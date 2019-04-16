@@ -13,6 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public interface AggregationServiceVisitorWGroupDetail
     {
         void VisitGrouped(int numGroups);
-        void VisitGroup(Object groupKey, params object[] state);
+
+        void VisitGroup(
+            Object groupKey,
+            params object[] state);
     }
 }

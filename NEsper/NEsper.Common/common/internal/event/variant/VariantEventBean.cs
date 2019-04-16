@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
         /// </summary>
         /// <param name="variantEventType">the event type</param>
         /// <param name="underlying">the event</param>
-        public VariantEventBean(VariantEventType variantEventType, EventBean underlying)
+        public VariantEventBean(
+            VariantEventType variantEventType,
+            EventBean underlying)
         {
             this.variantEventType = variantEventType;
             UnderlyingEventBean = underlying;

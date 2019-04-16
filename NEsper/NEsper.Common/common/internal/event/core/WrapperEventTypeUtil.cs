@@ -30,9 +30,11 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="eventTypeNameResolver">type name resolver</param>
         /// <returns>wrapper type</returns>
         public static WrapperEventType MakeWrapper(
-            EventTypeMetadata metadata, EventType underlyingEventType,
+            EventTypeMetadata metadata,
+            EventType underlyingEventType,
             IDictionary<string, object> propertyTypesMayPrimitive,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
             EventTypeNameResolver eventTypeNameResolver)
         {
             IDictionary<string, object> verified = BaseNestableEventUtil.ResolvePropertyTypes(

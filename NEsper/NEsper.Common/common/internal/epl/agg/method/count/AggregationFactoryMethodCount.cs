@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
 
         private AggregatorCount aggregator;
 
-        public AggregationFactoryMethodCount(ExprCountNode parent, bool ignoreNulls, Type countedValueType)
+        public AggregationFactoryMethodCount(
+            ExprCountNode parent,
+            bool ignoreNulls,
+            Type countedValueType)
         {
             this.parent = parent;
             this.ignoreNulls = ignoreNulls;
@@ -43,7 +46,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             parent.IsDistinct, false, parent.IsDistinct, countedValueType, ignoreNulls);
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             var distinctType = !parent.IsDistinct ? null : countedValueType;
             aggregator = new AggregatorCount(
@@ -51,13 +57,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
                 parent.OptionalFilter, false);
         }
 
-        public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream)
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
         {
             return GetMethodAggregationEvaluatorCountByForge(parent.PositionalParams, join, typesPerStream);
         }
 
         private static ExprForge[] GetMethodAggregationEvaluatorCountByForge(
-            ExprNode[] childNodes, bool join, EventType[] typesPerStream)
+            ExprNode[] childNodes,
+            bool join,
+            EventType[] typesPerStream)
         {
             if (childNodes[0] is ExprWildcard && childNodes.Length == 2) {
                 return ExprMethodAggUtil.GetDefaultForges(new[] {childNodes[1]}, join, typesPerStream);

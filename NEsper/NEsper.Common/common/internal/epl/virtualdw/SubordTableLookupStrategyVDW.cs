@@ -31,7 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         private readonly bool nwOnTrigger;
 
         public SubordTableLookupStrategyVDW(
-            VirtualDWViewFactory factory, SubordTableLookupStrategyFactoryVDW subordTableFactory,
+            VirtualDWViewFactory factory,
+            SubordTableLookupStrategyFactoryVDW subordTableFactory,
             VirtualDataWindowLookup externalIndex)
         {
             this.factory = factory;
@@ -71,7 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             }
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             EventBean[] events;
             if (nwOnTrigger) {
@@ -110,44 +113,55 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public LookupStrategyDesc StrategyDesc => new LookupStrategyDesc(LookupStrategyType.VDW);
 
-        private interface ExternalEvaluator
+        internal interface ExternalEvaluator
         {
-            object Evaluate(EventBean[] events, ExprEvaluatorContext context);
+            object Evaluate(
+                EventBean[] events,
+                ExprEvaluatorContext context);
         }
 
-        private class ExternalEvaluatorHashRelOp : ExternalEvaluator
+        internal class ExternalEvaluatorHashRelOp : ExternalEvaluator
         {
             private readonly Type coercionType;
 
             private readonly ExprEvaluator hashKeysEval;
 
-            private ExternalEvaluatorHashRelOp(ExprEvaluator hashKeysEval, Type coercionType)
+            internal ExternalEvaluatorHashRelOp(
+                ExprEvaluator hashKeysEval,
+                Type coercionType)
             {
                 this.hashKeysEval = hashKeysEval;
                 this.coercionType = coercionType;
             }
 
-            public object Evaluate(EventBean[] events, ExprEvaluatorContext context)
+            public object Evaluate(
+                EventBean[] events,
+                ExprEvaluatorContext context)
             {
                 return EventBeanUtility.Coerce(hashKeysEval.Evaluate(events, true, context), coercionType);
             }
         }
 
-        private class ExternalEvaluatorBtreeRange : ExternalEvaluator
+        internal class ExternalEvaluatorBtreeRange : ExternalEvaluator
         {
             private readonly Type coercionType;
             private readonly ExprEvaluator endEval;
 
             private readonly ExprEvaluator startEval;
 
-            private ExternalEvaluatorBtreeRange(ExprEvaluator startEval, ExprEvaluator endEval, Type coercionType)
+            internal ExternalEvaluatorBtreeRange(
+                ExprEvaluator startEval,
+                ExprEvaluator endEval,
+                Type coercionType)
             {
                 this.startEval = startEval;
                 this.endEval = endEval;
                 this.coercionType = coercionType;
             }
 
-            public object Evaluate(EventBean[] events, ExprEvaluatorContext context)
+            public object Evaluate(
+                EventBean[] events,
+                ExprEvaluatorContext context)
             {
                 var start = EventBeanUtility.Coerce(startEval.Evaluate(events, true, context), coercionType);
                 var end = EventBeanUtility.Coerce(endEval.Evaluate(events, true, context), coercionType);

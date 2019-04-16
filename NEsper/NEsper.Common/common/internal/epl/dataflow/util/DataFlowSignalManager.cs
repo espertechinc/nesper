@@ -8,34 +8,41 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.util
 {
-	public class DataFlowSignalManager {
+    public class DataFlowSignalManager
+    {
+        private IDictionary<int, IList<DataFlowSignalListener>> listenersPerOp = new Dictionary<int, IList<DataFlowSignalListener>>();
 
-	    private IDictionary<int, IList<DataFlowSignalListener>> listenersPerOp = new Dictionary<int, IList<DataFlowSignalListener>>();
+        public void ProcessSignal(
+            int operatorNum,
+            EPDataFlowSignal signal)
+        {
+            IList<DataFlowSignalListener> listeners = listenersPerOp.Get(operatorNum);
+            if (listeners == null || listeners.IsEmpty()) {
+                return;
+            }
 
-	    public void ProcessSignal(int operatorNum, EPDataFlowSignal signal) {
-	        IList<DataFlowSignalListener> listeners = listenersPerOp.Get(operatorNum);
-	        if (listeners == null || listeners.IsEmpty()) {
-	            return;
-	        }
-	        foreach (DataFlowSignalListener listener in listeners) {
-	            listener.ProcessSignal(signal);
-	        }
-	    }
+            foreach (DataFlowSignalListener listener in listeners) {
+                listener.ProcessSignal(signal);
+            }
+        }
 
-	    public void AddSignalListener(int producerOpNum, DataFlowSignalListener listener) {
-	        IList<DataFlowSignalListener> listeners = listenersPerOp.Get(producerOpNum);
-	        if (listeners == null) {
-	            listeners = new List<DataFlowSignalListener>();
-	            listenersPerOp.Put(producerOpNum, listeners);
-	        }
-	        listeners.Add(listener);
-	    }
-	}
+        public void AddSignalListener(
+            int producerOpNum,
+            DataFlowSignalListener listener)
+        {
+            IList<DataFlowSignalListener> listeners = listenersPerOp.Get(producerOpNum);
+            if (listeners == null) {
+                listeners = new List<DataFlowSignalListener>();
+                listenersPerOp.Put(producerOpNum, listeners);
+            }
+
+            listeners.Add(listener);
+        }
+    }
 } // end of namespace

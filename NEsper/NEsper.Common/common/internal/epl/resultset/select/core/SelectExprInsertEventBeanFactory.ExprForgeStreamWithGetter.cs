@@ -32,11 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
             }
 
             public object Evaluate(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 var theEvent = eventsPerStream[0];
-                if (theEvent != null)
-                {
+                if (theEvent != null) {
                     return getter.Get(theEvent);
                 }
 
@@ -68,7 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+            public void ToEPL(
+                TextWriter writer,
+                ExprPrecedenceEnum parentPrecedence)
             {
                 writer.Write(typeof(ExprForgeStreamWithGetter).GetSimpleName());
             }

@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
         AIRegistryRequirements RegistryRequirements { get; }
 
         StatementAgentInstanceFactoryResult NewContext(
-            AgentInstanceContext agentInstanceContext, bool isRecoveringResilient);
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient);
 
         void StatementCreate(StatementContext statementContext);
 
@@ -28,6 +29,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
         void StatementDestroyPreconditions(StatementContext statementContext);
         // default void StatementDestroyPreconditions(StatementContext statementContext) { }
 
-        StatementAgentInstanceLock ObtainAgentInstanceLock(StatementContext statementContext, int agentInstanceId);
+        StatementAgentInstanceLock ObtainAgentInstanceLock(
+            StatementContext statementContext,
+            int agentInstanceId);
     }
 } // end of namespace

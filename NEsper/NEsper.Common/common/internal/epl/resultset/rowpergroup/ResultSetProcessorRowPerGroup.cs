@@ -23,20 +23,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         ExprEvaluatorContext AgentInstanceContext { get; }
 
         SelectExprProcessor SelectExprProcessor { get; }
-        object GenerateGroupKeySingle(EventBean[] eventsPerStream, bool isNewData);
+
+        object GenerateGroupKeySingle(
+            EventBean[] eventsPerStream,
+            bool isNewData);
 
         bool HasHavingClause { get; }
 
         bool EvaluateHavingClause(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         bool IsSelectRStream { get; }
 
         EventBean GenerateOutputBatchedNoSortWMap(
-            bool join, object mk, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize);
+            bool join,
+            object mk,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize);
 
         void GenerateOutputBatchedArrFromIterator(
-            bool join, IEnumerator<KeyValuePair<object, EventBean[]>> keysAndEvents, bool isNewData, bool isSynthesize,
-            IList<EventBean> resultEvents, IList<object> optSortKeys);
+            bool join,
+            IEnumerator<KeyValuePair<object, EventBean[]>> keysAndEvents,
+            bool isNewData,
+            bool isSynthesize,
+            IList<EventBean> resultEvents,
+            IList<object> optSortKeys);
     }
 } // end of namespace

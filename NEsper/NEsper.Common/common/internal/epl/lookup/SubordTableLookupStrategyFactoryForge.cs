@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
     /// </summary>
     public interface SubordTableLookupStrategyFactoryForge
     {
-        CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
         string ToQueryPlan();
     }

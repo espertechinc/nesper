@@ -15,7 +15,8 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterSpecParamAdvancedIndexQuadTreeMXCIF : FilterSpecParam
     {
         public FilterSpecParamAdvancedIndexQuadTreeMXCIF(
-            ExprFilterSpecLookupable lookupable, FilterOperator filterOperator)
+            ExprFilterSpecLookupable lookupable,
+            FilterOperator filterOperator)
             : base(lookupable, filterOperator)
         {
         }
@@ -29,7 +30,8 @@ namespace com.espertech.esper.common.@internal.filterspec
         public FilterSpecParamFilterForEvalDouble HeightEval { get; set; }
 
         public override object GetFilterValue(
-            MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext,
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
             double x = XEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
@@ -41,9 +43,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         protected bool Equals(FilterSpecParamAdvancedIndexQuadTreeMXCIF other)
         {
-            return Equals(XEval, other.XEval) && 
-                   Equals(YEval, other.YEval) && 
-                   Equals(WidthEval, other.WidthEval) && 
+            return Equals(XEval, other.XEval) &&
+                   Equals(YEval, other.YEval) &&
+                   Equals(WidthEval, other.WidthEval) &&
                    Equals(HeightEval, other.HeightEval);
         }
 

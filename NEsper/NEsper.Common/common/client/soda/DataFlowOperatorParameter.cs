@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="parameterName">parameter name</param>
         /// <param name="parameterValue">parameter value</param>
-        public DataFlowOperatorParameter(String parameterName, Object parameterValue)
+        public DataFlowOperatorParameter(
+            String parameterName,
+            Object parameterValue)
         {
             ParameterName = parameterName;
             ParameterValue = parameterValue;
@@ -56,30 +58,27 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>RenderAny prameter. </summary>
         /// <param name="writer">to render to</param>
         /// <param name="parameterValue">value</param>
-        public static void RenderValue(TextWriter writer, Object parameterValue)
+        public static void RenderValue(
+            TextWriter writer,
+            Object parameterValue)
         {
-            if (parameterValue is EPStatementObjectModel)
-            {
+            if (parameterValue is EPStatementObjectModel) {
                 writer.Write("(");
                 ((EPStatementObjectModel) parameterValue).ToEPL(writer);
                 writer.Write(")");
             }
-            else if (parameterValue is Expression)
-            {
+            else if (parameterValue is Expression) {
                 ((Expression) parameterValue).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
-            else if (parameterValue == null)
-            {
+            else if (parameterValue == null) {
                 writer.Write("null");
             }
-            else if (parameterValue is String)
-            {
+            else if (parameterValue is String) {
                 writer.Write("\"");
                 writer.Write(parameterValue.ToString());
                 writer.Write("\"");
             }
-            else
-            {
+            else {
                 writer.Write(parameterValue.ToString());
             }
         }

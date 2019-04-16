@@ -45,7 +45,9 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <param name="eventType">is the event type representing the JavaBean</param>
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <returns>property type class</returns>
-        Type GetPropertyType(BeanEventType eventType, BeanEventTypeFactory beanEventTypeFactory);
+        Type GetPropertyType(
+            BeanEventType eventType,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         /// <summary>
         ///     Returns the property type plus its generic type parameter, if any.
@@ -53,7 +55,9 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <param name="eventType">is the event type representing the JavaBean</param>
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <returns>type and generic descriptor</returns>
-        GenericPropertyDesc GetPropertyTypeGeneric(BeanEventType eventType, BeanEventTypeFactory beanEventTypeFactory);
+        GenericPropertyDesc GetPropertyTypeGeneric(
+            BeanEventType eventType,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         /// <summary>
         ///     Returns value getter for the property of an event of the given event type.
@@ -63,7 +67,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <returns>fast property value getter for property</returns>
         EventPropertyGetterSPI GetGetter(
-            BeanEventType eventType, EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventType eventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory);
 
         /// <summary>
@@ -73,7 +78,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <returns>property type @param optionalMapPropTypes</returns>
         Type GetPropertyTypeMap(
-            IDictionary<string, object> optionalMapPropTypes, BeanEventTypeFactory beanEventTypeFactory);
+            IDictionary<string, object> optionalMapPropTypes,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         /// <summary>
         ///     Returns the getter-method for use with Map event representations.
@@ -83,12 +89,15 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <returns>getter for maps</returns>
         MapEventPropertyGetter GetGetterMap(
-            IDictionary<string, object> optionalMapPropTypes, EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            IDictionary<string, object> optionalMapPropTypes,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory);
 
         ObjectArrayEventPropertyGetter GetGetterObjectArray(
-            IDictionary<string, int> indexPerProperty, IDictionary<string, object> nestableTypes,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory);
+            IDictionary<string, int> indexPerProperty,
+            IDictionary<string, object> nestableTypes,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         /// <summary>
         ///     Returns the property type for use with DOM event representations.
@@ -106,14 +115,16 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <param name="propertyExpression">the full property expression</param>
         /// <returns>getter</returns>
         EventPropertyGetterSPI GetGetterDOM(
-            SchemaElementComplex complexProperty, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BaseXMLEventType xmlEventType, string propertyExpression);
+            SchemaElementComplex complexProperty,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BaseXMLEventType xmlEventType,
+            string propertyExpression);
 
         /// <summary>
         ///     Write the EPL-representation of the property.
         /// </summary>
         /// <param name="writer">to write to</param>
-        void ToPropertyEPL(StringWriter writer);
+        void ToPropertyEPL(TextWriter writer);
 
         /// <summary>
         ///     Return a String-array of atomic property names.

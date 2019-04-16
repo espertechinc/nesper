@@ -50,7 +50,9 @@ namespace com.espertech.esper.common.@internal.collection
             return ((IList<T>) Array).Contains(item);
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(
+            T[] array,
+            int arrayIndex)
         {
             ((IList<T>) Array).CopyTo(array, arrayIndex);
         }
@@ -69,7 +71,9 @@ namespace com.espertech.esper.common.@internal.collection
             return ((IList<T>) Array).IndexOf(item);
         }
 
-        public void Insert(int index, T item)
+        public void Insert(
+            int index,
+            T item)
         {
             ((IList<T>) Array).Insert(index, item);
         }

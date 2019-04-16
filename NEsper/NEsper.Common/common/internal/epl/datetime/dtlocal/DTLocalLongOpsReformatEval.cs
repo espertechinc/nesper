@@ -26,12 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
     {
         private readonly TimeAbacus timeAbacus;
 
-        private readonly TimeZone timeZone;
+        private readonly TimeZoneInfo timeZone;
 
         public DTLocalLongOpsReformatEval(
             IList<CalendarOp> calendarOps,
             ReformatOp reformatOp,
-            TimeZone timeZone,
+            TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
             : base(calendarOps, reformatOp)
         {
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var cal = DateTimeEx.GetInstance(timeZone);
-            timeAbacus.DateTimeSet((long?) target, cal);
+            timeAbacus.DateTimeSet(target.AsLong(), cal);
             DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
             return reformatOp.Evaluate(cal, eventsPerStream, isNewData, exprEvaluatorContext);
         }
@@ -65,12 +65,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(long), "target");
 
             var block = methodNode.Block
-                .DeclareVar(typeof(DateTimeEx), "cal", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
                 .Expression(
-                    forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("cal"), methodNode, codegenClassScope));
+                    forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("dtx"), methodNode, codegenClassScope));
             DTLocalUtil.EvaluateCalOpsCalendarCodegen(
-                block, forge.calendarForges, Ref("cal"), methodNode, exprSymbol, codegenClassScope);
-            block.MethodReturn(forge.reformatForge.CodegenDateTimeEx(Ref("cal"), methodNode, exprSymbol, codegenClassScope));
+                block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
+            block.MethodReturn(forge.reformatForge.CodegenDateTimeEx(Ref("dtx"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
     }

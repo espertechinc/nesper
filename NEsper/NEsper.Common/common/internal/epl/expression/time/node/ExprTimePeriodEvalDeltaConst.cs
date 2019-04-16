@@ -7,18 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.node
 {
-	public interface ExprTimePeriodEvalDeltaConst {
-	    long DeltaAdd(long fromTime);
+    public interface ExprTimePeriodEvalDeltaConst
+    {
+        long DeltaAdd(long fromTime);
 
-	    long DeltaSubtract(long fromTime);
+        long DeltaSubtract(long fromTime);
 
-	    TimePeriodDeltaResult DeltaAddWReference(long fromTime, long reference);
-	}
+        TimePeriodDeltaResult DeltaAddWReference(
+            long fromTime,
+            long reference);
+    }
 } // end of namespace

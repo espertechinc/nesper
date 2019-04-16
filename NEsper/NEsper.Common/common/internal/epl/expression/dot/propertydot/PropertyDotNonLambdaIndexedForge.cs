@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
         ExprNodeRenderable
     {
         public PropertyDotNonLambdaIndexedForge(
-            int streamId, EventPropertyGetterIndexedSPI indexedGetter, ExprForge paramForge, Type returnType)
+            int streamId,
+            EventPropertyGetterIndexedSPI indexedGetter,
+            ExprForge paramForge,
+            Type returnType)
         {
             StreamId = streamId;
             IndexedGetter = indexedGetter;
@@ -37,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
         public ExprEvaluator ExprEvaluator => new PropertyDotNonLambdaIndexedForgeEval(this, ParamForge.ExprEvaluator);
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return PropertyDotNonLambdaIndexedForgeEval.Codegen(
@@ -50,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
 
         public ExprNodeRenderable ForgeRenderable => this;
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(GetType().Name);
         }

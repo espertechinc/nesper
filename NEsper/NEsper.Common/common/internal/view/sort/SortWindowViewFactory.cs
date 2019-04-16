@@ -65,7 +65,9 @@ namespace com.espertech.esper.common.@internal.view.sort
 
         public string ViewName => ViewEnum.SORT_WINDOW.Name;
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
             comparator = ExprNodeUtilityMake.GetComparatorHashableMultiKeys(
                 sortCriteriaTypes, useCollatorSort,
@@ -87,7 +89,9 @@ namespace com.espertech.esper.common.@internal.view.sort
             return new RandomAccessByIndexGetter();
         }
 
-        private bool Compare(bool[] one, bool[] two)
+        private bool Compare(
+            bool[] one,
+            bool[] two)
         {
             if (one.Length != two.Length) {
                 return false;

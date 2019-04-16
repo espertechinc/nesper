@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
     public class ContextControllerKeyedPartitionKeyWInit
     {
         public ContextControllerKeyedPartitionKeyWInit(
-            object getterKey, string optionalInitAsName, EventBean optionalInitBean)
+            object getterKey,
+            string optionalInitAsName,
+            EventBean optionalInitBean)
         {
             GetterKey = getterKey;
             OptionalInitAsName = optionalInitAsName;

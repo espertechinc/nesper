@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             double width,
             double height,
             EventBean eventBean,
-            TT target, QuadTreeCollector<TL, TT> collector)
+            TT target,
+            QuadTreeCollector<TL, TT> collector)
         {
             CollectRange(quadTree.Root, x, y, width, height, eventBean, target, collector);
         }

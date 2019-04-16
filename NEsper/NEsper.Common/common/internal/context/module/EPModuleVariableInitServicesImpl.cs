@@ -14,7 +14,8 @@ namespace com.espertech.esper.common.@internal.context.module
     public class EPModuleVariableInitServicesImpl : EPModuleVariableInitServices
     {
         public EPModuleVariableInitServicesImpl(
-            VariableCollector variableCollector, EventTypeResolver eventTypeResolver)
+            VariableCollector variableCollector,
+            EventTypeResolver eventTypeResolver)
         {
             VariableCollector = variableCollector;
             EventTypeResolver = eventTypeResolver;

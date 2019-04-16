@@ -86,7 +86,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public string ViewName => ViewEnum.GROUP_PROPERTY.Name;
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
             if (groupeds == null) {
                 throw new IllegalStateException("Grouped views not provided");

@@ -31,8 +31,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         internal readonly CodegenExpressionRef points;
 
         public AggregatorRateEver(
-            AggregationFactoryMethodRate factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter)
+            AggregationFactoryMethodRate factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter)
             : base(
                 factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
                 optionalFilter)
@@ -44,40 +50,59 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         }
 
         protected override void ApplyEvalEnterFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             Apply(method, classScope);
         }
 
         public override void ApplyEvalLeaveCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             // This is an "ever" aggregator and is designed for use in non-window env
         }
 
         protected override void ApplyEvalLeaveFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
         }
 
         protected override void ApplyTableEnterFiltered(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             Apply(method, classScope);
         }
 
         protected override void ApplyTableLeaveFiltered(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             // This is an "ever" aggregator and is designed for use in non-window env
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(points, "clear");
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.IfCondition(Not(ExprDotMethod(points, "isEmpty")))
                 .DeclareVar(typeof(long), "newest", Cast(typeof(long), ExprDotMethod(points, "getLast")))
@@ -98,8 +123,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(WriteBoolean(output, row, hasLeave))
@@ -107,8 +137,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(ReadBoolean(row, hasLeave, input))
@@ -121,7 +155,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         /// <param name="output">out</param>
         /// <param name="points">points</param>
         /// <throws>IOException io error</throws>
-        public static void WritePoints(DataOutput output, Deque<long> points)
+        public static void WritePoints(
+            DataOutput output,
+            Deque<long> points)
         {
             output.WriteInt(points.Count);
             foreach (long value in points) {
@@ -129,7 +165,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             }
         }
 
-        protected void Apply(CodegenMethod method, CodegenClassScope classScope)
+        protected void Apply(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             CodegenExpression timeProvider = classScope.AddOrGetFieldSharable(TimeProviderField.INSTANCE);
             method.Block.DeclareVar(typeof(long), "timestamp", ExprDotMethod(timeProvider, "getTime"))
@@ -166,7 +204,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         /// <param name="timestamp">timestamp</param>
         /// <param name="interval">interval</param>
         /// <returns>hasLeave</returns>
-        public static bool RemoveFromHead(Deque<long> points, long timestamp, long interval)
+        public static bool RemoveFromHead(
+            Deque<long> points,
+            long timestamp,
+            long interval)
         {
             var hasLeave = false;
             if (points.Count > 1) {

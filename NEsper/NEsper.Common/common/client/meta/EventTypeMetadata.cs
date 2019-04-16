@@ -39,8 +39,13 @@ namespace com.espertech.esper.common.client.meta
         /// </param>
         /// <param name="eventTypeIdPair">the type id pair</param>
         public EventTypeMetadata(
-            string name, string moduleName, EventTypeTypeClass typeClass, EventTypeApplicationType applicationType,
-            NameAccessModifier accessModifier, EventTypeBusModifier busModifier, bool isPropertyAgnostic,
+            string name,
+            string moduleName,
+            EventTypeTypeClass typeClass,
+            EventTypeApplicationType applicationType,
+            NameAccessModifier accessModifier,
+            EventTypeBusModifier busModifier,
+            bool isPropertyAgnostic,
             EventTypeIdPair eventTypeIdPair)
         {
             Name = name;
@@ -137,7 +142,9 @@ namespace com.espertech.esper.common.client.meta
         /// <param name="eventTypeIdPublic">public id</param>
         /// <param name="eventTypeIdProtected">protected id</param>
         /// <returns>exppression</returns>
-        public EventTypeMetadata WithIds(long eventTypeIdPublic, long eventTypeIdProtected)
+        public EventTypeMetadata WithIds(
+            long eventTypeIdPublic,
+            long eventTypeIdProtected)
         {
             return new EventTypeMetadata(
                 Name, ModuleName, TypeClass, ApplicationType, AccessModifier, BusModifier, IsPropertyAgnostic,

@@ -7,28 +7,33 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 {
-	public class EventsAndSortKeysPair {
-	    private readonly EventBean[] events;
-	    private readonly object[] sortKeys;
+    public class EventsAndSortKeysPair
+    {
+        private readonly EventBean[] events;
+        private readonly object[] sortKeys;
 
-	    public EventsAndSortKeysPair(EventBean[] events, object[] sortKeys) {
-	        this.events = events;
-	        this.sortKeys = sortKeys;
-	    }
+        public EventsAndSortKeysPair(
+            EventBean[] events,
+            object[] sortKeys)
+        {
+            this.events = events;
+            this.sortKeys = sortKeys;
+        }
 
-	    public EventBean[] GetEvents() {
-	        return events;
-	    }
+        public EventBean[] GetEvents()
+        {
+            return events;
+        }
 
-	    public object[] GetSortKeys() {
-	        return sortKeys;
-	    }
-	}
+        public object[] GetSortKeys()
+        {
+            return sortKeys;
+        }
+    }
 } // end of namespace

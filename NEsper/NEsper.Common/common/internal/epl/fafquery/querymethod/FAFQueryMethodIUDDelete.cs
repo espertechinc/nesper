@@ -26,14 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             return fireAndForgetProcessorInstance.ProcessDelete(this);
         }
 
-        public override QueryGraph QueryGraph
-        {
+        public override QueryGraph QueryGraph {
             get => _queryGraph;
             set => _queryGraph = value;
         }
 
-        public ExprEvaluator OptionalWhereClause
-        {
+        public ExprEvaluator OptionalWhereClause {
             get => _optionalWhereClause;
             set => _optionalWhereClause = value;
         }

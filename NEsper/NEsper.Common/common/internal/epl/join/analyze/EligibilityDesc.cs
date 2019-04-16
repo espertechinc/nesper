@@ -10,8 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
 {
     public class EligibilityDesc
     {
-        public EligibilityDesc(Eligibility eligibility,
-                               int? streamNum)
+        public EligibilityDesc(
+            Eligibility eligibility,
+            int? streamNum)
         {
             Eligibility = eligibility;
             StreamNum = streamNum;

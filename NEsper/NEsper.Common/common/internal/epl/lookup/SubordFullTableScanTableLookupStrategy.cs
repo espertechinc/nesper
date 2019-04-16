@@ -23,13 +23,17 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly IEnumerable<EventBean> _contents;
         private readonly ILockable _tableLevelLock;
 
-        public SubordFullTableScanTableLookupStrategy(ILockable tableLevelLock, IEnumerable<EventBean> contents)
+        public SubordFullTableScanTableLookupStrategy(
+            ILockable tableLevelLock,
+            IEnumerable<EventBean> contents)
         {
             this._tableLevelLock = tableLevelLock;
             this._contents = contents;
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, null, null);

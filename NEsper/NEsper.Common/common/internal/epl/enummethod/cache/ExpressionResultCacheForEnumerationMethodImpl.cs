@@ -14,52 +14,64 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
-	public class ExpressionResultCacheForEnumerationMethodImpl : ExpressionResultCacheForEnumerationMethod {
+    public class ExpressionResultCacheForEnumerationMethodImpl : ExpressionResultCacheForEnumerationMethod
+    {
+        private readonly IDictionary<object, SoftReference<ExpressionResultCacheEntryLongArrayAndObj>> enumMethodCache =
+            new IdentityDictionary<object, SoftReference<ExpressionResultCacheEntryLongArrayAndObj>>();
 
-	    private readonly IDictionary<object, SoftReference<ExpressionResultCacheEntryLongArrayAndObj>> enumMethodCache = 
-	        new IdentityDictionary<object, SoftReference<ExpressionResultCacheEntryLongArrayAndObj>>();
+        private Deque<ExpressionResultCacheStackEntry> callStack;
+        private Deque<long> lastValueCacheStack;
 
-	    private Deque<ExpressionResultCacheStackEntry> callStack;
-	    private Deque<long> lastValueCacheStack;
+        public ExpressionResultCacheEntryLongArrayAndObj GetEnumerationMethodLastValue(object node)
+        {
+            SoftReference<ExpressionResultCacheEntryLongArrayAndObj> cacheRef = enumMethodCache.Get(node);
+            if (cacheRef == null) {
+                return null;
+            }
 
-	    public ExpressionResultCacheEntryLongArrayAndObj GetEnumerationMethodLastValue(object node) {
-	        SoftReference<ExpressionResultCacheEntryLongArrayAndObj> cacheRef = enumMethodCache.Get(node);
-	        if (cacheRef == null) {
-	            return null;
-	        }
-	        ExpressionResultCacheEntryLongArrayAndObj entry = cacheRef.Get();
-	        if (entry == null) {
-	            return null;
-	        }
-	        long[] required = entry.Reference;
-	        if (required.Length != lastValueCacheStack.Count) {
-	            return null;
-	        }
-	        IEnumerator<long> prov = lastValueCacheStack.GetEnumerator();
-	        for (int i = 0; i < lastValueCacheStack.Count; i++) {
-	            if (!required[i].Equals(prov.Next())) {
-	                return null;
-	            }
-	        }
-	        return entry;
-	    }
+            ExpressionResultCacheEntryLongArrayAndObj entry = cacheRef.Get();
+            if (entry == null) {
+                return null;
+            }
 
-	    public void SaveEnumerationMethodLastValue(object node, object result) {
-	        long[] snapshot = lastValueCacheStack.ToArray();
-	        ExpressionResultCacheEntryLongArrayAndObj entry = new ExpressionResultCacheEntryLongArrayAndObj(snapshot, result);
-	        enumMethodCache.Put(node, new SoftReference<ExpressionResultCacheEntryLongArrayAndObj>(entry));
-	    }
+            long[] required = entry.Reference;
+            if (required.Length != lastValueCacheStack.Count) {
+                return null;
+            }
 
-	    public void PushContext(long contextNumber) {
-	        if (callStack == null) {
-	            callStack = new ArrayDeque<ExpressionResultCacheStackEntry>();
-	            lastValueCacheStack = new ArrayDeque<long>(10);
-	        }
-	        lastValueCacheStack.Push(contextNumber);
-	    }
+            IEnumerator<long> prov = lastValueCacheStack.GetEnumerator();
+            for (int i = 0; i < lastValueCacheStack.Count; i++) {
+                prov.MoveNext();
+                if (!Equals(required[i], prov.Current)) {
+                    return null;
+                }
+            }
 
-	    public void PopContext() {
-	        lastValueCacheStack.Remove();
-	    }
-	}
+            return entry;
+        }
+
+        public void SaveEnumerationMethodLastValue(
+            object node,
+            object result)
+        {
+            var snapshot = lastValueCacheStack.ToArray();
+            var entry = new ExpressionResultCacheEntryLongArrayAndObj(snapshot, result);
+            enumMethodCache.Put(node, new SoftReference<ExpressionResultCacheEntryLongArrayAndObj>(entry));
+        }
+
+        public void PushContext(long contextNumber)
+        {
+            if (callStack == null) {
+                callStack = new ArrayDeque<ExpressionResultCacheStackEntry>();
+                lastValueCacheStack = new ArrayDeque<long>(10);
+            }
+
+            lastValueCacheStack.AddFirst(contextNumber); // Push(contextNumber);
+        }
+
+        public void PopContext()
+        {
+            lastValueCacheStack.RemoveFirst(); //Remove();
+        }
+    }
 } // end of namespace

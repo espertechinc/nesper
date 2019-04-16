@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
 {
     public class ContextPartitionInstantiationResult
     {
-        public ContextPartitionInstantiationResult(int subpathOrCPId, IList<AgentInstance> agentInstances)
+        public ContextPartitionInstantiationResult(
+            int subpathOrCPId,
+            IList<AgentInstance> agentInstances)
         {
             SubpathOrCPId = subpathOrCPId;
             AgentInstances = agentInstances;

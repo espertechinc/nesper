@@ -21,14 +21,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator left;
         private readonly ExprEvaluator right;
 
-        public ExprRelationalOpNodeForgeEval(ExprRelationalOpNodeForge forge, ExprEvaluator left, ExprEvaluator right)
+        public ExprRelationalOpNodeForgeEval(
+            ExprRelationalOpNodeForge forge,
+            ExprEvaluator left,
+            ExprEvaluator right)
         {
             this.forge = forge;
             this.left = left;
             this.right = right;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var lvalue = left.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (lvalue == null) {
@@ -44,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprRelationalOpNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprRelationalOpNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var lhs = forge.ForgeRenderable.ChildNodes[0].Forge;

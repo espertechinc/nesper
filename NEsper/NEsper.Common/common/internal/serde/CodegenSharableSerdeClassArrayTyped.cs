@@ -10,6 +10,7 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.serde
@@ -19,7 +20,9 @@ namespace com.espertech.esper.common.@internal.serde
         private readonly CodegenSharableSerdeName name;
         private readonly Type[] valueTypes;
 
-        public CodegenSharableSerdeClassArrayTyped(CodegenSharableSerdeName name, Type[] valueTypes)
+        public CodegenSharableSerdeClassArrayTyped(
+            CodegenSharableSerdeName name,
+            Type[] valueTypes)
         {
             this.name = name;
             this.valueTypes = valueTypes;
@@ -27,14 +30,14 @@ namespace com.espertech.esper.common.@internal.serde
 
         public Type Type()
         {
-            return typeof(DataInputOutputSerdeWCollation);
+            return typeof(DataInputOutputSerdeWCollation<object>);
         }
 
         public CodegenExpression InitCtorScoped()
         {
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                 .Add(EPStatementInitServicesConstants.GETDATAINPUTOUTPUTSERDEPROVIDER)
-                .Add(name.methodName, Constant(valueTypes));
+                .Add(name.MethodName, Constant(valueTypes));
         }
 
         public override bool Equals(object o)
@@ -54,13 +57,13 @@ namespace com.espertech.esper.common.@internal.serde
             }
 
             // Probably incorrect - comparing Object[] arrays with Arrays.equals
-            return Arrays.Equals(valueTypes, that.valueTypes);
+            return CompatExtensions.AreEqual(valueTypes, that.valueTypes);
         }
 
         public override int GetHashCode()
         {
             var result = name.GetHashCode();
-            result = 31 * result + Arrays.HashCode(valueTypes);
+            result = 31 * result + CompatExtensions.Hash(valueTypes);
             return result;
         }
 

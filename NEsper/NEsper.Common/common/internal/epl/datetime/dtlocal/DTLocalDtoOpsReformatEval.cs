@@ -21,13 +21,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public class DTLocalDtoOpsReformatEval : DTLocalEvaluatorCalopReformatBase
     {
-        public DTLocalDtoOpsReformatEval(IList<CalendarOp> calendarOps, ReformatOp reformatOp) : base(
-            calendarOps, reformatOp)
+        public DTLocalDtoOpsReformatEval(
+            IList<CalendarOp> calendarOps,
+            ReformatOp reformatOp)
+            : base(
+                calendarOps, reformatOp)
         {
         }
 
         public override object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var dto = (DateTimeOffset) target;
             dto = DTLocalUtil.EvaluateCalOpsLDT(calendarOps, dto, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -35,8 +41,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDtoOpsReformatForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            DTLocalDtoOpsReformatForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
                     forge.reformatForge.ReturnType, typeof(DTLocalDtoOpsReformatEval), codegenClassScope)

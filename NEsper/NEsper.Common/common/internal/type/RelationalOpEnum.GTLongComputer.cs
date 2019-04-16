@@ -17,14 +17,23 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         /// Computer for relational op compare.
         /// </summary>
-        public class GTLongComputer : Computer {
-            public bool Compare(object objOne, object objTwo) {
+        public class GTLongComputer : Computer
+        {
+            public bool Compare(
+                object objOne,
+                object objTwo)
+            {
                 object s1 = (object) objOne;
                 object s2 = (object) objTwo;
                 return s1.AsLong() > s2.AsLong();
             }
 
-            public CodegenExpression Codegen(CodegenExpressionRef lhs, Type lhsType, CodegenExpression rhs, Type rhsType) {
+            public CodegenExpression Codegen(
+                CodegenExpressionRef lhs,
+                Type lhsType,
+                CodegenExpression rhs,
+                Type rhsType)
+            {
                 return CodegenLong(lhs, lhsType, rhs, rhsType, GT);
             }
         }

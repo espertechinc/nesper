@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
@@ -15,7 +14,8 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
 {
-	public interface ExprDeclaredCompileTimeResolver : CompileTimeResolver {
-	    ExpressionDeclItem Resolve(string name);
-	}
+    public interface ExprDeclaredCompileTimeResolver : CompileTimeResolver
+    {
+        ExpressionDeclItem Resolve(string name);
+    }
 } // end of namespace

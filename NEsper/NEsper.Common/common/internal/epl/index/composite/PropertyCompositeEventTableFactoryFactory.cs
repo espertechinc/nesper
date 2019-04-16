@@ -26,8 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         private readonly int? _subqueryNum;
 
         public PropertyCompositeEventTableFactoryFactory(
-            int indexedStreamNum, int? subqueryNum, bool isFireAndForget, string[] keyProps, Type[] keyTypes,
-            EventPropertyValueGetter keyGetter, string[] rangeProps, Type[] rangeTypes,
+            int indexedStreamNum,
+            int? subqueryNum,
+            bool isFireAndForget,
+            string[] keyProps,
+            Type[] keyTypes,
+            EventPropertyValueGetter keyGetter,
+            string[] rangeProps,
+            Type[] rangeTypes,
             EventPropertyValueGetter[] rangeGetters)
         {
             this._indexedStreamNum = indexedStreamNum;
@@ -41,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             this._rangeGetters = rangeGetters;
         }
 
-        public EventTableFactory Create(EventType eventType, StatementContext statementContext)
+        public EventTableFactory Create(
+            EventType eventType,
+            StatementContext statementContext)
         {
             return statementContext.EventTableIndexService.CreateComposite(
                 _indexedStreamNum, eventType,

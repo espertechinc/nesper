@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,7 +19,9 @@ namespace com.espertech.esper.common.@internal.rettype
     /// </summary>
     public class EventMultiValuedEPType : EPType
     {
-        internal EventMultiValuedEPType(Type container, EventType component)
+        internal EventMultiValuedEPType(
+            Type container,
+            EventType component)
         {
             Container = container;
             Component = component;

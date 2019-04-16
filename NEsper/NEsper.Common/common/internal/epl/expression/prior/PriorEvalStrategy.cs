@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -15,10 +14,17 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.prior
 {
-	/// <summary>
-	/// Represents the 'prior' prior event resolution strategy for use in an expression node tree.
-	/// </summary>
-	public interface PriorEvalStrategy {
-	    EventBean GetSubstituteEvent(EventBean originalEvent, bool isNewData, int constantIndexNumber, int relativeIndex, ExprEvaluatorContext exprEvaluatorContext, int streamNum);
-	}
+    /// <summary>
+    /// Represents the 'prior' prior event resolution strategy for use in an expression node tree.
+    /// </summary>
+    public interface PriorEvalStrategy
+    {
+        EventBean GetSubstituteEvent(
+            EventBean originalEvent,
+            bool isNewData,
+            int constantIndexNumber,
+            int relativeIndex,
+            ExprEvaluatorContext exprEvaluatorContext,
+            int streamNum);
+    }
 } // end of namespace

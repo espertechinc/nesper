@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.compat;
@@ -23,6 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
     public class ProxyAggSvcGroupByReclaimAgedEvalFuncFactory : AggSvcGroupByReclaimAgedEvalFuncFactory
     {
         public Func<AgentInstanceContext, AggSvcGroupByReclaimAgedEvalFunc> ProcMake;
+
         public AggSvcGroupByReclaimAgedEvalFunc Make(AgentInstanceContext agentInstanceContext)
             => ProcMake(agentInstanceContext);
     }

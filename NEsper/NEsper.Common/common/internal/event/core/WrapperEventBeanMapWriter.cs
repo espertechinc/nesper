@@ -6,36 +6,37 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
-	/// <summary>
-	/// Writer for wrapper events.
-	/// </summary>
-	public class WrapperEventBeanMapWriter : EventBeanWriter {
-	    private readonly string[] properties;
+    /// <summary>
+    ///     Writer for wrapper events.
+    /// </summary>
+    public class WrapperEventBeanMapWriter : EventBeanWriter
+    {
+        private readonly string[] properties;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="properties">to write</param>
-	    public WrapperEventBeanMapWriter(string[] properties) {
-	        this.properties = properties;
-	    }
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="properties">to write</param>
+        public WrapperEventBeanMapWriter(string[] properties)
+        {
+            this.properties = properties;
+        }
 
-	    public void Write(object[] values, EventBean theEvent) {
-	        DecoratingEventBean mappedEvent = (DecoratingEventBean) theEvent;
-	        IDictionary<string, object> map = mappedEvent.DecoratingProperties;
+        public void Write(
+            object[] values,
+            EventBean theEvent)
+        {
+            var mappedEvent = (DecoratingEventBean) theEvent;
+            var map = mappedEvent.DecoratingProperties;
 
-	        for (int i = 0; i < properties.Length; i++) {
-	            map.Put(properties[i], values[i]);
-	        }
-	    }
-	}
+            for (var i = 0; i < properties.Length; i++) {
+                map.Put(properties[i], values[i]);
+            }
+        }
+    }
 } // end of namespace

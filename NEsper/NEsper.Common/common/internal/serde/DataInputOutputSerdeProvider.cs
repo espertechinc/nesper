@@ -7,30 +7,32 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.serde
 {
-	public interface DataInputOutputSerdeProvider {
-	    DataInputOutputSerdeWCollation<E> ValueNullable<E>(Type type);
+    public interface DataInputOutputSerdeProvider
+    {
+        DataInputOutputSerdeWCollation<E> ValueNullable<E>(Type type);
 
-	    DataInputOutputSerdeWCollation<E> RefCountedSet<E>(Type type);
+        DataInputOutputSerdeWCollation<E> RefCountedSet<E>(Type type);
 
-	    DataInputOutputSerdeWCollation<E> SortedRefCountedSet<E>(Type type);
+        DataInputOutputSerdeWCollation<E> SortedRefCountedSet<E>(Type type);
 
-	    DataInputOutputSerdeWCollation<E> ObjectArrayMayNullNull<E>(Type[] types);
+        DataInputOutputSerdeWCollation<E> ObjectArrayMayNullNull<E>(Type[] types);
 
-	    DataInputOutputSerdeWCollation<E> ListEvents<E>(EventType eventType);
+        DataInputOutputSerdeWCollation<E> ListEvents<E>(EventType eventType);
 
-	    DataInputOutputSerdeWCollation<E> LinkedHashMapEventsAndInt<E>(EventType eventType);
+        DataInputOutputSerdeWCollation<E> LinkedHashMapEventsAndInt<E>(EventType eventType);
 
-	    DataInputOutputSerdeWCollation<E> EventNullable<E>(EventType eventType);
+        DataInputOutputSerdeWCollation<E> EventNullable<E>(EventType eventType);
 
-	    DataInputOutputSerdeWCollation<E> RefCountedSetAtomicInteger<E>(EventType eventType);
+        DataInputOutputSerdeWCollation<E> RefCountedSetAtomicInteger<E>(EventType eventType);
 
-	    DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque<E>(Type[] valueTypes, EventType eventType);
-	}
+        DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque<E>(
+            Type[] valueTypes,
+            EventType eventType);
+    }
 } // end of namespace

@@ -37,7 +37,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         private IDictionary<string, ExpressionScriptProvided> scripts;
 
         public StatementSpecMapContext(
-            ContextCompileTimeDescriptor contextCompileTimeDescriptor, StatementSpecMapEnv mapEnv)
+            ContextCompileTimeDescriptor contextCompileTimeDescriptor,
+            StatementSpecMapEnv mapEnv)
         {
             VariableNames = new HashSet<string>();
             MapEnv = mapEnv;

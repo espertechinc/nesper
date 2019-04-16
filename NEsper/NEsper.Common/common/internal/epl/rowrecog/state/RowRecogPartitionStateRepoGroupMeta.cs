@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
     public class RowRecogPartitionStateRepoGroupMeta
     {
         public RowRecogPartitionStateRepoGroupMeta(
-            bool hasInterval, ExprEvaluator partitionExpression, AgentInstanceContext agentInstanceContext)
+            bool hasInterval,
+            ExprEvaluator partitionExpression,
+            AgentInstanceContext agentInstanceContext)
         {
             IsInterval = hasInterval;
             PartitionExpression = partitionExpression;

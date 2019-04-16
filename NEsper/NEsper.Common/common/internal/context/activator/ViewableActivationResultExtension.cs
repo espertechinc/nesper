@@ -10,5 +10,5 @@ namespace com.espertech.esper.common.@internal.context.activator
 {
     public interface ViewableActivationResultExtension
     {
-	}
+    }
 } // end of namespace

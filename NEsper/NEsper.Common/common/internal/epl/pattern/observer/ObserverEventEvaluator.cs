@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         /// </summary>
         /// <param name="matchEvent">is the matched events so far</param>
         /// <param name="quitted">whether the observer quit, usually "true" for most observers</param>
-        void ObserverEvaluateTrue(MatchedEventMap matchEvent, bool quitted);
+        void ObserverEvaluateTrue(
+            MatchedEventMap matchEvent,
+            bool quitted);
 
         /// <summary>
         ///     Indicate that the observer turned permanently false.

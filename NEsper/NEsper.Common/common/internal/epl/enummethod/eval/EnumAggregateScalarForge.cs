@@ -19,8 +19,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         internal readonly ObjectArrayEventType evalEventType;
 
         public EnumAggregateScalarForge(
-            ExprForge initialization, ExprForge innerExpression, int streamNumLambda,
-            ObjectArrayEventType resultEventType, ObjectArrayEventType evalEventType)
+            ExprForge initialization,
+            ExprForge innerExpression,
+            int streamNumLambda,
+            ObjectArrayEventType resultEventType,
+            ObjectArrayEventType evalEventType)
             : base(initialization, innerExpression, streamNumLambda, resultEventType)
 
         {
@@ -33,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public ObjectArrayEventType EvalEventType => evalEventType;
 
         public override CodegenExpression Codegen(
-            EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return EnumAggregateScalarForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
         }

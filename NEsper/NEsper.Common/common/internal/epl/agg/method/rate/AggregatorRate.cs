@@ -33,8 +33,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         protected CodegenExpressionRef oldest;
 
         public AggregatorRate(
-            AggregationFactoryMethodRate factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter)
+            AggregationFactoryMethodRate factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter)
             : base(
                 factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
                 optionalFilter)
@@ -47,7 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         }
 
         protected override void ApplyEvalEnterFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             var firstType = forges[0].EvaluationType;
             var firstExpr = forges[0].EvaluateCodegen(typeof(long), method, symbols, classScope);
@@ -66,7 +75,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         }
 
         protected override void ApplyEvalLeaveFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             var numFilters = factory.Parent.OptionalFilter != null ? 1 : 0;
 
@@ -87,25 +99,35 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         }
 
         protected override void ApplyTableEnterFiltered(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             throw new UnsupportedOperationException("Not available with tables");
         }
 
         protected override void ApplyTableLeaveFiltered(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             throw new UnsupportedOperationException("Not available with tables");
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(accumulator, Constant(0))
                 .AssignRef(latest, Constant(0))
                 .AssignRef(oldest, Constant(0));
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.IfCondition(Not(isSet)).BlockReturn(ConstantNull())
                 .MethodReturn(
@@ -113,8 +135,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(WriteDouble(output, row, accumulator))
@@ -124,8 +151,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(ReadDouble(row, accumulator, input))

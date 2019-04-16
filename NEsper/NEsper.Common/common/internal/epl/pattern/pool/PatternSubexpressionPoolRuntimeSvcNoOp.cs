@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.compat;
@@ -15,26 +14,42 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.pool
 {
-	public class PatternSubexpressionPoolRuntimeSvcNoOp : PatternSubexpressionPoolRuntimeSvc {
-	    public readonly static PatternSubexpressionPoolRuntimeSvcNoOp INSTANCE = new PatternSubexpressionPoolRuntimeSvcNoOp();
+    public class PatternSubexpressionPoolRuntimeSvcNoOp : PatternSubexpressionPoolRuntimeSvc
+    {
+        public readonly static PatternSubexpressionPoolRuntimeSvcNoOp INSTANCE = new PatternSubexpressionPoolRuntimeSvcNoOp();
 
-	    private PatternSubexpressionPoolRuntimeSvcNoOp() {
-	    }
+        private PatternSubexpressionPoolRuntimeSvcNoOp()
+        {
+        }
 
-	    public void AddPatternContext(int statementId, string statementName, PatternSubexpressionPoolStmtHandler stmtCounts) {
-	    }
+        public void AddPatternContext(
+            int statementId,
+            string statementName,
+            PatternSubexpressionPoolStmtHandler stmtCounts)
+        {
+        }
 
-	    public void RemoveStatement(int statementId) {
-	    }
+        public void RemoveStatement(int statementId)
+        {
+        }
 
-	    public void DecreaseCount(EvalNode evalNode, AgentInstanceContext agentInstanceContext) {
-	    }
+        public void DecreaseCount(
+            EvalNode evalNode,
+            AgentInstanceContext agentInstanceContext)
+        {
+        }
 
-	    public bool TryIncreaseCount(EvalNode evalNode, AgentInstanceContext agentInstanceContext) {
-	        return false;
-	    }
+        public bool TryIncreaseCount(
+            EvalNode evalNode,
+            AgentInstanceContext agentInstanceContext)
+        {
+            return false;
+        }
 
-	    public void ForceIncreaseCount(EvalNode evalNode, AgentInstanceContext agentInstanceContext) {
-	    }
-	}
+        public void ForceIncreaseCount(
+            EvalNode evalNode,
+            AgentInstanceContext agentInstanceContext)
+        {
+        }
+    }
 } // end of namespace

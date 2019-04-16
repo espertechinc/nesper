@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="interval">for rescheduling the execution</param>
         /// <param name="statementGroup">group number of statement group</param>
         public MetricExecStatement(
-            MetricEventRouter metricEventRouter, MetricScheduleService metricScheduleService, long interval,
+            MetricEventRouter metricEventRouter,
+            MetricScheduleService metricScheduleService,
+            long interval,
             int statementGroup)
         {
             this.metricEventRouter = metricEventRouter;
@@ -41,8 +43,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>reporting interval</returns>
         public long Interval {
             get => _interval;
-            set
-            {
+            set {
                 // Set a new interval, cancels the existing schedule, re-establishes the new
                 // schedule if the interval is a positive number.
                 _interval = value;

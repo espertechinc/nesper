@@ -26,9 +26,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly Table table;
 
         public InfraOnUpdateViewFactory(
-            EventType infraEventType, EventBeanUpdateHelperWCopy updateHelperNamedWindow,
-            EventBeanUpdateHelperNoCopy updateHelperTable, Table table, StatementContext statementContext) : base(
-            infraEventType)
+            EventType infraEventType,
+            EventBeanUpdateHelperWCopy updateHelperNamedWindow,
+            EventBeanUpdateHelperNoCopy updateHelperTable,
+            Table table,
+            StatementContext statementContext)
+            : base(
+                infraEventType)
         {
             UpdateHelperNamedWindow = updateHelperNamedWindow;
             UpdateHelperTable = updateHelperTable;
@@ -66,7 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         public override InfraOnExprBaseViewResult MakeNamedWindow(
-            SubordWMatchExprLookupStrategy lookupStrategy, NamedWindowRootViewInstance namedWindowRootViewInstance,
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            NamedWindowRootViewInstance namedWindowRootViewInstance,
             AgentInstanceContext agentInstanceContext)
         {
             var view = new OnExprViewNamedWindowUpdate(
@@ -75,7 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         public override InfraOnExprBaseViewResult MakeTable(
-            SubordWMatchExprLookupStrategy lookupStrategy, TableInstance tableInstance,
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableInstance tableInstance,
             AgentInstanceContext agentInstanceContext)
         {
             var view = new OnExprViewTableUpdate(lookupStrategy, tableInstance, agentInstanceContext, this);

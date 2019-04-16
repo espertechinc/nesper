@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="namespace">if the namespace the object is in</param>
         /// <param name="objectName">is the name of the object</param>
         /// <param name="viewParameters">is a list of expressions representing the view parameters</param>
-        public ViewSpec(string @namespace, string objectName, IList<ExprNode> viewParameters)
+        public ViewSpec(
+            string @namespace,
+            string objectName,
+            IList<ExprNode> viewParameters)
             : base(@namespace, objectName, viewParameters)
         {
         }

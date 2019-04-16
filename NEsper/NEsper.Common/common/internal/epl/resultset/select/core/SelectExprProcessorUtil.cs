@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -23,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     public class SelectExprProcessorUtil
     {
         public static CodegenExpressionNewAnonymousClass MakeAnonymous(
-            SelectExprProcessorForge insertHelper, 
+            SelectExprProcessorForge insertHelper,
             CodegenMethod method,
             CodegenExpressionRef initSvc,
             CodegenClassScope classScope)

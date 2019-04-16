@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -21,8 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.join.strategy
         /// <param name="lookupEvents">events to use to perform the join</param>
         /// <param name="joinSet">result join tuples of events</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
-        void Lookup(EventBean[] lookupEvents,
-                    ICollection<MultiKey<EventBean>> joinSet,
-                    ExprEvaluatorContext exprEvaluatorContext);
+        void Lookup(
+            EventBean[] lookupEvents,
+            ICollection<MultiKey<EventBean>> joinSet,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 }

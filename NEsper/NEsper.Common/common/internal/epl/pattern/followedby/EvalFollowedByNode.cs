@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         internal readonly EvalFollowedByFactoryNode factoryNode;
 
         public EvalFollowedByNode(
-            PatternAgentInstanceContext context, EvalFollowedByFactoryNode factoryNode, EvalNode[] childNodes)
+            PatternAgentInstanceContext context,
+            EvalFollowedByFactoryNode factoryNode,
+            EvalNode[] childNodes)
             : base(context)
         {
             this.factoryNode = factoryNode;

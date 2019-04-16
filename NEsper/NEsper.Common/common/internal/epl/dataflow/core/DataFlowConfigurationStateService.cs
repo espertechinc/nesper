@@ -7,23 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.core
 {
-	public interface DataFlowConfigurationStateService {
+    public interface DataFlowConfigurationStateService
+    {
+        bool Exists(string savedConfigName);
 
-	    bool Exists(string savedConfigName);
+        void Add(EPDataFlowSavedConfiguration epDataFlowSavedConfiguration);
 
-	    void Add(EPDataFlowSavedConfiguration epDataFlowSavedConfiguration);
+        string[] SavedConfigNames { get; }
 
-	    string[] SavedConfigNames { get; }
+        EPDataFlowSavedConfiguration GetSavedConfig(string savedConfigName);
 
-	    EPDataFlowSavedConfiguration GetSavedConfig(string savedConfigName);
-
-	    object RemovePrototype(string savedConfigName);
-	}
+        object RemovePrototype(string savedConfigName);
+    }
 } // end of namespace

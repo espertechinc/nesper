@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -27,9 +26,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
         internal EventPropertyDescriptor[] writablePropertyDescriptors;
 
         public ObjectArrayEventType(
-            EventTypeMetadata metadata, IDictionary<string, object> properyTypes,
-            EventType[] optionalSuperTypes, ISet<EventType> optionalDeepSupertypes,
-            string startTimestampName, string endTimestampName, BeanEventTypeFactory beanEventTypeFactory)
+            EventTypeMetadata metadata,
+            IDictionary<string, object> properyTypes,
+            EventType[] optionalSuperTypes,
+            ISet<EventType> optionalDeepSupertypes,
+            string startTimestampName,
+            string endTimestampName,
+            BeanEventTypeFactory beanEventTypeFactory)
             : base(
                 metadata, properyTypes, optionalSuperTypes,
                 optionalDeepSupertypes, startTimestampName, endTimestampName,
@@ -56,7 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         internal override void PostUpdateNestableTypes()
         {
-            var factory = (EventTypeNestableGetterFactoryObjectArray) GetGetterFactory();
+            var factory = (EventTypeNestableGetterFactoryObjectArray) getterFactory;
             var indexPerProperty = factory.PropertiesIndex;
             var index = FindMax(indexPerProperty) + 1;
             foreach (var entry in nestableTypes) {
@@ -211,7 +214,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         private static EventTypeNestableGetterFactory GetGetterFactory(
-            string eventTypeName, IDictionary<string, object> propertyTypes, EventType[] optionalSupertypes)
+            string eventTypeName,
+            IDictionary<string, object> propertyTypes,
+            EventType[] optionalSupertypes)
         {
             IDictionary<string, int> indexPerProperty = new Dictionary<string, int>();
 
@@ -250,7 +255,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return max;
         }
 
-        public static object[] ConvertEvent(EventBean theEvent, ObjectArrayEventType targetType)
+        public static object[] ConvertEvent(
+            EventBean theEvent,
+            ObjectArrayEventType targetType)
         {
             var indexesTarget = targetType.PropertiesIndexes;
             var indexesSource = ((ObjectArrayEventType) theEvent.EventType).PropertiesIndexes;
@@ -271,10 +278,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public bool IsDeepEqualsConsiderOrder(ObjectArrayEventType other)
         {
-            var factoryOther =
-                (EventTypeNestableGetterFactoryObjectArray) other.GetGetterFactory;
-            var factoryMe =
-                (EventTypeNestableGetterFactoryObjectArray) this.GetGetterFactory;
+            var factoryOther = (EventTypeNestableGetterFactoryObjectArray) other.getterFactory;
+            var factoryMe = (EventTypeNestableGetterFactoryObjectArray) getterFactory;
 
             if (factoryOther.PropertiesIndex.Count != factoryMe.PropertiesIndex.Count) {
                 return false;

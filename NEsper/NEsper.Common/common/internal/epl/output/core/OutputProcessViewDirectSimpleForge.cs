@@ -31,12 +31,17 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 
         public bool IsCodeGenerated => true;
 
-        public void ProvideCodegen(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public void ProvideCodegen(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             throw new IllegalStateException("Provide is not required");
         }
 
-        public void UpdateCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void UpdateCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(Instblock(classScope, "qOutputProcessNonBuffered", REF_NEWDATA, REF_OLDDATA));
 
@@ -80,7 +85,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 .Apply(Instblock(classScope, "aOutputProcessNonBuffered"));
         }
 
-        public void ProcessCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void ProcessCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(Instblock(classScope, "qOutputProcessNonBufferedJoin", REF_NEWDATA, REF_OLDDATA));
 
@@ -109,7 +116,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             method.Block.Apply(Instblock(classScope, "aOutputProcessNonBufferedJoin"));
         }
 
-        public void IteratorCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void IteratorCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(
                 StaticMethod(
@@ -121,7 +130,10 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
         }
 
-        private void GenerateRSPCall(string rspMethod, CodegenMethod method, CodegenClassScope classScope)
+        private void GenerateRSPCall(
+            string rspMethod,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .DeclareVar(

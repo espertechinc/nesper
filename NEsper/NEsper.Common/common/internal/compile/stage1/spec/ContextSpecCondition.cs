@@ -14,6 +14,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public interface ContextSpecCondition
     {
-        CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

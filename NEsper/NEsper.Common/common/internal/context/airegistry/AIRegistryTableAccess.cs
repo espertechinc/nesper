@@ -7,18 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.airegistry
 {
-	public interface AIRegistryTableAccess : ExprTableEvalStrategy {
-	    void AssignService(int num, ExprTableEvalStrategy value);
+    public interface AIRegistryTableAccess : ExprTableEvalStrategy
+    {
+        void AssignService(
+            int num,
+            ExprTableEvalStrategy value);
 
-	    void DeassignService(int num);
+        void DeassignService(int num);
 
-	    int InstanceCount { get; }
-	}
+        int InstanceCount { get; }
+    }
 } // end of namespace

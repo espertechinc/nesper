@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         private readonly StatementAgentInstanceFactoryUpdateForge forge;
 
         public StmtClassForgableAIFactoryProviderUpdate(
-            string className, CodegenPackageScope packageScope, StatementAgentInstanceFactoryUpdateForge forge)
+            string className,
+            CodegenPackageScope packageScope,
+            StatementAgentInstanceFactoryUpdateForge forge)
             : base(className, packageScope)
         {
             this.forge = forge;
@@ -32,7 +34,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             return typeof(StatementAgentInstanceFactoryUpdate);
         }
 
-        protected override CodegenMethod CodegenConstructorInit(CodegenMethodScope parent, CodegenClassScope classScope)
+        protected override CodegenMethod CodegenConstructorInit(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var saiffInitializeSymbol = new SAIFFInitializeSymbol();
             var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)

@@ -7,18 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-	public class PathExceptionAlreadyRegistered : PathException {
-	    public PathExceptionAlreadyRegistered(string name, PathRegistryObjectType objectType, string moduleName)
-	    	 : base(objectType.Prefix + " " + objectType.Name + " by name '" + name + "' has already been created for module '" + StringValue.UnnamedWhenNullOrEmpty(moduleName) + "'")
-	    {
-	    }
-	}
-
+    public class PathExceptionAlreadyRegistered : PathException
+    {
+        public PathExceptionAlreadyRegistered(
+            string name,
+            PathRegistryObjectType objectType,
+            string moduleName)
+            : base(
+                objectType.Prefix + " " + objectType.Name + " by name '" + name + "' has already been created for module '" +
+                StringValue.UnnamedWhenNullOrEmpty(moduleName) + "'")
+        {
+        }
+    }
 } // end of namespace

@@ -40,8 +40,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the connection settings for transaction isolation level.
         /// </summary>
         /// <value>transaction isolation level</value>
-        public int? TransactionIsolation
-        {
+        public int? TransactionIsolation {
             get => transactionIsolation;
             set => transactionIsolation = value;
         }

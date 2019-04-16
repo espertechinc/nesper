@@ -17,6 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         void ValidatePositionals(ExprValidationContext validationContext);
 
         AggregationTableReadDesc ValidateAggregationTableRead(
-            ExprValidationContext context, TableMetadataColumnAggregation tableAccessColumn, TableMetaData table);
+            ExprValidationContext context,
+            TableMetadataColumnAggregation tableAccessColumn,
+            TableMetaData table);
     }
 } // end of namespace

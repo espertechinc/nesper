@@ -9,7 +9,6 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
@@ -21,7 +20,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
         private readonly string variableName;
 
         public StatementAgentInstanceFactoryCreateVariableForge(
-            string variableName, ExprForge optionalInitialValue, string resultSetProcessorProviderClassName)
+            string variableName,
+            ExprForge optionalInitialValue,
+            string resultSetProcessorProviderClassName)
         {
             this.variableName = variableName;
             this.optionalInitialValue = optionalInitialValue;
@@ -29,7 +30,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
         }
 
         public CodegenMethod InitializeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateVariable), GetType(), classScope);
             method.Block
@@ -40,8 +43,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 .ExprDotMethod(
                     Ref("saiff"), "setResultSetProcessorFactoryProvider",
                     NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)));
-            if (optionalInitialValue != null)
-            {
+            if (optionalInitialValue != null) {
                 method.Block
                     .ExprDotMethod(
                         Ref("saiff"), "setVariableInitialValueExpr",

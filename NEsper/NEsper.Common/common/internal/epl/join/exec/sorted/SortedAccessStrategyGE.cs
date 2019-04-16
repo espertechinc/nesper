@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.sorted;
@@ -17,30 +16,54 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
 {
-	public class SortedAccessStrategyGE : SortedAccessStrategyRelOpBase , SortedAccessStrategy {
+    public class SortedAccessStrategyGE : SortedAccessStrategyRelOpBase,
+        SortedAccessStrategy
+    {
+        public SortedAccessStrategyGE(
+            bool isNWOnTrigger,
+            int lookupStream,
+            int numStreams,
+            ExprEvaluator keyEval)
+            : base(isNWOnTrigger, lookupStream, numStreams, keyEval)
+        {
+        }
 
-	    public SortedAccessStrategyGE(bool isNWOnTrigger, int lookupStream, int numStreams, ExprEvaluator keyEval) : base(isNWOnTrigger, lookupStream, numStreams, keyEval)
-	        {
-	    }
+        public ISet<EventBean> Lookup(
+            EventBean theEvent,
+            PropertySortedEventTable index,
+            ExprEvaluatorContext context)
+        {
+            return index.LookupGreaterEqual(base.EvaluateLookup(theEvent, context));
+        }
 
-	    public ISet<EventBean> Lookup(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context) {
-	        return index.LookupGreaterEqual(base.EvaluateLookup(theEvent, context));
-	    }
+        public ISet<EventBean> LookupCollectKeys(
+            EventBean theEvent,
+            PropertySortedEventTable index,
+            ExprEvaluatorContext context,
+            List<object> keys)
+        {
+            object point = base.EvaluateLookup(theEvent, context);
+            keys.Add(point);
+            return index.LookupGreaterEqual(point);
+        }
 
-	    public ISet<EventBean> LookupCollectKeys(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context, List<object> keys) {
-	        object point = base.EvaluateLookup(theEvent, context);
-	        keys.Add(point);
-	        return index.LookupGreaterEqual(point);
-	    }
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventsPerStream,
+            PropertySortedEventTable index,
+            ExprEvaluatorContext context)
+        {
+            return index.LookupGreaterEqualColl(base.EvaluatePerStream(eventsPerStream, context));
+        }
 
-	    public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context) {
-	        return index.LookupGreaterEqualColl(base.EvaluatePerStream(eventsPerStream, context));
-	    }
-
-	    public ICollection<EventBean> LookupCollectKeys(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context, List<object> keys) {
-	        object point = base.EvaluatePerStream(eventsPerStream, context);
-	        keys.Add(point);
-	        return index.LookupGreaterEqualColl(point);
-	    }
-	}
+        public ICollection<EventBean> LookupCollectKeys(
+            EventBean[] eventsPerStream,
+            PropertySortedEventTable index,
+            ExprEvaluatorContext context,
+            List<object> keys)
+        {
+            object point = base.EvaluatePerStream(eventsPerStream, context);
+            keys.Add(point);
+            return index.LookupGreaterEqualColl(point);
+        }
+    }
 } // end of namespace

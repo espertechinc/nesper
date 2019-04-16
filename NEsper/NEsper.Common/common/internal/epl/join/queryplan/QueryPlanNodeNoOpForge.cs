@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public static readonly QueryPlanNodeNoOpForge INSTANCE = new QueryPlanNodeNoOpForge();
 
         public override CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return PublicConstValue(typeof(QueryPlanNodeNoOp), "INSTANCE");
         }

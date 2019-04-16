@@ -58,7 +58,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">for NewLine-whitespace formatting</param>
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             formatter.BeginOnSet(writer);
             UpdateClause.RenderEPLAssignments(writer, Assignments);

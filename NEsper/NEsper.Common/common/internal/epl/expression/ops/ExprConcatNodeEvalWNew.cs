@@ -17,21 +17,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprConcatNode parent;
 
-        public ExprConcatNodeEvalWNew(ExprConcatNode parent, ExprEvaluator[] evaluators)
+        public ExprConcatNodeEvalWNew(
+            ExprConcatNode parent,
+            ExprEvaluator[] evaluators)
         {
             this.parent = parent;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var buffer = new StringBuilder();
             return Evaluate(eventsPerStream, isNewData, context, buffer, evaluators, parent);
         }
 
         protected internal static string Evaluate(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context, StringBuilder buffer,
-            ExprEvaluator[] evaluators, ExprConcatNode parent)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context,
+            StringBuilder buffer,
+            ExprEvaluator[] evaluators,
+            ExprConcatNode parent)
         {
             foreach (var child in evaluators) {
                 var result = (string) child.Evaluate(eventsPerStream, isNewData, context);

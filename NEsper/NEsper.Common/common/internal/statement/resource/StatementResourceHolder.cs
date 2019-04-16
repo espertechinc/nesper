@@ -25,9 +25,13 @@ namespace com.espertech.esper.common.@internal.statement.resource
     public class StatementResourceHolder
     {
         public StatementResourceHolder(
-            AgentInstanceContext agentInstanceContext, AgentInstanceStopCallback agentInstanceStopCallback,
-            Viewable finalView, AggregationService aggregationService, PriorEvalStrategy[] priorEvalStrategies,
-            PreviousGetterStrategy[] previousGetterStrategies, RowRecogPreviousStrategy rowRecogPreviousStrategy)
+            AgentInstanceContext agentInstanceContext,
+            AgentInstanceStopCallback agentInstanceStopCallback,
+            Viewable finalView,
+            AggregationService aggregationService,
+            PriorEvalStrategy[] priorEvalStrategies,
+            PreviousGetterStrategy[] previousGetterStrategies,
+            RowRecogPreviousStrategy rowRecogPreviousStrategy)
         {
             AgentInstanceContext = agentInstanceContext;
             AgentInstanceStopCallback = agentInstanceStopCallback;

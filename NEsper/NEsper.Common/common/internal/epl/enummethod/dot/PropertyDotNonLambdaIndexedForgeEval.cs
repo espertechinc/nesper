@@ -20,13 +20,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         private readonly PropertyDotNonLambdaIndexedForge forge;
         private readonly ExprEvaluator paramEval;
 
-        public PropertyDotNonLambdaIndexedForgeEval(PropertyDotNonLambdaIndexedForge forge, ExprEvaluator paramEval)
+        public PropertyDotNonLambdaIndexedForgeEval(
+            PropertyDotNonLambdaIndexedForge forge,
+            ExprEvaluator paramEval)
         {
             this.forge = forge;
             this.paramEval = paramEval;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var @event = eventsPerStream[forge.StreamId];
             if (@event == null) {
@@ -38,8 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public static CodegenExpression Codegen(
-            PropertyDotNonLambdaIndexedForge forge, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            PropertyDotNonLambdaIndexedForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType, typeof(PropertyDotNonLambdaIndexedForgeEval), codegenClassScope);

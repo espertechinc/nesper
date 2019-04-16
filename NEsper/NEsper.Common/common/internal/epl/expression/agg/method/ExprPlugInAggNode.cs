@@ -34,7 +34,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         /// <param name="aggregationFunctionForge">is the base class for plug-in aggregation functions</param>
         /// <param name="functionName">is the aggregation function name</param>
         public ExprPlugInAggNode(
-            bool distinct, AggregationFunctionForge aggregationFunctionForge, string functionName) : base(distinct)
+            bool distinct,
+            AggregationFunctionForge aggregationFunctionForge,
+            string functionName)
+            : base(distinct)
         {
             this.aggregationFunctionForge = aggregationFunctionForge;
             this.functionName = functionName;
@@ -50,10 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
             int count = 0;
             bool hasDataWindows = true;
-            foreach (ExprNode child in positionalParams)
-            {
-                if (child.Forge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST)
-                {
+            foreach (ExprNode child in positionalParams) {
+                if (child.Forge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
                     isConstant[count] = true;
                     constant[count] = child.Forge.ExprEvaluator.Evaluate(null, true, null);
                 }
@@ -62,13 +63,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 expressions[count] = child;
 
                 if (!ExprNodeUtilityAggregation.HasRemoveStreamForAggregations(
-                    child, validationContext.StreamTypeService, validationContext.IsResettingAggregations))
-                {
+                    child, validationContext.StreamTypeService, validationContext.IsResettingAggregations)) {
                     hasDataWindows = false;
                 }
 
-                if (child is ExprWildcard)
-                {
+                if (child is ExprWildcard) {
                     ExprAggMultiFunctionUtil.CheckWildcardNotJoinOrSubquery(
                         validationContext.StreamTypeService, functionName);
                     parameterTypes[count] = validationContext.StreamTypeService.EventTypes[0].UnderlyingType;
@@ -80,8 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             LinkedHashMap<string, IList<ExprNode>> namedParameters = null;
-            if (optionalFilter != null)
-            {
+            if (optionalFilter != null) {
                 namedParameters = new LinkedHashMap<string, IList<ExprNode>>();
                 namedParameters.Put("filter", Collections.SingletonList(optionalFilter));
                 positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
@@ -89,61 +87,51 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
             AggregationFunctionValidationContext context = new AggregationFunctionValidationContext(
                 parameterTypes, isConstant, constant, base.IsDistinct, hasDataWindows, expressions, namedParameters);
-            try
-            {
+            try {
                 // the aggregation function factory is transient, obtain if not provided
-                if (aggregationFunctionForge == null)
-                {
+                if (aggregationFunctionForge == null) {
                     aggregationFunctionForge =
                         validationContext.ImportService.ResolveAggregationFunction(functionName);
                 }
 
                 aggregationFunctionForge.Validate(context);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 throw new ExprValidationException(
                     "Plug-in aggregation function '" + functionName + "' failed validation: " + ex.Message, ex);
             }
 
             AggregationFunctionMode mode = aggregationFunctionForge.AggregationFunctionMode;
-            if (mode == null)
-            {
+            if (mode == null) {
                 throw new ExprValidationException("Aggregation function forge returned a null value for mode");
             }
 
-            if (mode is AggregationFunctionModeManaged)
-            {
-                if (positionalParams.Length > 2)
-                {
+            if (mode is AggregationFunctionModeManaged) {
+                if (positionalParams.Length > 2) {
                     throw new ExprValidationException(
                         "Aggregation function forge single-value mode requires zero, one or two parameters");
                 }
             }
-            else if (mode is AggregationFunctionModeMultiParam || mode is AggregationFunctionModeCodeGenerated)
-            {
+            else if (mode is AggregationFunctionModeMultiParam || mode is AggregationFunctionModeCodeGenerated) {
             }
-            else
-            {
+            else {
                 throw new ExprValidationException("Aggregation function forge returned an unrecognized mode " + mode);
             }
 
             return new AggregationMethodFactoryPluginMethod(this, aggregationFunctionForge, mode);
         }
 
-        public override string AggregationFunctionName
-        {
+        public override string AggregationFunctionName {
             get => functionName;
         }
 
         internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
-            if (!(node is ExprPlugInAggNode))
-            {
+            if (!(node is ExprPlugInAggNode)) {
                 return false;
             }
 
-            ExprPlugInAggNode other = (ExprPlugInAggNode)node;
+            ExprPlugInAggNode other = (ExprPlugInAggNode) node;
             return other.AggregationFunctionName.Equals(this.AggregationFunctionName);
         }
 

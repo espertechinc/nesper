@@ -16,16 +16,23 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         /// Computer for relational op.
         /// </summary>
-        public interface Computer {
+        public interface Computer
+        {
             /// <summary>
             /// Compares objects and returns boolean indicating larger (true) or smaller (false).
             /// </summary>
             /// <param name="objOne">object to compare</param>
             /// <param name="objTwo">object to compare</param>
             /// <returns>true if larger, false if smaller</returns>
-            bool Compare(object objOne, object objTwo);
+            bool Compare(
+                object objOne,
+                object objTwo);
 
-            CodegenExpression Codegen(CodegenExpressionRef lhs, Type lhsType, CodegenExpression rhs, Type rhsType);
+            CodegenExpression Codegen(
+                CodegenExpressionRef lhs,
+                Type lhsType,
+                CodegenExpression rhs,
+                Type rhsType);
         }
     }
 }

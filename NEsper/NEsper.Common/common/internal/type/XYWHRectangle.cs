@@ -10,7 +10,11 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class XYWHRectangle
     {
-        public XYWHRectangle(double x, double y, double w, double h)
+        public XYWHRectangle(
+            double x,
+            double y,
+            double w,
+            double h)
         {
             X = x;
             Y = y;
@@ -23,7 +27,11 @@ namespace com.espertech.esper.common.@internal.type
         public double W;
         public double H;
 
-        public bool CoordinateEquals(double otherX, double otherY, double otherWidth, double otherHeight)
+        public bool CoordinateEquals(
+            double otherX,
+            double otherY,
+            double otherWidth,
+            double otherHeight)
         {
             return X == otherX && Y == otherY && W == otherWidth && H == otherHeight;
         }
@@ -43,8 +51,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public override int GetHashCode()
         {
-            unchecked
-            {
+            unchecked {
                 var hashCode = X.GetHashCode();
                 hashCode = (hashCode * 397) ^ Y.GetHashCode();
                 hashCode = (hashCode * 397) ^ W.GetHashCode();

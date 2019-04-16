@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.pattern.everydistinct;
 using com.espertech.esper.common.@internal.epl.pattern.filter;
@@ -39,18 +38,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 currentNode is EvalGuardForgeNode ||
                 currentNode is EvalObserverForgeNode ||
                 currentNode is EvalMatchUntilForgeNode ||
-                currentNode is EvalEveryDistinctForgeNode)
-            {
+                currentNode is EvalEveryDistinctForgeNode) {
                 evalNodeAnalysisResult.AddNode(currentNode);
             }
 
-            if (currentNode is EvalObserverForgeNode)
-            {
+            if (currentNode is EvalObserverForgeNode) {
                 evalNodeAnalysisResult.AddNode(currentNode);
             }
 
-            foreach (EvalForgeNode node in currentNode.ChildNodes)
-            {
+            foreach (EvalForgeNode node in currentNode.ChildNodes) {
                 RecursiveAnalyzeChildNodes(evalNodeAnalysisResult, node);
             }
         }
@@ -66,8 +62,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             EvalNodeUtilFactoryFilter filter)
         {
             ICollection<EvalForgeNode> result = new LinkedHashSet<EvalForgeNode>();
-            if (filter.Consider(currentNode))
-            {
+            if (filter.Consider(currentNode)) {
                 result.Add(currentNode);
             }
 
@@ -80,10 +75,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             EvalForgeNode currentNode,
             EvalNodeUtilFactoryFilter filter)
         {
-            foreach (var node in currentNode.ChildNodes)
-            {
-                if (filter.Consider(node))
-                {
+            foreach (var node in currentNode.ChildNodes) {
+                if (filter.Consider(node)) {
                     set.Add(node);
                 }
 

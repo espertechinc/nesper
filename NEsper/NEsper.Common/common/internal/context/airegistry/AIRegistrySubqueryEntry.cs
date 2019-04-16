@@ -16,8 +16,10 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     public class AIRegistrySubqueryEntry
     {
         public AIRegistrySubqueryEntry(
-            AIRegistrySubselectLookup lookupStrategies, AIRegistryAggregation aggregationServices,
-            AIRegistryPriorEvalStrategy priorEvalStrategies, AIRegistryPreviousGetterStrategy previousGetterStrategies)
+            AIRegistrySubselectLookup lookupStrategies,
+            AIRegistryAggregation aggregationServices,
+            AIRegistryPriorEvalStrategy priorEvalStrategies,
+            AIRegistryPreviousGetterStrategy previousGetterStrategies)
         {
             LookupStrategies = lookupStrategies;
             AggregationServices = aggregationServices;
@@ -50,8 +52,11 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         }
 
         public void Assign(
-            int agentInstanceId, SubordTableLookupStrategy lookupStrategy, AggregationService aggregationService,
-            PriorEvalStrategy priorEvalStrategy, PreviousGetterStrategy previousGetterStrategy)
+            int agentInstanceId,
+            SubordTableLookupStrategy lookupStrategy,
+            AggregationService aggregationService,
+            PriorEvalStrategy priorEvalStrategy,
+            PreviousGetterStrategy previousGetterStrategy)
         {
             LookupStrategies.AssignService(agentInstanceId, lookupStrategy);
             if (AggregationServices != null) {

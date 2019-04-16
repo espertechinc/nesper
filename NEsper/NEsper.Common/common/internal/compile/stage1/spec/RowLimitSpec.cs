@@ -19,10 +19,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="optionalOffset">offset or null</param>
         /// <param name="numRowsVariable">max num rows variable, null if using constant</param>
         /// <param name="optionalOffsetVariable">offset variable or null</param>
-        public RowLimitSpec(int? numRows,
-                            int? optionalOffset,
-                            String numRowsVariable,
-                            String optionalOffsetVariable)
+        public RowLimitSpec(
+            int? numRows,
+            int? optionalOffset,
+            String numRowsVariable,
+            String optionalOffsetVariable)
         {
             NumRows = numRows;
             OptionalOffset = optionalOffset;

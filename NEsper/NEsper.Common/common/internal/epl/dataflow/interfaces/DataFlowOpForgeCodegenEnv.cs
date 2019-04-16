@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
 {
     public class DataFlowOpForgeCodegenEnv
     {
-        public DataFlowOpForgeCodegenEnv(string packageName, string classPostfix)
+        public DataFlowOpForgeCodegenEnv(
+            string packageName,
+            string classPostfix)
         {
             PackageName = packageName;
             ClassPostfix = classPostfix;

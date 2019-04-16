@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -27,96 +27,108 @@ using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
-	/// <summary>
-	/// Build a query plan based on filtering information.
-	/// </summary>
-	public class QueryPlanBuilder {
-	    private static readonly ILog QUERY_PLAN_LOG = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
+    /// <summary>
+    /// Build a query plan based on filtering information.
+    /// </summary>
+    public class QueryPlanBuilder
+    {
+        private static readonly ILog QUERY_PLAN_LOG = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
 
-	    public static QueryPlanForge GetPlan(EventType[] typesPerStream,
-	                                         OuterJoinDesc[] outerJoinDescList,
-	                                         QueryGraphForge queryGraph,
-	                                         string[] streamNames,
-	                                         HistoricalViewableDesc historicalViewableDesc,
-	                                         DependencyGraph dependencyGraph,
-	                                         HistoricalStreamIndexListForge[] historicalStreamIndexLists,
-	                                         StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult,
-	                                         bool isQueryPlanLogging,
-	                                         StatementRawInfo statementRawInfo,
-	                                         StatementCompileTimeServices services)
-	            {
-	        string methodName = ".getPlan ";
+        public static QueryPlanForge GetPlan(
+            EventType[] typesPerStream,
+            OuterJoinDesc[] outerJoinDescList,
+            QueryGraphForge queryGraph,
+            string[] streamNames,
+            HistoricalViewableDesc historicalViewableDesc,
+            DependencyGraph dependencyGraph,
+            HistoricalStreamIndexListForge[] historicalStreamIndexLists,
+            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult,
+            bool isQueryPlanLogging,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            string methodName = ".getPlan ";
 
-	        int numStreams = typesPerStream.Length;
-	        if (numStreams < 2) {
-	            throw new ArgumentException("Number of join stream types is less then 2");
-	        }
-	        if (outerJoinDescList.Length >= numStreams) {
-	            throw new ArgumentException("Too many outer join descriptors found");
-	        }
+            int numStreams = typesPerStream.Length;
+            if (numStreams < 2) {
+                throw new ArgumentException("Number of join stream types is less then 2");
+            }
 
-	        if (numStreams == 2) {
-	            OuterJoinType outerJoinType = null;
-	            if (outerJoinDescList.Length > 0) {
-	                outerJoinType = outerJoinDescList[0].OuterJoinType;
-	            }
+            if (outerJoinDescList.Length >= numStreams) {
+                throw new ArgumentException("Too many outer join descriptors found");
+            }
 
-	            QueryPlanForge queryPlan = TwoStreamQueryPlanBuilder.Build(typesPerStream, queryGraph, outerJoinType, streamJoinAnalysisResult);
-	            RemoveUnidirectionalAndTable(queryPlan, streamJoinAnalysisResult);
+            if (numStreams == 2) {
+                OuterJoinType? outerJoinType = null;
+                if (outerJoinDescList.Length > 0) {
+                    outerJoinType = outerJoinDescList[0].OuterJoinType;
+                }
 
-	            if (Log.IsDebugEnabled) {
-	                Log.Debug(methodName + "2-Stream queryPlan=" + queryPlan);
-	            }
-	            return queryPlan;
-	        }
+                QueryPlanForge queryPlanForge = TwoStreamQueryPlanBuilder.Build(
+                    typesPerStream, queryGraph, outerJoinType, streamJoinAnalysisResult);
+                RemoveUnidirectionalAndTable(queryPlanForge, streamJoinAnalysisResult);
 
-	        bool hasPreferMergeJoin = HintEnum.PREFER_MERGE_JOIN.GetHint(statementRawInfo.Annotations) != null;
-	        bool hasForceNestedIter = HintEnum.FORCE_NESTED_ITER.GetHint(statementRawInfo.Annotations) != null;
-	        bool isAllInnerJoins = outerJoinDescList.Length == 0 || OuterJoinDesc.ConsistsOfAllInnerJoins(outerJoinDescList);
+                if (Log.IsDebugEnabled) {
+                    Log.Debug(methodName + "2-Stream queryPlan=" + queryPlanForge);
+                }
 
-	        if (isAllInnerJoins && !hasPreferMergeJoin) {
-	            QueryPlanForge queryPlan = NStreamQueryPlanBuilder.Build(queryGraph, typesPerStream,
-	                    historicalViewableDesc, dependencyGraph, historicalStreamIndexLists,
-	                    hasForceNestedIter, streamJoinAnalysisResult.UniqueKeys,
-	                    streamJoinAnalysisResult.TablesPerStream, streamJoinAnalysisResult);
+                return queryPlanForge;
+            }
 
-	            if (queryPlan != null) {
-	                RemoveUnidirectionalAndTable(queryPlan, streamJoinAnalysisResult);
+            bool hasPreferMergeJoin = HintEnum.PREFER_MERGE_JOIN.GetHint(statementRawInfo.Annotations) != null;
+            bool hasForceNestedIter = HintEnum.FORCE_NESTED_ITER.GetHint(statementRawInfo.Annotations) != null;
+            bool isAllInnerJoins = outerJoinDescList.Length == 0 || OuterJoinDesc.ConsistsOfAllInnerJoins(outerJoinDescList);
 
-	                if (Log.IsDebugEnabled) {
-	                    Log.Debug(methodName + "N-Stream inner-join queryPlan=" + queryPlan);
-	                }
-	                return queryPlan;
-	            }
+            if (isAllInnerJoins && !hasPreferMergeJoin) {
+                QueryPlanForge queryPlanForge = NStreamQueryPlanBuilder.Build(
+                    queryGraph, typesPerStream,
+                    historicalViewableDesc, dependencyGraph, historicalStreamIndexLists,
+                    hasForceNestedIter, streamJoinAnalysisResult.UniqueKeys,
+                    streamJoinAnalysisResult.TablesPerStream, streamJoinAnalysisResult);
 
-	            if (isQueryPlanLogging && QUERY_PLAN_LOG.IsInfoEnabled) {
-	                Log.Info("Switching to Outer-NStream algorithm for query plan");
-	            }
-	        }
+                if (queryPlanForge != null) {
+                    RemoveUnidirectionalAndTable(queryPlanForge, streamJoinAnalysisResult);
 
-	        QueryPlanForge queryPlan = NStreamOuterQueryPlanBuilder.Build(queryGraph, outerJoinDescList, streamNames, typesPerStream,
-	                historicalViewableDesc, dependencyGraph, historicalStreamIndexLists, streamJoinAnalysisResult.UniqueKeys,
-	                streamJoinAnalysisResult.TablesPerStream, streamJoinAnalysisResult, statementRawInfo, services);
-	        RemoveUnidirectionalAndTable(queryPlan, streamJoinAnalysisResult);
-	        return queryPlan;
-	    }
+                    if (Log.IsDebugEnabled) {
+                        Log.Debug(methodName + "N-Stream inner-join queryPlan=" + queryPlanForge);
+                    }
 
-	    // Remove plans for non-unidirectional streams
-	    private static void RemoveUnidirectionalAndTable(QueryPlanForge queryPlan, StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult) {
-	        bool allUnidirectional = streamJoinAnalysisResult.IsUnidirectionalAll;
-	        for (int streamNum = 0; streamNum < queryPlan.ExecNodeSpecs.Length; streamNum++) {
-	            if (allUnidirectional) {
-	                queryPlan.ExecNodeSpecs[streamNum] = new QueryPlanNodeForgeAllUnidirectionalOuter(streamNum);
-	            } else {
-	                bool unidirectional = streamJoinAnalysisResult.IsUnidirectional && !streamJoinAnalysisResult.UnidirectionalInd[streamNum];
-	                bool table = streamJoinAnalysisResult.TablesPerStream[streamNum] != null;
-	                if (unidirectional || table) {
-	                    queryPlan.ExecNodeSpecs[streamNum] = QueryPlanNodeNoOpForge.INSTANCE;
-	                }
-	            }
-	        }
-	    }
+                    return queryPlanForge;
+                }
 
-	    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-	}
+                if (isQueryPlanLogging && QUERY_PLAN_LOG.IsInfoEnabled) {
+                    Log.Info("Switching to Outer-NStream algorithm for query plan");
+                }
+            }
+
+            QueryPlanForge queryPlan = NStreamOuterQueryPlanBuilder.Build(
+                queryGraph, outerJoinDescList, streamNames, typesPerStream,
+                historicalViewableDesc, dependencyGraph, historicalStreamIndexLists, streamJoinAnalysisResult.UniqueKeys,
+                streamJoinAnalysisResult.TablesPerStream, streamJoinAnalysisResult, statementRawInfo, services);
+            RemoveUnidirectionalAndTable(queryPlan, streamJoinAnalysisResult);
+            return queryPlan;
+        }
+
+        // Remove plans for non-unidirectional streams
+        private static void RemoveUnidirectionalAndTable(
+            QueryPlanForge queryPlan,
+            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult)
+        {
+            bool allUnidirectional = streamJoinAnalysisResult.IsUnidirectionalAll;
+            for (int streamNum = 0; streamNum < queryPlan.ExecNodeSpecs.Length; streamNum++) {
+                if (allUnidirectional) {
+                    queryPlan.ExecNodeSpecs[streamNum] = new QueryPlanNodeForgeAllUnidirectionalOuter(streamNum);
+                }
+                else {
+                    bool unidirectional = streamJoinAnalysisResult.IsUnidirectional && !streamJoinAnalysisResult.UnidirectionalInd[streamNum];
+                    bool table = streamJoinAnalysisResult.TablesPerStream[streamNum] != null;
+                    if (unidirectional || table) {
+                        queryPlan.ExecNodeSpecs[streamNum] = QueryPlanNodeNoOpForge.INSTANCE;
+                    }
+                }
+            }
+        }
+
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    }
 } // end of namespace

@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.core;
@@ -56,7 +55,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         public StmtForgeMethodResult Make(
-            string packageName, string classPostfix, StatementCompileTimeServices services)
+            string packageName,
+            string classPostfix,
+            StatementCompileTimeServices services)
         {
             var statementSpec = @base.StatementSpec;
 
@@ -68,7 +69,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 eventTypeName, @base.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP,
                 NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             EventType eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                metadata, Collections.GetEmptyMap<string, object>(), null, null, null, null, 
+                metadata, Collections.GetEmptyMap<string, object>(), null, null, null, null,
                 services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(eventType);
@@ -90,7 +91,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
-                @base, 
+                @base,
                 Collections.GetEmptyList<FilterSpecCompiled>(),
                 Collections.GetEmptyList<ScheduleHandleCallbackProvider>(),
                 Collections.GetEmptyList<NamedWindowConsumerStreamSpec>(),
@@ -122,8 +123,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             // add additional forgeables
             foreach (StmtForgeMethodResult additional in dataflowForge.GetAdditionalForgables()) {
-                forgables.AddAll(0, additional.GetForgables());
-                scheduleds.AddAll(additional.GetScheduleds());
+                forgables.AddAll(0, additional.Forgables);
+                scheduleds.AddAll(additional.Scheduleds);
             }
 
             return new StmtForgeMethodResult(
@@ -131,7 +132,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static DataflowDescForge BuildForge(
-            CreateDataFlowDesc desc, DataFlowOpForgeCodegenEnv codegenEnv, StatementBaseInfo @base,
+            CreateDataFlowDesc desc,
+            DataFlowOpForgeCodegenEnv codegenEnv,
+            StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
             // basic validation
@@ -187,12 +190,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static InitForgesResult DetermineChannelsInitForges(
-            IDictionary<int, DataFlowOperatorForge> operatorForges, ISet<int> operatorBuildOrder,
+            IDictionary<int, DataFlowOperatorForge> operatorForges,
+            ISet<int> operatorBuildOrder,
             IDictionary<int, Attribute[]> operatorAnnotations,
             IDictionary<int, OperatorDependencyEntry> operatorDependencies,
             IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
-            IDictionary<string, EventType> declaredTypes, CreateDataFlowDesc desc, DataFlowOpForgeCodegenEnv codegenEnv,
-            StatementBaseInfo @base, StatementCompileTimeServices services)
+            IDictionary<string, EventType> declaredTypes,
+            CreateDataFlowDesc desc,
+            DataFlowOpForgeCodegenEnv codegenEnv,
+            StatementBaseInfo @base,
+            StatementCompileTimeServices services)
         {
             // Step 1: find all the operators that have explicit output ports and determine the type of such
             IDictionary<int, IList<LogicalChannelProducingPortDeclared>> declaredOutputPorts =
@@ -247,11 +254,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 //   If output types have been determined based on input, use that.
                 //   else error
                 var outgoingPorts = DetermineOutgoingPorts(
-                    operatorNum, 
-                    operatorSpec, 
-                    metadata, 
-                    compiledOutputPorts, 
-                    declaredOutputPorts, 
+                    operatorNum,
+                    operatorSpec,
+                    metadata,
+                    compiledOutputPorts,
+                    declaredOutputPorts,
                     typesPerOutput,
                     incomingDependentOpNums);
                 compiledOutputPorts.Put(operatorNum, outgoingPorts);
@@ -314,8 +321,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
             IDictionary<int, Attribute[]> operatorAnnotations,
             IDictionary<string, EventType> declaredTypes,
-            CreateDataFlowDesc createDataFlowDesc, 
-            StatementBaseInfo @base, 
+            CreateDataFlowDesc createDataFlowDesc,
+            StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
             IDictionary<int, DataFlowOperatorForge> forges = new Dictionary<int, DataFlowOperatorForge>();
@@ -329,8 +336,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static DataFlowOperatorForge InstantiateOperatorForge(
-            CreateDataFlowDesc createDataFlowDesc, int operatorNum, OperatorMetadataDescriptor desc,
-            StatementBaseInfo @base, StatementCompileTimeServices services)
+            CreateDataFlowDesc createDataFlowDesc,
+            int operatorNum,
+            OperatorMetadataDescriptor desc,
+            StatementBaseInfo @base,
+            StatementCompileTimeServices services)
         {
             var operatorSpec = createDataFlowDesc.Operators[operatorNum];
             var dataflowName = createDataFlowDesc.GraphName;
@@ -423,8 +433,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static IDictionary<int, OperatorMetadataDescriptor> ResolveMetadata(
-            CreateDataFlowDesc desc, 
-            IDictionary<GraphOperatorSpec, Attribute[]> operatorAnnotations, 
+            CreateDataFlowDesc desc,
+            IDictionary<GraphOperatorSpec, Attribute[]> operatorAnnotations,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
@@ -474,7 +484,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static IDictionary<string, EventType> ResolveTypes(
-            CreateDataFlowDesc desc, StatementBaseInfo @base, StatementCompileTimeServices services)
+            CreateDataFlowDesc desc,
+            StatementBaseInfo @base,
+            StatementCompileTimeServices services)
         {
             IDictionary<string, EventType> types = new Dictionary<string, EventType>();
             foreach (var spec in desc.Schemas) {
@@ -508,7 +520,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             }
         }
 
-        private static string ToPrettyPrint(int operatorNum, GraphOperatorSpec spec)
+        private static string ToPrettyPrint(
+            int operatorNum,
+            GraphOperatorSpec spec)
         {
             var writer = new StringWriter();
             writer.Write(spec.OperatorName);
@@ -547,7 +561,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             return writer.ToString();
         }
 
-        private static void ToPrettyPrintInput(GraphOperatorInputNamesAlias inputItem, StringWriter writer)
+        private static void ToPrettyPrintInput(
+            GraphOperatorInputNamesAlias inputItem,
+            TextWriter writer)
         {
             if (inputItem.InputStreamNames.Length == 1) {
                 writer.Write(inputItem.InputStreamNames[0]);
@@ -565,7 +581,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             }
         }
 
-        private static void WriteTypes(IList<GraphOperatorOutputItemType> types, StringWriter writer)
+        private static void WriteTypes(
+            IList<GraphOperatorOutputItemType> types,
+            TextWriter writer)
         {
             if (types.IsEmpty()) {
                 return;
@@ -582,7 +600,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             writer.Write(">");
         }
 
-        private static void WriteType(GraphOperatorOutputItemType type, StringWriter writer)
+        private static void WriteType(
+            GraphOperatorOutputItemType type,
+            TextWriter writer)
         {
             if (type.IsWildcard) {
                 writer.Write('?');
@@ -654,7 +674,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             while (topDownSet.Count < operators.Count) {
                 // secondary sort according to the order of listing
                 ISet<int> rootNodes = new SortedSet<int>(
-                    new ProxyComparer<int>((o1, o2) => -1 * o1.CompareTo(o2)));
+                    new ProxyComparer<int>(
+                        (
+                                o1,
+                                o2) => -1 * o1.CompareTo(o2)));
 
                 rootNodes.AddAll(graph.GetRootNodes(topDownSet));
 
@@ -681,9 +704,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static void InjectObjectProperties(
-            string dataFlowName, string operatorName, int operatorNum, IDictionary<string, object> configs,
-            object instance, EPDataFlowOperatorParameterProvider optionalParameterProvider,
-            IDictionary<string, object> optionalParameterURIs, ExprValidationContext exprValidationContext)
+            string dataFlowName,
+            string operatorName,
+            int operatorNum,
+            IDictionary<string, object> configs,
+            object instance,
+            EPDataFlowOperatorParameterProvider optionalParameterProvider,
+            IDictionary<string, object> optionalParameterURIs,
+            ExprValidationContext exprValidationContext)
         {
             // determine if there is a property holder which holds all properties
             ICollection<FieldInfo> propertyHolderFields = TypeHelper.FindAnnotatedFields(
@@ -727,14 +755,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static IList<LogicalChannelProducingPortDeclared> DetermineAnnotatedOutputPorts(
-            int operatorNumber, DataFlowOperatorForge forge, GraphOperatorSpec operatorSpec,
-            OperatorMetadataDescriptor descriptor, StatementBaseInfo @base, StatementCompileTimeServices services)
+            int operatorNumber,
+            DataFlowOperatorForge forge,
+            GraphOperatorSpec operatorSpec,
+            OperatorMetadataDescriptor descriptor,
+            StatementBaseInfo @base,
+            StatementCompileTimeServices services)
         {
             IList<LogicalChannelProducingPortDeclared> ports = new List<LogicalChannelProducingPortDeclared>();
 
             // See if any @OutputTypes annotations exists
             var annotations = TypeHelper.GetAnnotations(
-                typeof(OutputTypeAttribute), 
+                typeof(OutputTypeAttribute),
                 forge.GetType().GetCustomAttributes().UnwrapIntoArray<Attribute>());
 
             foreach (var annotation in annotations) {
@@ -802,8 +834,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static IList<LogicalChannelProducingPortDeclared> DetermineGraphDeclaredOutputPorts(
-            int producingOpNum, DataFlowOperatorForge operatorForge, GraphOperatorSpec operatorSpec,
-            OperatorMetadataDescriptor metadata, IDictionary<string, EventType> types,
+            int producingOpNum,
+            DataFlowOperatorForge operatorForge,
+            GraphOperatorSpec operatorSpec,
+            OperatorMetadataDescriptor metadata,
+            IDictionary<string, EventType> types,
             StatementCompileTimeServices services)
         {
             IList<LogicalChannelProducingPortDeclared> ports = new List<LogicalChannelProducingPortDeclared>();
@@ -833,7 +868,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static GraphTypeDesc DetermineTypeOutputPort(
-            GraphOperatorOutputItemType outType, IDictionary<string, EventType> types,
+            GraphOperatorOutputItemType outType,
+            IDictionary<string, EventType> types,
             StatementCompileTimeServices services)
         {
             EventType eventType = null;
@@ -862,7 +898,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static EventType ResolveType(
-            string typeOrClassname, IDictionary<string, EventType> types, StatementCompileTimeServices services)
+            string typeOrClassname,
+            IDictionary<string, EventType> types,
+            StatementCompileTimeServices services)
         {
             var eventType = types.Get(typeOrClassname);
             if (eventType == null) {
@@ -1010,8 +1048,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 // punctuation determined by input
                 var hasPunctuationSignal = (foundDeclared != null ? foundDeclared.HasPunctuation : false) ||
                                            DetermineReceivesPunctuation(
-                                               incomingDependentOpNums, 
-                                               operatorSpec.Input, 
+                                               incomingDependentOpNums,
+                                               operatorSpec.Input,
                                                compiledOutputPorts);
 
                 GraphTypeDesc compiledType;
@@ -1039,7 +1077,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static bool DetermineReceivesPunctuation(
-            ICollection<int> incomingDependentOpNums, 
+            ICollection<int> incomingDependentOpNums,
             GraphOperatorInput input,
             IDictionary<int, IList<LogicalChannelProducingPortCompiled>> compiledOutputPorts)
         {
@@ -1057,7 +1095,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static void CompareTypeInfo(
-            string operatorName, string firstName, GraphTypeDesc firstType, string otherName, GraphTypeDesc otherType)
+            string operatorName,
+            string firstName,
+            GraphTypeDesc firstType,
+            string otherName,
+            GraphTypeDesc otherType)
         {
             if (firstType.EventType != null && otherType.EventType != null &&
                 !firstType.EventType.Equals(otherType.EventType)) {
@@ -1082,7 +1124,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static IDictionary<int, DataFlowOpOutputPort> GetDeclaredOutputPorts(
-            GraphOperatorSpec operatorSpec, IDictionary<string, EventType> types, StatementCompileTimeServices services)
+            GraphOperatorSpec operatorSpec,
+            IDictionary<string, EventType> types,
+            StatementCompileTimeServices services)
         {
             IDictionary<int, DataFlowOpOutputPort> outputPorts = new LinkedHashMap<int, DataFlowOpOutputPort>();
             for (var outputPortNum = 0; outputPortNum < operatorSpec.Output.Items.Count; outputPortNum++) {
@@ -1102,7 +1146,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         private class InitForgesResult
         {
             public InitForgesResult(
-                IList<LogicalChannel> logicalChannels, IList<StmtForgeMethodResult> additionalForgables)
+                IList<LogicalChannel> logicalChannels,
+                IList<StmtForgeMethodResult> additionalForgables)
             {
                 LogicalChannels = logicalChannels;
                 AdditionalForgables = additionalForgables;

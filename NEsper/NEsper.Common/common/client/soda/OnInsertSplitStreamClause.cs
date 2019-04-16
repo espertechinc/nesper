@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="isFirst">true for first where-clause, false for all where-clauses fire</param>
         /// <param name="items">is a list of insert-into, select and optional where-clauses</param>
         /// <returns>split-stream on-insert clause</returns>
-        public static OnInsertSplitStreamClause Create(bool isFirst, List<OnInsertSplitStreamItem> items)
+        public static OnInsertSplitStreamClause Create(
+            bool isFirst,
+            List<OnInsertSplitStreamItem> items)
         {
             return new OnInsertSplitStreamClause(isFirst, items);
         }
@@ -39,7 +41,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="isFirst">indicator whether only the first where-clause is to match or all where-clauses.</param>
         /// <param name="items">tuples of insert-into, select and where-clauses.</param>
-        public OnInsertSplitStreamClause(bool isFirst, List<OnInsertSplitStreamItem> items)
+        public OnInsertSplitStreamClause(
+            bool isFirst,
+            List<OnInsertSplitStreamItem> items)
         {
             IsFirst = isFirst;
             Items = items;
@@ -48,31 +52,29 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Renders the clause in textual representation. </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">for NewLine-whitespace formatting</param>
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
-            foreach (OnInsertSplitStreamItem item in Items)
-            {
+            foreach (OnInsertSplitStreamItem item in Items) {
                 item.InsertInto.ToEPL(writer, formatter, true);
                 item.SelectClause.ToEPL(writer, formatter, true, false);
-                if (item.PropertySelects != null)
-                {
+                if (item.PropertySelects != null) {
                     writer.Write(" from ");
                     ContainedEventSelect.ToEPL(writer, formatter, item.PropertySelects);
-                    if (item.PropertySelectsStreamName != null)
-                    {
+                    if (item.PropertySelectsStreamName != null) {
                         writer.Write(" as ");
                         writer.Write(item.PropertySelectsStreamName);
                     }
                 }
-                if (item.WhereClause != null)
-                {
+
+                if (item.WhereClause != null) {
                     writer.Write(" where ");
                     item.WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }
             }
 
-            if (!IsFirst)
-            {
+            if (!IsFirst) {
                 writer.Write(" output all");
             }
         }

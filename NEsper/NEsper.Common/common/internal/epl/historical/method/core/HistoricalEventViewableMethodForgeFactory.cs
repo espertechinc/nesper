@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
     public class HistoricalEventViewableMethodForgeFactory
     {
         public static HistoricalEventViewableMethodForge CreateMethodStatementView(
-            int stream, MethodStreamSpec methodStreamSpec, StatementBaseInfo @base,
+            int stream,
+            MethodStreamSpec methodStreamSpec,
+            StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
             var variableMetaData = services.VariableCompileTimeResolver.Resolve(methodStreamSpec.ClassName);
@@ -189,12 +191,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     if (variableMetaData != null) {
                         metadata = GetCheckMetadataVariable(
                             methodStreamSpec.MethodName, variableMetaData, classpathImportService,
-                            typeof(LinkedHashMap));
+                            typeof(LinkedHashMap<object, object>));
                     }
                     else {
                         metadata = GetCheckMetadataNonVariable(
                             methodStreamSpec.MethodName, methodStreamSpec.ClassName, classpathImportService,
-                            typeof(LinkedHashMap));
+                            typeof(LinkedHashMap<object, object>));
                     }
 
                     oaTypeName = metadata.TypeName;
@@ -203,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
                 // Determine event type from class and method name
                 // If the method returns EventBean[], require the event type
-                Func<EventTypeApplicationType, EventTypeMetadata> metadata = apptype => {
+                Func<EventTypeApplicationType, EventTypeMetadata> metadataFunction = apptype => {
                     var eventTypeName = services.EventTypeNameGeneratorStatement.GetAnonymousMethodHistorical(stream);
                     return new EventTypeMetadata(
                         eventTypeName, @base.ModuleName, EventTypeTypeClass.METHODPOLLDERIVED, apptype,
@@ -222,20 +224,20 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 }
                 else if (mapType != null) {
                     eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                        metadata.Invoke(EventTypeApplicationType.MAP), mapType, null, null, null, null,
+                        metadataFunction.Invoke(EventTypeApplicationType.MAP), mapType, null, null, null, null,
                         services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
                     services.EventTypeCompileTimeRegistry.NewType(eventType);
                 }
                 else if (oaType != null) {
                     eventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                        metadata.Invoke(EventTypeApplicationType.OBJECTARR), oaType, null, null, null, null,
+                        metadataFunction.Invoke(EventTypeApplicationType.OBJECTARR), oaType, null, null, null, null,
                         services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
                     services.EventTypeCompileTimeRegistry.NewType(eventType);
                 }
                 else {
                     var stem = services.BeanEventTypeStemService.GetCreateStem(beanClass, null);
                     eventType = new BeanEventType(
-                        stem, metadata.Invoke(EventTypeApplicationType.CLASS), services.BeanEventTypeFactoryPrivate,
+                        stem, metadataFunction.Invoke(EventTypeApplicationType.CLASS), services.BeanEventTypeFactoryPrivate,
                         null, null, null, null);
                     services.EventTypeCompileTimeRegistry.NewType(eventType);
                 }
@@ -261,8 +263,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
         }
 
         private static MethodMetadataDesc GetCheckMetadataVariable(
-            string methodName, VariableMetaData variableMetaData,
-            ImportServiceCompileTime importService, Type metadataClass)
+            string methodName,
+            VariableMetaData variableMetaData,
+            ImportServiceCompileTime importService,
+            Type metadataClass)
         {
             var typeGetterMethod = GetRequiredTypeGetterMethodCanNonStatic(
                 methodName, null, variableMetaData.Type, importService, metadataClass);
@@ -287,7 +291,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
         }
 
         private static MethodMetadataDesc GetCheckMetadataNonVariable(
-            string methodName, string className, ImportServiceCompileTime importService,
+            string methodName,
+            string className,
+            ImportServiceCompileTime importService,
             Type metadataClass)
         {
             var typeGetterMethod = GetRequiredTypeGetterMethodCanNonStatic(
@@ -296,8 +302,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
         }
 
         private static MethodInfo GetRequiredTypeGetterMethodCanNonStatic(
-            string methodName, string classNameWhenNoClass, Type clazzWhenAvailable,
-            ImportServiceCompileTime importService, Type metadataClass)
+            string methodName,
+            string classNameWhenNoClass,
+            Type clazzWhenAvailable,
+            ImportServiceCompileTime importService,
+            Type metadataClass)
         {
             MethodInfo typeGetterMethod;
             var getterMethodName = methodName + "Metadata";
@@ -334,7 +343,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
         }
 
         private static MethodMetadataDesc InvokeMetadataMethod(
-            object target, string className, MethodInfo typeGetterMethod)
+            object target,
+            string className,
+            MethodInfo typeGetterMethod)
         {
             object resultType;
             try {
@@ -356,7 +367,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
         public class MethodMetadataDesc
         {
-            public MethodMetadataDesc(string typeName, object typeMetadata)
+            public MethodMetadataDesc(
+                string typeName,
+                object typeMetadata)
             {
                 TypeName = typeName;
                 TypeMetadata = typeMetadata;

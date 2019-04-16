@@ -7,26 +7,28 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.metrics.instrumentation
 {
-	public class InstrumentationField : CodegenFieldSharable {
-	    public readonly static InstrumentationField INSTANCE = new InstrumentationField();
+    public class InstrumentationField : CodegenFieldSharable
+    {
+        public readonly static InstrumentationField INSTANCE = new InstrumentationField();
 
-	    private InstrumentationField() {
-	    }
+        private InstrumentationField()
+        {
+        }
 
-	    public Type Type() {
-	        return typeof(Instrumentation);
-	    }
+        public Type Type()
+        {
+            return typeof(Instrumentation);
+        }
 
-	    public CodegenExpression InitCtorScoped() {
-	        return StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "get");
-	    }
-	}
+        public CodegenExpression InitCtorScoped()
+        {
+            return StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "get");
+        }
+    }
 } // end of namespace

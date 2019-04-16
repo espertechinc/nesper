@@ -23,14 +23,18 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
     {
         internal readonly ContextControllerKeyedSvc keyedSvc;
 
-        public ContextControllerKeyedImpl(ContextControllerKeyedFactory factory, ContextManagerRealization realization)
+        public ContextControllerKeyedImpl(
+            ContextControllerKeyedFactory factory,
+            ContextManagerRealization realization)
             : base(realization, factory)
         {
             keyedSvc = ContextControllerKeyedUtil.GetService(factory, realization);
         }
 
         public override void Activate(
-            IntSeqKey path, object[] parentPartitionKeys, EventBean optionalTriggeringEvent,
+            IntSeqKey path,
+            object[] parentPartitionKeys,
+            EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern)
         {
             keyedSvc.MgmtCreate(path, parentPartitionKeys);
@@ -38,7 +42,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             keyedSvc.MgmtSetFilters(path, filterEntries);
         }
 
-        public override void Deactivate(IntSeqKey path, bool terminateChildContexts)
+        public override void Deactivate(
+            IntSeqKey path,
+            bool terminateChildContexts)
         {
             if (path.Length != factory.FactoryEnv.NestingLevel - 1) {
                 throw new IllegalStateException("Unrecognized controller path");
@@ -65,7 +71,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         public void MatchFound(
-            ContextControllerDetailKeyedItem item, EventBean theEvent, IntSeqKey controllerPath,
+            ContextControllerDetailKeyedItem item,
+            EventBean theEvent,
+            IntSeqKey controllerPath,
             string optionalInitCondAsName)
         {
             if (controllerPath.Length != factory.FactoryEnv.NestingLevel - 1) {
@@ -118,12 +126,16 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 .StmtFilterVersion = filterVersionAfterStart;
         }
 
-        protected override void VisitPartitions(IntSeqKey controllerPath, BiConsumer<object, int> keyAndSubpathOrCPId)
+        protected override void VisitPartitions(
+            IntSeqKey controllerPath,
+            BiConsumer<object, int> keyAndSubpathOrCPId)
         {
             keyedSvc.KeyVisit(controllerPath, keyAndSubpathOrCPId);
         }
 
-        protected override int GetSubpathOrCPId(IntSeqKey path, object keyForLookup)
+        protected override int GetSubpathOrCPId(
+            IntSeqKey path,
+            object keyForLookup)
         {
             return keyedSvc.KeyGetSubpathOrCPId(path, keyForLookup);
         }
@@ -171,7 +183,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider = null;
             if (optionalInitCondAsName != null) {
                 endConditionMatchEventProvider = new ProxyContextControllerEndConditionMatchEventProvider {
-                    ProcPopulateEndConditionFromTrigger = (map, triggeringEventArg) => {
+                    ProcPopulateEndConditionFromTrigger = (
+                        map,
+                        triggeringEventArg) => {
                         ContextControllerKeyedUtil.PopulatePriorMatch(optionalInitCondAsName, map, triggeringEventArg);
                     }
                 };
@@ -183,7 +197,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         private ContextControllerFilterEntry[] ActivateFilters(
-            EventBean optionalTriggeringEvent, IntSeqKey controllerPath, object[] parentPartitionKeys)
+            EventBean optionalTriggeringEvent,
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys)
         {
             ContextConditionDescriptor[] optionalInit = factory.KeyedSpec.OptionalInit;
             if (optionalInit == null || optionalInit.Length == 0) {
@@ -194,7 +210,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         private ContextControllerFilterEntry[] ActivateFiltersFromInit(
-            EventBean optionalTriggeringEvent, IntSeqKey controllerPath, object[] parentPartitionKeys)
+            EventBean optionalTriggeringEvent,
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys)
         {
             var inits = factory.KeyedSpec.OptionalInit;
             var filterEntries = new ContextControllerFilterEntry[inits.Length];
@@ -209,7 +227,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         private ContextControllerFilterEntry[] ActivateFiltersFromPartitionKeys(
-            EventBean optionalTriggeringEvent, IntSeqKey controllerPath, object[] parentPartitionKeys)
+            EventBean optionalTriggeringEvent,
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys)
         {
             var items = factory.KeyedSpec.Items;
             var filterEntries = new ContextControllerFilterEntry[items.Length];
@@ -222,7 +242,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         private ContextControllerFilterEntry ActivateFilterNoInit(
-            ContextControllerDetailKeyedItem item, EventBean optionalTriggeringEvent, IntSeqKey controllerPath,
+            ContextControllerDetailKeyedItem item,
+            EventBean optionalTriggeringEvent,
+            IntSeqKey controllerPath,
             object[] parentPartitionKeys)
         {
             var callback = new ContextControllerKeyedFilterEntryNoInit(this, controllerPath, parentPartitionKeys, item);
@@ -239,8 +261,11 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         private ContextControllerFilterEntry ActivateFilterWithInit(
-            ContextConditionDescriptorFilter filter, ContextControllerDetailKeyedItem item,
-            EventBean optionalTriggeringEvent, IntSeqKey controllerPath, object[] parentPartitionKeys)
+            ContextConditionDescriptorFilter filter,
+            ContextControllerDetailKeyedItem item,
+            EventBean optionalTriggeringEvent,
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys)
         {
             return new ContextControllerKeyedFilterEntryWInit(this, controllerPath, item, parentPartitionKeys, filter);
         }
@@ -253,7 +278,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             {
             }
 
-            public bool HandleFilterFault(EventBean theEvent, long version)
+            public bool HandleFilterFault(
+                EventBean theEvent,
+                long version)
             {
                 return true;
             }

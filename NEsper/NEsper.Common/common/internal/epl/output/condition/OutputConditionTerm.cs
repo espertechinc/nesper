@@ -11,11 +11,14 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
     public class OutputConditionTerm : OutputConditionBase,
         OutputCondition
     {
-        public OutputConditionTerm(OutputCallback outputCallback) : base(outputCallback)
+        public OutputConditionTerm(OutputCallback outputCallback)
+            : base(outputCallback)
         {
         }
 
-        public override void UpdateOutputCondition(int newEventsCount, int oldEventsCount)
+        public override void UpdateOutputCondition(
+            int newEventsCount,
+            int oldEventsCount)
         {
         }
 

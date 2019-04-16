@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class CreateTableDesc
     {
-        public CreateTableDesc(string tableName, IList<CreateTableColumn> columns)
+        public CreateTableDesc(
+            string tableName,
+            IList<CreateTableColumn> columns)
         {
             TableName = tableName;
             Columns = columns;

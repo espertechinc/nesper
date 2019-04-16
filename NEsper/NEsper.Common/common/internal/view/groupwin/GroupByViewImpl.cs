@@ -55,7 +55,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         /// <param name="groupByViewFactory">view factory</param>
         /// <param name="agentInstanceContext">contains required view services</param>
         public GroupByViewImpl(
-            GroupByViewFactory groupByViewFactory, AgentInstanceViewFactoryChainContext agentInstanceContext)
+            GroupByViewFactory groupByViewFactory,
+            AgentInstanceViewFactoryChainContext agentInstanceContext)
         {
             ViewFactory = groupByViewFactory;
             this.agentInstanceContext = agentInstanceContext;
@@ -71,7 +72,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public GroupByViewFactory ViewFactory { get; }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             AgentInstanceContext aiContext = agentInstanceContext.AgentInstanceContext;
             aiContext.AuditProvider.View(newData, oldData, aiContext, ViewFactory);
@@ -80,7 +83,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             // Algorithm for single new event
             if (newData != null && oldData == null && newData.Length == 1) {
                 var theEvent = newData[0];
-                var newDataToPost = new EventBean[]{ theEvent };
+                var newDataToPost = new EventBean[] {theEvent};
 
                 var groupByValuesKey = GetGroupKey(theEvent);
 
@@ -155,7 +158,10 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             return GetType().Name + " groupFieldNames=" + ViewFactory.PropertyNames.RenderAny();
         }
 
-        public static void VisitView(ViewDataVisitorContained viewDataVisitor, object groupkey, View view)
+        public static void VisitView(
+            ViewDataVisitorContained viewDataVisitor,
+            object groupkey,
+            View view)
         {
             if (view == null) {
                 return;
@@ -164,7 +170,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             viewDataVisitor.VisitContained(groupkey, view);
         }
 
-        private void HandleEvent(EventBean theEvent, bool isNew)
+        private void HandleEvent(
+            EventBean theEvent,
+            bool isNew)
         {
             var groupByValuesKey = GetGroupKey(theEvent);
 
@@ -209,7 +217,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             return new HashableMultiKey(values);
         }
 
-        protected internal static object AddUpgradeToDequeIfPopulated(object holder, EventBean theEvent)
+        protected internal static object AddUpgradeToDequeIfPopulated(
+            object holder,
+            EventBean theEvent)
         {
             if (holder == null) {
                 return theEvent;
@@ -235,7 +245,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
 
             if (eventOrDeque is EventBean) {
-                return new[] { (EventBean) eventOrDeque };
+                return new[] {(EventBean) eventOrDeque};
             }
 
             return ((ArrayDeque<EventBean>) eventOrDeque).ToArray();

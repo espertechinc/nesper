@@ -10,11 +10,11 @@ using System;
 
 namespace com.espertech.esper.common.client.annotation
 {
-	/// <summary>
-	/// Annotation for use in EPL statements for making an unbound stream iterable returning the last event without
-	/// requiring a data window to be declared.
-	/// </summary>
-	public class IterableUnboundAttribute : Attribute
-	{
-	}
+    /// <summary>
+    /// Annotation for use in EPL statements for making an unbound stream iterable returning the last event without
+    /// requiring a data window to be declared.
+    /// </summary>
+    public class IterableUnboundAttribute : Attribute
+    {
+    }
 } // end of namespace

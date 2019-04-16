@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -27,16 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             return true;
         }
 
-        public void Visit(ExprNode exprNode, ExprNode parentExprNode)
+        public void Visit(
+            ExprNode exprNode,
+            ExprNode parentExprNode)
         {
-            if (exprNode is ExprIdentNode)
-            {
+            if (exprNode is ExprIdentNode) {
                 _identNodes.Add(new Pair<ExprNode, ExprIdentNode>(parentExprNode, (ExprIdentNode) exprNode));
             }
         }
 
-        public IList<Pair<ExprNode, ExprIdentNode>> IdentNodes
-        {
+        public IList<Pair<ExprNode, ExprIdentNode>> IdentNodes {
             get { return _identNodes; }
         }
     }

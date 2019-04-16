@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         /// <param name="newData">is the correlation events</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         /// <returns>the events</returns>
-        EventBean[] Lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext);
+        EventBean[] Lookup(
+            EventBean[] newData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         string ToQueryPlan();
     }

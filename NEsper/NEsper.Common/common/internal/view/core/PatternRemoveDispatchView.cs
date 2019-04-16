@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.view.core
         private readonly FlushedEventBuffer newDataBuffer = new FlushedEventBuffer();
 
         public PatternRemoveDispatchView(
-            EvalRootMatchRemover matchRemoveCallback, bool suppressSameEventMatches, bool discardPartialsOnMatch)
+            EvalRootMatchRemover matchRemoveCallback,
+            bool suppressSameEventMatches,
+            bool discardPartialsOnMatch)
         {
             this.matchRemoveCallback = matchRemoveCallback;
             this.suppressSameEventMatches = suppressSameEventMatches;
@@ -92,13 +94,17 @@ namespace com.espertech.esper.common.@internal.view.core
             return Parent.GetEnumerator();
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             newDataBuffer.Add(newData);
             hasData = true;
         }
 
-        private bool AddEventsFromMatch(EventBean match, ISet<EventBean> events)
+        private bool AddEventsFromMatch(
+            EventBean match,
+            ISet<EventBean> events)
         {
             var properties = match.EventType.PropertyDescriptors;
             var overlaps = false;

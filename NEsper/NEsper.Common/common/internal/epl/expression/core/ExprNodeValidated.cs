@@ -38,7 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprPrecedenceEnum Precedence => inner.Precedence;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return inner.Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         }
@@ -46,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return inner.Forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
@@ -58,17 +63,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprForgeConstantType ForgeConstantType => inner.Forge.ForgeConstantType;
 
-        public override void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public override void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             inner.ToEPL(writer, parentPrecedence);
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             inner.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (node is ExprNodeValidated) {
                 return inner.EqualsNode(((ExprNodeValidated) node).inner, false);

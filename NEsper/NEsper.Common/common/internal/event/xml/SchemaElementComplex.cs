@@ -14,14 +14,14 @@ using System.Xml.Schema;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     /// <summary>
-    /// Represents a complex element possibly with attributes, simple elements, other
-    /// complex child elements.
+    ///     Represents a complex element possibly with attributes, simple elements, other
+    ///     complex child elements.
     /// </summary>
     [Serializable]
     public class SchemaElementComplex : SchemaElement
     {
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="name">the element name</param>
         /// <param name="namespace">the element namespace</param>
@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="optionalSimpleType">if the element does itself have a type</param>
         /// <param name="optionalSimpleTypeName">if the element does itself have a type</param>
         public SchemaElementComplex(
-            String name,
-            String @namespace,
+            string name,
+            string @namespace,
             IList<SchemaItemAttribute> attributes,
             IList<SchemaElementComplex> children,
             IList<SchemaElementSimple> simpleElements,
@@ -52,77 +52,34 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         /// <summary>
-        /// Returns attributes.
+        ///     Returns attributes.
         /// </summary>
         /// <returns>
-        /// attributes
+        ///     attributes
         /// </returns>
-        public IList<SchemaItemAttribute> Attributes { get; private set; }
+        public IList<SchemaItemAttribute> Attributes { get; }
 
         /// <summary>
-        /// Returns complex child elements.
+        ///     Returns complex child elements.
         /// </summary>
         /// <returns>
-        /// attributes
+        ///     attributes
         /// </returns>
-        public IList<SchemaElementComplex> ComplexElements { get; private set; }
+        public IList<SchemaElementComplex> ComplexElements { get; }
 
         /// <summary>
-        /// Returns simple child elements.
+        ///     Returns simple child elements.
         /// </summary>
         /// <returns>
-        /// simple child elements
+        ///     simple child elements
         /// </returns>
-        public IList<SchemaElementSimple> SimpleElements { get; private set; }
-
-        #region SchemaElement Members
+        public IList<SchemaElementSimple> SimpleElements { get; }
 
         /// <summary>
-        /// Returns the name.
+        ///     Returns a <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.
         /// </summary>
         /// <returns>
-        /// name
-        /// </returns>
-        public string Name { get; private set; }
-
-        /// <summary>
-        /// Returns the namespace of the element.
-        /// </summary>
-        /// <value></value>
-        /// <returns>
-        /// namespace
-        /// </returns>
-        public string Namespace { get; private set; }
-
-        /// <summary>
-        /// Returns true if unbound or max greater one.
-        /// </summary>
-        /// <returns>
-        /// true if array
-        /// </returns>
-        public bool IsArray { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the type of the optional simple.  If not null, then the
-        /// complex element itself has a type defined for it.
-        /// </summary>
-        /// <value>The type of the optional simple.</value>
-        public XmlSchemaSimpleType OptionalSimpleType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the optional simple type.  If not null then
-        /// the complex element itself has a type defined for it.
-        /// </summary>
-        /// <value>The name of the optional simple type.</value>
-        public XmlQualifiedName OptionalSimpleTypeName { get; set; }
-
-        #endregion
-
-        /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        ///     A <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.
         /// </returns>
         public override string ToString()
         {
@@ -138,5 +95,48 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     OptionalSimpleType,
                     OptionalSimpleTypeName);
         }
+
+        #region SchemaElement Members
+
+        /// <summary>
+        ///     Returns the name.
+        /// </summary>
+        /// <returns>
+        ///     name
+        /// </returns>
+        public string Name { get; }
+
+        /// <summary>
+        ///     Returns the namespace of the element.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        ///     namespace
+        /// </returns>
+        public string Namespace { get; }
+
+        /// <summary>
+        ///     Returns true if unbound or max greater one.
+        /// </summary>
+        /// <returns>
+        ///     true if array
+        /// </returns>
+        public bool IsArray { get; }
+
+        /// <summary>
+        ///     Gets or sets the type of the optional simple.  If not null, then the
+        ///     complex element itself has a type defined for it.
+        /// </summary>
+        /// <value>The type of the optional simple.</value>
+        public XmlSchemaSimpleType OptionalSimpleType { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the name of the optional simple type.  If not null then
+        ///     the complex element itself has a type defined for it.
+        /// </summary>
+        /// <value>The name of the optional simple type.</value>
+        public XmlQualifiedName OptionalSimpleTypeName { get; set; }
+
+        #endregion
     }
 }

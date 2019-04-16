@@ -115,8 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             eventTypeMeta.RootElementName = "rootelement";
 
             var schemaStream = resourceManager.GetResourceAsStream(CLASSLOADER_SCHEMA_URI);
-            if (schemaStream == null)
-            {
+            if (schemaStream == null) {
                 throw new IllegalStateException("Failed to load schema '" + CLASSLOADER_SCHEMA_URI + "'");
             }
 
@@ -136,8 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             xml = xml.RegexReplaceAll("VAL_INT", Convert.ToString(myInt));
             xml = xml.RegexReplaceAll("VAL_STR", myString);
 
-            try
-            {
+            try {
                 XmlDocument document = new XmlDocument();
                 document.LoadXml(xml);
                 return document.DocumentElement;

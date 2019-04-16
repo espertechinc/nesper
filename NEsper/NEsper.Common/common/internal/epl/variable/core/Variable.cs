@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     public class Variable
     {
         public Variable(
-            int variableNumber, string deploymentId, VariableMetaData metaData, string optionalContextDeploymentId)
+            int variableNumber,
+            string deploymentId,
+            VariableMetaData metaData,
+            string optionalContextDeploymentId)
         {
             VariableNumber = variableNumber;
             DeploymentId = deploymentId;

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -53,16 +52,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this, enumForge.EnumEvaluator, cache, enumEvalNumRequiredEvents);
 
         public CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return ExprDotForgeEnumMethodEval.Codegen(
                 this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public void Init(
-            int? streamOfProviderIfApplicable, EnumMethodEnum enumMethodEnum, string enumMethodUsedName,
-            EPType typeInfo, IList<ExprNode> parameters, ExprValidationContext validationContext)
+            int? streamOfProviderIfApplicable,
+            EnumMethodEnum enumMethodEnum,
+            string enumMethodUsedName,
+            EPType typeInfo,
+            IList<ExprNode> parameters,
+            ExprValidationContext validationContext)
         {
             var eventTypeColl = typeInfo.GetEventTypeMultiValued();
             var eventTypeBean = typeInfo.GetEventTypeSingleValued();
@@ -180,14 +186,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public abstract EventType[] GetAddStreamTypes(
-            string enumMethodUsedName, IList<string> goesToNames, EventType inputEventType,
-            Type collectionComponentType, IList<ExprDotEvalParam> bodiesAndParameters,
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices services);
+            string enumMethodUsedName,
+            IList<string> goesToNames,
+            EventType inputEventType,
+            Type collectionComponentType,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services);
 
         public abstract EnumForge GetEnumForge(
-            StreamTypeService streamTypeService, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType, Type collectionComponentType, int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache, StatementRawInfo statementRawInfo,
+            StreamTypeService streamTypeService,
+            string enumMethodUsedName,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            EventType inputEventType,
+            Type collectionComponentType,
+            int numStreamsIncoming,
+            bool disablePropertyExpressionEventCollCache,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services);
 
         private ExprDotEvalParam GetBodyAndParameter(
@@ -253,7 +268,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 numStreamsIncoming, goesNode.GoesToNames, additionalTypes);
         }
 
-        private void ValidateDuplicateStreamNames(string[] streamNames, string[] additionalStreamNames)
+        private void ValidateDuplicateStreamNames(
+            string[] streamNames,
+            string[] additionalStreamNames)
         {
             for (var added = 0; added < additionalStreamNames.Length; added++) {
                 for (var exist = 0; exist < streamNames.Length; exist++) {

@@ -7,13 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -26,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         private readonly Type valueType;
 
         public PollResultIndexingStrategySortedForge(
-            int streamNum, EventType eventType, string propertyName, Type valueType)
+            int streamNum,
+            EventType eventType,
+            string propertyName,
+            Type valueType)
         {
             this.streamNum = streamNum;
             this.eventType = eventType;
@@ -40,11 +41,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategySorted), GetType(), classScope);
 
-            var propertyGetter = ((EventTypeSPI)eventType).GetGetterSPI(propertyName);
+            var propertyGetter = ((EventTypeSPI) eventType).GetGetterSPI(propertyName);
             var propertyType = eventType.GetPropertyType(propertyName);
             var valueGetter = EventTypeUtility.CodegenGetterWCoerce(
                 propertyGetter, propertyType, valueType, method, GetType(), classScope);

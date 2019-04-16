@@ -19,14 +19,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         private readonly HistoricalIndexLookupStrategyForge innerLookupStrategy;
 
         public HistoricalIndexLookupStrategyMultiForge(
-            int indexUsed, HistoricalIndexLookupStrategyForge innerLookupStrategy)
+            int indexUsed,
+            HistoricalIndexLookupStrategyForge innerLookupStrategy)
         {
             this.indexUsed = indexUsed;
             this.innerLookupStrategy = innerLookupStrategy;
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyMulti), GetType(), classScope);
             method.Block

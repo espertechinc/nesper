@@ -31,7 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         internal readonly ConfigurationRuntimeThreading threadingConfig;
         internal readonly TimeSourceService timeSourceService;
 
-        public NamedWindowTailViewBase(EventType eventType, bool isParentBatchWindow, EPStatementInitServices services)
+        public NamedWindowTailViewBase(
+            EventType eventType,
+            bool isParentBatchWindow,
+            EPStatementInitServices services)
         {
             this.eventType = eventType;
             namedWindowManagementService = services.NamedWindowManagementService;
@@ -56,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         public abstract NamedWindowConsumerLatchFactory MakeLatchFactory();
 
         public abstract void AddDispatches(
-            NamedWindowConsumerLatchFactory latchFactory, IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumersInContext, NamedWindowDeltaData delta,
+            NamedWindowConsumerLatchFactory latchFactory,
+            IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumersInContext,
+            NamedWindowDeltaData delta,
             AgentInstanceContext agentInstanceContext);
 
         public abstract NamedWindowConsumerView AddConsumerNoContext(NamedWindowConsumerDesc consumerDesc);

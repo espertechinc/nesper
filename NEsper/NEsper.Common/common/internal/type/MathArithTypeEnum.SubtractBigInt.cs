@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var b1 = (BigInteger) d1;
                 var b2 = (BigInteger) d2;
-                return b1.Subtract(b2);
+                return b1 - b2;
             }
 
             public CodegenExpression Codegen(

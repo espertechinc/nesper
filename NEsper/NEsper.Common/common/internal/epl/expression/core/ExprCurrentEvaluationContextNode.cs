@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return ExprCurrentEvaluationContextMake(exprEvaluatorContext);
         }
@@ -38,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprNodeRenderable ForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
@@ -74,12 +79,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 exprEvaluatorContext.RuntimeURI, exprEvaluatorContext.UserObjectCompileTime);
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("current_evaluation_context()");
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprCurrentEvaluationContextNode)) {
                 return false;

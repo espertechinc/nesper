@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.client.hook.type
         /// <param name="context">receives the context information such as database name, query fired and types returned by query</param>
         /// <returns>class that represents a result row</returns>
         Type GetOutputRowType(SQLOutputRowTypeContext context);
-    
+
         /// <summary>Returns the PONO object that represents a row of the SQL query result, or null to indicate to skip this row. </summary>
         /// <param name="context">receives row result information</param>
         /// <returns>PONO or null value to skip the row</returns>

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,30 +15,40 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalNoWildcardEmptyProps : SelectExprProcessorForge {
+    public class SelectEvalNoWildcardEmptyProps : SelectExprProcessorForge
+    {
+        private readonly SelectExprForgeContext selectExprForgeContext;
+        private readonly EventType resultEventType;
 
-	    private readonly SelectExprForgeContext selectExprForgeContext;
-	    private readonly EventType resultEventType;
+        public SelectEvalNoWildcardEmptyProps(
+            SelectExprForgeContext selectExprForgeContext,
+            EventType resultEventType)
+        {
+            this.selectExprForgeContext = selectExprForgeContext;
+            this.resultEventType = resultEventType;
+        }
 
-	    public SelectEvalNoWildcardEmptyProps(SelectExprForgeContext selectExprForgeContext, EventType resultEventType) {
-	        this.selectExprForgeContext = selectExprForgeContext;
-	        this.resultEventType = resultEventType;
-	    }
+        public CodegenMethod ProcessCodegen(
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            methodNode.Block.MethodReturn(
+                ExprDotMethod(eventBeanFactory, "adapterForTypedMap", StaticMethod(typeof(Collections), "emptyMap"), resultEventType));
+            return methodNode;
+        }
 
-	    public CodegenMethod ProcessCodegen(CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
-	        methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedMap", StaticMethod(typeof(Collections), "emptyMap"), resultEventType));
-	        return methodNode;
-	    }
-
-	    public EventType ResultEventType {
-	        get => resultEventType;
-	    }
-	}
+        public EventType ResultEventType {
+            get => resultEventType;
+        }
+    }
 } // end of namespace

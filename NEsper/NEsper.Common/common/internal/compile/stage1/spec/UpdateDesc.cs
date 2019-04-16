@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="assignments">the individual assignments made</param>
         /// <param name="optionalWhereClause">the where-clause expression if provided</param>
         public UpdateDesc(
-            string optionalStreamName, IList<OnTriggerSetAssignment> assignments, ExprNode optionalWhereClause)
+            string optionalStreamName,
+            IList<OnTriggerSetAssignment> assignments,
+            ExprNode optionalWhereClause)
         {
             OptionalStreamName = optionalStreamName;
             Assignments = assignments;

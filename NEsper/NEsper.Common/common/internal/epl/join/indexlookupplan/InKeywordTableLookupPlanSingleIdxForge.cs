@@ -25,8 +25,12 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
     public class InKeywordTableLookupPlanSingleIdxForge : TableLookupPlanForge
     {
         public InKeywordTableLookupPlanSingleIdxForge(
-            int lookupStream, int indexedStream, bool indexedStreamIsVDW, EventType[] typesPerStream,
-            TableLookupIndexReqKey indexNum, ExprNode[] expressions)
+            int lookupStream,
+            int indexedStream,
+            bool indexedStreamIsVDW,
+            EventType[] typesPerStream,
+            TableLookupIndexReqKey indexNum,
+            ExprNode[] expressions)
             : base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
 
         {
@@ -52,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         }
 
         public override ICollection<CodegenExpression> AdditionalParams(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return Collections.SingletonList(CodegenEvaluators(Expressions, method, GetType(), classScope));
         }

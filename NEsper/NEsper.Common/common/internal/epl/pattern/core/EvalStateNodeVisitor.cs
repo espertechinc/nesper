@@ -27,32 +27,57 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     /// </summary>
     public interface EvalStateNodeVisitor
     {
-        void VisitGuard(EvalGuardFactoryNode factoryNode, EvalStateNode stateNode, Guard guard);
+        void VisitGuard(
+            EvalGuardFactoryNode factoryNode,
+            EvalStateNode stateNode,
+            Guard guard);
 
-        void VisitFollowedBy(EvalFollowedByFactoryNode factoryNode, EvalStateNode stateNode, params object[] stateFlat);
+        void VisitFollowedBy(
+            EvalFollowedByFactoryNode factoryNode,
+            EvalStateNode stateNode,
+            params object[] stateFlat);
 
         void VisitFilter(
-            EvalFilterFactoryNode factoryNode, EvalStateNode stateNode, EPStatementHandleCallbackFilter handle,
+            EvalFilterFactoryNode factoryNode,
+            EvalStateNode stateNode,
+            EPStatementHandleCallbackFilter handle,
             MatchedEventMap beginState);
 
-        void VisitMatchUntil(EvalMatchUntilFactoryNode factoryNode, EvalStateNode stateNode, params object[] stateDeep);
+        void VisitMatchUntil(
+            EvalMatchUntilFactoryNode factoryNode,
+            EvalStateNode stateNode,
+            params object[] stateDeep);
 
-        void VisitObserver(EvalObserverFactoryNode factoryNode, EvalStateNode stateNode, EventObserver eventObserver);
+        void VisitObserver(
+            EvalObserverFactoryNode factoryNode,
+            EvalStateNode stateNode,
+            EventObserver eventObserver);
 
-        void VisitNot(EvalNotFactoryNode factoryNode, EvalStateNode stateNode);
+        void VisitNot(
+            EvalNotFactoryNode factoryNode,
+            EvalStateNode stateNode);
 
-        void VisitOr(EvalOrFactoryNode factoryNode, EvalStateNode stateNode);
+        void VisitOr(
+            EvalOrFactoryNode factoryNode,
+            EvalStateNode stateNode);
 
         void VisitRoot(EvalStateNode stateNode);
 
-        void VisitAnd(EvalAndFactoryNode factoryNode, EvalStateNode stateNode, params object[] stateDeep);
+        void VisitAnd(
+            EvalAndFactoryNode factoryNode,
+            EvalStateNode stateNode,
+            params object[] stateDeep);
 
         void VisitEvery(
-            EvalEveryFactoryNode factoryNode, EvalStateNode stateNode, MatchedEventMap beginState,
+            EvalEveryFactoryNode factoryNode,
+            EvalStateNode stateNode,
+            MatchedEventMap beginState,
             params object[] stateFlat);
 
         void VisitEveryDistinct(
-            EvalEveryDistinctFactoryNode factoryNode, EvalStateNode stateNode, MatchedEventMap beginState,
+            EvalEveryDistinctFactoryNode factoryNode,
+            EvalStateNode stateNode,
+            MatchedEventMap beginState,
             ICollection<object> keySetCollection);
 
         void VisitAudit();

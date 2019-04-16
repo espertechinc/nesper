@@ -18,15 +18,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
     public class SelectEvalStreamNoUnderlyingObjectArray : SelectEvalStreamBaseObjectArray
     {
         public SelectEvalStreamNoUnderlyingObjectArray(
-            SelectExprForgeContext context, EventType resultEventType,
-            IList<SelectClauseStreamCompiledSpec> namedStreams, bool usingWildcard)
+            SelectExprForgeContext context,
+            EventType resultEventType,
+            IList<SelectClauseStreamCompiledSpec> namedStreams,
+            bool usingWildcard)
             : base(context, resultEventType, namedStreams, usingWildcard)
 
         {
         }
 
         protected override CodegenExpression ProcessSpecificCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenExpressionRef props,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenExpressionRef props,
             CodegenClassScope codegenClassScope)
         {
             return ExprDotMethod(eventBeanFactory, "adapterForTypedObjectArray", props, resultEventType);

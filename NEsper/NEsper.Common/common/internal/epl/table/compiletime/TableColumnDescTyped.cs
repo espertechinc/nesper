@@ -10,7 +10,11 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
     public class TableColumnDescTyped : TableColumnDesc
     {
-        public TableColumnDescTyped(int positionInDeclaration, string columnName, object unresolvedType, bool key)
+        public TableColumnDescTyped(
+            int positionInDeclaration,
+            string columnName,
+            object unresolvedType,
+            bool key)
             : base(positionInDeclaration, columnName)
         {
             UnresolvedType = unresolvedType;

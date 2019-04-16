@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private long scheduleSlot;
 
         public void SetScheduleCallback(
-            AgentInstanceContext agentInstanceContext, RowRecogNFAViewScheduleCallback scheduleCallback)
+            AgentInstanceContext agentInstanceContext,
+            RowRecogNFAViewScheduleCallback scheduleCallback)
         {
             this.agentInstanceContext = agentInstanceContext;
             scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();

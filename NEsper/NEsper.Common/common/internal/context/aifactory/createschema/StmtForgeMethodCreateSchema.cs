@@ -62,10 +62,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
-                @base, 
-                new EmptyList<FilterSpecCompiled>(), 
-                new EmptyList<ScheduleHandleCallbackProvider>(), 
-                new EmptyList<NamedWindowConsumerStreamSpec>(), 
+                @base,
+                new EmptyList<FilterSpecCompiled>(),
+                new EmptyList<ScheduleHandleCallbackProvider>(),
+                new EmptyList<NamedWindowConsumerStreamSpec>(),
                 false,
                 selectSubscriberDescriptor, packageScope, services);
             var statementProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);

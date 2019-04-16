@@ -37,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         /// <param name="everyDistinctNode">is the factory node associated to the state</param>
         public EvalEveryDistinctStateNode(
             Evaluator parentNode,
-            EvalEveryDistinctNode everyDistinctNode) : base(parentNode)
+            EvalEveryDistinctNode everyDistinctNode)
+            : base(parentNode)
         {
             this.everyDistinctNode = everyDistinctNode;
             spawnedNodes = new LinkedHashMap<EvalStateNode, ISet<object>>();
@@ -51,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         public override bool IsObserverStateNodeNonRestarting => false;
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             var agentInstanceContext = everyDistinctNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryDistinctEvalFalse(everyDistinctNode.factoryNode);
@@ -79,7 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         }
 
         public void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent)
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             var agentInstanceContext = everyDistinctNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryDistinctEvaluateTrue(

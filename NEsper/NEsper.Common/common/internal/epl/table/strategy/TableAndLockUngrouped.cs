@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 {
     public class TableAndLockUngrouped
     {
-        public TableAndLockUngrouped(ILockable @lock, TableInstanceUngrouped ungrouped)
+        public TableAndLockUngrouped(
+            ILockable @lock,
+            TableInstanceUngrouped ungrouped)
         {
             Lock = @lock;
             Ungrouped = ungrouped;

@@ -16,13 +16,20 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
     /// </summary>
     public interface NamedWindowManagementService
     {
-        void AddNamedWindow(string namedWindowName, NamedWindowMetaData desc, EPStatementInitServices services);
+        void AddNamedWindow(
+            string namedWindowName,
+            NamedWindowMetaData desc,
+            EPStatementInitServices services);
 
-        NamedWindow GetNamedWindow(string deploymentId, string namedWindowName);
+        NamedWindow GetNamedWindow(
+            string deploymentId,
+            string namedWindowName);
 
         int DeploymentCount { get; }
 
-        void DestroyNamedWindow(string deploymentId, string namedWindowName);
+        void DestroyNamedWindow(
+            string deploymentId,
+            string namedWindowName);
     }
 
     public class NamedWindowManagementServiceConstants

@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="cause">The cause.</param>
-        public ExprValidationException(String message, Exception cause)
+        public ExprValidationException(
+            String message,
+            Exception cause)
             : base(message, cause)
         {
         }

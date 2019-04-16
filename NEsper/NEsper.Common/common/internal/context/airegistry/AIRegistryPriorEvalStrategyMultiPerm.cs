@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             services = new ArrayWrap<PriorEvalStrategy>(2);
         }
 
-        public void AssignService(int serviceId, PriorEvalStrategy priorEvalStrategy)
+        public void AssignService(
+            int serviceId,
+            PriorEvalStrategy priorEvalStrategy)
         {
             AIRegistryUtil.CheckExpand(serviceId, services);
             services.Array[serviceId] = priorEvalStrategy;
@@ -43,8 +45,12 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         public int InstanceCount { get; private set; }
 
         public EventBean GetSubstituteEvent(
-            EventBean originalEvent, bool isNewData, int constantIndexNumber, int relativeIndex,
-            ExprEvaluatorContext exprEvaluatorContext, int streamNum)
+            EventBean originalEvent,
+            bool isNewData,
+            int constantIndexNumber,
+            int relativeIndex,
+            ExprEvaluatorContext exprEvaluatorContext,
+            int streamNum)
         {
             return services.Array[exprEvaluatorContext.AgentInstanceId].GetSubstituteEvent(
                 originalEvent, isNewData, constantIndexNumber, relativeIndex, exprEvaluatorContext, streamNum);

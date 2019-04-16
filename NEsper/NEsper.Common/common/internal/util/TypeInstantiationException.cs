@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.util
@@ -29,7 +28,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary>Ctor. </summary>
         /// <param name="message">supplies the detailed description</param>
         /// <param name="cause">the exception cause</param>
-        public TypeInstantiationException(String message, Exception cause)
+        public TypeInstantiationException(
+            String message,
+            Exception cause)
             : base(message, cause)
         {
         }

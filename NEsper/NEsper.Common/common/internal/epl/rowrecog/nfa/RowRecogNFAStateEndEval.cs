@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
 
         public override bool IsExprRequiresMultimatchState => throw new UnsupportedOperationException();
 
-        public override bool Matches(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext)
+        public override bool Matches(
+            EventBean[] eventsPerStream,
+            AgentInstanceContext agentInstanceContext)
         {
             throw new UnsupportedOperationException();
         }

@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         }
 
         public StmtForgeMethodResult Make(
-            string packageName, string classPostfix, StatementCompileTimeServices services)
+            string packageName,
+            string classPostfix,
+            StatementCompileTimeServices services)
         {
             var statementSpec = @base.StatementSpec;
 

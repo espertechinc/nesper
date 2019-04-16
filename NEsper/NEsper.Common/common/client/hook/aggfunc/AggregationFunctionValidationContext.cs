@@ -38,9 +38,9 @@ namespace com.espertech.esper.common.client.hook.aggfunc
         /// <param name="expressions">the parameter expressions themselves (positional parameters only)</param>
         /// <param name="namedParameters">provided when there are named parameters, such as the "filter:expression" parameter</param>
         public AggregationFunctionValidationContext(
-            Type[] parameterTypes, 
-            bool[] constantValue, 
-            object[] constantValues, 
+            Type[] parameterTypes,
+            bool[] constantValue,
+            object[] constantValues,
             bool distinct,
             bool windowed,
             ExprNode[] expressions,

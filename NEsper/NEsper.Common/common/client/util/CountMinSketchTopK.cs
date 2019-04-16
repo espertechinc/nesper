@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.client.util
         /// </summary>
         /// <param name="frequency">the value frequency</param>
         /// <param name="value">the value object</param>
-        public CountMinSketchTopK(long frequency, object value)
+        public CountMinSketchTopK(
+            long frequency,
+            object value)
         {
             Frequency = frequency;
             Value = value;
@@ -36,11 +38,12 @@ namespace com.espertech.esper.common.client.util
         /// <value>value</value>
         public object Value { get; private set; }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return "CountMinSketchFrequency{" +
-                    "frequency=" + Frequency +
-                    ", value=" + Value +
-                    '}';
+                   "frequency=" + Frequency +
+                   ", value=" + Value +
+                   '}';
         }
     }
 }

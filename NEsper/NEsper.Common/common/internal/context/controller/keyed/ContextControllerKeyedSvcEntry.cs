@@ -7,28 +7,31 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
-	public class ContextControllerKeyedSvcEntry {
-	    private readonly int subpathOrCPId;
-	    private readonly ContextControllerConditionNonHA terminationCondition;
+    public class ContextControllerKeyedSvcEntry
+    {
+        private readonly int subpathOrCPId;
+        private readonly ContextControllerConditionNonHA terminationCondition;
 
-	    public ContextControllerKeyedSvcEntry(int subpathOrCPId, ContextControllerConditionNonHA terminationCondition) {
-	        this.subpathOrCPId = subpathOrCPId;
-	        this.terminationCondition = terminationCondition;
-	    }
+        public ContextControllerKeyedSvcEntry(
+            int subpathOrCPId,
+            ContextControllerConditionNonHA terminationCondition)
+        {
+            this.subpathOrCPId = subpathOrCPId;
+            this.terminationCondition = terminationCondition;
+        }
 
-	    public int SubpathOrCPId {
-	        get => subpathOrCPId;
-	    }
+        public int SubpathOrCPId {
+            get => subpathOrCPId;
+        }
 
-	    public ContextControllerConditionNonHA TerminationCondition {
-	        get => terminationCondition;
-	    }
-	}
+        public ContextControllerConditionNonHA TerminationCondition {
+            get => terminationCondition;
+        }
+    }
 } // end of namespace

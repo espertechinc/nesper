@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         internal readonly Table table;
         internal readonly IReaderWriterLock tableLevelRWLock = new StandardReaderWriterLock(60000);
 
-        protected TableInstanceBase(Table table, AgentInstanceContext agentInstanceContext)
+        protected TableInstanceBase(
+            Table table,
+            AgentInstanceContext agentInstanceContext)
         {
             this.table = table;
             this.agentInstanceContext = agentInstanceContext;
@@ -59,8 +61,12 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         public abstract void Destroy();
         public abstract void HandleRowUpdated(ObjectArrayBackedEventBean updatedEvent);
         public abstract void DeleteEvent(EventBean matchingEvent);
+
         public abstract void AddExplicitIndex(
-            string indexName, string indexModuleName, QueryPlanIndexItem explicitIndexDesc, bool isRecoveringResilient);
+            string indexName,
+            string indexModuleName,
+            QueryPlanIndexItem explicitIndexDesc,
+            bool isRecoveringResilient);
 
         public abstract void RemoveExplicitIndex(string indexName);
         public abstract EventTable GetIndex(string indexName);

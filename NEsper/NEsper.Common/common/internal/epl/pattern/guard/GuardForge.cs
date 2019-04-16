@@ -27,12 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         /// <param name="services">services</param>
         /// <throws>GuardParameterException thrown to indicate a parameter problem</throws>
         void SetGuardParameters(
-            IList<ExprNode> guardParameters, MatchedEventConvertorForge convertor,
+            IList<ExprNode> guardParameters,
+            MatchedEventConvertorForge convertor,
             StatementCompileTimeServices services);
 
         void CollectSchedule(IList<ScheduleHandleCallbackProvider> schedules);
 
         CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

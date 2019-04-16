@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,37 +17,49 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
 {
-	public class SelectExprProcessorTypableMapEval : ExprEvaluator {
-	    private readonly SelectExprProcessorTypableMapForge forge;
+    public class SelectExprProcessorTypableMapEval : ExprEvaluator
+    {
+        private readonly SelectExprProcessorTypableMapForge forge;
 
-	    public SelectExprProcessorTypableMapEval(SelectExprProcessorTypableMapForge forge) {
-	        this.forge = forge;
-	    }
+        public SelectExprProcessorTypableMapEval(SelectExprProcessorTypableMapForge forge)
+        {
+            this.forge = forge;
+        }
 
-	    public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        throw new UnsupportedOperationException("Evaluate not supported");
-	    }
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException("Evaluate not supported");
+        }
 
-	    public static CodegenExpression Codegen(SelectExprProcessorTypableMapForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenExpression mapType = codegenClassScope.AddFieldUnshared(true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(forge.MapType, EPStatementInitServicesConstants.REF));
-	        CodegenExpression beanFactory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+        public static CodegenExpression Codegen(
+            SelectExprProcessorTypableMapForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenExpression mapType = codegenClassScope.AddFieldUnshared(
+                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(forge.MapType, EPStatementInitServicesConstants.REF));
+            CodegenExpression beanFactory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
 
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), typeof(SelectExprProcessorTypableMapEval), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), typeof(SelectExprProcessorTypableMapEval), codegenClassScope);
 
-	        methodNode.Block
-	                .DeclareVar(typeof(IDictionary<object, object>), "values", forge.innerForge.EvaluateCodegen(typeof(IDictionary<object, object>), methodNode, exprSymbol, codegenClassScope))
-	                .DeclareVarNoInit(typeof(IDictionary<object, object>), "map")
-	                .IfRefNull("values")
-	                .AssignRef("values", StaticMethod(typeof(Collections), "emptyMap"))
-	                .BlockEnd()
-	                .MethodReturn(ExprDotMethod(beanFactory, "adapterForTypedMap", @Ref("values"), mapType));
-	        return LocalMethod(methodNode);
-	    }
-
-	}
+            methodNode.Block
+                .DeclareVar(
+                    typeof(IDictionary<object, object>), "values",
+                    forge.innerForge.EvaluateCodegen(typeof(IDictionary<object, object>), methodNode, exprSymbol, codegenClassScope))
+                .DeclareVarNoInit(typeof(IDictionary<object, object>), "map")
+                .IfRefNull("values")
+                .AssignRef("values", StaticMethod(typeof(Collections), "emptyMap"))
+                .BlockEnd()
+                .MethodReturn(ExprDotMethod(beanFactory, "adapterForTypedMap", @Ref("values"), mapType));
+            return LocalMethod(methodNode);
+        }
+    }
 } // end of namespace

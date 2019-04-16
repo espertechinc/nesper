@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
             return "EvalNotNode children=" + ChildNodes.Count;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("not ");
             ChildNodes[0].ToEPL(writer, Precedence);
@@ -47,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
         }
 
         protected override void InlineCodegen(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block
                 .ExprDotMethod(
@@ -55,7 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, IList<ScheduleHandleCallbackProvider> schedules)
+            IList<FilterSpecCompiled> filters,
+            IList<ScheduleHandleCallbackProvider> schedules)
         {
         }
     }

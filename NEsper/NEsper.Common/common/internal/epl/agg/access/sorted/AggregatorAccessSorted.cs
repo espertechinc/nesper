@@ -14,9 +14,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
     public interface AggregatorAccessSorted : AggregatorAccess
     {
-        CodegenExpression GetLastValueCodegen(CodegenClassScope classScope, CodegenMethod parent);
+        CodegenExpression GetLastValueCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod parent);
 
-        CodegenExpression GetFirstValueCodegen(CodegenClassScope classScope, CodegenMethod parent);
+        CodegenExpression GetFirstValueCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod parent);
 
         CodegenExpression SizeCodegen();
 

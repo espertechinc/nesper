@@ -17,6 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     public interface SubselectForgeNR
     {
         CodegenExpression EvaluateMatchesCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

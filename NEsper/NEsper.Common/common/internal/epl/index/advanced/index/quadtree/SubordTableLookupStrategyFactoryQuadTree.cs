@@ -32,15 +32,16 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         public int StreamCountOuter { get; set; }
 
         public SubordTableLookupStrategy MakeStrategy(
-            EventTable[] eventTable, AgentInstanceContext agentInstanceContext, VirtualDWView vdw)
+            EventTable[] eventTable,
+            AgentInstanceContext agentInstanceContext,
+            VirtualDWView vdw)
         {
-            if (IsNwOnTrigger)
-            {
-                return new SubordTableLookupStrategyQuadTreeNW((EventTableQuadTree)eventTable[0], this);
+            if (IsNwOnTrigger) {
+                return new SubordTableLookupStrategyQuadTreeNW((EventTableQuadTree) eventTable[0], this);
             }
 
             return new SubordTableLookupStrategyQuadTreeSubq(
-                (EventTableQuadTree)eventTable[0], this, StreamCountOuter);
+                (EventTableQuadTree) eventTable[0], this, StreamCountOuter);
         }
 
         public LookupStrategyDesc LookupStrategyDesc =>

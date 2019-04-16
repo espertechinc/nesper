@@ -15,7 +15,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     {
         internal readonly ObjectArrayEventType type;
 
-        public EnumForgeBaseScalar(ExprForge innerExpression, int streamCountIncoming, ObjectArrayEventType type)
+        public EnumForgeBaseScalar(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ObjectArrayEventType type)
             : base(innerExpression, streamCountIncoming)
         {
             this.type = type;

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.access;
@@ -27,8 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
         }
 
         public EventBean GetSubstituteEvent(
-            EventBean originalEvent, bool isNewData, int constantIndexNumber, int relativeIndex,
-            ExprEvaluatorContext exprEvaluatorContext, int streamNum)
+            EventBean originalEvent,
+            bool isNewData,
+            int constantIndexNumber,
+            int relativeIndex,
+            ExprEvaluatorContext exprEvaluatorContext,
+            int streamNum)
         {
             if (isNewData) {
                 return randomAccess.GetNewData(constantIndexNumber);

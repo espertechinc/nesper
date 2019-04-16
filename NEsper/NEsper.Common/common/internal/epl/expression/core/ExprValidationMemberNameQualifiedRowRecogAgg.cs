@@ -7,34 +7,39 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public class ExprValidationMemberNameQualifiedRowRecogAgg : ExprValidationMemberName {
-	    private readonly int streamNum;
+    public class ExprValidationMemberNameQualifiedRowRecogAgg : ExprValidationMemberName
+    {
+        private readonly int streamNum;
 
-	    public ExprValidationMemberNameQualifiedRowRecogAgg(int streamNum) {
-	        this.streamNum = streamNum;
-	    }
+        public ExprValidationMemberNameQualifiedRowRecogAgg(int streamNum)
+        {
+            this.streamNum = streamNum;
+        }
 
-	    public CodegenFieldName AggregationResultFutureRef() {
-	        return new CodegenFieldNameMatchRecognizeAgg(streamNum);
-	    }
+        public CodegenFieldName AggregationResultFutureRef()
+        {
+            return new CodegenFieldNameMatchRecognizeAgg(streamNum);
+        }
 
-	    public CodegenFieldName PriorStrategy(int streamNum) {
-	        throw new IllegalStateException("Match-recognize measures-clauses not supported in subquery");
-	    }
+        public CodegenFieldName PriorStrategy(int streamNum)
+        {
+            throw new IllegalStateException("Match-recognize measures-clauses not supported in subquery");
+        }
 
-	    public CodegenFieldName PreviousStrategy(int streamNum) {
-	        throw new IllegalStateException("Match-recognize measures-clauses not supported with previous");
-	    }
+        public CodegenFieldName PreviousStrategy(int streamNum)
+        {
+            throw new IllegalStateException("Match-recognize measures-clauses not supported with previous");
+        }
 
-	    public CodegenFieldName PreviousMatchrecognizeStrategy() {
-	        throw new IllegalStateException("Match-recognize measures-clauses not supported in subquery");
-	    }
-	}
+        public CodegenFieldName PreviousMatchrecognizeStrategy()
+        {
+            throw new IllegalStateException("Match-recognize measures-clauses not supported in subquery");
+        }
+    }
 } // end of namespace

@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     {
         private AggregationService service;
 
-        public void AssignService(int serviceId, AggregationService aggregationService)
+        public void AssignService(
+            int serviceId,
+            AggregationService aggregationService)
         {
             service = aggregationService;
         }
@@ -32,18 +34,25 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         public int InstanceCount => service == null ? 0 : 1;
 
         public void ApplyEnter(
-            EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             service.ApplyEnter(eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
         public void ApplyLeave(
-            EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             service.ApplyLeave(eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
-        public void SetCurrentAccess(object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
+        public void SetCurrentAccess(
+            object groupKey,
+            int agentInstanceId,
+            AggregationGroupByRollupLevel rollupLevel)
         {
             service.SetCurrentAccess(groupKey, agentInstanceId, null);
         }
@@ -54,26 +63,38 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         }
 
         public object GetValue(
-            int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData,
+            int column,
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return service.GetValue(column, agentInstanceId, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ICollection<EventBean> GetCollectionOfEvents(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return service.GetCollectionOfEvents(column, eventsPerStream, isNewData, context);
         }
 
         public ICollection<object> GetCollectionScalar(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return service.GetCollectionScalar(column, eventsPerStream, isNewData, context);
         }
 
         public EventBean GetEventBean(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return service.GetEventBean(column, eventsPerStream, isNewData, context);
         }

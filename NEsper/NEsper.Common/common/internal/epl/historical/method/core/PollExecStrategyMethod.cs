@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
         private readonly MethodTargetStrategy methodTargetStrategy;
 
         public PollExecStrategyMethod(
-            MethodTargetStrategy methodTargetStrategy, MethodConversionStrategy methodConversionStrategy)
+            MethodTargetStrategy methodTargetStrategy,
+            MethodConversionStrategy methodConversionStrategy)
         {
             this.methodTargetStrategy = methodTargetStrategy;
             this.methodConversionStrategy = methodConversionStrategy;
@@ -31,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             // no action
         }
 
-        public IList<EventBean> Poll(object lookupValues, AgentInstanceContext agentInstanceContext)
+        public IList<EventBean> Poll(
+            object lookupValues,
+            AgentInstanceContext agentInstanceContext)
         {
             var result = methodTargetStrategy.Invoke(lookupValues, agentInstanceContext);
             if (result != null) {

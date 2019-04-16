@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this._expression = expression;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             if (_expression is CodegenExpressionRef) {
                 _expression.Render(builder, imports, isInnerClass);

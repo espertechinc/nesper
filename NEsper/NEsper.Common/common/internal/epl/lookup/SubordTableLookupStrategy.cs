@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         /// <param name="events">to look up</param>
         /// <param name="context">context</param>
         /// <returns>set of matching events, or null if none matching</returns>
-        ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context);
+        ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context);
 
         string ToQueryPlan();
     }
@@ -39,6 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         public LookupStrategyDesc StrategyDesc => ProcStrategyDesc.Invoke();
 
         public Func<EventBean[], ExprEvaluatorContext, ICollection<EventBean>> ProcLookup;
+
         public ICollection<EventBean> Lookup(
             EventBean[] events,
             ExprEvaluatorContext context) => ProcLookup.Invoke(events, context);

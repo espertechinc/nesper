@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         private const string NAME_UNBOUNDHELPER = "unboundHelper";
 
         protected internal static void StopMethodUnboundCodegen(
-            ResultSetProcessorRowPerGroupRollupForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorRowPerGroupRollupForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             StopMethodCodegenBound(method, instance);
@@ -37,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         }
 
         protected internal static void ApplyViewResultUnboundCodegen(
-            ResultSetProcessorRowPerGroupRollupForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorRowPerGroupRollupForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             var generateGroupKeysView = GenerateGroupKeysViewCodegen(forge, classScope, instance);
@@ -61,7 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         }
 
         protected internal static void ProcessViewResultUnboundCodegen(
-            ResultSetProcessorRowPerGroupRollupForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorRowPerGroupRollupForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             var factory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
@@ -112,7 +118,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         }
 
         protected internal static void GetIteratorViewUnboundCodegen(
-            ResultSetProcessorRowPerGroupRollupForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorRowPerGroupRollupForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             var generateOutputEventsView = GenerateOutputEventsViewCodegen(forge, classScope, instance);
@@ -122,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     LocalMethod(
                         generateOutputEventsView, ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"), ConstantTrue(),
                         ConstantTrue()))
-                .MethodReturn(StaticMethod(typeof(EnumerationHelper),"Singleton", Ref("output")));
+                .MethodReturn(StaticMethod(typeof(EnumerationHelper), "Singleton", Ref("output")));
         }
     }
 } // end of namespace

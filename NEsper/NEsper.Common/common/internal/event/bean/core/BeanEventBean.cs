@@ -24,14 +24,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     /// </summary>
     public class BeanEventBean : EventBeanSPI
     {
-        private object _underlying;
-
         /// <summary>
         ///     Constructor.
         /// </summary>
         /// <param name="theEvent">is the event object</param>
         /// <param name="eventType">is the schema information for the event object.</param>
-        public BeanEventBean(object theEvent, EventType eventType)
+        public BeanEventBean(
+            object theEvent,
+            EventType eventType)
         {
             EventType = eventType;
             Underlying = theEvent;
@@ -39,14 +39,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public object this[string property] => Get(property);
 
-        public object UnderlyingSpi {
-            get => _underlying;
-            set => _underlying = value;
-        }
+        public object UnderlyingSpi { get; set; }
 
         public object Underlying {
-            get => _underlying;
-            set => _underlying = value;
+            get => UnderlyingSpi;
+            set => UnderlyingSpi = value;
         }
 
         public EventType EventType { get; }

@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.client.render
         /// </summary>
         /// <param name="eventType">event type</param>
         /// <param name="jsonFormatted">boolean if JSON formatted</param>
-        public EventPropertyRendererContext(EventType eventType, bool jsonFormatted)
+        public EventPropertyRendererContext(
+            EventType eventType,
+            bool jsonFormatted)
         {
             EventType = eventType;
             IsJsonFormatted = jsonFormatted;

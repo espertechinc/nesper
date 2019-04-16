@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 {
     public class IntervalStartEndParameterPairEval
     {
-        public IntervalStartEndParameterPairEval(ExprOptionalConstantEval start, ExprOptionalConstantEval end)
+        public IntervalStartEndParameterPairEval(
+            ExprOptionalConstantEval start,
+            ExprOptionalConstantEval end)
         {
             Start = start;
             End = end;

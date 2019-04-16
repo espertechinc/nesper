@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -74,12 +73,12 @@ namespace com.espertech.esper.common.@internal.view.expression
             EventBean newestEvent)
         {
             properties[(int) ExpressionViewOAFieldEnum.CURRENT_COUNT] = windowSize;
-            properties[(int)ExpressionViewOAFieldEnum.OLDEST_TIMESTAMP] = oldestEventTimestamp;
-            properties[(int)ExpressionViewOAFieldEnum.NEWEST_TIMESTAMP] = newestEventTimestamp;
-            properties[(int)ExpressionViewOAFieldEnum.VIEW_REFERENCE] = viewReference;
-            properties[(int)ExpressionViewOAFieldEnum.EXPIRED_COUNT] = expiredCount;
-            properties[(int)ExpressionViewOAFieldEnum.OLDEST_EVENT] = oldestEvent;
-            properties[(int)ExpressionViewOAFieldEnum.NEWEST_EVENT] = newestEvent;
+            properties[(int) ExpressionViewOAFieldEnum.OLDEST_TIMESTAMP] = oldestEventTimestamp;
+            properties[(int) ExpressionViewOAFieldEnum.NEWEST_TIMESTAMP] = newestEventTimestamp;
+            properties[(int) ExpressionViewOAFieldEnum.VIEW_REFERENCE] = viewReference;
+            properties[(int) ExpressionViewOAFieldEnum.EXPIRED_COUNT] = expiredCount;
+            properties[(int) ExpressionViewOAFieldEnum.OLDEST_EVENT] = oldestEvent;
+            properties[(int) ExpressionViewOAFieldEnum.NEWEST_EVENT] = newestEvent;
         }
 
         public static object[] GetPrototypeOA()

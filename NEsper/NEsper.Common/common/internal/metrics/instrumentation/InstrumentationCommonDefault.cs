@@ -51,8 +51,12 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QNamedWindowCPSingle(
-            string runtimeURI, int numConsumers, EventBean[] newData, EventBean[] oldData,
-            EPStatementAgentInstanceHandle handle, long time)
+            string runtimeURI,
+            int numConsumers,
+            EventBean[] newData,
+            EventBean[] oldData,
+            EPStatementAgentInstanceHandle handle,
+            long time)
         {
         }
 
@@ -61,8 +65,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QNamedWindowCPMulti(
-            string runtimeURI, IDictionary<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer,
-            EPStatementAgentInstanceHandle handle, long time)
+            string runtimeURI,
+            IDictionary<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer,
+            EPStatementAgentInstanceHandle handle,
+            long time)
         {
         }
 
@@ -70,36 +76,43 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QRegEx(EventBean newEvent, RowRecogPartitionState partitionState)
+        public void QRegEx(
+            EventBean newEvent,
+            RowRecogPartitionState partitionState)
         {
         }
 
         public void ARegEx(
-            RowRecogPartitionState partitionState, IList<RowRecogNFAStateEntry> endStates,
+            RowRecogPartitionState partitionState,
+            IList<RowRecogNFAStateEntry> endStates,
             IList<RowRecogNFAStateEntry> terminationStates)
         {
         }
 
         public void QRegExState(
-            RowRecogNFAStateEntry currentState, IDictionary<string, Pair<int, bool>> variableStreams,
+            RowRecogNFAStateEntry currentState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable)
         {
         }
 
         public void ARegExState(
-            IList<RowRecogNFAStateEntry> next, IDictionary<string, Pair<int, bool>> variableStreams,
+            IList<RowRecogNFAStateEntry> next,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable)
         {
         }
 
         public void QRegExStateStart(
-            RowRecogNFAState startState, IDictionary<string, Pair<int, bool>> variableStreams,
+            RowRecogNFAState startState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable)
         {
         }
 
         public void ARegExStateStart(
-            IList<RowRecogNFAStateEntry> nextStates, IDictionary<string, Pair<int, bool>> variableStreams,
+            IList<RowRecogNFAStateEntry> nextStates,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable)
         {
         }
@@ -108,7 +121,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void ARegExPartition(bool exists, object partitionKey, RowRecogPartitionState state)
+        public void ARegExPartition(
+            bool exists,
+            object partitionKey,
+            RowRecogPartitionState state)
         {
         }
 
@@ -121,8 +137,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QRegIntervalState(
-            RowRecogNFAStateEntry endState, IDictionary<string, Pair<int, bool>> variableStreams,
-            int[] multimatchStreamNumToVariable, long runtimeTime)
+            RowRecogNFAStateEntry endState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
+            int[] multimatchStreamNumToVariable,
+            long runtimeTime)
         {
         }
 
@@ -139,7 +157,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QRegMeasure(
-            RowRecogNFAStateEntry endState, IDictionary<string, Pair<int, bool>> variableStreams,
+            RowRecogNFAStateEntry endState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable)
         {
         }
@@ -156,7 +175,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QRegFilter(string text, EventBean[] eventsPerStream)
+        public void QRegFilter(
+            string text,
+            EventBean[] eventsPerStream)
         {
         }
 
@@ -165,26 +186,38 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QFilterActivationStream(
-            string eventTypeName, int streamNumber, AgentInstanceContext agentInstanceContext, bool subselect,
+            string eventTypeName,
+            int streamNumber,
+            AgentInstanceContext agentInstanceContext,
+            bool subselect,
             int subselectNumber)
         {
         }
 
         public void AFilterActivationStream(
-            AgentInstanceContext agentInstanceContext, bool subselect, int subselectNumber)
+            AgentInstanceContext agentInstanceContext,
+            bool subselect,
+            int subselectNumber)
         {
         }
 
         public void QIndexSubordLookup(
-            SubordTableLookupStrategy subordTableLookupStrategy, EventTable optionalEventIndex, int[] keyStreamNums)
+            SubordTableLookupStrategy subordTableLookupStrategy,
+            EventTable optionalEventIndex,
+            int[] keyStreamNums)
         {
         }
 
-        public void AIndexSubordLookup(ICollection<EventBean> events, object keys)
+        public void AIndexSubordLookup(
+            ICollection<EventBean> events,
+            object keys)
         {
         }
 
-        public void QViewProcessIRStream(ViewFactory viewFactory, EventBean[] newData, EventBean[] oldData)
+        public void QViewProcessIRStream(
+            ViewFactory viewFactory,
+            EventBean[] newData,
+            EventBean[] oldData)
         {
         }
 
@@ -192,7 +225,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QViewIndicate(ViewFactory viewFactory, EventBean[] newData, EventBean[] oldData)
+        public void QViewIndicate(
+            ViewFactory viewFactory,
+            EventBean[] newData,
+            EventBean[] oldData)
         {
         }
 
@@ -208,7 +244,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternFilterMatch(EvalFilterFactoryNode filterNode, EventBean theEvent)
+        public void QPatternFilterMatch(
+            EvalFilterFactoryNode filterNode,
+            EventBean theEvent)
         {
         }
 
@@ -216,7 +254,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternNotEvaluateTrue(EvalNotFactoryNode evalNotNode, MatchedEventMapMinimal matchEvent)
+        public void QPatternNotEvaluateTrue(
+            EvalNotFactoryNode evalNotNode,
+            MatchedEventMapMinimal matchEvent)
         {
         }
 
@@ -256,7 +296,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternObserverEvaluateTrue(EvalObserverFactoryNode evalObserverNode, MatchedEventMap matchEvent)
+        public void QPatternObserverEvaluateTrue(
+            EvalObserverFactoryNode evalObserverNode,
+            MatchedEventMap matchEvent)
         {
         }
 
@@ -265,7 +307,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QPatternFollowedByEvaluateTrue(
-            EvalFollowedByFactoryNode evalFollowedByNode, MatchedEventMap matchEvent, int? index)
+            EvalFollowedByFactoryNode evalFollowedByNode,
+            MatchedEventMap matchEvent,
+            int? index)
         {
         }
 
@@ -273,7 +317,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternGuardStart(EvalGuardFactoryNode evalGuardNode, MatchedEventMap beginState)
+        public void QPatternGuardStart(
+            EvalGuardFactoryNode evalGuardNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -281,7 +327,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternAndStart(EvalAndFactoryNode evalAndNode, MatchedEventMap beginState)
+        public void QPatternAndStart(
+            EvalAndFactoryNode evalAndNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -289,7 +337,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternFilterStart(EvalFilterFactoryNode evalFilterNode, MatchedEventMap beginState)
+        public void QPatternFilterStart(
+            EvalFilterFactoryNode evalFilterNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -297,7 +347,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternNotStart(EvalNotFactoryNode evalNotNode, MatchedEventMap beginState)
+        public void QPatternNotStart(
+            EvalNotFactoryNode evalNotNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -305,7 +357,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternAndEvaluateTrue(EvalAndFactoryNode evalAndNode, MatchedEventMap passUp)
+        public void QPatternAndEvaluateTrue(
+            EvalAndFactoryNode evalAndNode,
+            MatchedEventMap passUp)
         {
         }
 
@@ -337,7 +391,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternFilterQuit(EvalFilterFactoryNode evalFilterNode, MatchedEventMap beginState)
+        public void QPatternFilterQuit(
+            EvalFilterFactoryNode evalFilterNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -369,7 +425,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternObserverStart(EvalObserverFactoryNode evalObserverNode, MatchedEventMap beginState)
+        public void QPatternObserverStart(
+            EvalObserverFactoryNode evalObserverNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -378,7 +436,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QPatternMatchUntilEvaluateTrue(
-            EvalMatchUntilFactoryNode evalMatchUntilNode, MatchedEventMap matchEvent, bool matchFromUntil)
+            EvalMatchUntilFactoryNode evalMatchUntilNode,
+            MatchedEventMap matchEvent,
+            bool matchFromUntil)
         {
         }
 
@@ -386,7 +446,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternMatchUntilStart(EvalMatchUntilFactoryNode evalMatchUntilNode, MatchedEventMap beginState)
+        public void QPatternMatchUntilStart(
+            EvalMatchUntilFactoryNode evalMatchUntilNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -402,7 +464,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternMatchUntilEvalFalse(EvalMatchUntilFactoryNode evalMatchUntilNode, bool matchFromUntil)
+        public void QPatternMatchUntilEvalFalse(
+            EvalMatchUntilFactoryNode evalMatchUntilNode,
+            bool matchFromUntil)
         {
         }
 
@@ -410,7 +474,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternGuardEvaluateTrue(EvalGuardFactoryNode evalGuardNode, MatchedEventMap matchEvent)
+        public void QPatternGuardEvaluateTrue(
+            EvalGuardFactoryNode evalGuardNode,
+            MatchedEventMap matchEvent)
         {
         }
 
@@ -427,17 +493,22 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QPatternEveryDistinctEvaluateTrue(
-            EvalEveryDistinctFactoryNode everyDistinctNode, MatchedEventMap matchEvent)
+            EvalEveryDistinctFactoryNode everyDistinctNode,
+            MatchedEventMap matchEvent)
         {
         }
 
         public void APatternEveryDistinctEvaluateTrue(
-            ISet<object> keysFromNodeNoExpire, IDictionary<object, long?> keysFromNodeExpire, object matchEventKey,
+            ISet<object> keysFromNodeNoExpire,
+            IDictionary<object, long> keysFromNodeExpire,
+            object matchEventKey,
             bool haveSeenThis)
         {
         }
 
-        public void QPatternEveryDistinctStart(EvalEveryDistinctFactoryNode everyNode, MatchedEventMap beginState)
+        public void QPatternEveryDistinctStart(
+            EvalEveryDistinctFactoryNode everyNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -469,7 +540,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternEveryEvaluateTrue(EvalEveryFactoryNode evalEveryNode, MatchedEventMap matchEvent)
+        public void QPatternEveryEvaluateTrue(
+            EvalEveryFactoryNode evalEveryNode,
+            MatchedEventMap matchEvent)
         {
         }
 
@@ -477,7 +550,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternEveryStart(EvalEveryFactoryNode evalEveryNode, MatchedEventMap beginState)
+        public void QPatternEveryStart(
+            EvalEveryFactoryNode evalEveryNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -501,7 +576,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternOrEvaluateTrue(EvalOrFactoryNode evalOrNode, MatchedEventMap matchEvent)
+        public void QPatternOrEvaluateTrue(
+            EvalOrFactoryNode evalOrNode,
+            MatchedEventMap matchEvent)
         {
         }
 
@@ -509,7 +586,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternOrStart(EvalOrFactoryNode evalOrNode, MatchedEventMap beginState)
+        public void QPatternOrStart(
+            EvalOrFactoryNode evalOrNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -533,7 +612,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QPatternFollowedByStart(EvalFollowedByFactoryNode evalFollowedByNode, MatchedEventMap beginState)
+        public void QPatternFollowedByStart(
+            EvalFollowedByFactoryNode evalFollowedByNode,
+            MatchedEventMap beginState)
         {
         }
 
@@ -597,7 +678,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QInfraOnAction(OnTriggerType triggerType, EventBean[] triggerEvents, EventBean[] matchingEvents)
+        public void QInfraOnAction(
+            OnTriggerType triggerType,
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
         {
         }
 
@@ -613,7 +697,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QInfraMergeWhenThens(bool matched, EventBean triggerEvent, int numWhenThens)
+        public void QInfraMergeWhenThens(
+            bool matched,
+            EventBean triggerEvent,
+            int numWhenThens)
         {
         }
 
@@ -621,11 +708,15 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QInfraMergeWhenThenItem(bool matched, int count)
+        public void QInfraMergeWhenThenItem(
+            bool matched,
+            int count)
         {
         }
 
-        public void AInfraMergeWhenThenItem(bool matched, bool actionsApplied)
+        public void AInfraMergeWhenThenItem(
+            bool matched,
+            bool actionsApplied)
         {
         }
 
@@ -637,7 +728,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QInfraMergeWhenThenActionItem(int count, string actionName)
+        public void QInfraMergeWhenThenActionItem(
+            int count,
+            string actionName)
         {
         }
 
@@ -653,15 +746,21 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QIndexJoinLookup(JoinExecTableLookupStrategy strategy, EventTable index)
+        public void QIndexJoinLookup(
+            JoinExecTableLookupStrategy strategy,
+            EventTable index)
         {
         }
 
-        public void AIndexJoinLookup(ISet<EventBean> result, object keys)
+        public void AIndexJoinLookup(
+            ICollection<EventBean> result,
+            object keys)
         {
         }
 
-        public void QJoinDispatch(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+        public void QJoinDispatch(
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream)
         {
         }
 
@@ -685,7 +784,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QJoinCompositionStepUpdIndex(int stream, EventBean[] added, EventBean[] removed)
+        public void QJoinCompositionStepUpdIndex(
+            int stream,
+            EventBean[] added,
+            EventBean[] removed)
         {
         }
 
@@ -693,7 +795,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QIndexAddRemove(EventTable eventTable, EventBean[] newData, EventBean[] oldData)
+        public void QIndexAddRemove(
+            EventTable eventTable,
+            EventBean[] newData,
+            EventBean[] oldData)
         {
         }
 
@@ -701,7 +806,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QIndexAdd(EventTable eventTable, EventBean[] addEvents)
+        public void QIndexAdd(
+            EventTable eventTable,
+            EventBean[] addEvents)
         {
         }
 
@@ -709,7 +816,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QIndexRemove(EventTable eventTable, EventBean[] removeEvents)
+        public void QIndexRemove(
+            EventTable eventTable,
+            EventBean[] removeEvents)
         {
         }
 
@@ -717,7 +826,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QJoinCompositionQueryStrategy(bool insert, int streamNum, EventBean[] events)
+        public void QJoinCompositionQueryStrategy(
+            bool insert,
+            int streamNum,
+            EventBean[] events)
         {
         }
 
@@ -737,11 +849,15 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void AJoinCompositionWinToWin(ISet<MultiKey<EventBean>> newResults, ISet<MultiKey<EventBean>> oldResults)
+        public void AJoinCompositionWinToWin(
+            ISet<MultiKey<EventBean>> newResults,
+            ISet<MultiKey<EventBean>> oldResults)
         {
         }
 
-        public void QOutputProcessWCondition(EventBean[] newData, EventBean[] oldData)
+        public void QOutputProcessWCondition(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
         }
 
@@ -749,7 +865,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QOutputRateConditionUpdate(int newDataLength, int oldDataLength)
+        public void QOutputRateConditionUpdate(
+            int newDataLength,
+            int oldDataLength)
         {
         }
 
@@ -766,7 +884,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QOutputProcessWConditionJoin(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents)
         {
         }
 
@@ -774,15 +893,23 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QWhereClauseFilter(string text, EventBean[] newData, EventBean[] oldData)
+        public void QWhereClauseFilter(
+            string text,
+            EventBean[] newData,
+            EventBean[] oldData)
         {
         }
 
-        public void AWhereClauseFilter(EventBean[] filteredNewData, EventBean[] filteredOldData)
+        public void AWhereClauseFilter(
+            EventBean[] filteredNewData,
+            EventBean[] filteredOldData)
         {
         }
 
-        public void QWhereClauseFilterEval(int num, EventBean @event, bool newData)
+        public void QWhereClauseFilterEval(
+            int num,
+            EventBean @event,
+            bool newData)
         {
         }
 
@@ -790,7 +917,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QWhereClauseIR(EventBean[] filteredNewData, EventBean[] filteredOldData)
+        public void QWhereClauseIR(
+            EventBean[] filteredNewData,
+            EventBean[] filteredOldData)
         {
         }
 
@@ -798,11 +927,16 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QSplitStream(bool all, EventBean theEvent, int numWhereClauses)
+        public void QSplitStream(
+            bool all,
+            EventBean theEvent,
+            int numWhereClauses)
         {
         }
 
-        public void ASplitStream(bool all, bool handled)
+        public void ASplitStream(
+            bool all,
+            bool handled)
         {
         }
 
@@ -855,7 +989,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QAggregationGroupedApplyEnterLeave(
-            bool enter, int numAggregators, int numAccessStates, object groupKey)
+            bool enter,
+            int numAggregators,
+            int numAccessStates,
+            object groupKey)
         {
         }
 
@@ -863,19 +1000,31 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QAggNoAccessEnterLeave(bool enter, int index, object currentValue, string aggExpression)
+        public void QAggNoAccessEnterLeave(
+            bool enter,
+            int index,
+            object currentValue,
+            string aggExpression)
         {
         }
 
-        public void AAggNoAccessEnterLeave(bool enter, int index, object newValue)
+        public void AAggNoAccessEnterLeave(
+            bool enter,
+            int index,
+            object newValue)
         {
         }
 
-        public void QAggAccessEnterLeave(bool enter, int index, string aggExpr)
+        public void QAggAccessEnterLeave(
+            bool enter,
+            int index,
+            string aggExpr)
         {
         }
 
-        public void AAggAccessEnterLeave(bool enter, int index)
+        public void AAggAccessEnterLeave(
+            bool enter,
+            int index)
         {
         }
 
@@ -883,15 +1032,21 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void AUpdateIStream(EventBean finalEvent, bool haveCloned)
+        public void AUpdateIStream(
+            EventBean finalEvent,
+            bool haveCloned)
         {
         }
 
-        public void QUpdateIStreamApply(int index, InternalEventRouterEntry entry)
+        public void QUpdateIStreamApply(
+            int index,
+            InternalEventRouterEntry entry)
         {
         }
 
-        public void AUpdateIStreamApply(EventBean updated, bool applied)
+        public void AUpdateIStreamApply(
+            EventBean updated,
+            bool applied)
         {
         }
 
@@ -931,7 +1086,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void AJoinExecFilter(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        public void AJoinExecFilter(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents)
         {
         }
 
@@ -940,7 +1097,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void AJoinCompositionHistorical(
-            ISet<MultiKey<EventBean>> newResults, ISet<MultiKey<EventBean>> oldResults)
+            ISet<MultiKey<EventBean>> newResults,
+            ISet<MultiKey<EventBean>> oldResults)
         {
         }
 

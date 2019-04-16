@@ -19,16 +19,21 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly FilterSpecParamFilterForEvalDoubleForge yEval;
 
         public FilterSpecParamAdvancedIndexQuadTreePointRegionForge(
-            ExprFilterSpecLookupableForge lookupable, FilterOperator filterOperator,
-            FilterSpecParamFilterForEvalDoubleForge xEval, FilterSpecParamFilterForEvalDoubleForge yEval) : base(
-            lookupable, filterOperator)
+            ExprFilterSpecLookupableForge lookupable,
+            FilterOperator filterOperator,
+            FilterSpecParamFilterForEvalDoubleForge xEval,
+            FilterSpecParamFilterForEvalDoubleForge yEval)
+            : base(
+                lookupable, filterOperator)
         {
             this.xEval = xEval;
             this.yEval = yEval;
         }
 
         public override CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbolWEventType symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols)
         {
             var method = parent.MakeChild(
                 typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion), GetType(), classScope);

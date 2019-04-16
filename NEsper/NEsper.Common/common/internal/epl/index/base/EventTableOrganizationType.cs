@@ -8,14 +8,14 @@
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
 {
-	public enum EventTableOrganizationType
+    public enum EventTableOrganizationType
     {
-	    UNORGANIZED,
-	    HASH,
-	    BTREE,
-	    COMPOSITE,
-	    MULTIINDEX,
+        UNORGANIZED,
+        HASH,
+        BTREE,
+        COMPOSITE,
+        MULTIINDEX,
         APPLICATION,
-	    VDW
-	}
+        VDW
+    }
 } // end of namespace

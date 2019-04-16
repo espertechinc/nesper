@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// </summary>
         /// <param name="min">is the low endpoint</param>
         /// <param name="max">is the high endpoint</param>
-        public StringRange(string min, string max)
+        public StringRange(
+            string min,
+            string max)
         {
             Min = min;
             Max = max;

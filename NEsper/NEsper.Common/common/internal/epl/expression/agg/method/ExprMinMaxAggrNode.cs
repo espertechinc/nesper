@@ -21,7 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
     {
         private readonly bool isFFunc;
 
-        public ExprMinMaxAggrNode(bool distinct, MinMaxTypeEnum minMaxTypeEnum, bool isFFunc, bool isEver)
+        public ExprMinMaxAggrNode(
+            bool distinct,
+            MinMaxTypeEnum minMaxTypeEnum,
+            bool isFFunc,
+            bool isEver)
             : base(distinct)
         {
             MinMaxTypeEnum = minMaxTypeEnum;
@@ -45,34 +49,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            if (positionalParams.Length == 0 || positionalParams.Length > 2)
-            {
+            if (positionalParams.Length == 0 || positionalParams.Length > 2) {
                 throw new ExprValidationException(MinMaxTypeEnum + " node must have either 1 or 2 parameters");
             }
 
             var child = positionalParams[0];
             bool hasDataWindows;
-            if (IsEver)
-            {
+            if (IsEver) {
                 hasDataWindows = false;
             }
-            else
-            {
-                if (validationContext.StatementType == StatementType.CREATE_TABLE)
-                {
+            else {
+                if (validationContext.StatementType == StatementType.CREATE_TABLE) {
                     hasDataWindows = true;
                 }
-                else
-                {
+                else {
                     hasDataWindows = ExprNodeUtilityAggregation.HasRemoveStreamForAggregations(
                         child, validationContext.StreamTypeService, validationContext.IsResettingAggregations);
                 }
             }
 
-            if (isFFunc)
-            {
-                if (positionalParams.Length < 2)
-                {
+            if (isFFunc) {
+                if (positionalParams.Length < 2) {
                     throw new ExprValidationException(
                         MinMaxTypeEnum +
                         "-filtered aggregation function must have a filter expression as a second parameter");
@@ -82,8 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             HasFilter = positionalParams.Length == 2;
-            if (HasFilter)
-            {
+            if (HasFilter) {
                 optionalFilter = positionalParams[1];
             }
 
@@ -92,12 +88,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
-            if (!(node is ExprMinMaxAggrNode))
-            {
+            if (!(node is ExprMinMaxAggrNode)) {
                 return false;
             }
 
-            var other = (ExprMinMaxAggrNode)node;
+            var other = (ExprMinMaxAggrNode) node;
             return other.MinMaxTypeEnum == MinMaxTypeEnum && other.IsEver == IsEver;
         }
     }

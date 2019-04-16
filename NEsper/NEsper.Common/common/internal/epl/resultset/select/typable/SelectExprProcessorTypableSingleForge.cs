@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,92 +18,113 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
 {
-	public class SelectExprProcessorTypableSingleForge : SelectExprProcessorTypableForge, ExprNodeRenderable {
-	    internal readonly ExprTypableReturnForge typable;
-	    internal readonly bool hasWideners;
-	    internal readonly TypeWidenerSPI[] wideners;
-	    internal readonly EventBeanManufacturerForge factory;
-	    internal readonly EventType targetType;
-	    internal readonly bool singleRowOnly;
+    public class SelectExprProcessorTypableSingleForge : SelectExprProcessorTypableForge,
+        ExprNodeRenderable
+    {
+        internal readonly ExprTypableReturnForge typable;
+        internal readonly bool hasWideners;
+        internal readonly TypeWidenerSPI[] wideners;
+        internal readonly EventBeanManufacturerForge factory;
+        internal readonly EventType targetType;
+        internal readonly bool singleRowOnly;
 
-	    public SelectExprProcessorTypableSingleForge(ExprTypableReturnForge typable, bool hasWideners, TypeWidenerSPI[] wideners, EventBeanManufacturerForge factory, EventType targetType, bool singleRowOnly) {
-	        this.typable = typable;
-	        this.hasWideners = hasWideners;
-	        this.wideners = wideners;
-	        this.factory = factory;
-	        this.targetType = targetType;
-	        this.singleRowOnly = singleRowOnly;
-	    }
+        public SelectExprProcessorTypableSingleForge(
+            ExprTypableReturnForge typable,
+            bool hasWideners,
+            TypeWidenerSPI[] wideners,
+            EventBeanManufacturerForge factory,
+            EventType targetType,
+            bool singleRowOnly)
+        {
+            this.typable = typable;
+            this.hasWideners = hasWideners;
+            this.wideners = wideners;
+            this.factory = factory;
+            this.targetType = targetType;
+            this.singleRowOnly = singleRowOnly;
+        }
 
-	    public ExprEvaluator ExprEvaluator {
-	        get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
-	    }
+        public ExprEvaluator ExprEvaluator {
+            get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
+        }
 
-	    public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenExpressionField manufacturer = codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), factory.Make(codegenMethodScope, codegenClassScope));
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenExpressionField manufacturer = codegenClassScope.AddFieldUnshared(
+                true, typeof(EventBeanManufacturer), factory.Make(codegenMethodScope, codegenClassScope));
 
-	        if (singleRowOnly) {
-	            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), typeof(SelectExprProcessorTypableSingleForge), codegenClassScope);
+            if (singleRowOnly) {
+                CodegenMethod singleMethodNode = codegenMethodScope.MakeChild(
+                    typeof(EventBean), typeof(SelectExprProcessorTypableSingleForge), codegenClassScope);
 
-	            CodegenBlock block = methodNode.Block
-	                    .DeclareVar(typeof(object[]), "row", typable.EvaluateTypableSingleCodegen(methodNode, exprSymbol, codegenClassScope))
-	                    .IfRefNullReturnNull("row");
-	            if (hasWideners) {
-	                block.Expression(SelectExprProcessorHelper.ApplyWidenersCodegen(@Ref("row"), wideners, methodNode, codegenClassScope));
-	            }
-	            block.MethodReturn(ExprDotMethod(manufacturer, "make", @Ref("row")));
-	            return LocalMethod(methodNode);
-	        }
+                CodegenBlock singleMethodBlock = singleMethodNode.Block
+                    .DeclareVar(typeof(object[]), "row", typable.EvaluateTypableSingleCodegen(singleMethodNode, exprSymbol, codegenClassScope))
+                    .IfRefNullReturnNull("row");
+                if (hasWideners) {
+                    singleMethodBlock.Expression(SelectExprProcessorHelper.ApplyWidenersCodegen(@Ref("row"), wideners, singleMethodNode, codegenClassScope));
+                }
 
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean[]), typeof(SelectExprProcessorTypableSingleForge), codegenClassScope);
+                singleMethodBlock.MethodReturn(ExprDotMethod(manufacturer, "make", @Ref("row")));
+                return LocalMethod(singleMethodNode);
+            }
 
-	        CodegenBlock block = methodNode.Block
-	                .DeclareVar(typeof(object[]), "row", typable.EvaluateTypableSingleCodegen(methodNode, exprSymbol, codegenClassScope))
-	                .IfRefNullReturnNull("row");
-	        if (hasWideners) {
-	            block.Expression(SelectExprProcessorHelper.ApplyWidenersCodegen(@Ref("row"), wideners, methodNode, codegenClassScope));
-	        }
-	        block.DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(1)))
-	                .AssignArrayElement("events", Constant(0), ExprDotMethod(manufacturer, "make", @Ref("row")))
-	                .MethodReturn(@Ref("events"));
-	        return LocalMethod(methodNode);
-	    }
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean[]), typeof(SelectExprProcessorTypableSingleForge), codegenClassScope);
 
-	    public Type UnderlyingEvaluationType {
-	        get {
-	            if (singleRowOnly) {
-	                return targetType.UnderlyingType;
-	            }
+            CodegenBlock block = methodNode.Block
+                .DeclareVar(typeof(object[]), "row", typable.EvaluateTypableSingleCodegen(methodNode, exprSymbol, codegenClassScope))
+                .IfRefNullReturnNull("row");
+            if (hasWideners) {
+                block.Expression(SelectExprProcessorHelper.ApplyWidenersCodegen(@Ref("row"), wideners, methodNode, codegenClassScope));
+            }
 
-	            return TypeHelper.GetArrayType(targetType.UnderlyingType);
-	        }
-	    }
+            block.DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(1)))
+                .AssignArrayElement("events", Constant(0), ExprDotMethod(manufacturer, "make", @Ref("row")))
+                .MethodReturn(@Ref("events"));
+            return LocalMethod(methodNode);
+        }
 
-	    public Type EvaluationType {
-	        get {
-	            if (singleRowOnly) {
-	                return typeof(EventBean);
-	            }
+        public Type UnderlyingEvaluationType {
+            get {
+                if (singleRowOnly) {
+                    return targetType.UnderlyingType;
+                }
 
-	            return typeof(EventBean[]);
-	        }
-	    }
+                return TypeHelper.GetArrayType(targetType.UnderlyingType);
+            }
+        }
 
-	    public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence) {
-	        typable.ForgeRenderable.ToEPL(writer, parentPrecedence);
-	    }
+        public Type EvaluationType {
+            get {
+                if (singleRowOnly) {
+                    return typeof(EventBean);
+                }
 
-	    public ExprNodeRenderable ForgeRenderable {
-	        get => this;
-	    }
+                return typeof(EventBean[]);
+            }
+        }
 
-	    public ExprForgeConstantType ForgeConstantType {
-	        get => ExprForgeConstantType.NONCONST;
-	    }
-	}
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
+        {
+            typable.ForgeRenderable.ToEPL(writer, parentPrecedence);
+        }
+
+        public ExprNodeRenderable ForgeRenderable {
+            get => this;
+        }
+
+        public ExprForgeConstantType ForgeConstantType {
+            get => ExprForgeConstantType.NONCONST;
+        }
+    }
 } // end of namespace

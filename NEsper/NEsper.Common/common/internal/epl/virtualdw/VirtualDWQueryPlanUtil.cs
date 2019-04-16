@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             new EventTableOrganization(null, false, false, 0, null, EventTableOrganizationType.VDW);
 
         public static Pair<IndexMultiKey, VirtualDWEventTable> GetSubordinateQueryDesc(
-            bool unique, 
+            bool unique,
             IndexedPropDesc[] hashedProps,
             IndexedPropDesc[] btreeProps)
         {
@@ -76,8 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         }
 
         public static Pair<IndexMultiKey, EventTable> GetFireAndForgetDesc(
-            EventType eventType, 
-            ISet<string> keysAvailable, 
+            EventType eventType,
+            ISet<string> keysAvailable,
             ISet<string> rangesAvailable)
         {
             IList<VirtualDataWindowLookupFieldDesc> hashFields = new List<VirtualDataWindowLookupFieldDesc>();

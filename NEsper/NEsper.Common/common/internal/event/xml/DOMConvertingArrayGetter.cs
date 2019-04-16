@@ -7,114 +7,151 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
 using System.Xml;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.xml
 {
-	/// <summary>
-	/// Getter for converting a Node child nodes into an array.
-	/// </summary>
-	public class DOMConvertingArrayGetter : EventPropertyGetterSPI {
-	    private readonly DOMPropertyGetter getter;
-	    private readonly Type componentType;
-	    private readonly SimpleTypeParserSPI parser;
+    /// <summary>
+    ///     Getter for converting a Node child nodes into an array.
+    /// </summary>
+    public class DOMConvertingArrayGetter : EventPropertyGetterSPI
+    {
+        private readonly Type componentType;
+        private readonly DOMPropertyGetter getter;
+        private readonly SimpleTypeParserSPI parser;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="domPropertyGetter">getter</param>
-	    /// <param name="returnType">component type</param>
-	    public DOMConvertingArrayGetter(DOMPropertyGetter domPropertyGetter, Type returnType) {
-	        this.getter = domPropertyGetter;
-	        this.componentType = returnType;
-	        this.parser = SimpleTypeParserFactory.GetParser(returnType);
-	    }
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="domPropertyGetter">getter</param>
+        /// <param name="returnType">component type</param>
+        public DOMConvertingArrayGetter(
+            DOMPropertyGetter domPropertyGetter,
+            Type returnType)
+        {
+            getter = domPropertyGetter;
+            componentType = returnType;
+            parser = SimpleTypeParserFactory.GetParser(returnType);
+        }
 
-	    public object Get(EventBean obj) {
-	        // The underlying is expected to be a map
-	        if (!(obj.Underlying is XmlNode)) {
-	            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
-	                    "the underlying data object is not of type Node");
-	        }
-	        XmlNode node = (XmlNode) obj.Underlying;
-	        XmlNode[] result = getter.GetValueAsNodeArray(node);
-	        if (result == null) {
-	            return null;
-	        }
-	        return GetDOMArrayFromNodes(result, componentType, parser);
-	    }
+        public object Get(EventBean obj)
+        {
+            // The underlying is expected to be a map
+            if (!(obj.Underlying is XmlNode)) {
+                throw new PropertyAccessException(
+                    "Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type Node");
+            }
 
-	    private CodegenMethod GetCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        CodegenExpressionField mComponentType = codegenClassScope.AddFieldUnshared(true, typeof(Type), Constant(componentType));
-	        CodegenExpressionField mParser = codegenClassScope.AddOrGetFieldSharable(new SimpleTypeParserCodegenFieldSharable(parser, codegenClassScope));
-	        return codegenMethodScope.MakeChild(typeof(object), this.GetType(), codegenClassScope).AddParam(typeof(XmlNode), "node").Block
-	                .DeclareVar(typeof(XmlNode[]), "result", getter.GetValueAsNodeArrayCodegen(@Ref("node"), codegenMethodScope, codegenClassScope))
-	                .IfRefNullReturnNull("result")
-	                .MethodReturn(StaticMethod(this.GetType(), "getDOMArrayFromNodes", @Ref("result"), mComponentType, mParser));
-	    }
+            var node = (XmlNode) obj.Underlying;
+            var result = getter.GetValueAsNodeArray(node);
+            if (result == null) {
+                return null;
+            }
 
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="result">nodes</param>
-	    /// <param name="componentType">type</param>
-	    /// <param name="parser">parser</param>
-	    /// <returns>result</returns>
-	    public static object GetDOMArrayFromNodes(XmlNode[] result, Type componentType, SimpleTypeParser parser) {
-	        var array = Array.CreateInstance(componentType, result.Length);
-	        for (int i = 0; i < result.Length; i++) {
-	            string text = result[i].TextContent;
-	            if ((text == null) || (text.Length == 0)) {
-	                continue;
-	            }
+            return GetDOMArrayFromNodes(result, componentType, parser);
+        }
 
-	            object parseResult = parser.Parse(text);
-	            array.SetValue(parseResult, i);
-	        }
+        public bool IsExistsProperty(EventBean eventBean)
+        {
+            return true;
+        }
 
-	        return array;
-	    }
+        public object GetFragment(EventBean eventBean)
+        {
+            return null;
+        }
 
-	    public bool IsExistsProperty(EventBean eventBean) {
-	        return true;
-	    }
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingGetCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+        }
 
-	    public object GetFragment(EventBean eventBean) {
-	        return null;
-	    }
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantTrue();
+        }
 
-	    public CodegenExpression EventBeanGetCodegen(CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return UnderlyingGetCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
-	    }
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EventBeanExistsCodegen(CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ConstantTrue();
-	    }
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return LocalMethod(GetCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
+        }
 
-	    public CodegenExpression EventBeanFragmentCodegen(CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantTrue();
+        }
 
-	    public CodegenExpression UnderlyingGetCodegen(CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return LocalMethod(GetCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
-	    }
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression UnderlyingExistsCodegen(CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ConstantTrue();
-	    }
+        private CodegenMethod GetCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var mComponentType = codegenClassScope.AddFieldUnshared(true, typeof(Type), Constant(componentType));
+            var mParser = codegenClassScope.AddOrGetFieldSharable(new SimpleTypeParserCodegenFieldSharable(parser, codegenClassScope));
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(XmlNode), "node").Block
+                .DeclareVar(typeof(XmlNode[]), "result", getter.GetValueAsNodeArrayCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
+                .IfRefNullReturnNull("result")
+                .MethodReturn(StaticMethod(GetType(), "getDOMArrayFromNodes", Ref("result"), mComponentType, mParser));
+        }
 
-	    public CodegenExpression UnderlyingFragmentCodegen(CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
-	}
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="result">nodes</param>
+        /// <param name="componentType">type</param>
+        /// <param name="parser">parser</param>
+        /// <returns>result</returns>
+        public static object GetDOMArrayFromNodes(
+            XmlNode[] result,
+            Type componentType,
+            SimpleTypeParser parser)
+        {
+            var array = Array.CreateInstance(componentType, result.Length);
+            for (var i = 0; i < result.Length; i++) {
+                var text = result[i].InnerText;
+                if (text == null || text.Length == 0) {
+                    continue;
+                }
+
+                var parseResult = parser.Parse(text);
+                array.SetValue(parseResult, i);
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

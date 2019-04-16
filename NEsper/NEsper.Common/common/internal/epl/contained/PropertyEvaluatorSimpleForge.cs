@@ -33,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
         /// <param name="filter">optional where-clause expression</param>
         /// <param name="expressionText">the property name</param>
         public PropertyEvaluatorSimpleForge(
-            ContainedEventEvalForge containedEventEval, FragmentEventType fragmentEventType, ExprForge filter,
+            ContainedEventEvalForge containedEventEval,
+            FragmentEventType fragmentEventType,
+            ExprForge filter,
             string expressionText)
         {
             this.fragmentEventType = fragmentEventType;
@@ -47,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
         public string ExpressionText { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PropertyEvaluatorSimple), GetType(), classScope);
             method.Block

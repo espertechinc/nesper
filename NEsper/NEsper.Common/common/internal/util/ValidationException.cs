@@ -15,11 +15,15 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class ValidationException : EPRuntimeException
     {
-        public ValidationException(string message) : base(message)
+        public ValidationException(string message)
+            : base(message)
         {
         }
 
-        public ValidationException(string message, Exception cause) : base(message, cause)
+        public ValidationException(
+            string message,
+            Exception cause)
+            : base(message, cause)
         {
         }
     }

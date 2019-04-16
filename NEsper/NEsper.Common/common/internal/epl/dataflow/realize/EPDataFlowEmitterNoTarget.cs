@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
         internal readonly int operatorNum;
 
-        public EPDataFlowEmitterNoTarget(int operatorNum, DataFlowSignalManager dataFlowSignalManager)
+        public EPDataFlowEmitterNoTarget(
+            int operatorNum,
+            DataFlowSignalManager dataFlowSignalManager)
         {
             this.operatorNum = operatorNum;
             this.dataFlowSignalManager = dataFlowSignalManager;
@@ -33,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             dataFlowSignalManager.ProcessSignal(operatorNum, signal);
         }
 
-        public void SubmitPort(int portNumber, object @object)
+        public void SubmitPort(
+            int portNumber,
+            object @object)
         {
         }
     }

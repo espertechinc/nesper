@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 {
     public class TableColumnMethodPairEval
     {
-        public TableColumnMethodPairEval(ExprEvaluator evaluator, int column)
+        public TableColumnMethodPairEval(
+            ExprEvaluator evaluator,
+            int column)
         {
             Evaluator = evaluator;
             Column = column;

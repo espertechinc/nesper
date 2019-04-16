@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -22,7 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
     /// </summary>
     public class RowRecogNFAStateEndForge : RowRecogNFAStateForgeBase
     {
-        public RowRecogNFAStateEndForge() : base("endstate", null, -1, false, null, false)
+        public RowRecogNFAStateEndForge()
+            : base("endstate", null, -1, false, null, false)
         {
         }
 
@@ -33,7 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
         internal override Type EvalClass => typeof(RowRecogNFAStateEndEval);
 
         internal override void AssignInline(
-            CodegenExpression eval, CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenExpression eval,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             throw new IllegalStateException("Cannot build end state, end node is implied by node-num=-1");
         }

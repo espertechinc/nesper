@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -25,7 +24,6 @@ using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.ExprSubselectEvalMatchSymbol;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.ExprSubselectNode.SubselectEvaluationType;
@@ -120,35 +118,46 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         public abstract Type ComponentTypeCollection { get; }
 
         public abstract EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices);
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices);
 
         public abstract EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices);
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices);
 
         public ExprNodeRenderable ForgeRenderable => this;
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(GETEVENTCOLL, this, typeof(ICollection<object>), parent, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
                 GETSCALARCOLL, this, typeof(ICollection<object>), parent, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(GETEVENT, this, typeof(EventBean), parent, exprSymbol, codegenClassScope);
         }
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
@@ -191,7 +200,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public CodegenExpression EvaluateTypableMultiCodegen(
             CodegenMethodScope parent,
-            ExprForgeCodegenSymbol exprSymbol, 
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
@@ -205,22 +214,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         public abstract IDictionary<string, object> TypableGetRowProperties();
 
         protected abstract CodegenExpression EvalMatchesPlainCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
 
         protected abstract CodegenExpression EvalMatchesGetCollEventsCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
 
         protected abstract CodegenExpression EvalMatchesGetCollScalarCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
 
         protected abstract CodegenExpression EvalMatchesGetEventBeanCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
 
         protected abstract CodegenExpression EvalMatchesTypableSingleCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
 
         protected abstract CodegenExpression EvalMatchesTypableMultiCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -233,7 +254,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         /// </summary>
         /// <param name="statementSpecCompiled">compiled validated filters</param>
         /// <param name="subselectNumber">subselect assigned number</param>
-        public void SetStatementSpecCompiled(StatementSpecCompiled statementSpecCompiled, int subselectNumber)
+        public void SetStatementSpecCompiled(
+            StatementSpecCompiled statementSpecCompiled,
+            int subselectNumber)
         {
             StatementSpecCompiled = statementSpecCompiled;
             SubselectNumber = subselectNumber;
@@ -241,17 +264,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public object Evaluate(
             EventBean[] eventsPerStream,
-            bool isNewData, 
+            bool isNewData,
             ICollection<EventBean> matchingEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (SelectAsNames != null && SelectAsNames[0] != null)
-            {
+            if (SelectAsNames != null && SelectAsNames[0] != null) {
                 writer.Write(SelectAsNames[0]);
                 return;
             }
@@ -260,15 +282,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             writer.Write(SubselectNumber + 1); // Error-reporting starts at 1, internally we start at zero
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             return false; // 2 subselects are never equivalent
         }
 
         public static ExprSubselectNode[] ToArray(IList<ExprSubselectNode> subselectNodes)
         {
-            if (subselectNodes.IsEmpty())
-            {
+            if (subselectNodes.IsEmpty()) {
                 return EMPTY_SUBSELECT_ARRAY;
             }
 
@@ -301,32 +324,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .MakeChildWithScope(resultType, typeof(ExprSubselectNode), evalMatchSymbol, classScope)
                 .AddParam(typeof(ICollection<object>), NAME_MATCHINGEVENTS).AddParam(ExprForgeCodegenNames.PARAMS);
             CodegenExpression process;
-            if (evaluationType == PLAIN)
-            {
+            if (evaluationType == PLAIN) {
                 process = subselectNode.EvalMatchesPlainCodegen(processMethod, evalMatchSymbol, classScope);
             }
-            else if (evaluationType == GETEVENTCOLL)
-            {
+            else if (evaluationType == GETEVENTCOLL) {
                 process = subselectNode.EvalMatchesGetCollEventsCodegen(processMethod, evalMatchSymbol, classScope);
             }
-            else if (evaluationType == GETSCALARCOLL)
-            {
+            else if (evaluationType == GETSCALARCOLL) {
                 process = subselectNode.EvalMatchesGetCollScalarCodegen(processMethod, evalMatchSymbol, classScope);
             }
-            else if (evaluationType == GETEVENT)
-            {
+            else if (evaluationType == GETEVENT) {
                 process = subselectNode.EvalMatchesGetEventBeanCodegen(processMethod, evalMatchSymbol, classScope);
             }
-            else if (evaluationType == TYPABLESINGLE)
-            {
+            else if (evaluationType == TYPABLESINGLE) {
                 process = subselectNode.EvalMatchesTypableSingleCodegen(processMethod, evalMatchSymbol, classScope);
             }
-            else if (evaluationType == TYPABLEMULTI)
-            {
+            else if (evaluationType == TYPABLEMULTI) {
                 process = subselectNode.EvalMatchesTypableMultiCodegen(processMethod, evalMatchSymbol, classScope);
             }
-            else
-            {
+            else {
                 throw new IllegalStateException("Unrecognized evaluation type " + evaluationType);
             }
 

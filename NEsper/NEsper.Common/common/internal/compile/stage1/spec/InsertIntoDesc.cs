@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// </summary>
         /// <param name="streamSelector">selects insert, remove or insert+remove stream</param>
         /// <param name="eventTypeName">is the event type name</param>
-        public InsertIntoDesc(SelectClauseStreamSelectorEnum streamSelector, String eventTypeName)
+        public InsertIntoDesc(
+            SelectClauseStreamSelectorEnum streamSelector,
+            String eventTypeName)
         {
             StreamSelector = streamSelector;
             EventTypeName = eventTypeName;
@@ -61,13 +63,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             ColumnNames.Add(columnName);
         }
 
-        public static InsertIntoDesc FromColumns(String streamName, IList<String> columns)
+        public static InsertIntoDesc FromColumns(
+            String streamName,
+            IList<String> columns)
         {
             var insertIntoDesc = new InsertIntoDesc(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamName);
-            foreach (var col in columns)
-            {
+            foreach (var col in columns) {
                 insertIntoDesc.Add(col);
             }
+
             return insertIntoDesc;
         }
     }

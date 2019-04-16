@@ -18,22 +18,34 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         CodegenExpression SizeCodegen();
 
         CodegenExpression IteratorCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenNamedMethods namedMethods);
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenNamedMethods namedMethods);
 
         CodegenExpression CollectionReadOnlyCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods);
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods);
 
         CodegenExpression GetLastValueCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenNamedMethods namedMethods);
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenNamedMethods namedMethods);
 
-        CodegenExpression GetFirstValueCodegen(CodegenClassScope classScope, CodegenMethod method);
+        CodegenExpression GetFirstValueCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method);
 
         CodegenExpression GetFirstNthValueCodegen(
-            CodegenExpressionRef index, CodegenMethod method, CodegenClassScope classScope,
+            CodegenExpressionRef index,
+            CodegenMethod method,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods);
 
         CodegenExpression GetLastNthValueCodegen(
-            CodegenExpressionRef index, CodegenMethod method, CodegenClassScope classScope,
+            CodegenExpressionRef index,
+            CodegenMethod method,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods);
     }
 } // end of namespace

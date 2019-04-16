@@ -100,7 +100,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="name">is the object's name</param>
         /// <param name="clazz">is the class the object resolves to</param>
         /// <param name="type">is the object type</param>
-        public void AddObject(string @namespace, string name, Type clazz, PluggableObjectType type)
+        public void AddObject(
+            string @namespace,
+            string name,
+            Type clazz,
+            PluggableObjectType type)
         {
             AddObject(@namespace, name, clazz, type, null);
         }
@@ -114,7 +118,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="type">is the object type</param>
         /// <param name="configuration">config</param>
         public void AddObject(
-            string @namespace, string name, Type clazz, PluggableObjectType type, object configuration)
+            string @namespace,
+            string name,
+            Type clazz,
+            PluggableObjectType type,
+            object configuration)
         {
             SerializableExtensions.EnsureSerializable(configuration);
 
@@ -159,8 +167,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         }
 
         private void HandleAddPluggableObject(
-            string factoryClassName, string @namespace, string name, PluggableObjectType type,
-            object optionalCustomConfig, ImportServiceCompileTime importService)
+            string factoryClassName,
+            string @namespace,
+            string name,
+            PluggableObjectType type,
+            object optionalCustomConfig,
+            ImportServiceCompileTime importService)
         {
             SerializableExtensions.EnsureSerializable(optionalCustomConfig);
 

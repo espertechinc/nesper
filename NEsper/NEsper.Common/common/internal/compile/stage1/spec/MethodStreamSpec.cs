@@ -18,9 +18,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// </summary>
     [Serializable]
     public class MethodStreamSpec
-        : StreamSpecBase
-        , StreamSpecRaw
-        , StreamSpecCompiled
+        : StreamSpecBase,
+            StreamSpecRaw,
+            StreamSpecCompiled
     {
         /// <summary>
         /// Ctor.
@@ -85,14 +85,14 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             bool isOnTrigger,
             string optionalStreamName)
         {
-            if (!Ident.Equals("method"))
-            {
+            if (!Ident.Equals("method")) {
                 throw new ExprValidationException("Expecting keyword 'method', found '" + Ident + "'");
             }
-            if (MethodName == null)
-            {
+
+            if (MethodName == null) {
                 throw new ExprValidationException("No method name specified for method-based join");
             }
+
             return this;
         }
     }

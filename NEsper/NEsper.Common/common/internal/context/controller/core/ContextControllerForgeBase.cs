@@ -26,8 +26,14 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         public abstract ContextControllerPortableInfo ValidationInfo { get; }
 
         public abstract void ValidateGetContextProps(
-            LinkedHashMap<string, object> props, string contextName, StatementRawInfo statementRawInfo, StatementCompileTimeServices services);
+            LinkedHashMap<string, object> props,
+            string contextName,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services);
 
-        public abstract CodegenMethod MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols);
+        public abstract CodegenMethod MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols);
     }
 } // end of namespace

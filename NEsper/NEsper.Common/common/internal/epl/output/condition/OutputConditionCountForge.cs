@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         internal readonly int eventRate;
         internal readonly VariableMetaData variableMetaData;
 
-        public OutputConditionCountForge(int eventRate, VariableMetaData variableMetaData)
+        public OutputConditionCountForge(
+            int eventRate,
+            VariableMetaData variableMetaData)
         {
             if (eventRate < 1 && variableMetaData == null) {
                 throw new ArgumentException(
@@ -36,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             // resolve variable at init-time via field
             var variableExpression = ConstantNull();

@@ -31,59 +31,53 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         {
         }
 
-        public override bool Handle(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public override bool Handle(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             InstrumentationCommon instrumentationCommon = agentInstanceContext.InstrumentationProvider;
             instrumentationCommon.QSplitStream(false, theEvent, items.Length);
 
             int index = -1;
 
-            for (int i = 0; i < items.Length; i++)
-            {
+            for (int i = 0; i < items.Length; i++) {
                 OnSplitItemEval item = items[i];
                 eventsPerStream[0] = theEvent;
 
                 // handle no contained-event evaluation
-                if (item.PropertyEvaluator == null)
-                {
+                if (item.PropertyEvaluator == null) {
                     bool pass = CheckWhereClauseCurrentEvent(i, exprEvaluatorContext);
-                    if (pass)
-                    {
+                    if (pass) {
                         index = i;
                         break;
                     }
                 }
-                else
-                {
+                else {
                     // need to get contained events first
                     EventBean[] containeds = items[i].PropertyEvaluator.GetProperty(eventsPerStream[0], exprEvaluatorContext);
-                    if (containeds == null || containeds.Length == 0)
-                    {
+                    if (containeds == null || containeds.Length == 0) {
                         continue;
                     }
 
-                    foreach (EventBean contained in containeds)
-                    {
+                    foreach (EventBean contained in containeds) {
                         eventsPerStream[0] = contained;
                         bool pass = CheckWhereClauseCurrentEvent(i, exprEvaluatorContext);
-                        if (pass)
-                        {
+                        if (pass) {
                             index = i;
                             break;
                         }
                     }
 
-                    if (index != -1)
-                    {
+                    if (index != -1) {
                         break;
                     }
                 }
             }
 
-            if (index != -1)
-            {
+            if (index != -1) {
                 MayRouteCurrentEvent(index, exprEvaluatorContext);
             }
+
             bool handled = index != -1;
             instrumentationCommon.ASplitStream(false, handled);
             return handled;

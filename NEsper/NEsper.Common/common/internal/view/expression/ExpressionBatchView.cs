@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.arr;
@@ -53,7 +52,9 @@ namespace com.espertech.esper.common.@internal.view.expression
             }
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
@@ -178,7 +179,9 @@ namespace com.espertech.esper.common.@internal.view.expression
             viewDataVisitor.VisitPrimary(lastBatch, factory.ViewName);
         }
 
-        private bool EvaluateExpression(EventBean arriving, int windowSize)
+        private bool EvaluateExpression(
+            EventBean arriving,
+            int windowSize)
         {
             ExpressionViewOAFieldEnum.Populate(
                 builtinEventProps.Properties, windowSize, oldestEventTimestamp, newestEventTimestamp, this, 0,
@@ -193,7 +196,9 @@ namespace com.espertech.esper.common.@internal.view.expression
         }
 
         // Handle variable updates by scheduling a re-evaluation with timers
-        public override void Update(object newValue, object oldValue)
+        public override void Update(
+            object newValue,
+            object oldValue)
         {
             if (!agentInstanceContext.StatementContext.SchedulingService.IsScheduled(scheduleHandle)) {
                 agentInstanceContext.AuditProvider.ScheduleAdd(

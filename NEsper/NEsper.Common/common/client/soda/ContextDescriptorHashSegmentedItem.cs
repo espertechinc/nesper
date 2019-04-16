@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="hashFunction">the hash function, expecting SingleRowMethodExpression</param>
         /// <param name="filter">the event types to apply to</param>
-        public ContextDescriptorHashSegmentedItem(Expression hashFunction, Filter filter)
+        public ContextDescriptorHashSegmentedItem(
+            Expression hashFunction,
+            Filter filter)
         {
             HashFunction = hashFunction;
             Filter = filter;
@@ -37,12 +39,14 @@ namespace com.espertech.esper.common.client.soda
         /// <value>hash function</value>
         public Expression HashFunction { get; set; }
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
-            if (HashFunction != null)
-            {
+            if (HashFunction != null) {
                 HashFunction.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
+
             writer.Write(" from ");
             Filter.ToEPL(writer, formatter);
         }

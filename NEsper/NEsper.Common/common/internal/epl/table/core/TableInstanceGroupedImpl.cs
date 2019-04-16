@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
     {
         private readonly IDictionary<object, ObjectArrayBackedEventBean> rows;
 
-        public TableInstanceGroupedImpl(Table table, AgentInstanceContext agentInstanceContext)
+        public TableInstanceGroupedImpl(
+            Table table,
+            AgentInstanceContext agentInstanceContext)
             : base(table, agentInstanceContext)
         {
             var eventTable =
@@ -58,7 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         }
 
         public override void AddExplicitIndex(
-            string indexName, string indexModuleName, QueryPlanIndexItem explicitIndexDesc, bool isRecoveringResilient)
+            string indexName,
+            string indexModuleName,
+            QueryPlanIndexItem explicitIndexDesc,
+            bool isRecoveringResilient)
         {
             indexRepository.ValidateAddExplicitIndex(
                 indexName, indexModuleName, explicitIndexDesc, table.MetaData.InternalEventType,
@@ -92,7 +97,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         }
 
         public override ObjectArrayBackedEventBean GetCreateRowIntoTable(
-            object groupByKey, ExprEvaluatorContext exprEvaluatorContext)
+            object groupByKey,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var bean = rows.Get(groupByKey);
             if (bean != null) {

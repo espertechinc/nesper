@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -49,6 +50,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             // Determine stateless statement
             var stateless = DetermineStatelessSelect(
                 @base.StatementRawInfo.StatementType,
+                @base.StatementSpec.Raw,
                 !@base.StatementSpec.SubselectNodes.IsEmpty());
 
             string contextName = null;
@@ -68,7 +70,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             var hasHint = false;
             if (@base.StatementSpec.Raw.Annotations != null) {
                 foreach (Attribute annotation in @base.StatementRawInfo.Annotations) {
-                    if (annotation is Hint) {
+                    if (annotation is HintAttribute) {
                         hasHint = true;
                     }
                 }
@@ -123,7 +125,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             return false;
         }
 
-        private static bool DetermineStatelessSelect(StatementType type, StatementSpecRaw spec, bool hasSubselects)
+        internal static bool DetermineStatelessSelect(
+            StatementType type,
+            StatementSpecRaw spec,
+            bool hasSubselects)
         {
             if (hasSubselects) {
                 return false;
@@ -181,7 +186,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             /// </summary>
             /// <param name="priority">priority</param>
             /// <param name="premptive">preemptive indicator</param>
-            private AnnotationAnalysisResult(int priority, bool premptive)
+            private AnnotationAnalysisResult(
+                int priority,
+                bool premptive)
             {
                 Priority = priority;
                 IsPremptive = premptive;
@@ -210,12 +217,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 var priority = 0;
                 var hasPrioritySetting = false;
                 foreach (var annotation in annotations) {
-                    if (annotation is Priority) {
-                        priority = ((Priority) annotation).Value();
+                    if (annotation is PriorityAttribute priorityAttribute) {
+                        priority = priorityAttribute.Value;
                         hasPrioritySetting = true;
                     }
 
-                    if (annotation is Drop) {
+                    if (annotation is DropAttribute) {
                         preemptive = true;
                     }
                 }

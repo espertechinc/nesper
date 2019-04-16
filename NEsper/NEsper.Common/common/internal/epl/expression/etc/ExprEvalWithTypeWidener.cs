@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -23,41 +22,47 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         private readonly ExprNode validated;
         private readonly Type targetType;
 
-        public ExprEvalWithTypeWidener(TypeWidenerSPI widener, ExprNode validated, Type targetType)
+        public ExprEvalWithTypeWidener(
+            TypeWidenerSPI widener,
+            ExprNode validated,
+            Type targetType)
         {
             this.widener = widener;
             this.validated = validated;
             this.targetType = targetType;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get { throw new UnsupportedOperationException("Not available at compile time"); }
         }
 
-        public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            CodegenExpression inner = validated.Forge.EvaluateCodegen(validated.Forge.EvaluationType, codegenMethodScope, exprSymbol, codegenClassScope);
+            CodegenExpression inner = validated.Forge.EvaluateCodegen(
+                validated.Forge.EvaluationType, codegenMethodScope, exprSymbol, codegenClassScope);
             return widener.WidenCodegen(inner, codegenMethodScope, codegenClassScope);
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => targetType;
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
-            get
-            {
-                return new ProxyExprNodeRenderable()
-                {
-                    ProcToEPL = (writer, parentPrecedence) => { writer.Write(typeof(ExprEvalWithTypeWidener).Name); },
+        public ExprNodeRenderable ForgeRenderable {
+            get {
+                return new ProxyExprNodeRenderable() {
+                    ProcToEPL = (
+                        writer,
+                        parentPrecedence) => {
+                        writer.Write(typeof(ExprEvalWithTypeWidener).Name);
+                    },
                 };
             }
         }

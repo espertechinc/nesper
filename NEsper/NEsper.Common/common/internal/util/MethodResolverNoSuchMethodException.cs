@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="message">message</param>
         /// <param name="nearestMissMethod">best-match method</param>
-        public MethodResolverNoSuchMethodException(string message, MethodInfo nearestMissMethod)
+        public MethodResolverNoSuchMethodException(
+            string message,
+            MethodInfo nearestMissMethod)
             : base(message)
         {
             this.nearestMissMethod = nearestMissMethod;

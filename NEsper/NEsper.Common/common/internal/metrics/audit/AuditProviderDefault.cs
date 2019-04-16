@@ -31,86 +31,133 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         }
 
         public void View(
-            EventBean[] newData, EventBean[] oldData, AgentInstanceContext agentInstanceContext,
+            EventBean[] newData,
+            EventBean[] oldData,
+            AgentInstanceContext agentInstanceContext,
             ViewFactory viewFactory)
         {
         }
 
-        public void Stream(EventBean @event, ExprEvaluatorContext context, string filterSpecText)
+        public void Stream(
+            EventBean @event,
+            ExprEvaluatorContext context,
+            string filterSpecText)
         {
         }
 
         public void Stream(
-            EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext context, string filterSpecText)
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext context,
+            string filterSpecText)
         {
         }
 
         public void ScheduleAdd(
-            long nextScheduledTime, AgentInstanceContext agentInstanceContext, ScheduleHandle scheduleHandle,
-            ScheduleObjectType type, string name)
-        {
-        }
-
-        public void ScheduleRemove(
-            AgentInstanceContext agentInstanceContext, ScheduleHandle scheduleHandle, ScheduleObjectType type,
+            long nextScheduledTime,
+            AgentInstanceContext agentInstanceContext,
+            ScheduleHandle scheduleHandle,
+            ScheduleObjectType type,
             string name)
         {
         }
 
-        public void ScheduleFire(AgentInstanceContext agentInstanceContext, ScheduleObjectType type, string name)
+        public void ScheduleRemove(
+            AgentInstanceContext agentInstanceContext,
+            ScheduleHandle scheduleHandle,
+            ScheduleObjectType type,
+            string name)
         {
         }
 
-        public void Property(string name, object value, ExprEvaluatorContext exprEvaluatorContext)
+        public void ScheduleFire(
+            AgentInstanceContext agentInstanceContext,
+            ScheduleObjectType type,
+            string name)
+        {
+        }
+
+        public void Property(
+            string name,
+            object value,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
         public void PatternInstance(
-            bool increase, EvalFactoryNode factoryNode, AgentInstanceContext agentInstanceContext)
+            bool increase,
+            EvalFactoryNode factoryNode,
+            AgentInstanceContext agentInstanceContext)
         {
         }
 
         public void DataflowTransition(
-            string dataflowName, string dataFlowInstanceId, EPDataFlowState state, EPDataFlowState newState,
+            string dataflowName,
+            string dataFlowInstanceId,
+            EPDataFlowState state,
+            EPDataFlowState newState,
             AgentInstanceContext agentInstanceContext)
         {
         }
 
         public void DataflowSource(
-            string dataFlowName, string dataFlowInstanceId, string operatorName, int operatorNumber,
+            string dataFlowName,
+            string dataFlowInstanceId,
+            string operatorName,
+            int operatorNumber,
             AgentInstanceContext agentInstanceContext)
         {
         }
 
         public void DataflowOp(
-            string dataFlowName, string instanceId, string operatorName, int operatorNumber, object[] parameters,
+            string dataFlowName,
+            string instanceId,
+            string operatorName,
+            int operatorNumber,
+            object[] parameters,
             AgentInstanceContext agentInstanceContext)
         {
         }
 
-        public void ContextPartition(bool allocate, AgentInstanceContext agentInstanceContext)
+        public void ContextPartition(
+            bool allocate,
+            AgentInstanceContext agentInstanceContext)
         {
         }
 
-        public void Insert(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
+        public void Insert(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
-        public void Expression(string text, object value, ExprEvaluatorContext exprEvaluatorContext)
+        public void Expression(
+            string text,
+            object value,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
         public void PatternTrue(
-            EvalFactoryNode factoryNode, object from, MatchedEventMapMinimal matchEvent, bool isQuitted,
+            EvalFactoryNode factoryNode,
+            object from,
+            MatchedEventMapMinimal matchEvent,
+            bool isQuitted,
             AgentInstanceContext agentInstanceContext)
         {
         }
 
-        public void PatternFalse(EvalFactoryNode factoryNode, object from, AgentInstanceContext agentInstanceContext)
+        public void PatternFalse(
+            EvalFactoryNode factoryNode,
+            object from,
+            AgentInstanceContext agentInstanceContext)
         {
         }
 
-        public void Exprdef(string name, object value, ExprEvaluatorContext exprEvaluatorContext)
+        public void Exprdef(
+            string name,
+            object value,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
     }

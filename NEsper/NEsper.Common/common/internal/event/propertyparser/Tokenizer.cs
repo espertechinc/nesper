@@ -7,41 +7,46 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.propertyparser
 {
-	public class Tokenizer {
+    public class Tokenizer
+    {
+        private readonly LinkedList<TokenInfo> tokenInfos = new LinkedList<TokenInfo>();
 
-	    private readonly LinkedList<TokenInfo> tokenInfos = new LinkedList<>();
+        public void Add(
+            string pattern,
+            TokenType token)
+        {
+            tokenInfos.AddLast(new TokenInfo(new Regex("^(" + pattern + ")"), token));
+        }
 
-	    public void Add(string pattern, TokenType token) {
-	        tokenInfos.Add(new TokenInfo(Pattern.Compile("^(" + pattern + ")"), token));
-	    }
+        public ArrayDeque<Token> Tokenize(string str)
+        {
+            var tokens = new ArrayDeque<Token>(4);
+            while (!str.Equals("")) {
+                var match = false;
+                foreach (var info in tokenInfos) {
+                    var m = info.regex.Match(str);
+                    if (m != Match.Empty) {
+                        match = true;
 
-	    public ArrayDeque<Token> Tokenize(string str) {
-	        ArrayDeque<Token> tokens = new ArrayDeque<>(4);
-	        while (!str.Equals("")) {
-	            bool match = false;
-	            foreach (TokenInfo info in tokenInfos) {
-	                Matcher m = info.regex.Matcher(str);
-	                if (m.Find()) {
-	                    match = true;
+                        var tok = m.Value.Trim();
+                        tokens.Add(new Token(info.token, tok));
 
-	                    string tok = m.Group().Trim();
-	                    tokens.Add(new Token(info.token, tok));
+                        str = m.ReplaceFirst("").Trim();
+                        break;
+                    }
+                }
 
-	                    str = m.ReplaceFirst("").Trim();
-	                    break;
-	                }
-	            }
+                if (!match) {
+                    throw new PropertyParseNodepException("Unexpected token '" + str + "'");
+                }
+            }
 
-	            if (!match) {
-	                throw new PropertyParseNodepException("Unexpected token '" + str + "'");
-	            }
-	        }
-	        return tokens;
-	    }
-
-	}
+            return tokens;
+        }
+    }
 } // end of namespace

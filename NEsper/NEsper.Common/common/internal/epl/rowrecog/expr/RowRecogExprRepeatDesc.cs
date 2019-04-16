@@ -15,7 +15,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     [Serializable]
     public class RowRecogExprRepeatDesc
     {
-        public RowRecogExprRepeatDesc(ExprNode lower, ExprNode upper, ExprNode single)
+        public RowRecogExprRepeatDesc(
+            ExprNode lower,
+            ExprNode upper,
+            ExprNode single)
         {
             Lower = lower;
             Upper = upper;
@@ -28,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
         public ExprNode Single { get; }
 
-        public void ToExpressionString(StringWriter writer)
+        public void ToExpressionString(TextWriter writer)
         {
             writer.Write("{");
             if (Single != null) {

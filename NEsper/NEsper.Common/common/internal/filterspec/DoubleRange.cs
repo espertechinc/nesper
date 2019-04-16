@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -25,7 +24,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// </summary>
         /// <param name="min">is the low endpoint</param>
         /// <param name="max">is the high endpoint</param>
-        public DoubleRange(double? min, double? max)
+        public DoubleRange(
+            double? min,
+            double? max)
         {
             Min = min;
             Max = max;

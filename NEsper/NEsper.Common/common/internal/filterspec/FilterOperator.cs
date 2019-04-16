@@ -26,42 +26,61 @@ namespace com.espertech.esper.common.@internal.filterspec
     {
         /// <summary> Exact matches (=).</summary>
         EQUAL,
+
         /// <summary> Exact not matches (!=).</summary>
         NOT_EQUAL,
+
         /// <summary>Exact matches allowing null (is).</summary>
         IS,
+
         /// <summary>Exact not matches allowing null (is not)</summary>
         IS_NOT,
+
         /// <summary> Less (&lt;).</summary>
         LESS,
+
         /// <summary> Less or equal (&lt;=).</summary>
         LESS_OR_EQUAL,
+
         /// <summary> Greater or equal (&gt;=).</summary>
         GREATER_OR_EQUAL,
+
         /// <summary> Greater (&gt;).</summary>
         GREATER,
+
         /// <summary> Range contains neither endpoint, i.e. (a,b)</summary>
         RANGE_OPEN,
+
         /// <summary> Range contains low and high endpoint, i.e. [a,b]</summary>
         RANGE_CLOSED,
+
         /// <summary> Range includes low endpoint but not high endpoint, i.e. [a,b)</summary>
         RANGE_HALF_OPEN,
+
         /// <summary> Range includes high endpoint but not low endpoint, i.e. (a,b]</summary>
         RANGE_HALF_CLOSED,
+
         /// <summary> Inverted-Range contains neither endpoint, i.e. (a,b)</summary>
         NOT_RANGE_OPEN,
+
         /// <summary> Inverted-Range contains low and high endpoint, i.e. [a,b]</summary>
         NOT_RANGE_CLOSED,
+
         /// <summary> Inverted-Range includes low endpoint but not high endpoint, i.e. [a,b)</summary>
         NOT_RANGE_HALF_OPEN,
+
         /// <summary> Inverted-Range includes high endpoint but not low endpoint, i.e. (a,b]</summary>
         NOT_RANGE_HALF_CLOSED,
+
         /// <summary> List of values using the 'in' operator</summary>
         IN_LIST_OF_VALUES,
+
         /// <summary> Not-in list of values using the 'not in' operator</summary>
         NOT_IN_LIST_OF_VALUES,
+
         /// <summary> Advanced-index</summary>
         ADVANCED_INDEX,
+
         /// <summary> Boolean expression filter operator</summary>
         BOOLEAN_EXPRESSION
     };
@@ -69,7 +88,6 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// <summary>
     /// Contains static methods useful for help with FilterOperators.
     /// </summary>
-
     public static class FilterOperatorExtensions
     {
         /// <summary> Returns true for all range operators, false if not a range operator.</summary>
@@ -80,10 +98,10 @@ namespace com.espertech.esper.common.@internal.filterspec
             if ((op == FilterOperator.RANGE_CLOSED) ||
                 (op == FilterOperator.RANGE_OPEN) ||
                 (op == FilterOperator.RANGE_HALF_OPEN) ||
-                (op == FilterOperator.RANGE_HALF_CLOSED))
-            {
+                (op == FilterOperator.RANGE_HALF_CLOSED)) {
                 return true;
             }
+
             return false;
         }
 
@@ -96,10 +114,10 @@ namespace com.espertech.esper.common.@internal.filterspec
             if ((op == FilterOperator.NOT_RANGE_CLOSED) ||
                 (op == FilterOperator.NOT_RANGE_OPEN) ||
                 (op == FilterOperator.NOT_RANGE_HALF_OPEN) ||
-                (op == FilterOperator.NOT_RANGE_HALF_CLOSED))
-            {
+                (op == FilterOperator.NOT_RANGE_HALF_CLOSED)) {
                 return true;
             }
+
             return false;
         }
 
@@ -111,10 +129,10 @@ namespace com.espertech.esper.common.@internal.filterspec
             if ((op == FilterOperator.LESS) ||
                 (op == FilterOperator.LESS_OR_EQUAL) ||
                 (op == FilterOperator.GREATER) ||
-                (op == FilterOperator.GREATER_OR_EQUAL))
-            {
+                (op == FilterOperator.GREATER_OR_EQUAL)) {
                 return true;
             }
+
             return false;
         }
 
@@ -127,27 +145,29 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <returns>
         /// FilterOperator for the combination inclusive or exclusive
         /// </returns>
-        public static FilterOperator ParseRangeOperator(bool isInclusiveFirst, bool isInclusiveLast, bool isNot)
+        public static FilterOperator ParseRangeOperator(
+            bool isInclusiveFirst,
+            bool isInclusiveLast,
+            bool isNot)
         {
-            if (isInclusiveFirst && isInclusiveLast)
-            {
+            if (isInclusiveFirst && isInclusiveLast) {
                 return isNot ? FilterOperator.NOT_RANGE_CLOSED : FilterOperator.RANGE_CLOSED;
             }
-            if (isInclusiveFirst)
-            {
+
+            if (isInclusiveFirst) {
                 return isNot ? FilterOperator.NOT_RANGE_HALF_OPEN : FilterOperator.RANGE_HALF_OPEN;
             }
-            if (isInclusiveLast)
-            {
+
+            if (isInclusiveLast) {
                 return isNot ? FilterOperator.NOT_RANGE_HALF_CLOSED : FilterOperator.RANGE_HALF_CLOSED;
             }
+
             return isNot ? FilterOperator.NOT_RANGE_OPEN : FilterOperator.RANGE_OPEN;
         }
 
         public static string GetTextualOp(this FilterOperator op)
         {
-            switch (op)
-            {
+            switch (op) {
                 case FilterOperator.EQUAL:
                     return ("=");
                 case FilterOperator.NOT_EQUAL:
@@ -195,8 +215,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public static FilterOperator ReversedRelationalOp(this FilterOperator op)
         {
-            switch (op)
-            {
+            switch (op) {
                 case FilterOperator.LESS:
                     return FilterOperator.GREATER;
                 case FilterOperator.LESS_OR_EQUAL:
@@ -206,6 +225,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 case FilterOperator.GREATER_OR_EQUAL:
                     return FilterOperator.LESS_OR_EQUAL;
             }
+
             throw new ArgumentException("Not a relational operator: " + op);
         }
     }

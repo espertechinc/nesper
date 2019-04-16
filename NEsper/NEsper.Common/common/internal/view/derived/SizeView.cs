@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.view.derived
         protected internal long size;
 
         public SizeView(
-            SizeViewFactory sizeViewFactory, AgentInstanceContext agentInstanceContext, EventType eventType,
+            SizeViewFactory sizeViewFactory,
+            AgentInstanceContext agentInstanceContext,
+            EventType eventType,
             StatViewAdditionalPropsEval additionalProps)
         {
             this.sizeViewFactory = sizeViewFactory;
@@ -41,7 +43,9 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public override EventType EventType => eventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, sizeViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(sizeViewFactory, newData, oldData);
@@ -126,7 +130,9 @@ namespace com.espertech.esper.common.@internal.view.derived
         }
 
         public static EventType CreateEventType(
-            ViewForgeEnv env, StatViewAdditionalPropsForge additionalProps, int streamNum)
+            ViewForgeEnv env,
+            StatViewAdditionalPropsForge additionalProps,
+            int streamNum)
         {
             var schemaMap = new LinkedHashMap<string, object>();
             schemaMap.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), typeof(long));

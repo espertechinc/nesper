@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -95,7 +94,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             set => namedWindowFilterQueryGraph = value;
         }
 
-        public void Ready(StatementContext statementContext, EventType eventType)
+        public void Ready(
+            StatementContext statementContext,
+            EventType eventType)
         {
             var type = viewFactories.Length == 0 ? eventType : viewFactories[viewFactories.Length - 1].EventType;
             eventTableFactory = eventTableFactoryFactory.Create(type, statementContext);
@@ -103,8 +104,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         }
 
         public SubSelectStrategyRealization Instantiate(
-            Viewable viewableRoot, AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbackList, int subqueryNumber, bool isRecoveringResilient)
+            Viewable viewableRoot,
+            AgentInstanceContext agentInstanceContext,
+            IList<AgentInstanceStopCallback> stopCallbackList,
+            int subqueryNumber,
+            bool isRecoveringResilient)
         {
             // create factory chain context to hold callbacks specific to "prior" and "prev"
             var viewFactoryChainContext = AgentInstanceViewFactoryChainContext.Create(
@@ -217,7 +221,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         public LookupStrategyDesc LookupStrategyDesc => lookupStrategyFactory.LookupStrategyDesc;
 
         private void PreloadFromNamedWindow(
-            EventTable[] eventIndex, Viewable subselectView, AgentInstanceContext agentInstanceContext)
+            EventTable[] eventIndex,
+            Viewable subselectView,
+            AgentInstanceContext agentInstanceContext)
         {
             var instance = namedWindow.GetNamedWindowInstance(agentInstanceContext);
             if (instance == null) {

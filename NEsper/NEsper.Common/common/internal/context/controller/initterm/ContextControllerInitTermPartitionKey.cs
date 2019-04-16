@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         public ContextControllerInitTermPartitionKey(
-            EventBean triggeringEvent, IDictionary<string, object> triggeringPattern, long startTime,
+            EventBean triggeringEvent,
+            IDictionary<string, object> triggeringPattern,
+            long startTime,
             long? expectedEndTime)
         {
             TriggeringEvent = triggeringEvent;

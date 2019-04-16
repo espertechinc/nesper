@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         internal readonly Type varargClass;
 
         public ExprNodeVarargOnlyArrayForge(
-            ExprForge[] forges, Type varargClass, SimpleNumberCoercer[] optionalCoercers)
+            ExprForge[] forges,
+            Type varargClass,
+            SimpleNumberCoercer[] optionalCoercers)
         {
             this.forges = forges;
             this.varargClass = varargClass;
@@ -43,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var arrayType = TypeHelper.GetArrayType(varargClass);
@@ -82,7 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(GetType().GetSimpleName());
         }

@@ -14,11 +14,14 @@ namespace com.espertech.esper.common.client.soda
     public class ContextDescriptorConditionNever : ContextDescriptorCondition
     {
         /// <summary>Ctor.</summary>
-        public ContextDescriptorConditionNever() {
+        public ContextDescriptorConditionNever()
+        {
         }
-    
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter) {
-    
+
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
+        {
         }
     }
 } // end of namespace

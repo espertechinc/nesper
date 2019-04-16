@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,33 +20,50 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.lastevent
 {
-	/// <summary>
-	/// Factory for <seealso cref="LastEventView" /> instances.
-	/// </summary>
-	public class LastEventViewForge : ViewFactoryForgeBase , DataWindowViewForge {
-	    public const string NAME = "Last-Event";
+    /// <summary>
+    /// Factory for <seealso cref="LastEventView" /> instances.
+    /// </summary>
+    public class LastEventViewForge : ViewFactoryForgeBase,
+        DataWindowViewForge
+    {
+        public const string NAME = "Last-Event";
 
-	    public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber) {
-	        ViewForgeSupport.ValidateNoParameters(ViewName, parameters);
-	    }
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
+        {
+            ViewForgeSupport.ValidateNoParameters(ViewName, parameters);
+        }
 
-	    public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv) {
-	        this.eventType = parentEventType;
-	    }
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
+        {
+            this.eventType = parentEventType;
+        }
 
-	    internal override Type TypeOfFactory() {
-	        return typeof(ViewFactory);
-	    }
+        internal override Type TypeOfFactory()
+        {
+            return typeof(ViewFactory);
+        }
 
-	    internal override string FactoryMethod() {
-	        return "lastevent";
-	    }
+        internal override string FactoryMethod()
+        {
+            return "lastevent";
+        }
 
-	    internal override void Assign(CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	    }
+        internal override void Assign(
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+        }
 
-	    public override string ViewName {
-	        get => NAME;
-	    }
-	}
+        public override string ViewName {
+            get => NAME;
+        }
+    }
 } // end of namespace

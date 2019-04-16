@@ -12,12 +12,16 @@ namespace com.espertech.esper.common.@internal.filterspec
 {
     public class FilterAddendumUtil
     {
-        public static FilterValueSetParam[][] AddAddendum(FilterValueSetParam[][] filters, FilterValueSetParam toAdd)
+        public static FilterValueSetParam[][] AddAddendum(
+            FilterValueSetParam[][] filters,
+            FilterValueSetParam toAdd)
         {
             return AddAddendum(filters, new[] {toAdd});
         }
 
-        public static FilterValueSetParam[][] AddAddendum(FilterValueSetParam[][] filters, FilterValueSetParam[] toAdd)
+        public static FilterValueSetParam[][] AddAddendum(
+            FilterValueSetParam[][] filters,
+            FilterValueSetParam[] toAdd)
         {
             if (filters.Length == 0) {
                 filters = new FilterValueSetParam[1][];
@@ -33,7 +37,8 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public static FilterValueSetParam[][] MultiplyAddendum(
-            FilterValueSetParam[][] filtersFirst, FilterValueSetParam[][] filtersSecond)
+            FilterValueSetParam[][] filtersFirst,
+            FilterValueSetParam[][] filtersSecond)
         {
             if (filtersFirst == null || filtersFirst.Length == 0) {
                 return filtersSecond;
@@ -57,7 +62,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             return result;
         }
 
-        private static FilterValueSetParam[] Append(FilterValueSetParam[] first, FilterValueSetParam[] second)
+        private static FilterValueSetParam[] Append(
+            FilterValueSetParam[] first,
+            FilterValueSetParam[] second)
         {
             var appended = new FilterValueSetParam[first.Length + second.Length];
             Array.Copy(first, 0, appended, 0, first.Length);

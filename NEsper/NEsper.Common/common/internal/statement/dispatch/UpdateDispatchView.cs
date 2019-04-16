@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.view.core;
@@ -16,15 +15,16 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.statement.dispatch
 {
-	/// <summary>
-	/// Update dispatch view to indicate statement results to listeners.
-	/// </summary>
-	public interface UpdateDispatchView : View {
-	    /// <summary>
-	    /// Convenience method that accepts a pair of new and old data
-	    /// as this is the most treated unit.
-	    /// </summary>
-	    /// <param name="result">is new data (insert stream) and old data (remove stream)</param>
-	    void NewResult(UniformPair<EventBean[]> result);
-	}
+    /// <summary>
+    /// Update dispatch view to indicate statement results to listeners.
+    /// </summary>
+    public interface UpdateDispatchView : View
+    {
+        /// <summary>
+        /// Convenience method that accepts a pair of new and old data
+        /// as this is the most treated unit.
+        /// </summary>
+        /// <param name="result">is new data (insert stream) and old data (remove stream)</param>
+        void NewResult(UniformPair<EventBean[]> result);
+    }
 } // end of namespace

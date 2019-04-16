@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -26,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         private static readonly ILog log = LogManager.GetLogger(typeof(PatternExpressionUtil));
 
         public static void ToPrecedenceFreeEPL(
-            StringWriter writer, string delimiterText, IList<EvalForgeNode> childNodes,
+            TextWriter writer,
+            string delimiterText,
+            IList<EvalForgeNode> childNodes,
             PatternExpressionPrecedenceEnum precedence)
         {
             var delimiter = "";
@@ -38,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         }
 
         public static object GetKeys(
-            MatchedEventMap matchEvent, MatchedEventConvertor convertor, ExprEvaluator expression,
+            MatchedEventMap matchEvent,
+            MatchedEventConvertor convertor,
+            ExprEvaluator expression,
             AgentInstanceContext agentInstanceContext)
         {
             var eventsPerStream = convertor.Convert(matchEvent);
@@ -46,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         }
 
         public static object EvaluateChecked(
-            string objectName, ExprEvaluator evaluator, EventBean[] eventsPerStream,
+            string objectName,
+            ExprEvaluator evaluator,
+            EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             try {
@@ -60,7 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             }
         }
 
-        public static EPException HandleRuntimeEx(Exception ex, string objectName)
+        public static EPException HandleRuntimeEx(
+            Exception ex,
+            string objectName)
         {
             var message = objectName + " failed to evaluate expression";
             if (ex.Message != null) {

@@ -32,7 +32,8 @@ namespace com.espertech.esper.common.@internal.view.firstunique
         private readonly EventBean[] eventsPerStream = new EventBean[1];
 
         public FirstUniqueByPropertyView(
-            FirstUniqueByPropertyViewFactory viewFactory, AgentInstanceViewFactoryChainContext agentInstanceContext)
+            FirstUniqueByPropertyViewFactory viewFactory,
+            AgentInstanceViewFactoryChainContext agentInstanceContext)
         {
             this.viewFactory = viewFactory;
             this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
@@ -48,7 +49,9 @@ namespace com.espertech.esper.common.@internal.view.firstunique
 
         public override EventType EventType => parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, viewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(viewFactory, newData, oldData);

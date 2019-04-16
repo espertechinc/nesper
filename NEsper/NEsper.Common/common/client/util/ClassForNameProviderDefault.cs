@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.client.util
     public class ClassForNameProviderDefault : ClassForNameProvider
     {
         public const string NAME = "ClassForNameProvider";
-        
+
         public static readonly ClassForNameProviderDefault INSTANCE = new ClassForNameProviderDefault();
 
         private ClassForNameProviderDefault()

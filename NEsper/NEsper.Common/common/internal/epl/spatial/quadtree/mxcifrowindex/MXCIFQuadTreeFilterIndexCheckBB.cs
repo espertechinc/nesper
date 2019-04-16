@@ -13,10 +13,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 {
     public class MXCIFQuadTreeFilterIndexCheckBB
     {
-        public static void CheckBB(BoundingBox bb, double x, double y, double width, double height)
+        public static void CheckBB(
+            BoundingBox bb,
+            double x,
+            double y,
+            double width,
+            double height)
         {
-            if (!bb.IntersectsBoxIncludingEnd(x, y, width, height))
-            {
+            if (!bb.IntersectsBoxIncludingEnd(x, y, width, height)) {
                 throw new EPException("Rectangle (" + x + "," + y + "," + width + "," + height + ") not in " + bb);
             }
         }

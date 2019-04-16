@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         /// </summary>
         /// <param name="randomAccessIndexesRequested">requested indexes</param>
         /// <param name="isUnbound">true if unbound</param>
-        public RowRecogPreviousStrategyImpl(int[] randomAccessIndexesRequested, bool isUnbound)
+        public RowRecogPreviousStrategyImpl(
+            int[] randomAccessIndexesRequested,
+            bool isUnbound)
         {
             IndexesRequested = randomAccessIndexesRequested;
             this.isUnbound = isUnbound;

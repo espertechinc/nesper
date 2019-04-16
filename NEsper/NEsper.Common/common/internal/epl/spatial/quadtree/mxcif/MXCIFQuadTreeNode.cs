@@ -12,7 +12,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 {
     public abstract class MXCIFQuadTreeNode<TL>
     {
-        protected MXCIFQuadTreeNode(BoundingBox bb, int level, TL data, int count)
+        protected MXCIFQuadTreeNode(
+            BoundingBox bb,
+            int level,
+            TL data,
+            int count)
         {
             Bb = bb;
             Level = level;

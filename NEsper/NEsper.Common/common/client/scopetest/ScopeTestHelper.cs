@@ -8,7 +8,6 @@
 
 using System;
 using System.Text;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
@@ -30,10 +29,11 @@ namespace com.espertech.esper.common.client.scopetest
         /// <summary>Assert a condition is false. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="condition">to assert</param>
-        public static void AssertFalse(String message, bool condition)
+        public static void AssertFalse(
+            String message,
+            bool condition)
         {
-            if (condition)
-            {
+            if (condition) {
                 Fail(message);
             }
         }
@@ -48,43 +48,38 @@ namespace com.espertech.esper.common.client.scopetest
         /// <summary>Assert a condition is true. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="condition">to assert</param>
-        public static void AssertTrue(String message, bool condition)
+        public static void AssertTrue(
+            String message,
+            bool condition)
         {
-            if (!condition)
-            {
+            if (!condition) {
                 Fail(message);
             }
         }
 
-        private static bool AreCollectionsEqual(Object expected, Object actual)
+        private static bool AreCollectionsEqual(
+            Object expected,
+            Object actual)
         {
             var magicExpected = MagicMarker.GetCollectionFactory(expected.GetType())
                 .Invoke(expected);
             var magicActual = MagicMarker.GetCollectionFactory(actual.GetType())
                 .Invoke(actual);
-            if (magicExpected.Count == magicActual.Count)
-            {
-                using (var magicExpectedEnum = magicExpected.GetEnumerator())
-                {
-                    using (var magicActualEnum = magicActual.GetEnumerator())
-                    {
-                        while (true)
-                        {
+            if (magicExpected.Count == magicActual.Count) {
+                using (var magicExpectedEnum = magicExpected.GetEnumerator()) {
+                    using (var magicActualEnum = magicActual.GetEnumerator()) {
+                        while (true) {
                             var mvExpected = magicExpectedEnum.MoveNext();
                             var mvActual = magicActualEnum.MoveNext();
-                            if (mvExpected && mvActual)
-                            {
-                                if (!Equals(magicExpectedEnum.Current, magicActualEnum.Current))
-                                {
+                            if (mvExpected && mvActual) {
+                                if (!Equals(magicExpectedEnum.Current, magicActualEnum.Current)) {
                                     break;
                                 }
                             }
-                            else if (!mvExpected && !mvActual)
-                            {
+                            else if (!mvExpected && !mvActual) {
                                 return true;
                             }
-                            else
-                            {
+                            else {
                                 throw new IllegalStateException("collection has been modified");
                             }
                         }
@@ -99,33 +94,36 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="message">an optional message</param>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void AssertEquals(String message, Object expected, Object actual)
+        public static void AssertEquals(
+            String message,
+            Object expected,
+            Object actual)
         {
-            if (expected == null && actual == null)
-            {
+            if (expected == null && actual == null) {
                 return;
             }
-            if (expected != null && expected.Equals(actual))
-            {
+
+            if (expected != null && expected.Equals(actual)) {
                 return;
             }
-            if (expected != null && actual != null)
-            {
-                if (expected.GetType().IsGenericCollection() && actual.GetType().IsGenericCollection())
-                {
-                    if (AreCollectionsEqual(expected, actual))
-                    {
+
+            if (expected != null && actual != null) {
+                if (expected.GetType().IsGenericCollection() && actual.GetType().IsGenericCollection()) {
+                    if (AreCollectionsEqual(expected, actual)) {
                         return;
                     }
                 }
             }
+
             FailNotEquals(message, expected, actual);
         }
 
         /// <summary>Assert that two values equal. </summary>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void AssertEquals(Object expected, Object actual)
+        public static void AssertEquals(
+            Object expected,
+            Object actual)
         {
             AssertEquals(null, expected, actual);
         }
@@ -140,31 +138,38 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="message">an optional message</param>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void AssertSame(String message, Object expected, Object actual)
+        public static void AssertSame(
+            String message,
+            Object expected,
+            Object actual)
         {
-            if (expected == actual)
-            {
+            if (expected == actual) {
                 return;
             }
+
             FailNotSame(message, expected, actual);
         }
 
         /// <summary>Assert that two values are the same. </summary>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void AssertSame(Object expected, Object actual)
+        public static void AssertSame(
+            Object expected,
+            Object actual)
         {
-            if (expected == actual)
-            {
+            if (expected == actual) {
                 return;
             }
+
             FailNotSame(null, expected, actual);
         }
 
         /// <summary>Assert that a value is null. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="object">the object to check</param>
-        public static void AssertNull(String message, Object @object)
+        public static void AssertNull(
+            String message,
+            Object @object)
         {
             AssertTrue(message, @object == null);
         }
@@ -181,7 +186,9 @@ namespace com.espertech.esper.common.client.scopetest
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="object">the object to check</param>
-        public static void AssertNotNull(String message, Object @object)
+        public static void AssertNotNull(
+            String message,
+            Object @object)
         {
             AssertTrue(message, @object != null);
         }
@@ -197,7 +204,10 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="message">an optional message</param>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void FailNotSame(String message, Object expected, Object actual)
+        public static void FailNotSame(
+            String message,
+            Object expected,
+            Object actual)
         {
             Fail(Format(message, expected, actual, true));
         }
@@ -206,7 +216,10 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="message">an optional message</param>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void FailNotEquals(String message, Object expected, Object actual)
+        public static void FailNotEquals(
+            String message,
+            Object expected,
+            Object actual)
         {
             Fail(Format(message, expected, actual, false));
         }
@@ -218,19 +231,23 @@ namespace com.espertech.esper.common.client.scopetest
             AssertProxy.Fail(message);
         }
 
-        private static String Format(String message, Object expected, Object actual, bool isSame)
+        private static String Format(
+            String message,
+            Object expected,
+            Object actual,
+            bool isSame)
         {
             var buf = new StringBuilder();
-            if (!string.IsNullOrEmpty(message))
-            {
+            if (!string.IsNullOrEmpty(message)) {
                 buf.Append(message);
                 buf.Append(' ');
             }
+
             buf.Append("expected");
-            if (isSame)
-            {
+            if (isSame) {
                 buf.Append(" same");
             }
+
             buf.Append(":<");
             buf.Append(expected == null ? "null" : expected.ToString());
             buf.Append("> but was:<");

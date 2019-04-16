@@ -38,8 +38,13 @@ namespace com.espertech.esper.common.@internal.support
         }
 
         public SupportBeanComplexProps(
-            string simpleProperty, Properties mappedProps, int[] indexedProps, IDictionary<string, string> mapProperty,
-            int[] arrayProperty, string nestedValue, string nestedNestedValue)
+            string simpleProperty,
+            Properties mappedProps,
+            int[] indexedProps,
+            IDictionary<string, string> mapProperty,
+            int[] arrayProperty,
+            string nestedValue,
+            string nestedNestedValue)
         {
             this.simpleProperty = simpleProperty;
             this.mappedProps = mappedProps;
@@ -110,7 +115,9 @@ namespace com.espertech.esper.common.@internal.support
             return indexedProps[index];
         }
 
-        public void SetIndexed(int index, int value)
+        public void SetIndexed(
+            int index,
+            int value)
         {
             indexedProps[index] = value;
         }
@@ -120,7 +127,9 @@ namespace com.espertech.esper.common.@internal.support
         {
             private string nestedValue;
 
-            public SupportBeanSpecialGetterNested(string nestedValue, string nestedNestedValue)
+            public SupportBeanSpecialGetterNested(
+                string nestedValue,
+                string nestedNestedValue)
             {
                 this.nestedValue = nestedValue;
                 NestedNested = new SupportBeanSpecialGetterNestedNested(nestedNestedValue);

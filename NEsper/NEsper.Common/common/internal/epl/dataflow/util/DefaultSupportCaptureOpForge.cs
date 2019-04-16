@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,19 +18,23 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.util
 {
-	public class DefaultSupportCaptureOpForge<T> : DataFlowOperatorForge {
-	    [DataFlowOpParameter]
-	    string name;
+    public class DefaultSupportCaptureOpForge<T> : DataFlowOperatorForge
+    {
+        [DataFlowOpParameter] string name;
 
-	    public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context) {
-	        return null;
-	    }
+        public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
+        {
+            return null;
+        }
 
-	    public CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        return new SAIFFInitializeBuilder(typeof(DefaultSupportCaptureOpFactory), this.GetType(), "so", parent, symbols, classScope)
-	                .Constant("name", name)
-	                .Build();
-	    }
-	}
-
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            return new SAIFFInitializeBuilder(typeof(DefaultSupportCaptureOpFactory<object>), this.GetType(), "so", parent, symbols, classScope)
+                .Constant("name", name)
+                .Build();
+        }
+    }
 } // end of namespace

@@ -40,11 +40,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
         private readonly SchemaElementComplex schemaModelRoot;
 
         public SchemaXMLEventType(
-            EventTypeMetadata eventTypeMetadata, ConfigurationCommonEventTypeXMLDOM config, SchemaModel schemaModel,
-            string representsFragmentOfProperty, string representsOriginalTypeName,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, EventTypeNameResolver eventTypeResolver,
-            XMLFragmentEventTypeFactory xmlEventTypeFactory) : base(
-            eventTypeMetadata, config, eventBeanTypedEventFactory, eventTypeResolver, xmlEventTypeFactory)
+            EventTypeMetadata eventTypeMetadata,
+            ConfigurationCommonEventTypeXMLDOM config,
+            SchemaModel schemaModel,
+            string representsFragmentOfProperty,
+            string representsOriginalTypeName,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventTypeNameResolver eventTypeResolver,
+            XMLFragmentEventTypeFactory xmlEventTypeFactory)
+            : base(
+                eventTypeMetadata, config, eventBeanTypedEventFactory, eventTypeResolver, xmlEventTypeFactory)
         {
             propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             SchemaModel = schemaModel;
@@ -99,7 +104,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             // Add a property for each simple child element
             foreach (var simple in schemaModelRoot.SimpleElements) {
                 var propertyName = simple.Name;
-                Type returnType = SchemaUtil.ToReturnType(simple);
+                var returnType = SchemaUtil.ToReturnType(simple);
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
                     propertyName, returnType, null, false, false, simple.IsArray, false, false);
@@ -110,7 +115,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             // Add a property for each attribute
             foreach (var attribute in schemaModelRoot.Attributes) {
                 var propertyName = attribute.Name;
-                Type returnType = SchemaUtil.ToReturnType(attribute);
+                var returnType = SchemaUtil.ToReturnType(attribute);
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
                     propertyName, returnType, null, false, false, false, false, false);
@@ -183,7 +188,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return DoResolvePropertyType(propertyExpression, false);
         }
 
-        private Type DoResolvePropertyType(string propertyExpression, bool allowSimpleProperties)
+        private Type DoResolvePropertyType(
+            string propertyExpression,
+            bool allowSimpleProperties)
         {
             // see if this is an indexed property
             var index = StringValue.UnescapedIndexOfDot(propertyExpression);
@@ -223,7 +230,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return DoResolvePropertyGetter(property, false);
         }
 
-        private EventPropertyGetterSPI DoResolvePropertyGetter(string propertyExpression, bool allowSimpleProperties)
+        private EventPropertyGetterSPI DoResolvePropertyGetter(
+            string propertyExpression,
+            bool allowSimpleProperties)
         {
             var getter = propertyGetterCache.Get(propertyExpression);
             if (getter != null) {
@@ -280,7 +289,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         return null;
                     }
 
-                    Type returnType = SchemaUtil.ToReturnType(item);
+                    var returnType = SchemaUtil.ToReturnType(item);
                     if (returnType != typeof(XmlNode) && returnType != typeof(XmlNodeList)) {
                         if (!returnType.IsArray) {
                             getter = new DOMConvertingGetter((DOMPropertyGetter) getter, returnType);

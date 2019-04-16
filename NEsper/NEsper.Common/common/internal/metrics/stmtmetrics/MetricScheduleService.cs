@@ -61,7 +61,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <summary>Adds an execution to the schedule. </summary>
         /// <param name="afterMSec">offset to add at</param>
         /// <param name="execution">execution to add</param>
-        public void Add(long afterMSec, MetricExec execution)
+        public void Add(
+            long afterMSec,
+            MetricExec execution)
         {
             lock (this) {
                 if (execution == null) {

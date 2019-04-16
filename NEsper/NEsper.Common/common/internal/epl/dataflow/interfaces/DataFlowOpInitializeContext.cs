@@ -15,13 +15,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
     public class DataFlowOpInitializeContext
     {
         public DataFlowOpInitializeContext(
-            string dataFlowName, 
-            string operatorName, 
-            int operatorNumber, 
+            string dataFlowName,
+            string operatorName,
+            int operatorNumber,
             AgentInstanceContext agentInstanceContext,
-            IDictionary<string, object> additionalParameters, 
+            IDictionary<string, object> additionalParameters,
             string dataFlowInstanceId,
-            EPDataFlowOperatorParameterProvider parameterProvider, 
+            EPDataFlowOperatorParameterProvider parameterProvider,
             DataFlowOperatorFactory dataFlowOperatorFactory,
             object dataflowInstanceUserObject)
         {

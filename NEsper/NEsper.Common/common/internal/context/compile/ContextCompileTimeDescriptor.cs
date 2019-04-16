@@ -15,8 +15,11 @@ namespace com.espertech.esper.common.@internal.context.compile
     public class ContextCompileTimeDescriptor
     {
         public ContextCompileTimeDescriptor(
-            string contextName, string contextModuleName, NameAccessModifier contextVisibility,
-            ContextPropertyRegistry contextPropertyRegistry, ContextControllerPortableInfo[] validationInfos)
+            string contextName,
+            string contextModuleName,
+            NameAccessModifier contextVisibility,
+            ContextPropertyRegistry contextPropertyRegistry,
+            ContextControllerPortableInfo[] validationInfos)
         {
             ContextName = contextName;
             ContextModuleName = contextModuleName;

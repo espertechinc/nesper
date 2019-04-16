@@ -16,7 +16,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
     public abstract class CodegenStatementBase : CodegenStatement
     {
         public virtual void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level,
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
             CodegenIndent indent)
         {
             RenderStatement(builder, imports, isInnerClass);
@@ -24,7 +27,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public abstract void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass);
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass);
 
         public abstract void MergeClasses(ISet<Type> classes);
     }

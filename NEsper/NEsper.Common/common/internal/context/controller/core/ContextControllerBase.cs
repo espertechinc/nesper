@@ -28,13 +28,19 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         public abstract ContextControllerFactory Factory { get; }
 
         public abstract void Activate(
-            IntSeqKey path, object[] parentPartitionKeys, EventBean optionalTriggeringEvent,
+            IntSeqKey path,
+            object[] parentPartitionKeys,
+            EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern);
 
-        public abstract void Deactivate(IntSeqKey path, bool terminateChildContexts);
+        public abstract void Deactivate(
+            IntSeqKey path,
+            bool terminateChildContexts);
 
         public abstract void VisitSelectedPartitions(
-            IntSeqKey path, ContextPartitionSelector selector, ContextPartitionVisitor visitor,
+            IntSeqKey path,
+            ContextPartitionSelector selector,
+            ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel);
 
         public abstract void Destroy();

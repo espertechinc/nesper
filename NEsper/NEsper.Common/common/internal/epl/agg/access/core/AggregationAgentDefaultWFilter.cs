@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -24,20 +23,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             this.filterEval = filterEval;
         }
 
-        public void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column)
+        public void ApplyEnter(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
         {
-            Boolean pass = (Boolean)filterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            if (pass != null && pass)
-            {
+            Boolean pass = (Boolean) filterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            if (pass != null && pass) {
                 row.EnterAccess(column, eventsPerStream, exprEvaluatorContext);
             }
         }
 
-        public void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column)
+        public void ApplyLeave(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
         {
-            Boolean pass = (Boolean)filterEval.Evaluate(eventsPerStream, false, exprEvaluatorContext);
-            if (pass != null && pass)
-            {
+            Boolean pass = (Boolean) filterEval.Evaluate(eventsPerStream, false, exprEvaluatorContext);
+            if (pass != null && pass) {
                 row.LeaveAccess(column, eventsPerStream, exprEvaluatorContext);
             }
         }

@@ -14,8 +14,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class AggregationAccessorForgeGetCodegenContext
     {
         public AggregationAccessorForgeGetCodegenContext(
-            int column, CodegenClassScope classScope, AggregationStateFactoryForge accessStateForge,
-            CodegenMethod method, CodegenNamedMethods namedMethods)
+            int column,
+            CodegenClassScope classScope,
+            AggregationStateFactoryForge accessStateForge,
+            CodegenMethod method,
+            CodegenNamedMethods namedMethods)
         {
             Column = column;
             ClassScope = classScope;

@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// </summary>
         internal readonly ExprFilterSpecLookupableForge lookupable;
 
-        protected FilterSpecParamForge(ExprFilterSpecLookupableForge lookupable, FilterOperator filterOperator)
+        protected FilterSpecParamForge(
+            ExprFilterSpecLookupableForge lookupable,
+            FilterOperator filterOperator)
         {
             this.lookupable = lookupable;
             this.filterOperator = filterOperator;
@@ -40,7 +42,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         public FilterOperator FilterOperator => filterOperator;
 
         public abstract CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbolWEventType symbols);
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols);
 
         public static FilterSpecParamForge[] ToArray(ICollection<FilterSpecParamForge> coll)
         {
@@ -52,7 +56,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public static CodegenMethod MakeParamArrayArrayCodegen(
-            FilterSpecParamForge[][] forges, CodegenClassScope classScope, CodegenMethod parent)
+            FilterSpecParamForge[][] forges,
+            CodegenClassScope classScope,
+            CodegenMethod parent)
         {
             var symbolsWithType = new SAIFFInitializeSymbolWEventType();
             var method = parent
@@ -75,7 +81,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         private static CodegenMethod MakeParamArrayCodegen(
-            FilterSpecParamForge[] forges, CodegenClassScope classScope, CodegenMethod parent,
+            FilterSpecParamForge[] forges,
+            CodegenClassScope classScope,
+            CodegenMethod parent,
             SAIFFInitializeSymbolWEventType symbolsWithType)
         {
             var method = parent.MakeChild(typeof(FilterSpecParam[]), typeof(FilterSpecParamForge), classScope);

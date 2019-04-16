@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.client.soda
     {
         /// <summary>Hash-index. </summary>
         HASH,
-    
+
         /// <summary>Binary-tree (sorted) index. </summary>
         BTREE
     }

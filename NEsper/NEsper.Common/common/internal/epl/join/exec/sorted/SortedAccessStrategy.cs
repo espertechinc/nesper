@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.sorted;
@@ -17,15 +16,30 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
 {
-	public interface SortedAccessStrategy {
-	    ISet<EventBean> Lookup(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context);
+    public interface SortedAccessStrategy
+    {
+        ISet<EventBean> Lookup(
+            EventBean theEvent,
+            PropertySortedEventTable index,
+            ExprEvaluatorContext context);
 
-	    ISet<EventBean> LookupCollectKeys(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context, List<object> keys);
+        ISet<EventBean> LookupCollectKeys(
+            EventBean theEvent,
+            PropertySortedEventTable index,
+            ExprEvaluatorContext context,
+            List<object> keys);
 
-	    ICollection<EventBean> Lookup(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context);
+        ICollection<EventBean> Lookup(
+            EventBean[] eventsPerStream,
+            PropertySortedEventTable index,
+            ExprEvaluatorContext context);
 
-	    ICollection<EventBean> LookupCollectKeys(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context, List<object> keys);
+        ICollection<EventBean> LookupCollectKeys(
+            EventBean[] eventsPerStream,
+            PropertySortedEventTable index,
+            ExprEvaluatorContext context,
+            List<object> keys);
 
-	    string ToQueryPlan();
-	}
+        string ToQueryPlan();
+    }
 } // end of namespace

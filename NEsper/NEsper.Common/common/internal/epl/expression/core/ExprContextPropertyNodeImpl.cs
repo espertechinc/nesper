@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(PropertyName);
         }

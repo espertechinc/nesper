@@ -35,7 +35,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         private long? nextSweepTime;
 
         public GroupByViewReclaimAged(
-            GroupByViewFactory groupByViewFactory, AgentInstanceViewFactoryChainContext agentInstanceContext)
+            GroupByViewFactory groupByViewFactory,
+            AgentInstanceViewFactoryChainContext agentInstanceContext)
         {
             ViewFactory = groupByViewFactory;
             AgentInstanceContext = agentInstanceContext;
@@ -51,7 +52,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public GroupByViewFactory ViewFactory { get; }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             var aiContext = AgentInstanceContext.AgentInstanceContext;
             aiContext.AuditProvider.View(newData, oldData, aiContext, ViewFactory);
@@ -139,7 +142,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             return MergeView.GetEnumerator();
         }
 
-        private void HandleEvent(EventBean theEvent, bool isNew)
+        private void HandleEvent(
+            EventBean theEvent,
+            bool isNew)
         {
             var groupByValuesKey = GetGroupKey(theEvent);
 

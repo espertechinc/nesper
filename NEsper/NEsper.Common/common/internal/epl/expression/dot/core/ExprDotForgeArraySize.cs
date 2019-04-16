@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public ExprDotForge DotForge => this;
 
         public object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (target == null) {
                 return null;
@@ -42,8 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope.MakeChild(typeof(int?), typeof(ExprDotForgeArraySize), codegenClassScope)
                 .AddParam(innerType, "target").Block

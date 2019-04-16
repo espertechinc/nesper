@@ -67,7 +67,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             set => assignedIndex = value;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
@@ -81,7 +84,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(EvaluationType, GetType(), classScope);
             var eps = symbols.GetAddEPS(method);
@@ -147,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("prev(");
             ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
@@ -156,7 +162,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             writer.Write(')');
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprPreviousMatchRecognizeNode)) {
                 return false;

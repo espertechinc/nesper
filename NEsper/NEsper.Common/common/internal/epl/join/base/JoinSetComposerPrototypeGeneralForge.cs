@@ -28,9 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly string[] streamNames;
 
         public JoinSetComposerPrototypeGeneralForge(
-            EventType[] streamTypes, ExprNode postJoinEvaluator, bool outerJoins, QueryPlanForge queryPlan,
-            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult, string[] streamNames, bool joinRemoveStream,
-            bool hasHistorical) : base(streamTypes, postJoinEvaluator, outerJoins)
+            EventType[] streamTypes,
+            ExprNode postJoinEvaluator,
+            bool outerJoins,
+            QueryPlanForge queryPlan,
+            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult,
+            string[] streamNames,
+            bool joinRemoveStream,
+            bool hasHistorical)
+            : base(streamTypes, postJoinEvaluator, outerJoins)
         {
             this.queryPlan = queryPlan;
             this.streamJoinAnalysisResult = streamJoinAnalysisResult;
@@ -47,7 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         protected override void PopulateInline(
-            CodegenExpression impl, CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenExpression impl,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block
                 .ExprDotMethod(Ref("impl"), "setQueryPlan", queryPlan.Make(method, symbols, classScope))

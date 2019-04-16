@@ -61,11 +61,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="combinations"></param>
         /// <returns></returns>
-
         public static IEnumerable<Object[]> New(Object[][] combinations)
         {
-            if (combinations.Any(element => element == null || element.Length < 1))
-            {
+            if (combinations.Any(element => element == null || element.Length < 1)) {
                 throw new ArgumentException("Expecting non-null element of minimum length 1");
             }
 
@@ -75,14 +73,13 @@ namespace com.espertech.esper.common.@internal.collection
         public static IEnumerable<Object[]> FromZeroBasedRanges(int[] zeroBasedRanges)
         {
             var combinations = new Object[zeroBasedRanges.Length][];
-            for (int i = 0; i < zeroBasedRanges.Length; i++)
-            {
+            for (int i = 0; i < zeroBasedRanges.Length; i++) {
                 combinations[i] = new Object[zeroBasedRanges[i]];
-                for (int j = 0; j < zeroBasedRanges[i]; j++)
-                {
+                for (int j = 0; j < zeroBasedRanges[i]; j++) {
                     combinations[i][j] = j;
                 }
             }
+
             return NewInternal(combinations);
         }
 
@@ -92,39 +89,41 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="combinations"></param>
         /// <returns></returns>
-
         private static IEnumerable<object[]> NewInternal(object[][] combinations)
         {
             var current = new int[combinations.Length];
             var prototype = new Object[combinations.Length];
             var hasMore = true;
 
-            while (hasMore)
-            {
+            while (hasMore) {
                 Populate(combinations, prototype, current);
                 hasMore = DetermineNext(combinations, prototype, current);
                 yield return prototype;
             }
         }
 
-        private static void Populate(object[][] combinations, object[] prototype, int[] current)
+        private static void Populate(
+            object[][] combinations,
+            object[] prototype,
+            int[] current)
         {
-            for (int i = 0; i < prototype.Length; i++)
-            {
+            for (int i = 0; i < prototype.Length; i++) {
                 prototype[i] = combinations[i][current[i]];
             }
         }
 
-        private static bool DetermineNext(object[][] combinations, object[] prototype, int[] current)
+        private static bool DetermineNext(
+            object[][] combinations,
+            object[] prototype,
+            int[] current)
         {
-            for (int i = combinations.Length - 1; i >= 0; i--)
-            {
+            for (int i = combinations.Length - 1; i >= 0; i--) {
                 int max = combinations[i].Length;
-                if (current[i] < max - 1)
-                {
+                if (current[i] < max - 1) {
                     current[i]++;
                     return true;
                 }
+
                 // overflowing
                 current[i] = 0;
             }

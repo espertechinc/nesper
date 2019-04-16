@@ -7,50 +7,55 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.type
 {
-	/// <summary>
-	/// Math context member
-	/// </summary>
-	public class MathContextCodegenField : CodegenFieldSharable {
+    /// <summary>
+    /// Math context member
+    /// </summary>
+    public class MathContextCodegenField : CodegenFieldSharable
+    {
+        private readonly MathContext mathContext;
 
-	    private readonly MathContext mathContext;
+        public MathContextCodegenField(MathContext mathContext)
+        {
+            this.mathContext = mathContext;
+        }
 
-	    public MathContextCodegenField(MathContext mathContext) {
-	        this.mathContext = mathContext;
-	    }
+        public Type Type()
+        {
+            return typeof(MathContext);
+        }
 
-	    public Type Type() {
-	        return typeof(MathContext);
-	    }
+        public CodegenExpression InitCtorScoped()
+        {
+            if (mathContext == null) {
+                return ConstantNull();
+            }
 
-	    public CodegenExpression InitCtorScoped() {
-	        if (mathContext == null) {
-	            return ConstantNull();
-	        }
-	        return NewInstance(typeof(MathContext), Constant(mathContext.Precision),
-	                EnumValue(typeof(RoundingMode), mathContext.RoundingMode.Name()));
-	    }
+            return NewInstance(
+                typeof(MathContext), Constant(mathContext.Precision),
+                EnumValue(typeof(RoundingMode), mathContext.RoundingMode.Name()));
+        }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+        public override bool Equals(object o)
+        {
+            if (this == o) return true;
+            if (o == null || GetType() != o.GetType()) return false;
 
-	        MathContextCodegenField that = (MathContextCodegenField) o;
+            MathContextCodegenField that = (MathContextCodegenField) o;
 
-	        return mathContext != null ? mathContext.Equals(that.mathContext) : that.mathContext == null;
-	    }
+            return mathContext != null ? mathContext.Equals(that.mathContext) : that.mathContext == null;
+        }
 
-	    public override int GetHashCode() {
-	        return mathContext != null ? mathContext.GetHashCode() : 0;
-	    }
-	}
+        public override int GetHashCode()
+        {
+            return mathContext != null ? mathContext.GetHashCode() : 0;
+        }
+    }
 } // end of namespace

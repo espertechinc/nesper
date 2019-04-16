@@ -14,7 +14,8 @@ namespace com.espertech.esper.common.@internal.filterspec
     public interface FilterSpecParamFilterForEvalDouble : FilterSpecParamFilterForEval
     {
         double GetFilterValueDouble(
-            MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext,
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv);
     }
 } // end of namespace

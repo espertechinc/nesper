@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
@@ -28,7 +27,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         void Execute(StatementDispatchTLEntry dispatchTLEntry);
 
-        void Indicate(UniformPair<EventBean[]> results, StatementDispatchTLEntry dispatchTLEntry);
+        void Indicate(
+            UniformPair<EventBean[]> results,
+            StatementDispatchTLEntry dispatchTLEntry);
 
         bool IsMakeSynthetic { get; }
 

@@ -24,6 +24,8 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>widened number</returns>
         BigInteger CoerceBoxedBigInt(object numToCoerce);
 
-        CodegenExpression CoerceBoxedBigIntCodegen(CodegenExpression expr, Type type);
+        CodegenExpression CoerceBoxedBigIntCodegen(
+            CodegenExpression expr,
+            Type type);
     }
 } // end of namespace

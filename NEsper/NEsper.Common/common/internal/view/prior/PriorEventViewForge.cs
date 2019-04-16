@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,39 +16,57 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.view.prior
 {
-	public class PriorEventViewForge : ViewFactoryForgeBase {
-	    private readonly bool unbound;
+    public class PriorEventViewForge : ViewFactoryForgeBase
+    {
+        private readonly bool unbound;
 
-	    public PriorEventViewForge(bool unbound, EventType eventType) {
-	        this.unbound = unbound;
-	        this.eventType = eventType;
-	    }
+        public PriorEventViewForge(
+            bool unbound,
+            EventType eventType)
+        {
+            this.unbound = unbound;
+            this.eventType = eventType;
+        }
 
-	    public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber) {
-	    }
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
+        {
+        }
 
-	    public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv) {
-	    }
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
+        {
+        }
 
-	    internal override Type TypeOfFactory() {
-	        return typeof(PriorEventViewFactory);
-	    }
+        internal override Type TypeOfFactory()
+        {
+            return typeof(PriorEventViewFactory);
+        }
 
-	    internal override string FactoryMethod() {
-	        return "prior";
-	    }
+        internal override string FactoryMethod()
+        {
+            return "prior";
+        }
 
-	    internal override void Assign(CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        method.Block.ExprDotMethod(factory, "setUnbound", Constant(unbound));
-	    }
+        internal override void Assign(
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            method.Block.ExprDotMethod(factory, "setUnbound", Constant(unbound));
+        }
 
-	    public override string ViewName {
-	        get => "prior";
-	    }
-	}
+        public override string ViewName {
+            get => "prior";
+        }
+    }
 } // end of namespace

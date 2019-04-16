@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             StrategyDesc = strategyDesc;
         }
 
-        public void AssignService(int num, SubordTableLookupStrategy subselectStrategy)
+        public void AssignService(
+            int num,
+            SubordTableLookupStrategy subselectStrategy)
         {
             service = subselectStrategy;
         }
@@ -34,7 +36,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             service = null;
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             return service.Lookup(events, context);
         }

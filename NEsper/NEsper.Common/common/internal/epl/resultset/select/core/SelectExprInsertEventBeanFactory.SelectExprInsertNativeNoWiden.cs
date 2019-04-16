@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
         public class SelectExprInsertNativeNoWiden : SelectExprInsertNativeBase
         {
             public SelectExprInsertNativeNoWiden(
-                EventType eventType, EventBeanManufacturerForge eventManufacturer, ExprForge[] exprForges)
+                EventType eventType,
+                EventBeanManufacturerForge eventManufacturer,
+                ExprForge[] exprForges)
                 : base(eventType, eventManufacturer, exprForges)
             {
             }
@@ -38,9 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                     true, typeof(EventBeanManufacturer), eventManufacturer.Make(codegenMethodScope, codegenClassScope));
                 var block = methodNode.Block
                     .DeclareVar(
-                        typeof(object[]), "values", CodegenExpressionBuilder.NewArrayByLength(typeof(object), CodegenExpressionBuilder.Constant(exprForges.Length)));
-                for (var i = 0; i < exprForges.Length; i++)
-                {
+                        typeof(object[]), "values",
+                        CodegenExpressionBuilder.NewArrayByLength(typeof(object), CodegenExpressionBuilder.Constant(exprForges.Length)));
+                for (var i = 0; i < exprForges.Length; i++) {
                     var expression = CodegenLegoMayVoid.ExpressionMayVoid(
                         typeof(object), exprForges[i], methodNode, exprSymbol, codegenClassScope);
                     block.AssignArrayElement("values", CodegenExpressionBuilder.Constant(i), expression);

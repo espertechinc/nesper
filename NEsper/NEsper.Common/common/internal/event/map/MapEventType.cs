@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {
-            BaseNestableEventUtil.MapIndexedPropPair pair = BaseNestableEventUtil.GetIndexedAndMappedProps(properties);
+            var pair = BaseNestableEventUtil.GetIndexedAndMappedProps(properties);
 
             if (pair.MapProperties.IsEmpty() && pair.ArrayProperties.IsEmpty()) {
                 return new MapEventBeanCopyMethodForge(this, beanEventTypeFactory.EventBeanTypedEventFactory);
@@ -74,7 +74,9 @@ namespace com.espertech.esper.common.@internal.@event.map
                 this, beanEventTypeFactory.EventBeanTypedEventFactory, pair.MapProperties, pair.ArrayProperties);
         }
 
-        public object GetValue(string propertyName, IDictionary<string, object> values)
+        public object GetValue(
+            string propertyName,
+            IDictionary<string, object> values)
         {
             var getter = (MapEventPropertyGetter) GetGetter(propertyName);
             return getter.GetMap(values);

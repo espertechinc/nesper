@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
@@ -28,8 +26,13 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         public const string INDEXTYPE_NAME = "mxcifquadtree";
 
         public SettingsApplicationDotMethodRectangeIntersectsRectangle(
-            ExprDotNodeImpl parent, string lhsName, ExprNode[] lhs, string dotMethodName, string rhsName,
-            ExprNode[] rhs, ExprNode[] indexNamedParameter)
+            ExprDotNodeImpl parent,
+            string lhsName,
+            ExprNode[] lhs,
+            string dotMethodName,
+            string rhsName,
+            ExprNode[] rhs,
+            ExprNode[] indexNamedParameter)
             : base(parent, lhsName, lhs, dotMethodName, rhsName, rhs, indexNamedParameter)
 
         {
@@ -40,7 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         protected override string IndexTypeName => INDEXTYPE_NAME;
 
         protected override ExprForge ValidateAll(
-            string lhsName, ExprNode[] lhs, string rhsName, ExprNode[] rhs, ExprValidationContext validationContext)
+            string lhsName,
+            ExprNode[] lhs,
+            string rhsName,
+            ExprNode[] rhs,
+            ExprValidationContext validationContext)
         {
             EPLValidationUtil.ValidateParameterNumber(lhsName, LHS_VALIDATION_NAME, false, 4, lhs.Length);
             EPLValidationUtil.ValidateParametersTypePredefined(
@@ -78,8 +85,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             private readonly ExprDotNodeImpl parent;
 
             public RectangleIntersectsRectangleForge(
-                ExprDotNodeImpl parent, ExprForge meXEval, ExprForge meYEval, ExprForge meWidthEval,
-                ExprForge meHeightEval, ExprForge otherXEval, ExprForge otherYEval, ExprForge otherWidthEval,
+                ExprDotNodeImpl parent,
+                ExprForge meXEval,
+                ExprForge meYEval,
+                ExprForge meWidthEval,
+                ExprForge meHeightEval,
+                ExprForge otherXEval,
+                ExprForge otherYEval,
+                ExprForge otherWidthEval,
                 ExprForge otherHeightEval)
             {
                 this.parent = parent;
@@ -99,7 +112,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 otherHeightEval.ExprEvaluator);
 
             public CodegenExpression EvaluateCodegen(
-                Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                Type requiredType,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return RectangleIntersectsRectangleEvaluator.Codegen(
@@ -126,8 +141,13 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             private readonly ExprEvaluator otherYEval;
 
             public RectangleIntersectsRectangleEvaluator(
-                ExprEvaluator meXEval, ExprEvaluator meYEval, ExprEvaluator meWidthEval, ExprEvaluator meHeightEval,
-                ExprEvaluator otherXEval, ExprEvaluator otherYEval, ExprEvaluator otherWidthEval,
+                ExprEvaluator meXEval,
+                ExprEvaluator meYEval,
+                ExprEvaluator meWidthEval,
+                ExprEvaluator meHeightEval,
+                ExprEvaluator otherXEval,
+                ExprEvaluator otherYEval,
+                ExprEvaluator otherWidthEval,
                 ExprEvaluator otherHeightEval)
             {
                 this.meXEval = meXEval;
@@ -140,53 +160,48 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 this.otherHeightEval = otherHeightEval;
             }
 
-            public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            public object Evaluate(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext context)
             {
                 var meX = meXEval.Evaluate(eventsPerStream, isNewData, context);
-                if (meX == null)
-                {
+                if (meX == null) {
                     return null;
                 }
 
                 var meY = meYEval.Evaluate(eventsPerStream, isNewData, context);
-                if (meY == null)
-                {
+                if (meY == null) {
                     return null;
                 }
 
                 var meWidth = meWidthEval.Evaluate(eventsPerStream, isNewData, context);
-                if (meWidth == null)
-                {
+                if (meWidth == null) {
                     return null;
                 }
 
                 var meHeight = meHeightEval.Evaluate(eventsPerStream, isNewData, context);
-                if (meHeight == null)
-                {
+                if (meHeight == null) {
                     return null;
                 }
 
                 var otherX = otherXEval.Evaluate(eventsPerStream, isNewData, context);
-                if (otherX == null)
-                {
+                if (otherX == null) {
                     return null;
                 }
 
                 var otherY = otherYEval.Evaluate(eventsPerStream, isNewData, context);
-                if (otherY == null)
-                {
+                if (otherY == null) {
                     return null;
                 }
 
                 var otherWidth = otherWidthEval.Evaluate(eventsPerStream, isNewData, context);
-                if (otherWidth == null)
-                {
+                if (otherWidth == null) {
                     return null;
                 }
 
                 var otherHeight = otherHeightEval.Evaluate(eventsPerStream, isNewData, context);
-                if (otherHeight == null)
-                {
+                if (otherHeight == null) {
                     return null;
                 }
 
@@ -200,8 +215,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             }
 
             public static CodegenExpression Codegen(
-                RectangleIntersectsRectangleForge forge, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                RectangleIntersectsRectangleForge forge,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
                     typeof(bool?), typeof(RectangleIntersectsRectangleEvaluator), codegenClassScope);

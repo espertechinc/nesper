@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     public class QueryGraphValueEntryRangeRelOpForge : QueryGraphValueEntryRangeForge
     {
         public QueryGraphValueEntryRangeRelOpForge(
-            QueryGraphRangeEnum type, ExprNode expression, bool isBetweenPart) : base(type)
+            QueryGraphRangeEnum type,
+            ExprNode expression,
+            bool isBetweenPart)
+            : base(type)
         {
             if (type.IsRange) {
                 throw new ArgumentException("Invalid ctor for use with ranges");
@@ -44,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public override CodegenExpression Make(
-            Type optCoercionType, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            Type optCoercionType,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryRange), GetType(), classScope);
@@ -61,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public override CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryRangeRelOp), GetType(), classScope);
             method.Block

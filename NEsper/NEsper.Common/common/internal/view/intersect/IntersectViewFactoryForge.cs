@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.view.core.ViewFactoryForgeUtil;
 
@@ -38,34 +36,36 @@ namespace com.espertech.esper.common.@internal.view.intersect
         public IntersectViewFactoryForge(IList<ViewFactoryForge> intersected)
         {
             this.intersected = intersected;
-            if (intersected.IsEmpty())
-            {
+            if (intersected.IsEmpty()) {
                 throw new IllegalStateException("Empty intersected forges");
             }
 
             int batchCount = 0;
-            for (int i = 0; i < intersected.Count; i++)
-            {
+            for (int i = 0; i < intersected.Count; i++) {
                 ViewFactoryForge forge = intersected[i];
                 hasAsymetric |= forge is AsymetricDataWindowViewForge;
-                if (forge is DataWindowBatchingViewForge)
-                {
+                if (forge is DataWindowBatchingViewForge) {
                     batchCount++;
                     batchViewIndex = i;
                 }
             }
 
-            if (batchCount > 1)
-            {
+            if (batchCount > 1) {
                 throw new ViewProcessingException("Cannot combined multiple batch data windows into an intersection");
             }
         }
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             this.eventType = parentEventType;
         }
@@ -81,7 +81,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block
@@ -92,34 +94,32 @@ namespace com.espertech.esper.common.@internal.view.intersect
                         MakeViewFactories(intersected, this.GetType(), method, classScope, symbols)));
         }
 
-        public override string ViewName
-        {
+        public override string ViewName {
             get => GetViewNameUnionIntersect(true, intersected);
         }
 
         public override void Accept(ViewForgeVisitor visitor)
         {
             visitor.Visit(this);
-            foreach (ViewFactoryForge forge in intersected)
-            {
+            foreach (ViewFactoryForge forge in intersected) {
                 forge.Accept(visitor);
             }
         }
 
-        public static string GetViewNameUnionIntersect(bool intersect, ICollection<ViewFactoryForge> forges)
+        public static string GetViewNameUnionIntersect(
+            bool intersect,
+            ICollection<ViewFactoryForge> forges)
         {
             StringBuilder buf = new StringBuilder();
             buf.Append(intersect ? "Intersection" : "Union");
 
-            if (forges == null)
-            {
+            if (forges == null) {
                 return buf.ToString();
             }
 
             buf.Append(" of ");
             string delimiter = "";
-            foreach (ViewFactoryForge forge in forges)
-            {
+            foreach (ViewFactoryForge forge in forges) {
                 buf.Append(delimiter);
                 buf.Append(forge.ViewName);
                 delimiter = ",";

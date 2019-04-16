@@ -21,13 +21,16 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         public OutputProcessViewDirectPostProcess(
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessor resultSetProcessor,
-            OutputStrategyPostProcess postProcessor) : base(agentInstanceContext, resultSetProcessor)
+            OutputStrategyPostProcess postProcessor)
+            : base(agentInstanceContext, resultSetProcessor)
         {
             this.postProcessor = postProcessor;
         }
 
         protected void PostProcess(
-            bool force, UniformPair<EventBean[]> newOldEvents, UpdateDispatchView childView)
+            bool force,
+            UniformPair<EventBean[]> newOldEvents,
+            UpdateDispatchView childView)
         {
             postProcessor.Output(force, newOldEvents, childView);
         }

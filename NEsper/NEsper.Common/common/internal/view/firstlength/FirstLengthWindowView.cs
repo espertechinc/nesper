@@ -31,7 +31,8 @@ namespace com.espertech.esper.common.@internal.view.firstlength
 
         public FirstLengthWindowView(
             AgentInstanceViewFactoryChainContext agentInstanceContext,
-            FirstLengthWindowViewFactory lengthFirstWindowViewFactory, int size)
+            FirstLengthWindowViewFactory lengthFirstWindowViewFactory,
+            int size)
         {
             if (size < 1) {
                 throw new ArgumentException("Illegal argument for size of length window");
@@ -61,7 +62,9 @@ namespace com.espertech.esper.common.@internal.view.firstlength
 
         public override EventType EventType => parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, lengthFirstFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(lengthFirstFactory, newData, oldData);

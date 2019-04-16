@@ -13,14 +13,24 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     internal interface EventServiceRouteEventCommon
     {
-        void RouteEventObjectArray(object[] @event, string eventTypeName);
+        void RouteEventObjectArray(
+            object[] @event,
+            string eventTypeName);
 
-        void RouteEventBean(object @event, string eventTypeName);
+        void RouteEventBean(
+            object @event,
+            string eventTypeName);
 
-        void RouteEventMap(IDictionary<string, object> @event, string eventTypeName);
+        void RouteEventMap(
+            IDictionary<string, object> @event,
+            string eventTypeName);
 
-        void RouteEventXMLDOM(XmlNode node, string eventTypeName);
+        void RouteEventXMLDOM(
+            XmlNode node,
+            string eventTypeName);
 
-        void RouteEventAvro(object avroGenericDataDotRecord, string eventTypeName);
+        void RouteEventAvro(
+            object avroGenericDataDotRecord,
+            string eventTypeName);
     }
 } // end of namespace

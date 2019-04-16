@@ -11,7 +11,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 {
     public class AggSvcLocalGroupLevelKeyPair
     {
-        public AggSvcLocalGroupLevelKeyPair(int level, object key)
+        public AggSvcLocalGroupLevelKeyPair(
+            int level,
+            object key)
         {
             Level = level;
             Key = key;

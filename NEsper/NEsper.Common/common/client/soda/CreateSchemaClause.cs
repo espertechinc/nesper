@@ -15,10 +15,11 @@ namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Represents a create-schema syntax for creating a new event type. </summary>
     [Serializable]
-    public class CreateSchemaClause 
+    public class CreateSchemaClause
     {
         /// <summary>Ctor. </summary>
-        public CreateSchemaClause() {
+        public CreateSchemaClause()
+        {
         }
 
         /// <summary>Ctor. </summary>
@@ -34,14 +35,14 @@ namespace com.espertech.esper.common.client.soda
             Types = types;
             TypeDefinition = typeDefinition;
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="schemaName">name of type</param>
         /// <param name="columns">column definition</param>
         /// <param name="inherits">inherited types, if any</param>
         public CreateSchemaClause(
-            String schemaName, 
-            IList<SchemaColumnDesc> columns, 
+            String schemaName,
+            IList<SchemaColumnDesc> columns,
             ICollection<String> inherits)
         {
             SchemaName = schemaName;
@@ -59,7 +60,7 @@ namespace com.espertech.esper.common.client.soda
             String schemaName,
             ICollection<String> types,
             IList<SchemaColumnDesc> columns,
-            ICollection<String> inherits, 
+            ICollection<String> inherits,
             CreateSchemaClauseTypeDef typeDefinition)
         {
             SchemaName = schemaName;
@@ -114,10 +115,10 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("create");
-            if (TypeDefinition != null)
-            {
+            if (TypeDefinition != null) {
                 TypeDefinition.Value.Write(writer);
             }
+
             writer.Write(" schema ");
             writer.Write(SchemaName);
             writer.Write(" as ");
@@ -137,9 +138,10 @@ namespace com.espertech.esper.common.client.soda
                     col.ToEPL(writer);
                     delimiter = ", ";
                 }
+
                 writer.Write(")");
             }
-    
+
             if ((Inherits != null) && (Inherits.IsNotEmpty())) {
                 writer.Write(" inherits ");
                 String delimiter = "";
@@ -149,16 +151,17 @@ namespace com.espertech.esper.common.client.soda
                     delimiter = ", ";
                 }
             }
-    
+
             if (StartTimestampPropertyName != null) {
                 writer.Write(" starttimestamp ");
                 writer.Write(StartTimestampPropertyName);
             }
+
             if (EndTimestampPropertyName != null) {
                 writer.Write(" endtimestamp ");
                 writer.Write(EndTimestampPropertyName);
             }
-    
+
             if ((CopyFrom != null) && (CopyFrom.IsNotEmpty())) {
                 writer.Write(" copyFrom ");
                 String delimiter = "";

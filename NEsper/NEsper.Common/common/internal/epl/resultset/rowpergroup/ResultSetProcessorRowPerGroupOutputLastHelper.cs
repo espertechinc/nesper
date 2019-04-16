@@ -15,10 +15,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 {
     public interface ResultSetProcessorRowPerGroupOutputLastHelper : ResultSetProcessorOutputHelper
     {
-        void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic);
+        void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic);
 
         void ProcessJoin(
-            ISet<MultiKey<EventBean>> newData, ISet<MultiKey<EventBean>> oldData, bool isGenerateSynthetic);
+            ISet<MultiKey<EventBean>> newData,
+            ISet<MultiKey<EventBean>> oldData,
+            bool isGenerateSynthetic);
 
         UniformPair<EventBean[]> OutputView(bool isSynthesize);
 

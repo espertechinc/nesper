@@ -7,14 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 {
-	public interface VariableCompileTimeResolver : CompileTimeResolver {
-	    VariableMetaData Resolve(string variableName);
-	}
+    public interface VariableCompileTimeResolver : CompileTimeResolver
+    {
+        VariableMetaData Resolve(string variableName);
+    }
 } // end of namespace

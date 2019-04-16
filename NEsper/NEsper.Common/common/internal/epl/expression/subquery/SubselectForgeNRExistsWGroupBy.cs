@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
             CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(

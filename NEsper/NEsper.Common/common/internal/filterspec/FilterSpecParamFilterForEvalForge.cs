@@ -14,8 +14,12 @@ namespace com.espertech.esper.common.@internal.filterspec
 {
     public interface FilterSpecParamFilterForEvalForge
     {
-        CodegenExpression MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent);
+        CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent);
 
-        object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext);
+        object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

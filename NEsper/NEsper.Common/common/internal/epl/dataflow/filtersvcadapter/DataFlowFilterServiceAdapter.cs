@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
@@ -17,23 +16,24 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.filtersvcadapter
 {
-	/// <summary>
-	/// Service for isolating non-HA and HA filter operation.
-	/// Implementations map the operator to a filter handle.
-	/// </summary>
-	public interface DataFlowFilterServiceAdapter {
-	    void AddFilterCallback(
-	            FilterHandleCallback filterHandleCallback,
-	            AgentInstanceContext agentInstanceContext,
-	            EventType eventType,
-	            FilterValueSetParam[][] @params,
-	            int filterCallbackId);
+    /// <summary>
+    /// Service for isolating non-HA and HA filter operation.
+    /// Implementations map the operator to a filter handle.
+    /// </summary>
+    public interface DataFlowFilterServiceAdapter
+    {
+        void AddFilterCallback(
+            FilterHandleCallback filterHandleCallback,
+            AgentInstanceContext agentInstanceContext,
+            EventType eventType,
+            FilterValueSetParam[][] @params,
+            int filterCallbackId);
 
-	    void RemoveFilterCallback(
-	            FilterHandleCallback filterHandleCallback,
-	            AgentInstanceContext agentInstanceContext,
-	            EventType eventType,
-	            FilterValueSetParam[][] @params,
-	            int filterCallbackId);
-	}
+        void RemoveFilterCallback(
+            FilterHandleCallback filterHandleCallback,
+            AgentInstanceContext agentInstanceContext,
+            EventType eventType,
+            FilterValueSetParam[][] @params,
+            int filterCallbackId);
+    }
 } // end of namespace

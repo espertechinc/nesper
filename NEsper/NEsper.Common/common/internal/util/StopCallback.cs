@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.@internal.util
     /// <summary>
     ///  General purpose callback to Stop a resource and free it's underlying resources.
     /// </summary>
-
     public interface StopCallback
     {
         void Stop();
@@ -23,7 +22,10 @@ namespace com.espertech.esper.common.@internal.util
     {
         public Action ProcStop;
 
-        public ProxyStopCallback() { }
+        public ProxyStopCallback()
+        {
+        }
+
         public ProxyStopCallback(Action procStop)
         {
             ProcStop = procStop;

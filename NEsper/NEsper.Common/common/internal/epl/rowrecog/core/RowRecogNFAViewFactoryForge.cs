@@ -41,12 +41,18 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             set => scheduleCallbackId = value;
         }
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             // no action
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             // no action
         }
@@ -62,7 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             if (scheduleCallbackId == -1) {

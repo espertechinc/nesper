@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
     public class InternalEventRouterDescFactory
     {
         public static InternalEventRouterDescForge GetValidatePreprocessing(
-            EventType eventType, UpdateDesc desc, Attribute[] annotations)
+            EventType eventType,
+            UpdateDesc desc,
+            Attribute[] annotations)
         {
             if (!(eventType is EventTypeSPI)) {
                 throw new ExprValidationException(

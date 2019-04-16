@@ -29,10 +29,14 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     public class SubSelectHelperFilters
     {
         public static void HandleSubselectSelectClauses(
-            ExprSubselectNode subselect, EventType outerEventType, string outerEventTypeName, string outerStreamName,
+            ExprSubselectNode subselect,
+            EventType outerEventType,
+            string outerEventTypeName,
+            string outerStreamName,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             if (subselect.SubselectNumber == -1) {
                 throw new IllegalStateException("Subselect is unassigned");

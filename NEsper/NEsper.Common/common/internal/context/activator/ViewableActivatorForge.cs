@@ -14,6 +14,9 @@ namespace com.espertech.esper.common.@internal.context.activator
 {
     public interface ViewableActivatorForge
     {
-        CodegenExpression MakeCodegen(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression MakeCodegen(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

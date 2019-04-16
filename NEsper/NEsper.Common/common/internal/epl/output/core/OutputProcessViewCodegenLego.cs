@@ -7,18 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.core
 {
-	public class OutputProcessViewCodegenLego {
-	    protected internal static CodegenExpression PairNotNull(string name, string get) {
-	        return And(NotEqualsNull(@Ref(name)), NotEqualsNull(ExprDotMethod(@Ref(name), get)));
-	    }
-	}
+    public class OutputProcessViewCodegenLego
+    {
+        protected internal static CodegenExpression PairNotNull(
+            string name,
+            string get)
+        {
+            return And(NotEqualsNull(@Ref(name)), NotEqualsNull(ExprDotMethod(@Ref(name), get)));
+        }
+    }
 } // end of namespace

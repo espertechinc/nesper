@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             this.enumeration = enumeration;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return enumeration.EvaluateGetEventBean(eventsPerStream, isNewData, context);
         }

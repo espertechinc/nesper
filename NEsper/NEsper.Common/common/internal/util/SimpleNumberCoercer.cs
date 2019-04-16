@@ -28,10 +28,14 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>the numToCoerce as a value in the given result type</returns>
         object CoerceBoxed(object numToCoerce);
 
-        CodegenExpression CoerceCodegen(CodegenExpression value, Type valueType);
+        CodegenExpression CoerceCodegen(
+            CodegenExpression value,
+            Type valueType);
 
         CodegenExpression CoerceCodegenMayNullBoxed(
-            CodegenExpression value, Type valueTypeMustNumeric, CodegenMethodScope codegenMethodScope,
+            CodegenExpression value,
+            Type valueTypeMustNumeric,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope);
     }
 } // end of namespace

@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         internal readonly long end;
         internal readonly long start;
 
-        protected IntervalComputerConstantBase(IntervalStartEndParameterPairForge pair, bool allowSwitch)
+        protected IntervalComputerConstantBase(
+            IntervalStartEndParameterPairForge pair,
+            bool allowSwitch)
         {
             long startVal = pair.Start.OptionalConstant.GetValueOrDefault();
             long endVal = pair.End.OptionalConstant.GetValueOrDefault();

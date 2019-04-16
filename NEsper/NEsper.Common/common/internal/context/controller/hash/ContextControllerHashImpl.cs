@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -22,17 +21,23 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
     {
         private readonly ContextControllerHashSvc hashSvc;
 
-        public ContextControllerHashImpl(ContextControllerHashFactory factory, ContextManagerRealization realization) : base(realization, factory)
+        public ContextControllerHashImpl(
+            ContextControllerHashFactory factory,
+            ContextManagerRealization realization)
+            : base(realization, factory)
         {
             hashSvc = ContextControllerHashUtil.MakeService(factory, realization);
         }
 
-        public override void Activate(IntSeqKey path, object[] parentPartitionKeys, EventBean optionalTriggeringEvent, IDictionary<string, object> optionalTriggeringPattern)
+        public override void Activate(
+            IntSeqKey path,
+            object[] parentPartitionKeys,
+            EventBean optionalTriggeringEvent,
+            IDictionary<string, object> optionalTriggeringPattern)
         {
             hashSvc.MgmtCreate(path, parentPartitionKeys);
 
-            if (factory.HashSpec.IsPreallocate)
-            {
+            if (factory.HashSpec.IsPreallocate) {
                 int[] subpathOrCPIds = ActivateByPreallocate(path, parentPartitionKeys, optionalTriggeringEvent);
                 hashSvc.MgmtSetSubpathOrCPIdsWhenPreallocate(path, subpathOrCPIds);
                 return;
@@ -41,62 +46,62 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             ContextControllerDetailHashItem[] hashItems = factory.HashSpec.Items;
             ContextControllerFilterEntry[] filterEntries = new ContextControllerFilterEntry[hashItems.Length];
 
-            for (int i = 0; i < hashItems.Length; i++)
-            {
+            for (int i = 0; i < hashItems.Length; i++) {
                 ContextControllerDetailHashItem item = hashItems[i];
                 filterEntries[i] = new ContextControllerHashFilterEntry(this, path, item, parentPartitionKeys);
 
-                if (optionalTriggeringEvent != null)
-                {
-                    bool match = AgentInstanceUtil.EvaluateFilterForStatement(optionalTriggeringEvent, realization.AgentInstanceContextCreate, filterEntries[i].FilterHandle);
+                if (optionalTriggeringEvent != null) {
+                    bool match = AgentInstanceUtil.EvaluateFilterForStatement(
+                        optionalTriggeringEvent, realization.AgentInstanceContextCreate, filterEntries[i].FilterHandle);
 
-                    if (match)
-                    {
+                    if (match) {
                         MatchFound(item, optionalTriggeringEvent, path);
                     }
                 }
             }
+
             hashSvc.MgmtSetFilters(path, filterEntries);
         }
 
-        public override void Deactivate(IntSeqKey path, bool terminateChildContexts)
+        public override void Deactivate(
+            IntSeqKey path,
+            bool terminateChildContexts)
         {
-            if (factory.HashSpec.IsPreallocate && terminateChildContexts)
-            {
+            if (factory.HashSpec.IsPreallocate && terminateChildContexts) {
                 int[] subpathOrCPIdsX = hashSvc.MgmtGetSubpathOrCPIdsWhenPreallocate(path);
-                for (int i = 0; i < factory.HashSpec.Granularity; i++)
-                {
+                for (int i = 0; i < factory.HashSpec.Granularity; i++) {
                     realization.ContextPartitionTerminate(path, subpathOrCPIdsX[i], this, null, false, null);
                 }
+
                 return;
             }
 
             ContextControllerFilterEntry[] filters = hashSvc.MgmtGetFilters(path);
-            if (filters != null)
-            {
-                foreach (ContextControllerFilterEntry callback in filters)
-                {
-                    ((ContextControllerHashFilterEntry)callback).Destroy();
+            if (filters != null) {
+                foreach (ContextControllerFilterEntry callback in filters) {
+                    ((ContextControllerHashFilterEntry) callback).Destroy();
                 }
             }
 
-            foreach (int id in hashSvc.Deactivate(path))
-            {
+            foreach (int id in hashSvc.Deactivate(path)) {
                 realization.ContextPartitionTerminate(path, id, this, null, false, null);
             }
         }
 
-        public void MatchFound(ContextControllerDetailHashItem item, EventBean theEvent, IntSeqKey controllerPath)
+        public void MatchFound(
+            ContextControllerDetailHashItem item,
+            EventBean theEvent,
+            IntSeqKey controllerPath)
         {
             int value = item.Lookupable.Getter.Get(theEvent).AsInt();
 
-            if (hashSvc.HashHasSeenPartition(controllerPath, value))
-            {
+            if (hashSvc.HashHasSeenPartition(controllerPath, value)) {
                 return;
             }
 
             object[] parentPartitionKeys = hashSvc.MgmtGetParentPartitionKeys(controllerPath);
-            ContextPartitionInstantiationResult result = realization.ContextPartitionInstantiate(controllerPath, value, this, theEvent, null, parentPartitionKeys, value);
+            ContextPartitionInstantiationResult result = realization.ContextPartitionInstantiate(
+                controllerPath, value, this, theEvent, null, parentPartitionKeys, value);
             int subpathIdOrCPId = result.SubpathOrCPId;
             hashSvc.HashAddPartition(controllerPath, value, subpathIdOrCPId);
 
@@ -105,12 +110,16 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             realization.AgentInstanceContextCreate.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filterVersion;
         }
 
-        protected override void VisitPartitions(IntSeqKey controllerPath, BiConsumer<int, int> hashAndCPId)
+        protected override void VisitPartitions(
+            IntSeqKey controllerPath,
+            BiConsumer<int, int> hashAndCPId)
         {
             hashSvc.HashVisit(controllerPath, hashAndCPId);
         }
 
-        protected override int GetSubpathOrCPId(IntSeqKey path, int hash)
+        protected override int GetSubpathOrCPId(
+            IntSeqKey path,
+            int hash)
         {
             return hashSvc.HashGetSubpathOrCPId(path, hash);
         }

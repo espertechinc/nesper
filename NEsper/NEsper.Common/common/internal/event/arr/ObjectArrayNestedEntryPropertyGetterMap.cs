@@ -25,8 +25,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
         private readonly MapEventPropertyGetter mapGetter;
 
         public ObjectArrayNestedEntryPropertyGetterMap(
-            int propertyIndex, EventType fragmentType, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            MapEventPropertyGetter mapGetter) : base(propertyIndex, fragmentType, eventBeanTypedEventFactory)
+            int propertyIndex,
+            EventType fragmentType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            MapEventPropertyGetter mapGetter)
+            : base(propertyIndex, fragmentType, eventBeanTypedEventFactory)
         {
             this.mapGetter = mapGetter;
         }
@@ -74,7 +77,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression HandleNestedValueCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
                 CodegenLegoPropertyBeanOrUnd.From(
@@ -83,7 +88,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression HandleNestedValueExistsCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
                 CodegenLegoPropertyBeanOrUnd.From(
@@ -92,7 +99,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression HandleNestedValueFragmentCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
                 CodegenLegoPropertyBeanOrUnd.From(

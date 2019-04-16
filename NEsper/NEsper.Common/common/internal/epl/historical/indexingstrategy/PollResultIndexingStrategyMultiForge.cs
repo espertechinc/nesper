@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         private readonly PollResultIndexingStrategyForge[] indexingStrategies;
         private readonly int streamNum;
 
-        public PollResultIndexingStrategyMultiForge(int streamNum, PollResultIndexingStrategyForge[] indexingStrategies)
+        public PollResultIndexingStrategyMultiForge(
+            int streamNum,
+            PollResultIndexingStrategyForge[] indexingStrategies)
         {
             this.streamNum = streamNum;
             this.indexingStrategies = indexingStrategies;
@@ -39,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategyMulti), GetType(), classScope);
 

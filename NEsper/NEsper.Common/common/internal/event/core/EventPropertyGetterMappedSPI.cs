@@ -16,24 +16,34 @@ namespace com.espertech.esper.common.@internal.@event.core
     public interface EventPropertyGetterMappedSPI : EventPropertyGetterMapped
     {
         CodegenExpression EventBeanGetMappedCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope,
-            CodegenExpression beanExpression, CodegenExpression key);
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            CodegenExpression beanExpression,
+            CodegenExpression key);
     }
 
     public class ProxyEventPropertyGetterMappedSPI : EventPropertyGetterMappedSPI
     {
-        public Func<EventBean, string, object> ProcGet;
-        public object Get(EventBean eventBean, string mapKey)
-            => ProcGet.Invoke(eventBean, mapKey);
-
-        public Func<CodegenMethodScope, CodegenClassScope, CodegenExpression, CodegenExpression, CodegenExpression> 
+        public Func<CodegenMethodScope, CodegenClassScope, CodegenExpression, CodegenExpression, CodegenExpression>
             ProcEventBeanGetMappedCodegen;
+
+        public Func<EventBean, string, object> ProcGet;
+
+        public object Get(
+            EventBean eventBean,
+            string mapKey)
+        {
+            return ProcGet.Invoke(eventBean, mapKey);
+        }
+
         public CodegenExpression EventBeanGetMappedCodegen(
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope,
             CodegenExpression beanExpression,
             CodegenExpression key)
-            => ProcEventBeanGetMappedCodegen.Invoke(
+        {
+            return ProcEventBeanGetMappedCodegen.Invoke(
                 codegenMethodScope, codegenClassScope, beanExpression, key);
+        }
     }
 } // end of namespace

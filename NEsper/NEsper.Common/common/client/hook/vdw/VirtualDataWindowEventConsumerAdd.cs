@@ -28,9 +28,14 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <param name="filter">filter expressions</param>
         /// <param name="exprEvaluatorContext">for expression evaluation</param>
         public VirtualDataWindowEventConsumerAdd(
-            string namedWindowName, object consumerObject, string statementName, int agentInstanceId,
-            ExprEvaluator filter, ExprEvaluatorContext exprEvaluatorContext) : base(
-            namedWindowName, consumerObject, statementName, agentInstanceId)
+            string namedWindowName,
+            object consumerObject,
+            string statementName,
+            int agentInstanceId,
+            ExprEvaluator filter,
+            ExprEvaluatorContext exprEvaluatorContext)
+            : base(
+                namedWindowName, consumerObject, statementName, agentInstanceId)
         {
             Filter = filter;
             ExprEvaluatorContext = exprEvaluatorContext;

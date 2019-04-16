@@ -62,8 +62,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         }
 
         protected override CodegenExpression ProcessSpecificCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenExpression props,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenExpression props,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope

@@ -9,7 +9,6 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -27,7 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         {
         }
 
-        public CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return PublicConstValue(typeof(PollResultIndexingStrategyNoIndex), "INSTANCE");
         }

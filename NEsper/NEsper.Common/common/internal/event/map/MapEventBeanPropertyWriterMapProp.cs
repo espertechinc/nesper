@@ -6,28 +6,29 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.map
 {
     public class MapEventBeanPropertyWriterMapProp : MapEventBeanPropertyWriter
     {
-        private readonly String _key;
+        private readonly string _key;
 
-        public MapEventBeanPropertyWriterMapProp(String propertyName, String key)
+        public MapEventBeanPropertyWriterMapProp(
+            string propertyName,
+            string key)
             : base(propertyName)
         {
             _key = key;
         }
 
-        public override void Write(Object value, IDictionary<String, Object> map)
+        public override void Write(
+            object value,
+            IDictionary<string, object> map)
         {
-            var mapEntry = (IDictionary<String, Object>)map.Get(PropertyName);
-            if (mapEntry != null)
-            {
+            var mapEntry = (IDictionary<string, object>) map.Get(PropertyName);
+            if (mapEntry != null) {
                 mapEntry.Put(_key, value);
             }
         }

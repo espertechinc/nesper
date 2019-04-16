@@ -36,7 +36,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="left">is a property providing joined-on values</param>
         /// <param name="type">is the type of outer join</param>
         /// <param name="right">is a property providing joined-on values</param>
-        public OuterJoinQualifier(OuterJoinType type, PropertyValueExpression left, PropertyValueExpression right) :
+        public OuterJoinQualifier(
+            OuterJoinType type,
+            PropertyValueExpression left,
+            PropertyValueExpression right)
+            :
             this(type, left, right, new List<PropertyValueExpressionPair>())
         {
         }
@@ -49,7 +53,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="right">is a property providing joined-on values</param>
         /// <param name="additionalProperties">for any pairs of additional on-clause properties</param>
         public OuterJoinQualifier(
-            OuterJoinType type, PropertyValueExpression left, PropertyValueExpression right,
+            OuterJoinType type,
+            PropertyValueExpression left,
+            PropertyValueExpression right,
             List<PropertyValueExpressionPair> additionalProperties)
         {
             this.type = type;
@@ -101,7 +107,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="type">is the type of outer join</param>
         /// <param name="propertyRight">is a property name providing joined-on values</param>
         /// <returns>qualifier</returns>
-        public static OuterJoinQualifier Create(string propertyLeft, OuterJoinType type, string propertyRight)
+        public static OuterJoinQualifier Create(
+            string propertyLeft,
+            OuterJoinType type,
+            string propertyRight)
         {
             return new OuterJoinQualifier(
                 type, new PropertyValueExpression(propertyLeft), new PropertyValueExpression(propertyRight));
@@ -113,7 +122,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="propertyLeft">property providing joined-on value</param>
         /// <param name="propertyRight">property providing joined-on value</param>
         /// <returns>outer join qualifier</returns>
-        public OuterJoinQualifier Add(string propertyLeft, string propertyRight)
+        public OuterJoinQualifier Add(
+            string propertyLeft,
+            string propertyRight)
         {
             additionalProperties.Add(
                 new PropertyValueExpressionPair(

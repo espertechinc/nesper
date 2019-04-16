@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 {
     public class IntervalStartEndParameterPairForge
     {
-        public IntervalStartEndParameterPairForge(ExprOptionalConstantForge start, ExprOptionalConstantForge end)
+        public IntervalStartEndParameterPairForge(
+            ExprOptionalConstantForge start,
+            ExprOptionalConstantForge end)
         {
             Start = start;
             End = end;

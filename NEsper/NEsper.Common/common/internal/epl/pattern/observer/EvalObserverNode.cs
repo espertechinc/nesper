@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
     {
         internal readonly EvalObserverFactoryNode factoryNode;
 
-        public EvalObserverNode(PatternAgentInstanceContext context, EvalObserverFactoryNode factoryNode)
+        public EvalObserverNode(
+            PatternAgentInstanceContext context,
+            EvalObserverFactoryNode factoryNode)
             : base(context)
         {
             this.factoryNode = factoryNode;

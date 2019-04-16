@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 {
     public class DotMethodFPParam
     {
-        public DotMethodFPParam(int lambdaParamNum, string description, EPLExpressionParamType type)
+        public DotMethodFPParam(
+            int lambdaParamNum,
+            string description,
+            EPLExpressionParamType type)
         {
             LambdaParamNum = lambdaParamNum;
             Description = description;
@@ -24,12 +27,17 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
             }
         }
 
-        public DotMethodFPParam(string description, EPLExpressionParamType type)
+        public DotMethodFPParam(
+            string description,
+            EPLExpressionParamType type)
             : this(description, type, null)
         {
         }
 
-        public DotMethodFPParam(string description, EPLExpressionParamType type, params Type[] specificType)
+        public DotMethodFPParam(
+            string description,
+            EPLExpressionParamType type,
+            params Type[] specificType)
         {
             Description = description;
             Type = type;

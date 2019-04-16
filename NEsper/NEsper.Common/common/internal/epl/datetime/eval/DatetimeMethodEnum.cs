@@ -7,137 +7,136 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.methodbase;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.eval
 {
-    public class DatetimeMethodEnum
+    public class DateTimeMethodEnum
     {
         // calendar op
-        public static readonly DatetimeMethodEnum WITHTIME = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum WITHTIME = new DateTimeMethodEnum
             ("withTime", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.WITHTIME);
 
-        public static readonly DatetimeMethodEnum WITHDATE = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum WITHDATE = new DateTimeMethodEnum
             ("withDate", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.WITHDATE);
 
-        public static readonly DatetimeMethodEnum PLUS = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum PLUS = new DateTimeMethodEnum
             ("plus", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.PLUSMINUS);
 
-        public static readonly DatetimeMethodEnum MINUS = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum MINUS = new DateTimeMethodEnum
             ("minus", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.PLUSMINUS);
 
-        public static readonly DatetimeMethodEnum WITHMAX = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum WITHMAX = new DateTimeMethodEnum
             ("withMax", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.CALFIELD);
 
-        public static readonly DatetimeMethodEnum WITHMIN = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum WITHMIN = new DateTimeMethodEnum
             ("withMin", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.CALFIELD);
 
-        public static readonly DatetimeMethodEnum SET = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum SET = new DateTimeMethodEnum
             ("set", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.CALFIELD_PLUS_INT);
 
-        public static readonly DatetimeMethodEnum ROUNDCEILING = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum ROUNDCEILING = new DateTimeMethodEnum
             ("roundCeiling", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.CALFIELD);
 
-        public static readonly DatetimeMethodEnum ROUNDFLOOR = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum ROUNDFLOOR = new DateTimeMethodEnum
             ("roundFloor", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.CALFIELD);
 
-        public static readonly DatetimeMethodEnum ROUNDHALF = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum ROUNDHALF = new DateTimeMethodEnum
             ("roundHalf", DatetimeMethodEnumStatics.CALENDAR_FORGE_FACTORY, DatetimeMethodEnumParams.CALFIELD);
 
         // reformat op
-        public static readonly DatetimeMethodEnum GET = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GET = new DateTimeMethodEnum
             ("get", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.CALFIELD);
 
-        public static readonly DatetimeMethodEnum FORMAT = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum FORMAT = new DateTimeMethodEnum
             ("format", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.FORMAT);
 
-        public static readonly DatetimeMethodEnum TODATETIMEEX = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum TODATETIMEEX = new DateTimeMethodEnum
             ("toDateTimeEx", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum TODATETIMEOFFSET = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum TODATETIMEOFFSET = new DateTimeMethodEnum
             ("toDateTimeOffset", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum TODATETIME = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum TODATETIME = new DateTimeMethodEnum
             ("toDateTime", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum TOMILLISEC = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum TOMILLISEC = new DateTimeMethodEnum
             ("toMillisec", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETMINUTEOFHOUR = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETMINUTEOFHOUR = new DateTimeMethodEnum
             ("getMinuteOfHour", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETMONTHOFYEAR = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETMONTHOFYEAR = new DateTimeMethodEnum
             ("getMonthOfYear", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETDAYOFMONTH = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETDAYOFMONTH = new DateTimeMethodEnum
             ("getDayOfMonth", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETDAYOFWEEK = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETDAYOFWEEK = new DateTimeMethodEnum
             ("getDayOfWeek", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETDAYOFYEAR = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETDAYOFYEAR = new DateTimeMethodEnum
             ("getDayOfYear", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETHOUROFDAY = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETHOUROFDAY = new DateTimeMethodEnum
             ("getHourOfDay", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETMILLISOFSECOND = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETMILLISOFSECOND = new DateTimeMethodEnum
             ("getMillisOfSecond", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETSECONDOFMINUTE = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETSECONDOFMINUTE = new DateTimeMethodEnum
             ("getSecondOfMinute", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETWEEKYEAR = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETWEEKYEAR = new DateTimeMethodEnum
             ("getWeekyear", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum GETYEAR = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum GETYEAR = new DateTimeMethodEnum
             ("getYear", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.NOPARAM);
 
-        public static readonly DatetimeMethodEnum BETWEEN = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum BETWEEN = new DateTimeMethodEnum
             ("between", DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY, DatetimeMethodEnumParams.BETWEEN);
 
         // interval op
-        public static readonly DatetimeMethodEnum BEFORE = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum BEFORE = new DateTimeMethodEnum
             ("before", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_BEFORE_AFTER);
 
-        public static readonly DatetimeMethodEnum AFTER = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum AFTER = new DateTimeMethodEnum
             ("after", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_BEFORE_AFTER);
 
-        public static readonly DatetimeMethodEnum COINCIDES = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum COINCIDES = new DateTimeMethodEnum
             ("coincides", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_COINCIDES);
 
-        public static readonly DatetimeMethodEnum DURING = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum DURING = new DateTimeMethodEnum
             ("during", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_DURING_INCLUDES);
 
-        public static readonly DatetimeMethodEnum INCLUDES = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum INCLUDES = new DateTimeMethodEnum
             ("includes", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_DURING_INCLUDES);
 
-        public static readonly DatetimeMethodEnum FINISHES = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum FINISHES = new DateTimeMethodEnum
             ("finishes", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_FINISHES_FINISHEDBY);
 
-        public static readonly DatetimeMethodEnum FINISHEDBY = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum FINISHEDBY = new DateTimeMethodEnum
             ("finishedBy", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_FINISHES_FINISHEDBY);
 
-        public static readonly DatetimeMethodEnum MEETS = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum MEETS = new DateTimeMethodEnum
             ("meets", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_MEETS_METBY);
 
-        public static readonly DatetimeMethodEnum METBY = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum METBY = new DateTimeMethodEnum
             ("metBy", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_MEETS_METBY);
 
-        public static readonly DatetimeMethodEnum OVERLAPS = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum OVERLAPS = new DateTimeMethodEnum
             ("overlaps", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_DURING_OVERLAPS_OVERLAPBY);
 
-        public static readonly DatetimeMethodEnum OVERLAPPEDBY = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum OVERLAPPEDBY = new DateTimeMethodEnum
             ("overlappedBy", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_DURING_OVERLAPS_OVERLAPBY);
 
-        public static readonly DatetimeMethodEnum STARTS = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum STARTS = new DateTimeMethodEnum
             ("starts", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_STARTS_STARTEDBY);
 
-        public static readonly DatetimeMethodEnum STARTEDBY = new DatetimeMethodEnum
+        public static readonly DateTimeMethodEnum STARTEDBY = new DateTimeMethodEnum
             ("startedBy", DatetimeMethodEnumStatics.INTERVAL_FORGE_FACTORY, DatetimeMethodEnumParams.INTERVAL_STARTS_STARTEDBY);
 
-        public static readonly DatetimeMethodEnum[] Values = {
+        public static readonly DateTimeMethodEnum[] Values = {
             WITHTIME,
             WITHDATE,
             PLUS,
@@ -181,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             STARTEDBY
         };
 
-        private DatetimeMethodEnum(
+        private DateTimeMethodEnum(
             string nameCamel,
             ForgeFactory forgeFactory,
             DotMethodFP[] footprints)
@@ -199,10 +198,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
         public static bool IsDateTimeMethod(string name)
         {
-            foreach (var e in Values)
-            {
-                if (e.NameCamel.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-                {
+            foreach (var e in Values) {
+                if (e.NameCamel.Equals(name, StringComparison.InvariantCultureIgnoreCase)) {
                     return true;
                 }
             }
@@ -210,12 +207,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             return false;
         }
 
-        public static DatetimeMethodEnum FromName(string name)
+        public static DateTimeMethodEnum FromName(string name)
         {
-            foreach (var e in Values)
-            {
-                if (e.NameCamel.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-                {
+            foreach (var e in Values) {
+                if (e.NameCamel.Equals(name, StringComparison.InvariantCultureIgnoreCase)) {
                     return e;
                 }
             }

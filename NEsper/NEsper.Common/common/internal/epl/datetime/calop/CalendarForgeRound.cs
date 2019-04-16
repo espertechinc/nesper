@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.datetime;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
@@ -22,20 +23,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         CalendarOp
     {
         private readonly int code;
-        private readonly CalendarFieldEnum fieldName;
+        private readonly DateTimeFieldEnum field;
 
         public CalendarForgeRound(
-            CalendarFieldEnum fieldName,
-            DatetimeMethodEnum method)
+            DateTimeFieldEnum field,
+            DateTimeMethodEnum method)
         {
-            this.fieldName = fieldName;
-            if (method == DatetimeMethodEnum.ROUNDCEILING) {
+            this.field = field;
+            if (method == DateTimeMethodEnum.ROUNDCEILING) {
                 code = ApacheCommonsDateUtils.MODIFY_CEILING;
             }
-            else if (method == DatetimeMethodEnum.ROUNDFLOOR) {
+            else if (method == DateTimeMethodEnum.ROUNDFLOOR) {
                 code = ApacheCommonsDateUtils.MODIFY_TRUNCATE;
             }
-            else if (method == DatetimeMethodEnum.ROUNDHALF) {
+            else if (method == DateTimeMethodEnum.ROUNDHALF) {
                 code = ApacheCommonsDateUtils.MODIFY_ROUND;
             }
             else {
@@ -45,15 +46,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
         public CalendarOp EvalOp => this;
 
-        public void Evaluate(
+        public DateTimeEx Evaluate(
             DateTimeEx dateTimeEx,
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context)
         {
             var dateTime = ApacheCommonsDateUtils.Modify(
-                dateTimeEx.DateTime.DateTime, fieldName.GetCalendarField(), code);
-
+                dateTimeEx.DateTime.DateTime, field, code);
+            return DateTimeEx.GetInstance(dateTimeEx.TimeZone, dateTime);
         }
 
         public DateTimeOffset Evaluate(
@@ -63,11 +64,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprEvaluatorContext context)
         {
             if (code == ApacheCommonsDateUtils.MODIFY_TRUNCATE) {
-                return dateTimeOffset.TruncatedTo(fieldName.ChronoUnit);
+                return dateTimeOffset.TruncatedTo(field);
             }
 
             if (code == ApacheCommonsDateUtils.MODIFY_CEILING) {
-                return dateTimeOffset.Plus(1, fieldName.ChronoUnit).TruncatedTo(fieldName.ChronoUnit);
+                return dateTimeOffset.Plus(1, field).TruncatedTo(field);
             }
 
             throw new EPException("Round-half operation not supported for LocalDateTime");
@@ -80,11 +81,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprEvaluatorContext context)
         {
             if (code == ApacheCommonsDateUtils.MODIFY_TRUNCATE) {
-                return dateTime.TruncatedTo(fieldName.ChronoUnit);
+                return dateTime.TruncatedTo(field.ChronoUnit);
             }
 
             if (code == ApacheCommonsDateUtils.MODIFY_CEILING) {
-                return dateTime.Plus(1, fieldName.ChronoUnit).TruncatedTo(fieldName.ChronoUnit);
+                DateTimeFieldMath.AddUsingField(dateTime, field, 1);
+                return dateTime.Plus(1, field.ChronoUnit).TruncatedTo(field.ChronoUnit);
             }
 
             throw new EPException("Round-half operation not supported for ZonedDateTime");
@@ -97,8 +99,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                typeof(ApacheCommonsDateUtils), "modify", dateTimeEx,
-                Constant(fieldName.GetCalendarField()), Constant(code));
+                typeof(ApacheCommonsDateUtils), "Modify", dateTimeEx,
+                Constant(field), Constant(code));
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -123,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenExpression val)
         {
             var type = typeof(T);
-            var chronoUnit = EnumValue(typeof(ChronoUnit), fieldName.ChronoUnit.Name());
+            var chronoUnit = EnumValue(typeof(ChronoUnit), field.GetName());
             if (code == ApacheCommonsDateUtils.MODIFY_TRUNCATE) {
                 return ExprDotMethod(val, "truncatedTo", chronoUnit);
             }

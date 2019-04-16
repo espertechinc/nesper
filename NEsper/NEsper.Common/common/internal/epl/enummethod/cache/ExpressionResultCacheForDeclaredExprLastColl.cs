@@ -8,23 +8,27 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
-	/// <summary>
-	/// On the level of expression declaration:
-	/// a) for non-enum evaluation and for enum-evaluation a separate cache
-	/// b) The cache is keyed by the prototype-node and verified by a events-per-stream (EventBean[]) that is maintained or rewritten.
-	/// <para />NOTE: ExpressionResultCacheForDeclaredExprLastColl should not be held onto since the instance returned can be reused.
-	/// </summary>
-	public interface ExpressionResultCacheForDeclaredExprLastColl {
+    /// <summary>
+    /// On the level of expression declaration:
+    /// a) for non-enum evaluation and for enum-evaluation a separate cache
+    /// b) The cache is keyed by the prototype-node and verified by a events-per-stream (EventBean[]) that is maintained or rewritten.
+    /// <para />NOTE: ExpressionResultCacheForDeclaredExprLastColl should not be held onto since the instance returned can be reused.
+    /// </summary>
+    public interface ExpressionResultCacheForDeclaredExprLastColl
+    {
+        ExpressionResultCacheEntryEventBeanArrayAndCollBean GetDeclaredExpressionLastColl(
+            object node,
+            EventBean[] eventsPerStream);
 
-	    ExpressionResultCacheEntryEventBeanArrayAndCollBean GetDeclaredExpressionLastColl(object node, EventBean[] eventsPerStream);
-
-	    void SaveDeclaredExpressionLastColl(object node, EventBean[] eventsPerStream, ICollection<EventBean> result);
-	}
+        void SaveDeclaredExpressionLastColl(
+            object node,
+            EventBean[] eventsPerStream,
+            ICollection<EventBean> result);
+    }
 } // end of namespace

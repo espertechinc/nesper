@@ -16,13 +16,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly ExprCastNode parent;
         private readonly object theConstant;
 
-        public ExprCastNodeConstEval(ExprCastNode parent, object theConstant)
+        public ExprCastNodeConstEval(
+            ExprCastNode parent,
+            object theConstant)
         {
             this.parent = parent;
             this.theConstant = theConstant;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return theConstant;
         }

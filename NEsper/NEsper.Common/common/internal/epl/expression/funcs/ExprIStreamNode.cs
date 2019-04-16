@@ -32,7 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return isNewData;
         }
@@ -42,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public Type EvaluationType => typeof(bool?);
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -51,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return exprSymbol.GetAddIsNewData(codegenMethodScope);
@@ -68,12 +75,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("istream()");
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprIStreamNode)) {
                 return false;

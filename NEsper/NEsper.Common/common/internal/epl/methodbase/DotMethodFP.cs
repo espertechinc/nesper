@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 {
     public class DotMethodFP
     {
-        public DotMethodFP(DotMethodFPInputEnum input, params DotMethodFPParam[] parameters)
+        public DotMethodFP(
+            DotMethodFPInputEnum input,
+            params DotMethodFPParam[] parameters)
         {
             Input = input;
             Parameters = parameters;
@@ -26,35 +28,30 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 
         public String ToStringFootprint(bool isLambdaApplies)
         {
-            if (Parameters.Length == 0)
-            {
+            if (Parameters.Length == 0) {
                 return "no parameters";
             }
+
             var buf = new StringBuilder();
             var delimiter = "";
-            foreach (var param in Parameters)
-            {
+            foreach (var param in Parameters) {
                 buf.Append(delimiter);
 
-                if (isLambdaApplies)
-                {
-                    if (param.LambdaParamNum == 0)
-                    {
+                if (isLambdaApplies) {
+                    if (param.LambdaParamNum == 0) {
                         buf.Append("an (non-lambda)");
                     }
-                    else if (param.LambdaParamNum == 1)
-                    {
+                    else if (param.LambdaParamNum == 1) {
                         buf.Append("a lambda");
                     }
-                    else
-                    {
+                    else {
                         buf.Append("a " + param.LambdaParamNum + "-parameter lambda");
                     }
                 }
-                else
-                {
+                else {
                     buf.Append("an");
                 }
+
                 buf.Append(" expression");
                 buf.Append(" providing ");
                 buf.Append(param.Description);
@@ -64,39 +61,35 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
             return buf.ToString();
         }
 
-        public static String ToStringProvided(DotMethodFPProvided provided, bool isLambdaApplies)
+        public static String ToStringProvided(
+            DotMethodFPProvided provided,
+            bool isLambdaApplies)
         {
-            if (provided.Parameters.Length == 0)
-            {
+            if (provided.Parameters.Length == 0) {
                 return "no parameters";
             }
 
             var buf = new StringWriter();
             var delimiter = "";
 
-            if (!isLambdaApplies)
-            {
+            if (!isLambdaApplies) {
                 buf.Write(provided.Parameters.Length);
                 buf.Write(" expressions");
             }
-            else
-            {
-                foreach (DotMethodFPProvidedParam param in provided.Parameters)
-                {
+            else {
+                foreach (DotMethodFPProvidedParam param in provided.Parameters) {
                     buf.Write(delimiter);
 
-                    if (param.LambdaParamNum == 0)
-                    {
+                    if (param.LambdaParamNum == 0) {
                         buf.Write("an (non-lambda)");
                     }
-                    else if (param.LambdaParamNum == 1)
-                    {
+                    else if (param.LambdaParamNum == 1) {
                         buf.Write("a lambda");
                     }
-                    else
-                    {
+                    else {
                         buf.Write("a " + param.LambdaParamNum + "-parameter lambda");
                     }
+
                     buf.Write(" expression");
                     delimiter = " and ";
                 }

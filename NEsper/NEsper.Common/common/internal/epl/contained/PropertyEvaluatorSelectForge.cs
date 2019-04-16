@@ -26,14 +26,17 @@ namespace com.espertech.esper.common.@internal.epl.contained
         private readonly SelectExprProcessorDescriptor selectExprProcessor;
 
         public PropertyEvaluatorSelectForge(
-            SelectExprProcessorDescriptor selectExprProcessor, PropertyEvaluatorAccumulativeForge accumulative)
+            SelectExprProcessorDescriptor selectExprProcessor,
+            PropertyEvaluatorAccumulativeForge accumulative)
         {
             this.selectExprProcessor = selectExprProcessor;
             this.accumulative = accumulative;
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PropertyEvaluatorSelect), GetType(), classScope);
             var processor = SelectExprProcessorUtil.MakeAnonymous(

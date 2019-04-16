@@ -12,7 +12,10 @@ namespace com.espertech.esper.common.@internal.view.prior
 {
     public interface PriorEventBufferChangeCaptureMulti
     {
-        void Added(EventBean key, EventBean[] referrals);
+        void Added(
+            EventBean key,
+            EventBean[] referrals);
+
         void Removed(EventBean removed);
     }
 } // end of namespace

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -18,19 +17,27 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumWhereScalarIndexForge : EnumForgeBaseScalarIndex {
+    public class EnumWhereScalarIndexForge : EnumForgeBaseScalarIndex
+    {
+        public EnumWhereScalarIndexForge(
+            ExprForge innerExpression,
+            int streamNumLambda,
+            ObjectArrayEventType evalEventType,
+            ObjectArrayEventType indexEventType)
+            : base(innerExpression, streamNumLambda, evalEventType, indexEventType)
+        {
+        }
 
-	    public EnumWhereScalarIndexForge(ExprForge innerExpression, int streamNumLambda, ObjectArrayEventType evalEventType, ObjectArrayEventType indexEventType)
-	    	 : base(innerExpression, streamNumLambda, evalEventType, indexEventType)
-	    {
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumWhereScalarIndexForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumWhereScalarIndexForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumWhereScalarIndexForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumWhereScalarIndexForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

@@ -25,10 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var state = (CountMinSketchAggState) row.GetAccessState(aggColNum);
-            return state.FromBytes;
+            return state.GetFromBytes();
         }
 
-        public ICollection<object> GetValueCollectionEvents(
+        public ICollection<EventBean> GetValueCollectionEvents(
             int aggColNum,
             AggregationRow row,
             EventBean[] eventsPerStream,

@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
         }
 
-        public GraphTypeDesc(bool wildcard, bool underlying, EventType eventType)
+        public GraphTypeDesc(
+            bool wildcard,
+            bool underlying,
+            EventType eventType)
         {
             IsWildcard = wildcard;
             IsUnderlying = underlying;
@@ -33,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         public EventType EventType { get; set; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(typeof(GraphTypeDesc), GetType(), "gtd", parent, symbols, classScope)
                 .Constant("wildcard", IsWildcard)

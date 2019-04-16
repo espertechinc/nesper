@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
 {
     public class SelectorInstructionPair
     {
-        public SelectorInstructionPair(IList<IndexHintSelector> selector, IList<IndexHintInstruction> instructions)
+        public SelectorInstructionPair(
+            IList<IndexHintSelector> selector,
+            IList<IndexHintInstruction> instructions)
         {
             Selector = selector;
             Instructions = instructions;

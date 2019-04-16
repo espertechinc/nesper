@@ -22,8 +22,12 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
     public class InKeywordTableLookupPlanMultiIdxFactory : TableLookupPlan
     {
         public InKeywordTableLookupPlanMultiIdxFactory(
-            int lookupStream, int indexedStream, TableLookupIndexReqKey[] indexNum, ExprEvaluator keyExpr) : base(
-            lookupStream, indexedStream, indexNum)
+            int lookupStream,
+            int indexedStream,
+            TableLookupIndexReqKey[] indexNum,
+            ExprEvaluator keyExpr)
+            : base(
+                lookupStream, indexedStream, indexNum)
         {
             KeyExpr = keyExpr;
         }
@@ -31,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         public ExprEvaluator KeyExpr { get; }
 
         protected override JoinExecTableLookupStrategy MakeStrategyInternal(
-            EventTable[] eventTable, EventType[] eventTypes)
+            EventTable[] eventTable,
+            EventType[] eventTypes)
         {
             var indexes = new PropertyHashedEventTable[eventTable.Length];
             for (var i = 0; i < eventTable.Length; i++) {

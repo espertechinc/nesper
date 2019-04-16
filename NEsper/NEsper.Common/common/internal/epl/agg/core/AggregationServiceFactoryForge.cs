@@ -8,6 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
-	public interface AggregationServiceFactoryForge {
-	}
+    public interface AggregationServiceFactoryForge
+    {
+    }
 } // end of namespace

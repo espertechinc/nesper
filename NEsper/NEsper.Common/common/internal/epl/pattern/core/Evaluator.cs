@@ -29,14 +29,19 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         ///     provides that event
         /// </param>
         void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent);
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent);
 
         /// <summary>
         ///     Indicate a change in truth value to false.
         /// </summary>
         /// <param name="fromNode">is the node that indicates the change</param>
         /// <param name="restartable">whether the evaluator can be restarted</param>
-        void EvaluateFalse(EvalStateNode fromNode, bool restartable);
+        void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable);
 
         bool IsFilterChildNonQuitting { get; }
     }

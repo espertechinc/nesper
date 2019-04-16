@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
             this.tableLookupStrategy = tableLookupStrategy;
         }
 
-        public EventBean[] Lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext)
+        public EventBean[] Lookup(
+            EventBean[] newData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             ISet<EventBean> removeEvents = null;
 

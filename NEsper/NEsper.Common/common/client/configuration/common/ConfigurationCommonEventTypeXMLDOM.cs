@@ -164,7 +164,10 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="name">of the event property</param>
         /// <param name="xpath">is an arbitrary xpath expression</param>
         /// <param name="type">a constant obtained from System.Xml.XPath.XPathResultType.</param>
-        public void AddXPathProperty(string name, string xpath, XPathResultType type)
+        public void AddXPathProperty(
+            string name,
+            string xpath,
+            XPathResultType type)
         {
             var desc = new XPathPropertyDesc(name, xpath, type);
             XPathProperties.Put(name, desc);
@@ -178,7 +181,11 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="xpath">is an arbitrary xpath expression</param>
         /// <param name="type">a constant obtained from System.Xml.XPath.XPathResultType.</param>
         /// <param name="castToType">is the type name of the type that the return value of the xpath expression is casted to</param>
-        public void AddXPathProperty(string name, string xpath, XPathResultType type, string castToType)
+        public void AddXPathProperty(
+            string name,
+            string xpath,
+            XPathResultType type,
+            string castToType)
         {
             Type castToTypeClass = null;
 
@@ -212,7 +219,11 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="xpath">is an arbitrary xpath expression</param>
         /// <param name="type">a constant obtained from System.Xml.XPath.XPathResultType.</param>
         /// <param name="eventTypeName">is the name of another event type that represents the XPath nodes</param>
-        public void AddXPathPropertyFragment(string name, string xpath, XPathResultType type, string eventTypeName)
+        public void AddXPathPropertyFragment(
+            string name,
+            string xpath,
+            XPathResultType type,
+            string eventTypeName)
         {
             if ((type != XPathResultType.Any) && (type != XPathResultType.NodeSet)) {
                 throw new ArgumentException(
@@ -229,7 +240,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="prefix">is the prefix of the namespace</param>
         /// <param name="namespace">is the namespace name</param>
-        public void AddNamespacePrefix(string prefix, string @namespace)
+        public void AddNamespacePrefix(
+            string prefix,
+            string @namespace)
         {
             NamespacePrefixes.Put(prefix, @namespace);
         }
@@ -283,7 +296,10 @@ namespace com.espertech.esper.common.client.configuration.common
             /// <param name="name">is the event property name</param>
             /// <param name="xPath">is an arbitrary XPath expression</param>
             /// <param name="type">is a javax.xml.xpath.XPathConstants constant</param>
-            public XPathPropertyDesc(string name, string xPath, XPathResultType type)
+            public XPathPropertyDesc(
+                string name,
+                string xPath,
+                XPathResultType type)
             {
                 Name = name;
                 XPath = xPath;
@@ -297,7 +313,11 @@ namespace com.espertech.esper.common.client.configuration.common
             /// <param name="xPath">is an arbitrary XPath expression</param>
             /// <param name="type">is a javax.xml.xpath.XPathConstants constant</param>
             /// <param name="optionalCastToType">if non-null then the return value of the xpath expression is cast to this value</param>
-            public XPathPropertyDesc(string name, string xPath, XPathResultType type, Type optionalCastToType)
+            public XPathPropertyDesc(
+                string name,
+                string xPath,
+                XPathResultType type,
+                Type optionalCastToType)
             {
                 Name = name;
                 XPath = xPath;
@@ -312,7 +332,11 @@ namespace com.espertech.esper.common.client.configuration.common
             /// <param name="xPath">is an arbitrary XPath expression</param>
             /// <param name="type">is a javax.xml.xpath.XPathConstants constant</param>
             /// <param name="eventTypeName">the name of an event type that represents the fragmented property value</param>
-            public XPathPropertyDesc(string name, string xPath, XPathResultType type, string eventTypeName)
+            public XPathPropertyDesc(
+                string name,
+                string xPath,
+                XPathResultType type,
+                string eventTypeName)
             {
                 Name = name;
                 XPath = xPath;

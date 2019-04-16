@@ -18,41 +18,52 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.compile
 {
-	public class ContextCompileTimeResolverImpl : ContextCompileTimeResolver {
-	    private readonly string moduleName;
-	    private readonly ISet<string> moduleUses;
-	    private readonly ContextCompileTimeRegistry locals;
-	    private readonly PathRegistry<string, ContextMetaData> path;
-	    private readonly ModuleDependenciesCompileTime moduleDependencies;
+    public class ContextCompileTimeResolverImpl : ContextCompileTimeResolver
+    {
+        private readonly string moduleName;
+        private readonly ISet<string> moduleUses;
+        private readonly ContextCompileTimeRegistry locals;
+        private readonly PathRegistry<string, ContextMetaData> path;
+        private readonly ModuleDependenciesCompileTime moduleDependencies;
 
-	    public ContextCompileTimeResolverImpl(string moduleName, ISet<string> moduleUses, ContextCompileTimeRegistry locals, PathRegistry<string, ContextMetaData> path, ModuleDependenciesCompileTime moduleDependencies) {
-	        this.moduleName = moduleName;
-	        this.moduleUses = moduleUses;
-	        this.locals = locals;
-	        this.path = path;
-	        this.moduleDependencies = moduleDependencies;
-	    }
+        public ContextCompileTimeResolverImpl(
+            string moduleName,
+            ISet<string> moduleUses,
+            ContextCompileTimeRegistry locals,
+            PathRegistry<string, ContextMetaData> path,
+            ModuleDependenciesCompileTime moduleDependencies)
+        {
+            this.moduleName = moduleName;
+            this.moduleUses = moduleUses;
+            this.locals = locals;
+            this.path = path;
+            this.moduleDependencies = moduleDependencies;
+        }
 
-	    public ContextMetaData GetContextInfo(string contextName) {
-	        // try self-originated protected types first
-	        ContextMetaData localContext = locals.Contexts.Get(contextName);
-	        if (localContext != null) {
-	            return localContext;
-	        }
-	        try {
-	            Pair<ContextMetaData, string> pair = path.GetAnyModuleExpectSingle(contextName, moduleUses);
-	            if (pair != null) {
-	                if (!NameAccessModifier.Visible(pair.First.ContextVisibility, pair.First.ContextModuleName, moduleName)) {
-	                    return null;
-	                }
+        public ContextMetaData GetContextInfo(string contextName)
+        {
+            // try self-originated protected types first
+            ContextMetaData localContext = locals.Contexts.Get(contextName);
+            if (localContext != null) {
+                return localContext;
+            }
 
-	                moduleDependencies.AddPathContext(contextName, pair.Second);
-	                return pair.First;
-	            }
-	        } catch (PathException e) {
-	            throw CompileTimeResolver.MakePathAmbiguous(PathRegistryObjectType.CONTEXT, contextName, e);
-	        }
-	        return null;
-	    }
-	}
+            try {
+                Pair<ContextMetaData, string> pair = path.GetAnyModuleExpectSingle(contextName, moduleUses);
+                if (pair != null) {
+                    if (!NameAccessModifier.Visible(pair.First.ContextVisibility, pair.First.ContextModuleName, moduleName)) {
+                        return null;
+                    }
+
+                    moduleDependencies.AddPathContext(contextName, pair.Second);
+                    return pair.First;
+                }
+            }
+            catch (PathException e) {
+                throw CompileTimeResolver.MakePathAmbiguous(PathRegistryObjectType.CONTEXT, contextName, e);
+            }
+
+            return null;
+        }
+    }
 } // end of namespace

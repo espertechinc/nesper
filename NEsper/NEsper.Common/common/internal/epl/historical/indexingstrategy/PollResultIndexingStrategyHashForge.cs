@@ -7,13 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -26,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         private readonly int streamNum;
 
         public PollResultIndexingStrategyHashForge(
-            int streamNum, EventType eventType, string[] propertyNames, Type[] coercionTypes)
+            int streamNum,
+            EventType eventType,
+            string[] propertyNames,
+            Type[] coercionTypes)
         {
             this.streamNum = streamNum;
             this.eventType = eventType;
@@ -40,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategyHash), GetType(), classScope);
 

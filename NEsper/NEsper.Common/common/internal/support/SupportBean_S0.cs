@@ -15,14 +15,16 @@ namespace com.espertech.esper.common.@internal.support
     {
         private static int _idCounter;
 
-        public static Object[] MakeS0(String propOne, String[] propTwo)
+        public static Object[] MakeS0(
+            String propOne,
+            String[] propTwo)
         {
             _idCounter++;
             var events = new Object[propTwo.Length];
-            for (int i = 0; i < propTwo.Length; i++)
-            {
+            for (int i = 0; i < propTwo.Length; i++) {
                 events[i] = new SupportBean_S0(_idCounter, propOne, propTwo[i]);
             }
+
             return events;
         }
 
@@ -31,20 +33,29 @@ namespace com.espertech.esper.common.@internal.support
             Id = id;
         }
 
-        public SupportBean_S0(int id, String p00)
+        public SupportBean_S0(
+            int id,
+            String p00)
         {
             Id = id;
             P00 = p00;
         }
 
-        public SupportBean_S0(int id, String p00,  String p01)
+        public SupportBean_S0(
+            int id,
+            String p00,
+            String p01)
         {
             Id = id;
             P00 = p00;
             P01 = p01;
         }
 
-        public SupportBean_S0(int id, String p00,  String p01, String p02)
+        public SupportBean_S0(
+            int id,
+            String p00,
+            String p01,
+            String p02)
         {
             Id = id;
             P00 = p00;
@@ -52,7 +63,12 @@ namespace com.espertech.esper.common.@internal.support
             P02 = p02;
         }
 
-        public SupportBean_S0(int id, String p00, String p01, String p02, String p03)
+        public SupportBean_S0(
+            int id,
+            String p00,
+            String p01,
+            String p02,
+            String p03)
         {
             Id = id;
             P00 = p00;
@@ -71,17 +87,19 @@ namespace com.espertech.esper.common.@internal.support
 
         public string P03 { get; set; }
 
-        public override String ToString() {
+        public override String ToString()
+        {
             return "SupportBean_S0{" +
-                    "id=" + Id +
-                    ", p00='" + P00 + '\'' +
-                    ", p01='" + P01 + '\'' +
-                    ", p02='" + P02 + '\'' +
-                    ", p03='" + P03 + '\'' +
-                    '}';
+                   "id=" + Id +
+                   ", p00='" + P00 + '\'' +
+                   ", p01='" + P01 + '\'' +
+                   ", p02='" + P02 + '\'' +
+                   ", p03='" + P03 + '\'' +
+                   '}';
         }
 
-        public override bool Equals(Object o) {
+        public override bool Equals(Object o)
+        {
             if (this == o) return true;
             if (o == null || GetType() != o.GetType()) return false;
 

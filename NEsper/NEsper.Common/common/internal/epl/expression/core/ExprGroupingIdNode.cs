@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public bool IsConstantResult => false;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return Id;
         }
@@ -42,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprNodeRenderable ForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return Constant(Id);
@@ -57,12 +62,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ExprNodeUtilityPrint.ToExpressionStringWFunctionName("grouping_id", ChildNodes, writer);
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             return false;
         }

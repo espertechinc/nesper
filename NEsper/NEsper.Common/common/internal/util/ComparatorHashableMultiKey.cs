@@ -33,7 +33,9 @@ namespace com.espertech.esper.common.@internal.util
             this.isDescendingValues = isDescendingValues;
         }
 
-        public int Compare(HashableMultiKey firstValues, HashableMultiKey secondValues)
+        public int Compare(
+            HashableMultiKey firstValues,
+            HashableMultiKey secondValues)
         {
             if (firstValues.Count != isDescendingValues.Length || secondValues.Count != isDescendingValues.Length) {
                 throw new ArgumentException("Incompatible size MultiKey sizes for comparison");

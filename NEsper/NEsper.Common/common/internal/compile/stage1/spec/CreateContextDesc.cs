@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class CreateContextDesc
     {
-        public CreateContextDesc(string contextName, ContextSpec contextDetail)
+        public CreateContextDesc(
+            string contextName,
+            ContextSpec contextDetail)
         {
             ContextName = contextName;
             ContextDetail = contextDetail;

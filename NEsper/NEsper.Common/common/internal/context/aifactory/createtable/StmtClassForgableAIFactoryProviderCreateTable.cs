@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.context.aifactory.core.SAIFFInitializeSymbol;
 
@@ -27,7 +25,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             string className,
             CodegenPackageScope packageScope,
             StatementAgentInstanceFactoryCreateTableForge forge,
-            string tableName) : base(className, packageScope)
+            string tableName)
+            : base(className, packageScope)
         {
             this.forge = forge;
             this.tableName = tableName;
@@ -38,7 +37,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             return typeof(StatementAgentInstanceFactoryCreateTable);
         }
 
-        protected override CodegenMethod CodegenConstructorInit(CodegenMethodScope parent, CodegenClassScope classScope)
+        protected override CodegenMethod CodegenConstructorInit(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             SAIFFInitializeSymbol saiffInitializeSymbol = new SAIFFInitializeSymbol();
             CodegenMethod method = parent

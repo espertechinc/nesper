@@ -34,16 +34,17 @@ namespace com.espertech.esper.common.client.soda
             Children.Add(expression);
         }
 
-        public virtual void ToEPL(TextWriter writer, PatternExprPrecedenceEnum parentPrecedence, EPStatementFormatter formatter)
+        public virtual void ToEPL(
+            TextWriter writer,
+            PatternExprPrecedenceEnum parentPrecedence,
+            EPStatementFormatter formatter)
         {
-            if (Precedence.GetLevel() < parentPrecedence.GetLevel())
-            {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer, formatter);
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 ToPrecedenceFreeEPL(writer, formatter);
             }
         }
@@ -55,6 +56,8 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Renders the expressions and all it's child expression, in full tree depth, as a string in language syntax. </summary>
         /// <param name="writer">is the output to use</param>
         /// <param name="formatter">for NewLine-whitespace formatting</param>
-        public abstract void ToPrecedenceFreeEPL(TextWriter writer, EPStatementFormatter formatter);
+        public abstract void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter);
     }
 }

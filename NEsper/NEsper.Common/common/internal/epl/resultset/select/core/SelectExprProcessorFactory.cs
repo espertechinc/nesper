@@ -15,9 +15,8 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
-using com.espertech.esper.common.@internal.epl.resultset.select.eval;
+using com.espertech.esper.common.@internal.epl.resultset.@select.eval;
 using com.espertech.esper.common.@internal.epl.streamtype;
-using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
@@ -26,199 +25,232 @@ using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
-	/// <summary>
-	/// Factory for select expression processors.
-	/// </summary>
-	public class SelectExprProcessorFactory {
-	    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    /// <summary>
+    ///     Factory for select expression processors.
+    /// </summary>
+    public class SelectExprProcessorFactory
+    {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-	    public static SelectExprProcessorDescriptor GetProcessor(SelectProcessorArgs args, InsertIntoDesc insertIntoDesc, bool withSubscriber)
-	            {
+        public static SelectExprProcessorDescriptor GetProcessor(
+            SelectProcessorArgs args,
+            InsertIntoDesc insertIntoDesc,
+            bool withSubscriber)
+        {
+            var synthetic = GetProcessorInternal(args, insertIntoDesc);
+            if (args.IsFireAndForget || !withSubscriber) {
+                return new SelectExprProcessorDescriptor(new SelectSubscriberDescriptor(), synthetic);
+            }
 
-	        SelectExprProcessorForge synthetic = GetProcessorInternal(args, insertIntoDesc);
-	        if (args.IsFireAndForget || !withSubscriber) {
-	            return new SelectExprProcessorDescriptor(new SelectSubscriberDescriptor(), synthetic);
-	        }
+            // Handle for-clause delivery contract checking
+            ExprNode[] groupedDeliveryExpr = null;
+            var forDelivery = false;
+            if (args.ForClauseSpec != null) {
+                foreach (var item in args.ForClauseSpec.Clauses) {
+                    if (item.Keyword == null) {
+                        throw new ExprValidationException(
+                            "Expected any of the " + EnumHelper.GetValues<ForClauseKeyword>().RenderAny().ToLowerInvariant() +
+                            " for-clause keywords after reserved keyword 'for'");
+                    }
 
-	        // Handle for-clause delivery contract checking
-	        ExprNode[] groupedDeliveryExpr = null;
-	        bool forDelivery = false;
-	        if (args.ForClauseSpec != null) {
-	            foreach (ForClauseItemSpec item in args.ForClauseSpec.Clauses) {
-	                if (item.Keyword == null) {
-	                    throw new ExprValidationException("Expected any of the " + CompatExtensions.RenderAny(ForClauseKeyword.Values()).ToLowerInvariant() + " for-clause keywords after reserved keyword 'for'");
-	                }
-	                try {
-	                    ForClauseKeyword keyword = ForClauseKeyword.ValueOf(item.Keyword.ToUpperCase(Locale.ENGLISH));
-	                    if ((keyword == ForClauseKeyword.GROUPED_DELIVERY) && (item.Expressions.IsEmpty())) {
-	                        throw new ExprValidationException("The for-clause with the " + ForClauseKeyword.GROUPED_DELIVERY.Name + " keyword requires one or more grouping expressions");
-	                    }
-	                    if ((keyword == ForClauseKeyword.DISCRETE_DELIVERY) && (!item.Expressions.IsEmpty())) {
-	                        throw new ExprValidationException("The for-clause with the " + ForClauseKeyword.DISCRETE_DELIVERY.Name + " keyword does not allow grouping expressions");
-	                    }
-	                    if (forDelivery) {
-	                        throw new ExprValidationException("The for-clause with delivery keywords may only occur once in a statement");
-	                    }
-	                }
-	                catch (EPException)
-	                {
-	                    throw;
-	                }
-	                catch (Exception ex)
-	                {
-	                    throw new ExprValidationException("Expected any of the " + CompatExtensions.RenderAny(ForClauseKeyword.Values()).ToLowerInvariant() + " for-clause keywords after reserved keyword 'for'");
-	                }
+                    try {
+                        var keyword = EnumHelper.Parse<ForClauseKeyword>(item.Keyword);
+                        if (keyword == ForClauseKeyword.GROUPED_DELIVERY && item.Expressions.IsEmpty()) {
+                            throw new ExprValidationException(
+                                "The for-clause with the " + ForClauseKeyword.GROUPED_DELIVERY.GetName() +
+                                " keyword requires one or more grouping expressions");
+                        }
 
-	                StreamTypeService type = new StreamTypeServiceImpl(synthetic.ResultEventType, null, false);
-	                groupedDeliveryExpr = new ExprNode[item.Expressions.Count];
-	                ExprValidationContext validationContext = new ExprValidationContextBuilder(type, args.StatementRawInfo, args.CompileTimeServices).WithAllowBindingConsumption(true).Build();
-	                for (int i = 0; i < item.Expressions.Count; i++) {
-	                    groupedDeliveryExpr[i] = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.FORCLAUSE, item.Expressions.Get(i), validationContext);
-	                }
-	                forDelivery = true;
-	            }
-	            if (groupedDeliveryExpr != null && groupedDeliveryExpr.Length == 0) {
-	                groupedDeliveryExpr = null;
-	            }
-	        }
+                        if (keyword == ForClauseKeyword.DISCRETE_DELIVERY && !item.Expressions.IsEmpty()) {
+                            throw new ExprValidationException(
+                                "The for-clause with the " + ForClauseKeyword.DISCRETE_DELIVERY.GetName() +
+                                " keyword does not allow grouping expressions");
+                        }
 
-	        bool allowSubscriber = args.CompileTimeServices.Configuration.Compiler.ByteCode.IsAllowSubscriber;
-	        SelectSubscriberDescriptor descriptor;
-	        SelectExprProcessorForge forge;
+                        if (forDelivery) {
+                            throw new ExprValidationException("The for-clause with delivery keywords may only occur once in a statement");
+                        }
+                    }
+                    catch (EPException) {
+                        throw;
+                    }
+                    catch (Exception ex) {
+                        throw new ExprValidationException(
+                            "Expected any of the " + EnumHelper.GetValues<ForClauseKeyword>().RenderAny().ToLowerInvariant() +
+                            " for-clause keywords after reserved keyword 'for'");
+                    }
 
-	        if (allowSubscriber) {
-	            BindProcessorForge bindProcessor = new BindProcessorForge(synthetic, args.SelectionList, args.TypeService.EventTypes, args.TypeService.StreamNames, args.TableCompileTimeResolver);
-	            descriptor = new SelectSubscriberDescriptor(bindProcessor.ExpressionTypes, bindProcessor.ColumnNamesAssigned, forDelivery, groupedDeliveryExpr);
-	            forge = new BindSelectExprProcessorForge(synthetic, bindProcessor);
-	        } else {
-	            descriptor = new SelectSubscriberDescriptor();
-	            forge = synthetic;
-	        }
+                    StreamTypeService type = new StreamTypeServiceImpl(synthetic.ResultEventType, null, false);
+                    groupedDeliveryExpr = new ExprNode[item.Expressions.Count];
+                    var validationContext = new ExprValidationContextBuilder(type, args.StatementRawInfo, args.CompileTimeServices)
+                        .WithAllowBindingConsumption(true).Build();
+                    for (var i = 0; i < item.Expressions.Count; i++) {
+                        groupedDeliveryExpr[i] = ExprNodeUtilityValidate.GetValidatedSubtree(
+                            ExprNodeOrigin.FORCLAUSE, item.Expressions[i], validationContext);
+                    }
 
-	        return new SelectExprProcessorDescriptor(descriptor, forge);
-	    }
+                    forDelivery = true;
+                }
 
-	    private static SelectExprProcessorForge GetProcessorInternal(SelectProcessorArgs args, InsertIntoDesc insertIntoDesc)
-	            {
-	        // Wildcard not allowed when insert into specifies column order
-	        if (args.IsUsingWildcard && insertIntoDesc != null && !insertIntoDesc.ColumnNames.IsEmpty()) {
-	            throw new ExprValidationException("Wildcard not allowed when insert-into specifies column order");
-	        }
+                if (groupedDeliveryExpr != null && groupedDeliveryExpr.Length == 0) {
+                    groupedDeliveryExpr = null;
+                }
+            }
 
-	        EventType insertIntoTarget = insertIntoDesc == null ? null : args.EventTypeCompileTimeResolver.GetTypeByName(insertIntoDesc.EventTypeName);
+            var allowSubscriber = args.CompileTimeServices.Configuration.Compiler.ByteCode.IsAllowSubscriber;
+            SelectSubscriberDescriptor descriptor;
+            SelectExprProcessorForge forge;
 
-	        // Determine wildcard processor (select *)
-	        if (IsWildcardsOnly(args.SelectionList)) {
-	            // For joins
-	            if (args.TypeService.StreamNames.Length > 1 && (!(insertIntoTarget is VariantEventType))) {
-	                Log.Debug(".getProcessor Using SelectExprJoinWildcardProcessor");
-	                return SelectExprJoinWildcardProcessorFactory.Create(args, insertIntoDesc, eventTypeName => eventTypeName);
-	            } else if (insertIntoDesc == null) {
-	                // Single-table selects with no insert-into
-	                // don't need extra processing
-	                Log.Debug(".getProcessor Using wildcard processor");
-	                if (args.TypeService.HasTableTypes) {
-	                    TableMetaData table = args.TableCompileTimeResolver.ResolveTableFromEventType(args.TypeService.EventTypes[0]);
-	                    if (table != null) {
-	                        return new SelectEvalWildcardTable(table);
-	                    }
-	                }
-	                return new SelectEvalWildcardNonJoin(args.TypeService.EventTypes[0]);
-	            }
-	        }
+            if (allowSubscriber) {
+                var bindProcessor = new BindProcessorForge(
+                    synthetic, args.SelectionList, args.TypeService.EventTypes, args.TypeService.StreamNames, args.TableCompileTimeResolver);
+                descriptor = new SelectSubscriberDescriptor(
+                    bindProcessor.ExpressionTypes, bindProcessor.ColumnNamesAssigned, forDelivery, groupedDeliveryExpr);
+                forge = new BindSelectExprProcessorForge(synthetic, bindProcessor);
+            }
+            else {
+                descriptor = new SelectSubscriberDescriptor();
+                forge = synthetic;
+            }
 
-	        // Verify the assigned or name used is unique
-	        if (insertIntoDesc == null) {
-	            VerifyNameUniqueness(args.SelectionList);
-	        }
+            return new SelectExprProcessorDescriptor(descriptor, forge);
+        }
 
-	        // Construct processor
-	        SelectExprBuckets buckets = GetSelectExpressionBuckets(args.SelectionList);
+        private static SelectExprProcessorForge GetProcessorInternal(
+            SelectProcessorArgs args,
+            InsertIntoDesc insertIntoDesc)
+        {
+            // Wildcard not allowed when insert into specifies column order
+            if (args.IsUsingWildcard && insertIntoDesc != null && !insertIntoDesc.ColumnNames.IsEmpty()) {
+                throw new ExprValidationException("Wildcard not allowed when insert-into specifies column order");
+            }
 
-	        SelectExprProcessorHelper factory = new SelectExprProcessorHelper(buckets.expressions, buckets.selectedStreams, args, insertIntoDesc);
-	        SelectExprProcessorForge forge = factory.Forge;
-	        return forge;
-	    }
+            var insertIntoTarget = insertIntoDesc == null ? null : args.EventTypeCompileTimeResolver.GetTypeByName(insertIntoDesc.EventTypeName);
 
-	    protected internal static void VerifyNameUniqueness(SelectClauseElementCompiled[] selectionList) {
-	        ISet<string> names = new HashSet<string>();
-	        foreach (SelectClauseElementCompiled element in selectionList) {
-	            if (element is SelectClauseExprCompiledSpec) {
-	                SelectClauseExprCompiledSpec expr = (SelectClauseExprCompiledSpec) element;
-	                if (names.Contains(expr.AssignedName)) {
-	                    throw new ExprValidationException("Column name '" + expr.AssignedName + "' appears more then once in select clause");
-	                }
-	                names.Add(expr.AssignedName);
-	            } else if (element is SelectClauseStreamCompiledSpec) {
-	                SelectClauseStreamCompiledSpec stream = (SelectClauseStreamCompiledSpec) element;
-	                if (stream.OptionalName == null) {
-	                    continue; // ignore no-name stream selectors
-	                }
-	                if (names.Contains(stream.OptionalName)) {
-	                    throw new ExprValidationException("Column name '" + stream.OptionalName + "' appears more then once in select clause");
-	                }
-	                names.Add(stream.OptionalName);
-	            }
-	        }
-	    }
+            // Determine wildcard processor (select *)
+            if (IsWildcardsOnly(args.SelectionList)) {
+                // For joins
+                if (args.TypeService.StreamNames.Length > 1 && !(insertIntoTarget is VariantEventType)) {
+                    Log.Debug(".getProcessor Using SelectExprJoinWildcardProcessor");
+                    return SelectExprJoinWildcardProcessorFactory.Create(args, insertIntoDesc, eventTypeName => eventTypeName);
+                }
 
-	    private static bool IsWildcardsOnly(SelectClauseElementCompiled[] elements) {
-	        foreach (SelectClauseElementCompiled element in elements) {
-	            if (!(element is SelectClauseElementWildcard)) {
-	                return false;
-	            }
-	        }
-	        return true;
-	    }
+                if (insertIntoDesc == null) {
+                    // Single-table selects with no insert-into
+                    // don't need extra processing
+                    Log.Debug(".getProcessor Using wildcard processor");
+                    if (args.TypeService.HasTableTypes) {
+                        var table = args.TableCompileTimeResolver.ResolveTableFromEventType(args.TypeService.EventTypes[0]);
+                        if (table != null) {
+                            return new SelectEvalWildcardTable(table);
+                        }
+                    }
 
-	    private static SelectExprBuckets GetSelectExpressionBuckets(SelectClauseElementCompiled[] elements) {
-	        IList<SelectClauseExprCompiledSpec> expressions = new List<SelectClauseExprCompiledSpec>();
-	        IList<SelectExprStreamDesc> selectedStreams = new List<SelectExprStreamDesc>();
+                    return new SelectEvalWildcardNonJoin(args.TypeService.EventTypes[0]);
+                }
+            }
 
-	        foreach (SelectClauseElementCompiled element in elements) {
-	            if (element is SelectClauseExprCompiledSpec) {
-	                SelectClauseExprCompiledSpec expr = (SelectClauseExprCompiledSpec) element;
-	                if (!IsTransposingFunction(expr.SelectExpression)) {
-	                    expressions.Add(expr);
-	                } else {
-	                    selectedStreams.Add(new SelectExprStreamDesc(expr));
-	                }
-	            } else if (element is SelectClauseStreamCompiledSpec) {
-	                selectedStreams.Add(new SelectExprStreamDesc((SelectClauseStreamCompiledSpec) element));
-	            }
-	        }
-	        return new SelectExprBuckets(expressions, selectedStreams);
-	    }
+            // Verify the assigned or name used is unique
+            if (insertIntoDesc == null) {
+                VerifyNameUniqueness(args.SelectionList);
+            }
 
-	    private static bool IsTransposingFunction(ExprNode selectExpression) {
-	        if (!(selectExpression is ExprDotNode)) {
-	            return false;
-	        }
-	        ExprDotNode dotNode = (ExprDotNode) selectExpression;
-	        if (dotNode.ChainSpec.Get(0).Name.ToLowerInvariant().Equals(ImportServiceCompileTime.EXT_SINGLEROW_FUNCTION_TRANSPOSE)) {
-	            return true;
-	        }
-	        return false;
-	    }
+            // Construct processor
+            var buckets = GetSelectExpressionBuckets(args.SelectionList);
 
-	    public class SelectExprBuckets {
-	        private readonly IList<SelectClauseExprCompiledSpec> expressions;
-	        private readonly IList<SelectExprStreamDesc> selectedStreams;
+            var factory = new SelectExprProcessorHelper(buckets.Expressions, buckets.SelectedStreams, args, insertIntoDesc);
+            var forge = factory.Forge;
+            return forge;
+        }
 
-	        public SelectExprBuckets(IList<SelectClauseExprCompiledSpec> expressions, IList<SelectExprStreamDesc> selectedStreams) {
-	            this.expressions = expressions;
-	            this.selectedStreams = selectedStreams;
-	        }
+        protected internal static void VerifyNameUniqueness(SelectClauseElementCompiled[] selectionList)
+        {
+            ISet<string> names = new HashSet<string>();
+            foreach (var element in selectionList) {
+                if (element is SelectClauseExprCompiledSpec) {
+                    var expr = (SelectClauseExprCompiledSpec) element;
+                    if (names.Contains(expr.AssignedName)) {
+                        throw new ExprValidationException("Column name '" + expr.AssignedName + "' appears more then once in select clause");
+                    }
 
-	        public IList<SelectExprStreamDesc> SelectedStreams
-	        {
-	            get => selectedStreams;
-	        }
+                    names.Add(expr.AssignedName);
+                }
+                else if (element is SelectClauseStreamCompiledSpec) {
+                    var stream = (SelectClauseStreamCompiledSpec) element;
+                    if (stream.OptionalName == null) {
+                        continue; // ignore no-name stream selectors
+                    }
 
-	        public IList<SelectClauseExprCompiledSpec> Expressions
-	        {
-	            get => expressions;
-	        }
-	    }
-	}
+                    if (names.Contains(stream.OptionalName)) {
+                        throw new ExprValidationException("Column name '" + stream.OptionalName + "' appears more then once in select clause");
+                    }
+
+                    names.Add(stream.OptionalName);
+                }
+            }
+        }
+
+        private static bool IsWildcardsOnly(SelectClauseElementCompiled[] elements)
+        {
+            foreach (var element in elements) {
+                if (!(element is SelectClauseElementWildcard)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static SelectExprBuckets GetSelectExpressionBuckets(SelectClauseElementCompiled[] elements)
+        {
+            IList<SelectClauseExprCompiledSpec> expressions = new List<SelectClauseExprCompiledSpec>();
+            IList<SelectExprStreamDesc> selectedStreams = new List<SelectExprStreamDesc>();
+
+            foreach (var element in elements) {
+                if (element is SelectClauseExprCompiledSpec) {
+                    var expr = (SelectClauseExprCompiledSpec) element;
+                    if (!IsTransposingFunction(expr.SelectExpression)) {
+                        expressions.Add(expr);
+                    }
+                    else {
+                        selectedStreams.Add(new SelectExprStreamDesc(expr));
+                    }
+                }
+                else if (element is SelectClauseStreamCompiledSpec) {
+                    selectedStreams.Add(new SelectExprStreamDesc((SelectClauseStreamCompiledSpec) element));
+                }
+            }
+
+            return new SelectExprBuckets(expressions, selectedStreams);
+        }
+
+        private static bool IsTransposingFunction(ExprNode selectExpression)
+        {
+            if (!(selectExpression is ExprDotNode)) {
+                return false;
+            }
+
+            var dotNode = (ExprDotNode) selectExpression;
+            if (dotNode.ChainSpec[0].Name.ToLowerInvariant() == ImportServiceCompileTime.EXT_SINGLEROW_FUNCTION_TRANSPOSE) {
+                return true;
+            }
+
+            return false;
+        }
+
+        public class SelectExprBuckets
+        {
+            public SelectExprBuckets(
+                IList<SelectClauseExprCompiledSpec> expressions,
+                IList<SelectExprStreamDesc> selectedStreams)
+            {
+                Expressions = expressions;
+                SelectedStreams = selectedStreams;
+            }
+
+            public IList<SelectExprStreamDesc> SelectedStreams { get; }
+
+            public IList<SelectClauseExprCompiledSpec> Expressions { get; }
+        }
+    }
 } // end of namespace

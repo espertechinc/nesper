@@ -12,6 +12,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
     public interface PatternDeltaCompute
     {
-        long ComputeDelta(MatchedEventMap beginState, PatternAgentInstanceContext context);
+        long ComputeDelta(
+            MatchedEventMap beginState,
+            PatternAgentInstanceContext context);
     }
 } // end of namespace

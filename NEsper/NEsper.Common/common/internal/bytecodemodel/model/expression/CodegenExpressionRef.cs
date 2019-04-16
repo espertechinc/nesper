@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public virtual string Ref { get; internal set; }
 
-        public virtual void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public virtual void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append(Ref);
         }

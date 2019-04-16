@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             return null;
         }
 
-        public ICollection<object> GetValueCollectionEvents(
+        public ICollection<EventBean> GetValueCollectionEvents(
             int aggColNum,
             AggregationRow row,
             EventBean[] eventsPerStream,

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -17,38 +16,46 @@ using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
-	public class FAFQueryMethodSelectExecNoContextNoJoin : FAFQueryMethodSelectExec {
-	    public static readonly FAFQueryMethodSelectExec INSTANCE = new FAFQueryMethodSelectExecNoContextNoJoin();
+    public class FAFQueryMethodSelectExecNoContextNoJoin : FAFQueryMethodSelectExec
+    {
+        public static readonly FAFQueryMethodSelectExec INSTANCE = new FAFQueryMethodSelectExecNoContextNoJoin();
 
-	    private FAFQueryMethodSelectExecNoContextNoJoin() {
-	    }
+        private FAFQueryMethodSelectExecNoContextNoJoin()
+        {
+        }
 
-	    public EPPreparedQueryResult Execute(FAFQueryMethodSelect select, ContextPartitionSelector[] contextPartitionSelectors, FAFQueryMethodAssignerSetter assignerSetter, ContextManagementService contextManagementService) {
-	        FireAndForgetProcessor processor = select.Processors[0];
-	        FireAndForgetInstance processorInstance = processor.ProcessorInstanceNoContext;
+        public EPPreparedQueryResult Execute(
+            FAFQueryMethodSelect select,
+            ContextPartitionSelector[] contextPartitionSelectors,
+            FAFQueryMethodAssignerSetter assignerSetter,
+            ContextManagementService contextManagementService)
+        {
+            FireAndForgetProcessor processor = select.Processors[0];
+            FireAndForgetInstance processorInstance = processor.ProcessorInstanceNoContext;
 
-	        ICollection<EventBean> events;
-	        AgentInstanceContext agentInstanceContext = null;
-	        if (processorInstance == null) {
-	            events = Collections.GetEmptyList<object>();
-	        } else {
-	            agentInstanceContext = processorInstance.AgentInstanceContext;
-	            events = Snapshot(select.ConsumerFilters[0], processorInstance, select.QueryGraph, select.Annotations);
-	        }
+            ICollection<EventBean> events;
+            AgentInstanceContext agentInstanceContext = null;
+            if (processorInstance == null) {
+                events = new EmptyList<EventBean>();
+            }
+            else {
+                agentInstanceContext = processorInstance.AgentInstanceContext;
+                events = Snapshot(select.ConsumerFilters[0], processorInstance, select.QueryGraph, select.Annotations);
+            }
 
-	        // get RSP
-	        ResultSetProcessor resultSetProcessor = ProcessorWithAssign(select.ResultSetProcessorFactoryProvider, agentInstanceContext, assignerSetter, select.TableAccesses);
+            // get RSP
+            ResultSetProcessor resultSetProcessor = ProcessorWithAssign(
+                select.ResultSetProcessorFactoryProvider, agentInstanceContext, assignerSetter, select.TableAccesses);
 
-	        if (select.WhereClause != null) {
-	            events = Filtered(events, select.WhereClause, agentInstanceContext);
-	        }
+            if (select.WhereClause != null) {
+                events = Filtered(events, select.WhereClause, agentInstanceContext);
+            }
 
-	        return ProcessedNonJoin(resultSetProcessor, events, select.EventBeanReaderDistinct);
-	    }
-	}
+            return ProcessedNonJoin(resultSetProcessor, events, select.EventBeanReaderDistinct);
+        }
+    }
 } // end of namespace

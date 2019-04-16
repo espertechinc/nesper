@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 {
     public class PointRegionQuadTreeFilterIndexCheckBB
     {
-        public static void CheckBB(BoundingBox bb, double x, double y)
+        public static void CheckBB(
+            BoundingBox bb,
+            double x,
+            double y)
         {
             if (!bb.ContainsPoint(x, y)) {
                 throw new EPException("Point (" + x + "," + y + ") not in " + bb);

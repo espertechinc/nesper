@@ -10,28 +10,32 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.name
 {
-	public class CodegenFieldNameViewAgg : CodegenFieldName {
-	    private readonly int _streamNumber;
+    public class CodegenFieldNameViewAgg : CodegenFieldName
+    {
+        private readonly int _streamNumber;
 
-	    public CodegenFieldNameViewAgg(int streamNumber) {
-	        this._streamNumber = streamNumber;
-	    }
+        public CodegenFieldNameViewAgg(int streamNumber)
+        {
+            this._streamNumber = streamNumber;
+        }
 
-	    public string Name {
-	        get => CodegenPackageScopeNames.AggView(_streamNumber);
-	    }
+        public string Name {
+            get => CodegenPackageScopeNames.AggView(_streamNumber);
+        }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+        public override bool Equals(object o)
+        {
+            if (this == o) return true;
+            if (o == null || GetType() != o.GetType()) return false;
 
-	        CodegenFieldNameViewAgg that = (CodegenFieldNameViewAgg) o;
+            CodegenFieldNameViewAgg that = (CodegenFieldNameViewAgg) o;
 
-	        return _streamNumber == that._streamNumber;
-	    }
+            return _streamNumber == that._streamNumber;
+        }
 
-	    public override int GetHashCode() {
-	        return _streamNumber;
-	    }
-	}
+        public override int GetHashCode()
+        {
+            return _streamNumber;
+        }
+    }
 } // end of namespace

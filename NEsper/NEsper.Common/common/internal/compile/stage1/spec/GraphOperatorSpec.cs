@@ -14,11 +14,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class GraphOperatorSpec
     {
-        public GraphOperatorSpec(String operatorName,
-                                 GraphOperatorInput input,
-                                 GraphOperatorOutput output,
-                                 GraphOperatorDetail detail,
-                                 IList<AnnotationDesc> annotations)
+        public GraphOperatorSpec(
+            String operatorName,
+            GraphOperatorInput input,
+            GraphOperatorOutput output,
+            GraphOperatorDetail detail,
+            IList<AnnotationDesc> annotations)
         {
             OperatorName = operatorName;
             Input = input;

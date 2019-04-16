@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public override EventType EventType { get; }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
         }
 

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;
@@ -21,30 +20,24 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             MethodTargetStrategy origin,
             AgentInstanceContext agentInstanceContext)
         {
-            if (invocationResult == null)
-            {
+            if (invocationResult == null) {
                 return Collections.GetEmptyList<EventBean>();
             }
 
-            if (invocationResult.GetType().IsArray)
-            {
+            if (invocationResult.GetType().IsArray) {
                 return invocationResult.UnwrapIntoList<EventBean>();
             }
 
-            if (invocationResult.GetType().IsGenericCollection())
-            {
+            if (invocationResult.GetType().IsGenericCollection()) {
                 var collection = invocationResult.Unwrap<EventBean>();
                 var length = collection.Count;
-                if (length == 0)
-                {
+                if (length == 0) {
                     return Collections.GetEmptyList<EventBean>();
                 }
 
                 var genRowResult = new List<EventBean>(length);
-                foreach (var value in collection)
-                {
-                    if (value != null)
-                    {
+                foreach (var value in collection) {
+                    if (value != null) {
                         genRowResult.Add(value);
                     }
                 }
@@ -52,18 +45,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                 return genRowResult;
             }
 
-            var it = (IEnumerator<EventBean>)invocationResult;
-            if (!it.MoveNext())
-            {
+            var it = (IEnumerator<EventBean>) invocationResult;
+            if (!it.MoveNext()) {
                 return Collections.GetEmptyList<EventBean>();
             }
 
             var rowResult = new List<EventBean>();
-            for (; it.MoveNext();)
-            {
+            for (; it.MoveNext();) {
                 var value = it.Current;
-                if (value != null)
-                {
+                if (value != null) {
                     rowResult.Add(value);
                 }
             }

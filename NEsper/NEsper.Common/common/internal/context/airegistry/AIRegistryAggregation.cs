@@ -7,18 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.airegistry
 {
-	public interface AIRegistryAggregation : AggregationService {
-	    void AssignService(int serviceId, AggregationService aggregationService);
+    public interface AIRegistryAggregation : AggregationService
+    {
+        void AssignService(
+            int serviceId,
+            AggregationService aggregationService);
 
-	    void DeassignService(int serviceId);
+        void DeassignService(int serviceId);
 
-	    int InstanceCount { get; }
-	}
+        int InstanceCount { get; }
+    }
 } // end of namespace

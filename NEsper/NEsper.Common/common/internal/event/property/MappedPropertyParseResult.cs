@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <param name="className">is the class name, or null if there isn't one</param>
         /// <param name="methodName">is the method name</param>
         /// <param name="argString">is the argument</param>
-        public MappedPropertyParseResult(string className, string methodName, string argString)
+        public MappedPropertyParseResult(
+            string className,
+            string methodName,
+            string argString)
         {
             ClassName = className;
             MethodName = methodName;

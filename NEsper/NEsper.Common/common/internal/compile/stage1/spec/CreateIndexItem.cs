@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         private readonly string _type;
         private readonly IList<ExprNode> _parameters;
 
-        public CreateIndexItem(IList<ExprNode> expressions, string type, IList<ExprNode> parameters)
+        public CreateIndexItem(
+            IList<ExprNode> expressions,
+            string type,
+            IList<ExprNode> parameters)
         {
             _expressions = expressions;
             _type = type;

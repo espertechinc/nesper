@@ -15,7 +15,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 {
     public class PointRegionQuadTreeFilterIndexSet<TL>
     {
-        public static void Set(double x, double y, TL value, PointRegionQuadTree<object> tree)
+        public static void Set(
+            double x,
+            double y,
+            TL value,
+            PointRegionQuadTree<object> tree)
         {
             var root = tree.Root;
             CheckBB(root.Bb, x, y);
@@ -24,9 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         }
 
         private static PointRegionQuadTreeNode SetOnNode(
-            double x, double y,
-            TL value, 
-            PointRegionQuadTreeNode node, 
+            double x,
+            double y,
+            TL value,
+            PointRegionQuadTreeNode node,
             PointRegionQuadTree<object> tree)
         {
             if (node is PointRegionQuadTreeNodeLeaf<object>) {
@@ -47,9 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         }
 
         private static void AddToBranch(
-            PointRegionQuadTreeNodeBranch branch, 
-            double x, 
-            double y, 
+            PointRegionQuadTreeNodeBranch branch,
+            double x,
+            double y,
             object value,
             PointRegionQuadTree<object> tree)
         {
@@ -69,7 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         }
 
         private static PointRegionQuadTreeNode Subdivide(
-            PointRegionQuadTreeNodeLeaf<object> leaf, PointRegionQuadTree<object> tree)
+            PointRegionQuadTreeNodeLeaf<object> leaf,
+            PointRegionQuadTree<object> tree)
         {
             var w = (leaf.Bb.MaxX - leaf.Bb.MinX) / 2d;
             var h = (leaf.Bb.MaxY - leaf.Bb.MinY) / 2d;
@@ -103,7 +109,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         }
 
         private static void SubdividePoint(
-            XYPointWValue<TL> point, PointRegionQuadTreeNodeBranch branch, PointRegionQuadTree<object> tree)
+            XYPointWValue<TL> point,
+            PointRegionQuadTreeNodeBranch branch,
+            PointRegionQuadTree<object> tree)
         {
             var x = point.X;
             var y = point.Y;
@@ -122,7 +130,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             }
         }
 
-        private static int SetOnLeaf(PointRegionQuadTreeNodeLeaf<object> leaf, double x, double y, TL value)
+        private static int SetOnLeaf(
+            PointRegionQuadTreeNodeLeaf<object> leaf,
+            double x,
+            double y,
+            TL value)
         {
             var currentValue = leaf.Points;
 

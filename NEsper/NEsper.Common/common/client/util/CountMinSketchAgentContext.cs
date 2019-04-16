@@ -7,34 +7,34 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.approx.countminsketch;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.util
 {
-	/// <summary>
-	/// Count-min sketch base context object.
-	/// </summary>
-	public abstract class CountMinSketchAgentContext {
-	    private readonly CountMinSketchState state;
+    /// <summary>
+    /// Count-min sketch base context object.
+    /// </summary>
+    public abstract class CountMinSketchAgentContext
+    {
+        private readonly CountMinSketchState state;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="state">the state</param>
-	    protected CountMinSketchAgentContext(CountMinSketchState state) {
-	        this.state = state;
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="state">the state</param>
+        protected CountMinSketchAgentContext(CountMinSketchState state)
+        {
+            this.state = state;
+        }
 
-	    /// <summary>
-	    /// Returns state
-	    /// </summary>
-	    /// <returns>state</returns>
-	    public CountMinSketchState State
-	    {
-	        get => state;
-	    }
-	}
+        /// <summary>
+        /// Returns state
+        /// </summary>
+        /// <returns>state</returns>
+        public CountMinSketchState State {
+            get => state;
+        }
+    }
 } // end of namespace

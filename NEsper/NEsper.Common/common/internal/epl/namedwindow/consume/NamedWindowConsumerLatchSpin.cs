@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.logging;
 
@@ -30,21 +29,26 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 
         private volatile bool isCompleted;
 
-        public NamedWindowConsumerLatchSpin(NamedWindowDeltaData deltaData, IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> dispatchTo, NamedWindowConsumerLatchFactory factory, NamedWindowConsumerLatchSpin earlier) : base(deltaData, dispatchTo)
+        public NamedWindowConsumerLatchSpin(
+            NamedWindowDeltaData deltaData,
+            IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> dispatchTo,
+            NamedWindowConsumerLatchFactory factory,
+            NamedWindowConsumerLatchSpin earlier)
+            : base(deltaData, dispatchTo)
         {
             this.factory = factory;
             this.earlier = earlier;
         }
 
-        public NamedWindowConsumerLatchSpin(NamedWindowConsumerLatchFactory factory) : base(null, null)
+        public NamedWindowConsumerLatchSpin(NamedWindowConsumerLatchFactory factory)
+            : base(null, null)
         {
             this.factory = factory;
             isCompleted = true;
             earlier = null;
         }
 
-        public override NamedWindowConsumerLatch Earlier
-        {
+        public override NamedWindowConsumerLatch Earlier {
             get => earlier;
         }
 
@@ -52,8 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         /// Returns true if the dispatch completed for this future.
         /// </summary>
         /// <returns>true for completed, false if not</returns>
-        public bool IsCompleted
-        {
+        public bool IsCompleted {
             get => isCompleted;
         }
 
@@ -62,19 +65,18 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         /// </summary>
         public override void Await()
         {
-            if (earlier.isCompleted)
-            {
+            if (earlier.isCompleted) {
                 return;
             }
 
             long spinStartTime = factory.TimeSourceService.GetTimeMillis();
-            while (!earlier.isCompleted)
-            {
+            while (!earlier.isCompleted) {
                 Thread.Yield();
                 long spinDelta = factory.TimeSourceService.GetTimeMillis() - spinStartTime;
-                if (spinDelta > factory.MsecWait)
-                {
-                    Log.Info("Spin wait timeout exceeded in named window '" + factory.Name + "' consumer dispatch at " + factory.MsecWait + "ms for " + factory.Name + ", consider disabling named window consumer dispatch latching for better performance");
+                if (spinDelta > factory.MsecWait) {
+                    Log.Info(
+                        "Spin wait timeout exceeded in named window '" + factory.Name + "' consumer dispatch at " + factory.MsecWait + "ms for " +
+                        factory.Name + ", consider disabling named window consumer dispatch latching for better performance");
                     break;
                 }
             }

@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         private volatile VersionedValueList<object> versionsLow;
 
         public VariableReader(
-            Variable variable, VariableVersionThreadLocal versionThreadLocal, VersionedValueList<object> versionsLow)
+            Variable variable,
+            VariableVersionThreadLocal versionThreadLocal,
+            VersionedValueList<object> versionsLow)
         {
             Variable = variable;
             this.versionThreadLocal = versionThreadLocal;

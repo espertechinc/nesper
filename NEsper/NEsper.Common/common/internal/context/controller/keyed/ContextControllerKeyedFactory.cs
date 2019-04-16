@@ -34,8 +34,12 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         public override FilterValueSetParam[][] PopulateFilterAddendum(
-            FilterSpecActivatable filterSpec, bool forStatement, int nestingLevel, object partitionKey,
-            ContextControllerStatementDesc optionalStatementDesc, AgentInstanceContext agentInstanceContextStatement)
+            FilterSpecActivatable filterSpec,
+            bool forStatement,
+            int nestingLevel,
+            object partitionKey,
+            ContextControllerStatementDesc optionalStatementDesc,
+            AgentInstanceContext agentInstanceContextStatement)
         {
             if (!forStatement) {
                 var found = false;
@@ -59,7 +63,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 agentInstanceContextStatement);
         }
 
-        public override void PopulateContextProperties(IDictionary<string, object> props, object partitionKey)
+        public override void PopulateContextProperties(
+            IDictionary<string, object> props,
+            object partitionKey)
         {
             if (!keyedSpec.HasAsName) {
                 PopulateContextPropertiesAddKeyInfo(props, partitionKey);
@@ -103,7 +109,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             return partitionKey;
         }
 
-        private void PopulateContextPropertiesAddKeyInfo(IDictionary<string, object> props, object getterKey)
+        private void PopulateContextPropertiesAddKeyInfo(
+            IDictionary<string, object> props,
+            object getterKey)
         {
             if (getterKey is HashableMultiKey) {
                 var values = ((HashableMultiKey) getterKey).Keys;

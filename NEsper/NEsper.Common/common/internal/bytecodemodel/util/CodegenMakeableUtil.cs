@@ -8,14 +8,11 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
@@ -23,29 +20,29 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
     public class CodegenMakeableUtil
     {
         public static CodegenExpression MakeArray<T>(
-            string name, 
+            string name,
             Type clazz,
             CodegenMakeable<T>[] forges,
-            Type generator, 
+            Type generator,
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
             where T : CodegenSymbolProvider
         {
-            Type arrayType = TypeHelper.GetArrayType(clazz);
+            var arrayType = TypeHelper.GetArrayType(clazz);
             if (forges == null || forges.Length == 0) {
                 return NewArrayByLength(clazz, Constant(0));
             }
 
-            CodegenMethod method = parent.MakeChild(arrayType, generator, classScope);
+            var method = parent.MakeChild(arrayType, generator, classScope);
             method.Block.DeclareVar(arrayType, name, NewArrayByLength(clazz, Constant(forges.Length)));
-            for (int i = 0; i < forges.Length; i++) {
+            for (var i = 0; i < forges.Length; i++) {
                 method.Block.AssignArrayElement(
-                    @Ref(name), Constant(i),
+                    Ref(name), Constant(i),
                     forges[i] == null ? ConstantNull() : forges[i].Make(method, symbols, classScope));
             }
 
-            method.Block.MethodReturn(@Ref(name));
+            method.Block.MethodReturn(Ref(name));
             return LocalMethod(method);
         }
 
@@ -53,10 +50,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             string name,
             Type clazzKey,
             Type clazzValue,
-            IDictionary<CodegenMakeable<K>, CodegenMakeable<V>> map, 
+            IDictionary<CodegenMakeable<K>, CodegenMakeable<V>> map,
             Type generator,
-            CodegenMethodScope parent, 
-            SAIFFInitializeSymbol symbols, 
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
             where K : CodegenSymbolProvider
             where V : CodegenSymbolProvider
@@ -65,11 +62,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                 return StaticMethod(typeof(Collections), "emptyMap");
             }
 
-            CodegenMethod method = parent.MakeChild(typeof(IDictionary<string, object>), generator, classScope);
-            int count = 0;
+            var method = parent.MakeChild(typeof(IDictionary<string, object>), generator, classScope);
+            var count = 0;
             foreach (var entry in map) {
-                string nameKey = "key" + count;
-                string nameValue = "value" + count;
+                var nameKey = "key" + count;
+                var nameValue = "value" + count;
                 method.Block
                     .DeclareVar(clazzKey, nameKey, entry.Key.Make(method, symbols, classScope))
                     .DeclareVar(clazzValue, nameValue, entry.Value.Make(method, symbols, classScope));
@@ -78,16 +75,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
             if (map.Count == 1) {
                 method.Block.MethodReturn(
-                    StaticMethod(typeof(Collections), "singletonMap", @Ref("key0"), @Ref("value0")));
+                    StaticMethod(typeof(Collections), "singletonMap", Ref("key0"), Ref("value0")));
             }
             else {
                 method.Block.DeclareVar(
-                    typeof(IDictionary<object, object>), name, NewInstance(typeof(LinkedHashMap), Constant(map.Count)));
-                for (int i = 0; i < map.Count; i++) {
-                    method.Block.ExprDotMethod(@Ref(name), "put", @Ref("key" + i), @Ref("value" + i));
+                    typeof(IDictionary<object, object>), name,
+                    NewInstance(typeof(LinkedHashMap<object, object>), Constant(map.Count)));
+                for (var i = 0; i < map.Count; i++) {
+                    method.Block.ExprDotMethod(Ref(name), "put", Ref("key" + i), Ref("value" + i));
                 }
 
-                method.Block.MethodReturn(@Ref(name));
+                method.Block.MethodReturn(Ref(name));
             }
 
             return LocalMethod(method);

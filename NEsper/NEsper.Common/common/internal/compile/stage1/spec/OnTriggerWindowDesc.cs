@@ -22,7 +22,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="optionalAsName">the optional name</param>
         /// <param name="onTriggerType">for indicationg on-delete, on-select or on-Update</param>
         /// <param name="deleteAndSelect">if set to <c>true</c> [delete and select].</param>
-        public OnTriggerWindowDesc(String windowName, String optionalAsName, OnTriggerType onTriggerType, bool deleteAndSelect)
+        public OnTriggerWindowDesc(
+            String windowName,
+            String optionalAsName,
+            OnTriggerType onTriggerType,
+            bool deleteAndSelect)
             : base(onTriggerType)
         {
             WindowName = windowName;

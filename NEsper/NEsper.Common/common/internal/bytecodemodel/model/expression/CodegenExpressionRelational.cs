@@ -18,14 +18,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenRelational _op;
         private readonly CodegenExpression _rhs;
 
-        public CodegenExpressionRelational(CodegenExpression lhs, CodegenRelational op, CodegenExpression rhs)
+        public CodegenExpressionRelational(
+            CodegenExpression lhs,
+            CodegenRelational op,
+            CodegenExpression rhs)
         {
             this._lhs = lhs;
             this._op = op;
             this._rhs = rhs;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             _lhs.Render(builder, imports, isInnerClass);
             builder.Append(_op.Op);

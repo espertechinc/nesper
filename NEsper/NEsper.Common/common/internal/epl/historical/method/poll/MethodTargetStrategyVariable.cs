@@ -21,13 +21,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         private readonly MethodTargetStrategyVariableFactory factory;
         private readonly VariableReader reader;
 
-        public MethodTargetStrategyVariable(MethodTargetStrategyVariableFactory factory, VariableReader reader)
+        public MethodTargetStrategyVariable(
+            MethodTargetStrategyVariableFactory factory,
+            VariableReader reader)
         {
             this.factory = factory;
             this.reader = reader;
         }
 
-        public object Invoke(object lookupValues, AgentInstanceContext agentInstanceContext)
+        public object Invoke(
+            object lookupValues,
+            AgentInstanceContext agentInstanceContext)
         {
             var target = reader.Value;
             if (target == null) {

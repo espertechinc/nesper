@@ -13,6 +13,8 @@ namespace com.espertech.esper.common.@internal.metrics.audit
 {
     public interface AuditProviderInsert
     {
-        void Insert(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        void Insert(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

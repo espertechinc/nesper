@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         internal readonly Type type;
         private AggregatorMethod _aggregator;
 
-        public AggregationFactoryMethodMinMax(ExprMinMaxAggrNode parent, Type type, bool hasDataWindows)
+        public AggregationFactoryMethodMinMax(
+            ExprMinMaxAggrNode parent,
+            Type type,
+            bool hasDataWindows)
         {
             this.parent = parent;
             this.type = type;
@@ -47,7 +50,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         public ExprMinMaxAggrNode Parent => parent;
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             var distinctType = !parent.IsDistinct ? null : type;
             if (!hasDataWindows) {
@@ -62,7 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             }
         }
 
-        public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream)
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
         {
             return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
         }

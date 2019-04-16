@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -42,7 +41,9 @@ namespace com.espertech.esper.common.client.dataflow.annotations
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="portNumber">The port number.</param>
-        public OutputTypesAttributes(OutputTypeAttribute[] value, int portNumber)
+        public OutputTypesAttributes(
+            OutputTypeAttribute[] value,
+            int portNumber)
         {
             Value = value;
             PortNumber = portNumber;

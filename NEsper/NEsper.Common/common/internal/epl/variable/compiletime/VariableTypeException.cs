@@ -14,13 +14,13 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
     /// <summary>
     /// Exception indicating a variable type error.
     /// </summary>
-	public class VariableTypeException : VariableDeclarationException
-	{
-	    /// <summary>Ctor.</summary>
-	    /// <param name="msg">the exception message.</param>
-	    public VariableTypeException(String msg)
+    public class VariableTypeException : VariableDeclarationException
+    {
+        /// <summary>Ctor.</summary>
+        /// <param name="msg">the exception message.</param>
+        public VariableTypeException(String msg)
             : base(msg)
-	    {
-	    }
-	}
+        {
+        }
+    }
 } // End of namespace

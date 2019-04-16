@@ -9,7 +9,6 @@
 using System;
 using System.Linq;
 using System.Text;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
@@ -29,51 +28,25 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
     public static class CalendarFieldEnumExtensions
     {
-        public static int GetCalendarField(this CalendarFieldEnum @enum)
-        {
-            switch (@enum)
-            {
-                case CalendarFieldEnum.MILLISEC:
-                    return DateTimeFieldEnum.MILLISEC;
-                case CalendarFieldEnum.SECOND:
-                    return DateTimeFieldEnum.SECOND;
-                case CalendarFieldEnum.MINUTE:
-                    return DateTimeFieldEnum.MINUTE;
-                case CalendarFieldEnum.HOUR:
-                    return DateTimeFieldEnum.HOUR;
-                case CalendarFieldEnum.DAY:
-                    return DateTimeFieldEnum.DAY;
-                case CalendarFieldEnum.MONTH:
-                    return DateTimeFieldEnum.MONTH;
-                case CalendarFieldEnum.WEEK:
-                    return DateTimeFieldEnum.WEEK;
-                case CalendarFieldEnum.YEAR:
-                    return DateTimeFieldEnum.YEAR;
-            }
-
-            throw new ArgumentException("invalid value", "enum");
-        }
-
         public static string[] GetNames(this CalendarFieldEnum @enum)
         {
-            switch (@enum)
-            {
+            switch (@enum) {
                 case CalendarFieldEnum.MILLISEC:
-                    return new[] { "msec", "millisecond", "milliseconds" };
+                    return new[] {"msec", "millisecond", "milliseconds"};
                 case CalendarFieldEnum.SECOND:
-                    return new[] { "sec", "second", "seconds" };
+                    return new[] {"sec", "second", "seconds"};
                 case CalendarFieldEnum.MINUTE:
-                    return new[] { "min", "minute", "minutes" };
+                    return new[] {"min", "minute", "minutes"};
                 case CalendarFieldEnum.HOUR:
-                    return new[] { "hour", "hours" };
+                    return new[] {"hour", "hours"};
                 case CalendarFieldEnum.DAY:
-                    return new[] { "day", "days" };
+                    return new[] {"day", "days"};
                 case CalendarFieldEnum.MONTH:
-                    return new[] { "month", "months" };
+                    return new[] {"month", "months"};
                 case CalendarFieldEnum.WEEK:
-                    return new[] { "week", "weeks" };
+                    return new[] {"week", "weeks"};
                 case CalendarFieldEnum.YEAR:
-                    return new[] { "year", "years" };
+                    return new[] {"year", "years"};
             }
 
             throw new ArgumentException("invalid value", "enum");
@@ -102,10 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             string compareTo = field.Trim().ToLower();
 
             var values = Enum.GetValues(typeof(CalendarFieldEnum));
-            foreach (CalendarFieldEnum value in values)
-            {
-                if (GetNames(value).Any(name => name == field))
-                {
+            foreach (CalendarFieldEnum value in values) {
+                if (GetNames(value).Any(name => name == field)) {
                     return value;
                 }
             }
@@ -113,10 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             throw new ArgumentException("value not found", "field");
         }
 
-        public static int ToDateTimeFieldEnum(this CalendarFieldEnum @enum)
+        public static DateTimeFieldEnum ToDateTimeFieldEnum(this CalendarFieldEnum @enum)
         {
-            switch (@enum)
-            {
+            switch (@enum) {
                 case CalendarFieldEnum.MILLISEC:
                     return DateTimeFieldEnum.MILLISEC;
                 case CalendarFieldEnum.SECOND:
@@ -140,8 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
         public static ChronoUnit GetChronoUnit(this CalendarFieldEnum @enum)
         {
-            switch (@enum)
-            {
+            switch (@enum) {
                 case CalendarFieldEnum.MILLISEC:
                     return ChronoUnit.MILLIS;
                 case CalendarFieldEnum.SECOND:
@@ -165,8 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
         public static ChronoField GetChronoField(this CalendarFieldEnum @enum)
         {
-            switch (@enum)
-            {
+            switch (@enum) {
                 case CalendarFieldEnum.MILLISEC:
                     return ChronoField.MILLI_OF_SECOND;
                 case CalendarFieldEnum.SECOND:

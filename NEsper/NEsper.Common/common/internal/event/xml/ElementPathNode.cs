@@ -18,22 +18,24 @@ namespace com.espertech.esper.common.@internal.@event.xml
     {
         private IList<ElementPathNode> _children;
 
-        public ElementPathNode(ElementPathNode parent, XmlQualifiedName name)
+        public ElementPathNode(
+            ElementPathNode parent,
+            XmlQualifiedName name)
         {
             Name = name;
             Parent = parent;
         }
 
-        public XmlQualifiedName Name { get; private set; }
+        public XmlQualifiedName Name { get; }
 
-        public ElementPathNode Parent { get; private set; }
+        public ElementPathNode Parent { get; }
 
         public ElementPathNode AddChild(XmlQualifiedName name)
         {
-            if (_children == null)
-            {
+            if (_children == null) {
                 _children = new List<ElementPathNode>();
             }
+
             var newChild = new ElementPathNode(this, name);
             _children.Add(newChild);
             return newChild;
@@ -47,17 +49,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
         private bool DoesNameAlreadyExistInHierarchy(XmlQualifiedName nameToFind)
         {
             var doesNameAlreadyExistInHierarchy = false;
-            if (Parent != null)
-            {
-                if (Parent.Name.Equals(nameToFind))
-                {
+            if (Parent != null) {
+                if (Parent.Name.Equals(nameToFind)) {
                     doesNameAlreadyExistInHierarchy = true;
                 }
-                else
-                {
+                else {
                     return Parent.DoesNameAlreadyExistInHierarchy(nameToFind);
                 }
             }
+
             return doesNameAlreadyExistInHierarchy;
         }
     }

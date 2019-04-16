@@ -12,7 +12,6 @@ using System.IO;
 using System.Linq;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.lookup
@@ -27,7 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
         /// </summary>
         /// <param name="indexPropName">is the property name of the indexed field</param>
         /// <param name="coercionType">is the type to coerce to</param>
-        public IndexedPropDesc(string indexPropName, Type coercionType)
+        public IndexedPropDesc(
+            string indexPropName,
+            Type coercionType)
         {
             IndexPropName = indexPropName;
             CoercionType = coercionType;
@@ -83,7 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
             return result;
         }
 
-        public static int GetPropertyIndex(string propertyName, IndexedPropDesc[] descList)
+        public static int GetPropertyIndex(
+            string propertyName,
+            IndexedPropDesc[] descList)
         {
             for (var i = 0; i < descList.Length; i++) {
                 if (descList[i].IndexPropName.Equals(propertyName)) {
@@ -133,19 +136,22 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
             return true;
         }
 
-        public static bool Compare(IList<IndexedPropDesc> first, IList<IndexedPropDesc> second)
+        public static bool Compare(
+            IList<IndexedPropDesc> first,
+            IList<IndexedPropDesc> second)
         {
             if (first.Count != second.Count) {
                 return false;
             }
 
-            IList<IndexedPropDesc> copyFirst = new List<IndexedPropDesc>(first);
-            IList<IndexedPropDesc> copySecond = new List<IndexedPropDesc>(second);
-            IComparer<IndexedPropDesc> comparator = new ProxyComparator<IndexedPropDesc> {
-                ProcCompare = (o1, o2) => { return o1.IndexPropName.CompareTo(o2.IndexPropName); }
-            };
-            Collections.Sort(copyFirst, comparator);
-            Collections.Sort(copySecond, comparator);
+            var copyFirst = new List<IndexedPropDesc>(first);
+            var copySecond = new List<IndexedPropDesc>(second);
+            Comparison<IndexedPropDesc> comparator = (
+                o1,
+                o2) => o1.IndexPropName.CompareTo(o2.IndexPropName);
+
+            copyFirst.Sort(comparator);
+            copySecond.Sort(comparator);
             for (var i = 0; i < copyFirst.Count; i++) {
                 if (!copyFirst[i].Equals(copySecond[i])) {
                     return false;
@@ -163,14 +169,16 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
             return result;
         }
 
-        public static void ToQueryPlan(StringWriter writer, IndexedPropDesc[] indexedProps)
+        public static void ToQueryPlan(
+            TextWriter writer,
+            IndexedPropDesc[] indexedProps)
         {
             var delimiter = "";
             foreach (var prop in indexedProps) {
                 writer.Write(delimiter);
                 writer.Write(prop.IndexPropName);
                 writer.Write("(");
-                writer.Write(TypeHelper.GetSimpleNameForClass(prop.CoercionType));
+                writer.Write(TypeHelper.GetSimpleNameForType(prop.CoercionType));
                 writer.Write(")");
                 delimiter = ",";
             }

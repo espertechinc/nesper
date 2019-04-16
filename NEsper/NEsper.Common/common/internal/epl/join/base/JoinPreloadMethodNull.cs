@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
     /// </summary>
     public class JoinPreloadMethodNull : JoinPreloadMethod
     {
-        public void PreloadFromBuffer(int stream, ExprEvaluatorContext exprEvaluatorContext)
+        public void PreloadFromBuffer(
+            int stream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
@@ -25,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         {
         }
 
-        public void SetBuffer(BufferView buffer, int i)
+        public void SetBuffer(
+            BufferView buffer,
+            int i)
         {
         }
 

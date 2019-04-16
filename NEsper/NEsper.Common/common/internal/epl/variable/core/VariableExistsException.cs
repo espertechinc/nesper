@@ -13,13 +13,13 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     /// <summary>
     /// Exception indicating a a variable already exists.
     /// </summary>
-	public class VariableExistsException : VariableDeclarationException
-	{
-	    /// <summary>Ctor.</summary>
-	    /// <param name="msg">the exception message.</param>
-	    public VariableExistsException(String msg)
+    public class VariableExistsException : VariableDeclarationException
+    {
+        /// <summary>Ctor.</summary>
+        /// <param name="msg">the exception message.</param>
+        public VariableExistsException(String msg)
             : base(msg)
-	    {
-	    }
-	}
+        {
+        }
+    }
 } // End of namespace

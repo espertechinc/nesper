@@ -30,8 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         internal readonly TableInstance tableInstance;
 
         internal OnExprViewTableBase(
-            SubordWMatchExprLookupStrategy lookupStrategy, TableInstance tableInstance,
-            AgentInstanceContext agentInstanceContext, bool acquireWriteLock)
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableInstance tableInstance,
+            AgentInstanceContext agentInstanceContext,
+            bool acquireWriteLock)
         {
             this.lookupStrategy = lookupStrategy;
             this.tableInstance = tableInstance;
@@ -52,9 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             Log.Debug(".stop");
         }
 
-        public abstract void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents);
+        public abstract void HandleMatching(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents);
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             if (newData == null) {
                 return;

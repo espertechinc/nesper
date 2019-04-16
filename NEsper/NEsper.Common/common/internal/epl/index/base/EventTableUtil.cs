@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             int indexedStreamNum,
             QueryPlanIndexItem item,
             EventType eventType,
-            bool coerceOnAddOnly, 
+            bool coerceOnAddOnly,
             bool unique,
             string optionalIndexName,
             object optionalSerde,

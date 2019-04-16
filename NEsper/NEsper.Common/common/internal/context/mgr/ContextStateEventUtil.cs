@@ -15,7 +15,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
     public class ContextStateEventUtil
     {
         public static void DispatchContext<T>(
-            CopyOnWriteList<ContextStateListener> listeners, Supplier<T> supplier,
+            CopyOnWriteList<ContextStateListener> listeners,
+            Supplier<T> supplier,
             BiConsumer<ContextStateListener, T> consumer)
         {
             if (listeners.IsEmpty()) {
@@ -29,7 +30,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         public static void DispatchPartition<T>(
-            CopyOnWriteList<ContextPartitionStateListener> listeners, Supplier<T> supplier,
+            CopyOnWriteList<ContextPartitionStateListener> listeners,
+            Supplier<T> supplier,
             BiConsumer<ContextPartitionStateListener, T> consumer)
         {
             if (listeners == null || listeners.IsEmpty()) {

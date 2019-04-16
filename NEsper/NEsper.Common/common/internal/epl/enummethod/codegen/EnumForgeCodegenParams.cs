@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
     public class EnumForgeCodegenParams
     {
         public EnumForgeCodegenParams(
-            CodegenExpression eps, CodegenExpression enumcoll, CodegenExpression isNewData, CodegenExpression exprCtx)
+            CodegenExpression eps,
+            CodegenExpression enumcoll,
+            CodegenExpression isNewData,
+            CodegenExpression exprCtx)
         {
             Eps = eps;
             Enumcoll = enumcoll;

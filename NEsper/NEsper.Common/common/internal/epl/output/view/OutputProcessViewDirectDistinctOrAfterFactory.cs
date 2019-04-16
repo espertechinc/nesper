@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
@@ -19,62 +18,75 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
-	/// <summary>
-	/// Output process view that does not enforce any output policies and may simply
-	/// hand over events to child views, but works with distinct and after-output policies
-	/// </summary>
-	public class OutputProcessViewDirectDistinctOrAfterFactory : OutputProcessViewDirectFactory {
-	    private readonly bool isDistinct;
-	    internal readonly TimePeriodCompute afterTimePeriod;
-	    internal readonly int? afterConditionNumberOfEvents;
+    /// <summary>
+    /// Output process view that does not enforce any output policies and may simply
+    /// hand over events to child views, but works with distinct and after-output policies
+    /// </summary>
+    public class OutputProcessViewDirectDistinctOrAfterFactory : OutputProcessViewDirectFactory
+    {
+        private readonly bool isDistinct;
+        internal readonly TimePeriodCompute afterTimePeriod;
+        internal readonly int? afterConditionNumberOfEvents;
 
-	    private EventBeanReader eventBeanReader;
+        private EventBeanReader eventBeanReader;
 
-	    public OutputProcessViewDirectDistinctOrAfterFactory(OutputStrategyPostProcessFactory postProcessFactory, bool distinct, TimePeriodCompute afterTimePeriod, int? afterConditionNumberOfEvents, EventType resultEventType) : base(postProcessFactory)
-	        {
-	        isDistinct = distinct;
-	        this.afterTimePeriod = afterTimePeriod;
-	        this.afterConditionNumberOfEvents = afterConditionNumberOfEvents;
+        public OutputProcessViewDirectDistinctOrAfterFactory(
+            OutputStrategyPostProcessFactory postProcessFactory,
+            bool distinct,
+            TimePeriodCompute afterTimePeriod,
+            int? afterConditionNumberOfEvents,
+            EventType resultEventType)
+            : base(postProcessFactory)
+        {
+            isDistinct = distinct;
+            this.afterTimePeriod = afterTimePeriod;
+            this.afterConditionNumberOfEvents = afterConditionNumberOfEvents;
 
-	        if (isDistinct) {
-	            if (resultEventType is EventTypeSPI) {
-	                EventTypeSPI eventTypeSPI = (EventTypeSPI) resultEventType;
-	                eventBeanReader = eventTypeSPI.Reader;
-	            }
-	            if (eventBeanReader == null) {
-	                eventBeanReader = new EventBeanReaderDefaultImpl(resultEventType);
-	            }
-	        }
-	    }
+            if (isDistinct) {
+                if (resultEventType is EventTypeSPI) {
+                    EventTypeSPI eventTypeSPI = (EventTypeSPI) resultEventType;
+                    eventBeanReader = eventTypeSPI.Reader;
+                }
 
-	    public override OutputProcessView MakeView(ResultSetProcessor resultSetProcessor, AgentInstanceContext agentInstanceContext) {
+                if (eventBeanReader == null) {
+                    eventBeanReader = new EventBeanReaderDefaultImpl(resultEventType);
+                }
+            }
+        }
 
-	        bool isAfterConditionSatisfied = true;
-	        long? afterConditionTime = null;
-	        if (afterConditionNumberOfEvents != null) {
-	            isAfterConditionSatisfied = false;
-	        } else if (afterTimePeriod != null) {
-	            isAfterConditionSatisfied = false;
-	            long time = agentInstanceContext.TimeProvider.Time;
-	            long delta = afterTimePeriod.DeltaAdd(time, null, true, agentInstanceContext);
-	            afterConditionTime = time + delta;
-	        }
+        public override OutputProcessView MakeView(
+            ResultSetProcessor resultSetProcessor,
+            AgentInstanceContext agentInstanceContext)
+        {
+            bool isAfterConditionSatisfied = true;
+            long? afterConditionTime = null;
+            if (afterConditionNumberOfEvents != null) {
+                isAfterConditionSatisfied = false;
+            }
+            else if (afterTimePeriod != null) {
+                isAfterConditionSatisfied = false;
+                long time = agentInstanceContext.TimeProvider.Time;
+                long delta = afterTimePeriod.DeltaAdd(time, null, true, agentInstanceContext);
+                afterConditionTime = time + delta;
+            }
 
-	        if (base.postProcessFactory == null) {
-	            return new OutputProcessViewDirectDistinctOrAfter(agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this);
-	        }
-	        OutputStrategyPostProcess postProcess = postProcessFactory.Make(agentInstanceContext);
-	        return new OutputProcessViewDirectDistinctOrAfterPostProcess(agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this, postProcess);
-	    }
+            if (base.postProcessFactory == null) {
+                return new OutputProcessViewDirectDistinctOrAfter(
+                    agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this);
+            }
 
-	    public bool IsDistinct
-	    {
-	        get => isDistinct;
-	    }
+            OutputStrategyPostProcess postProcess = postProcessFactory.Make(agentInstanceContext);
+            return new OutputProcessViewDirectDistinctOrAfterPostProcess(
+                agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this,
+                postProcess);
+        }
 
-	    public EventBeanReader EventBeanReader
-	    {
-	        get => eventBeanReader;
-	    }
-	}
+        public bool IsDistinct {
+            get => isDistinct;
+        }
+
+        public EventBeanReader EventBeanReader {
+            get => eventBeanReader;
+        }
+    }
 } // end of namespace

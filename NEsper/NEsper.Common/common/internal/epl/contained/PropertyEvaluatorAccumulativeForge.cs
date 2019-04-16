@@ -34,7 +34,11 @@ namespace com.espertech.esper.common.@internal.epl.contained
         /// <param name="fragmentEventTypeIsIndexed">property fragment types is indexed</param>
         /// <param name="whereClauses">filters, if any</param>
         /// <param name="propertyNames">the property names that are staggered</param>
-        public PropertyEvaluatorAccumulativeForge(ContainedEventEvalForge[] containedEventEvals, bool[] fragmentEventTypeIsIndexed, ExprForge[] whereClauses, IList<string> propertyNames)
+        public PropertyEvaluatorAccumulativeForge(
+            ContainedEventEvalForge[] containedEventEvals,
+            bool[] fragmentEventTypeIsIndexed,
+            ExprForge[] whereClauses,
+            IList<string> propertyNames)
         {
             this.fragmentEventTypeIsIndexed = fragmentEventTypeIsIndexed;
             this.containedEventEvals = containedEventEvals;
@@ -42,36 +46,49 @@ namespace com.espertech.esper.common.@internal.epl.contained
             this.propertyNames = propertyNames;
         }
 
-        public CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenMethod method = parent.MakeChild(typeof(PropertyEvaluatorAccumulative), this.GetType(), classScope);
             method.Block
-                    .DeclareVar(typeof(PropertyEvaluatorAccumulative), "pe", NewInstance(typeof(PropertyEvaluatorAccumulative)))
-                    .ExprDotMethod(@Ref("pe"), "setContainedEventEvals", MakeContained(containedEventEvals, method, symbols, classScope))
-                    .ExprDotMethod(@Ref("pe"), "setWhereClauses", MakeWhere(whereClauses, method, symbols, classScope))
-                    .ExprDotMethod(@Ref("pe"), "setPropertyNames", Constant(propertyNames.ToArray()))
-                    .ExprDotMethod(@Ref("pe"), "setFragmentEventTypeIsIndexed", Constant(fragmentEventTypeIsIndexed))
-                    .MethodReturn(@Ref("pe"));
+                .DeclareVar(typeof(PropertyEvaluatorAccumulative), "pe", NewInstance(typeof(PropertyEvaluatorAccumulative)))
+                .ExprDotMethod(@Ref("pe"), "setContainedEventEvals", MakeContained(containedEventEvals, method, symbols, classScope))
+                .ExprDotMethod(@Ref("pe"), "setWhereClauses", MakeWhere(whereClauses, method, symbols, classScope))
+                .ExprDotMethod(@Ref("pe"), "setPropertyNames", Constant(propertyNames.ToArray()))
+                .ExprDotMethod(@Ref("pe"), "setFragmentEventTypeIsIndexed", Constant(fragmentEventTypeIsIndexed))
+                .MethodReturn(@Ref("pe"));
             return LocalMethod(method);
         }
 
-        protected internal static CodegenExpression MakeWhere(ExprForge[] whereClauses, CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        protected internal static CodegenExpression MakeWhere(
+            ExprForge[] whereClauses,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenExpression[] expressions = new CodegenExpression[whereClauses.Length];
-            for (int i = 0; i < whereClauses.Length; i++)
-            {
-                expressions[i] = whereClauses[i] == null ? ConstantNull() : ExprNodeUtilityCodegen.CodegenEvaluator(whereClauses[i], method, typeof(PropertyEvaluatorAccumulativeForge), classScope);
+            for (int i = 0; i < whereClauses.Length; i++) {
+                expressions[i] = whereClauses[i] == null
+                    ? ConstantNull()
+                    : ExprNodeUtilityCodegen.CodegenEvaluator(whereClauses[i], method, typeof(PropertyEvaluatorAccumulativeForge), classScope);
             }
+
             return NewArrayWithInit(typeof(ExprEvaluator), expressions);
         }
 
-        protected internal static CodegenExpression MakeContained(ContainedEventEvalForge[] evals, CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        protected internal static CodegenExpression MakeContained(
+            ContainedEventEvalForge[] evals,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenExpression[] expressions = new CodegenExpression[evals.Length];
-            for (int i = 0; i < evals.Length; i++)
-            {
+            for (int i = 0; i < evals.Length; i++) {
                 expressions[i] = evals[i].Make(parent, symbols, classScope);
             }
+
             return NewArrayWithInit(typeof(ContainedEventEval), expressions);
         }
     }

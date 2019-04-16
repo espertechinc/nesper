@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.hook.type;
@@ -51,10 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             // Parse the SQL for placeholders and text fragments
             var sqlFragments = GetSqlFragments(databaseStreamSpec);
             var invocationInputParameters = new List<string>();
-            foreach (var fragment in sqlFragments)
-            {
-                if ((fragment.IsParameter) && (fragment.Value != SAMPLE_WHERECLAUSE_PLACEHOLDER))
-                {
+            foreach (var fragment in sqlFragments) {
+                if ((fragment.IsParameter) && (fragment.Value != SAMPLE_WHERECLAUSE_PLACEHOLDER)) {
                     invocationInputParameters.Add(fragment.Value);
                 }
             }
@@ -62,8 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             // Assemble a PreparedStatement and parameter list
             var preparedStatementText = CreatePreparedStatement(sqlFragments);
             var parameterDesc = GetParameters(sqlFragments);
-            if (Log.IsDebugEnabled)
-            {
+            if (Log.IsDebugEnabled) {
                 Log.Debug(
                     ".CreateDBStatementView preparedStatementText=" + preparedStatementText +
                     " parameterDesc=" + parameterDesc);
@@ -78,8 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                 GetMetaDataSettings(services, databaseName),
                 contextAttributes);
 
-            if (Log.IsDebugEnabled)
-            {
+            if (Log.IsDebugEnabled) {
                 Log.Debug(".CreateDBStatementView dbCommand=" + dbCommand);
             }
 
@@ -147,19 +142,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             Func<EventTypeApplicationType, EventTypeMetadata> metadata = appType => new EventTypeMetadata(
                 eventTypeName, @base.ModuleName, EventTypeTypeClass.DBDERIVED, appType, NameAccessModifier.TRANSIENT,
                 EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
-            if (outputRowConversionHook == null)
-            {
+            if (outputRowConversionHook == null) {
                 eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                     metadata.Invoke(EventTypeApplicationType.MAP), eventTypeFields, null, null, null, null,
                     services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
             }
-            else
-            {
+            else {
                 var carrierClass = outputRowConversionHook.GetOutputRowType(
                     new SQLOutputRowTypeContext(
                         databaseStreamSpec.DatabaseName, databaseStreamSpec.SqlWithSubsParams, eventTypeFields));
-                if (carrierClass == null)
-                {
+                if (carrierClass == null) {
                     throw new ExprValidationException("Output row conversion hook returned no type");
                 }
 
@@ -186,23 +178,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         {
             IDictionary<string, object> eventTypeFields = new Dictionary<string, object>();
             var columnNum = 1;
-            foreach (var entry in queryMetaData.OutputParameters)
-            {
+            foreach (var entry in queryMetaData.OutputParameters) {
                 var name = entry.Key;
                 var dbOutputDesc = entry.Value;
 
                 Type clazz;
-                if (dbOutputDesc.OptionalBinding != null)
-                {
+                if (dbOutputDesc.OptionalBinding != null) {
                     clazz = dbOutputDesc.OptionalBinding.DataType;
                 }
-                else
-                {
+                else {
                     clazz = dbOutputDesc.DataType;
                 }
 
-                if (columnTypeConversionHook != null)
-                {
+                if (columnTypeConversionHook != null) {
                     var newValue = columnTypeConversionHook.GetColumnType(
                         new SQLColumnTypeContext(
                             databaseStreamSpec.DatabaseName,
@@ -211,8 +199,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                             dbOutputDesc.SqlType,
                             columnNum));
 
-                    if (newValue != null)
-                    {
+                    if (newValue != null) {
                         clazz = newValue;
                     }
                 }
@@ -233,12 +220,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             DBStatementStreamSpec databaseStreamSpec)
         {
             IList<PlaceholderParser.Fragment> sqlFragments;
-            try
-            {
+            try {
                 sqlFragments = PlaceholderParser.ParsePlaceholder(databaseStreamSpec.SqlWithSubsParams);
             }
-            catch (PlaceholderParseException ex)
-            {
+            catch (PlaceholderParseException ex) {
                 const string text = "Error parsing SQL";
                 throw new ExprValidationException(text + ", reason: " + ex.Message, ex);
             }
@@ -254,7 +239,6 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         /// <param name="dbCommand">The database command.</param>
         /// <param name="parameterDesc"></param>
         /// <returns></returns>
-
         private static QueryMetaData GetQueryMetaData(
             DBStatementStreamSpec databaseStreamSpec,
             StatementCompileTimeServices services,
@@ -266,8 +250,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             var metadataSetting = dbCommand.MetaDataSettings;
             // On default setting, if we detect Oracle in the connection then don't query metadata from prepared statement
             var metaOriginPolicy = metadataSetting.MetadataRetrievalEnum;
-            if (metaOriginPolicy == MetadataOriginEnum.DEFAULT)
-            {
+            if (metaOriginPolicy == MetadataOriginEnum.DEFAULT) {
                 // Ask the driver how it interprets the default meta origin policy; the
                 // esper code has a specific hook for Oracle.  We have moved this into
                 // the driver to avoid specifically coding behavior to a driver.
@@ -276,8 +259,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
             QueryMetaData queryMetaData;
 
-            switch (metaOriginPolicy)
-            {
+            switch (metaOriginPolicy) {
                 case MetadataOriginEnum.METADATA:
                 case MetadataOriginEnum.DEFAULT:
                     queryMetaData = dbCommand.MetaData;
@@ -285,39 +267,32 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                     //    connection, parameterDesc.Parameters, preparedStatementText, metadataSetting);
                     break;
 
-                case MetadataOriginEnum.SAMPLE:
-                {
+                case MetadataOriginEnum.SAMPLE: {
                     string sampleSQL;
                     var isGivenMetadataSQL = true;
-                    if (databaseStreamSpec.MetadataSQL != null)
-                    {
+                    if (databaseStreamSpec.MetadataSQL != null) {
                         sampleSQL = databaseStreamSpec.MetadataSQL;
                         isGivenMetadataSQL = true;
-                        if (Log.IsInfoEnabled)
-                        {
+                        if (Log.IsInfoEnabled) {
                             Log.Info(".GetQueryMetaData Using provided sample SQL '" + sampleSQL + "'");
                         }
                     }
-                    else
-                    {
+                    else {
                         // Create the sample SQL by replacing placeholders with null and
                         // SAMPLE_WHERECLAUSE_PLACEHOLDER with a "where 1=0" clause
 
                         // REWRITE: sampleSQL = CreateSamplePlaceholderStatement(sqlFragments);
                         sampleSQL = CreateSamplePlaceholderStatement(dbCommand.Fragments);
 
-                        if (Log.IsInfoEnabled)
-                        {
+                        if (Log.IsInfoEnabled) {
                             Log.Info(".GetQueryMetaData Using un-lexed sample SQL '" + sampleSQL + "'");
                         }
 
                         // If there is no SAMPLE_WHERECLAUSE_PLACEHOLDER, lexical analyse the SQL
                         // adding a "where 1=0" clause.
-                        if (parameterDesc.BuiltinIdentifiers.Count != 1)
-                        {
+                        if (parameterDesc.BuiltinIdentifiers.Count != 1) {
                             sampleSQL = services.CompilerServices.LexSampleSQL(sampleSQL);
-                            if (Log.IsInfoEnabled)
-                            {
+                            if (Log.IsInfoEnabled) {
                                 Log.Info(".GetQueryMetaData Using lexed sample SQL '" + sampleSQL + "'");
                             }
                         }
@@ -352,12 +327,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             IEnumerable<Attribute> contextAttributes)
         {
             var sampleSQLFragments = PlaceholderParser.ParsePlaceholder(sampleSQL);
-            using (var dbCommand = dbDriver.CreateCommand(sampleSQLFragments, metadataSetting, contextAttributes))
-            {
+            using (var dbCommand = dbDriver.CreateCommand(sampleSQLFragments, metadataSetting, contextAttributes)) {
                 return dbCommand.MetaData;
             }
         }
-        
+
         /// <summary>
         /// Gets the meta data settings from the database configuration service for the specified
         /// database name.
@@ -365,17 +339,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         /// <param name="services"></param>
         /// <param name="databaseName"></param>
         /// <returns></returns>
-
         private static ColumnSettings GetMetaDataSettings(
             StatementCompileTimeServices services,
             String databaseName)
         {
-            try
-            {
+            try {
                 return services.DatabaseConfigServiceCompileTime.GetQuerySetting(databaseName);
             }
-            catch (DatabaseConfigException ex)
-            {
+            catch (DatabaseConfigException ex) {
                 var text = "Error connecting to database '" + databaseName + '\'';
                 Log.Error(text, ex);
                 throw new ExprValidationException(text + ", reason: " + ex.Message, ex);
@@ -386,16 +357,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             IEnumerable<PlaceholderParser.Fragment> parseFragements)
         {
             var buffer = new StringBuilder();
-            foreach (var fragment in parseFragements)
-            {
-                if (!fragment.IsParameter)
-                {
+            foreach (var fragment in parseFragements) {
+                if (!fragment.IsParameter) {
                     buffer.Append(fragment.Value);
                 }
-                else
-                {
-                    if (fragment.Value.Equals(SAMPLE_WHERECLAUSE_PLACEHOLDER))
-                    {
+                else {
+                    if (fragment.Value.Equals(SAMPLE_WHERECLAUSE_PLACEHOLDER)) {
                         continue;
                     }
 
@@ -410,16 +377,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             IEnumerable<PlaceholderParser.Fragment> parseFragements)
         {
             var buffer = new StringBuilder();
-            foreach (var fragment in parseFragements)
-            {
-                if (!fragment.IsParameter)
-                {
+            foreach (var fragment in parseFragements) {
+                if (!fragment.IsParameter) {
                     buffer.Append(fragment.Value);
                 }
-                else
-                {
-                    if (fragment.Value.Equals(SAMPLE_WHERECLAUSE_PLACEHOLDER))
-                    {
+                else {
+                    if (fragment.Value.Equals(SAMPLE_WHERECLAUSE_PLACEHOLDER)) {
                         buffer.Append(" where 1=0 ");
                         break;
                     }
@@ -434,10 +397,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         private static SQLParameterDesc GetParameters(IList<PlaceholderParser.Fragment> parseFragements)
         {
             IList<string> eventPropertyParams = new List<string>();
-            foreach (var fragment in parseFragements)
-            {
-                if (fragment.IsParameter && !fragment.Value.Equals(SAMPLE_WHERECLAUSE_PLACEHOLDER))
-                {
+            foreach (var fragment in parseFragements) {
+                if (fragment.IsParameter && !fragment.Value.Equals(SAMPLE_WHERECLAUSE_PLACEHOLDER)) {
                     eventPropertyParams.Add(fragment.Value);
                 }
             }

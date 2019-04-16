@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.lookup;
@@ -20,14 +19,13 @@ namespace com.espertech.esper.common.@internal.epl.table.update
 {
     public class TableUpdateStrategyFactory
     {
-        public static void ValidateNewUniqueIndex(string[] tableUpdatedProperties, IndexedPropDesc[] hashIndexedProps)
+        public static void ValidateNewUniqueIndex(
+            string[] tableUpdatedProperties,
+            IndexedPropDesc[] hashIndexedProps)
         {
-            foreach (var prop in hashIndexedProps)
-            {
-                foreach (var col in tableUpdatedProperties)
-                {
-                    if (prop.IndexPropName.Equals(col))
-                    {
+            foreach (var prop in hashIndexedProps) {
+                foreach (var col in tableUpdatedProperties) {
+                    if (prop.IndexPropName.Equals(col)) {
                         throw new EPException(
                             "Create-index adds a unique key on columns that are updated by one or more on-merge statements");
                     }
@@ -35,25 +33,26 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             }
         }
 
-        public static void ValidateTableUpdateOnMerge(TableMetaData tableMetadata, string[] updatedProperties)
+        public static void ValidateTableUpdateOnMerge(
+            TableMetaData tableMetadata,
+            string[] updatedProperties)
         {
             var desc = GetAffectedIndexes(tableMetadata, updatedProperties);
-            if (desc.AffectedIndexNames != null && desc.IsUniqueIndexUpdated)
-            {
+            if (desc.AffectedIndexNames != null && desc.IsUniqueIndexUpdated) {
                 throw new ExprValidationException("On-merge statements may not update unique keys of tables");
             }
         }
 
         public static TableUpdateStrategy ValidateGetTableUpdateStrategy(
-            TableMetaData tableMetadata, EventBeanUpdateHelperNoCopy updateHelper, bool isOnMerge)
+            TableMetaData tableMetadata,
+            EventBeanUpdateHelperNoCopy updateHelper,
+            bool isOnMerge)
         {
             var desc = GetAffectedIndexes(tableMetadata, updateHelper.UpdatedProperties);
 
             // with affected indexes and with uniqueness : careful updates, may need to rollback
-            if (desc.AffectedIndexNames != null && desc.IsUniqueIndexUpdated)
-            {
-                if (isOnMerge)
-                {
+            if (desc.AffectedIndexNames != null && desc.IsUniqueIndexUpdated) {
+                if (isOnMerge) {
                     throw new ExprValidationException("On-merge statements may not update unique keys of tables");
                 }
 
@@ -61,8 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             }
 
             // with affected indexes and without uniqueness : update indexes without unique key violation and rollback
-            if (desc.AffectedIndexNames != null)
-            {
+            if (desc.AffectedIndexNames != null) {
                 return new TableUpdateStrategyIndexNonUnique(updateHelper, desc.AffectedIndexNames);
             }
 
@@ -70,20 +68,18 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             return new TableUpdateStrategyNonIndex(updateHelper);
         }
 
-        private static IndexUpdateDesc GetAffectedIndexes(TableMetaData tableMetadata, string[] updatedProperties)
+        private static IndexUpdateDesc GetAffectedIndexes(
+            TableMetaData tableMetadata,
+            string[] updatedProperties)
         {
             ISet<string> affectedIndexNames = null;
             var uniqueIndexUpdated = false;
 
-            foreach (KeyValuePair<IndexMultiKey, EventTableIndexMetadataEntry> index in tableMetadata.IndexMetadata.Indexes)
-            {
-                foreach (var updatedProperty in updatedProperties)
-                {
+            foreach (KeyValuePair<IndexMultiKey, EventTableIndexMetadataEntry> index in tableMetadata.IndexMetadata.Indexes) {
+                foreach (var updatedProperty in updatedProperties) {
                     var match = DetermineUpdatesIndex(updatedProperty, index.Key);
-                    if (match)
-                    {
-                        if (affectedIndexNames == null)
-                        {
+                    if (match) {
+                        if (affectedIndexNames == null) {
                             affectedIndexNames = new LinkedHashSet<string>();
                         }
 
@@ -96,20 +92,18 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             return new IndexUpdateDesc(affectedIndexNames, uniqueIndexUpdated);
         }
 
-        private static bool DetermineUpdatesIndex(string updatedProperty, IndexMultiKey key)
+        private static bool DetermineUpdatesIndex(
+            string updatedProperty,
+            IndexMultiKey key)
         {
-            foreach (var prop in key.HashIndexedProps)
-            {
-                if (prop.IndexPropName.Equals(updatedProperty))
-                {
+            foreach (var prop in key.HashIndexedProps) {
+                if (prop.IndexPropName.Equals(updatedProperty)) {
                     return true;
                 }
             }
 
-            foreach (var prop in key.RangeIndexedProps)
-            {
-                if (prop.IndexPropName.Equals(updatedProperty))
-                {
+            foreach (var prop in key.RangeIndexedProps) {
+                if (prop.IndexPropName.Equals(updatedProperty)) {
                     return true;
                 }
             }
@@ -119,7 +113,9 @@ namespace com.espertech.esper.common.@internal.epl.table.update
 
         private class IndexUpdateDesc
         {
-            public IndexUpdateDesc(ISet<string> affectedIndexNames, bool uniqueIndexUpdated)
+            public IndexUpdateDesc(
+                ISet<string> affectedIndexNames,
+                bool uniqueIndexUpdated)
             {
                 AffectedIndexNames = affectedIndexNames;
                 IsUniqueIndexUpdated = uniqueIndexUpdated;

@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(Desc.LhsName);
             writer.Write("(");
@@ -63,7 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             writer.Write("))");
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprAppDotMethodImpl)) {
                 return false;

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 
@@ -25,9 +24,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="assignment">expression assigning the initial value, or null if none</param>
         /// <param name="constant">if set to <c>true</c> [constant].</param>
         public CreateVariableDesc(
-            ClassIdentifierWArray variableType, 
+            ClassIdentifierWArray variableType,
             string variableName,
-            ExprNode assignment, 
+            ExprNode assignment,
             bool constant)
         {
             VariableType = variableType;

@@ -78,8 +78,12 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         public EventTableIndexMetadata EventTableIndexMetadata => metaData.IndexMetadata;
 
         public void ValidateAddIndex(
-            string deploymentId, string statementName, string indexName, string indexModuleName,
-            QueryPlanIndexItem explicitIndexDesc, IndexMultiKey indexMultiKey)
+            string deploymentId,
+            string statementName,
+            string indexName,
+            string indexModuleName,
+            QueryPlanIndexItem explicitIndexDesc,
+            IndexMultiKey indexMultiKey)
         {
             metaData.IndexMetadata.AddIndexExplicit(
                 false, indexMultiKey, indexName, indexModuleName, explicitIndexDesc, deploymentId);
@@ -89,7 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         }
 
         public void RemoveIndexReferencesStmtMayRemoveIndex(
-            IndexMultiKey indexMultiKey, string deploymentId, string statementName)
+            IndexMultiKey indexMultiKey,
+            string deploymentId,
+            string statementName)
         {
             var last = metaData.IndexMetadata.RemoveIndexReference(indexMultiKey, deploymentId);
             if (last) {
@@ -152,7 +158,11 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         }
 
         public abstract TableInstance TableInstanceNoContext { get; }
-        public abstract TableAndLockProvider GetStateProvider(int agentInstanceId, bool writesToTables);
+
+        public abstract TableAndLockProvider GetStateProvider(
+            int agentInstanceId,
+            bool writesToTables);
+
         public abstract TableInstance GetTableInstance(int agentInstanceId);
     }
 } // end of namespace

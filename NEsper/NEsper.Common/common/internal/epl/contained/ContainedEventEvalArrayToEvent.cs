@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -22,14 +21,18 @@ namespace com.espertech.esper.common.@internal.epl.contained
         private readonly ExprEvaluator evaluator;
         private readonly EventBeanManufacturer manufacturer;
 
-        public ContainedEventEvalArrayToEvent(ExprEvaluator evaluator, EventBeanManufacturer manufacturer)
+        public ContainedEventEvalArrayToEvent(
+            ExprEvaluator evaluator,
+            EventBeanManufacturer manufacturer)
         {
             this.evaluator = evaluator;
             this.manufacturer = manufacturer;
         }
 
         public object GetFragment(
-            EventBean eventBean, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean eventBean,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             Array result = evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext) as Array;
             if (result == null) {

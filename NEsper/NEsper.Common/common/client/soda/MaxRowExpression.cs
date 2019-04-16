@@ -8,96 +8,109 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
-	/// <summary>
-	/// Maximum-value per-row expression (not aggregating) determines the maximum value among a set of values.
-	/// </summary>
-	public class MaxRowExpression : ExpressionBase {
-	    /// <summary>
-	    /// Ctor - for use to create an expression tree, without child expression.
-	    /// <para />Use add methods to add child expressions to acts upon.
-	    /// </summary>
-	    public MaxRowExpression() {
-	    }
+    /// <summary>
+    /// Maximum-value per-row expression (not aggregating) determines the maximum value among a set of values.
+    /// </summary>
+    public class MaxRowExpression : ExpressionBase
+    {
+        /// <summary>
+        /// Ctor - for use to create an expression tree, without child expression.
+        /// <para />Use add methods to add child expressions to acts upon.
+        /// </summary>
+        public MaxRowExpression()
+        {
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="propertyOne">the name of the property providing a value to determine the maximum of</param>
-	    /// <param name="propertyTwo">the name of the property providing a value to determine the maximum of</param>
-	    /// <param name="moreProperties">optional additional properties to consider</param>
-	    public MaxRowExpression(string propertyOne, string propertyTwo, string[] moreProperties) {
-	        AddChild(new PropertyValueExpression(propertyOne));
-	        AddChild(new PropertyValueExpression(propertyTwo));
-	        for (int i = 0; i < moreProperties.Length; i++) {
-	            AddChild(new PropertyValueExpression(moreProperties[i]));
-	        }
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="propertyOne">the name of the property providing a value to determine the maximum of</param>
+        /// <param name="propertyTwo">the name of the property providing a value to determine the maximum of</param>
+        /// <param name="moreProperties">optional additional properties to consider</param>
+        public MaxRowExpression(
+            string propertyOne,
+            string propertyTwo,
+            string[] moreProperties)
+        {
+            AddChild(new PropertyValueExpression(propertyOne));
+            AddChild(new PropertyValueExpression(propertyTwo));
+            for (int i = 0; i < moreProperties.Length; i++) {
+                AddChild(new PropertyValueExpression(moreProperties[i]));
+            }
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="exprOne">provides a value to determine the maximum of</param>
-	    /// <param name="exprTwo">provides a value to determine the maximum of</param>
-	    /// <param name="moreExpressions">optional additional values to consider</param>
-	    public MaxRowExpression(Expression exprOne, Expression exprTwo, params Expression[] moreExpressions) {
-	        AddChild(exprOne);
-	        AddChild(exprTwo);
-	        for (int i = 0; i < moreExpressions.Length; i++) {
-	            AddChild(moreExpressions[i]);
-	        }
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="exprOne">provides a value to determine the maximum of</param>
+        /// <param name="exprTwo">provides a value to determine the maximum of</param>
+        /// <param name="moreExpressions">optional additional values to consider</param>
+        public MaxRowExpression(
+            Expression exprOne,
+            Expression exprTwo,
+            params Expression[] moreExpressions)
+        {
+            AddChild(exprOne);
+            AddChild(exprTwo);
+            for (int i = 0; i < moreExpressions.Length; i++) {
+                AddChild(moreExpressions[i]);
+            }
+        }
 
-	    /// <summary>
-	    /// Add a constant to include in the computation.
-	    /// </summary>
-	    /// <param name="object">constant to add</param>
-	    /// <returns>expression</returns>
-	    public MaxRowExpression Add(object @object) {
-	        this.Children.Add(new ConstantExpression(@object));
-	        return this;
-	    }
+        /// <summary>
+        /// Add a constant to include in the computation.
+        /// </summary>
+        /// <param name="object">constant to add</param>
+        /// <returns>expression</returns>
+        public MaxRowExpression Add(object @object)
+        {
+            this.Children.Add(new ConstantExpression(@object));
+            return this;
+        }
 
-	    /// <summary>
-	    /// Add an expression to include in the computation.
-	    /// </summary>
-	    /// <param name="expression">to add</param>
-	    /// <returns>expression</returns>
-	    public MaxRowExpression Add(Expression expression) {
-	        this.Children.Add(expression);
-	        return this;
-	    }
+        /// <summary>
+        /// Add an expression to include in the computation.
+        /// </summary>
+        /// <param name="expression">to add</param>
+        /// <returns>expression</returns>
+        public MaxRowExpression Add(Expression expression)
+        {
+            this.Children.Add(expression);
+            return this;
+        }
 
-	    /// <summary>
-	    /// Add a property to include in the computation.
-	    /// </summary>
-	    /// <param name="propertyName">is the name of the property</param>
-	    /// <returns>expression</returns>
-	    public MaxRowExpression Add(string propertyName) {
-	        this.Children.Add(new PropertyValueExpression(propertyName));
-	        return this;
-	    }
+        /// <summary>
+        /// Add a property to include in the computation.
+        /// </summary>
+        /// <param name="propertyName">is the name of the property</param>
+        /// <returns>expression</returns>
+        public MaxRowExpression Add(string propertyName)
+        {
+            this.Children.Add(new PropertyValueExpression(propertyName));
+            return this;
+        }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
 
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        writer.Write("max(");
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            writer.Write("max(");
 
-	        string delimiter = "";
-	        foreach (Expression expr in this.Children) {
-	            writer.Write(delimiter);
-	            expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-	            delimiter = ",";
-	        }
-	        writer.Write(')');
-	    }
-	}
+            string delimiter = "";
+            foreach (Expression expr in this.Children) {
+                writer.Write(delimiter);
+                expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                delimiter = ",";
+            }
+
+            writer.Write(')');
+        }
+    }
 } // end of namespace

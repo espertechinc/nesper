@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.@join.rep;
 using com.espertech.esper.common.@internal.util;
@@ -51,8 +50,12 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// </param>
         /// <param name="childStreamIndex">indexes for child streams</param>
         public CartesianProdAssemblyNode(
-            int streamNum, int numStreams, bool allSubStreamsOptional, int[] childStreamIndex) : base(
-            streamNum, numStreams)
+            int streamNum,
+            int numStreams,
+            bool allSubStreamsOptional,
+            int[] childStreamIndex)
+            : base(
+                streamNum, numStreams)
         {
             this._childStreamIndex = childStreamIndex;
             this._allSubStreamsOptional = allSubStreamsOptional;
@@ -104,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
 
         public override void Process(
             IList<Node>[] result,
-            ICollection<EventBean[]> resultFinalRows, 
+            ICollection<EventBean[]> resultFinalRows,
             EventBean resultRootEvent)
         {
             // there cannot be child nodes to compute a cartesian product if this node had no results
@@ -159,7 +162,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         private void PostCartesian(
-            IList<EventBean[]>[] rowsPerStream, Node node, ICollection<EventBean[]> resultFinalRows,
+            IList<EventBean[]>[] rowsPerStream,
+            Node node,
+            ICollection<EventBean[]> resultFinalRows,
             EventBean resultRootEvent)
         {
             IList<EventBean[]> result = new List<EventBean[]>();
@@ -185,8 +190,12 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override void Result(
-            EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode,
-            ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+            EventBean[] row,
+            int fromStreamNum,
+            EventBean myEvent,
+            Node myNode,
+            ICollection<EventBean[]> resultFinalRows,
+            EventBean resultRootEvent)
         {
             // fill event in
             row[streamNum] = myEvent;
@@ -250,7 +259,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             /// </summary>
             /// <param name="fromStreamIndex">from stream</param>
             /// <param name="row">row to add</param>
-            public void Add(int fromStreamIndex, EventBean[] row)
+            public void Add(
+                int fromStreamIndex,
+                EventBean[] row)
             {
                 var rows = RowsPerStream[fromStreamIndex];
                 if (rows == null) {

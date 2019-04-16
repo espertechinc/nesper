@@ -19,16 +19,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
     public class SelectEvalStreamNoUnderlyingMap : SelectEvalStreamBaseMap
     {
         public SelectEvalStreamNoUnderlyingMap(
-            SelectExprForgeContext selectExprForgeContext, EventType resultEventType,
-            IList<SelectClauseStreamCompiledSpec> namedStreams, bool usingWildcard)
+            SelectExprForgeContext selectExprForgeContext,
+            EventType resultEventType,
+            IList<SelectClauseStreamCompiledSpec> namedStreams,
+            bool usingWildcard)
             : base(selectExprForgeContext, resultEventType, namedStreams, usingWildcard)
 
         {
         }
 
         protected override CodegenExpression ProcessSpecificCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenExpression props,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenExpression props,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprDotMethod(eventBeanFactory, "adapterForTypedMap", props, resultEventType);

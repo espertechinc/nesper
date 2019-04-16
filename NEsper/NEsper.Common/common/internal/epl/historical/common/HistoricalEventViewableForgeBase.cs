@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         protected ExprForge[] inputParamEvaluators;
         protected int scheduleCallbackId = -1;
 
-        public HistoricalEventViewableForgeBase(int streamNum, EventType eventType)
+        public HistoricalEventViewableForgeBase(
+            int streamNum,
+            EventType eventType)
         {
             this.streamNum = streamNum;
             this.eventType = eventType;
@@ -40,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         public SortedSet<int> RequiredStreams => subordinateStreams;
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(TypeOfImplementation(), GetType(), classScope);
             var @ref = Ref("hist");
@@ -66,12 +70,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         }
 
         public abstract void Validate(
-            StreamTypeService typeService, StatementBaseInfo @base, StatementCompileTimeServices services);
+            StreamTypeService typeService,
+            StatementBaseInfo @base,
+            StatementCompileTimeServices services);
 
         public abstract Type TypeOfImplementation();
 
         public abstract void CodegenSetter(
-            CodegenExpressionRef @ref, CodegenMethod method, SAIFFInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
     }
 } // end of namespace

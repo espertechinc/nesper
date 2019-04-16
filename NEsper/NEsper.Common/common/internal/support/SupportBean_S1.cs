@@ -20,26 +20,29 @@ namespace com.espertech.esper.common.@internal.support
             Id = id;
         }
 
-        public SupportBean_S1(int id,
-                              String p10)
+        public SupportBean_S1(
+            int id,
+            String p10)
         {
             Id = id;
             P10 = p10;
         }
 
-        public SupportBean_S1(int id,
-                              String p10,
-                              String p11)
+        public SupportBean_S1(
+            int id,
+            String p10,
+            String p11)
         {
             Id = id;
             P10 = p10;
             P11 = p11;
         }
 
-        public SupportBean_S1(int id,
-                              String p10,
-                              String p11,
-                              String p12)
+        public SupportBean_S1(
+            int id,
+            String p10,
+            String p11,
+            String p12)
         {
             Id = id;
             P10 = p10;
@@ -47,7 +50,12 @@ namespace com.espertech.esper.common.@internal.support
             P12 = p12;
         }
 
-        public SupportBean_S1(int id, String p10, String p11, String p12, String p13)
+        public SupportBean_S1(
+            int id,
+            String p10,
+            String p11,
+            String p12,
+            String p13)
         {
             Id = id;
             P10 = p10;
@@ -66,16 +74,17 @@ namespace com.espertech.esper.common.@internal.support
 
         public string P13 { get; set; }
 
-        public static Object[] MakeS1(String propOne,
-                                      String[] propTwo)
+        public static Object[] MakeS1(
+            String propOne,
+            String[] propTwo)
         {
             _idCounter++;
 
             var events = new Object[propTwo.Length];
-            for (int i = 0; i < propTwo.Length; i++)
-            {
+            for (int i = 0; i < propTwo.Length; i++) {
                 events[i] = new SupportBean_S1(_idCounter, propOne, propTwo[i]);
             }
+
             return events;
         }
     }

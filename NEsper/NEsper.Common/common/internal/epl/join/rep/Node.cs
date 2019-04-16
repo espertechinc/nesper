@@ -49,6 +49,6 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
         ///     Returns the results of the lookup.
         /// </summary>
         /// <returns>set of events</returns>
-        public ISet<EventBean> Events { get; set; }
+        public ICollection<EventBean> Events { get; set; }
     }
 } // end of namespace

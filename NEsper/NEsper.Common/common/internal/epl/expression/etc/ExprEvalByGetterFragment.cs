@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -27,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         private readonly FragmentEventType fragmentType;
 
         public ExprEvalByGetterFragment(
-            int streamNum, EventPropertyGetterSPI getter, Type returnType, FragmentEventType fragmentType)
+            int streamNum,
+            EventPropertyGetterSPI getter,
+            Type returnType,
+            FragmentEventType fragmentType)
         {
             StreamNum = streamNum;
             Getter = getter;
@@ -40,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         public int StreamNum { get; }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var result = fragmentType.IsIndexed ? typeof(EventBean[]) : typeof(EventBean);
@@ -63,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(GetType().Name);
         }

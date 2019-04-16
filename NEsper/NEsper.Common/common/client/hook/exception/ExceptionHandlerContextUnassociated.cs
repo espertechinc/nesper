@@ -23,7 +23,10 @@ namespace com.espertech.esper.common.client.hook.exception
         /// <param name="engineURI">engine URI</param>
         /// <param name="exception">exception</param>
         /// <param name="currentEvent">the event when applicable</param>
-        public ExceptionHandlerContextUnassociated(string engineURI, Exception exception, object currentEvent)
+        public ExceptionHandlerContextUnassociated(
+            string engineURI,
+            Exception exception,
+            object currentEvent)
         {
             EngineURI = engineURI;
             Exception = exception;

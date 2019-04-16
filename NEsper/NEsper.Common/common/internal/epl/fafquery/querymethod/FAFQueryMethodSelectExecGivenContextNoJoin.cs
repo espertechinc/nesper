@@ -29,8 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         }
 
         public EPPreparedQueryResult Execute(
-            FAFQueryMethodSelect select, ContextPartitionSelector[] contextPartitionSelectors,
-            FAFQueryMethodAssignerSetter assignerSetter, ContextManagementService contextManagementService)
+            FAFQueryMethodSelect select,
+            ContextPartitionSelector[] contextPartitionSelectors,
+            FAFQueryMethodAssignerSetter assignerSetter,
+            ContextManagementService contextManagementService)
         {
             var processor = select.Processors[0];
 
@@ -80,7 +82,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
         internal class ContextPartitionResult
         {
-            internal ContextPartitionResult(ICollection<EventBean> events, AgentInstanceContext context)
+            internal ContextPartitionResult(
+                ICollection<EventBean> events,
+                AgentInstanceContext context)
             {
                 Events = events;
                 Context = context;

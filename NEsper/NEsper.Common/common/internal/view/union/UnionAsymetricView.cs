@@ -84,7 +84,9 @@ namespace com.espertech.esper.common.@internal.view.union
             }
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, ViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(ViewFactory, newData, oldData);
@@ -269,7 +271,10 @@ namespace com.espertech.esper.common.@internal.view.union
             throw new UnsupportedOperationException("Must visit container");
         }
 
-        public void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents)
+        public void NewData(
+            int streamId,
+            EventBean[] newEvents,
+            EventBean[] oldEvents)
         {
             newDataChildView = newEvents;
 

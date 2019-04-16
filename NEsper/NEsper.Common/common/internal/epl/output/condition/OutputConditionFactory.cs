@@ -12,6 +12,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 {
     public interface OutputConditionFactory
     {
-        OutputCondition InstantiateOutputCondition(AgentInstanceContext agentInstanceContext, OutputCallback outputCallback);
+        OutputCondition InstantiateOutputCondition(
+            AgentInstanceContext agentInstanceContext,
+            OutputCallback outputCallback);
     }
 } // end of namespace

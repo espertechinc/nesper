@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.client.context
         /// <param name="contextName">context name</param>
         /// <param name="id">context partition id</param>
         public ContextStateEventContextPartition(
-            string runtimeURI, string contextDeploymentId, string contextName, int id)
+            string runtimeURI,
+            string contextDeploymentId,
+            string contextName,
+            int id)
             : base(runtimeURI, contextDeploymentId, contextName)
         {
             Id = id;

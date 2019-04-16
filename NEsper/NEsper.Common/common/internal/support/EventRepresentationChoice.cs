@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
@@ -29,8 +28,7 @@ namespace com.espertech.esper.common.@internal.support
     {
         public static string GetAnnotationText(this EventRepresentationChoice enumValue)
         {
-            switch (enumValue)
-            {
+            switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
                     return "@EventRepresentation('objectarray')";
                 case EventRepresentationChoice.MAP:
@@ -46,8 +44,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public static string GetOutputTypeCreateSchemaName(this EventRepresentationChoice enumValue)
         {
-            switch (enumValue)
-            {
+            switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
                     return " objectarray";
                 case EventRepresentationChoice.MAP:
@@ -63,8 +60,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public static string GetOutputTypeClassName(this EventRepresentationChoice enumValue)
         {
-            switch (enumValue)
-            {
+            switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
                     return EventUnderlyingType.OBJECTARRAY.UnderlyingClassName;
                 case EventRepresentationChoice.MAP:
@@ -81,8 +77,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public static EventUnderlyingType GetUnderlyingType(this EventRepresentationChoice enumValue)
         {
-            switch (enumValue)
-            {
+            switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
                     return EventUnderlyingType.OBJECTARRAY;
                 case EventRepresentationChoice.MAP:
@@ -97,33 +92,33 @@ namespace com.espertech.esper.common.@internal.support
         }
 
 
-        public static bool MatchesClass(this EventRepresentationChoice enumValue, Type representationType)
+        public static bool MatchesClass(
+            this EventRepresentationChoice enumValue,
+            Type representationType)
         {
             var outputTypeClassName = GetOutputTypeClassName(enumValue);
             var supers = new HashSet<Type>();
             TypeHelper.GetBase(representationType, supers);
             supers.Add(representationType);
-            foreach (Type clazz in supers)
-            {
-                if (clazz.FullName == outputTypeClassName)
-                {
+            foreach (Type clazz in supers) {
+                if (clazz.FullName == outputTypeClassName) {
                     return true;
                 }
             }
+
             return false;
         }
 
         public static EventRepresentationChoice GetEngineDefault(Configuration configuration)
         {
             var configured = configuration.Common.EventMeta.DefaultEventRepresentation;
-            if (configured == EventUnderlyingType.OBJECTARRAY)
-            {
+            if (configured == EventUnderlyingType.OBJECTARRAY) {
                 return EventRepresentationChoice.ARRAY;
             }
-            else if (configured == EventUnderlyingType.AVRO)
-            {
+            else if (configured == EventUnderlyingType.AVRO) {
                 return EventRepresentationChoice.AVRO;
             }
+
             return EventRepresentationChoice.MAP;
         }
 
@@ -139,28 +134,30 @@ namespace com.espertech.esper.common.@internal.support
 
         public static string GetAnnotationTextForNonMap(this EventRepresentationChoice enumValue)
         {
-            if (enumValue == EventRepresentationChoice.DEFAULT || enumValue == EventRepresentationChoice.MAP)
-            {
+            if (enumValue == EventRepresentationChoice.DEFAULT || enumValue == EventRepresentationChoice.MAP) {
                 return "";
             }
+
             return GetAnnotationText(enumValue);
         }
 
-        public static void AddAnnotationForNonMap(this EventRepresentationChoice enumValue, EPStatementObjectModel model)
+        public static void AddAnnotationForNonMap(
+            this EventRepresentationChoice enumValue,
+            EPStatementObjectModel model)
         {
-            if (enumValue == EventRepresentationChoice.DEFAULT || enumValue == EventRepresentationChoice.MAP)
-            {
+            if (enumValue == EventRepresentationChoice.DEFAULT || enumValue == EventRepresentationChoice.MAP) {
                 return;
             }
+
             var part = new AnnotationPart("EventRepresentation");
-            if (enumValue == EventRepresentationChoice.ARRAY)
-            {
+            if (enumValue == EventRepresentationChoice.ARRAY) {
                 part.AddValue("objectarray");
             }
-            if (enumValue == EventRepresentationChoice.AVRO)
-            {
+
+            if (enumValue == EventRepresentationChoice.AVRO) {
                 part.AddValue("avro");
             }
+
             model.Annotations = Collections.SingletonList(part);
         }
 

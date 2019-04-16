@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -17,39 +16,53 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
-	public class InfraOnMergeActionInsForge : InfraOnMergeActionForge {
-	    private readonly SelectExprProcessorForge insertHelper;
-	    private readonly TableMetaData insertIntoTable;
-	    private readonly bool audit;
-	    private readonly bool route;
+    public class InfraOnMergeActionInsForge : InfraOnMergeActionForge
+    {
+        private readonly SelectExprProcessorForge insertHelper;
+        private readonly TableMetaData insertIntoTable;
+        private readonly bool audit;
+        private readonly bool route;
 
-	    public InfraOnMergeActionInsForge(ExprNode optionalFilter, SelectExprProcessorForge insertHelper, TableMetaData insertIntoTable, bool audit, bool route)
+        public InfraOnMergeActionInsForge(
+            ExprNode optionalFilter,
+            SelectExprProcessorForge insertHelper,
+            TableMetaData insertIntoTable,
+            bool audit,
+            bool route)
+            : base(optionalFilter)
 
-	    	 : base(optionalFilter)
+        {
+            this.insertHelper = insertHelper;
+            this.insertIntoTable = insertIntoTable;
+            this.audit = audit;
+            this.route = route;
+        }
 
-	    {
-	        this.insertHelper = insertHelper;
-	        this.insertIntoTable = insertIntoTable;
-	        this.audit = audit;
-	        this.route = route;
-	    }
+        public TableMetaData InsertIntoTable {
+            get => insertIntoTable;
+        }
 
-	    public TableMetaData InsertIntoTable {
-	        get => insertIntoTable;
-	    }
-
-	    protected override CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeActionIns), this.GetType(), classScope);
-	        CodegenExpressionNewAnonymousClass anonymousSelect = SelectExprProcessorUtil.MakeAnonymous(insertHelper, method, symbols.GetAddInitSvc(method), classScope);
-	        method.Block.MethodReturn(NewInstance(typeof(InfraOnMergeActionIns),
-	                MakeFilter(method, classScope), anonymousSelect,
-	                insertIntoTable == null ? ConstantNull() : TableDeployTimeResolver.MakeResolveTable(insertIntoTable, symbols.GetAddInitSvc(method)), Constant(audit), Constant(route)));
-	        return LocalMethod(method);
-	    }
-	}
+        protected override CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeActionIns), this.GetType(), classScope);
+            CodegenExpressionNewAnonymousClass anonymousSelect = SelectExprProcessorUtil.MakeAnonymous(
+                insertHelper, method, symbols.GetAddInitSvc(method), classScope);
+            method.Block.MethodReturn(
+                NewInstance(
+                    typeof(InfraOnMergeActionIns),
+                    MakeFilter(method, classScope), anonymousSelect,
+                    insertIntoTable == null
+                        ? ConstantNull()
+                        : TableDeployTimeResolver.MakeResolveTable(insertIntoTable, symbols.GetAddInitSvc(method)), Constant(audit),
+                    Constant(route)));
+            return LocalMethod(method);
+        }
+    }
 } // end of namespace

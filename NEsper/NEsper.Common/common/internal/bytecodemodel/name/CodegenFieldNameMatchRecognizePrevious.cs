@@ -10,14 +10,16 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.name
 {
-	public class CodegenFieldNameMatchRecognizePrevious : CodegenFieldName {
-	    public readonly static CodegenFieldNameMatchRecognizePrevious INSTANCE = new CodegenFieldNameMatchRecognizePrevious();
+    public class CodegenFieldNameMatchRecognizePrevious : CodegenFieldName
+    {
+        public readonly static CodegenFieldNameMatchRecognizePrevious INSTANCE = new CodegenFieldNameMatchRecognizePrevious();
 
-	    private CodegenFieldNameMatchRecognizePrevious() {
-	    }
+        private CodegenFieldNameMatchRecognizePrevious()
+        {
+        }
 
-	    public string Name {
-	        get => CodegenPackageScopeNames.PreviousMatchRecognize();
-	    }
-	}
+        public string Name {
+            get => CodegenPackageScopeNames.PreviousMatchRecognize();
+        }
+    }
 } // end of namespace

@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprInstanceofNodeForge : ExprForgeInstrumentable
     {
-        internal ExprInstanceofNodeForge(ExprInstanceofNode parent, Type[] classes)
+        internal ExprInstanceofNodeForge(
+            ExprInstanceofNode parent,
+            Type[] classes)
         {
             ForgeRenderableInstance = parent;
             Classes = classes;
@@ -37,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public Type[] Classes { get; }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -46,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprInstanceofNodeForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);

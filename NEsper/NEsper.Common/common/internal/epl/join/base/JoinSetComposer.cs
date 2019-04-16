@@ -33,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         ///     stream
         /// </param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
-        void Init(EventBean[][] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext);
+        void Init(
+            EventBean[][] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     Return join tuple result set from new data and old data for each stream.
@@ -43,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         /// <returns>join tuples</returns>
         UniformPair<ISet<MultiKey<EventBean>>> Join(
-            EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext);
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     For use in iteration over join statements, this must build a join tuple result set from

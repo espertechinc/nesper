@@ -33,6 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         /// </summary>
         /// <param name="exprNode">is the expression node to visit</param>
         /// <param name="parentExprNode">parent to visit</param>
-        void Visit(ExprNode exprNode, ExprNode parentExprNode);
+        void Visit(
+            ExprNode exprNode,
+            ExprNode parentExprNode);
     }
 }

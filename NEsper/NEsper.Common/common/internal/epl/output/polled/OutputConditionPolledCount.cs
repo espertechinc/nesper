@@ -8,7 +8,7 @@
 
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.util;
-
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         private readonly OutputConditionPolledCountState state;
         private readonly VariableReader optionalVariableReader;
 
-        public OutputConditionPolledCount(OutputConditionPolledCountState state, VariableReader optionalVariableReader)
+        public OutputConditionPolledCount(
+            OutputConditionPolledCountState state,
+            VariableReader optionalVariableReader)
         {
             this.state = state;
             this.optionalVariableReader = optionalVariableReader;
@@ -31,31 +33,29 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
 
         OutputConditionPolledState OutputConditionPolled.State => State;
 
-        public OutputConditionPolledCountState State
-        {
+        public OutputConditionPolledCountState State {
             get => state;
         }
 
-        public bool UpdateOutputCondition(int newDataCount, int oldDataCount)
+        public bool UpdateOutputCondition(
+            int newDataCount,
+            int oldDataCount)
         {
-            if (optionalVariableReader != null)
-            {
+            if (optionalVariableReader != null) {
                 object value = optionalVariableReader.Value;
-                if (value != null)
-                {
-                    state.EventRate = (value).AsLong();
+                if (value != null) {
+                    state.EventRate = value.AsLong();
                 }
             }
 
             state.NewEventsCount = state.NewEventsCount + newDataCount;
             state.OldEventsCount = state.OldEventsCount + oldDataCount;
 
-            if (IsSatisfied || state.IsFirst)
-            {
-                if ((ExecutionPathDebugLog.isDebugEnabled) && (log.IsDebugEnabled))
-                {
+            if (IsSatisfied() || state.IsFirst) {
+                if ((ExecutionPathDebugLog.IsEnabled) && (log.IsDebugEnabled)) {
                     log.Debug(".updateOutputCondition() condition satisfied");
                 }
+
                 state.IsFirst = false;
                 state.NewEventsCount = 0;
                 state.OldEventsCount = 0;

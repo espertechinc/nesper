@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         private readonly IDictionary<string, int> _tagsPerIndexMap;
 
-        public MatchedEventMapMeta(string[] tagsPerIndex, EventType[] eventTypes, string[] arrayTags)
+        public MatchedEventMapMeta(
+            string[] tagsPerIndex,
+            EventType[] eventTypes,
+            string[] arrayTags)
         {
             TagsPerIndex = tagsPerIndex;
             EventTypes = eventTypes;
@@ -98,7 +101,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols)
         {
             var method = parent.MakeChild(typeof(MatchedEventMapMeta), GetType(), classScope);
             method.Block.DeclareVar(typeof(string[]), "tagsPerIndex", Constant(TagsPerIndex))

@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     public class QueryGraphValueEntryRangeRelOp : QueryGraphValueEntryRange
     {
         public QueryGraphValueEntryRangeRelOp(
-            QueryGraphRangeEnum type, ExprEvaluator expression, bool isBetweenPart) : base(type)
+            QueryGraphRangeEnum type,
+            ExprEvaluator expression,
+            bool isBetweenPart)
+            : base(type)
         {
             if (type.IsRange) {
                 throw new ArgumentException("Invalid ctor for use with ranges");

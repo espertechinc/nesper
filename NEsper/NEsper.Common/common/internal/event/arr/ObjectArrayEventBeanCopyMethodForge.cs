@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="objectArrayEventType">map event type</param>
         /// <param name="eventBeanTypedEventFactory">for copying events</param>
         public ObjectArrayEventBeanCopyMethodForge(
-            ObjectArrayEventType objectArrayEventType, EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            ObjectArrayEventType objectArrayEventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.objectArrayEventType = objectArrayEventType;
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;

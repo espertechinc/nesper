@@ -21,15 +21,19 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         ContextControllerInitTermWLastTrigger
     {
         public ContextControllerInitTermNonOverlap(
-            ContextControllerInitTermFactory factory, ContextManagerRealization realization) : base(
-            factory, realization)
+            ContextControllerInitTermFactory factory,
+            ContextManagerRealization realization)
+            : base(
+                factory, realization)
         {
         }
 
         public EventBean LastTriggerEvent { get; private set; }
 
         public override void Activate(
-            IntSeqKey path, object[] parentPartitionKeys, EventBean optionalTriggeringEvent,
+            IntSeqKey path,
+            object[] parentPartitionKeys,
+            EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern)
         {
             initTermSvc.MgmtCreate(path, parentPartitionKeys);
@@ -53,9 +57,11 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         public override void RangeNotification(
-            IntSeqKey conditionPath, 
-            ContextControllerConditionNonHA originCondition, EventBean optionalTriggeringEvent,
-            IDictionary<string, object> optionalTriggeringPattern, EventBean optionalTriggeringEventPattern,
+            IntSeqKey conditionPath,
+            ContextControllerConditionNonHA originCondition,
+            EventBean optionalTriggeringEvent,
+            IDictionary<string, object> optionalTriggeringPattern,
+            EventBean optionalTriggeringEventPattern,
             IDictionary<string, object> optionalPatternForInclusiveEval)
         {
             bool endConditionNotification = originCondition.Descriptor != factory.InitTermSpec.StartCondition;
@@ -73,8 +79,10 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         private void RangeNotificationStart(
-            IntSeqKey controllerPath, EventBean optionalTriggeringEvent,
-            IDictionary<string, object> optionalTriggeringPattern, EventBean optionalTriggeringEventPattern,
+            IntSeqKey controllerPath,
+            EventBean optionalTriggeringEvent,
+            IDictionary<string, object> optionalTriggeringPattern,
+            EventBean optionalTriggeringEventPattern,
             IDictionary<string, object> optionalPatternForInclusiveEval)
         {
             var startCondition = initTermSvc.MgmtUpdClearStartCondition(controllerPath);
@@ -89,8 +97,11 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         private void RangeNotificationEnd(
-            IntSeqKey conditionPath, ContextControllerConditionNonHA endCondition, EventBean optionalTriggeringEvent,
-            IDictionary<string, object> optionalTriggeringPattern, EventBean optionalTriggeringEventPattern)
+            IntSeqKey conditionPath,
+            ContextControllerConditionNonHA endCondition,
+            EventBean optionalTriggeringEvent,
+            IDictionary<string, object> optionalTriggeringPattern,
+            EventBean optionalTriggeringEventPattern)
         {
             if (endCondition.IsRunning) {
                 endCondition.Deactivate();
@@ -148,7 +159,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
         }
 
-        private void InstallFilterFaultHandler(IList<AgentInstance> agentInstances, IntSeqKey controllerPath)
+        private void InstallFilterFaultHandler(
+            IList<AgentInstance> agentInstances,
+            IntSeqKey controllerPath)
         {
             if (agentInstances.IsEmpty()) {
                 return;
@@ -174,7 +187,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 this.contextControllerInitTerm = contextControllerInitTerm;
             }
 
-            public bool HandleFilterFault(EventBean theEvent, long version)
+            public bool HandleFilterFault(
+                EventBean theEvent,
+                long version)
             {
                 // Handle filter faults such as
                 // - a) App thread determines event E1 applies to CP1

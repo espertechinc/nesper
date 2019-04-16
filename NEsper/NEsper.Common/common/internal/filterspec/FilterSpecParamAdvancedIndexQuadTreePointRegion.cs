@@ -19,12 +19,13 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public FilterSpecParamAdvancedIndexQuadTreePointRegion(
             ExprFilterSpecLookupable lookupable,
-            FilterOperator filterOperator) : base(lookupable, filterOperator)
+            FilterOperator filterOperator)
+            : base(lookupable, filterOperator)
         {
         }
 
         public override object GetFilterValue(
-            MatchedEventMap matchedEvents, 
+            MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
@@ -48,8 +49,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override int GetHashCode()
         {
-            unchecked
-            {
+            unchecked {
                 var hashCode = base.GetHashCode();
                 hashCode = (hashCode * 397) ^ (_xEval != null ? _xEval.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (_yEval != null ? _yEval.GetHashCode() : 0);

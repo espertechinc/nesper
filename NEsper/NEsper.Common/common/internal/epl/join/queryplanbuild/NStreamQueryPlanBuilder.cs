@@ -498,7 +498,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="dependencyGraph">dependencies between historical streams</param>
         /// <returns>chain and chain depth</returns>
         protected internal static BestChainResult ComputeBestPath(
-            int lookupStream, QueryGraphForge queryGraph, DependencyGraph dependencyGraph)
+            int lookupStream,
+            QueryGraphForge queryGraph,
+            DependencyGraph dependencyGraph)
         {
             var defNestingorder = BuildDefaultNestingOrder(queryGraph.NumStreams, lookupStream);
             IEnumerator<int[]> streamEnum;
@@ -547,7 +549,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="dependencyGraph">dependencies</param>
         /// <returns>pass or fail indication</returns>
         protected internal static bool IsDependencySatisfied(
-            int lookupStream, int[] permutation, DependencyGraph dependencyGraph)
+            int lookupStream,
+            int[] permutation,
+            DependencyGraph dependencyGraph)
         {
             foreach (var entry in dependencyGraph.Dependencies) {
                 var target = entry.Key;
@@ -576,7 +580,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             return true;
         }
 
-        private static int PositionOf(int stream, int lookupStream, int[] permutation)
+        private static int PositionOf(
+            int stream,
+            int lookupStream,
+            int[] permutation)
         {
             if (stream == lookupStream) {
                 return 0;
@@ -599,7 +606,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="nextStreams">list of stream numbers next in lookup</param>
         /// <param name="queryGraph">indexing information</param>
         /// <returns>value between 0 and (nextStreams.lenght - 1)</returns>
-        protected internal static int ComputeNavigableDepth(int lookupStream, int[] nextStreams, QueryGraphForge queryGraph)
+        protected internal static int ComputeNavigableDepth(
+            int lookupStream,
+            int[] nextStreams,
+            QueryGraphForge queryGraph)
         {
             var currentStream = lookupStream;
             var currentDepth = 0;
@@ -628,7 +638,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <returns>
         ///     int array with all stream numbers starting at 0 to (numStreams - 1) leaving theforStream out
         /// </returns>
-        protected internal static int[] BuildDefaultNestingOrder(int numStreams, int forStream)
+        protected internal static int[] BuildDefaultNestingOrder(
+            int numStreams,
+            int forStream)
         {
             var nestingOrder = new int[numStreams - 1];
 
@@ -667,7 +679,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         }
 
         private static TableLookupPlanForge GetFullTableScanTable(
-            int lookupStream, int indexedStream, bool indexedStreamIsVDW, EventType[] typesPerStream,
+            int lookupStream,
+            int indexedStream,
+            bool indexedStreamIsVDW,
+            EventType[] typesPerStream,
             TableMetaData indexedStreamTableMeta)
         {
             var indexName = new TableLookupIndexReqKey(
@@ -714,7 +729,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             /// </summary>
             /// <param name="depth">depth this chain resolves into a indexed lookup</param>
             /// <param name="chain">chain for nested lookup</param>
-            public BestChainResult(int depth, int[] chain)
+            public BestChainResult(
+                int depth,
+                int[] chain)
             {
                 Depth = depth;
                 Chain = chain;

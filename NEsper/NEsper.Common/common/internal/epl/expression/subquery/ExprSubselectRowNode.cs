@@ -38,7 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         ///     Ctor.
         /// </summary>
         /// <param name="statementSpec">is the lookup statement spec from the parser, unvalidated</param>
-        public ExprSubselectRowNode(StatementSpecRaw statementSpec) : base(statementSpec)
+        public ExprSubselectRowNode(StatementSpecRaw statementSpec)
+            : base(statementSpec)
         {
         }
 
@@ -147,7 +148,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public override EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             if (SelectClause == null) {
                 return null;
@@ -161,7 +163,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public override EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             var rawEventType = RawEventType;
             var selectClause = SelectClause;
@@ -192,7 +195,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         private EventType GetAssignAnonymousType(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             IDictionary<string, object> rowType = RowType;
             var eventTypeName =
@@ -225,7 +229,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         protected override CodegenExpression EvalMatchesPlainCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(EvaluationType, GetType(), classScope);
             method.Block
@@ -236,7 +242,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         protected override CodegenExpression EvalMatchesGetCollEventsCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ICollection<object>), GetType(), classScope);
             method.Block
@@ -248,7 +256,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         protected override CodegenExpression EvalMatchesGetCollScalarCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ICollection<object>), GetType(), classScope);
             method.Block
@@ -260,7 +270,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         protected override CodegenExpression EvalMatchesGetEventBeanCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(EventBean), GetType(), classScope);
             method.Block
@@ -270,7 +282,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             return LocalMethod(method);
         }
 
-        public CodegenMethod EvaluateRowCodegen(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenMethod EvaluateRowCodegen(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var symbols = new ExprForgeCodegenSymbol(true, true);
             var method = parent.MakeChildWithScope(
@@ -298,7 +312,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         protected override CodegenExpression EvalMatchesTypableSingleCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(object[]), GetType(), classScope);
             method.Block
@@ -311,7 +327,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         protected override CodegenExpression EvalMatchesTypableMultiCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(object[][]), GetType(), classScope);
             method.Block

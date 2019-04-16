@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     {
         private ExprTableEvalStrategy service;
 
-        public void AssignService(int num, ExprTableEvalStrategy subselectStrategy)
+        public void AssignService(
+            int num,
+            ExprTableEvalStrategy subselectStrategy)
         {
             service = subselectStrategy;
         }
@@ -27,29 +29,42 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             service = null;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return service.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return service.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return service.EvaluateGetEventBean(eventsPerStream, isNewData, context);
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return service.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
         }
 
-        public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object[] EvaluateTypableSingle(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return service.EvaluateTypableSingle(eventsPerStream, isNewData, context);
         }

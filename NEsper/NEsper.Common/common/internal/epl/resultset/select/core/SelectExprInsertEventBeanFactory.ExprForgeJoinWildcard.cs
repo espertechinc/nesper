@@ -25,17 +25,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
         {
             private readonly int streamNum;
 
-            public ExprForgeJoinWildcard(int streamNum, Type returnType)
+            public ExprForgeJoinWildcard(
+                int streamNum,
+                Type returnType)
             {
                 this.streamNum = streamNum;
                 EvaluationType = returnType;
             }
 
-            public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            public object Evaluate(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext context)
             {
                 var bean = eventsPerStream[streamNum];
-                if (bean == null)
-                {
+                if (bean == null) {
                     return null;
                 }
 
@@ -56,9 +60,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                     EvaluationType, typeof(ExprForgeJoinWildcard), codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 methodNode.Block
-                    .DeclareVar(typeof(EventBean), "bean", CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(streamNum)))
+                    .DeclareVar(
+                        typeof(EventBean), "bean", CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(streamNum)))
                     .IfRefNullReturnNull("bean")
-                    .MethodReturn(CodegenExpressionBuilder.Cast(EvaluationType, CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.Ref("bean"))));
+                    .MethodReturn(
+                        CodegenExpressionBuilder.Cast(
+                            EvaluationType, CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.Ref("bean"))));
                 return CodegenExpressionBuilder.LocalMethod(methodNode);
             }
 
@@ -66,7 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 
             public ExprNodeRenderable ForgeRenderable => this;
 
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+            public void ToEPL(
+                TextWriter writer,
+                ExprPrecedenceEnum parentPrecedence)
             {
                 writer.Write(GetType().GetSimpleName());
             }

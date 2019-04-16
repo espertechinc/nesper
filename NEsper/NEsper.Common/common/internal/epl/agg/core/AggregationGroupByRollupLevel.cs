@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     {
         private readonly int levelOffset;
 
-        public AggregationGroupByRollupLevel(int levelNumber, int levelOffset, int[] rollupKeys)
+        public AggregationGroupByRollupLevel(
+            int levelNumber,
+            int levelOffset,
+            int[] rollupKeys)
         {
             LevelNumber = levelNumber;
             this.levelOffset = levelOffset;
@@ -85,7 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                    '}';
         }
 
-        public HashableMultiKey ComputeMultiKey(object subkey, int numExpected)
+        public HashableMultiKey ComputeMultiKey(
+            object subkey,
+            int numExpected)
         {
             if (subkey is HashableMultiKey) {
                 var mk = (HashableMultiKey) subkey;

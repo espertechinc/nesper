@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.guard
@@ -29,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         private ExprNode expression;
 
         public void SetGuardParameters(
-            IList<ExprNode> parameters, MatchedEventConvertorForge convertor, StatementCompileTimeServices services)
+            IList<ExprNode> parameters,
+            MatchedEventConvertorForge convertor,
+            StatementCompileTimeServices services)
         {
             var errorMessage =
                 "Expression pattern guard requires a single expression as a parameter returning a true or false (boolean) value";
@@ -52,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ExpressionGuardFactory), GetType(), classScope);
             method.Block

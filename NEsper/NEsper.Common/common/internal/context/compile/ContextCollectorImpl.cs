@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.context.compile
             this.moduleContexts = moduleContexts;
         }
 
-        public void RegisterContext(string contextName, ContextMetaData contextDetail)
+        public void RegisterContext(
+            string contextName,
+            ContextMetaData contextDetail)
         {
             moduleContexts.Put(contextName, contextDetail);
         }

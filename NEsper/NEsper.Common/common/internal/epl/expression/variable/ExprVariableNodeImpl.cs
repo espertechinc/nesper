@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -21,7 +20,6 @@ using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.variable
@@ -38,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
         private EventPropertyGetterSPI optSubPropGetter;
 
-        public ExprVariableNodeImpl(VariableMetaData variableMeta, string optSubPropName)
+        public ExprVariableNodeImpl(
+            VariableMetaData variableMeta,
+            string optSubPropName)
         {
             VariableMetadata = variableMeta;
             this.optSubPropName = optSubPropName;
@@ -48,10 +48,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (VariableMetadata.IsCompileTimeConstant)
-            {
+            if (VariableMetadata.IsCompileTimeConstant) {
                 return VariableMetadata.ValueWhenAvailable;
             }
 
@@ -65,18 +67,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
         public ExprNodeRenderable ForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             var methodNode = parent.MakeChild(EvaluationType, typeof(ExprVariableNodeImpl), classScope);
 
             CodegenExpression readerExpression;
-            if (VariableMetadata.OptionalContextName == null)
-            {
+            if (VariableMetadata.OptionalContextName == null) {
                 readerExpression =
                     classScope.AddOrGetFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
             }
-            else
-            {
+            else {
                 var field = classScope.AddOrGetFieldSharable(
                     new VariableReaderPerCPCodegenFieldSharable(VariableMetadata));
                 var cpid = ExprDotMethod(symbols.GetAddExprEvalCtx(methodNode), "getAgentInstanceId");
@@ -85,23 +88,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
             var block = methodNode.Block
                 .DeclareVar(typeof(VariableReader), "reader", readerExpression);
-            if (VariableMetadata.EventType == null)
-            {
+            if (VariableMetadata.EventType == null) {
                 block.DeclareVar(
                         EvaluationType, "value", Cast(EvaluationType, ExprDotMethod(Ref("reader"), "getValue")))
                     .MethodReturn(Ref("value"));
             }
-            else
-            {
+            else {
                 block.DeclareVar(typeof(object), "value", ExprDotMethod(Ref("reader"), "getValue"))
                     .IfRefNullReturnNull("value")
                     .DeclareVar(typeof(EventBean), "theEvent", Cast(typeof(EventBean), Ref("value")));
-                if (optSubPropName == null)
-                {
+                if (optSubPropName == null) {
                     block.MethodReturn(Cast(EvaluationType, ExprDotUnderlying(Ref("theEvent"))));
                 }
-                else
-                {
+                else {
                     block.MethodReturn(
                         CodegenLegoCast.CastSafeFromObjectType(
                             EvaluationType,
@@ -113,7 +112,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             return new InstrumentationBuilderExpr(
                 GetType(), this, "ExprVariable", requiredType, parent, symbols, classScope).Build();
@@ -125,8 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
         {
             CodegenExpression readerExpression =
                 classScope.AddOrGetFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
-            if (VariableMetadata.EventType == null)
-            {
+            if (VariableMetadata.EventType == null) {
                 return Cast(EvaluationType, ExprDotMethod(readerExpression, "getValue"));
             }
 
@@ -139,57 +140,47 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             // determine if any types are property agnostic; If yes, resolve to variable
             var hasPropertyAgnosticType = false;
             var types = validationContext.StreamTypeService.EventTypes;
-            for (var i = 0; i < validationContext.StreamTypeService.EventTypes.Length; i++)
-            {
-                if (types[i] is EventTypeSPI)
-                {
-                    hasPropertyAgnosticType |= ((EventTypeSPI)types[i]).Metadata.IsPropertyAgnostic;
+            for (var i = 0; i < validationContext.StreamTypeService.EventTypes.Length; i++) {
+                if (types[i] is EventTypeSPI) {
+                    hasPropertyAgnosticType |= ((EventTypeSPI) types[i]).Metadata.IsPropertyAgnostic;
                 }
             }
 
             string variableName;
 
-            if (!hasPropertyAgnosticType)
-            {
+            if (!hasPropertyAgnosticType) {
                 variableName = VariableMetadata.VariableName;
                 // the variable name should not overlap with a property name
-                try
-                {
+                try {
                     validationContext.StreamTypeService.ResolveByPropertyName(variableName, false);
                     throw new ExprValidationException(
                         "The variable by name '" + variableName + "' is ambiguous to a property of the same name");
                 }
-                catch (DuplicatePropertyException e)
-                {
+                catch (DuplicatePropertyException e) {
                     throw new ExprValidationException(
                         "The variable by name '" + variableName + "' is ambiguous to a property of the same name");
                 }
-                catch (PropertyNotFoundException e)
-                {
+                catch (PropertyNotFoundException e) {
                     // expected
                 }
             }
 
             variableName = VariableMetadata.VariableName;
-            if (optSubPropName != null)
-            {
-                if (VariableMetadata.EventType == null)
-                {
+            if (optSubPropName != null) {
+                if (VariableMetadata.EventType == null) {
                     throw new ExprValidationException(
                         "Property '" + optSubPropName + "' is not valid for variable '" + variableName + "'");
                 }
 
-                optSubPropGetter = ((EventTypeSPI)VariableMetadata.EventType).GetGetterSPI(optSubPropName);
-                if (optSubPropGetter == null)
-                {
+                optSubPropGetter = ((EventTypeSPI) VariableMetadata.EventType).GetGetterSPI(optSubPropName);
+                if (optSubPropGetter == null) {
                     throw new ExprValidationException(
                         "Property '" + optSubPropName + "' is not valid for variable '" + variableName + "'");
                 }
 
                 EvaluationType = VariableMetadata.EventType.GetPropertyType(optSubPropName);
             }
-            else
-            {
+            else {
                 EvaluationType = VariableMetadata.Type;
             }
 
@@ -202,20 +193,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             return "variableName=" + VariableMetadata.VariableName;
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
-            get
-            {
-                if (VariableMetadata.OptionalContextName != null)
-                {
+        public ExprForgeConstantType ForgeConstantType {
+            get {
+                if (VariableMetadata.OptionalContextName != null) {
                     return ExprForgeConstantType.NONCONST;
                 }
 
                 // for simple-value variables that are constant and created by the same module and not preconfigured we can use compile-time constant
                 if (VariableMetadata.IsConstant && VariableMetadata.IsCreatedByCurrentModule &&
                     VariableMetadata.VariableVisibility != NameAccessModifier.PRECONFIGURED &&
-                    VariableMetadata.EventType == null)
-                {
+                    VariableMetadata.EventType == null) {
                     return ExprForgeConstantType.COMPILETIMECONST;
                 }
 
@@ -223,39 +210,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             }
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(VariableMetadata.VariableName);
-            if (optSubPropName != null)
-            {
+            if (optSubPropName != null) {
                 writer.Write(".");
                 writer.Write(optSubPropName);
             }
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
-            if (!(node is ExprVariableNodeImpl))
-            {
+            if (!(node is ExprVariableNodeImpl)) {
                 return false;
             }
 
-            var that = (ExprVariableNodeImpl)node;
+            var that = (ExprVariableNodeImpl) node;
 
-            if (optSubPropName != null ? !optSubPropName.Equals(that.optSubPropName) : that.optSubPropName != null)
-            {
+            if (optSubPropName != null ? !optSubPropName.Equals(that.optSubPropName) : that.optSubPropName != null) {
                 return false;
             }
 
             return that.VariableMetadata.VariableName.Equals(VariableMetadata.VariableName);
         }
 
-        public string VariableNameWithSubProp
-        {
-            get
-            {
-                if (optSubPropName == null)
-                {
+        public string VariableNameWithSubProp {
+            get {
+                if (optSubPropName == null) {
                     return VariableMetadata.VariableName;
                 }
 

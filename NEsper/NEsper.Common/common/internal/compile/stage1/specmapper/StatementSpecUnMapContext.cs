@@ -8,10 +8,10 @@
 
 namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 {
-	/// <summary>
-	/// Un-mapping context for mapping from an internal specifications to an SODA object model.
-	/// </summary>
-	public class StatementSpecUnMapContext
-	{
-	}
+    /// <summary>
+    /// Un-mapping context for mapping from an internal specifications to an SODA object model.
+    /// </summary>
+    public class StatementSpecUnMapContext
+    {
+    }
 } // end of namespace

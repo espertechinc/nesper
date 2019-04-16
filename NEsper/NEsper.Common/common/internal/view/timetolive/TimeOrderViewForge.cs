@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -41,28 +39,31 @@ namespace com.espertech.esper.common.@internal.view.timetolive
         private string ViewParamMessage => ViewName +
                                            " view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size";
 
-        public int ScheduleCallbackId
-        {
+        public int ScheduleCallbackId {
             set => scheduleCallbackId = value;
         }
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             viewParameters = parameters;
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
 
-            if (viewParameters.Count != 2)
-            {
+            if (viewParameters.Count != 2) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            if (!validated[0].Forge.EvaluationType.IsNumeric())
-            {
+            if (!validated[0].Forge.EvaluationType.IsNumeric()) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
@@ -83,11 +84,12 @@ namespace com.espertech.esper.common.@internal.view.timetolive
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (scheduleCallbackId == -1)
-            {
+            if (scheduleCallbackId == -1) {
                 throw new IllegalStateException("No schedule callback id");
             }
 

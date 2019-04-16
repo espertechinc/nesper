@@ -22,8 +22,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly CodegenExpression target;
         private readonly Type type;
 
-        public CodegenStatementForEach(CodegenBlock parent, Type type, string @ref, CodegenExpression target) : base(
-            parent)
+        public CodegenStatementForEach(
+            CodegenBlock parent,
+            Type type,
+            string @ref,
+            CodegenExpression target)
+            : base(
+                parent)
         {
             this.type = type;
             this.@ref = @ref;
@@ -33,7 +38,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         public CodegenBlock Block { get; set; }
 
         public override void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level,
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
             CodegenIndent indent)
         {
             builder.Append("for (");

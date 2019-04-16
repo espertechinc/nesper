@@ -12,7 +12,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
 {
     public class PointRegionQuadTreeNodeLeaf<TL> : PointRegionQuadTreeNode
     {
-        public PointRegionQuadTreeNodeLeaf(BoundingBox bb, int level, TL points, int count) : base(bb, level)
+        public PointRegionQuadTreeNodeLeaf(
+            BoundingBox bb,
+            int level,
+            TL points,
+            int count)
+            : base(bb, level)
         {
             Points = points;
             Count = count;

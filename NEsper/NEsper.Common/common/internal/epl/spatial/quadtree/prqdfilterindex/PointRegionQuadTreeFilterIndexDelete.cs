@@ -16,7 +16,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 {
     public class PointRegionQuadTreeFilterIndexDelete<TL>
     {
-        public static void Delete(double x, double y, PointRegionQuadTree<object> tree)
+        public static void Delete(
+            double x,
+            double y,
+            PointRegionQuadTree<object> tree)
         {
             var root = tree.Root;
             PointRegionQuadTreeFilterIndexCheckBB.CheckBB(root.Bb, x, y);
@@ -25,15 +28,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         }
 
         private static PointRegionQuadTreeNode DeleteFromNode(
-            double x, double y,
+            double x,
+            double y,
             PointRegionQuadTreeNode node,
             PointRegionQuadTree<object> tree)
         {
-            if (node is PointRegionQuadTreeNodeLeaf<object> leaf)
-            {
+            if (node is PointRegionQuadTreeNodeLeaf<object> leaf) {
                 var removed = DeleteFromPoints(x, y, leaf.Points);
-                if (removed)
-                {
+                if (removed) {
                     leaf.DecCount();
                     if (leaf.Count == 0) leaf.Points = null;
                 }
@@ -69,19 +71,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             return new PointRegionQuadTreeNodeLeaf<object>(branch.Bb, branch.Level, collection, count);
         }
 
-        private static bool DeleteFromPoints(double x, double y, object points)
+        private static bool DeleteFromPoints(
+            double x,
+            double y,
+            object points)
         {
             XYPointWValue<TL> point;
 
             if (points == null) return false;
-            if (points is ICollection<XYPointWValue<TL>> collection)
-            {
+            if (points is ICollection<XYPointWValue<TL>> collection) {
                 var enumerator = collection.GetEnumerator();
-                while (enumerator.MoveNext())
-                {
+                while (enumerator.MoveNext()) {
                     point = enumerator.Current;
-                    if (point.X == x && point.Y == y)
-                    {
+                    if (point.X == x && point.Y == y) {
                         collection.Remove(point);
                         return true;
                     }
@@ -94,11 +96,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             return point.X == x && point.Y == y;
         }
 
-        private static int MergeChildNodes(ICollection<XYPointWValue<TL>> target, object points)
+        private static int MergeChildNodes(
+            ICollection<XYPointWValue<TL>> target,
+            object points)
         {
             if (points == null) return 0;
-            if (points is XYPointWValue<TL>)
-            {
+            if (points is XYPointWValue<TL>) {
                 var p = (XYPointWValue<TL>) points;
                 target.Add(p);
                 return 1;

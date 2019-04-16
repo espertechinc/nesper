@@ -8,35 +8,38 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 {
-	public abstract class NamedWindowConsumerLatch {
-	    private readonly NamedWindowDeltaData deltaData;
-	    private readonly IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> dispatchTo;
+    public abstract class NamedWindowConsumerLatch
+    {
+        private readonly NamedWindowDeltaData deltaData;
+        private readonly IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> dispatchTo;
 
-	    public abstract void Await();
+        public abstract void Await();
 
-	    public abstract void Done();
+        public abstract void Done();
 
-	    public abstract NamedWindowConsumerLatch Earlier { get; }
+        public abstract NamedWindowConsumerLatch Earlier { get; }
 
-	    public NamedWindowConsumerLatch(NamedWindowDeltaData deltaData, IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> dispatchTo) {
-	        this.deltaData = deltaData;
-	        this.dispatchTo = dispatchTo;
-	    }
+        public NamedWindowConsumerLatch(
+            NamedWindowDeltaData deltaData,
+            IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> dispatchTo)
+        {
+            this.deltaData = deltaData;
+            this.dispatchTo = dispatchTo;
+        }
 
-	    public NamedWindowDeltaData DeltaData
-	    {
-	        get => deltaData;
-	    }
+        public NamedWindowDeltaData DeltaData {
+            get => deltaData;
+        }
 
-	    public IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> GetDispatchTo() {
-	        return dispatchTo;
-	    }
-	}
+        public IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> GetDispatchTo()
+        {
+            return dispatchTo;
+        }
+    }
 } // end of namespace

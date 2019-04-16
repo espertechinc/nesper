@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public override DTLocalEvaluator DTEvaluator => new DTLocalLongOpsReformatEval(
-            GetCalendarOps(calendarForges), reformatForge.Op, TimeZone.Default, timeAbacus);
+            GetCalendarOps(calendarForges), reformatForge.Op, TimeZoneInfo.Local, timeAbacus);
 
         public override CodegenExpression Codegen(
             CodegenExpression inner,

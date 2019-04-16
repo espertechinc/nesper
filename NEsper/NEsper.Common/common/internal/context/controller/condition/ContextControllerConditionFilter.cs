@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -21,91 +20,107 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
 {
-	public class ContextControllerConditionFilter : ContextControllerConditionNonHA {
+    public class ContextControllerConditionFilter : ContextControllerConditionNonHA
+    {
+        private readonly IntSeqKey conditionPath;
+        private readonly object[] partitionKeys;
+        private readonly ContextConditionDescriptorFilter filter;
+        private readonly ContextControllerConditionCallback callback;
+        private readonly ContextController controller;
 
-	    private readonly IntSeqKey conditionPath;
-	    private readonly object[] partitionKeys;
-	    private readonly ContextConditionDescriptorFilter filter;
-	    private readonly ContextControllerConditionCallback callback;
-	    private readonly ContextController controller;
+        private EPStatementHandleCallbackFilter filterHandle;
+        private EventBean lastEvent;
 
-	    private EPStatementHandleCallbackFilter filterHandle;
-	    private EventBean lastEvent;
+        public ContextControllerConditionFilter(
+            IntSeqKey conditionPath,
+            object[] partitionKeys,
+            ContextConditionDescriptorFilter filter,
+            ContextControllerConditionCallback callback,
+            ContextController controller)
+        {
+            this.conditionPath = conditionPath;
+            this.partitionKeys = partitionKeys;
+            this.filter = filter;
+            this.callback = callback;
+            this.controller = controller;
+        }
 
-	    public ContextControllerConditionFilter(IntSeqKey conditionPath, object[] partitionKeys, ContextConditionDescriptorFilter filter, ContextControllerConditionCallback callback, ContextController controller) {
-	        this.conditionPath = conditionPath;
-	        this.partitionKeys = partitionKeys;
-	        this.filter = filter;
-	        this.callback = callback;
-	        this.controller = controller;
-	    }
+        public bool Activate(
+            EventBean optionalTriggeringEvent,
+            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider)
+        {
+            AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
 
-	    public bool Activate(EventBean optionalTriggeringEvent, ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider) {
-	        AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
-
-	        FilterHandleCallback filterCallback = new ProxyFilterHandleCallback() {
+            FilterHandleCallback filterCallback = new ProxyFilterHandleCallback() {
                 ProcStatementId = () => agentInstanceContext.StatementContext.StatementId,
-	            ProcMatchFound = (theEvent, allStmtMatches) => FilterMatchFound(theEvent),
+                ProcMatchFound = (
+                    theEvent,
+                    allStmtMatches) => FilterMatchFound(theEvent),
                 ProcIsSubselect = () => false,
-	        };
+            };
 
-	        FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(partitionKeys, filter.FilterSpecActivatable, controller.Realization);
-	        filterHandle = new EPStatementHandleCallbackFilter(agentInstanceContext.EpStatementAgentInstanceHandle, filterCallback);
-	        FilterValueSetParam[][] filterValueSet = filter.FilterSpecActivatable.GetValueSet(null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
-	        agentInstanceContext.FilterService.Add(filter.FilterSpecActivatable.FilterForEventType, filterValueSet, filterHandle);
-	        long filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
-	        agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+            FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(
+                partitionKeys, filter.FilterSpecActivatable, controller.Realization);
+            filterHandle = new EPStatementHandleCallbackFilter(agentInstanceContext.EpStatementAgentInstanceHandle, filterCallback);
+            FilterValueSetParam[][] filterValueSet = filter.FilterSpecActivatable.GetValueSet(
+                null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
+            agentInstanceContext.FilterService.Add(filter.FilterSpecActivatable.FilterForEventType, filterValueSet, filterHandle);
+            long filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
+            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
 
-	        bool match = false;
-	        if (optionalTriggeringEvent != null) {
-	            match = AgentInstanceUtil.EvaluateFilterForStatement(optionalTriggeringEvent, agentInstanceContext, filterHandle);
-	        }
-	        return match;
-	    }
+            bool match = false;
+            if (optionalTriggeringEvent != null) {
+                match = AgentInstanceUtil.EvaluateFilterForStatement(optionalTriggeringEvent, agentInstanceContext, filterHandle);
+            }
 
-	    public void Deactivate() {
-	        if (filterHandle == null) {
-	            return;
-	        }
-	        AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
-	        FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(partitionKeys, filter.FilterSpecActivatable, controller.Realization);
-	        FilterValueSetParam[][] filterValueSet = filter.FilterSpecActivatable.GetValueSet(
-	            null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
-	        agentInstanceContext.FilterService.Remove(filterHandle, filter.FilterSpecActivatable.FilterForEventType, filterValueSet);
-	        filterHandle = null;
-	        long filtersVersion = agentInstanceContext.StatementContext.FilterService.FiltersVersion;
-	        agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
-	    }
+            return match;
+        }
 
-	    public bool IsImmediate
-	    {
-	        get => false;
-	    }
+        public void Deactivate()
+        {
+            if (filterHandle == null) {
+                return;
+            }
 
-	    public bool IsRunning
-	    {
-	        get => filterHandle != null;
-	    }
+            AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
+            FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(
+                partitionKeys, filter.FilterSpecActivatable, controller.Realization);
+            FilterValueSetParam[][] filterValueSet = filter.FilterSpecActivatable.GetValueSet(
+                null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
+            agentInstanceContext.FilterService.Remove(filterHandle, filter.FilterSpecActivatable.FilterForEventType, filterValueSet);
+            filterHandle = null;
+            long filtersVersion = agentInstanceContext.StatementContext.FilterService.FiltersVersion;
+            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+        }
 
-	    public ContextConditionDescriptor Descriptor
-	    {
-	        get => filter;
-	    }
+        public bool IsImmediate {
+            get => false;
+        }
 
-	    public long? ExpectedEndTime
-	    {
-	        get => null;
-	    }
+        public bool IsRunning {
+            get => filterHandle != null;
+        }
 
-	    private void FilterMatchFound(EventBean theEvent) {
-	        // For OR-type filters we de-duplicate here by keeping the last event instance
-	        if (filter.FilterSpecActivatable.Parameters.Length > 1) {
-	            if (theEvent == lastEvent) {
-	                return;
-	            }
-	            lastEvent = theEvent;
-	        }
-	        callback.RangeNotification(conditionPath, this, theEvent, null, null, null);
-	    }
-	}
+        public ContextConditionDescriptor Descriptor {
+            get => filter;
+        }
+
+        public long? ExpectedEndTime {
+            get => null;
+        }
+
+        private void FilterMatchFound(EventBean theEvent)
+        {
+            // For OR-type filters we de-duplicate here by keeping the last event instance
+            if (filter.FilterSpecActivatable.Parameters.Length > 1) {
+                if (theEvent == lastEvent) {
+                    return;
+                }
+
+                lastEvent = theEvent;
+            }
+
+            callback.RangeNotification(conditionPath, this, theEvent, null, null, null);
+        }
+    }
 } // end of namespace

@@ -11,7 +11,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class AggregationMultiFunctionAnalysisResult
     {
         public AggregationMultiFunctionAnalysisResult(
-            AggregationAccessorSlotPairForge[] accessorPairsForge, AggregationStateFactoryForge[] stateFactoryForges)
+            AggregationAccessorSlotPairForge[] accessorPairsForge,
+            AggregationStateFactoryForge[] stateFactoryForges)
         {
             AccessorPairsForge = accessorPairsForge;
             StateFactoryForges = stateFactoryForges;

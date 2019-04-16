@@ -39,7 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// </param>
         /// <param name="highEndpointIncluded">indicates whether the high endpoint is included</param>
         /// <param name="notBetween">is true for 'not between' or 'not in (a:b), or false for a regular between</param>
-        public ExprBetweenNodeImpl(bool lowEndpointIncluded, bool highEndpointIncluded, bool notBetween)
+        public ExprBetweenNodeImpl(
+            bool lowEndpointIncluded,
+            bool highEndpointIncluded,
+            bool notBetween)
         {
             IsLowEndpointIncluded = lowEndpointIncluded;
             IsHighEndpointIncluded = highEndpointIncluded;
@@ -128,7 +131,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             var other = node as ExprBetweenNodeImpl;
             return other?.IsNotBetween == IsNotBetween;
@@ -143,7 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             IEnumerator<ExprNode> it = ChildNodes.GetEnumerator();
             if (IsLowEndpointIncluded && IsHighEndpointIncluded) {
@@ -181,7 +186,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        private ExprBetweenComp MakeComputer(Type compareType, Type valueType, Type lowType, Type highType)
+        private ExprBetweenComp MakeComputer(
+            Type compareType,
+            Type valueType,
+            Type lowType,
+            Type highType)
         {
             ExprBetweenComp computer;
 
@@ -208,11 +217,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public interface ExprBetweenComp
         {
-            bool IsBetween(object value, object lower, object upper);
+            bool IsBetween(
+                object value,
+                object lower,
+                object upper);
 
             CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value, Type valueType, CodegenExpressionRef lower, Type lowerType,
-                CodegenExpressionRef higher, Type higherType, CodegenMethodScope codegenMethodScope,
+                CodegenExpressionRef value,
+                Type valueType,
+                CodegenExpressionRef lower,
+                Type lowerType,
+                CodegenExpressionRef higher,
+                Type higherType,
+                CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope);
         }
 
@@ -221,13 +238,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             private readonly bool _isHighIncluded;
             private readonly bool _isLowIncluded;
 
-            public ExprBetweenCompString(bool lowIncluded, bool isHighIncluded)
+            public ExprBetweenCompString(
+                bool lowIncluded,
+                bool isHighIncluded)
             {
                 _isLowIncluded = lowIncluded;
                 _isHighIncluded = isHighIncluded;
             }
 
-            public bool IsBetween(object value, object lower, object upper)
+            public bool IsBetween(
+                object value,
+                object lower,
+                object upper)
             {
                 if (value == null || lower == null || upper == null) {
                     return false;
@@ -267,8 +289,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value, Type valueType, CodegenExpressionRef lower, Type lowerType,
-                CodegenExpressionRef higher, Type higherType, CodegenMethodScope codegenMethodScope,
+                CodegenExpressionRef value,
+                Type valueType,
+                CodegenExpressionRef lower,
+                Type lowerType,
+                CodegenExpressionRef higher,
+                Type higherType,
+                CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
                 var block = codegenMethodScope.MakeChild(typeof(bool), typeof(ExprBetweenCompString), codegenClassScope)
@@ -295,7 +322,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return LocalMethod(method, value, lower, higher);
             }
 
-            public bool IsEqualsEndpoint(object value, object endpoint)
+            public bool IsEqualsEndpoint(
+                object value,
+                object endpoint)
             {
                 return value.Equals(endpoint);
             }
@@ -306,13 +335,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             private readonly bool _isHighIncluded;
             private readonly bool _isLowIncluded;
 
-            public ExprBetweenCompDouble(bool lowIncluded, bool highIncluded)
+            public ExprBetweenCompDouble(
+                bool lowIncluded,
+                bool highIncluded)
             {
                 _isLowIncluded = lowIncluded;
                 _isHighIncluded = highIncluded;
             }
 
-            public bool IsBetween(object value, object lower, object upper)
+            public bool IsBetween(
+                object value,
+                object lower,
+                object upper)
             {
                 if (value == null || lower == null || upper == null) {
                     return false;
@@ -348,8 +382,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value, Type valueType, CodegenExpressionRef lower, Type lowerType,
-                CodegenExpressionRef higher, Type higherType, CodegenMethodScope codegenMethodScope,
+                CodegenExpressionRef value,
+                Type valueType,
+                CodegenExpressionRef lower,
+                Type lowerType,
+                CodegenExpressionRef higher,
+                Type higherType,
+                CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
                 var block = codegenMethodScope.MakeChild(typeof(bool), typeof(ExprBetweenCompDouble), codegenClassScope)
@@ -387,13 +426,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             private readonly bool _isHighIncluded;
             private readonly bool _isLowIncluded;
 
-            public ExprBetweenCompLong(bool lowIncluded, bool highIncluded)
+            public ExprBetweenCompLong(
+                bool lowIncluded,
+                bool highIncluded)
             {
                 _isLowIncluded = lowIncluded;
                 _isHighIncluded = highIncluded;
             }
 
-            public bool IsBetween(object value, object lower, object upper)
+            public bool IsBetween(
+                object value,
+                object lower,
+                object upper)
             {
                 if (value == null || lower == null || upper == null) {
                     return false;
@@ -429,8 +473,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value, Type valueType, CodegenExpressionRef lower, Type lowerType,
-                CodegenExpressionRef higher, Type higherType, CodegenMethodScope codegenMethodScope,
+                CodegenExpressionRef value,
+                Type valueType,
+                CodegenExpressionRef lower,
+                Type lowerType,
+                CodegenExpressionRef higher,
+                Type higherType,
+                CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
                 var block = codegenMethodScope.MakeChild(typeof(bool), typeof(ExprBetweenCompLong), codegenClassScope)
@@ -469,13 +518,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             private readonly bool _isLowIncluded;
 
             public ExprBetweenCompDecimal(
-                bool lowIncluded, bool highIncluded, Type valueType, Type lowerType, Type upperType)
+                bool lowIncluded,
+                bool highIncluded,
+                Type valueType,
+                Type lowerType,
+                Type upperType)
             {
                 _isLowIncluded = lowIncluded;
                 _isHighIncluded = highIncluded;
             }
 
-            public bool IsBetween(object valueUncast, object lowerUncast, object upperUncast)
+            public bool IsBetween(
+                object valueUncast,
+                object lowerUncast,
+                object upperUncast)
             {
                 if (valueUncast == null || lowerUncast == null || upperUncast == null) {
                     return false;
@@ -509,8 +565,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value, Type valueType, CodegenExpressionRef lower, Type lowerType,
-                CodegenExpressionRef higher, Type higherType, CodegenMethodScope codegenMethodScope,
+                CodegenExpressionRef value,
+                Type valueType,
+                CodegenExpressionRef lower,
+                Type lowerType,
+                CodegenExpressionRef higher,
+                Type higherType,
+                CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
                 var block = codegenMethodScope.MakeChild(typeof(bool), typeof(ExprBetweenCompDouble), codegenClassScope)
@@ -524,22 +585,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var ifValueGtLower = block.IfCondition(Relational(Ref("value"), GT, Ref("lower")));
                 {
                     ifValueGtLower.IfCondition(Relational(Ref("value"), LT, Ref("upper"))).BlockReturn(ConstantTrue());
-                    if (_isHighIncluded)
-                    {
+                    if (_isHighIncluded) {
                         ifValueGtLower.BlockReturn(EqualsIdentity(Ref("value"), Ref("upper")));
                     }
-                    else
-                    {
+                    else {
                         ifValueGtLower.BlockReturn(ConstantFalse());
                     }
                 }
                 CodegenMethod method;
-                if (_isLowIncluded)
-                {
+                if (_isLowIncluded) {
                     method = block.MethodReturn(EqualsIdentity(Ref("value"), Ref("lower")));
                 }
-                else
-                {
+                else {
                     method = block.MethodReturn(ConstantFalse());
                 }
 
@@ -556,7 +613,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             private readonly BigIntegerCoercer _numberCoercerValue;
 
             public ExprBetweenCompBigInteger(
-                bool lowIncluded, bool highIncluded, Type valueType, Type lowerType, Type upperType)
+                bool lowIncluded,
+                bool highIncluded,
+                Type valueType,
+                Type lowerType,
+                Type upperType)
             {
                 _isLowIncluded = lowIncluded;
                 _isHighIncluded = highIncluded;
@@ -566,7 +627,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 _numberCoercerValue = SimpleNumberCoercerFactory.GetCoercerBigInteger(valueType);
             }
 
-            public bool IsBetween(object value, object lower, object upper)
+            public bool IsBetween(
+                object value,
+                object lower,
+                object upper)
             {
                 if (value == null || lower == null || upper == null) {
                     return false;
@@ -602,8 +666,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value, Type valueType, CodegenExpressionRef lower, Type lowerType,
-                CodegenExpressionRef higher, Type higherType, CodegenMethodScope codegenMethodScope,
+                CodegenExpressionRef value,
+                Type valueType,
+                CodegenExpressionRef lower,
+                Type lowerType,
+                CodegenExpressionRef higher,
+                Type higherType,
+                CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
                 var block = codegenMethodScope

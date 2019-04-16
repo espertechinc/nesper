@@ -36,7 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         private EventType eventTypeCollection;
         private ScriptDescriptorCompileTime scriptDescriptor;
 
-        public ExprNodeScript(string defaultDialect, ExpressionScriptProvided script, IList<ExprNode> parameters)
+        public ExprNodeScript(
+            string defaultDialect,
+            ExpressionScriptProvided script,
+            IList<ExprNode> parameters)
         {
             this.defaultDialect = defaultDialect;
             Script = script;
@@ -67,31 +70,39 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         }
 
         public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return eventTypeCollection;
         }
 
         public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol symbols, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEval("evaluateGetROCollectionEvents", codegenMethodScope, symbols, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol symbols, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEval("evaluateGetROCollectionScalar", codegenMethodScope, symbols, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol symbols, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEval("evaluateGetEventBean", codegenMethodScope, symbols, codegenClassScope);
         }
@@ -101,7 +112,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         public ExprEvaluator ExprEvaluator {
             get {
                 return new ProxyExprEvaluator {
-                    ProcEvaluate = (eventsPerStream, isNewData, context) => {
+                    ProcEvaluate = (
+                        eventsPerStream,
+                        isNewData,
+                        context) => {
                         throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
                     }
                 };
@@ -115,7 +129,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         public ExprNodeRenderable ForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol symbols,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
             return CodegenLegoCast.CastSafeFromObjectType(
@@ -124,13 +140,15 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public IList<ExprNode> AdditionalNodes => Parameters;
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(Script.Name);
             ExprNodeUtilityPrint.ToExpressionStringIncludeParen(Parameters, writer);
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (this == node) {
                 return true;
@@ -246,14 +264,18 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExprNodeUtilityQuery.AcceptParams(visitor, Parameters);
         }
 
-        public override void AcceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
+        public override void AcceptChildnodes(
+            ExprNodeVisitorWithParent visitor,
+            ExprNode parent)
         {
             base.AcceptChildnodes(visitor, parent);
             ExprNodeUtilityQuery.AcceptParams(visitor, Parameters, this);
         }
 
         private CodegenExpression MakeEval(
-            string method, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol symbols,
+            string method,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
             var eval = GetField(codegenClassScope);
@@ -268,7 +290,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 new ScriptCodegenFieldSharable(scriptDescriptor, codegenClassScope));
         }
 
-        private Type GetDeclaredReturnType(string returnTypeName, ExprValidationContext validationContext)
+        private Type GetDeclaredReturnType(
+            string returnTypeName,
+            ExprValidationContext validationContext)
         {
             if (returnTypeName == null) {
                 return null;

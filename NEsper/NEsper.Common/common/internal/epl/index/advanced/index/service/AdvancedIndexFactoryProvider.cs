@@ -14,9 +14,15 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
     public interface AdvancedIndexFactoryProvider
     {
         EventAdvancedIndexProvisionCompileTime ValidateEventIndex(
-            string indexName, string indexTypeName, ExprNode[] columns, ExprNode[] parameters);
+            string indexName,
+            string indexTypeName,
+            ExprNode[] columns,
+            ExprNode[] parameters);
 
         AdvancedIndexConfigContextPartition ValidateConfigureFilterIndex(
-            string indexName, string indexTypeName, ExprNode[] parameters, ExprValidationContext validationContext);
+            string indexName,
+            string indexTypeName,
+            ExprNode[] parameters,
+            ExprValidationContext validationContext);
     }
 } // end of namespace

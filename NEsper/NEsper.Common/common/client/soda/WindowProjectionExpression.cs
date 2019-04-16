@@ -17,9 +17,10 @@ namespace com.espertech.esper.common.client.soda
     public class WindowProjectionExpression : AccessProjectionExpressionBase
     {
         /// <summary>Ctor. </summary>
-        public WindowProjectionExpression() {
+        public WindowProjectionExpression()
+        {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="expression">to aggregate</param>
         public WindowProjectionExpression(Expression expression)
@@ -27,8 +28,7 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public override string AggregationFunctionName
-        {
+        public override string AggregationFunctionName {
             get { return "window"; }
         }
     }

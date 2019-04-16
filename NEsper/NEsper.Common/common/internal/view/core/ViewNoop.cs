@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.view.core
             set { }
         }
 
-        public void Update(EventBean[] newData, EventBean[] oldData)
+        public void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
         }
 

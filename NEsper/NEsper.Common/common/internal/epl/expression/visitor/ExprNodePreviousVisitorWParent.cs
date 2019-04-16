@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.prev;
@@ -26,22 +25,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             return true;
         }
 
-        public void Visit(ExprNode exprNode, ExprNode parentExprNode)
+        public void Visit(
+            ExprNode exprNode,
+            ExprNode parentExprNode)
         {
-            if (exprNode is ExprPreviousNode)
-            {
-                if (_previous == null)
-                {
+            if (exprNode is ExprPreviousNode) {
+                if (_previous == null) {
                     _previous = new List<Pair<ExprNode, ExprPreviousNode>>();
                 }
+
                 _previous.Add(new Pair<ExprNode, ExprPreviousNode>(parentExprNode, (ExprPreviousNode) exprNode));
             }
         }
 
         /// <summary>Returns the pair of previous nodes and their parent expression. </summary>
         /// <value>nodes</value>
-        public IList<Pair<ExprNode, ExprPreviousNode>> Previous
-        {
+        public IList<Pair<ExprNode, ExprPreviousNode>> Previous {
             get { return _previous; }
         }
     }

@@ -19,20 +19,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprInNodeForge forge;
 
-        public ExprInNodeForgeEvalNoColl(ExprInNodeForge forge, ExprEvaluator[] evaluators)
+        public ExprInNodeForgeEvalNoColl(
+            ExprInNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             this.forge = forge;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
             return result;
         }
 
         private bool? EvaluateInternal(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var inPropResult = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 

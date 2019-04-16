@@ -23,17 +23,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         private readonly int numKeys;
 
         public AggSvcGroupByWTableRollupMultiKeyImpl(
-            TableInstanceGrouped tableInstance, TableColumnMethodPairEval[] methodPairs,
-            AggregationMultiFunctionAgent[] accessAgents, int[] accessColumnsZeroOffset,
-            AggregationGroupByRollupDesc groupByRollupDesc) : base(
-            tableInstance, methodPairs, accessAgents, accessColumnsZeroOffset)
+            TableInstanceGrouped tableInstance,
+            TableColumnMethodPairEval[] methodPairs,
+            AggregationMultiFunctionAgent[] accessAgents,
+            int[] accessColumnsZeroOffset,
+            AggregationGroupByRollupDesc groupByRollupDesc)
+            : base(
+                tableInstance, methodPairs, accessAgents, accessColumnsZeroOffset)
         {
             this.groupByRollupDesc = groupByRollupDesc;
             numKeys = tableInstance.Table.MetaData.KeyTypes.Length;
         }
 
         public override void ApplyEnterInternal(
-            EventBean[] eventsPerStream, object compositeGroupByKey, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object compositeGroupByKey,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var groupKeyPerLevel = (object[]) compositeGroupByKey;
             for (var i = 0; i < groupKeyPerLevel.Length; i++) {
@@ -44,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         }
 
         public override void ApplyLeaveInternal(
-            EventBean[] eventsPerStream, object compositeGroupByKey, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object compositeGroupByKey,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var groupKeyPerLevel = (object[]) compositeGroupByKey;
             for (var i = 0; i < groupKeyPerLevel.Length; i++) {
@@ -55,7 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         }
 
         public override void SetCurrentAccess(
-            object groupByKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
+            object groupByKey,
+            int agentInstanceId,
+            AggregationGroupByRollupLevel rollupLevel)
         {
             var key = rollupLevel.ComputeMultiKey(groupByKey, numKeys);
             var bean = tableInstance.GetRowForGroupKey(key);

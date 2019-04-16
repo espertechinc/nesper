@@ -19,14 +19,19 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly InfraOnUpdateViewFactory parent;
 
         public OnExprViewTableUpdate(
-            SubordWMatchExprLookupStrategy lookupStrategy, TableInstance tableInstance,
-            AgentInstanceContext agentInstanceContext, InfraOnUpdateViewFactory parent) : base(
-            lookupStrategy, tableInstance, agentInstanceContext, true)
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableInstance tableInstance,
+            AgentInstanceContext agentInstanceContext,
+            InfraOnUpdateViewFactory parent)
+            : base(
+                lookupStrategy, tableInstance, agentInstanceContext, true)
         {
             this.parent = parent;
         }
 
-        public override void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
+        public override void HandleMatching(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
                 OnTriggerType.ON_UPDATE, triggerEvents, matchingEvents);

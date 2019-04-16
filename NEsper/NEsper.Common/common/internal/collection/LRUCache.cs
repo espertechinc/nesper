@@ -50,7 +50,9 @@ namespace com.espertech.esper.common.@internal.collection
             TrimToCacheLimit();
         }
 
-        public void Add(TK key, TV value)
+        public void Add(
+            TK key,
+            TV value)
         {
             Add(new KeyValuePair<TK, TV>(key, value));
         }
@@ -100,7 +102,9 @@ namespace com.espertech.esper.common.@internal.collection
             return _entries.ContainsKey(key);
         }
 
-        public bool TryGetValue(TK key, out TV value)
+        public bool TryGetValue(
+            TK key,
+            out TV value)
         {
             if (_entries.TryGetValue(key, out var node)) {
                 value = node.Value.Value;
@@ -139,7 +143,9 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        public void CopyTo(KeyValuePair<TK, TV>[] array, int arrayIndex)
+        public void CopyTo(
+            KeyValuePair<TK, TV>[] array,
+            int arrayIndex)
         {
             _useOrderEntries.CopyTo(array, arrayIndex);
         }

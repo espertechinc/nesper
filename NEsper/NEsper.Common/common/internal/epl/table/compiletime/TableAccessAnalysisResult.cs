@@ -17,16 +17,16 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
     public class TableAccessAnalysisResult
     {
         public TableAccessAnalysisResult(
-            IDictionary<string, TableMetadataColumn> tableColumns, 
+            IDictionary<string, TableMetadataColumn> tableColumns,
             ObjectArrayEventType internalEventType,
-            ObjectArrayEventType publicEventType, 
+            ObjectArrayEventType publicEventType,
             TableMetadataColumnPairPlainCol[] colsPlain,
-            TableMetadataColumnPairAggMethod[] colsAggMethod, 
+            TableMetadataColumnPairAggMethod[] colsAggMethod,
             TableMetadataColumnPairAggAccess[] colsAccess,
             AggregationRowStateForgeDesc aggDesc,
             string[] primaryKeyColumns,
-            EventPropertyGetterSPI[] primaryKeyGetters, 
-            Type[] primaryKeyTypes, 
+            EventPropertyGetterSPI[] primaryKeyGetters,
+            Type[] primaryKeyTypes,
             int[] primaryKeyColNums)
         {
             TableColumns = tableColumns;

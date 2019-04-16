@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -21,26 +20,46 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class ExprDotForgeTakeAndTakeLast : ExprDotForgeEnumMethodBase {
+    public class ExprDotForgeTakeAndTakeLast : ExprDotForgeEnumMethodBase
+    {
+        public override EventType[] GetAddStreamTypes(
+            string enumMethodUsedName,
+            IList<string> goesToNames,
+            EventType inputEventType,
+            Type collectionComponentType,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            return new EventType[] { };
+        }
 
-	    public override EventType[] GetAddStreamTypes(string enumMethodUsedName, IList<string> goesToNames, EventType inputEventType, Type collectionComponentType, IList<ExprDotEvalParam> bodiesAndParameters, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
-	        return new EventType[]{};
-	    }
+        public override EnumForge GetEnumForge(
+            StreamTypeService streamTypeService,
+            string enumMethodUsedName,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            EventType inputEventType,
+            Type collectionComponentType,
+            int numStreamsIncoming,
+            bool disablePropertyExpressionEventCollCache,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            ExprForge sizeEval = bodiesAndParameters[0].BodyForge;
 
-	    public override EnumForge GetEnumForge(StreamTypeService streamTypeService, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
-	        ExprForge sizeEval = bodiesAndParameters[0].BodyForge;
+            if (inputEventType != null) {
+                base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+            }
+            else {
+                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+            }
 
-	        if (inputEventType != null) {
-	            base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
-	        } else {
-	            base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
-	        }
-
-	        if (EnumMethodEnum == EnumMethodEnum.TAKE) {
-	            return new EnumTakeForge(sizeEval, numStreamsIncoming);
-	        } else {
-	            return new EnumTakeLastForge(sizeEval, numStreamsIncoming);
-	        }
-	    }
-	}
+            if (EnumMethodEnum == EnumMethodEnum.TAKE) {
+                return new EnumTakeForge(sizeEval, numStreamsIncoming);
+            }
+            else {
+                return new EnumTakeLastForge(sizeEval, numStreamsIncoming);
+            }
+        }
+    }
 } // end of namespace

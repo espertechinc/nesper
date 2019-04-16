@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;
@@ -25,18 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             MethodTargetStrategy origin,
             AgentInstanceContext agentInstanceContext)
         {
-            var it = (IEnumerator<EventBean>)invocationResult;
-            if (it == null || !it.MoveNext())
-            {
+            var it = (IEnumerator<EventBean>) invocationResult;
+            if (it == null || !it.MoveNext()) {
                 return Collections.GetEmptyList<EventBean>();
             }
 
             var rowResult = new List<EventBean>(2);
-            for (; it.MoveNext();)
-            {
+            for (; it.MoveNext();) {
                 object value = it.Current;
-                if (CheckNonNullArrayValue(value, origin))
-                {
+                if (CheckNonNullArrayValue(value, origin)) {
                     var @event = GetEventBean(value, agentInstanceContext);
                     rowResult.Add(@event);
                 }

@@ -7,40 +7,45 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
-	public class AggregationTableReadDesc {
-	    private readonly AggregationTableAccessAggReaderForge reader;
-	    private readonly EventType eventTypeCollection;
-	    private readonly Type componentTypeCollection;
-	    private readonly EventType eventTypeSingle;
+    public class AggregationTableReadDesc
+    {
+        private readonly AggregationTableAccessAggReaderForge reader;
+        private readonly EventType eventTypeCollection;
+        private readonly Type componentTypeCollection;
+        private readonly EventType eventTypeSingle;
 
-	    public AggregationTableReadDesc(AggregationTableAccessAggReaderForge reader, EventType eventTypeCollection, Type componentTypeCollection, EventType eventTypeSingle) {
-	        this.reader = reader;
-	        this.eventTypeCollection = eventTypeCollection;
-	        this.componentTypeCollection = componentTypeCollection;
-	        this.eventTypeSingle = eventTypeSingle;
-	    }
+        public AggregationTableReadDesc(
+            AggregationTableAccessAggReaderForge reader,
+            EventType eventTypeCollection,
+            Type componentTypeCollection,
+            EventType eventTypeSingle)
+        {
+            this.reader = reader;
+            this.eventTypeCollection = eventTypeCollection;
+            this.componentTypeCollection = componentTypeCollection;
+            this.eventTypeSingle = eventTypeSingle;
+        }
 
-	    public AggregationTableAccessAggReaderForge Reader {
-	        get => reader;
-	    }
+        public AggregationTableAccessAggReaderForge Reader {
+            get => reader;
+        }
 
-	    public EventType EventTypeCollection {
-	        get => eventTypeCollection;
-	    }
+        public EventType EventTypeCollection {
+            get => eventTypeCollection;
+        }
 
-	    public Type ComponentTypeCollection {
-	        get => componentTypeCollection;
-	    }
+        public Type ComponentTypeCollection {
+            get => componentTypeCollection;
+        }
 
-	    public EventType EventTypeSingle {
-	        get => eventTypeSingle;
-	    }
-	}
+        public EventType EventTypeSingle {
+            get => eventTypeSingle;
+        }
+    }
 } // end of namespace

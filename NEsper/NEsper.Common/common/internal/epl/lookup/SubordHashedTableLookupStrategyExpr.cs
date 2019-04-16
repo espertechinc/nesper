@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -22,7 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly SubordHashedTableLookupStrategyExprFactory _factory;
 
         public SubordHashedTableLookupStrategyExpr(
-            SubordHashedTableLookupStrategyExprFactory factory, PropertyHashedEventTable index)
+            SubordHashedTableLookupStrategyExprFactory factory,
+            PropertyHashedEventTable index)
         {
             this._factory = factory;
             _events = new EventBean[factory.NumStreamsOuter + 1];
@@ -35,17 +37,21 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         /// <returns>index to use</returns>
         public PropertyHashedEventTable Index { get; }
 
-        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
+            object key;
+
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, Index, null);
-                var key = GetKey(eventsPerStream, context);
-                ISet<EventBean> result = Index.Lookup(key);
+                key = GetKey(eventsPerStream, context);
+                var result = Index.Lookup(key);
                 context.InstrumentationProvider.AIndexSubordLookup(result, key);
                 return result;
             }
 
-            var key = GetKey(eventsPerStream, context);
+            key = GetKey(eventsPerStream, context);
             return Index.Lookup(key);
         }
 
@@ -62,7 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         /// <param name="eventsPerStream">is the events for each stream</param>
         /// <param name="context">context</param>
         /// <returns>key object</returns>
-        protected object GetKey(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        protected object GetKey(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
             return _factory.Evaluator.Evaluate(_events, true, context);

@@ -27,12 +27,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         StatementAgentInstanceFactoryOnTriggerInfraBaseForge
     {
         public StatementAgentInstanceFactoryOnTriggerInfraDeleteForge(
-            ViewableActivatorForge activator, 
+            ViewableActivatorForge activator,
             EventType resultEventType,
             IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects,
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccesses,
-            string nonSelectRSPProviderClassName, 
-            NamedWindowMetaData namedWindow, 
+            string nonSelectRSPProviderClassName,
+            NamedWindowMetaData namedWindow,
             TableMetaData table,
             SubordinateWMatchExprQueryPlanForge queryPlanForge)
             : base(
@@ -47,7 +47,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         protected override void InlineInitializeOnTriggerSpecific(
-            CodegenExpressionRef saiff, CodegenMethod method, SAIFFInitializeSymbol symbols,
+            CodegenExpressionRef saiff,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
         }

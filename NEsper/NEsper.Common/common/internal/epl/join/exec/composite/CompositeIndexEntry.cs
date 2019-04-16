@@ -32,8 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         internal ICollection<EventBean> AssertCollection()
         {
-            if (!IsCollection)
-            {
+            if (!IsCollection) {
                 throw new IllegalStateException("entry was not a collection");
             }
 

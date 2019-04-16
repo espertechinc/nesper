@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         /// <summary>
         /// Initializes a new instance of the <see cref="VariableVersionThreadLocal"/> class.
         /// </summary>
-        public VariableVersionThreadLocal() 
+        public VariableVersionThreadLocal()
             : this(new DefaultThreadLocalManager(new SlimThreadLocalFactory()))
         {
         }

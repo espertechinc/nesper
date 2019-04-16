@@ -21,49 +21,53 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
-	/// <summary>
-	/// Specification node for a query execution plan to be extended by specific execution specification nodes.
-	/// </summary>
-	public abstract class QueryPlanNodeForge : CodegenMakeable<SAIFFInitializeSymbol> {
+    /// <summary>
+    /// Specification node for a query execution plan to be extended by specific execution specification nodes.
+    /// </summary>
+    public abstract class QueryPlanNodeForge : CodegenMakeable<SAIFFInitializeSymbol>
+    {
+        public abstract void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes);
 
-	    public abstract void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes);
+        public abstract void Accept(QueryPlanNodeForgeVisitor visitor);
 
-	    public abstract void Accept(QueryPlanNodeForgeVisitor visitor);
+        public abstract CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
-	    public abstract CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        /// <summary>
+        /// Print a long readable format of the query node to the supplied PrintWriter.
+        /// </summary>
+        /// <param name="writer">is the indentation writer to print to</param>
+        protected abstract void Print(IndentWriter writer);
 
-	    /// <summary>
-	    /// Print a long readable format of the query node to the supplied PrintWriter.
-	    /// </summary>
-	    /// <param name="writer">is the indentation writer to print to</param>
-	    protected abstract void Print(IndentWriter writer);
+        /// <summary>
+        /// Print in readable format the execution plan spec.
+        /// </summary>
+        /// <param name="planNodeSpecs">plans to print</param>
+        /// <returns>readable text with plans</returns>
+        public static string Print(QueryPlanNodeForge[] planNodeSpecs)
+        {
+            StringBuilder buffer = new StringBuilder();
+            buffer.Append("QueryPlanNode[]\n");
 
-	    /// <summary>
-	    /// Print in readable format the execution plan spec.
-	    /// </summary>
-	    /// <param name="planNodeSpecs">plans to print</param>
-	    /// <returns>readable text with plans</returns>
+            for (int i = 0; i < planNodeSpecs.Length; i++) {
+                buffer.Append("  node spec " + i + " :\n");
 
-	    public static string Print(QueryPlanNodeForge[] planNodeSpecs) {
-	        StringBuilder buffer = new StringBuilder();
-	        buffer.Append("QueryPlanNode[]\n");
+                StringWriter writer = new StringWriter();
+                IndentWriter indentWriter = new IndentWriter(writer, 4, 2);
 
-	        for (int i = 0; i < planNodeSpecs.Length; i++) {
-	            buffer.Append("  node spec " + i + " :\n");
+                if (planNodeSpecs[i] != null) {
+                    planNodeSpecs[i].Print(indentWriter);
+                }
+                else {
+                    indentWriter.WriteLine("no plan (historical)");
+                }
 
-	            StringWriter writer = new StringWriter();
-	            IndentWriter indentWriter = new IndentWriter(writer, 4, 2);
+                buffer.Append(writer.ToString());
+            }
 
-	            if (planNodeSpecs[i] != null) {
-	                planNodeSpecs[i].Print(indentWriter);
-	            } else {
-	                indentWriter.WriteLine("no plan (historical)");
-	            }
-
-	            buffer.Append(writer.ToString());
-	        }
-
-	        return buffer.ToString();
-	    }
-	}
+            return buffer.ToString();
+        }
+    }
 } // end of namespace

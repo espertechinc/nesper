@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.compat;
@@ -15,15 +14,25 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.pool
 {
-	public interface PatternSubexpressionPoolRuntimeSvc {
-	    void AddPatternContext(int statementId, string statementName, PatternSubexpressionPoolStmtHandler stmtCounts);
+    public interface PatternSubexpressionPoolRuntimeSvc
+    {
+        void AddPatternContext(
+            int statementId,
+            string statementName,
+            PatternSubexpressionPoolStmtHandler stmtCounts);
 
-	    void RemoveStatement(int statementId);
+        void RemoveStatement(int statementId);
 
-	    void DecreaseCount(EvalNode evalNode, AgentInstanceContext agentInstanceContext);
+        void DecreaseCount(
+            EvalNode evalNode,
+            AgentInstanceContext agentInstanceContext);
 
-	    bool TryIncreaseCount(EvalNode evalNode, AgentInstanceContext agentInstanceContext);
+        bool TryIncreaseCount(
+            EvalNode evalNode,
+            AgentInstanceContext agentInstanceContext);
 
-	    void ForceIncreaseCount(EvalNode evalNode, AgentInstanceContext agentInstanceContext);
-	}
+        void ForceIncreaseCount(
+            EvalNode evalNode,
+            AgentInstanceContext agentInstanceContext);
+    }
 } // end of namespace

@@ -68,7 +68,9 @@ namespace com.espertech.esper.common.@internal.collection
             return One;
         }
 
-        public static void Write(IntSeqKeyOne key, DataOutput output)
+        public static void Write(
+            IntSeqKeyOne key,
+            DataOutput output)
         {
             output.WriteInt(key.One);
         }

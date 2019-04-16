@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public EventBeanService EventBeanService => statementContext.EventBeanService;
 
-        public void SetScriptAttribute(string attribute, object value)
+        public void SetScriptAttribute(
+            string attribute,
+            object value)
         {
             AllocateScriptProperties();
             scriptProperties.Put(attribute, value);

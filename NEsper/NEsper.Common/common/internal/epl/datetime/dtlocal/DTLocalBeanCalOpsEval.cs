@@ -21,14 +21,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         private readonly DTLocalBeanCalOpsForge forge;
         private readonly DTLocalEvaluator inner;
 
-        public DTLocalBeanCalOpsEval(DTLocalBeanCalOpsForge forge, DTLocalEvaluator inner)
+        public DTLocalBeanCalOpsEval(
+            DTLocalBeanCalOpsForge forge,
+            DTLocalEvaluator inner)
         {
             this.forge = forge;
             this.inner = inner;
         }
 
         public object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var timestamp = forge.getter.Get((EventBean) target);
             if (timestamp == null) {
@@ -39,8 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalBeanCalOpsForge forge, CodegenExpression inner, Type innerType,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            DTLocalBeanCalOpsForge forge,
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope

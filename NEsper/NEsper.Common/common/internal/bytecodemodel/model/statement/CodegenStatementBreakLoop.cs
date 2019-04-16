@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         public static readonly CodegenStatementBreakLoop INSTANCE = new CodegenStatementBreakLoop();
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("break");
         }

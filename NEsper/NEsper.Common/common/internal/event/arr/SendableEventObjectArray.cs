@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         private readonly object[] @event;
         private readonly string typeName;
 
-        public SendableEventObjectArray(object[] @event, string typeName)
+        public SendableEventObjectArray(
+            object[] @event,
+            string typeName)
         {
             this.@event = @event;
             this.typeName = typeName;

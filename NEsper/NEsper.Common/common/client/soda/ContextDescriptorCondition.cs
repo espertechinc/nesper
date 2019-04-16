@@ -14,11 +14,13 @@ namespace com.espertech.esper.common.client.soda
     /// For use with overlapping or non-overlapping contexts, implementations represents a 
     /// condition for starting/initiating or ending/terminating a context.
     /// </summary>
-    public interface ContextDescriptorCondition {
-    
+    public interface ContextDescriptorCondition
+    {
         /// <summary>Populate the EPL. </summary>
         /// <param name="writer">output</param>
         /// <param name="formatter">formatter</param>
-        void ToEPL(TextWriter writer, EPStatementFormatter formatter);
+        void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter);
     }
 }

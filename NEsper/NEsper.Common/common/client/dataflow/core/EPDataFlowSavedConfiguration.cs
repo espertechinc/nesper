@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="dataflowName">data flow name</param>
         /// <param name="options">options object</param>
         public EPDataFlowSavedConfiguration(
-            string savedConfigurationName, string deploymentId, string dataflowName,
+            string savedConfigurationName,
+            string deploymentId,
+            string dataflowName,
             EPDataFlowInstantiationOptions options)
         {
             SavedConfigurationName = savedConfigurationName;

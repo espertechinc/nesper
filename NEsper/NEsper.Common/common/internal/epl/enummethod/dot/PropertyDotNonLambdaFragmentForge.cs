@@ -26,13 +26,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         private readonly int streamId;
 
-        public PropertyDotNonLambdaFragmentForge(int streamId, EventPropertyGetterSPI getter)
+        public PropertyDotNonLambdaFragmentForge(
+            int streamId,
+            EventPropertyGetterSPI getter)
         {
             this.streamId = streamId;
             this.getter = getter;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var @event = eventsPerStream[streamId];
             if (@event == null) {
@@ -49,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
@@ -68,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public ExprNodeRenderable ForgeRenderable => this;
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(GetType().Name);
         }

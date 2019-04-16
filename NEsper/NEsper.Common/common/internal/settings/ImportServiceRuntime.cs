@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.settings
 
         public ImportServiceRuntime(
             IDictionary<string, object> transientConfiguration,
-            TimeAbacus timeAbacus, 
+            TimeAbacus timeAbacus,
             ISet<string> eventTypeAutoNames,
-            TimeZoneInfo timeZone, 
+            TimeZoneInfo timeZone,
             IDictionary<string, ConfigurationCommonMethodRef> methodInvocationRef,
-            IList<string> imports, 
+            IList<string> imports,
             IList<string> annotationImports)
             : base(transientConfiguration, timeAbacus, eventTypeAutoNames)
 

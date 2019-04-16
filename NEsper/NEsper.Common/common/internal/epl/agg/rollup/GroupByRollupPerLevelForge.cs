@@ -15,7 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
     public class GroupByRollupPerLevelForge
     {
         public GroupByRollupPerLevelForge(
-            SelectExprProcessorForge[] selectExprProcessorForges, ExprForge[] optionalHavingForges,
+            SelectExprProcessorForge[] selectExprProcessorForges,
+            ExprForge[] optionalHavingForges,
             OrderByElementForge[][] optionalOrderByElements)
         {
             SelectExprProcessorForges = selectExprProcessorForges;

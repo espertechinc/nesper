@@ -40,5 +40,5 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         public EventTableOrganizationType OrganizationType { get; private set; }
 
         public bool IsCoercing { get; private set; }
-   }
+    }
 }

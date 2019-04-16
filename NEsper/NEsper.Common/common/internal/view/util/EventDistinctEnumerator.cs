@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
@@ -23,13 +22,11 @@ namespace com.espertech.esper.common.@internal.view.util
             IEnumerator<EventBean> sourceIterator,
             EventType eventType)
         {
-            if (sourceIterator != null && sourceIterator.MoveNext())
-            {
+            if (sourceIterator != null && sourceIterator.MoveNext()) {
                 // there is at least one event...
                 var first = sourceIterator.Current;
                 // but is there only one event?
-                if (!sourceIterator.MoveNext())
-                {
+                if (!sourceIterator.MoveNext()) {
                     return EnumerationHelper.Singleton(first);
                 }
 
@@ -37,8 +34,7 @@ namespace com.espertech.esper.common.@internal.view.util
                 var events = new ArrayDeque<EventBean>();
                 events.Add(first);
                 events.Add(sourceIterator.Current);
-                while (sourceIterator.MoveNext())
-                {
+                while (sourceIterator.MoveNext()) {
                     events.Add(sourceIterator.Current);
                 }
 
@@ -55,13 +51,11 @@ namespace com.espertech.esper.common.@internal.view.util
         {
             EventBeanReader eventBeanReader = null;
 
-            if (eventType is EventTypeSPI)
-            {
-                eventBeanReader = ((EventTypeSPI)eventType).Reader;
+            if (eventType is EventTypeSPI) {
+                eventBeanReader = ((EventTypeSPI) eventType).Reader;
             }
 
-            if (eventBeanReader == null)
-            {
+            if (eventBeanReader == null) {
                 eventBeanReader = new EventBeanReaderDefaultImpl(eventType);
             }
 

@@ -57,7 +57,10 @@ namespace com.espertech.esper.common.@internal.util.apachecommonstext
         ///     Execution stops with the number of consumed codepoints being returned.
         ///     {@inheritDoc}
         /// </summary>
-        public override int Translate(string input, int index, TextWriter @out)
+        public override int Translate(
+            string input,
+            int index,
+            TextWriter @out)
         {
             foreach (var translator in translators) {
                 var consumed = translator.Translate(input, index, @out);

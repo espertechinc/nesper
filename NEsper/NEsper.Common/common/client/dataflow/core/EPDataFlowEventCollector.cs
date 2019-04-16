@@ -11,7 +11,8 @@ namespace com.espertech.esper.common.client.dataflow.core
     /// <summary>
     /// Collector for use with the <seealso cref="com.espertech.esper.dataflow.ops.EventBusSink" /> operator.
     /// </summary>
-    public interface EPDataFlowEventCollector {
+    public interface EPDataFlowEventCollector
+    {
         /// <summary>
         /// Collect: use the context to transform insert and remove stream events to data flow events.
         /// </summary>

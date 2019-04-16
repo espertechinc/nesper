@@ -40,7 +40,9 @@ namespace com.espertech.esper.common.@internal.view.lastevent
         /// </summary>
         protected internal EventBean lastEvent;
 
-        public LastEventView(LastEventViewFactory viewFactory, AgentInstanceContext agentInstanceContext)
+        public LastEventView(
+            LastEventViewFactory viewFactory,
+            AgentInstanceContext agentInstanceContext)
         {
             this.viewFactory = viewFactory;
             this.agentInstanceContext = agentInstanceContext;
@@ -50,7 +52,9 @@ namespace com.espertech.esper.common.@internal.view.lastevent
 
         public override EventType EventType => parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, viewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(viewFactory, newData, oldData);

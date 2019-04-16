@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.view.derived;
 using com.espertech.esper.common.@internal.view.expression;
 using com.espertech.esper.common.@internal.view.exttimedbatch;
@@ -208,7 +207,11 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public static readonly ISet<ViewEnum> Values = new HashSet<ViewEnum>();
 
-        private ViewEnum(string @namespace, string name, Type factoryClass, ViewEnum mergeView)
+        private ViewEnum(
+            string @namespace,
+            string name,
+            Type factoryClass,
+            ViewEnum mergeView)
         {
             Namespace = @namespace;
             Name = name;
@@ -247,7 +250,9 @@ namespace com.espertech.esper.common.@internal.view.core
         /// <param name="namespace">is the namespace name of the view</param>
         /// <param name="name">is the short name of the view as used in view expressions</param>
         /// <returns>view enumeration value, or null if no such view name is among the enumerated values</returns>
-        public static ViewEnum ForName(string @namespace, string name)
+        public static ViewEnum ForName(
+            string @namespace,
+            string name)
         {
             if (@namespace != null) {
                 foreach (var viewEnum in Values) {

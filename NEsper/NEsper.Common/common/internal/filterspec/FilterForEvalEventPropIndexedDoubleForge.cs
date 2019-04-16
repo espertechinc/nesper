@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly string _resultEventProperty;
 
         public FilterForEvalEventPropIndexedDoubleForge(
-            string resultEventAsName, int resultEventIndex, string resultEventProperty, EventType eventType)
+            string resultEventAsName,
+            int resultEventIndex,
+            string resultEventProperty,
+            EventType eventType)
         {
             _resultEventAsName = resultEventAsName;
             _resultEventIndex = resultEventIndex;
@@ -35,7 +38,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             _eventType = eventType;
         }
 
-        public CodegenExpression MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(_resultEventProperty);
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
@@ -61,12 +66,15 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         object FilterSpecParamFilterForEvalForge.GetFilterValue(
-            MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext)
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return GetFilterValue(matchedEvents, exprEvaluatorContext);
         }
 
-        public double? GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext)
+        public double? GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
@@ -25,13 +24,14 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
             this.streamNum = streamNum;
         }
 
-        public EventTable[] MakeEventTables(AgentInstanceContext agentInstanceContext, int? subqueryNumber)
+        public EventTable[] MakeEventTables(
+            AgentInstanceContext agentInstanceContext,
+            int? subqueryNumber)
         {
-            return new EventTable[] { new UnindexedEventTableImpl(streamNum) };
+            return new EventTable[] {new UnindexedEventTableImpl(streamNum)};
         }
 
-        public Type EventTableClass
-        {
+        public Type EventTableClass {
             get => typeof(UnindexedEventTable);
         }
 
@@ -40,8 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
             return this.GetType().Name + " streamNum=" + streamNum;
         }
 
-        public int StreamNum
-        {
+        public int StreamNum {
             get => streamNum;
         }
     }

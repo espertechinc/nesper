@@ -10,39 +10,41 @@ using System;
 
 namespace com.espertech.esper.common.client
 {
-	/// <summary> 
-	/// This exception is thrown to indicate a problem in administration and runtime.
-	/// </summary>
-	[Serializable]
-	public class EPException : Exception
-	{
-	    private static readonly Type MyType = 
+    /// <summary> 
+    /// This exception is thrown to indicate a problem in administration and runtime.
+    /// </summary>
+    [Serializable]
+    public class EPException : Exception
+    {
+        private static readonly Type MyType =
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
 
-		/// <summary> Ctor.</summary>
-		/// <param name="message">error message
-		/// </param>
-		public EPException(String message)
-			: base(message)
-		{
-		}
-		
-		/// <summary> Ctor for an inner exception and message.</summary>
-		/// <param name="message">error message
-		/// </param>
-		/// <param name="cause">inner exception
-		/// </param>
-		public EPException(String message, Exception cause)
-			: base(message, cause)
-		{
-		}
-		
-		/// <summary> Ctor - just an inner exception.</summary>
-		/// <param name="cause">inner exception
-		/// </param>
-		public EPException(Exception cause)
-			: base(MyType.FullName + ": " + cause.Message, cause)
-		{
-		}
-	}
+        /// <summary> Ctor.</summary>
+        /// <param name="message">error message
+        /// </param>
+        public EPException(String message)
+            : base(message)
+        {
+        }
+
+        /// <summary> Ctor for an inner exception and message.</summary>
+        /// <param name="message">error message
+        /// </param>
+        /// <param name="cause">inner exception
+        /// </param>
+        public EPException(
+            String message,
+            Exception cause)
+            : base(message, cause)
+        {
+        }
+
+        /// <summary> Ctor - just an inner exception.</summary>
+        /// <param name="cause">inner exception
+        /// </param>
+        public EPException(Exception cause)
+            : base(MyType.FullName + ": " + cause.Message, cause)
+        {
+        }
+    }
 }

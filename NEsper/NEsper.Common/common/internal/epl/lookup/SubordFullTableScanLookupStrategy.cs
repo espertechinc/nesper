@@ -37,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public LookupStrategyDesc StrategyDesc => LookupStrategyDesc.SCAN;
 
-        public ICollection<EventBean> Lookup(EventBean[] eventPerStream, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventPerStream,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, _eventIndex, null);

@@ -26,7 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         private readonly BeanEventType type;
 
         public ExprDotStaticMethodWrapIterableEvents(
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventType type)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventType type)
         {
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             this.type = type;
@@ -46,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression CodegenConvertNonNull(
-            CodegenExpression result, CodegenMethodScope codegenMethodScope, CodegenClassScope classScope)
+            CodegenExpression result,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope classScope)
         {
             var eventSvcMember = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var typeMember = classScope.AddFieldUnshared(

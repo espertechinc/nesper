@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             set => timePeriodCompute = value;
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

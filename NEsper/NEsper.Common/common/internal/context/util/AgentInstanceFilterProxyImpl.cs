@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         public FilterValueSetParam[][] GetAddendumFilters(
-            FilterSpecActivatable filterSpec, AgentInstanceContext agentInstanceContext)
+            FilterSpecActivatable filterSpec,
+            AgentInstanceContext agentInstanceContext)
         {
             if (addendumMap == null) {
                 addendumMap = generator.Invoke(agentInstanceContext);

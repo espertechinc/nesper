@@ -20,6 +20,8 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">output</param>
         /// <param name="formatter">formatter</param>
-        void ToEPL(TextWriter writer, EPStatementFormatter formatter);
+        void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter);
     }
 } // end of namespace

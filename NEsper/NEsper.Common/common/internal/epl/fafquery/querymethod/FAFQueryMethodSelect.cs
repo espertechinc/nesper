@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -99,8 +98,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         }
 
         public EPPreparedQueryResult Execute(
-            AtomicBoolean serviceStatusProvider, FAFQueryMethodAssignerSetter assignerSetter,
-            ContextPartitionSelector[] contextPartitionSelectors, ContextManagementService contextManagementService)
+            AtomicBoolean serviceStatusProvider,
+            FAFQueryMethodAssignerSetter assignerSetter,
+            ContextPartitionSelector[] contextPartitionSelectors,
+            ContextManagementService contextManagementService)
         {
             if (!serviceStatusProvider.Get()) {
                 throw FAFQueryMethodUtil.RuntimeDestroyed();

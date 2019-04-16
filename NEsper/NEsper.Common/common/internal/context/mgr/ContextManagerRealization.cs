@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
         FilterFaultHandler
     {
         public ContextManagerRealization(
-            ContextManagerResident contextManager, AgentInstanceContext agentInstanceContextCreate)
+            ContextManagerResident contextManager,
+            AgentInstanceContext agentInstanceContextCreate)
         {
             ContextManager = contextManager;
             AgentInstanceContextCreate = agentInstanceContextCreate;
@@ -127,15 +128,20 @@ namespace com.espertech.esper.common.@internal.context.mgr
                         ContextManager.ContextDefinition.ContextName,
                         assignedContextId,
                         identifier),
-                    (listener, context) => listener.OnContextPartitionAllocated(context));
+                    (
+                        listener,
+                        context) => listener.OnContextPartitionAllocated(context));
             }
 
             return new ContextPartitionInstantiationResult(assignedContextId, startedInstances);
         }
 
         public void ContextPartitionTerminate(
-            IntSeqKey controllerPath, int subpathIdOrCPId, ContextController originator,
-            IDictionary<string, object> terminationProperties, bool leaveLocksAcquired,
+            IntSeqKey controllerPath,
+            int subpathIdOrCPId,
+            ContextController originator,
+            IDictionary<string, object> terminationProperties,
+            bool leaveLocksAcquired,
             IList<AgentInstance> agentInstancesLocksHeld)
         {
             if (controllerPath.Length != originator.Factory.FactoryEnv.NestingLevel - 1) {
@@ -179,13 +185,18 @@ namespace com.espertech.esper.common.@internal.context.mgr
                         AgentInstanceContextCreate.RuntimeURI,
                         ContextManager.ContextRuntimeDescriptor.ContextDeploymentId,
                         ContextManager.ContextDefinition.ContextName, agentInstanceId),
-                    (listener, context) => listener.OnContextPartitionDeallocated(context));
+                    (
+                        listener,
+                        context) => listener.OnContextPartitionDeallocated(context));
             }
         }
 
         public void ContextPartitionRecursiveVisit(
-            IntSeqKey controllerPath, int subpathOrAgentInstanceId, ContextController originator,
-            ContextPartitionVisitor visitor, ContextPartitionSelector[] selectorPerLevel)
+            IntSeqKey controllerPath,
+            int subpathOrAgentInstanceId,
+            ContextController originator,
+            ContextPartitionVisitor visitor,
+            ContextPartitionSelector[] selectorPerLevel)
         {
             if (controllerPath.Length != originator.Factory.FactoryEnv.NestingLevel - 1) {
                 throw new IllegalStateException("Unrecognized controller path");
@@ -311,7 +322,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ContextManagerUtil.GetAgentInstances(statement, ids);
         }
 
-        public bool HandleFilterFault(EventBean theEvent, long version)
+        public bool HandleFilterFault(
+            EventBean theEvent,
+            long version)
         {
             // We handle context-management filter faults always the same way.
             // Statement-partition filter faults are specific to the controller.
@@ -335,7 +348,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return false;
         }
 
-        private object[] AddPartitionKey(int nestingLevel, object[] parentPartitionKeys, object partitionKey)
+        private object[] AddPartitionKey(
+            int nestingLevel,
+            object[] parentPartitionKeys,
+            object partitionKey)
         {
             var keysPerContext = new object[nestingLevel];
             if (nestingLevel > 1) {

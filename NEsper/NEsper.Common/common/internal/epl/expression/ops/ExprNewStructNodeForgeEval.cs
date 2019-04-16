@@ -23,13 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private readonly ExprNewStructNodeForge forge;
 
-        public ExprNewStructNodeForgeEval(ExprNewStructNodeForge forge, ExprEvaluator[] evaluators)
+        public ExprNewStructNodeForgeEval(
+            ExprNewStructNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             this.forge = forge;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var columnNames = forge.ForgeRenderable.ColumnNames;
             IDictionary<string, object> props = new Dictionary<string, object>();
@@ -41,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprNewStructNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprNewStructNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
@@ -63,7 +70,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return LocalMethod(methodNode);
         }
 
-        public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object[] EvaluateTypableSingle(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var columnNames = forge.ForgeRenderable.ColumnNames;
             var rows = new object[columnNames.Length];
@@ -75,7 +85,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression CodegenTypeableSingle(
-            ExprNewStructNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprNewStructNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
@@ -97,7 +109,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public object[][] EvaluateTypableMulti(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }

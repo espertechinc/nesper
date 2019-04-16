@@ -19,8 +19,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         private const string PASS_NAME = "pass";
 
         public static CodegenExpression CodegenBooleanExpressionReturnTrueFalse(
-            ExprForge forge, CodegenClassScope classScope, CodegenMethod parent, CodegenExpression eps,
-            CodegenExpression isNewData, CodegenExpression exprEvalCtx)
+            ExprForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod parent,
+            CodegenExpression eps,
+            CodegenExpression isNewData,
+            CodegenExpression exprEvalCtx)
         {
             CheckEvaluationType(forge);
             var expressionMethod = CodegenBooleanExpressionBoxedToPrimitive(forge, parent, classScope);
@@ -28,8 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         }
 
         public static void CodegenBooleanExpressionReturnNullIfNullOrNotPass(
-            ExprForge forge, CodegenClassScope classScope, CodegenMethod parent, CodegenExpression eps,
-            CodegenExpression isNewData, CodegenExpression exprEvalCtx)
+            ExprForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod parent,
+            CodegenExpression eps,
+            CodegenExpression isNewData,
+            CodegenExpression exprEvalCtx)
         {
             CheckEvaluationType(forge);
             var expressionMethod = CodegenBooleanExpressionBoxedToPrimitive(forge, parent, classScope);
@@ -38,8 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         }
 
         public static void CodegenBooleanExpressionReturnIfNullOrNotPass(
-            ExprForge forge, CodegenClassScope classScope, CodegenMethod parent, CodegenExpression eps,
-            CodegenExpression isNewData, CodegenExpression exprEvalCtx)
+            ExprForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod parent,
+            CodegenExpression eps,
+            CodegenExpression isNewData,
+            CodegenExpression exprEvalCtx)
         {
             CheckEvaluationType(forge);
             var expressionMethod = CodegenBooleanExpressionBoxedToPrimitive(forge, parent, classScope);
@@ -48,7 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         }
 
         public static CodegenMethod CodegenExpression(
-            ExprForge forge, CodegenMethod parent, CodegenClassScope classScope)
+            ExprForge forge,
+            CodegenMethod parent,
+            CodegenClassScope classScope)
         {
             var evaluationType = forge.EvaluationType;
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
@@ -62,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         }
 
         private static CodegenMethod CodegenBooleanExpressionBoxedToPrimitive(
-            ExprForge forge, CodegenMethod parent, CodegenClassScope classScope)
+            ExprForge forge,
+            CodegenMethod parent,
+            CodegenClassScope classScope)
         {
             var evaluationType = forge.EvaluationType;
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -16,50 +15,55 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
-	/// <summary>
-	/// An output strategy that handles routing (insert-into) and stream selection.
-	/// </summary>
-	public class OutputStrategyPostProcessFactory {
-	    private readonly bool isRoute;
-	    private readonly SelectClauseStreamSelectorEnum insertIntoStreamSelector;
-	    private readonly SelectClauseStreamSelectorEnum selectStreamDirEnum;
-	    private readonly bool addToFront;
-	    private readonly Table optionalTable;
+    /// <summary>
+    /// An output strategy that handles routing (insert-into) and stream selection.
+    /// </summary>
+    public class OutputStrategyPostProcessFactory
+    {
+        private readonly bool isRoute;
+        private readonly SelectClauseStreamSelectorEnum insertIntoStreamSelector;
+        private readonly SelectClauseStreamSelectorEnum selectStreamDirEnum;
+        private readonly bool addToFront;
+        private readonly Table optionalTable;
 
-	    public OutputStrategyPostProcessFactory(bool isRoute, SelectClauseStreamSelectorEnum insertIntoStreamSelector, SelectClauseStreamSelectorEnum selectStreamDirEnum, bool addToFront, Table optionalTable) {
-	        this.isRoute = isRoute;
-	        this.insertIntoStreamSelector = insertIntoStreamSelector;
-	        this.selectStreamDirEnum = selectStreamDirEnum;
-	        this.addToFront = addToFront;
-	        this.optionalTable = optionalTable;
-	    }
+        public OutputStrategyPostProcessFactory(
+            bool isRoute,
+            SelectClauseStreamSelectorEnum insertIntoStreamSelector,
+            SelectClauseStreamSelectorEnum selectStreamDirEnum,
+            bool addToFront,
+            Table optionalTable)
+        {
+            this.isRoute = isRoute;
+            this.insertIntoStreamSelector = insertIntoStreamSelector;
+            this.selectStreamDirEnum = selectStreamDirEnum;
+            this.addToFront = addToFront;
+            this.optionalTable = optionalTable;
+        }
 
-	    public OutputStrategyPostProcess Make(AgentInstanceContext agentInstanceContext) {
-	        TableInstance tableInstance = null;
-	        if (optionalTable != null) {
-	            tableInstance = optionalTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
-	        }
-	        return new OutputStrategyPostProcess(this, agentInstanceContext, tableInstance);
-	    }
+        public OutputStrategyPostProcess Make(AgentInstanceContext agentInstanceContext)
+        {
+            TableInstance tableInstance = null;
+            if (optionalTable != null) {
+                tableInstance = optionalTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+            }
 
-	    public bool IsRoute
-	    {
-	        get => isRoute;
-	    }
+            return new OutputStrategyPostProcess(this, agentInstanceContext, tableInstance);
+        }
 
-	    public SelectClauseStreamSelectorEnum InsertIntoStreamSelector
-	    {
-	        get => insertIntoStreamSelector;
-	    }
+        public bool IsRoute {
+            get => isRoute;
+        }
 
-	    public SelectClauseStreamSelectorEnum SelectStreamDirEnum
-	    {
-	        get => selectStreamDirEnum;
-	    }
+        public SelectClauseStreamSelectorEnum InsertIntoStreamSelector {
+            get => insertIntoStreamSelector;
+        }
 
-	    public bool IsAddToFront
-	    {
-	        get => addToFront;
-	    }
-	}
+        public SelectClauseStreamSelectorEnum SelectStreamDirEnum {
+            get => selectStreamDirEnum;
+        }
+
+        public bool IsAddToFront {
+            get => addToFront;
+        }
+    }
 } // end of namespace

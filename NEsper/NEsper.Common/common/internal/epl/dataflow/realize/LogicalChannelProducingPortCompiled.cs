@@ -20,8 +20,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         }
 
         public LogicalChannelProducingPortCompiled(
-            int producingOpNum, string producingOpPrettyPrint, string streamName, int streamNumber,
-            GraphTypeDesc graphTypeDesc, bool hasPunctuation)
+            int producingOpNum,
+            string producingOpPrettyPrint,
+            string streamName,
+            int streamNumber,
+            GraphTypeDesc graphTypeDesc,
+            bool hasPunctuation)
         {
             ProducingOpNum = producingOpNum;
             ProducingOpPrettyPrint = producingOpPrettyPrint;
@@ -44,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         public GraphTypeDesc GraphTypeDesc { get; set; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(
                     typeof(LogicalChannelProducingPortCompiled), GetType(), "c", parent, symbols, classScope)

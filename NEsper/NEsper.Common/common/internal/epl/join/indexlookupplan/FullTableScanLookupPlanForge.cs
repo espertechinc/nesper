@@ -32,7 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         /// <param name="typesPerStream">types</param>
         /// <param name="indexedStreamIsVDW">vdw indicator</param>
         public FullTableScanLookupPlanForge(
-            int lookupStream, int indexedStream, bool indexedStreamIsVDW, EventType[] typesPerStream,
+            int lookupStream,
+            int indexedStream,
+            bool indexedStreamIsVDW,
+            EventType[] typesPerStream,
             TableLookupIndexReqKey indexNum)
             : base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
         {
@@ -54,7 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         }
 
         public override ICollection<CodegenExpression> AdditionalParams(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return Collections.GetEmptyList<CodegenExpression>();
         }

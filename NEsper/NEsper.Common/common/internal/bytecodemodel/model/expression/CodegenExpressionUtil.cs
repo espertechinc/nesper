@@ -17,7 +17,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionUtil
     {
-        public static void RenderConstant(StringBuilder builder, object constant, IDictionary<Type, string> imports)
+        public static void RenderConstant(
+            StringBuilder builder,
+            object constant,
+            IDictionary<Type, string> imports)
         {
             if (constant is string) {
                 builder.Append('"').Append(StringEscapeUtils.EscapeJava((string) constant)).Append('"');
@@ -96,14 +99,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         }
 
         private static void RenderBigInteger(
-            BigInteger constant, StringBuilder builder, IDictionary<Type, string> imports)
+            BigInteger constant,
+            StringBuilder builder,
+            IDictionary<Type, string> imports)
         {
             builder.Append("new System.Numerics.BigInteger(");
             RenderConstant(builder, constant.ToByteArray(), imports);
             builder.Append(")");
         }
 
-        private static void AppendSequenceEscapeDQ(StringBuilder builder, string seq)
+        private static void AppendSequenceEscapeDQ(
+            StringBuilder builder,
+            string seq)
         {
             for (var i = 0; i < seq.Length; i++) {
                 var c = seq[i];

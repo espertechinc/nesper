@@ -29,7 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
     /// </summary>
     public class MXCIFQuadTree<TL>
     {
-        internal MXCIFQuadTree(int leafCapacity, int maxTreeHeight, MXCIFQuadTreeNode<TL> root)
+        internal MXCIFQuadTree(
+            int leafCapacity,
+            int maxTreeHeight,
+            MXCIFQuadTreeNode<TL> root)
         {
             LeafCapacity = leafCapacity;
             MaxTreeHeight = maxTreeHeight;

@@ -17,6 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
     {
         ExprForge OptionalFilter { get; }
 
-        CodegenExpression Make(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

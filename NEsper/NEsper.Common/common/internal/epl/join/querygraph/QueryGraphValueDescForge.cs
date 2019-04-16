@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphValueDescForge
     {
-        public QueryGraphValueDescForge(ExprNode[] indexExprs, QueryGraphValueEntryForge entry)
+        public QueryGraphValueDescForge(
+            ExprNode[] indexExprs,
+            QueryGraphValueEntryForge entry)
         {
             IndexExprs = indexExprs;
             Entry = entry;
@@ -27,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         public QueryGraphValueEntryForge Entry { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var indexes = new string[IndexExprs.Length];
             for (var i = 0; i < indexes.Length; i++) {

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -19,22 +18,30 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumLastOfPredicateScalarForge : EnumForgeBaseScalar {
+    public class EnumLastOfPredicateScalarForge : EnumForgeBaseScalar
+    {
+        internal readonly EPType resultType;
 
-	    internal readonly EPType resultType;
+        public EnumLastOfPredicateScalarForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ObjectArrayEventType type,
+            EPType resultType)
+            : base(innerExpression, streamCountIncoming, type)
+        {
+            this.resultType = resultType;
+        }
 
-	    public EnumLastOfPredicateScalarForge(ExprForge innerExpression, int streamCountIncoming, ObjectArrayEventType type, EPType resultType)
-	    	 : base(innerExpression, streamCountIncoming, type)
-	    {
-	        this.resultType = resultType;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumLastOfPredicateScalarForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumLastOfPredicateScalarForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumLastOfPredicateScalarForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumLastOfPredicateScalarForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

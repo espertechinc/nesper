@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -31,8 +32,11 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         protected EvalRootState patternStopCallback;
 
         public ContextControllerConditionPattern(
-            IntSeqKey conditionPath, object[] partitionKeys, ContextConditionDescriptorPattern pattern,
-            ContextControllerConditionCallback callback, ContextController controller)
+            IntSeqKey conditionPath,
+            object[] partitionKeys,
+            ContextConditionDescriptorPattern pattern,
+            ContextControllerConditionCallback callback,
+            ContextController controller)
         {
             this.conditionPath = conditionPath;
             this.partitionKeys = partitionKeys;
@@ -52,7 +56,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             }
 
             var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
-            Function<FilterSpecActivatable, FilterValueSetParam[][]> contextAddendumFunction = filter =>
+            Func<FilterSpecActivatable, FilterValueSetParam[][]> contextAddendumFunction = filter =>
                 ContextManagerUtil.ComputeAddendumNonStmt(partitionKeys, filter, controller.Realization);
             var patternAgentInstanceContext = new PatternAgentInstanceContext(
                 pattern.PatternContext, agentInstanceContext, false, contextAddendumFunction);
@@ -69,7 +73,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             patternStopCallback = rootNode.Start(callback, pattern.PatternContext, matchedEventMap, false);
             callback.forwardCalls = true;
 
-            if (callback.isInvoked) {
+            if (callback.IsInvoked) {
                 MatchFound(Collections.GetEmptyMap<string, object>(), optionalTriggeringEvent);
             }
 
@@ -92,7 +96,9 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public long? ExpectedEndTime => null;
 
-        public void MatchFound(IDictionary<string, object> matchEvent, EventBean optionalTriggeringEvent)
+        public void MatchFound(
+            IDictionary<string, object> matchEvent,
+            EventBean optionalTriggeringEvent)
         {
             IDictionary<string, object> matchEventInclusive = null;
             if (pattern.IsInclusive) {
@@ -120,8 +126,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public class ConditionPatternMatchCallback : PatternMatchCallback
         {
-            private readonly ContextControllerConditionPattern condition;
-            private bool forwardCalls;
+            internal readonly ContextControllerConditionPattern condition;
+            internal bool forwardCalls;
 
             public ConditionPatternMatchCallback(ContextControllerConditionPattern condition)
             {
@@ -130,7 +136,9 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
             public bool IsInvoked { get; private set; }
 
-            public void MatchFound(IDictionary<string, object> matchEvent, EventBean optionalTriggeringEvent)
+            public void MatchFound(
+                IDictionary<string, object> matchEvent,
+                EventBean optionalTriggeringEvent)
             {
                 IsInvoked = true;
                 if (forwardCalls) {

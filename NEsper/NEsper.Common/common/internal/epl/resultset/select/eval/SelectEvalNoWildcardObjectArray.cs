@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,35 +14,46 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalNoWildcardObjectArray : SelectExprProcessorForge {
+    public class SelectEvalNoWildcardObjectArray : SelectExprProcessorForge
+    {
+        private readonly SelectExprForgeContext context;
+        private readonly EventType resultEventType;
 
-	    private readonly SelectExprForgeContext context;
-	    private readonly EventType resultEventType;
+        public SelectEvalNoWildcardObjectArray(
+            SelectExprForgeContext context,
+            EventType resultEventType)
+        {
+            this.context = context;
+            this.resultEventType = resultEventType;
+        }
 
-	    public SelectEvalNoWildcardObjectArray(SelectExprForgeContext context, EventType resultEventType) {
-	        this.context = context;
-	        this.resultEventType = resultEventType;
-	    }
+        public CodegenMethod ProcessCodegen(
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenBlock block = methodNode.Block
+                .DeclareVar(typeof(object[]), "props", NewArrayByLength(typeof(object), Constant(this.context.ExprForges.Length)));
+            for (int i = 0; i < this.context.ExprForges.Length; i++) {
+                CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(
+                    typeof(object), this.context.ExprForges[i], methodNode, exprSymbol, codegenClassScope);
+                block.AssignArrayElement("props", Constant(i), expression);
+            }
 
-	    public CodegenMethod ProcessCodegen(CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
-	        CodegenBlock block = methodNode.Block
-	                .DeclareVar(typeof(object[]), "props", NewArrayByLength(typeof(object), Constant(this.context.ExprForges.Length)));
-	        for (int i = 0; i < this.context.ExprForges.Length; i++) {
-	            CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(typeof(object), this.context.ExprForges[i], methodNode, exprSymbol, codegenClassScope);
-	            block.AssignArrayElement("props", Constant(i), expression);
-	        }
-	        block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedObjectArray", @Ref("props"), resultEventType));
-	        return methodNode;
-	    }
+            block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedObjectArray", @Ref("props"), resultEventType));
+            return methodNode;
+        }
 
-	    public EventType ResultEventType {
-	        get => resultEventType;
-	    }
-	}
+        public EventType ResultEventType {
+            get => resultEventType;
+        }
+    }
 } // end of namespace

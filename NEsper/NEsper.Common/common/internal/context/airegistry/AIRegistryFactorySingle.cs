@@ -7,41 +7,48 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.airegistry
 {
-	public class AIRegistryFactorySingle : AIRegistryFactory {
-	    public readonly static AIRegistryFactorySingle INSTANCE = new AIRegistryFactorySingle();
+    public class AIRegistryFactorySingle : AIRegistryFactory
+    {
+        public readonly static AIRegistryFactorySingle INSTANCE = new AIRegistryFactorySingle();
 
-	    private AIRegistryFactorySingle() {
-	    }
+        private AIRegistryFactorySingle()
+        {
+        }
 
-	    public AIRegistryPriorEvalStrategy MakePrior() {
-	        return new AIRegistryPriorEvalStrategySingle();
-	    }
+        public AIRegistryPriorEvalStrategy MakePrior()
+        {
+            return new AIRegistryPriorEvalStrategySingle();
+        }
 
-	    public AIRegistryPreviousGetterStrategy MakePrevious() {
-	        return new AIRegistryPreviousGetterStrategySingle();
-	    }
+        public AIRegistryPreviousGetterStrategy MakePrevious()
+        {
+            return new AIRegistryPreviousGetterStrategySingle();
+        }
 
-	    public AIRegistrySubselectLookup MakeSubqueryLookup(LookupStrategyDesc lookupStrategyDesc) {
-	        return new AIRegistrySubselectLookupSingle(lookupStrategyDesc);
-	    }
+        public AIRegistrySubselectLookup MakeSubqueryLookup(LookupStrategyDesc lookupStrategyDesc)
+        {
+            return new AIRegistrySubselectLookupSingle(lookupStrategyDesc);
+        }
 
-	    public AIRegistryAggregation MakeAggregation() {
-	        return new AIRegistryAggregationSingle();
-	    }
+        public AIRegistryAggregation MakeAggregation()
+        {
+            return new AIRegistryAggregationSingle();
+        }
 
-	    public AIRegistryTableAccess MakeTableAccess() {
-	        return new AIRegistryTableAccessSingle();
-	    }
+        public AIRegistryTableAccess MakeTableAccess()
+        {
+            return new AIRegistryTableAccessSingle();
+        }
 
-	    public AIRegistryRowRecogPreviousStrategy MakeRowRecogPreviousStrategy() {
-	        return new AIRegistryRowRecogPreviousStrategySingle();
-	    }
-	}
+        public AIRegistryRowRecogPreviousStrategy MakeRowRecogPreviousStrategy()
+        {
+            return new AIRegistryRowRecogPreviousStrategySingle();
+        }
+    }
 } // end of namespace

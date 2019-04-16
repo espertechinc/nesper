@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this.target = target;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             RenderClass(target, builder, imports);
         }
@@ -36,7 +39,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             classes.Add(target);
         }
 
-        public static void RenderClass(Type clazz, StringBuilder builder, IDictionary<Type, string> imports)
+        public static void RenderClass(
+            Type clazz,
+            StringBuilder builder,
+            IDictionary<Type, string> imports)
         {
             AppendClassName(builder, clazz, null, imports);
             builder.Append(".");

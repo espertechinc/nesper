@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -15,7 +14,10 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
-	public interface OutputConditionPolledFactoryForge {
-	    CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope classScope);
-	}
+    public interface OutputConditionPolledFactoryForge
+    {
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope);
+    }
 } // end of namespace

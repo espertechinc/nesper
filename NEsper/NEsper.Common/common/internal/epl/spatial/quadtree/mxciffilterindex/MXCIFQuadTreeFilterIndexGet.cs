@@ -7,35 +7,41 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex;
-
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
     public class MXCIFQuadTreeFilterIndexGet<TL>
     {
-        public static TL Get(double x, double y, double width, double height, MXCIFQuadTree<object> tree)
+        public static TL Get(
+            double x,
+            double y,
+            double width,
+            double height,
+            MXCIFQuadTree<object> tree)
         {
             MXCIFQuadTreeFilterIndexCheckBB.CheckBB(tree.Root.Bb, x, y, width, height);
             return Get(x, y, width, height, tree.Root);
         }
 
-        private static TL Get(double x, double y, double width, double height, MXCIFQuadTreeNode<object> node)
+        private static TL Get(
+            double x,
+            double y,
+            double width,
+            double height,
+            MXCIFQuadTreeNode<object> node)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object>)
-            {
-                var leaf = (MXCIFQuadTreeNodeLeaf<object>)node;
+            if (node is MXCIFQuadTreeNodeLeaf<object>) {
+                var leaf = (MXCIFQuadTreeNodeLeaf<object>) node;
                 return GetFromData(x, y, width, height, leaf.Data);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch<object>)node;
+            var branch = (MXCIFQuadTreeNodeBranch<object>) node;
             var q = node.Bb.GetQuadrantApplies(x, y, width, height);
-            switch (q)
-            {
+            switch (q) {
                 case QuadrantAppliesEnum.NW:
                     return Get(x, y, width, height, branch.Nw);
 
@@ -55,30 +61,30 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             throw new IllegalStateException("Not applicable to any quadrant");
         }
 
-        private static TL GetFromData(double x, double y, double width, double height, object data)
+        private static TL GetFromData(
+            double x,
+            double y,
+            double width,
+            double height,
+            object data)
         {
-            if (data == null)
-            {
+            if (data == null) {
                 return default(TL);
             }
 
-            if (data is XYWHRectangleWValue<TL>)
-            {
-                var value = (XYWHRectangleWValue<TL>)data;
-                if (value.CoordinateEquals(x, y, width, height))
-                {
+            if (data is XYWHRectangleWValue<TL>) {
+                var value = (XYWHRectangleWValue<TL>) data;
+                if (value.CoordinateEquals(x, y, width, height)) {
                     return value.Value;
                 }
 
                 return default(TL);
             }
 
-            var collection = (ICollection<XYWHRectangleWValue<TL>>)data;
-            foreach (var rectangle in collection)
-            {
-                if (rectangle.CoordinateEquals(x, y, width, height))
-                {
-                    return (TL)rectangle.Value;
+            var collection = (ICollection<XYWHRectangleWValue<TL>>) data;
+            foreach (var rectangle in collection) {
+                if (rectangle.CoordinateEquals(x, y, width, height)) {
+                    return (TL) rectangle.Value;
                 }
             }
 

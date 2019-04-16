@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.condition
@@ -28,8 +27,13 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
         public static object[] OAPrototype => new Object[TYPEINFO.Count];
 
-        public static void Populate(Object[] builtinProperties, int totalNewEventsCount, int totalOldEventsCount,
-                                    int totalNewEventsSum, int totalOldEventsSum, long? lastOutputTimestamp)
+        public static void Populate(
+            Object[] builtinProperties,
+            int totalNewEventsCount,
+            int totalOldEventsCount,
+            int totalNewEventsSum,
+            int totalOldEventsSum,
+            long? lastOutputTimestamp)
         {
             builtinProperties[0] = totalNewEventsCount;
             builtinProperties[1] = totalOldEventsCount;

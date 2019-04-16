@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
     public class ObjectArrayPropertyGetterDefaultObjectArray : ObjectArrayPropertyGetterDefaultBase
     {
         public ObjectArrayPropertyGetterDefaultObjectArray(
-            int propertyIndex, EventType fragmentEventType, EventBeanTypedEventFactory eventBeanTypedEventFactory) :
+            int propertyIndex,
+            EventType fragmentEventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            :
             base(propertyIndex, fragmentEventType, eventBeanTypedEventFactory)
         {
         }
@@ -37,7 +40,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         internal override CodegenExpression HandleCreateFragmentCodegen(
-            CodegenExpression value, CodegenClassScope codegenClassScope)
+            CodegenExpression value,
+            CodegenClassScope codegenClassScope)
         {
             if (fragmentEventType == null) {
                 return ConstantNull();

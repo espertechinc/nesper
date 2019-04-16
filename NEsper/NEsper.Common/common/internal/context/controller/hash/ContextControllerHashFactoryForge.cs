@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
@@ -23,23 +22,36 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
     {
         private readonly ContextSpecHash detail;
 
-        public ContextControllerHashFactoryForge(ContextControllerFactoryEnv ctx, ContextSpecHash detail) : base(ctx)
+        public ContextControllerHashFactoryForge(
+            ContextControllerFactoryEnv ctx,
+            ContextSpecHash detail)
+            : base(ctx)
         {
             this.detail = detail;
         }
 
-        public override void ValidateGetContextProps(LinkedHashMap<string, object> props, string contextName, StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+        public override void ValidateGetContextProps(
+            LinkedHashMap<string, object> props,
+            string contextName,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             ContextControllerHashUtil.ValidateContextDesc(contextName, detail, statementRawInfo, services);
         }
 
-        public override CodegenMethod MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols)
+        public override CodegenMethod MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols)
         {
             CodegenMethod method = parent.MakeChild(typeof(ContextControllerHashFactory), this.GetType(), classScope);
             method.Block
-                    .DeclareVar(typeof(ContextControllerHashFactory), "factory", ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY).Add("hashFactory"))
-                    .ExprDotMethod(@Ref("factory"), "setHashSpec", detail.MakeCodegen(method, symbols, classScope))
-                    .MethodReturn(@Ref("factory"));
+                .DeclareVar(
+                    typeof(ContextControllerHashFactory), "factory",
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY)
+                        .Add("hashFactory"))
+                .ExprDotMethod(@Ref("factory"), "setHashSpec", detail.MakeCodegen(method, symbols, classScope))
+                .MethodReturn(@Ref("factory"));
             return method;
         }
 

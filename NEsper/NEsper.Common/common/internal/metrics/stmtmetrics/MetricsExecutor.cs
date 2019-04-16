@@ -16,6 +16,8 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <summary>Execute a metrics execution. </summary>
         /// <param name="execution">to execute</param>
         /// <param name="executionContext">context in which to execute</param>
-        void Execute(MetricExec execution, MetricExecutionContext executionContext);
+        void Execute(
+            MetricExec execution,
+            MetricExecutionContext executionContext);
     }
 }

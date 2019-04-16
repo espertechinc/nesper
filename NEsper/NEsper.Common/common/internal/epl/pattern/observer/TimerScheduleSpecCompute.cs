@@ -14,13 +14,13 @@ using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
 {
-	public interface TimerScheduleSpecCompute
-	{
-	    TimerScheduleSpec Compute(
-	        MatchedEventConvertor optionalConvertor,
-	        MatchedEventMap beginState,
-	        ExprEvaluatorContext exprEvaluatorContext,
-	        TimeZoneInfo timeZone,
-	        TimeAbacus timeAbacus);
-	}
+    public interface TimerScheduleSpecCompute
+    {
+        TimerScheduleSpec Compute(
+            MatchedEventConvertor optionalConvertor,
+            MatchedEventMap beginState,
+            ExprEvaluatorContext exprEvaluatorContext,
+            TimeZoneInfo timeZone,
+            TimeAbacus timeAbacus);
+    }
 } // end of namespace

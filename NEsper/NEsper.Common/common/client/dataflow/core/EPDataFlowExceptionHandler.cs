@@ -11,7 +11,8 @@ namespace com.espertech.esper.common.client.dataflow.core
     /// <summary>
     /// Handler for exceptions thrown by data flow operators.
     /// </summary>
-    public interface EPDataFlowExceptionHandler {
+    public interface EPDataFlowExceptionHandler
+    {
         /// <summary>
         /// Handle exception.
         /// </summary>

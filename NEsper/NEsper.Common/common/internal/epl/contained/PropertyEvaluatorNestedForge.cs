@@ -29,8 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
         private readonly ExprForge[] whereClauses;
 
         public PropertyEvaluatorNestedForge(
-            ContainedEventEvalForge[] containedEventEvals, FragmentEventType[] fragmentEventTypes,
-            ExprForge[] whereClauses, string[] expressionTexts)
+            ContainedEventEvalForge[] containedEventEvals,
+            FragmentEventType[] fragmentEventTypes,
+            ExprForge[] whereClauses,
+            string[] expressionTexts)
         {
             this.containedEventEvals = containedEventEvals;
             this.fragmentEventTypes = fragmentEventTypes;
@@ -45,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
         public EventType FragmentEventType => fragmentEventTypes[fragmentEventTypes.Length - 1].FragmentType;
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PropertyEvaluatorNested), GetType(), classScope);
             method.Block

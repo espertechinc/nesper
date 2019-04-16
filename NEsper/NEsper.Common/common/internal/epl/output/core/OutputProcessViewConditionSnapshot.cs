@@ -30,11 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         private readonly OutputProcessViewConditionFactory parent;
 
         public OutputProcessViewConditionSnapshot(
-            ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents,
-            bool afterConditionSatisfied, OutputProcessViewConditionFactory parent,
-            AgentInstanceContext agentInstanceContext) : base(
-            agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
-            afterConditionSatisfied)
+            ResultSetProcessor resultSetProcessor,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
+            OutputProcessViewConditionFactory parent,
+            AgentInstanceContext agentInstanceContext)
+            : base(
+                agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
+                afterConditionSatisfied)
         {
             this.parent = parent;
 
@@ -62,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         /// </summary>
         /// <param name="newData">new events</param>
         /// <param name="oldData">old events</param>
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             resultSetProcessor.ApplyViewResult(newData, oldData);
 
@@ -90,7 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         /// <param name="newEvents">new events</param>
         /// <param name="oldEvents">old events</param>
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             resultSetProcessor.ApplyJoinResult(newEvents, oldEvents);
@@ -123,7 +130,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         ///     just be processed
         /// </param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
-        protected void ContinueOutputProcessingView(bool doOutput, bool forceUpdate)
+        protected void ContinueOutputProcessingView(
+            bool doOutput,
+            bool forceUpdate)
         {
             EventBean[] newEvents = null;
             EventBean[] oldEvents = null;
@@ -147,7 +156,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             }
         }
 
-        public virtual void Output(bool forceUpdate, UniformPair<EventBean[]> results)
+        public virtual void Output(
+            bool forceUpdate,
+            UniformPair<EventBean[]> results)
         {
             // Child view can be null in replay from named window
             if (child != null) {
@@ -165,7 +176,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         ///     just be processed
         /// </param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
-        protected void ContinueOutputProcessingJoin(bool doOutput, bool forceUpdate)
+        protected void ContinueOutputProcessingJoin(
+            bool doOutput,
+            bool forceUpdate)
         {
             if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
                 Log.Debug(".continueOutputProcessingJoin");

@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
 {
     public class ContextControllerStatementDesc
     {
-        public ContextControllerStatementDesc(StatementLightweight lightweight, ContextMergeView contextMergeView)
+        public ContextControllerStatementDesc(
+            StatementLightweight lightweight,
+            ContextMergeView contextMergeView)
         {
             Lightweight = lightweight;
             ContextMergeView = contextMergeView;

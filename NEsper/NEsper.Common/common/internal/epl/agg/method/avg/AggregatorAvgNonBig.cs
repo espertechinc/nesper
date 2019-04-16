@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
     public class AggregatorAvgNonBig : AggregatorSumNonBig
     {
         public AggregatorAvgNonBig(
-            AggregationForgeFactory factory, int col,
+            AggregationForgeFactory factory,
+            int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
@@ -36,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         {
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .IfCondition(EqualsIdentity(cnt, Constant(0)))

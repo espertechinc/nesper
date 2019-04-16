@@ -9,30 +9,37 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
-	public class CodegenExpressionClassMethod : CodegenExpression
-	{
-	    private readonly string _methodName;
-	    private readonly CodegenExpression[] _params;
+    public class CodegenExpressionClassMethod : CodegenExpression
+    {
+        private readonly string _methodName;
+        private readonly CodegenExpression[] _params;
 
-	    public CodegenExpressionClassMethod(string methodName, CodegenExpression[] @params) {
-	        this._methodName = methodName;
-	        this._params = @params;
-	    }
+        public CodegenExpressionClassMethod(
+            string methodName,
+            CodegenExpression[] @params)
+        {
+            this._methodName = methodName;
+            this._params = @params;
+        }
 
-	    public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass) {
-	        builder.Append(_methodName);
-	        builder.Append("(");
-	        CodegenExpressionBuilder.RenderExpressions(builder, _params, imports, isInnerClass);
-	        builder.Append(")");
-	    }
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
+        {
+            builder.Append(_methodName);
+            builder.Append("(");
+            CodegenExpressionBuilder.RenderExpressions(builder, _params, imports, isInnerClass);
+            builder.Append(")");
+        }
 
-	    public void MergeClasses(ISet<Type> classes) {
-	        CodegenExpressionBuilder.MergeClassesExpressions(classes, _params);
-	    }
-	}
+        public void MergeClasses(ISet<Type> classes)
+        {
+            CodegenExpressionBuilder.MergeClassesExpressions(classes, _params);
+        }
+    }
 } // end of namespace

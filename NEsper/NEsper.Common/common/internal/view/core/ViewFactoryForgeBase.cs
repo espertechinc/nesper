@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.view.core
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (eventType == null) {
                 throw new IllegalStateException("Event type is unassigned");
@@ -58,11 +60,21 @@ namespace com.espertech.esper.common.@internal.view.core
         internal abstract string FactoryMethod();
 
         internal abstract void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
 
-        public abstract void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber);
-        public abstract void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv);
+        public abstract void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber);
+
+        public abstract void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv);
+
         public abstract string ViewName { get; }
 
         public virtual void Accept(ViewForgeVisitor visitor)

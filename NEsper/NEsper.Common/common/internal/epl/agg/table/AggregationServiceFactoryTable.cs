@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -18,50 +17,64 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.table
 {
-	public class AggregationServiceFactoryTable : AggregationServiceFactory {
-	    private Table table;
-	    private TableColumnMethodPairEval[] methodPairs;
-	    private AggregationMultiFunctionAgent[] accessAgents;
-	    private int[] accessColumnsZeroOffset;
-	    private AggregationGroupByRollupDesc groupByRollupDesc;
+    public class AggregationServiceFactoryTable : AggregationServiceFactory
+    {
+        private Table table;
+        private TableColumnMethodPairEval[] methodPairs;
+        private AggregationMultiFunctionAgent[] accessAgents;
+        private int[] accessColumnsZeroOffset;
+        private AggregationGroupByRollupDesc groupByRollupDesc;
 
-	    public void SetTable(Table table) {
-	        this.table = table;
-	    }
+        public void SetTable(Table table)
+        {
+            this.table = table;
+        }
 
-	    public void SetMethodPairs(TableColumnMethodPairEval[] methodPairs) {
-	        this.methodPairs = methodPairs;
-	    }
+        public void SetMethodPairs(TableColumnMethodPairEval[] methodPairs)
+        {
+            this.methodPairs = methodPairs;
+        }
 
-	    public void SetAccessAgents(AggregationMultiFunctionAgent[] accessAgents) {
-	        this.accessAgents = accessAgents;
-	    }
+        public void SetAccessAgents(AggregationMultiFunctionAgent[] accessAgents)
+        {
+            this.accessAgents = accessAgents;
+        }
 
-	    public void SetAccessColumnsZeroOffset(int[] accessColumnsZeroOffset) {
-	        this.accessColumnsZeroOffset = accessColumnsZeroOffset;
-	    }
+        public void SetAccessColumnsZeroOffset(int[] accessColumnsZeroOffset)
+        {
+            this.accessColumnsZeroOffset = accessColumnsZeroOffset;
+        }
 
-	    public void SetGroupByRollupDesc(AggregationGroupByRollupDesc groupByRollupDesc) {
-	        this.groupByRollupDesc = groupByRollupDesc;
-	    }
+        public void SetGroupByRollupDesc(AggregationGroupByRollupDesc groupByRollupDesc)
+        {
+            this.groupByRollupDesc = groupByRollupDesc;
+        }
 
-	    public AggregationService MakeService(AgentInstanceContext agentInstanceContext, ImportServiceRuntime importService, bool isSubquery, int? subqueryNumber, int[] groupId) {
-	        TableInstance tableInstance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
-	        if (!table.MetaData.IsKeyed) {
-	            TableInstanceUngrouped tableInstanceUngrouped = (TableInstanceUngrouped) tableInstance;
-	            return new AggSvcGroupAllWTableImpl(tableInstanceUngrouped, methodPairs, accessAgents, accessColumnsZeroOffset);
-	        }
+        public AggregationService MakeService(
+            AgentInstanceContext agentInstanceContext,
+            ImportServiceRuntime importService,
+            bool isSubquery,
+            int? subqueryNumber,
+            int[] groupId)
+        {
+            TableInstance tableInstance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
+            if (!table.MetaData.IsKeyed) {
+                TableInstanceUngrouped tableInstanceUngrouped = (TableInstanceUngrouped) tableInstance;
+                return new AggSvcGroupAllWTableImpl(tableInstanceUngrouped, methodPairs, accessAgents, accessColumnsZeroOffset);
+            }
 
-	        TableInstanceGrouped tableInstanceGrouped = (TableInstanceGrouped) tableInstance;
-	        if (groupByRollupDesc == null) {
-	            return new AggSvcGroupByWTableImpl(tableInstanceGrouped, methodPairs, accessAgents, accessColumnsZeroOffset);
-	        }
+            TableInstanceGrouped tableInstanceGrouped = (TableInstanceGrouped) tableInstance;
+            if (groupByRollupDesc == null) {
+                return new AggSvcGroupByWTableImpl(tableInstanceGrouped, methodPairs, accessAgents, accessColumnsZeroOffset);
+            }
 
-	        if (table.MetaData.KeyTypes.Length > 1) {
-	            return new AggSvcGroupByWTableRollupMultiKeyImpl(tableInstanceGrouped, methodPairs, accessAgents, accessColumnsZeroOffset, groupByRollupDesc);
-	        } else {
-	            return new AggSvcGroupByWTableRollupSingleKeyImpl(tableInstanceGrouped, methodPairs, accessAgents, accessColumnsZeroOffset);
-	        }
-	    }
-	}
+            if (table.MetaData.KeyTypes.Length > 1) {
+                return new AggSvcGroupByWTableRollupMultiKeyImpl(
+                    tableInstanceGrouped, methodPairs, accessAgents, accessColumnsZeroOffset, groupByRollupDesc);
+            }
+            else {
+                return new AggSvcGroupByWTableRollupSingleKeyImpl(tableInstanceGrouped, methodPairs, accessAgents, accessColumnsZeroOffset);
+            }
+        }
+    }
 } // end of namespace

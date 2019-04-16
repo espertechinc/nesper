@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
     {
         private static readonly EventTable[] EMPTY = new EventTable[0];
 
-        public static bool IsNonUnidirectionalNonSelf(bool isOuterJoins, bool isUnidirectional, bool isPureSelfJoin)
+        public static bool IsNonUnidirectionalNonSelf(
+            bool isOuterJoins,
+            bool isUnidirectional,
+            bool isPureSelfJoin)
         {
             return !isUnidirectional &&
                    (!isPureSelfJoin || isOuterJoins);
@@ -46,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             return ToArray(repositories, repositories.Length);
         }
 
-        public static EventTable[][] ToArray(IDictionary<TableLookupIndexReqKey, EventTable>[] repositories, int length)
+        public static EventTable[][] ToArray(
+            IDictionary<TableLookupIndexReqKey, EventTable>[] repositories,
+            int length)
         {
             if (repositories == null) {
                 return GetDefaultTablesArray(length);

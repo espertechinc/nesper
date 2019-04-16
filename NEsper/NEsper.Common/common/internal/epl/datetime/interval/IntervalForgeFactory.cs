@@ -18,8 +18,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     public class IntervalForgeFactory : ForgeFactory
     {
         public IntervalForge GetForge(
-            StreamTypeService streamTypeService, DatetimeMethodEnum method, string methodNameUsed,
-            IList<ExprNode> parameters, TimeAbacus timeAbacus, TableCompileTimeResolver tableCompileTimeResolver)
+            StreamTypeService streamTypeService,
+            DateTimeMethodEnum method,
+            string methodNameUsed,
+            IList<ExprNode> parameters,
+            TimeAbacus timeAbacus,
+            TableCompileTimeResolver tableCompileTimeResolver)
         {
             return new IntervalForgeImpl(
                 method, methodNameUsed, streamTypeService, parameters, timeAbacus, tableCompileTimeResolver);

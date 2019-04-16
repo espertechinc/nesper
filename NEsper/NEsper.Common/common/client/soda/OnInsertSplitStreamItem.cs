@@ -43,14 +43,17 @@ namespace com.espertech.esper.common.client.soda
             PropertySelectsStreamName = propertySelectsStreamName;
             WhereClause = whereClause;
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="insertInto">the insert-into clause</param>
         /// <param name="selectClause">the select-clause</param>
         /// <param name="whereClause">where-expression or null</param>
-        public OnInsertSplitStreamItem(InsertIntoClause insertInto, SelectClause selectClause, Expression whereClause)
+        public OnInsertSplitStreamItem(
+            InsertIntoClause insertInto,
+            SelectClause selectClause,
+            Expression whereClause)
             : this(insertInto, selectClause, null, null, whereClause)
         {
         }

@@ -18,12 +18,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public interface ExprEnumerationEval
     {
         ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
         ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
-        EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
     }
 
     public class ProxyExprEnumerationEval : ExprEnumerationEval
@@ -32,19 +39,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public Func<EventBean[], bool, ExprEvaluatorContext, ICollection<object>> ProcEvaluateGetROCollectionScalar;
         public Func<EventBean[], bool, ExprEvaluatorContext, EventBean> ProcEvaluateGetEventBean;
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return ProcEvaluateGetROCollectionEvents(
                 eventsPerStream, isNewData, context);
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return ProcEvaluateGetROCollectionScalar(
                 eventsPerStream, isNewData, context);
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return ProcEvaluateGetEventBean(
                 eventsPerStream, isNewData, context);

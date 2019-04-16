@@ -14,13 +14,14 @@ namespace com.espertech.esper.common.@internal.serde
     public interface DIOSerdeTreeMapEventsMayDeque
     {
         void Write(
-            OrderedDictionary<object, object> @object, 
-            DataOutput output, byte[] unitKey,
+            OrderedDictionary<object, object> @object,
+            DataOutput output,
+            byte[] unitKey,
             EventBeanCollatedWriter writer);
 
         void Read(
-            OrderedDictionary<object, object> @object, 
-            DataInput input, 
+            OrderedDictionary<object, object> @object,
+            DataInput input,
             byte[] unitKey);
     }
 } // end of namespace

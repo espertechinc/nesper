@@ -6,20 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.render;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.render
 {
-	public class EventPropertyRendererDefault : EventPropertyRenderer {
+    public class EventPropertyRendererDefault : EventPropertyRenderer
+    {
+        public static readonly EventPropertyRendererDefault INSTANCE = new EventPropertyRendererDefault();
 
-	    public static readonly EventPropertyRendererDefault INSTANCE = new EventPropertyRendererDefault();
-
-	    public void Render(EventPropertyRendererContext context) {
-
-	    }
-	}
+        public void Render(EventPropertyRendererContext context)
+        {
+        }
+    }
 } // end of namespace

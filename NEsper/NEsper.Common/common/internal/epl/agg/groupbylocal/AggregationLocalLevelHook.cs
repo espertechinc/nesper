@@ -11,6 +11,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     public interface AggregationLocalLevelHook
     {
         void Planned(
-            AggregationGroupByLocalGroupDesc localGroupDesc, AggregationLocalGroupByPlanForge localGroupByPlan);
+            AggregationGroupByLocalGroupDesc localGroupDesc,
+            AggregationLocalGroupByPlanForge localGroupByPlan);
     }
 } // end of namespace

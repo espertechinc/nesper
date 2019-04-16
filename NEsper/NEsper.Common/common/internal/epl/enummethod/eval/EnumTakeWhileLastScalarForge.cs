@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -18,19 +17,26 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumTakeWhileLastScalarForge : EnumForgeBaseScalar {
+    public class EnumTakeWhileLastScalarForge : EnumForgeBaseScalar
+    {
+        public EnumTakeWhileLastScalarForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ObjectArrayEventType type)
+            : base(innerExpression, streamCountIncoming, type)
+        {
+        }
 
-	    public EnumTakeWhileLastScalarForge(ExprForge innerExpression, int streamCountIncoming, ObjectArrayEventType type)
-	    	 : base(innerExpression, streamCountIncoming, type)
-	    {
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumTakeWhileLastScalarForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumTakeWhileLastScalarForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumTakeWhileLastScalarForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumTakeWhileLastScalarForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

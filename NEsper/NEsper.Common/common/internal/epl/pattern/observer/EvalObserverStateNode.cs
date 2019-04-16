@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         /// <param name="evalObserverNode">is the factory node associated to the state</param>
         public EvalObserverStateNode(
             Evaluator parentNode,
-            EvalObserverNode evalObserverNode) : base(parentNode)
+            EvalObserverNode evalObserverNode)
+            : base(parentNode)
         {
             this.evalObserverNode = evalObserverNode;
         }
@@ -49,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
         public PatternAgentInstanceContext Context => evalObserverNode.Context;
 
-        public void ObserverEvaluateTrue(MatchedEventMap matchEvent, bool quitted)
+        public void ObserverEvaluateTrue(
+            MatchedEventMap matchEvent,
+            bool quitted)
         {
             var agentInstanceContext = evalObserverNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternObserverEvaluateTrue(

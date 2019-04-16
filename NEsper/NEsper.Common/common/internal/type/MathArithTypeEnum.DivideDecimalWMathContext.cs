@@ -67,7 +67,10 @@ namespace com.espertech.esper.common.@internal.type
                 var block = codegenMethodScope
                     .MakeChild(typeof(decimal?), typeof(DivideDecimalWMathContext), codegenClassScope)
                     .AddParam(typeof(decimal?), "b1").AddParam(typeof(decimal?), "b2").Block;
-                var ifZero = block.IfCondition(CodegenExpressionBuilder.EqualsIdentity(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b2"), "doubleValue"), CodegenExpressionBuilder.Constant(0)));
+                var ifZero = block.IfCondition(
+                    CodegenExpressionBuilder.EqualsIdentity(
+                        CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b2"), "doubleValue"),
+                        CodegenExpressionBuilder.Constant(0)));
                 {
                     if (divisionByZeroReturnsNull) {
                         ifZero.BlockReturn(CodegenExpressionBuilder.ConstantNull());
@@ -75,10 +78,14 @@ namespace com.espertech.esper.common.@internal.type
                     else {
                         ifZero.BlockReturn(
                             CodegenExpressionBuilder.NewInstance(
-                                typeof(decimal?), CodegenExpressionBuilder.Op(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b1"), "doubleValue"), "/", CodegenExpressionBuilder.Constant(0))));
+                                typeof(decimal?),
+                                CodegenExpressionBuilder.Op(
+                                    CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b1"), "doubleValue"), "/",
+                                    CodegenExpressionBuilder.Constant(0))));
                     }
                 }
-                var method = block.MethodReturn(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b1"), "divide", CodegenExpressionBuilder.Ref("b2"), math));
+                var method = block.MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b1"), "divide", CodegenExpressionBuilder.Ref("b2"), math));
                 return CodegenExpressionBuilder.LocalMethod(method, left, right);
             }
         }

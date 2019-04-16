@@ -15,26 +15,37 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         /// <summary>Precedence. </summary>
         UNARY,
+
         /// <summary>Precedence. </summary>
         MULTIPLY,
+
         /// <summary>Precedence. </summary>
         ADDITIVE,
+
         /// <summary>Precedence. </summary>
         CONCAT,
+
         /// <summary>Precedence. </summary>
         RELATIONAL_BETWEEN_IN,
+
         /// <summary>Precedence. </summary>
         EQUALS,
+
         /// <summary>Precedence. </summary>
         NEGATED,
+
         /// <summary>Precedence. </summary>
         BITWISE,
+
         /// <summary>Precedence. </summary>
         AND,
+
         /// <summary>Precedence. </summary>
         OR,
+
         /// <summary>Precedence. </summary>
         CASE,
+
         /// <summary>Precedence. </summary>
         MINIMUM
     }
@@ -43,8 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         public static int GetLevel(this ExprPrecedenceEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case ExprPrecedenceEnum.UNARY:
                     return (11);
                 case ExprPrecedenceEnum.MULTIPLY:

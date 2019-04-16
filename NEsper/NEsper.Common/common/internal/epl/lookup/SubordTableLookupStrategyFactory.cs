@@ -21,6 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         LookupStrategyDesc LookupStrategyDesc { get; }
 
         SubordTableLookupStrategy MakeStrategy(
-            EventTable[] eventTable, AgentInstanceContext agentInstanceContext, VirtualDWView vdw);
+            EventTable[] eventTable,
+            AgentInstanceContext agentInstanceContext,
+            VirtualDWView vdw);
     }
 } // end of namespace

@@ -7,14 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.support
 {
-	public class SupportClasspathImport {
-	    public readonly static ImportServiceCompileTime INSTANCE = new ImportServiceCompileTime(null, null, null, null, false, false);
-	}
+    public class SupportClasspathImport
+    {
+        public readonly static ImportServiceCompileTime INSTANCE = new ImportServiceCompileTime(null, null, null, null, false, false);
+    }
 } // end of namespace

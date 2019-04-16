@@ -39,7 +39,8 @@ namespace com.espertech.esper.common.@internal.view.derived
         protected internal double sumXtimesW = double.NaN;
 
         public WeightedAverageView(
-            WeightedAverageViewFactory viewFactory, AgentInstanceViewFactoryChainContext agentInstanceContext)
+            WeightedAverageViewFactory viewFactory,
+            AgentInstanceViewFactoryChainContext agentInstanceContext)
         {
             this.viewFactory = viewFactory;
             this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
@@ -67,7 +68,9 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public ViewFactory ViewFactory => viewFactory;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, viewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(viewFactory, newData, oldData);
@@ -196,7 +199,9 @@ namespace com.espertech.esper.common.@internal.view.derived
         }
 
         public static EventType CreateEventType(
-            StatViewAdditionalPropsForge additionalProps, ViewForgeEnv env, int streamNum)
+            StatViewAdditionalPropsForge additionalProps,
+            ViewForgeEnv env,
+            int streamNum)
         {
             var schemaMap = new LinkedHashMap<string, object>();
             schemaMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), typeof(double?));

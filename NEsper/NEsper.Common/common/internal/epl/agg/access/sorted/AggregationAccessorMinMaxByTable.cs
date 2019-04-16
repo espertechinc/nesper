@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     {
         private readonly TableMetaData table;
 
-        public AggregationAccessorMinMaxByTable(bool max, TableMetaData table)
+        public AggregationAccessorMinMaxByTable(
+            bool max,
+            TableMetaData table)
             : base(max)
         {
             this.table = table;

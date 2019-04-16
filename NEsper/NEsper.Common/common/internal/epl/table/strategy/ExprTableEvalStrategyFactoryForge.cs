@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.strategy
@@ -28,39 +27,38 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
         private ExprEnumerationGivenEventForge optionalEnumEval;
         private AggregationTableAccessAggReaderForge accessAggStrategy;
 
-        public ExprTableEvalStrategyFactoryForge(TableMetaData tableMeta, ExprForge[] optionalGroupKeys)
+        public ExprTableEvalStrategyFactoryForge(
+            TableMetaData tableMeta,
+            ExprForge[] optionalGroupKeys)
         {
             this.tableMeta = tableMeta;
             this.optionalGroupKeys = optionalGroupKeys;
         }
 
-        public ExprTableEvalStrategyEnum StrategyEnum
-        {
+        public ExprTableEvalStrategyEnum StrategyEnum {
             set { this.strategyEnum = value; }
         }
 
-        public int PropertyIndex
-        {
+        public int PropertyIndex {
             set { this.propertyIndex = value; }
         }
 
-        public ExprEnumerationGivenEventForge OptionalEnumEval
-        {
+        public ExprEnumerationGivenEventForge OptionalEnumEval {
             set { this.optionalEnumEval = value; }
         }
 
-        public int AggColumnNum
-        {
+        public int AggColumnNum {
             set { this.aggColumnNum = value; }
         }
 
-        public AggregationTableAccessAggReaderForge AccessAggStrategy
-        {
+        public AggregationTableAccessAggReaderForge AccessAggStrategy {
             set { this.accessAggStrategy = value; }
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenMethod method = parent.MakeChild(typeof(ExprTableEvalStrategyFactory), this.GetType(), classScope);
             method.Block

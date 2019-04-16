@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.configuration.common
     [Serializable]
     public class ConfigurationCommonVariantStream
     {
-
         /// <summary>
         ///     Ctor.
         /// </summary>

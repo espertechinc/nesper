@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         private readonly ExprNode optionalEvaluator;
 
         public AggregationTAAReaderLinearFirstLastForge(
-            Type underlyingType, AggregationAccessorLinearType accessType, ExprNode optionalEvaluator)
+            Type underlyingType,
+            AggregationAccessorLinearType accessType,
+            ExprNode optionalEvaluator)
         {
             ResultType = underlyingType;
             this.accessType = accessType;
@@ -32,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         public Type ResultType { get; }
 
         public CodegenExpression CodegenCreateReader(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(AggregationTAAReaderLinearFirstLast), GetType(), classScope);
             method.Block

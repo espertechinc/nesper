@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// <param name="fragmentEventType">event type of fragment</param>
         /// <param name="eventBeanTypedEventFactory">for creating event instances</param>
         public MapFragmentArrayPropertyGetter(
-            string propertyNameAtomic, EventType fragmentEventType,
+            string propertyNameAtomic,
+            EventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             propertyName = propertyNameAtomic;
@@ -72,7 +73,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -81,14 +83,16 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
@@ -97,28 +101,32 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ExprDotMethod(underlyingExpression, "get", Constant(propertyName));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         private CodegenMethod GetFragmentCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var mSvc = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var mType = codegenClassScope.AddFieldUnshared(

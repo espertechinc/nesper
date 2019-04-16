@@ -18,10 +18,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
     /// </summary>
     public interface BeanEventTypeFactory
     {
-        BeanEventType GetCreateBeanType(Type clazz);
-
         EventBeanTypedEventFactory EventBeanTypedEventFactory { get; }
 
         EventTypeFactory EventTypeFactory { get; }
+        BeanEventType GetCreateBeanType(Type clazz);
     }
 } // end of namespace

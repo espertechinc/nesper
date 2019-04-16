@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.meta;
@@ -101,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
                         count++;
                     }
-                    catch(Exception ex) when (ex is ExprValidationException || ex is EPException) {
+                    catch (Exception ex) when (ex is ExprValidationException || ex is EPException) {
                         var isNot = item is OnTriggerMergeActionInsert;
                         var message = "Validation failed in when-" + (isNot ? "not-" : "") + "matched (clause " +
                                       count + "): " + ex.Message;
@@ -127,7 +126,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(InfraOnMergeHelper), GetType(), classScope);
             method.Block
@@ -144,7 +145,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         private CodegenExpression MakeList(
-            IList<InfraOnMergeMatchForge> items, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            IList<InfraOnMergeMatchForge> items,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(IList<object>), GetType(), classScope);
@@ -159,8 +162,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         private InfraOnMergeActionInsForge SetupInsert(
-            string infraName, EventType infraType, OnTriggerMergeActionInsert desc, EventType triggeringEventType,
-            string triggeringStreamName, StatementRawInfo statementRawInfo, StatementCompileTimeServices services,
+            string infraName,
+            EventType infraType,
+            OnTriggerMergeActionInsert desc,
+            EventType triggeringEventType,
+            string triggeringStreamName,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services,
             bool isTable)
         {
             // Compile insert-into info
@@ -208,7 +216,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         public static IList<SelectClauseElementCompiled> CompileSelectNoWildcard(
-            string triggeringStreamName, IList<SelectClauseElementCompiled> selectClause)
+            string triggeringStreamName,
+            IList<SelectClauseElementCompiled> selectClause)
         {
             IList<SelectClauseElementCompiled> selectNoWildcard = new List<SelectClauseElementCompiled>();
             foreach (var element in selectClause) {

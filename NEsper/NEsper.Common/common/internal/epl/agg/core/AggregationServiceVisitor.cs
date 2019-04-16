@@ -10,6 +10,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public interface AggregationServiceVisitor
     {
-        void VisitAggregations(int numGroups, params object[] state);
+        void VisitAggregations(
+            int numGroups,
+            params object[] state);
     }
 }

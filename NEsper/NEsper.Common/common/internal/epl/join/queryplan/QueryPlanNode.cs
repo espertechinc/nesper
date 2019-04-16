@@ -24,10 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     {
         public abstract ExecNode MakeExec(
             AgentInstanceContext agentInstanceContext,
-            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, 
+            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream,
             EventType[] streamTypes,
-            Viewable[] streamViews, 
-            VirtualDWView[] viewExternal, 
+            Viewable[] streamViews,
+            VirtualDWView[] viewExternal,
             ILockable[] tableSecondaryIndexLocks);
     }
 } // end of namespace

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.util
         /// </summary>
         /// <param name="ctx">contains value to add as well as the state</param>
         void Add(CountMinSketchAgentContextAdd ctx);
-    
+
         /// <summary>
         /// Return the estimated count for a given value.
         /// Implementations typically check for null value, convert the value object to a byte-array
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.util
         /// <param name="ctx">contains value to query as well as the state</param>
         /// <returns>estimated count</returns>
         long? Estimate(CountMinSketchAgentContextEstimate ctx);
-    
+
         /// <summary>
         /// Return the value object for a given byte-array, for use with top-K.
         /// Implementations typically simply convert a byte-array into a value object.

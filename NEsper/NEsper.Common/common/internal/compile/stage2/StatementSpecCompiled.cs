@@ -56,7 +56,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             TableAccessNodes = tableAccessNodes;
         }
 
-        public StatementSpecCompiled(StatementSpecCompiled spec, StreamSpecCompiled[] streamSpecCompileds)
+        public StatementSpecCompiled(
+            StatementSpecCompiled spec,
+            StreamSpecCompiled[] streamSpecCompileds)
             : this(
                 spec.Raw, streamSpecCompileds, spec.SelectClauseCompiled, spec.Annotations, spec.GroupByExpressions,
                 spec.SubselectNodes, spec.exprDeclaredNodes, spec.TableAccessNodes)

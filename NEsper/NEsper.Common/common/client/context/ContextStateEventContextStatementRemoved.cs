@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.client.context
         /// <param name="statementDeploymentId">statement deployment id</param>
         /// <param name="statementName">statement name</param>
         public ContextStateEventContextStatementRemoved(
-            string runtimeURI, string contextDeploymentId, string contextName, string statementDeploymentId,
+            string runtimeURI,
+            string contextDeploymentId,
+            string contextName,
+            string statementDeploymentId,
             string statementName)
             : base(runtimeURI, contextDeploymentId, contextName)
         {

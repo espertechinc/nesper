@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.client.configuration
         /// </param>
         /// <param name="cause">inner exception
         /// </param>
-        public ConfigurationException(String message, Exception cause)
+        public ConfigurationException(
+            String message,
+            Exception cause)
             : base(message, cause)
         {
         }

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -25,7 +24,6 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.io;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.core.AggregationServiceCodegenNames;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
@@ -57,7 +55,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             string providerClassName,
             AggregationClassNames classNames)
         {
-
             if (forge is AggregationServiceFactoryForgeWMethodGen) {
                 CodegenMethod initMethod = parent
                     .MakeChild(typeof(AggregationServiceFactory), typeof(AggregationServiceFactoryCompiler), classScope)
@@ -77,9 +74,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     generator.RowLevelDesc, generator.GetType(), classScope, innerClasses, providerClassName,
                     classNames);
 
-                BiConsumer<CodegenMethod, int> readConsumer = (method, level) =>
+                BiConsumer<CodegenMethod, int> readConsumer = (
+                        method,
+                        level) =>
                     generator.RowReadMethodCodegen(method, level);
-                BiConsumer<CodegenMethod, int> writeConsumer = (method, level) =>
+                BiConsumer<CodegenMethod, int> writeConsumer = (
+                        method,
+                        level) =>
                     generator.RowWriteMethodCodegen(method, level);
                 MakeRowSerde(
                     generator.RowLevelDesc, generator.GetType(), readConsumer, writeConsumer, innerClasses, classScope,
@@ -120,8 +121,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             MakeRowFactory(rowLevelDesc, forgeClass, classScope, innerClasses, providerClassName, classNames);
 
-            BiConsumer<CodegenMethod, int> readConsumer = (method, level) => { };
-            BiConsumer<CodegenMethod, int> writeConsumer = (method, level) => { };
+            BiConsumer<CodegenMethod, int> readConsumer = (
+                method,
+                level) => {
+            };
+            BiConsumer<CodegenMethod, int> writeConsumer = (
+                method,
+                level) => {
+            };
             MakeRowSerde(
                 rowLevelDesc, forgeClass, readConsumer, writeConsumer, innerClasses, classScope, providerClassName,
                 classNames);
@@ -136,7 +143,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             string providerClassName,
             AggregationClassNames classNames)
         {
-
             if (rowLevelDesc.OptionalTopRow != null) {
                 MakeRowFactoryForLevel(
                     classNames.RowTop, classNames.RowFactoryTop, forgeClass, classScope, innerClasses,
@@ -183,8 +189,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static void MakeRowSerde(
-            AggregationCodegenRowLevelDesc levels, 
-            Type forgeClass, 
+            AggregationCodegenRowLevelDesc levels,
+            Type forgeClass,
             BiConsumer<CodegenMethod, int> readConsumer,
             BiConsumer<CodegenMethod, int> writeConsumer,
             IList<CodegenInnerClass> innerClasses,
@@ -293,16 +299,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static void MakeRow(
-            bool isGenerateTableEnter, 
+            bool isGenerateTableEnter,
             bool isJoin,
-            AggregationCodegenRowLevelDesc rowLevelDesc, 
+            AggregationCodegenRowLevelDesc rowLevelDesc,
             Type forgeClass,
             Consumer<AggregationRowCtorDesc> rowCtorConsumer,
             CodegenClassScope classScope,
             IList<CodegenInnerClass> innerClasses,
             AggregationClassNames classNames)
         {
-
             if (rowLevelDesc.OptionalTopRow != null) {
                 MakeRowForLevel(
                     isGenerateTableEnter, isJoin, classNames.RowTop, rowLevelDesc.OptionalTopRow, forgeClass,
@@ -450,7 +455,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             bool isGenerateTableEnter,
             AggregationCodegenTableUpdateType type,
             int offset,
-            AggregationStateFactoryForge[] accessStateFactories, 
+            AggregationStateFactoryForge[] accessStateFactories,
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
@@ -642,7 +647,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                         method.Block.Apply(
                             Instblock(
                                 classScope, "aAggNoAccessEnterLeave", ConstantTrue(), Constant(count), getValue));
-                    } else if (updateType == AggregationCodegenUpdateType.APPLYLEAVE) {
+                    }
+                    else if (updateType == AggregationCodegenUpdateType.APPLYLEAVE) {
                         method.Block.Apply(
                             Instblock(
                                 classScope, "qAggNoAccessEnterLeave", ConstantFalse(), Constant(count), getValue,
@@ -651,7 +657,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                         method.Block.Apply(
                             Instblock(
                                 classScope, "aAggNoAccessEnterLeave", ConstantFalse(), Constant(count), getValue));
-                    } else if (updateType == AggregationCodegenUpdateType.CLEAR) {
+                    }
+                    else if (updateType == AggregationCodegenUpdateType.CLEAR) {
                         factory.Aggregator.ClearCodegen(method, classScope);
                     }
 
@@ -704,8 +711,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static CodegenMemberCol InitForgesMakeRowCtor(
-            bool join, CodegenCtor rowCtor, CodegenClassScope classScope, AggregationForgeFactory[] methodFactories,
-            AggregationStateFactoryForge[] accessFactories, ExprForge[][] methodForges)
+            bool join,
+            CodegenCtor rowCtor,
+            CodegenClassScope classScope,
+            AggregationForgeFactory[] methodFactories,
+            AggregationStateFactoryForge[] accessFactories,
+            ExprForge[][] methodForges)
         {
             CodegenMemberCol membersColumnized = new CodegenMemberCol();
             int count = 0;
@@ -727,8 +738,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static void MakeService(
-            AggregationServiceFactoryForgeWMethodGen forge, IList<CodegenInnerClass> innerClasses,
-            CodegenClassScope classScope, string providerClassName, AggregationClassNames classNames)
+            AggregationServiceFactoryForgeWMethodGen forge,
+            IList<CodegenInnerClass> innerClasses,
+            CodegenClassScope classScope,
+            string providerClassName,
+            AggregationClassNames classNames)
         {
             CodegenNamedMethods namedMethods = new CodegenNamedMethods();
 
@@ -939,7 +953,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             public static readonly AggregationCodegenGetType GETCOLLECTIONOFEVENTS =
                 new AggregationCodegenGetType("GetEnumerableEvents", typeof(ICollection<object>));
 
-            AggregationCodegenGetType(string accessorMethodName, Type returnType)
+            AggregationCodegenGetType(
+                string accessorMethodName,
+                Type returnType)
             {
                 this.AccessorMethodName = accessorMethodName;
                 this.ReturnType = returnType;

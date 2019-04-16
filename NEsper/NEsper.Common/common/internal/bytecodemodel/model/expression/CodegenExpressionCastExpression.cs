@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenExpression _expression;
         private readonly string _typeName;
 
-        public CodegenExpressionCastExpression(Type clazz, CodegenExpression expression)
+        public CodegenExpressionCastExpression(
+            Type clazz,
+            CodegenExpression expression)
         {
             if (clazz == null) {
                 throw new ArgumentException("Cast-to class is a null value");
@@ -30,7 +32,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this._expression = expression;
         }
 
-        public CodegenExpressionCastExpression(string typeName, CodegenExpression expression)
+        public CodegenExpressionCastExpression(
+            string typeName,
+            CodegenExpression expression)
         {
             if (typeName == null) {
                 throw new ArgumentException("Cast-to class is a null value");
@@ -41,7 +45,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this._expression = expression;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("((");
             if (_clazz != null) {

@@ -18,6 +18,8 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// </summary>
         /// <param name="newData">insert stream, or null if no insert stream events</param>
         /// <param name="oldData">remove stream, or null if no remove stream events</param>
-        void Update(EventBean[] newData, EventBean[] oldData);
+        void Update(
+            EventBean[] newData,
+            EventBean[] oldData);
     }
 }

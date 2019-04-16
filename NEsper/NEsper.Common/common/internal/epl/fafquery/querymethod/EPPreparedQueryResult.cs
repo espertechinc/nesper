@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         /// </summary>
         /// <param name="eventType">is the type of event produced by the query</param>
         /// <param name="result">the result rows</param>
-        public EPPreparedQueryResult(EventType eventType, EventBean[] result)
+        public EPPreparedQueryResult(
+            EventType eventType,
+            EventBean[] result)
         {
             EventType = eventType;
             Result = result;

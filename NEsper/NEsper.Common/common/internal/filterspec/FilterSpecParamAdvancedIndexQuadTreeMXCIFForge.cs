@@ -9,7 +9,6 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.select.core.SelectExprProcessorUtil;
 
@@ -23,9 +22,13 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly FilterSpecParamFilterForEvalDoubleForge yEval;
 
         public FilterSpecParamAdvancedIndexQuadTreeMXCIFForge(
-            ExprFilterSpecLookupableForge lookupable, FilterOperator filterOperator,
-            FilterSpecParamFilterForEvalDoubleForge xEval, FilterSpecParamFilterForEvalDoubleForge yEval,
-            FilterSpecParamFilterForEvalDoubleForge widthEval, FilterSpecParamFilterForEvalDoubleForge heightEval) :
+            ExprFilterSpecLookupableForge lookupable,
+            FilterOperator filterOperator,
+            FilterSpecParamFilterForEvalDoubleForge xEval,
+            FilterSpecParamFilterForEvalDoubleForge yEval,
+            FilterSpecParamFilterForEvalDoubleForge widthEval,
+            FilterSpecParamFilterForEvalDoubleForge heightEval)
+            :
             base(lookupable, filterOperator)
         {
             this.xEval = xEval;
@@ -35,7 +38,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public override CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbolWEventType symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols)
         {
             var method = parent.MakeChild(typeof(FilterSpecParamAdvancedIndexQuadTreeMXCIF), GetType(), classScope);
             method.Block

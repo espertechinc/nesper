@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 {
     public class JoinSetComposerDesc
     {
-        public JoinSetComposerDesc(JoinSetComposer joinSetComposer, ExprEvaluator postJoinFilterEvaluator)
+        public JoinSetComposerDesc(
+            JoinSetComposer joinSetComposer,
+            ExprEvaluator postJoinFilterEvaluator)
         {
             JoinSetComposer = joinSetComposer;
             PostJoinFilterEvaluator = postJoinFilterEvaluator;

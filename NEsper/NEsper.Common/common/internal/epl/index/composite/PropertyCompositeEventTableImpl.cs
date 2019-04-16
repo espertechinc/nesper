@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.exec.composite;
@@ -38,26 +37,29 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         /// </summary>
         internal readonly IDictionary<object, object> index;
 
-        public PropertyCompositeEventTableImpl(PropertyCompositeEventTableFactory factory) : base(factory)
+        public PropertyCompositeEventTableImpl(PropertyCompositeEventTableFactory factory)
+            : base(factory)
         {
-            if (factory.HashGetter != null)
-            {
+            if (factory.HashGetter != null) {
                 index = new Dictionary<object, object>();
             }
-            else
-            {
+            else {
                 index = new OrderedDictionary<object, object>();
             }
         }
 
         public override IDictionary<object, CompositeIndexEntry> Index => index;
 
-        public override void Add(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public override void Add(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             factory.Chain.Enter(theEvent, index);
         }
 
-        public override void Remove(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public override void Remove(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             factory.Chain.Remove(theEvent, index);
         }

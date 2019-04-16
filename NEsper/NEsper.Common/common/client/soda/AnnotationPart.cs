@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="annotations">annotations</param>
         /// <param name="formatter">for newline-whitespace formatting</param>
         public static void ToEPL(
-            StringWriter writer,
+            TextWriter writer,
             IList<AnnotationPart> annotations,
             EPStatementFormatter formatter)
         {

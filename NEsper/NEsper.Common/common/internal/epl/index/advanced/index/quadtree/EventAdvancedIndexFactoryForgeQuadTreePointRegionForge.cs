@@ -9,14 +9,14 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.lookup;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
     public class EventAdvancedIndexFactoryForgeQuadTreePointRegionForge : EventAdvancedIndexFactoryForgeQuadTreeForge
     {
-        public readonly static EventAdvancedIndexFactoryForgeQuadTreePointRegionForge INSTANCE = new EventAdvancedIndexFactoryForgeQuadTreePointRegionForge();
+        public readonly static EventAdvancedIndexFactoryForgeQuadTreePointRegionForge INSTANCE =
+            new EventAdvancedIndexFactoryForgeQuadTreePointRegionForge();
 
         private EventAdvancedIndexFactoryForgeQuadTreePointRegionForge()
         {
@@ -24,16 +24,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         public override bool ProvidesIndexForOperation(string operationName)
         {
-            return operationName.Equals(SettingsApplicationDotMethodPointInsideRectange.LOOKUP_OPERATION_NAME);
+            return operationName.Equals(SettingsApplicationDotMethodPointInsideRectangle.LOOKUP_OPERATION_NAME);
         }
 
-        public override CodegenExpression CodegenMake(CodegenMethodScope parent, CodegenClassScope classScope)
+        public override CodegenExpression CodegenMake(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             return PublicConstValue(typeof(EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory), "INSTANCE");
         }
 
-        public override EventAdvancedIndexFactory RuntimeFactory
-        {
+        public override EventAdvancedIndexFactory RuntimeFactory {
             get => EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory.INSTANCE;
         }
     }

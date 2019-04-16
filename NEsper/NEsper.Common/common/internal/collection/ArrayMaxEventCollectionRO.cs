@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="events">to iterate</param>
         /// <param name="maxNumEvents">max to iterate</param>
-        public ArrayMaxEventCollectionRO(EventBean[] events, int maxNumEvents)
+        public ArrayMaxEventCollectionRO(
+            EventBean[] events,
+            int maxNumEvents)
         {
             this.events = events;
             Count = maxNumEvents;
@@ -58,7 +60,9 @@ namespace com.espertech.esper.common.@internal.collection
             throw new UnsupportedOperationException("Read-only implementation");
         }
 
-        public void CopyTo(EventBean[] array, int arrayIndex)
+        public void CopyTo(
+            EventBean[] array,
+            int arrayIndex)
         {
             throw new UnsupportedOperationException("Read-only implementation");
         }

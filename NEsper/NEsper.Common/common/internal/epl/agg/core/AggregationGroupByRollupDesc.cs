@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             }
 
             return CodegenExpressionBuilder.NewInstance(
-                typeof(AggregationGroupByRollupDesc), 
+                typeof(AggregationGroupByRollupDesc),
                 CodegenExpressionBuilder.NewArrayWithInit(
                     typeof(AggregationGroupByRollupLevel), level));
         }

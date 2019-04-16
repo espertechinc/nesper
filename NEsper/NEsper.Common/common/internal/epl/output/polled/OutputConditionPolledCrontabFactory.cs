@@ -46,12 +46,15 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         }
 
         public OutputConditionPolled MakeFromState(
-            AgentInstanceContext agentInstanceContext, OutputConditionPolledState state)
+            AgentInstanceContext agentInstanceContext,
+            OutputConditionPolledState state)
         {
             return new OutputConditionPolledCrontab(agentInstanceContext, (OutputConditionPolledCrontabState) state);
         }
 
-        private static object[] Evaluate(ExprEvaluator[] parameters, ExprEvaluatorContext exprEvaluatorContext)
+        private static object[] Evaluate(
+            ExprEvaluator[] parameters,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var results = new object[parameters.Length];
             var count = 0;
@@ -59,9 +62,11 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 try {
                     results[count] = expr.Evaluate(null, true, exprEvaluatorContext);
                     count++;
-                } catch (EPException) {
+                }
+                catch (EPException) {
                     throw;
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     var message = "Failed expression evaluation in crontab timer-at for parameter " + count + ": " +
                                   ex.Message;
                     Log.Error(message, ex);

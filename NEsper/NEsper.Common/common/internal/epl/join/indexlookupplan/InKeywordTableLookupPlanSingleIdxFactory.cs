@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -20,25 +19,33 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
 {
-	/// <summary>
-	/// Plan to perform an indexed table lookup.
-	/// </summary>
-	public class InKeywordTableLookupPlanSingleIdxFactory : TableLookupPlan {
-	    private ExprEvaluator[] expressions;
+    /// <summary>
+    /// Plan to perform an indexed table lookup.
+    /// </summary>
+    public class InKeywordTableLookupPlanSingleIdxFactory : TableLookupPlan
+    {
+        private ExprEvaluator[] expressions;
 
-	    public InKeywordTableLookupPlanSingleIdxFactory(int lookupStream, int indexedStream, TableLookupIndexReqKey[] indexNums, ExprEvaluator[] expressions) : base(lookupStream, indexedStream, indexNums)
-	        {
-	        this.expressions = expressions;
-	    }
+        public InKeywordTableLookupPlanSingleIdxFactory(
+            int lookupStream,
+            int indexedStream,
+            TableLookupIndexReqKey[] indexNums,
+            ExprEvaluator[] expressions)
+            : base(lookupStream, indexedStream, indexNums)
+        {
+            this.expressions = expressions;
+        }
 
-	    protected override JoinExecTableLookupStrategy MakeStrategyInternal(EventTable[] eventTable, EventType[] eventTypes) {
-	        PropertyHashedEventTable index = (PropertyHashedEventTable) eventTable[0];
-	        return new InKeywordSingleTableLookupStrategyExpr(this, index);
-	    }
+        protected override JoinExecTableLookupStrategy MakeStrategyInternal(
+            EventTable[] eventTable,
+            EventType[] eventTypes)
+        {
+            PropertyHashedEventTable index = (PropertyHashedEventTable) eventTable[0];
+            return new InKeywordSingleTableLookupStrategyExpr(this, index);
+        }
 
-	    public ExprEvaluator[] Expressions
-	    {
-	        get => expressions;
-	    }
-	}
+        public ExprEvaluator[] Expressions {
+            get => expressions;
+        }
+    }
 } // end of namespace

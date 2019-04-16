@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.compat;
@@ -15,12 +14,13 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.variable
 {
-	/// <summary>
-	/// Represents a variable in an expression tree.
-	/// </summary>
-	public interface ExprVariableNode : ExprNodeDeployTimeConst {
-	    string VariableNameWithSubProp { get; }
+    /// <summary>
+    /// Represents a variable in an expression tree.
+    /// </summary>
+    public interface ExprVariableNode : ExprNodeDeployTimeConst
+    {
+        string VariableNameWithSubProp { get; }
 
-	    VariableMetaData VariableMetadata { get; }
-	}
+        VariableMetaData VariableMetadata { get; }
+    }
 } // end of namespace

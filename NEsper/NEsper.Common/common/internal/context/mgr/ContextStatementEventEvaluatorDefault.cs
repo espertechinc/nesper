@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.@internal.context.util;
@@ -18,138 +17,156 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.mgr
 {
-	public class ContextStatementEventEvaluatorDefault : ContextStatementEventEvaluator {
-	    public readonly static ContextStatementEventEvaluatorDefault INSTANCE = new ContextStatementEventEvaluatorDefault();
+    public class ContextStatementEventEvaluatorDefault : ContextStatementEventEvaluator
+    {
+        public readonly static ContextStatementEventEvaluatorDefault INSTANCE = new ContextStatementEventEvaluatorDefault();
 
-	    private ContextStatementEventEvaluatorDefault() {
-	    }
+        private ContextStatementEventEvaluatorDefault()
+        {
+        }
 
-	    public void EvaluateEventForStatement(EventBean theEvent, IList<AgentInstance> agentInstances, AgentInstanceContext agentInstanceContextCreate) {
-	        // context was created - reevaluate for the given event
-	        ArrayDeque<FilterHandle> callbacks = new ArrayDeque<FilterHandle>(2);
-	        agentInstanceContextCreate.FilterService.Evaluate(theEvent, callbacks);   // evaluates for ALL statements
-	        if (callbacks.IsEmpty()) {
-	            return;
-	        }
+        public void EvaluateEventForStatement(
+            EventBean theEvent,
+            IList<AgentInstance> agentInstances,
+            AgentInstanceContext agentInstanceContextCreate)
+        {
+            // context was created - reevaluate for the given event
+            ArrayDeque<FilterHandle> callbacks = new ArrayDeque<FilterHandle>(2);
+            agentInstanceContextCreate.FilterService.Evaluate(theEvent, callbacks); // evaluates for ALL statements
+            if (callbacks.IsEmpty()) {
+                return;
+            }
 
-	        // there is a single callback and a single context, if they match we are done
-	        if (agentInstances.Count == 1 && callbacks.Count == 1) {
-	            AgentInstance agentInstance = agentInstances[0];
-	            AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
-	            FilterHandle callback = callbacks.First;
-	            if (agentInstanceContext.StatementId == callback.StatementId &&
-	                agentInstanceContext.AgentInstanceId == callback.AgentInstanceId) {
-	                Process(agentInstance, callbacks, theEvent);
-	            }
-	            return;
-	        }
+            // there is a single callback and a single context, if they match we are done
+            if (agentInstances.Count == 1 && callbacks.Count == 1) {
+                AgentInstance agentInstance = agentInstances[0];
+                AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
+                FilterHandle callback = callbacks.First;
+                if (agentInstanceContext.StatementId == callback.StatementId &&
+                    agentInstanceContext.AgentInstanceId == callback.AgentInstanceId) {
+                    Process(agentInstance, callbacks, theEvent);
+                }
 
-	        // use the right sorted/unsorted Map keyed by AgentInstance to sort
-	        bool isPrioritized = agentInstanceContextCreate.RuntimeSettingsService.ConfigurationRuntime.Execution.IsPrioritized;
-	        IDictionary<AgentInstance, object> stmtCallbacks;
-	        if (!isPrioritized) {
-	            stmtCallbacks = new Dictionary<AgentInstance, object>();
-	        } else {
-	            stmtCallbacks = new OrderedDictionary<AgentInstance, object>(AgentInstanceComparator.INSTANCE);
-	        }
+                return;
+            }
 
-	        // process all callbacks
-	        foreach (FilterHandle filterHandle in callbacks) {
-	            EPStatementHandleCallbackFilter handleCallback = (EPStatementHandleCallbackFilter) filterHandle;
+            // use the right sorted/unsorted Map keyed by AgentInstance to sort
+            bool isPrioritized = agentInstanceContextCreate.RuntimeSettingsService.ConfigurationRuntime.Execution.IsPrioritized;
+            IDictionary<AgentInstance, object> stmtCallbacks;
+            if (!isPrioritized) {
+                stmtCallbacks = new Dictionary<AgentInstance, object>();
+            }
+            else {
+                stmtCallbacks = new OrderedDictionary<AgentInstance, object>(AgentInstanceComparator.INSTANCE);
+            }
 
-	            // determine if this filter entry applies to any of the affected agent instances
-	            int statementId = filterHandle.StatementId;
-	            AgentInstance agentInstanceFound = null;
-	            foreach (AgentInstance agentInstance in agentInstances) {
-	                AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
-	                if (agentInstanceContext.StatementId == statementId && agentInstanceContext.AgentInstanceId == handleCallback.AgentInstanceId) {
-	                    agentInstanceFound = agentInstance;
-	                    break;
-	                }
-	            }
-	            if (agentInstanceFound == null) {   // when the callback is for some other stmt
-	                continue;
-	            }
+            // process all callbacks
+            foreach (FilterHandle filterHandle in callbacks) {
+                EPStatementHandleCallbackFilter handleCallback = (EPStatementHandleCallbackFilter) filterHandle;
 
-	            EPStatementAgentInstanceHandle handle = handleCallback.AgentInstanceHandle;
+                // determine if this filter entry applies to any of the affected agent instances
+                int statementId = filterHandle.StatementId;
+                AgentInstance agentInstanceFound = null;
+                foreach (AgentInstance agentInstance in agentInstances) {
+                    AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
+                    if (agentInstanceContext.StatementId == statementId && agentInstanceContext.AgentInstanceId == handleCallback.AgentInstanceId) {
+                        agentInstanceFound = agentInstance;
+                        break;
+                    }
+                }
 
-	            // Self-joins require that the internal dispatch happens after all streams are evaluated.
-	            // Priority or preemptive settings also require special ordering.
-	            if (handle.IsCanSelfJoin || isPrioritized) {
-	                object stmtCallback = stmtCallbacks.Get(agentInstanceFound);
-	                if (stmtCallback == null) {
-	                    stmtCallbacks.Put(agentInstanceFound, handleCallback);
-	                } else if (stmtCallback is ArrayDeque) {
-	                    ArrayDeque<EPStatementHandleCallbackFilter> q = (ArrayDeque<EPStatementHandleCallbackFilter>) stmtCallback;
-	                    if (!q.Contains(handleCallback)) { // De-duplicate for Filter OR expression paths
-	                        q.Add(handleCallback);
-	                    }
-	                } else {
-	                    ArrayDeque<EPStatementHandleCallbackFilter> q = new ArrayDeque<EPStatementHandleCallbackFilter>(4);
-	                    q.Add((EPStatementHandleCallbackFilter) stmtCallback);
-	                    if (stmtCallback != handleCallback) { // De-duplicate for Filter OR expression paths
-	                        q.Add(handleCallback);
-	                    }
-	                    stmtCallbacks.Put(agentInstanceFound, q);
-	                }
-	                continue;
-	            }
+                if (agentInstanceFound == null) { // when the callback is for some other stmt
+                    continue;
+                }
 
-	            // no need to be sorted, process
-	            Process(agentInstanceFound, Collections.SingletonList<FilterHandle>(handleCallback), theEvent);
-	        }
+                EPStatementAgentInstanceHandle handle = handleCallback.AgentInstanceHandle;
 
-	        if (stmtCallbacks.IsEmpty()) {
-	            return;
-	        }
+                // Self-joins require that the internal dispatch happens after all streams are evaluated.
+                // Priority or preemptive settings also require special ordering.
+                if (handle.IsCanSelfJoin || isPrioritized) {
+                    object stmtCallback = stmtCallbacks.Get(agentInstanceFound);
+                    if (stmtCallback == null) {
+                        stmtCallbacks.Put(agentInstanceFound, handleCallback);
+                    }
+                    else if (stmtCallback is ArrayDeque<EPStatementHandleCallbackFilter> callbackFilterDeque) {
+                        if (!callbackFilterDeque.Contains(handleCallback)) { // De-duplicate for Filter OR expression paths
+                            callbackFilterDeque.Add(handleCallback);
+                        }
+                    }
+                    else {
+                        var filterDeque = new ArrayDeque<EPStatementHandleCallbackFilter>(4);
+                        filterDeque.Add((EPStatementHandleCallbackFilter) stmtCallback);
+                        if (stmtCallback != handleCallback) { // De-duplicate for Filter OR expression paths
+                            filterDeque.Add(handleCallback);
+                        }
 
-	        // Process self-join or sorted prioritized callbacks
-	        foreach (KeyValuePair<AgentInstance, object> entry in stmtCallbacks) {
-	            AgentInstance agentInstance = entry.Key;
-	            object callbackList = entry.Value;
-	            if (callbackList is ArrayDeque) {
-	                Process(agentInstance, (ICollection<FilterHandle>) callbackList, theEvent);
-	            } else {
-	                Process(agentInstance, Collections.SingletonList<FilterHandle>((FilterHandle) callbackList), theEvent);
-	            }
-	            if (agentInstance.AgentInstanceContext.EpStatementAgentInstanceHandle.IsPreemptive) {
-	                return;
-	            }
-	        }
-	    }
+                        stmtCallbacks.Put(agentInstanceFound, filterDeque);
+                    }
 
-	    private static void Process(AgentInstance agentInstance,
-	                                ICollection<FilterHandle> callbacks,
-	                                EventBean theEvent) {
-	        AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
-	        agentInstance.AgentInstanceContext.AgentInstanceLock.AcquireWriteLock();
-	        try {
-	            agentInstance.AgentInstanceContext.VariableManagementService.SetLocalVersion();
+                    continue;
+                }
 
-	            // sub-selects always go first
-	            foreach (FilterHandle handle in callbacks) {
-	                EPStatementHandleCallbackFilter callback = (EPStatementHandleCallbackFilter) handle;
-	                if (callback.AgentInstanceHandle != agentInstanceContext.EpStatementAgentInstanceHandle) {
-	                    continue;
-	                }
-	                callback.FilterCallback.MatchFound(theEvent, null);
-	            }
+                // no need to be sorted, process
+                Process(agentInstanceFound, Collections.SingletonList<FilterHandle>(handleCallback), theEvent);
+            }
 
-	            agentInstanceContext.EpStatementAgentInstanceHandle.InternalDispatch();
-	        }
-	        catch (EPException)
-	        {
-	            throw;
-	        }
-	        catch (Exception ex)
-	        {
-	            agentInstanceContext.ExceptionHandlingService.HandleException(ex, agentInstanceContext.EpStatementAgentInstanceHandle, ExceptionHandlerExceptionType.PROCESS, theEvent);
-	        } finally {
-	            if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
-	                agentInstanceContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
-	            }
-	            agentInstanceContext.AgentInstanceLock.ReleaseWriteLock();
-	        }
-	    }
-	}
+            if (stmtCallbacks.IsEmpty()) {
+                return;
+            }
+
+            // Process self-join or sorted prioritized callbacks
+            foreach (KeyValuePair<AgentInstance, object> entry in stmtCallbacks) {
+                AgentInstance agentInstance = entry.Key;
+                object callbackList = entry.Value;
+                if (callbackList is ICollection<FilterHandle> filterHandleCollection) {
+                    Process(agentInstance, filterHandleCollection, theEvent);
+                }
+                else {
+                    Process(agentInstance, Collections.SingletonList<FilterHandle>((FilterHandle) callbackList), theEvent);
+                }
+
+                if (agentInstance.AgentInstanceContext.EpStatementAgentInstanceHandle.IsPreemptive) {
+                    return;
+                }
+            }
+        }
+
+        private static void Process(
+            AgentInstance agentInstance,
+            ICollection<FilterHandle> callbacks,
+            EventBean theEvent)
+        {
+            AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
+            agentInstance.AgentInstanceContext.AgentInstanceLock.AcquireWriteLock();
+            try {
+                agentInstance.AgentInstanceContext.VariableManagementService.SetLocalVersion();
+
+                // sub-selects always go first
+                foreach (FilterHandle handle in callbacks) {
+                    EPStatementHandleCallbackFilter callback = (EPStatementHandleCallbackFilter) handle;
+                    if (callback.AgentInstanceHandle != agentInstanceContext.EpStatementAgentInstanceHandle) {
+                        continue;
+                    }
+
+                    callback.FilterCallback.MatchFound(theEvent, null);
+                }
+
+                agentInstanceContext.EpStatementAgentInstanceHandle.InternalDispatch();
+            }
+            catch (EPException) {
+                throw;
+            }
+            catch (Exception ex) {
+                agentInstanceContext.ExceptionHandlingService.HandleException(
+                    ex, agentInstanceContext.EpStatementAgentInstanceHandle, ExceptionHandlerExceptionType.PROCESS, theEvent);
+            }
+            finally {
+                if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
+                    agentInstanceContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                }
+
+                agentInstanceContext.AgentInstanceLock.ReleaseWriteLock();
+            }
+        }
+    }
 } // end of namespace

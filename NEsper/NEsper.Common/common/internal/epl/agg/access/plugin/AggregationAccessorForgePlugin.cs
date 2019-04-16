@@ -11,7 +11,6 @@ using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -23,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         private readonly AggregationMultiFunctionAccessorModeManaged mode;
         private CodegenExpressionField accessorField;
 
-        public AggregationAccessorForgePlugin(AggregationForgeFactoryAccessPlugin parent, AggregationMultiFunctionAccessorModeManaged mode)
+        public AggregationAccessorForgePlugin(
+            AggregationForgeFactoryAccessPlugin parent,
+            AggregationMultiFunctionAccessorModeManaged mode)
         {
             this.parent = parent;
             this.mode = mode;
@@ -49,14 +50,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             MakeBlock("getEnumerableScalar", context.Column, context.Method, context.ClassScope);
         }
 
-        private void MakeBlock(string getterMethod, int column, CodegenMethod method, CodegenClassScope classScope)
+        private void MakeBlock(
+            string getterMethod,
+            int column,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
-            if (accessorField == null)
-            {
-                InjectionStrategyClassNewInstance injectionStrategy = (InjectionStrategyClassNewInstance)mode.InjectionStrategyAggregationAccessorFactory;
-                accessorField = classScope.AddFieldUnshared(true, typeof(AggregationMultiFunctionAccessor), ExprDotMethod(injectionStrategy.GetInitializationExpression(classScope), "newAccessor", ConstantNull()));
+            if (accessorField == null) {
+                InjectionStrategyClassNewInstance injectionStrategy =
+                    (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationAccessorFactory;
+                accessorField = classScope.AddFieldUnshared(
+                    true, typeof(AggregationMultiFunctionAccessor),
+                    ExprDotMethod(injectionStrategy.GetInitializationExpression(classScope), "newAccessor", ConstantNull()));
             }
-            method.Block.MethodReturn(ExprDotMethod(accessorField, getterMethod, RefCol("state", column), REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+
+            method.Block.MethodReturn(
+                ExprDotMethod(accessorField, getterMethod, RefCol("state", column), REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
         }
     }
 } // end of namespace

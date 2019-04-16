@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
@@ -37,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         private readonly VariableTriggerWriteDescForge[] writers;
 
         public VariableReadWritePackageForge(
-            IList<OnTriggerSetAssignment> assignments, StatementCompileTimeServices services)
+            IList<OnTriggerSetAssignment> assignments,
+            StatementCompileTimeServices services)
         {
             variables = new VariableMetaData[assignments.Count];
             mustCoerce = new bool[assignments.Count];
@@ -193,7 +192,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         public IDictionary<string, object> VariableTypes { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(VariableReadWritePackage), GetType(), classScope);
             var @ref = Ref("rw");
@@ -211,7 +212,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         }
 
         private static CodegenExpression MakeReadersForGlobalVars(
-            VariableMetaData[] variables, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            VariableMetaData[] variables,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
@@ -236,7 +239,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         }
 
         private static CodegenExpression MakeWriters(
-            VariableTriggerWriteDescForge[] writers, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            VariableTriggerWriteDescForge[] writers,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
@@ -255,7 +260,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         }
 
         private static CodegenExpression MakeVariables(
-            VariableMetaData[] variables, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            VariableMetaData[] variables,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
@@ -273,7 +280,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         }
 
         private static CodegenExpression MakeAssignments(
-            VariableTriggerSetForge[] assignments, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            VariableTriggerSetForge[] assignments,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
@@ -294,8 +303,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         }
 
         private static CodegenExpression MakeCopyMethods(
-            IDictionary<EventTypeSPI, EventBeanCopyMethodForge> copyMethods, CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            IDictionary<EventTypeSPI, EventBeanCopyMethodForge> copyMethods,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (copyMethods.IsEmpty()) {
                 return StaticMethod(typeof(Collections), "emptyMap");
@@ -322,7 +333,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
             internal readonly string VariableName;
 
-            public CopyMethodDesc(string variableName, IList<string> propertiesCopied)
+            public CopyMethodDesc(
+                string variableName,
+                IList<string> propertiesCopied)
             {
                 VariableName = variableName;
                 PropertiesCopied = propertiesCopied;
@@ -334,7 +347,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             internal readonly ExprForge Forge;
             internal readonly string VariableName;
 
-            public VariableTriggerSetForge(string variableName, ExprForge forge)
+            public VariableTriggerSetForge(
+                string variableName,
+                ExprForge forge)
             {
                 VariableName = variableName;
                 Forge = forge;

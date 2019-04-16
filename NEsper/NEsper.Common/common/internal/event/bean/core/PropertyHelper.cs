@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <param name="beanEventTypeFactory">bean facory</param>
         /// <returns>property getter</returns>
         public static EventPropertyGetterSPI GetGetter(
-            MethodInfo method, EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            MethodInfo method,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return new ReflectionPropMethodGetter(method, eventBeanTypedEventFactory, beanEventTypeFactory);
@@ -77,7 +78,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return GetWritablePropertiesForClasses(propertyOrigClasses);
         }
 
-        private static void GetImplementedInterfaceParents(Type clazz, ISet<Type> classesResult)
+        private static void GetImplementedInterfaceParents(
+            Type clazz,
+            ISet<Type> classesResult)
         {
             var interfaces = clazz.GetInterfaces();
 
@@ -168,7 +171,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// </summary>
         /// <param name="clazz">to introspect</param>
         /// <param name="result">is the list to add to</param>
-        protected internal static void AddIntrospectProperties(Type clazz, IList<PropertyStem> result)
+        protected internal static void AddIntrospectProperties(
+            Type clazz,
+            IList<PropertyStem> result)
         {
             var magic = MagicType.GetCachedType(clazz);
 
@@ -193,7 +198,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
         }
 
-        private static void AddIntrospectPropertiesWritable(Type clazz, ISet<WriteablePropertyDescriptor> result)
+        private static void AddIntrospectPropertiesWritable(
+            Type clazz,
+            ISet<WriteablePropertyDescriptor> result)
         {
             var magic = MagicType.GetCachedType(clazz);
 
@@ -212,7 +219,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// </summary>
         /// <param name="clazz">to introspect</param>
         /// <param name="result">is the list to add to</param>
-        protected internal static void AddMappedProperties(Type clazz, IList<PropertyStem> result)
+        protected internal static void AddMappedProperties(
+            Type clazz,
+            IList<PropertyStem> result)
         {
             ISet<string> uniquePropertyNames = new HashSet<string>();
             var methods = clazz.GetMethods();
@@ -299,7 +308,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return GetGetterSetterMethodName(propertyName, "is");
         }
 
-        private static string GetGetterSetterMethodName(string propertyName, string operation)
+        private static string GetGetterSetterMethodName(
+            string propertyName,
+            string operation)
         {
             var writer = new StringWriter();
             writer.Write(operation);

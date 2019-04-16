@@ -16,6 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
     /// </summary>
     public interface OutputProcessViewFactory
     {
-        OutputProcessView MakeView(ResultSetProcessor resultSetProcessor, AgentInstanceContext agentInstanceContext);
+        OutputProcessView MakeView(
+            ResultSetProcessor resultSetProcessor,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     public class ExprDotStaticMethodWrapFactory
     {
         public static ExprDotStaticMethodWrap Make(
-            MethodInfo method, IList<ExprChainedSpec> modifiedChain, string optionalEventTypeName,
+            MethodInfo method,
+            IList<ExprChainedSpec> modifiedChain,
+            string optionalEventTypeName,
             ExprValidationContext validationContext)
         {
             if (modifiedChain.IsEmpty() || !EnumMethodEnum.IsEnumerationMethod(modifiedChain[0].Name)) {
@@ -74,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         private static BeanEventType MakeBeanType(
-            string methodName, Type clazz, ExprValidationContext validationContext)
+            string methodName,
+            Type clazz,
+            ExprValidationContext validationContext)
         {
             var eventTypeName =
                 validationContext.StatementCompileTimeService.EventTypeNameGeneratorStatement
@@ -93,7 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         private static EventType RequireEventType(
-            MethodInfo method, string optionalEventTypeName, ExprValidationContext ctx)
+            MethodInfo method,
+            string optionalEventTypeName,
+            ExprValidationContext ctx)
         {
             return EventTypeUtility.RequireEventType(
                 "Method", method.Name, optionalEventTypeName,

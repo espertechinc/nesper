@@ -7,11 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.order.OrderByProcessorCodegenNames;
 
@@ -20,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
     public class OrderByProcessorForgeImpl : OrderByProcessorFactoryForge
     {
         public OrderByProcessorForgeImpl(
-            OrderByElementForge[] orderBy, bool needsGroupByKeys, OrderByElementForge[][] orderByRollup,
+            OrderByElementForge[] orderBy,
+            bool needsGroupByKeys,
+            OrderByElementForge[][] orderByRollup,
             CodegenFieldSharable comparator)
         {
             OrderBy = orderBy;
@@ -37,13 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
         public CodegenFieldSharable IComparer { get; }
 
-        public string[] ExpressionTexts
-        {
-            get
-            {
+        public string[] ExpressionTexts {
+            get {
                 var expressions = new string[OrderBy.Length];
-                for (var i = 0; i < OrderBy.Length; i++)
-                {
+                for (var i = 0; i < OrderBy.Length; i++) {
                     expressions[i] = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(OrderBy[i].ExprNode);
                 }
 
@@ -51,13 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             }
         }
 
-        public bool[] DescendingFlags
-        {
-            get
-            {
+        public bool[] DescendingFlags {
+            get {
                 var descending = new bool[OrderBy.Length];
-                for (var i = 0; i < OrderBy.Length; i++)
-                {
+                for (var i = 0; i < OrderBy.Length; i++) {
                     descending[i] = OrderBy[i].IsDescending();
                 }
 
@@ -65,32 +59,42 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             }
         }
 
-        public void InstantiateCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void InstantiateCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(NewInstance(CLASSNAME_ORDERBYPROCESSOR, Ref("o")));
         }
 
-        public void CtorCodegen(CodegenCtor ctor, IList<CodegenTypedParam> members, CodegenClassScope classScope)
+        public void CtorCodegen(
+            CodegenCtor ctor,
+            IList<CodegenTypedParam> members,
+            CodegenClassScope classScope)
         {
         }
 
         public void SortPlainCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorImpl.SortPlainCodegen(this, method, classScope, namedMethods);
         }
 
         public void SortWGroupKeysCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorImpl.SortWGroupKeysCodegen(this, method, classScope, namedMethods);
         }
 
         public void SortRollupCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
-            if (OrderByRollup == null)
-            {
+            if (OrderByRollup == null) {
                 method.Block.MethodThrowUnsupported();
                 return;
             }
@@ -99,16 +103,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         }
 
         public void GetSortKeyCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorImpl.GetSortKeyCodegen(this, method, classScope, namedMethods);
         }
 
         public void GetSortKeyRollupCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
-            if (OrderByRollup == null)
-            {
+            if (OrderByRollup == null) {
                 method.Block.MethodThrowUnsupported();
                 return;
             }
@@ -117,13 +124,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         }
 
         public void SortWOrderKeysCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorImpl.SortWOrderKeysCodegen(this, method, classScope);
         }
 
         public void SortTwoKeysCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorImpl.SortTwoKeysCodegen(this, method, classScope, namedMethods);
         }

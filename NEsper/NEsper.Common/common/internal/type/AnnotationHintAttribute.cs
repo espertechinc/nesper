@@ -17,7 +17,10 @@ namespace com.espertech.esper.common.@internal.type
         private readonly string model;
         private readonly string value;
 
-        public AnnotationHintAttribute(string value, AppliesTo applies, string model)
+        public AnnotationHintAttribute(
+            string value,
+            AppliesTo applies,
+            string model)
         {
             this.value = value;
             this.applies = applies;

@@ -27,13 +27,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         public abstract DTLocalEvaluator DTEvaluator { get; }
 
         public abstract CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         public abstract DTLocalEvaluatorIntervalComp MakeEvaluatorComp();
 
         public abstract CodegenExpression Codegen(
-            CodegenExpressionRef start, CodegenExpressionRef end, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope);
+            CodegenExpressionRef start,
+            CodegenExpressionRef end,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
     }
 } // end of namespace

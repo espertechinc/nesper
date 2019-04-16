@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="when">providings conditions to evaluate</param>
         /// <param name="then">provides the result when a condition evaluates to true</param>
         /// <returns>expression</returns>
-        public CaseWhenThenExpression Add(Expression when, Expression then)
+        public CaseWhenThenExpression Add(
+            Expression when,
+            Expression then)
         {
             var size = Children.Count;
             if (size % 2 == 0) {

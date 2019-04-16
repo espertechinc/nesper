@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.view.length
         /// <param name="viewUpdatedCollection">is a collection that the view must update when receiving events</param>
         /// <exception cref="ArgumentException">Illegal argument for size of length window</exception>
         public LengthWindowView(
-            AgentInstanceViewFactoryChainContext agentInstanceContext, LengthWindowViewFactory viewFactory, int size,
+            AgentInstanceViewFactoryChainContext agentInstanceContext,
+            LengthWindowViewFactory viewFactory,
+            int size,
             ViewUpdatedCollection viewUpdatedCollection)
         {
             if (size < 1) {
@@ -55,7 +57,9 @@ namespace com.espertech.esper.common.@internal.view.length
 
         public override EventType EventType => Parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, viewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(viewFactory, newData, oldData);

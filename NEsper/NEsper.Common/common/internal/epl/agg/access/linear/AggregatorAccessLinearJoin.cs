@@ -19,7 +19,6 @@ using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -170,7 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             method.Block.IfRefNull(array)
                 .LocalMethod(initArray)
                 .BlockEnd()
-                .MethodReturn(NewInstance(typeof(ArrayEventIterator), array));
+                .MethodReturn(StaticMethod(typeof(ArrayHelper), "Iterate", array));
             return LocalMethod(method);
         }
 

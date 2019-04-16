@@ -28,8 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// <param name="streamNum">is the stream number</param>
         /// <param name="numStreams">is the number of streams</param>
         /// <param name="allSubStreamsOptional">true if all substreams are optional and none are required</param>
-        public RootCartProdAssemblyNodeFactory(int streamNum, int numStreams, bool allSubStreamsOptional) : base(
-            streamNum, numStreams)
+        public RootCartProdAssemblyNodeFactory(
+            int streamNum,
+            int numStreams,
+            bool allSubStreamsOptional)
+            : base(
+                streamNum, numStreams)
         {
             this.allSubStreamsOptional = allSubStreamsOptional;
             childStreamIndex = new int[numStreams];
@@ -52,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return NewInstance(
                 typeof(RootCartProdAssemblyNodeFactory), Constant(streamNum), Constant(numStreams),

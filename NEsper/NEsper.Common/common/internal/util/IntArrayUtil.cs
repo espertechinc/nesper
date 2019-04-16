@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.util
             return parent;
         }
 
-        public static void WriteOptionalArray(int[] ints, DataOutput output)
+        public static void WriteOptionalArray(
+            int[] ints,
+            DataOutput output)
         {
             if (ints == null) {
                 output.WriteBoolean(false);
@@ -39,7 +41,9 @@ namespace com.espertech.esper.common.@internal.util
             WriteArray(ints, output);
         }
 
-        public static void WriteArray(int[] ints, DataOutput output)
+        public static void WriteArray(
+            int[] ints,
+            DataOutput output)
         {
             output.WriteInt(ints.Length);
             foreach (var value in ints) {
@@ -75,7 +79,9 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        public static int[] Append(int[] array, int value)
+        public static int[] Append(
+            int[] array,
+            int value)
         {
             var newArray = new int[array.Length + 1];
             Array.Copy(array, 0, newArray, 0, array.Length);
@@ -112,7 +118,9 @@ namespace com.espertech.esper.common.@internal.util
             return values;
         }
 
-        public static bool CompareParentKey(int[] key, int[] parentKey)
+        public static bool CompareParentKey(
+            int[] key,
+            int[] parentKey)
         {
             if (key.Length - 1 != parentKey.Length) {
                 return false;

@@ -14,14 +14,18 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 {
     public interface ContextControllerEndConditionMatchEventProvider
     {
-        void PopulateEndConditionFromTrigger(MatchedEventMap map, EventBean triggeringEvent);
+        void PopulateEndConditionFromTrigger(
+            MatchedEventMap map,
+            EventBean triggeringEvent);
     }
 
     public class ProxyContextControllerEndConditionMatchEventProvider : ContextControllerEndConditionMatchEventProvider
     {
         public Action<MatchedEventMap, EventBean> ProcPopulateEndConditionFromTrigger;
 
-        public void PopulateEndConditionFromTrigger(MatchedEventMap map, EventBean triggeringEvent)
+        public void PopulateEndConditionFromTrigger(
+            MatchedEventMap map,
+            EventBean triggeringEvent)
         {
             ProcPopulateEndConditionFromTrigger?.Invoke(map, triggeringEvent);
         }

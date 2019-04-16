@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         public EventType EventType { get; private set; }
 
         public ViewableActivationResult Activate(
-            AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isSubselect,
+            bool isRecoveringResilient)
         {
             Viewable viewable = new ViewableDefaultImpl(EventType);
             return new ViewableActivationResult(

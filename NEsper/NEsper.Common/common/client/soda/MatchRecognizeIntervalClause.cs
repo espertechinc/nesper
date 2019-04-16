@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="expression">interval expression</param>
         /// <param name="orTerminated">indicator whether or-terminated</param>
-        public MatchRecognizeIntervalClause(TimePeriodExpression expression, bool orTerminated)
+        public MatchRecognizeIntervalClause(
+            TimePeriodExpression expression,
+            bool orTerminated)
         {
             Expression = expression;
             IsOrTerminated = orTerminated;

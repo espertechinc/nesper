@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
     /// </summary>
     public class InfraOnMergeViewFactory : InfraOnExprBaseViewFactory
     {
-        public InfraOnMergeViewFactory(EventType namedWindowEventType, InfraOnMergeHelper onMergeHelper)
+        public InfraOnMergeViewFactory(
+            EventType namedWindowEventType,
+            InfraOnMergeHelper onMergeHelper)
             : base(namedWindowEventType)
         {
             OnMergeHelper = onMergeHelper;
@@ -29,7 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         public InfraOnMergeHelper OnMergeHelper { get; }
 
         public override InfraOnExprBaseViewResult MakeNamedWindow(
-            SubordWMatchExprLookupStrategy lookupStrategy, NamedWindowRootViewInstance namedWindowRootViewInstance,
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            NamedWindowRootViewInstance namedWindowRootViewInstance,
             AgentInstanceContext agentInstanceContext)
         {
             View view;
@@ -46,7 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         public override InfraOnExprBaseViewResult MakeTable(
-            SubordWMatchExprLookupStrategy lookupStrategy, TableInstance tableInstance,
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableInstance tableInstance,
             AgentInstanceContext agentInstanceContext)
         {
             View view;

@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.util
     {
         CodegenExpression WidenCodegen(
             CodegenExpression expression,
-            CodegenMethodScope codegenMethodScope, 
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope);
     }
 

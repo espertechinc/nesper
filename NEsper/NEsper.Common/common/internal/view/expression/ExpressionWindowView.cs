@@ -30,8 +30,9 @@ namespace com.espertech.esper.common.@internal.view.expression
             ExpressionWindowViewFactory factory,
             ViewUpdatedCollection viewUpdatedCollection,
             ObjectArrayEventBean builtinEventProps,
-            AgentInstanceViewFactoryChainContext agentInstanceContext) : base(
-            factory, viewUpdatedCollection, builtinEventProps, agentInstanceContext)
+            AgentInstanceViewFactoryChainContext agentInstanceContext)
+            : base(
+                factory, viewUpdatedCollection, builtinEventProps, agentInstanceContext)
         {
         }
 
@@ -48,7 +49,9 @@ namespace com.espertech.esper.common.@internal.view.expression
             Expire(null, null);
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
@@ -105,7 +108,9 @@ namespace com.espertech.esper.common.@internal.view.expression
 
         // Called based on schedule evaluation registered when a variable changes (new data is null).
         // Called when new data arrives.
-        private void Expire(EventBean[] newData, EventBean[] oldData)
+        private void Expire(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             OneEventCollection expired = null;
             if (oldData != null) {
@@ -166,7 +171,9 @@ namespace com.espertech.esper.common.@internal.view.expression
         }
 
         private bool CheckEvent(
-            ExpressionWindowTimestampEventPair first, ExpressionWindowTimestampEventPair newest, int numExpired)
+            ExpressionWindowTimestampEventPair first,
+            ExpressionWindowTimestampEventPair newest,
+            int numExpired)
         {
             ExpressionViewOAFieldEnum.Populate(
                 builtinEventProps.Properties, window.Count, first.Timestamp, newest.Timestamp,
@@ -181,7 +188,9 @@ namespace com.espertech.esper.common.@internal.view.expression
         }
 
         // Handle variable updates by scheduling a re-evaluation with timers
-        public override void Update(object newValue, object oldValue)
+        public override void Update(
+            object newValue,
+            object oldValue)
         {
             if (!agentInstanceContext.StatementContext.SchedulingService.IsScheduled(scheduleHandle)) {
                 agentInstanceContext.AuditProvider.ScheduleAdd(

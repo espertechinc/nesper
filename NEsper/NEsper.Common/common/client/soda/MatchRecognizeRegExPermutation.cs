@@ -11,23 +11,23 @@ using System.IO;
 
 namespace com.espertech.esper.common.client.soda
 {
-	/// <summary>
-	/// Interface representing a permutation expression for use in match-recognize.
-	/// </summary>
-	[Serializable]
+    /// <summary>
+    /// Interface representing a permutation expression for use in match-recognize.
+    /// </summary>
+    [Serializable]
     public class MatchRecognizeRegExPermutation : MatchRecognizeRegEx
-	{
-	    public override void WriteEPL(TextWriter writer)
+    {
+        public override void WriteEPL(TextWriter writer)
         {
-	        string delimiter = "";
-	        writer.Write("match_recognize_permute(");
-	        foreach (MatchRecognizeRegEx node in Children)
-	        {
-	            writer.Write(delimiter);
-	            node.WriteEPL(writer);
-	            delimiter = ",";
-	        }
-	        writer.Write(")");
-	    }
-	}
+            string delimiter = "";
+            writer.Write("match_recognize_permute(");
+            foreach (MatchRecognizeRegEx node in Children) {
+                writer.Write(delimiter);
+                node.WriteEPL(writer);
+                delimiter = ",";
+            }
+
+            writer.Write(")");
+        }
+    }
 } // end of namespace

@@ -7,47 +7,53 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.variant
 {
-	public class VariantPropertyGetterCacheCodegenField : CodegenFieldSharable {
+    public class VariantPropertyGetterCacheCodegenField : CodegenFieldSharable
+    {
+        private readonly VariantEventType variantEventType;
 
-	    private readonly VariantEventType variantEventType;
+        public VariantPropertyGetterCacheCodegenField(VariantEventType variantEventType)
+        {
+            this.variantEventType = variantEventType;
+        }
 
-	    public VariantPropertyGetterCacheCodegenField(VariantEventType variantEventType) {
-	        this.variantEventType = variantEventType;
-	    }
+        public Type Type()
+        {
+            return typeof(VariantPropertyGetterCache);
+        }
 
-	    public Type Type() {
-	        return typeof(VariantPropertyGetterCache);
-	    }
+        public CodegenExpression InitCtorScoped()
+        {
+            var type = Cast(
+                typeof(VariantEventType), EventTypeUtility.ResolveTypeCodegen(variantEventType, EPStatementInitServicesConstants.REF));
+            return ExprDotMethod(type, "getVariantPropertyGetterCache");
+        }
 
-	    public CodegenExpression InitCtorScoped() {
-	        CodegenExpression type = Cast(typeof(VariantEventType), EventTypeUtility.ResolveTypeCodegen(variantEventType, EPStatementInitServicesConstants.REF));
-	        return ExprDotMethod(type, "getVariantPropertyGetterCache");
-	    }
+        public override bool Equals(object o)
+        {
+            if (this == o) {
+                return true;
+            }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
 
-	        VariantPropertyGetterCacheCodegenField that = (VariantPropertyGetterCacheCodegenField) o;
+            var that = (VariantPropertyGetterCacheCodegenField) o;
 
-	        return variantEventType.Equals(that.variantEventType);
-	    }
+            return variantEventType.Equals(that.variantEventType);
+        }
 
-	    public override int GetHashCode() {
-	        return variantEventType.GetHashCode();
-	    }
-	}
+        public override int GetHashCode()
+        {
+            return variantEventType.GetHashCode();
+        }
+    }
 } // end of namespace

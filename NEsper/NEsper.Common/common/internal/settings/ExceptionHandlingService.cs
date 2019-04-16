@@ -41,10 +41,13 @@ namespace com.espertech.esper.common.@internal.settings
         public string EngineURI { get; }
 
         public event ExceptionHandler UnhandledException;
+
         public event ConditionHandler UnhandledCondition;
         //public event ExceptionHandlerInboundPool InboundPoolHandler;
 
-        public void HandleCondition(BaseCondition condition, EPStatementHandle handle)
+        public void HandleCondition(
+            BaseCondition condition,
+            EPStatementHandle handle)
         {
             if (UnhandledCondition == null) {
                 Log.Info(
@@ -111,7 +114,10 @@ namespace com.espertech.esper.common.@internal.settings
             }
         }
 
-        public void HandleInboundPoolException(string engineURI, Exception exception, object @event)
+        public void HandleInboundPoolException(
+            string engineURI,
+            Exception exception,
+            object @event)
         {
             if (UnhandledException != null) {
                 UnhandledException(

@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
         internal ExprForge year;
 
-        public CalendarWithDateForge(ExprForge year, ExprForge month, ExprForge day)
+        public CalendarWithDateForge(
+            ExprForge year,
+            ExprForge month,
+            ExprForge day)
         {
             this.year = year;
             this.month = month;
@@ -31,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             year.ExprEvaluator, month.ExprEvaluator, day.ExprEvaluator);
 
         public CodegenExpression CodegenDateTimeEx(
-            CodegenExpression dateTimeEx, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTimeEx,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarWithDateForgeOp.CodegenCalendar(
@@ -39,14 +44,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         }
 
         public CodegenExpression CodegenDateTimeOffset(
-            CodegenExpression dateTimeOffset, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTimeOffset,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarWithDateForgeOp.CodegenDateTimeOffset(this, dateTimeOffset, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTime(
-            CodegenExpression dateTime, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTime,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarWithDateForgeOp.CodegenDateTime(this, dateTime, codegenMethodScope, exprSymbol, codegenClassScope);

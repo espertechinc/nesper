@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public ObjectArrayEventBeanCopyMethodWithArrayMapForge(
             ObjectArrayEventType eventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            ISet<string> mapPropertiesToCopy, 
+            ISet<string> mapPropertiesToCopy,
             ISet<string> arrayPropertiesToCopy,
             IDictionary<string, int> propertiesIndexes)
         {

@@ -163,8 +163,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         private static void ValidateMergeDesc(
-            OnTriggerMergeDesc mergeDesc, EventType namedWindowType, string namedWindowName,
-            EventType triggerStreamType, string triggerStreamName, StatementRawInfo statementRawInfo,
+            OnTriggerMergeDesc mergeDesc,
+            EventType namedWindowType,
+            string namedWindowName,
+            EventType triggerStreamType,
+            string triggerStreamName,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             var exprNodeErrorMessage = "Aggregation functions may not be used within an merge-clause";
@@ -266,7 +270,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         private static StreamTypeService GetInsertStreamService(
-            string optionalStreamName, string namedWindowName, StreamTypeService insertOnlyTypeSvc,
+            string optionalStreamName,
+            string namedWindowName,
+            StreamTypeService insertOnlyTypeSvc,
             StreamTypeServiceImpl twoStreamTypeSvc)
         {
             if (optionalStreamName == null || optionalStreamName.Equals(
@@ -279,8 +285,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         private static IList<SelectClauseElementCompiled> ValidateInsertSelect(
-            IList<SelectClauseElementRaw> selectClause, StreamTypeService insertTypeSvc, IList<string> insertColumns,
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            IList<SelectClauseElementRaw> selectClause,
+            StreamTypeService insertTypeSvc,
+            IList<string> insertColumns,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             var colIndex = 0;
             IList<SelectClauseElementCompiled> compiledSelect = new List<SelectClauseElementCompiled>();

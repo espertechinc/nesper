@@ -40,7 +40,9 @@ namespace com.espertech.esper.common.@internal.view.derived
             set => additionalProps = value;
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
             if (eventType == null) {
                 throw new IllegalStateException("Event type not provided");

@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             DateTimeEx dateTime,
             long remainder);
 
-        DateTimeEx ToDate(long ts);
+        DateTimeEx ToDateTimeEx(long ts);
 
         CodegenExpression DateTimeSetCodegen(
             CodegenExpression startLong,

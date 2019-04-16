@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.@event.core
@@ -22,7 +21,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="message">
         ///     error message
         /// </param>
-        public EventAdapterException(string message) : base(message)
+        public EventAdapterException(string message)
+            : base(message)
         {
         }
 
@@ -33,7 +33,10 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="nested">
         ///     nested exception
         /// </param>
-        public EventAdapterException(string message, Exception nested) : base(message, nested)
+        public EventAdapterException(
+            string message,
+            Exception nested)
+            : base(message, nested)
         {
         }
     }

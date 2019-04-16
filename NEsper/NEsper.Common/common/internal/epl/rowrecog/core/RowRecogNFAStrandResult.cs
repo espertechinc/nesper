@@ -23,7 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         /// <param name="startStates">NFA start states</param>
         /// <param name="allStates">all states</param>
         public RowRecogNFAStrandResult(
-            IList<RowRecogNFAStateForge> startStates, IList<RowRecogNFAStateForgeBase> allStates)
+            IList<RowRecogNFAStateForge> startStates,
+            IList<RowRecogNFAStateForgeBase> allStates)
         {
             StartStates = startStates;
             AllStates = allStates;

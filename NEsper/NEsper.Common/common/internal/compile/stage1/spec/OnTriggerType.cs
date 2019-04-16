@@ -11,27 +11,27 @@ using System;
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Enum for the type of on-trigger statement.</summary>
-	public enum OnTriggerType
-	{
-	    /// <summary>
-	    /// For on-delete triggers that delete from a named window when a triggering event arrives.
-	    /// </summary>
-	    ON_DELETE,
+    public enum OnTriggerType
+    {
+        /// <summary>
+        /// For on-delete triggers that delete from a named window when a triggering event arrives.
+        /// </summary>
+        ON_DELETE,
 
-	    /// <summary>
-	    /// For on-select triggers that selected from a named window when a triggering event arrives.
-	    /// </summary>
-	    ON_SELECT,
+        /// <summary>
+        /// For on-select triggers that selected from a named window when a triggering event arrives.
+        /// </summary>
+        ON_SELECT,
 
         /// <summary>
         /// For the on-insert split-stream syntax allowing multiple insert-into streams.
         /// </summary>
         ON_SPLITSTREAM,
 
-	    /// <summary>
-	    /// For on-set triggers that set variable values when a triggering event arrives.
-	    /// </summary>
-	    ON_SET,
+        /// <summary>
+        /// For on-set triggers that set variable values when a triggering event arrives.
+        /// </summary>
+        ON_SET,
 
         /// <summary>
         /// For on-Update triggers that Update an event in a named window when a
@@ -44,14 +44,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// triggering event arrives.
         /// </summary>
         ON_MERGE
-	}
+    }
 
     public static class OnTriggerTypeExtensions
     {
         public static string GetTextual(this OnTriggerType triggerType)
         {
-            switch (triggerType)
-            {
+            switch (triggerType) {
                 case OnTriggerType.ON_DELETE:
                     return "on-delete";
                 case OnTriggerType.ON_SELECT:

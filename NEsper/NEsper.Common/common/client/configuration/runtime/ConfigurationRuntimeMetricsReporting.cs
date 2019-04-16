@@ -114,7 +114,9 @@ namespace com.espertech.esper.common.client.configuration.runtime
         ///     interval
         /// </param>
         /// <param name="config">the statement group metrics configuration</param>
-        public void AddStmtGroup(string name, StmtGroupMetrics config)
+        public void AddStmtGroup(
+            string name,
+            StmtGroupMetrics config)
         {
             StatementGroups.Put(name, config);
         }
@@ -124,7 +126,9 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// </summary>
         /// <param name="stmtGroupName">name of statement group as assigned through configuration</param>
         /// <param name="newInterval">new interval, or a -1 or zero value to disable reporting</param>
-        public void SetStatementGroupInterval(string stmtGroupName, long newInterval)
+        public void SetStatementGroupInterval(
+            string stmtGroupName,
+            long newInterval)
         {
             var metrics = StatementGroups.Get(stmtGroupName);
             if (metrics != null) {

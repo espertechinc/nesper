@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
     {
         Type EventTableClass { get; }
 
-        EventTable[] MakeEventTables(AgentInstanceContext agentInstanceContext, int? subqueryNumber);
+        EventTable[] MakeEventTables(
+            AgentInstanceContext agentInstanceContext,
+            int? subqueryNumber);
 
         string ToQueryPlan();
     }

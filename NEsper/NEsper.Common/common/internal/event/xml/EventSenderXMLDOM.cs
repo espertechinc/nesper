@@ -59,7 +59,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             SendEvent(theEvent, true);
         }
 
-        private void SendEvent(object node, bool isRoute)
+        private void SendEvent(
+            object node,
+            bool isRoute)
         {
             XmlNode namedNode;
             if (node is XmlDocument) {

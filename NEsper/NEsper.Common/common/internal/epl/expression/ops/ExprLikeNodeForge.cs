@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public abstract class ExprLikeNodeForge : ExprForgeInstrumentable
     {
-        public ExprLikeNodeForge(ExprLikeNode parent, bool isNumericValue)
+        public ExprLikeNodeForge(
+            ExprLikeNode parent,
+            bool isNumericValue)
         {
             ForgeRenderable = parent;
             IsNumericValue = isNumericValue;
@@ -31,11 +33,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public abstract ExprForgeConstantType ForgeConstantType { get; }
 
         public abstract CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         public abstract CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;

@@ -11,7 +11,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.XPath;
 using System.Xml.Xsl;
-
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.xml
@@ -95,7 +94,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <returns>
         ///     An <see cref="T:System.Xml.Xsl.IXsltContextVariable" /> representing the variable at runtime.
         /// </returns>
-        public override IXsltContextVariable ResolveVariable(string prefix, string name)
+        public override IXsltContextVariable ResolveVariable(
+            string prefix,
+            string name)
         {
             return null;
         }
@@ -115,7 +116,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <returns>
         ///     An <see cref="T:System.Xml.Xsl.IXsltContextFunction" /> representing the function.
         /// </returns>
-        public override IXsltContextFunction ResolveFunction(string prefix, string name, XPathResultType[] argTypes)
+        public override IXsltContextFunction ResolveFunction(
+            string prefix,
+            string name,
+            XPathResultType[] argTypes)
         {
             return null;
         }
@@ -145,7 +149,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
         ///     before <paramref name="nextbaseUri" />; 0 if the two base URIs are identical; and 1 if <paramref name="baseUri" />
         ///     occurs after <paramref name="nextbaseUri" />.
         /// </returns>
-        public override int CompareDocument(string baseUri, string nextbaseUri)
+        public override int CompareDocument(
+            string baseUri,
+            string nextbaseUri)
         {
             throw new NotSupportedException();
         }

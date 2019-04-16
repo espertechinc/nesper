@@ -66,7 +66,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         protected override void InlineInitializeOnTriggerSpecific(
-            CodegenExpressionRef saiff, CodegenMethod method, SAIFFInitializeSymbol symbols,
+            CodegenExpressionRef saiff,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block

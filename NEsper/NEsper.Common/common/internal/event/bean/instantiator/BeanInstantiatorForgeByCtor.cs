@@ -10,7 +10,6 @@ using System;
 using System.Reflection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -29,7 +28,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 
         public BeanInstantiator BeanInstantiator => new BeanInstantiatorByCtor(GetCtor(underlyingType));
 
-        public CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope codegenClassScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope codegenClassScope)
         {
             var ctor = codegenClassScope.AddFieldUnshared(
                 true, typeof(ConstructorInfo),
@@ -44,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
         /// <returns>ctor</returns>
         public static ConstructorInfo GetCtor(Type underlyingType)
         {
-            return OnDemandSunReflectionFactory.GetConstructor(underlyingType, SUN_JVM_OBJECT_CONSTRUCTOR);
+            return underlyingType.GetConstructor(new Type[] { });
         }
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
         public static object InstantiateCtor(ConstructorInfo ctor)
         {
             try {
-                return ctor.NewInstance();
+                return ctor.Invoke(new object[0] { });
             }
             catch (TargetException e) {
                 var message = "Unexpected exception encountered invoking constructor '" + ctor.Name + "' on class '" +
@@ -68,7 +69,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             }
         }
 
-        private static object Handle(Exception e, ConstructorInfo ctor)
+        private static object Handle(
+            Exception e,
+            ConstructorInfo ctor)
         {
             var message = "Unexpected exception encountered invoking newInstance on class '" +
                           ctor.DeclaringType.Name + "': " + e.Message;

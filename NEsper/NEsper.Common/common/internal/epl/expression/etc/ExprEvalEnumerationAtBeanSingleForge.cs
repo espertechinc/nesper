@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,34 +20,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         internal readonly ExprEnumerationForge enumerationForge;
         private readonly EventType eventTypeSingle;
 
-        public ExprEvalEnumerationAtBeanSingleForge(ExprEnumerationForge enumerationForge, EventType eventTypeSingle)
+        public ExprEvalEnumerationAtBeanSingleForge(
+            ExprEnumerationForge enumerationForge,
+            EventType eventTypeSingle)
         {
             this.enumerationForge = enumerationForge;
             this.eventTypeSingle = eventTypeSingle;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
         }
 
-        public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return enumerationForge.EvaluateGetEventBeanCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => eventTypeSingle.UnderlyingType;
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => enumerationForge.ForgeRenderable;
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
     }

@@ -17,7 +17,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCoalesceNodeForge : ExprForgeInstrumentable
     {
-        public ExprCoalesceNodeForge(ExprCoalesceNode parent, Type resultType, bool[] isNumericCoercion)
+        public ExprCoalesceNodeForge(
+            ExprCoalesceNode parent,
+            Type resultType,
+            bool[] isNumericCoercion)
         {
             ForgeRenderable = parent;
             EvaluationType = resultType;
@@ -38,14 +41,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprCoalesceNodeForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(

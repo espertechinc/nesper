@@ -18,14 +18,14 @@ namespace com.espertech.esper.common.@internal.view.access
         /// <param name="index">to return new data for</param>
         /// <returns>new data event</returns>
         EventBean GetNewData(int index);
-    
+
         /// <summary>Returns an old data event given an index. </summary>
         /// <param name="index">to return old data for</param>
         /// <returns>old data event</returns>
         EventBean GetOldData(int index);
-    
+
         EventBean GetNewDataTail(int index);
-    
+
         IEnumerator<EventBean> GetWindowEnumerator();
 
         ICollection<EventBean> WindowCollectionReadOnly { get; }

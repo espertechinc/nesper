@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -41,21 +40,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private object cachedResult;
 
         public ExprDotNodeForgeStaticMethodEval(
-            ExprDotNodeForgeStaticMethod forge, ExprEvaluator[] childEvals, ExprDotEval[] chainEval)
+            ExprDotNodeForgeStaticMethod forge,
+            ExprEvaluator[] childEvals,
+            ExprDotEval[] chainEval)
         {
             this.forge = forge;
             this.childEvals = childEvals;
             this.chainEval = chainEval;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         public static CodegenExpression CodegenExprEval(
-            ExprDotNodeForgeStaticMethod forge, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            ExprDotNodeForgeStaticMethod forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             CodegenExpression isCachedMember = null;
             CodegenExpression cachedResultMember = null;
@@ -184,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
             catch (Exception e) when (e is TargetException || e is MemberAccessException) {
                 StaticMethodEvalHandleInvocationException(
-                    forge.OptionalStatementName, forge.StaticMethod.Name, 
+                    forge.OptionalStatementName, forge.StaticMethod.Name,
                     forge.StaticMethod.GetParameterTypes(),
                     forge.ClassOrPropertyName, args, e, forge.IsRethrowExceptions);
             }
@@ -193,7 +199,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public static CodegenExpression CodegenGet(
-            CodegenExpression beanExpression, ExprDotNodeForgeStaticMethod forge, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            ExprDotNodeForgeStaticMethod forge,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             ExprForgeCodegenSymbol exprSymbol = new ExprForgeCodegenSymbol(true, null);

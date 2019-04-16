@@ -33,8 +33,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
         private readonly CodegenExpressionRef qn;
 
         public AggregatorStddev(
-            AggregationForgeFactory factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter)
+            AggregationForgeFactory factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter)
             : base(
                 factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
                 optionalFilter)
@@ -45,39 +51,57 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
         }
 
         protected override void ApplyEvalEnterNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             ApplyEvalEnterNonNull(
                 method, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyEvalLeaveNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             ApplyEvalLeaveNonNull(
                 method, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyTableEnterNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             ApplyEvalEnterNonNull(method, ExprDotMethod(Cast(typeof(object), value), "doubleValue"));
         }
 
         protected override void ApplyTableLeaveNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             ApplyEvalLeaveNonNull(method, ExprDotMethod(Cast(typeof(object), value), "doubleValue"));
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(GetClear());
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.IfCondition(Relational(cnt, LT, Constant(2)))
                 .BlockReturn(ConstantNull())
@@ -85,8 +109,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(WriteDouble(output, row, mean))
                 .Apply(WriteDouble(output, row, qn))
@@ -94,15 +123,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(ReadDouble(row, mean, input))
                 .Apply(ReadDouble(row, qn, input))
                 .Apply(ReadLong(row, cnt, input));
         }
 
-        private void ApplyEvalEnterNonNull(CodegenMethod method, CodegenExpression doubleExpression)
+        private void ApplyEvalEnterNonNull(
+            CodegenMethod method,
+            CodegenExpression doubleExpression)
         {
             method.Block.DeclareVar(typeof(double), "p", doubleExpression)
                 .IfCondition(EqualsIdentity(cnt, Constant(0)))
@@ -116,7 +151,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
                 .AssignCompound(qn, "+", Op(Op(Ref("p"), "-", Ref("oldmean")), "*", Op(Ref("p"), "-", mean)));
         }
 
-        private void ApplyEvalLeaveNonNull(CodegenMethod method, CodegenExpression doubleExpression)
+        private void ApplyEvalLeaveNonNull(
+            CodegenMethod method,
+            CodegenExpression doubleExpression)
         {
             method.Block.DeclareVar(typeof(double), "p", doubleExpression)
                 .IfCondition(Relational(cnt, LE, Constant(1)))

@@ -7,20 +7,27 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 {
-	public interface ResultSetProcessorRowPerGroupRollupOutputLastHelper
+    public interface ResultSetProcessorRowPerGroupRollupOutputLastHelper
         : ResultSetProcessorOutputHelper
     {
-	    void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic);
-	    void ProcessJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic);
-	    UniformPair<EventBean[]> OutputView(bool isSynthesize);
-	    UniformPair<EventBean[]> OutputJoin(bool isSynthesize);
-	    void Destroy();
-	}
+        void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic);
+
+        void ProcessJoin(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
+            bool isGenerateSynthetic);
+
+        UniformPair<EventBean[]> OutputView(bool isSynthesize);
+        UniformPair<EventBean[]> OutputJoin(bool isSynthesize);
+        void Destroy();
+    }
 } // end of namespace

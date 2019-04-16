@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Threading;
-
 using com.espertech.esper.common.@internal.context.util;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
@@ -30,8 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         {
         }
 
-        public Thread CurrentThread
-        {
+        public Thread CurrentThread {
             get => Thread.CurrentThread;
         }
 
@@ -39,8 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         {
         }
 
-        public override NamedWindowConsumerLatch Earlier
-        {
+        public override NamedWindowConsumerLatch Earlier {
             get => null;
         }
     }

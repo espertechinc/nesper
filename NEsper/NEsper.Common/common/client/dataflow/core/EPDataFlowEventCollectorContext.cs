@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// </summary>
         /// <param name="sender">for sending events to the event bus</param>
         /// <param name="event">to process</param>
-        public EPDataFlowEventCollectorContext(EventServiceSendEventCommon sender, object @event)
+        public EPDataFlowEventCollectorContext(
+            EventServiceSendEventCommon sender,
+            object @event)
         {
             Sender = sender;
             Event = @event;

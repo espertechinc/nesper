@@ -56,7 +56,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
         }
 
         public StatementAgentInstanceFactoryResult NewContext(
-            AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
         {
             var variableService = agentInstanceContext.VariableManagementService;
             var deploymentId = agentInstanceContext.DeploymentId;
@@ -113,12 +114,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
         public StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
         }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             var meta = moduleIncidentals.Variables.Get(variableName);
             if (meta == null) {

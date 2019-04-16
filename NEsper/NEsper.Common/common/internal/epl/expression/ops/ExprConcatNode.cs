@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var delimiter = "";
             foreach (var child in ChildNodes) {
@@ -71,7 +71,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprConcatNode)) {
                 return false;

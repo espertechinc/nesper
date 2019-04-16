@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class GroupByClauseElementRollupOrCube : GroupByClauseElement
     {
-        public GroupByClauseElementRollupOrCube(bool cube, IList<GroupByClauseElement> rollupExpressions)
+        public GroupByClauseElementRollupOrCube(
+            bool cube,
+            IList<GroupByClauseElement> rollupExpressions)
         {
             IsCube = cube;
             RollupExpressions = rollupExpressions;

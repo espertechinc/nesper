@@ -17,7 +17,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public class ContextSpecHash : ContextSpec
     {
-        public ContextSpecHash(IList<ContextSpecHashItem> items, int granularity, bool preallocate)
+        public ContextSpecHash(
+            IList<ContextSpecHashItem> items,
+            int granularity,
+            bool preallocate)
         {
             Items = items;
             IsPreallocate = preallocate;
@@ -31,7 +34,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public int Granularity { get; }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailHash), GetType(), classScope);
 

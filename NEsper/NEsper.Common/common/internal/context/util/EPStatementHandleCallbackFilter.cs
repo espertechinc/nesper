@@ -10,50 +10,58 @@ using com.espertech.esper.common.@internal.filtersvc;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-	/// <summary>
-	/// Statement resource handle and callback for use with filter services.
-	/// <para />Links the statement handle identifying a statement and containing the statement resource lock,
-	/// with the actual callback to invoke for a statement together.
-	/// </summary>
-	public class EPStatementHandleCallbackFilter : FilterHandle {
-	    private EPStatementAgentInstanceHandle agentInstanceHandle;
-	    private FilterHandleCallback filterCallback;
-	    // private ScheduleHandleCallback scheduleCallback;
+    /// <summary>
+    /// Statement resource handle and callback for use with filter services.
+    /// <para />Links the statement handle identifying a statement and containing the statement resource lock,
+    /// with the actual callback to invoke for a statement together.
+    /// </summary>
+    public class EPStatementHandleCallbackFilter : FilterHandle
+    {
+        private EPStatementAgentInstanceHandle agentInstanceHandle;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="agentInstanceHandle">is a statement handle</param>
-	    /// <param name="callback">is a filter callback</param>
-	    public EPStatementHandleCallbackFilter(EPStatementAgentInstanceHandle agentInstanceHandle, FilterHandleCallback callback) {
-	        this.agentInstanceHandle = agentInstanceHandle;
-	        this.filterCallback = callback;
-	    }
+        private FilterHandleCallback filterCallback;
+        // private ScheduleHandleCallback scheduleCallback;
 
-	    public int StatementId {
-	        get => agentInstanceHandle.StatementId;
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="agentInstanceHandle">is a statement handle</param>
+        /// <param name="callback">is a filter callback</param>
+        public EPStatementHandleCallbackFilter(
+            EPStatementAgentInstanceHandle agentInstanceHandle,
+            FilterHandleCallback callback)
+        {
+            this.agentInstanceHandle = agentInstanceHandle;
+            this.filterCallback = callback;
+        }
 
-	    public int AgentInstanceId {
-	        get => agentInstanceHandle.AgentInstanceId;
-	    }
+        public int StatementId {
+            get => agentInstanceHandle.StatementId;
+        }
 
-	    /// <summary>
-	    /// Returns the statement handle.
-	    /// </summary>
-	    /// <returns>handle containing a statement resource lock</returns>
-	    public EPStatementAgentInstanceHandle AgentInstanceHandle {
-	        get => agentInstanceHandle;	    }
+        public int AgentInstanceId {
+            get => agentInstanceHandle.AgentInstanceId;
+        }
 
-	    /// <summary>
-	    /// Returns the statement filter callback, or null if this is a schedule callback handle.
-	    /// </summary>
-	    /// <returns>filter callback</returns>
-	    public FilterHandleCallback FilterCallback {
-	        get => filterCallback;	    }
+        /// <summary>
+        /// Returns the statement handle.
+        /// </summary>
+        /// <returns>handle containing a statement resource lock</returns>
+        public EPStatementAgentInstanceHandle AgentInstanceHandle {
+            get => agentInstanceHandle;
+        }
 
-	    public void SetFilterCallback(FilterHandleCallback filterCallback) {
-	        this.filterCallback = filterCallback;
-	    }
-	}
+        /// <summary>
+        /// Returns the statement filter callback, or null if this is a schedule callback handle.
+        /// </summary>
+        /// <returns>filter callback</returns>
+        public FilterHandleCallback FilterCallback {
+            get => filterCallback;
+        }
+
+        public void SetFilterCallback(FilterHandleCallback filterCallback)
+        {
+            this.filterCallback = filterCallback;
+        }
+    }
 } // end of namespace

@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.client.hook.exception
     {
         /// <summary>Ctor. </summary>
         /// <param name="engineURI">engine URI</param>
-        public ExceptionHandlerFactoryContext(String engineURI) {
+        public ExceptionHandlerFactoryContext(String engineURI)
+        {
             EngineURI = engineURI;
         }
 

@@ -79,7 +79,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return false;
         }
 
-        public void CopyTo(EventBean[] array, int arrayIndex)
+        public void CopyTo(
+            EventBean[] array,
+            int arrayIndex)
         {
             Array.CopyTo(array, arrayIndex);
         }

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -23,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         private readonly ResultSetProcessor resultSetProcessor;
 
         public OutputProcessViewSimpleWProcessor(
-            AgentInstanceContext agentInstanceContext, ResultSetProcessor resultSetProcessor)
+            AgentInstanceContext agentInstanceContext,
+            ResultSetProcessor resultSetProcessor)
         {
             this.agentInstanceContext = agentInstanceContext;
             this.resultSetProcessor = resultSetProcessor;
@@ -40,19 +40,21 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         }
 
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             var statementResultService = agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 
-            if (!isGenerateSynthetic && !isGenerateNatural)
-            {
+            if (!isGenerateSynthetic && !isGenerateNatural) {
                 return;
             }
 

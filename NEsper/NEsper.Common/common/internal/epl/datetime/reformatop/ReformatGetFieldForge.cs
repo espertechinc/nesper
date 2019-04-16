@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,7 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.@join.analyze;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
-
+using com.espertech.esper.compat.datetime;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
@@ -29,11 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
     public class ReformatGetFieldForge : ReformatForge,
         ReformatOp
     {
-        private readonly CalendarFieldEnum fieldNum;
+        private readonly DateTimeFieldEnum fieldNum;
         private readonly TimeAbacus timeAbacus;
 
         public ReformatGetFieldForge(
-            CalendarFieldEnum fieldNum,
+            DateTimeFieldEnum fieldNum,
             TimeAbacus timeAbacus)
         {
             this.fieldNum = fieldNum;
@@ -90,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public FilterExprAnalyzerAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DatetimeMethodEnum currentMethod,
+            DateTimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {
@@ -144,30 +143,29 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public static int GetValueUsingFieldEnum(
             DateTime dateTime,
-            CalendarFieldEnum fieldEnum)
+            DateTimeFieldEnum fieldEnum)
         {
             return GetValueUsingFieldEnum(DateTimeEx.UtcInstance(dateTime), fieldEnum);
         }
 
         public static int GetValueUsingFieldEnum(
             DateTimeEx dateTime,
-            CalendarFieldEnum fieldEnum)
+            DateTimeFieldEnum fieldEnum)
         {
-            switch (fieldEnum)
-            {
-                case CalendarFieldEnum.YEAR:
+            switch (fieldEnum) {
+                case DateTimeFieldEnum.YEAR:
                     return dateTime.Year;
-                case CalendarFieldEnum.MONTH:
+                case DateTimeFieldEnum.MONTH:
                     return dateTime.Month;
-                case CalendarFieldEnum.DAY:
+                case DateTimeFieldEnum.DAY:
                     return dateTime.Day;
-                case CalendarFieldEnum.HOUR:
+                case DateTimeFieldEnum.HOUR:
                     return dateTime.Hour;
-                case CalendarFieldEnum.MINUTE:
+                case DateTimeFieldEnum.MINUTE:
                     return dateTime.Minute;
-                case CalendarFieldEnum.SECOND:
+                case DateTimeFieldEnum.SECOND:
                     return dateTime.Second;
-                case CalendarFieldEnum.MILLISEC:
+                case DateTimeFieldEnum.MILLISEC:
                     return dateTime.Millisecond;
             }
 
@@ -176,23 +174,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public static int GetValueUsingFieldEnum(
             DateTimeOffset dateTime,
-            CalendarFieldEnum fieldEnum)
+            DateTimeFieldEnum fieldEnum)
         {
-            switch (fieldEnum)
-            {
-                case CalendarFieldEnum.YEAR:
+            switch (fieldEnum) {
+                case DateTimeFieldEnum.YEAR:
                     return dateTime.Year;
-                case CalendarFieldEnum.MONTH:
+                case DateTimeFieldEnum.MONTH:
                     return dateTime.Month;
-                case CalendarFieldEnum.DAY:
+                case DateTimeFieldEnum.DAY:
                     return dateTime.Day;
-                case CalendarFieldEnum.HOUR:
+                case DateTimeFieldEnum.HOUR:
                     return dateTime.Hour;
-                case CalendarFieldEnum.MINUTE:
+                case DateTimeFieldEnum.MINUTE:
                     return dateTime.Minute;
-                case CalendarFieldEnum.SECOND:
+                case DateTimeFieldEnum.SECOND:
                     return dateTime.Second;
-                case CalendarFieldEnum.MILLISEC:
+                case DateTimeFieldEnum.MILLISEC:
                     return dateTime.Millisecond;
             }
 

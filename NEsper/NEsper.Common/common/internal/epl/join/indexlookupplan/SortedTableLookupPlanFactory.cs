@@ -24,14 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         internal readonly QueryGraphValueEntryRange rangeKeyPair;
 
         public SortedTableLookupPlanFactory(
-            int lookupStream, int indexedStream, TableLookupIndexReqKey[] indexNum,
-            QueryGraphValueEntryRange rangeKeyPair) : base(lookupStream, indexedStream, indexNum)
+            int lookupStream,
+            int indexedStream,
+            TableLookupIndexReqKey[] indexNum,
+            QueryGraphValueEntryRange rangeKeyPair)
+            : base(lookupStream, indexedStream, indexNum)
         {
             this.rangeKeyPair = rangeKeyPair;
         }
 
         protected override JoinExecTableLookupStrategy MakeStrategyInternal(
-            EventTable[] eventTables, EventType[] eventTypes)
+            EventTable[] eventTables,
+            EventType[] eventTypes)
         {
             var index = (PropertySortedEventTable) eventTables[0];
             return new SortedTableLookupStrategy(lookupStream, -1, rangeKeyPair, index);

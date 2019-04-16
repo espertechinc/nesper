@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         }
 
         public AggregationPortableValidationFirstLastEver(
-            bool distinct, bool hasFilter, Type inputValueType, bool isFirst)
+            bool distinct,
+            bool hasFilter,
+            Type inputValueType,
+            bool isFirst)
             : base(distinct, hasFilter, inputValueType)
 
         {
@@ -38,14 +41,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         }
 
         protected override void CodegenInlineSetWFilterWInputType(
-            CodegenExpressionRef @ref, CodegenMethod method, ModuleTableInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(@ref, "setFirst", Constant(isFirst));
         }
 
         protected override void ValidateIntoTableWFilterWInputType(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory)
         {
             var that = (AggregationPortableValidationFirstLastEver) intoTableAgg;

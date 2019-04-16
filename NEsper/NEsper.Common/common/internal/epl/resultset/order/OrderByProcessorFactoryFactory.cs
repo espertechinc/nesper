@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Reflection;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -18,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenFieldSharableComparator.CodegenSharableSerdeName;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.order
@@ -41,17 +39,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         {
             // Get the order by expression nodes
             IList<ExprNode> orderByNodes = new List<ExprNode>();
-            foreach (var element in orderByList)
-            {
+            foreach (var element in orderByList) {
                 orderByNodes.Add(element.ExprNode);
             }
 
             // No order-by clause
-            if (orderByList.IsEmpty())
-            {
+            if (orderByList.IsEmpty()) {
                 Log.Debug(".getProcessor Using no OrderByProcessor");
-                if (rowLimitSpec != null)
-                {
+                if (rowLimitSpec != null) {
                     var rowLimitProcessorFactory = new RowLimitProcessorFactoryForge(
                         rowLimitSpec, variableCompileTimeResolver, optionalContextName);
                     return new OrderByProcessorRowLimitOnlyForge(rowLimitProcessorFactory);
@@ -62,15 +57,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
             // Determine aggregate functions used in select, if any
             IList<ExprAggregateNode> selectAggNodes = new List<ExprAggregateNode>();
-            foreach (var element in selectionList)
-            {
+            foreach (var element in selectionList) {
                 ExprAggregateNodeUtil.GetAggregatesBottomUp(element.SelectExpression, selectAggNodes);
             }
 
             // Get all the aggregate functions occuring in the order-by clause
             IList<ExprAggregateNode> orderAggNodes = new List<ExprAggregateNode>();
-            foreach (var orderByNode in orderByNodes)
-            {
+            foreach (var orderByNode in orderByNodes) {
                 ExprAggregateNodeUtil.GetAggregatesBottomUp(orderByNode, orderAggNodes);
             }
 
@@ -85,8 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var comparator = GetComparator(elements, isSortUsingCollator);
             var orderByProcessorForge = new OrderByProcessorForgeImpl(
                 elements, needsGroupByKeys, orderByRollup, comparator);
-            if (rowLimitSpec == null)
-            {
+            if (rowLimitSpec == null) {
                 return orderByProcessorForge;
             }
 
@@ -103,32 +95,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         {
             // Check that the order-by clause doesn't contain
             // any aggregate functions not in the select expression
-            foreach (var orderAgg in orderAggNodes)
-            {
+            foreach (var orderAgg in orderAggNodes) {
                 var inSelect = false;
-                foreach (var selectAgg in selectAggNodes)
-                {
-                    if (ExprNodeUtilityCompare.DeepEquals(selectAgg, orderAgg, false))
-                    {
+                foreach (var selectAgg in selectAggNodes) {
+                    if (ExprNodeUtilityCompare.DeepEquals(selectAgg, orderAgg, false)) {
                         inSelect = true;
                         break;
                     }
                 }
 
-                if (!inSelect)
-                {
+                if (!inSelect) {
                     throw new ExprValidationException(
                         "Aggregate functions in the order-by clause must also occur in the select expression");
                 }
             }
         }
 
-        private static CodegenFieldSharable GetComparator(OrderByElementForge[] orderBy, bool isSortUsingCollator)
+        private static CodegenFieldSharable GetComparator(
+            OrderByElementForge[] orderBy,
+            bool isSortUsingCollator)
         {
             var nodes = new ExprNode[orderBy.Length];
             var descending = new bool[orderBy.Length];
-            for (var i = 0; i < orderBy.Length; i++)
-            {
+            for (var i = 0; i < orderBy.Length; i++) {
                 nodes[i] = orderBy[i].ExprNode;
                 descending[i] = orderBy[i].IsDescending();
             }
@@ -142,8 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         {
             var elements = new OrderByElementForge[orderByList.Count];
             var count = 0;
-            foreach (var item in orderByList)
-            {
+            foreach (var item in orderByList) {
                 elements[count++] = new OrderByElementForge(item.ExprNode, item.IsDescending);
             }
 

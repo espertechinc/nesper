@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.compat;
@@ -16,42 +15,47 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.prior
 {
-	public class PriorEventViewRelAccess : RelativeAccessByEventNIndex {
-	    private readonly RelativeAccessByEventNIndex buffer;
-	    private readonly int relativeIndex;
+    public class PriorEventViewRelAccess : RelativeAccessByEventNIndex
+    {
+        private readonly RelativeAccessByEventNIndex buffer;
+        private readonly int relativeIndex;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="buffer">is the buffer to acces</param>
-	    /// <param name="relativeIndex">is the index to pull out</param>
-	    public PriorEventViewRelAccess(RelativeAccessByEventNIndex buffer, int relativeIndex) {
-	        this.buffer = buffer;
-	        this.relativeIndex = relativeIndex;
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="buffer">is the buffer to acces</param>
+        /// <param name="relativeIndex">is the index to pull out</param>
+        public PriorEventViewRelAccess(
+            RelativeAccessByEventNIndex buffer,
+            int relativeIndex)
+        {
+            this.buffer = buffer;
+            this.relativeIndex = relativeIndex;
+        }
 
-	    public EventBean GetRelativeToEvent(EventBean theEvent, int prevIndex) {
-	        return buffer.GetRelativeToEvent(theEvent, relativeIndex);
-	    }
+        public EventBean GetRelativeToEvent(
+            EventBean theEvent,
+            int prevIndex)
+        {
+            return buffer.GetRelativeToEvent(theEvent, relativeIndex);
+        }
 
-	    public EventBean GetRelativeToEnd(int index) {
-	        // No requirement to index from end of current buffer
-	        return null;
-	    }
+        public EventBean GetRelativeToEnd(int index)
+        {
+            // No requirement to index from end of current buffer
+            return null;
+        }
 
-	    public IEnumerator<EventBean> WindowToEvent
-	    {
-	        get => null;
-	    }
+        public IEnumerator<EventBean> WindowToEvent {
+            get => null;
+        }
 
-	    public ICollection<EventBean> WindowToEventCollReadOnly
-	    {
-	        get => null;
-	    }
+        public ICollection<EventBean> WindowToEventCollReadOnly {
+            get => null;
+        }
 
-	    public int WindowToEventCount
-	    {
-	        get => 0;
-	    }
-	}
+        public int WindowToEventCount {
+            get => 0;
+        }
+    }
 } // end of namespace

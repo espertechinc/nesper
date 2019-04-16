@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.@internal.util
         CodegenExpression Codegen(CodegenExpression input);
     }
 
-    public class ProxySimpleTypeParserSPI : ProxySimpleTypeParser, SimpleTypeParserSPI
+    public class ProxySimpleTypeParserSPI : ProxySimpleTypeParser,
+        SimpleTypeParserSPI
     {
         public Func<CodegenExpression, CodegenExpression> ProcCodegen;
         public CodegenExpression Codegen(CodegenExpression input) => ProcCodegen?.Invoke(input);

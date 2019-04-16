@@ -16,14 +16,23 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
         public const int DEFAULT_MAX_TREE_HEIGHT = 20;
 
         public static PointRegionQuadTree<L> Make<L>(
-            double x, double y, double width, double height, int leafCapacity, int maxTreeHeight)
+            double x,
+            double y,
+            double width,
+            double height,
+            int leafCapacity,
+            int maxTreeHeight)
         {
             var bb = new BoundingBox(x, y, x + width, y + height);
             var leaf = new PointRegionQuadTreeNodeLeaf<L>(bb, 1, default(L), 0);
             return new PointRegionQuadTree<L>(leafCapacity, maxTreeHeight, leaf);
         }
 
-        public static PointRegionQuadTree<L> Make<L>(double x, double y, double width, double height)
+        public static PointRegionQuadTree<L> Make<L>(
+            double x,
+            double y,
+            double width,
+            double height)
         {
             return Make<L>(x, y, width, height, DEFAULT_LEAF_CAPACITY, DEFAULT_MAX_TREE_HEIGHT);
         }

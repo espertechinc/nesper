@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
             internal readonly ExprForge[] exprForges;
 
             internal SelectExprInsertNativeBase(
-                EventType eventType, EventBeanManufacturerForge eventManufacturer, ExprForge[] exprForges)
+                EventType eventType,
+                EventBeanManufacturerForge eventManufacturer,
+                ExprForge[] exprForges)
             {
                 ResultEventType = eventType;
                 this.eventManufacturer = eventManufacturer;

@@ -62,7 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         public bool IsInsertInto { get; }
 
         public override InfraOnExprBaseViewResult MakeNamedWindow(
-            SubordWMatchExprLookupStrategy lookupStrategy, NamedWindowRootViewInstance namedWindowRootViewInstance,
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            NamedWindowRootViewInstance namedWindowRootViewInstance,
             AgentInstanceContext agentInstanceContext)
         {
             var pair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
@@ -82,7 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         public override InfraOnExprBaseViewResult MakeTable(
-            SubordWMatchExprLookupStrategy lookupStrategy, TableInstance tableInstance,
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableInstance tableInstance,
             AgentInstanceContext agentInstanceContext)
         {
             var pair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(

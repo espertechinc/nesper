@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class AggregationCodegenRowDetailStateDesc
     {
         public AggregationCodegenRowDetailStateDesc(
-            ExprForge[][] optionalMethodForges, AggregationForgeFactory[] methodFactories,
+            ExprForge[][] optionalMethodForges,
+            AggregationForgeFactory[] methodFactories,
             AggregationStateFactoryForge[] accessStateForges)
         {
             OptionalMethodForges = optionalMethodForges;

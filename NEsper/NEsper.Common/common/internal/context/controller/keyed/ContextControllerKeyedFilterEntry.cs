@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         protected internal FilterValueSetParam[][] filterValueSet;
 
         public ContextControllerKeyedFilterEntry(
-            ContextControllerKeyedImpl callback, IntSeqKey controllerPath, ContextControllerDetailKeyedItem item,
+            ContextControllerKeyedImpl callback,
+            IntSeqKey controllerPath,
+            ContextControllerDetailKeyedItem item,
             object[] parentPartitionKeys)
         {
             this.callback = callback;
@@ -41,7 +43,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public EPStatementHandleCallbackFilter FilterHandle => filterHandle;
 
-        public abstract void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches);
+        public abstract void MatchFound(
+            EventBean theEvent,
+            ICollection<FilterHandleCallback> allStmtMatches);
 
         public bool IsSubSelect => false;
 

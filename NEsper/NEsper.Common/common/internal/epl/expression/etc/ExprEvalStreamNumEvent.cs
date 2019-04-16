@@ -8,18 +8,18 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalStreamNumEvent : ExprForge, ExprEvaluator, ExprNodeRenderable
+    public class ExprEvalStreamNumEvent : ExprForge,
+        ExprEvaluator,
+        ExprNodeRenderable
     {
         private readonly int streamNum;
 
@@ -28,38 +28,43 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             this.streamNum = streamNum;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return eventsPerStream[streamNum];
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get => this;
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             return ArrayAtIndex(refEPS, Constant(streamNum));
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => typeof(EventBean);
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => this;
         }
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(typeof(ExprEvalStreamNumEvent).Name);
         }

@@ -73,30 +73,36 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         }
 
         protected override void InlineCodegen(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(
-                    Ref("node"), "setChildNode",
+                .SetProperty(
+                    Ref("node"), "ChildNode",
                     LocalMethod(ChildNodes[0].MakeCodegen(method, symbols, classScope)))
-                .ExprDotMethod(
-                    Ref("node"), "setDistinctExpression",
+                .SetProperty(
+                    Ref("node"), "DistinctExpression",
                     ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                        ExprNodeUtilityQuery.GetForges(ExprNodeUtilityQuery.ToArray()), null, method, GetType(),
+                        ExprNodeUtilityQuery.GetForges(
+                            ExprNodeUtilityQuery.ToArray(DistinctExpressions)), null, method, GetType(),
                         classScope))
-                .ExprDotMethod(
-                    Ref("node"), "setDistinctTypes",
+                .SetProperty(
+                    Ref("node"), "DistinctTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(DistinctExpressions)))
-                .ExprDotMethod(Ref("node"), "setConvertor", convertor.MakeAnonymous(method, classScope))
-                .ExprDotMethod(
-                    Ref("node"), "setTimePeriodCompute",
+                .SetProperty(
+                    Ref("node"), "Convertor", 
+                    convertor.MakeAnonymous(method, classScope))
+                .SetProperty(
+                    Ref("node"), "TimePeriodCompute",
                     timePeriodComputeForge == null
                         ? ConstantNull()
                         : timePeriodComputeForge.MakeEvaluator(method, classScope));
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, IList<ScheduleHandleCallbackProvider> schedules)
+            IList<FilterSpecCompiled> filters,
+            IList<ScheduleHandleCallbackProvider> schedules)
         {
             // nothing to collect for this node
         }
@@ -125,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
             this.expiryTimeExp = expiryTimeExp;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("every-distinct(");
             ExprNodeUtilityPrint.ToExpressionStringParameterList(DistinctExpressions, writer);

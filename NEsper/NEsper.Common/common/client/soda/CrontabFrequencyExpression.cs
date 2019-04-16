@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -18,30 +17,32 @@ namespace com.espertech.esper.common.client.soda
     /// Frequency expression for use in crontab expressions.
     /// </summary>
     [Serializable]
-    public class CrontabFrequencyExpression : ExpressionBase {
+    public class CrontabFrequencyExpression : ExpressionBase
+    {
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        public CrontabFrequencyExpression()
+        {
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    public CrontabFrequencyExpression() {
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="numericParameter">the frequency value</param>
+        public CrontabFrequencyExpression(Expression numericParameter)
+        {
+            this.Children.Add(numericParameter);
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="numericParameter">the frequency value</param>
-	    public CrontabFrequencyExpression(Expression numericParameter) {
-	        this.Children.Add(numericParameter);
-	    }
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
-
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        writer.Write("*/");
-	        this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-	    }
-	}
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            writer.Write("*/");
+            this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+        }
+    }
 } // end of namespace

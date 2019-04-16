@@ -7,22 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.support
 {
-	public interface QueryPlanIndexHook {
-	    void Subquery(QueryPlanIndexDescSubquery subquery);
+    public interface QueryPlanIndexHook
+    {
+        void Subquery(QueryPlanIndexDescSubquery subquery);
 
-	    void InfraOnExpr(QueryPlanIndexDescOnExpr onexpr);
+        void InfraOnExpr(QueryPlanIndexDescOnExpr onexpr);
 
-	    void FireAndForget(QueryPlanIndexDescFAF queryPlanIndexDescFAF);
+        void FireAndForget(QueryPlanIndexDescFAF queryPlanIndexDescFAF);
 
-	    void Join(QueryPlanForge join);
+        void Join(QueryPlanForge join);
 
-	    void Historical(QueryPlanIndexDescHistorical historical);
-	}
+        void Historical(QueryPlanIndexDescHistorical historical);
+    }
 } // end of namespace

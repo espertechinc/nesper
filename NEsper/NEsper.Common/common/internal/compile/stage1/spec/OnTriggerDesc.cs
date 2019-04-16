@@ -11,18 +11,18 @@ using System;
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Specification for on-trigger statements.</summary>
-	[Serializable]
+    [Serializable]
     public abstract class OnTriggerDesc
-	{
+    {
         /// <summary>Ctor.</summary>
-	    /// <param name="onTriggerType">the type of on-trigger</param>
+        /// <param name="onTriggerType">the type of on-trigger</param>
         protected OnTriggerDesc(OnTriggerType onTriggerType)
-	    {
-	        OnTriggerType = onTriggerType;
-	    }
+        {
+            OnTriggerType = onTriggerType;
+        }
 
         /// <summary>Returns the type of the on-trigger statement.</summary>
         /// <returns>trigger type</returns>
         public OnTriggerType OnTriggerType { get; private set; }
-	}
+    }
 } // End of namespace

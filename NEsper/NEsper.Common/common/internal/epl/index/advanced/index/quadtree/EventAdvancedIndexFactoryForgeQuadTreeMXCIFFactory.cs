@@ -21,8 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         {
         }
 
-        public override EventAdvancedIndexFactoryForge Forge
-        {
+        public override EventAdvancedIndexFactoryForge Forge {
             get => EventAdvancedIndexFactoryForgeQuadTreeMXCIFForge.INSTANCE;
         }
 
@@ -31,18 +30,18 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             AdvancedIndexConfigContextPartition configCP,
             EventTableOrganization organization)
         {
-            AdvancedIndexConfigContextPartitionQuadTree qt = (AdvancedIndexConfigContextPartitionQuadTree)configCP;
+            AdvancedIndexConfigContextPartitionQuadTree qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
             MXCIFQuadTree<object> quadTree = MXCIFQuadTreeFactory.Make(qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
-            return new EventTableQuadTreeMXCIFImpl(organization, (AdvancedIndexConfigStatementMXCIFQuadtree)configStatement, quadTree);
+            return new EventTableQuadTreeMXCIFImpl(organization, (AdvancedIndexConfigStatementMXCIFQuadtree) configStatement, quadTree);
         }
 
         public override EventAdvancedIndexConfigStatementForge ToConfigStatement(ExprNode[] indexedExpr)
         {
             return new AdvancedIndexConfigStatementMXCIFQuadtreeForge(
-                    indexedExpr[0].Forge,
-                    indexedExpr[1].Forge,
-                    indexedExpr[2].Forge,
-                    indexedExpr[3].Forge);
+                indexedExpr[0].Forge,
+                indexedExpr[1].Forge,
+                indexedExpr[2].Forge,
+                indexedExpr[3].Forge);
         }
     }
 } // end of namespace

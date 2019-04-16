@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         }
 
         public RowRecogPartitionStateRepoNoGroup(
-            RowRecogPreviousStrategyImpl getter, bool keepScheduleState,
+            RowRecogPreviousStrategyImpl getter,
+            bool keepScheduleState,
             RowRecogPartitionTerminationStateComparator terminationStateCompare)
         {
             singletonState = new RowRecogPartitionStateImpl(getter, new List<RowRecogNFAStateEntry>());
@@ -69,7 +70,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             return new RowRecogPartitionStateRepoNoGroup(state);
         }
 
-        public int RemoveOld(EventBean[] oldEvents, bool isEmpty, bool[] found)
+        public int RemoveOld(
+            EventBean[] oldEvents,
+            bool isEmpty,
+            bool[] found)
         {
             var countRemoved = 0;
             if (isEmpty) {
@@ -86,7 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             return countRemoved;
         }
 
-        public RowRecogPartitionState GetState(EventBean theEvent, bool collect)
+        public RowRecogPartitionState GetState(
+            EventBean theEvent,
+            bool collect)
         {
             return singletonState;
         }

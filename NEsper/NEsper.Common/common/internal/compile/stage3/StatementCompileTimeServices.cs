@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
     {
         private readonly ModuleCompileTimeServices services;
 
-        public StatementCompileTimeServices(int statementNumber, ModuleCompileTimeServices services)
+        public StatementCompileTimeServices(
+            int statementNumber,
+            ModuleCompileTimeServices services)
         {
             this.services = services;
             EventTypeNameGeneratorStatement = new EventTypeNameGeneratorStatement(statementNumber);

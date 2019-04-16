@@ -22,13 +22,16 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly PropertyHashedEventTable _index;
 
         public SubordHashedTableLookupStrategyExprNW(
-            SubordHashedTableLookupStrategyExprFactory factory, PropertyHashedEventTable index)
+            SubordHashedTableLookupStrategyExprFactory factory,
+            PropertyHashedEventTable index)
         {
             this._factory = factory;
             this._index = index;
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);
@@ -49,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             return _factory.ToQueryPlan();
         }
 
-        protected object GetKey(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        protected object GetKey(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             return _factory.Evaluator.Evaluate(eventsPerStream, true, context);
         }

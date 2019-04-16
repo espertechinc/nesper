@@ -132,12 +132,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
                     variableService.Commit();
                 }
-                catch (EPException)
-                {
+                catch (EPException) {
                     throw;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     variableService.Rollback();
                     throw new EPException("Failed variable write: " + ex.Message, ex);
                 }
@@ -151,7 +149,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         /// <param name="agentInstanceId">context partition id</param>
         /// <returns>map of values</returns>
         public IDictionary<string, object> Iterate(
-            VariableManagementService variableManagementService, int agentInstanceId)
+            VariableManagementService variableManagementService,
+            int agentInstanceId)
         {
             IDictionary<string, object> values = new Dictionary<string, object>();
 

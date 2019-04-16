@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.context.aifactory.createdataflow;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -18,13 +17,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
     {
         private readonly IDictionary<string, DataflowDesc> dataflows = new Dictionary<string, DataflowDesc>(4);
 
-        public void Add(string dataflowName, DataflowDesc metadata)
+        public void Add(
+            string dataflowName,
+            DataflowDesc metadata)
         {
             DataflowDesc existing = dataflows.Get(dataflowName);
-            if (existing != null)
-            {
+            if (existing != null) {
                 throw new IllegalStateException("Dataflow already found for name '" + dataflowName + "'");
             }
+
             dataflows.Put(dataflowName, metadata);
         }
 
@@ -43,8 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             return dataflows.IsEmpty();
         }
 
-        public IDictionary<string, DataflowDesc> Dataflows
-        {
+        public IDictionary<string, DataflowDesc> Dataflows {
             get { return dataflows; }
         }
     }

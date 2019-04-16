@@ -13,13 +13,21 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public interface EventServiceSendEventCommon
     {
-        void SendEventObjectArray(object[] @event, string eventTypeName);
+        void SendEventObjectArray(
+            object[] @event,
+            string eventTypeName);
 
-        void SendEventBean(object @event, string eventTypeName);
+        void SendEventBean(
+            object @event,
+            string eventTypeName);
 
-        void SendEventMap(IDictionary<string, object> @event, string eventTypeName);
+        void SendEventMap(
+            IDictionary<string, object> @event,
+            string eventTypeName);
 
-        void SendEventXMLDOM(XmlNode node, string eventTypeName);
+        void SendEventXMLDOM(
+            XmlNode node,
+            string eventTypeName);
 
         /// <summary>
         ///     Send an event represented by a Avro GenericData.Record to the event stream processing runtime.
@@ -32,6 +40,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="avroGenericDataDotRecord">is the event to sent to the runtime</param>
         /// <param name="avroEventTypeName">event type name</param>
         /// <throws>EPException is thrown when the processing of the event lead to an error</throws>
-        void SendEventAvro(object avroGenericDataDotRecord, string avroEventTypeName);
+        void SendEventAvro(
+            object avroGenericDataDotRecord,
+            string avroEventTypeName);
     }
 } // end of namespace

@@ -34,10 +34,16 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         void RemoveAllInstanceIndexes(IndexMultiKey index);
 
         void RemoveIndexReferencesStmtMayRemoveIndex(
-            IndexMultiKey imk, string referringDeploymentId, string referringStatementName);
+            IndexMultiKey imk,
+            string referringDeploymentId,
+            string referringStatementName);
 
         void ValidateAddIndex(
-            string deploymentId, string statementName, string indexName, string indexModuleName,
-            QueryPlanIndexItem explicitIndexDesc, IndexMultiKey indexMultiKey);
+            string deploymentId,
+            string statementName,
+            string indexName,
+            string indexModuleName,
+            QueryPlanIndexItem explicitIndexDesc,
+            IndexMultiKey indexMultiKey);
     }
 } // end of namespace

@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.settings
         private readonly IDictionary<string, object> transientConfiguration;
 
         public ImportServiceBase(
-            IDictionary<string, object> transientConfiguration, TimeAbacus timeAbacus, ISet<string> eventTypeAutoNames)
+            IDictionary<string, object> transientConfiguration,
+            TimeAbacus timeAbacus,
+            ISet<string> eventTypeAutoNames)
         {
             this.transientConfiguration = transientConfiguration;
             TimeAbacus = timeAbacus;
@@ -44,7 +46,9 @@ namespace com.espertech.esper.common.@internal.settings
 
         public TimeAbacus TimeAbacus { get; }
 
-        public Type ResolveClass(string className, bool forAnnotation)
+        public Type ResolveClass(
+            string className,
+            bool forAnnotation)
         {
             Type clazz;
             try {
@@ -96,7 +100,10 @@ namespace com.espertech.esper.common.@internal.settings
         }
 
         public MethodInfo ResolveMethodOverloadChecked(
-            string className, string methodName, Type[] paramTypes, bool[] allowEventBeanType,
+            string className,
+            string methodName,
+            Type[] paramTypes,
+            bool[] allowEventBeanType,
             bool[] allowEventBeanCollType)
         {
             Type clazz;
@@ -118,7 +125,11 @@ namespace com.espertech.esper.common.@internal.settings
         }
 
         public MethodInfo ResolveMethod(
-            Type clazz, string methodName, Type[] paramTypes, bool[] allowEventBeanType, bool[] allowEventBeanCollType)
+            Type clazz,
+            string methodName,
+            Type[] paramTypes,
+            bool[] allowEventBeanType,
+            bool[] allowEventBeanCollType)
         {
             try {
                 return MethodResolver.ResolveMethod(
@@ -129,7 +140,9 @@ namespace com.espertech.esper.common.@internal.settings
             }
         }
 
-        public ConstructorInfo ResolveCtor(Type clazz, Type[] paramTypes)
+        public ConstructorInfo ResolveCtor(
+            Type clazz,
+            Type[] paramTypes)
         {
             try {
                 return MethodResolver.ResolveCtor(clazz, paramTypes);
@@ -157,7 +170,10 @@ namespace com.espertech.esper.common.@internal.settings
         /// <param name="forAnnotationUse">whether resolving class for use with annotations</param>
         /// <returns>class</returns>
         /// <throws>ClassNotFoundException if the class cannot be loaded</throws>
-        protected Type ResolveClassInternal(string className, bool requireAnnotation, bool forAnnotationUse)
+        protected Type ResolveClassInternal(
+            string className,
+            bool requireAnnotation,
+            bool forAnnotationUse)
         {
             if (forAnnotationUse) {
                 var lowercase = className.ToLowerInvariant();
@@ -201,7 +217,10 @@ namespace com.espertech.esper.common.@internal.settings
             throw new TypeLoadException("Unknown class " + className);
         }
 
-        private Type CheckImports(IList<string> imports, bool requireAnnotation, string className)
+        private Type CheckImports(
+            IList<string> imports,
+            bool requireAnnotation,
+            string className)
         {
             // Try all the imports
             foreach (var importName in imports) {
@@ -259,24 +278,26 @@ namespace com.espertech.esper.common.@internal.settings
             return null;
         }
 
-        private static bool IsClassName(string importName)
+        public static bool IsClassName(string importName)
         {
             var classNameRegEx = "(\\w+\\.)*\\w+(\\$\\w+)?";
             return importName.Matches(classNameRegEx);
         }
 
-        private static string GetPackageName(string importName)
+        public static string GetPackageName(string importName)
         {
             return importName.Substring(0, importName.Length - 2);
         }
 
-        private static bool IsPackageName(string importName)
+        public static bool IsPackageName(string importName)
         {
             var classNameRegEx = "(\\w+\\.)+\\*";
             return importName.Matches(classNameRegEx);
         }
 
-        protected void ValidateImportAndAdd(string importName, IList<string> imports)
+        protected void ValidateImportAndAdd(
+            string importName,
+            IList<string> imports)
         {
             if (!IsClassName(importName) && !IsPackageName(importName)) {
                 throw new ImportException("Invalid import name '" + importName + "'");
@@ -289,13 +310,18 @@ namespace com.espertech.esper.common.@internal.settings
             imports.Add(importName);
         }
 
-        protected ImportException MakeClassNotFoundEx(string className, Exception e)
+        protected ImportException MakeClassNotFoundEx(
+            string className,
+            Exception e)
         {
             return new ImportException(
                 "Could not load class by name '" + className + "', please check imports", e);
         }
 
-        protected ImportException Convert(Type clazz, Type[] paramTypes, MethodResolverNoSuchCtorException e)
+        protected ImportException Convert(
+            Type clazz,
+            Type[] paramTypes,
+            MethodResolverNoSuchCtorException e)
         {
             var expected = TypeHelper.GetParameterAsString(paramTypes);
             var message = "Could not find constructor ";
@@ -324,7 +350,11 @@ namespace com.espertech.esper.common.@internal.settings
         }
 
         protected ImportException Convert(
-            Type clazz, string methodName, Type[] paramTypes, MethodResolverNoSuchMethodException e, bool isInstance)
+            Type clazz,
+            string methodName,
+            Type[] paramTypes,
+            MethodResolverNoSuchMethodException e,
+            bool isInstance)
         {
             var expected = TypeHelper.GetParameterAsString(paramTypes);
             var message = "Could not find ";

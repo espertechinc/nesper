@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.subselect;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.update
@@ -23,14 +21,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         private readonly IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects;
 
         public StatementAgentInstanceFactoryUpdateForge(
-            InternalEventRouterDescForge forge, IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects)
+            InternalEventRouterDescForge forge,
+            IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects)
         {
             this.forge = forge;
             this.subselects = subselects;
         }
 
         public CodegenMethod InitializeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryUpdate), GetType(), classScope);
             method.Block

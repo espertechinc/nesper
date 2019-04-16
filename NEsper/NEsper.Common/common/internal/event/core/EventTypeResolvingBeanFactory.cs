@@ -14,14 +14,24 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public interface EventTypeResolvingBeanFactory
     {
-        EventBean AdapterForObjectArray(object[] theEvent, string eventTypeName);
+        EventBean AdapterForObjectArray(
+            object[] theEvent,
+            string eventTypeName);
 
-        EventBean AdapterForBean(object data, string eventTypeName);
+        EventBean AdapterForBean(
+            object data,
+            string eventTypeName);
 
-        EventBean AdapterForMap(IDictionary<string, object> map, string eventTypeName);
+        EventBean AdapterForMap(
+            IDictionary<string, object> map,
+            string eventTypeName);
 
-        EventBean AdapterForXMLDOM(XmlNode node, string eventTypeName);
+        EventBean AdapterForXMLDOM(
+            XmlNode node,
+            string eventTypeName);
 
-        EventBean AdapterForAvro(object avroGenericDataDotRecord, string eventTypeName);
+        EventBean AdapterForAvro(
+            object avroGenericDataDotRecord,
+            string eventTypeName);
     }
 } // end of namespace

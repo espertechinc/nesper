@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -25,7 +24,6 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
@@ -51,7 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         private static readonly CountMinSketchAgentStringUTF16Forge DEFAULT_AGENT =
             new CountMinSketchAgentStringUTF16Forge();
 
-        public ExprAggMultiFunctionCountMinSketchNode(bool distinct, CountMinSketchAggType aggType) : base(distinct)
+        public ExprAggMultiFunctionCountMinSketchNode(
+            bool distinct,
+            CountMinSketchAggType aggType)
+            : base(distinct)
         {
             AggType = aggType;
         }
@@ -70,23 +71,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         private string MessagePrefix => MSG_NAME + " aggregation function '" + AggType.GetFuncName() + "' ";
 
         public AggregationTableReadDesc ValidateAggregationTableRead(
-            ExprValidationContext context, TableMetadataColumnAggregation tableAccessColumn, TableMetaData table)
+            ExprValidationContext context,
+            TableMetadataColumnAggregation tableAccessColumn,
+            TableMetaData table)
         {
-            if (AggType == CountMinSketchAggType.STATE || AggType == CountMinSketchAggType.ADD)
-            {
+            if (AggType == CountMinSketchAggType.STATE || AggType == CountMinSketchAggType.ADD) {
                 throw new ExprValidationException(MessagePrefix + "cannot not be used for table access");
             }
 
-            if (!(tableAccessColumn.AggregationPortableValidation is AggregationPortableValidationCountMinSketch))
-            {
+            if (!(tableAccessColumn.AggregationPortableValidation is AggregationPortableValidationCountMinSketch)) {
                 throw new ExprValidationException(MessagePrefix + "can only be used with count-min-sketch");
             }
 
             AggregationTableAccessAggReaderForge forge;
-            if (AggType == CountMinSketchAggType.FREQ)
-            {
-                if (positionalParams.Length == 0 || positionalParams.Length > 1)
-                {
+            if (AggType == CountMinSketchAggType.FREQ) {
+                if (positionalParams.Length == 0 || positionalParams.Length > 1) {
                     throw new ExprValidationException(MessagePrefix + "requires a single parameter expression");
                 }
 
@@ -94,10 +93,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 var frequencyEval = ChildNodes[0];
                 forge = new AgregationTAAReaderCountMinSketchFreqForge(frequencyEval);
             }
-            else
-            {
-                if (positionalParams.Length != 0)
-                {
+            else {
+                if (positionalParams.Length != 0) {
                     throw new ExprValidationException(MessagePrefix + "requires a no parameter expressions");
                 }
 
@@ -110,7 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
         public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
@@ -118,61 +116,69 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         public Type ComponentTypeCollection => null;
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return null;
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
         internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            if (IsDistinct)
-            {
+            if (IsDistinct) {
                 throw new ExprValidationException(MessagePrefix + "is not supported with distinct");
             }
 
             // for declaration, validate the specification and return the state factory
-            if (AggType == CountMinSketchAggType.STATE)
-            {
-                if (validationContext.StatementRawInfo.StatementType != StatementType.CREATE_TABLE)
-                {
+            if (AggType == CountMinSketchAggType.STATE) {
+                if (validationContext.StatementRawInfo.StatementType != StatementType.CREATE_TABLE) {
                     throw new ExprValidationException(MessagePrefix + "can only be used in create-table statements");
                 }
 
@@ -181,19 +187,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 return new AggregationForgeFactoryAccessCountMinSketchState(this, stateFactory);
             }
 
-            if (AggType != CountMinSketchAggType.ADD)
-            {
+            if (AggType != CountMinSketchAggType.ADD) {
                 // other methods are only used with table-access expressions
                 throw new ExprValidationException(MessagePrefix + "requires the use of a table-access expression");
             }
 
-            if (validationContext.StatementRawInfo.IntoTableName == null)
-            {
+            if (validationContext.StatementRawInfo.IntoTableName == null) {
                 throw new ExprValidationException(MessagePrefix + "can only be used with into-table");
             }
 
-            if (positionalParams.Length == 0 || positionalParams.Length > 1)
-            {
+            if (positionalParams.Length == 0 || positionalParams.Length > 1) {
                 throw new ExprValidationException(MessagePrefix + "requires a single parameter expression");
             }
 
@@ -202,8 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             // obtain evaluator
             ExprForge addOrFrequencyEvaluator = null;
             Type addOrFrequencyEvaluatorReturnType = null;
-            if (AggType == CountMinSketchAggType.ADD || AggType == CountMinSketchAggType.FREQ)
-            {
+            if (AggType == CountMinSketchAggType.ADD || AggType == CountMinSketchAggType.FREQ) {
                 addOrFrequencyEvaluator = ChildNodes[0].Forge;
                 addOrFrequencyEvaluatorReturnType = addOrFrequencyEvaluator.EvaluationType;
             }
@@ -224,21 +226,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             var spec = new CountMinSketchSpecForge(hashes, null, DEFAULT_AGENT);
 
             // no parameters
-            if (ChildNodes.Length == 0)
-            {
+            if (ChildNodes.Length == 0) {
                 return spec;
             }
 
             // check expected parameter type: a json object
-            if (ChildNodes.Length > 1 || !(ChildNodes[0] is ExprConstantNode))
-            {
+            if (ChildNodes.Length > 1 || !(ChildNodes[0] is ExprConstantNode)) {
                 throw DeclaredWrongParameterExpr;
             }
 
-            var constantNode = (ExprConstantNode)ChildNodes[0];
+            var constantNode = (ExprConstantNode) ChildNodes[0];
             var valueX = constantNode.ConstantValue;
-            if (!valueX.GetType().IsGenericStringDictionary())
-            {
+            if (!valueX.GetType().IsGenericStringDictionary()) {
                 throw DeclaredWrongParameterExpr;
             }
 

@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
     {
         public class SelectExprInsertNativeExpressionCoerceAvro : SelectExprInsertNativeExpressionCoerceBase
         {
-            internal SelectExprInsertNativeExpressionCoerceAvro(EventType eventType, ExprForge exprForge)
+            internal SelectExprInsertNativeExpressionCoerceAvro(
+                EventType eventType,
+                ExprForge exprForge)
                 : base(eventType, exprForge)
             {
             }
@@ -38,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                         exprForge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("result")
                     .MethodReturn(
-                        CodegenExpressionBuilder.ExprDotMethod(eventBeanFactory, "adapterForTypedAvro", CodegenExpressionBuilder.Ref("result"), resultEventType));
+                        CodegenExpressionBuilder.ExprDotMethod(
+                            eventBeanFactory, "adapterForTypedAvro", CodegenExpressionBuilder.Ref("result"), resultEventType));
                 return methodNode;
             }
         }

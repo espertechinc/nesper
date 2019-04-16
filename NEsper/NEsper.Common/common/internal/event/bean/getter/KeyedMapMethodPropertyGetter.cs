@@ -33,9 +33,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         private readonly MethodInfo method;
 
         public KeyedMapMethodPropertyGetter(
-            MethodInfo method, object key, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BeanEventTypeFactory beanEventTypeFactory) : base(
-            eventBeanTypedEventFactory, beanEventTypeFactory, TypeHelper.GetGenericReturnTypeMap(method, false), null)
+            MethodInfo method,
+            object key,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
+            : base(
+                eventBeanTypedEventFactory, beanEventTypeFactory, TypeHelper.GetGenericReturnTypeMap(method, false), null)
         {
             this.key = key;
             this.method = method;
@@ -67,7 +70,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public override Type TargetType => method.DeclaringType;
 
         public override CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -75,14 +79,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
@@ -91,27 +97,34 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
-        public object Get(EventBean eventBean, string mapKey)
+        public object Get(
+            EventBean eventBean,
+            string mapKey)
         {
             return GetBeanPropInternal(eventBean.Underlying, mapKey);
         }
 
         public CodegenExpression EventBeanGetMappedCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope,
-            CodegenExpression beanExpression, CodegenExpression key)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            CodegenExpression beanExpression,
+            CodegenExpression key)
         {
             return LocalMethod(
                 GetBeanPropInternalCodegen(codegenMethodScope, BeanPropType, TargetType, method, codegenClassScope),
                 CastUnderlying(TargetType, beanExpression), key);
         }
 
-        public object GetBeanPropInternal(object @object, object key)
+        public object GetBeanPropInternal(
+            object @object,
+            object key)
         {
             try {
                 var result = method.Invoke(@object, null);
@@ -122,13 +135,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 var resultMap = (IDictionary<object, object>) result;
                 return resultMap.Get(key);
             }
-            catch (ClassCastException e) {
+            catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(method, @object, e);
             }
         }
 
         private static CodegenMethod GetBeanPropInternalCodegen(
-            CodegenMethodScope codegenMethodScope, Type beanPropType, Type targetType, MethodInfo method,
+            CodegenMethodScope codegenMethodScope,
+            Type beanPropType,
+            Type targetType,
+            MethodInfo method,
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(beanPropType, typeof(KeyedMapMethodPropertyGetter), codegenClassScope)

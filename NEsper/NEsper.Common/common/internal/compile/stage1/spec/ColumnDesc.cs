@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// </summary>
         /// <param name="name">column name</param>
         /// <param name="type">type</param>
-        public ColumnDesc(string name, string type)
+        public ColumnDesc(
+            string name,
+            string type)
         {
             Name = name;
             Type = type;

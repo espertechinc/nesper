@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -22,8 +21,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class TypeWidenerFactory
     {
-        private static readonly TypeWidenerSPI STRING_TO_CHAR_COERCER = new ProxyTypeWidenerSPI
-        {
+        private static readonly TypeWidenerSPI STRING_TO_CHAR_COERCER = new ProxyTypeWidenerSPI {
             ProcWiden = input => SimpleTypeCasterFactory.CharTypeCaster.Cast(input),
             ProcWidenCodegen = (
                     expression,
@@ -84,20 +82,16 @@ namespace com.espertech.esper.common.@internal.util
             var columnClassBoxed = columnType.GetBoxedType();
             var targetClassBoxed = writeablePropertyType.GetBoxedType();
 
-            if (customizer != null)
-            {
+            if (customizer != null) {
                 var custom = customizer.WidenerFor(
                     columnName, columnType, writeablePropertyType, writeablePropertyName, statementName);
-                if (custom != null)
-                {
+                if (custom != null) {
                     return custom;
                 }
             }
 
-            if (columnType == null)
-            {
-                if (writeablePropertyType.IsPrimitive)
-                {
+            if (columnType == null) {
+                if (writeablePropertyType.IsPrimitive) {
                     var message = "Invalid assignment of column '" + columnName +
                                   "' of null type to event property '" + writeablePropertyName +
                                   "' typed as '" + writeablePropertyType.Name +
@@ -105,32 +99,26 @@ namespace com.espertech.esper.common.@internal.util
                     throw new TypeWidenerException(message);
                 }
             }
-            else if (columnClassBoxed != targetClassBoxed)
-            {
-                if (columnClassBoxed == typeof(string) && targetClassBoxed == typeof(char?))
-                {
+            else if (columnClassBoxed != targetClassBoxed) {
+                if (columnClassBoxed == typeof(string) && targetClassBoxed == typeof(char?)) {
                     return STRING_TO_CHAR_COERCER;
                 }
 
                 if (allowObjectArrayToCollectionConversion &&
                     columnClassBoxed.IsArray &&
                     !columnClassBoxed.GetElementType().IsPrimitive &&
-                    targetClassBoxed.IsImplementsInterface(typeof(ICollection<object>)))
-                {
+                    targetClassBoxed.IsImplementsInterface(typeof(ICollection<object>))) {
                     return OBJECT_ARRAY_TO_COLLECTION_COERCER;
                 }
 
-                if (!columnClassBoxed.IsAssignmentCompatible(targetClassBoxed))
-                {
+                if (!columnClassBoxed.IsAssignmentCompatible(targetClassBoxed)) {
                     var writablePropName = writeablePropertyType.Name;
-                    if (writeablePropertyType.IsArray)
-                    {
+                    if (writeablePropertyType.IsArray) {
                         writablePropName = writeablePropertyType.GetElementType().Name + "[]";
                     }
 
                     var columnTypeName = columnType.Name;
-                    if (columnType.IsArray)
-                    {
+                    if (columnType.IsArray) {
                         columnTypeName = columnType.GetElementType().Name + "[]";
                     }
 
@@ -142,8 +130,7 @@ namespace com.espertech.esper.common.@internal.util
                     throw new TypeWidenerException(message);
                 }
 
-                if (writeablePropertyType.IsNumeric())
-                {
+                if (writeablePropertyType.IsNumeric()) {
                     return new TypeWidenerBoxedNumeric(
                         SimpleNumberCoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
                 }
@@ -154,48 +141,39 @@ namespace com.espertech.esper.common.@internal.util
 
         public static TypeWidenerSPI GetArrayToCollectionCoercer(Type componentType)
         {
-            if (!componentType.IsPrimitive)
-            {
+            if (!componentType.IsPrimitive) {
                 return OBJECT_ARRAY_TO_COLLECTION_COERCER;
             }
 
-            if (componentType == typeof(byte))
-            {
+            if (componentType == typeof(byte)) {
                 return BYTE_ARRAY_TO_COLLECTION_COERCER;
             }
 
-            if (componentType == typeof(short))
-            {
+            if (componentType == typeof(short)) {
                 return SHORT_ARRAY_TO_COLLECTION_COERCER;
             }
 
-            if (componentType == typeof(int))
-            {
+            if (componentType == typeof(int)) {
                 return INT_ARRAY_TO_COLLECTION_COERCER;
             }
 
-            if (componentType == typeof(long))
-            {
+            if (componentType == typeof(long)) {
                 return LONG_ARRAY_TO_COLLECTION_COERCER;
             }
 
-            if (componentType == typeof(float))
-            {
+            if (componentType == typeof(float)) {
                 return FLOAT_ARRAY_TO_COLLECTION_COERCER;
             }
 
-            if (componentType == typeof(double))
-            {
+            if (componentType == typeof(double)) {
                 return DOUBLE_ARRAY_TO_COLLECTION_COERCER;
             }
 
-            if (componentType == typeof(bool))
-            {
+            if (componentType == typeof(bool)) {
                 return BOOLEAN_ARRAY_TO_COLLECTION_COERCER;
             }
 
-            if (componentType == typeof(char))
-            {
+            if (componentType == typeof(char)) {
                 return CHAR_ARRAY_TO_COLLECTION_COERCER;
             }
 

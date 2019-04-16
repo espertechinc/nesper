@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         private readonly ExprEvaluator expression;
         private readonly Quitable quitable;
 
-        public ExpressionGuard(MatchedEventConvertor convertor, ExprEvaluator expression, Quitable quitable)
+        public ExpressionGuard(
+            MatchedEventConvertor convertor,
+            ExprEvaluator expression,
+            Quitable quitable)
         {
             this.quitable = quitable;
             this.convertor = convertor;

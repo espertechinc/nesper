@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.compat;
@@ -32,16 +31,18 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
         }
 
-        public DefaultSupportCaptureOp(int latchedNumRows, ILockManager lockManager)
+        public DefaultSupportCaptureOp(
+            int latchedNumRows,
+            ILockManager lockManager)
             : base(latchedNumRows, lockManager)
         {
         }
     }
 
     public class DefaultSupportCaptureOp<T>
-        : DataFlowOperator
-        , EPDataFlowSignalHandler
-        , Future<Object[]>
+        : DataFlowOperator,
+            EPDataFlowSignalHandler,
+            Future<Object[]>
     {
         private IList<IList<T>> _received = new List<IList<T>>();
         private IList<T> _current = new List<T>();
@@ -55,12 +56,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
         }
 
-        public DefaultSupportCaptureOp(int latchedNumRows, ILockManager lockManager)
+        public DefaultSupportCaptureOp(
+            int latchedNumRows,
+            ILockManager lockManager)
             : this(latchedNumRows, lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType))
         {
         }
 
-        public DefaultSupportCaptureOp(int latchedNumRows, ILockable iLock)
+        public DefaultSupportCaptureOp(
+            int latchedNumRows,
+            ILockable iLock)
         {
             _numRowLatch = new CountDownLatch(latchedNumRows);
             _iLock = iLock;
@@ -68,11 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public void OnInput(T theEvent)
         {
-            using (_iLock.Acquire())
-            {
+            using (_iLock.Acquire()) {
                 _current.Add(theEvent);
-                if (_numRowLatch != null)
-                {
+                if (_numRowLatch != null) {
                     _numRowLatch.CountDown();
                 }
             }
@@ -86,8 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public IList<IList<T>> GetAndReset()
         {
-            using (_iLock.Acquire())
-            {
+            using (_iLock.Acquire()) {
                 IList<IList<T>> resultEvents = _received;
                 _received = new List<IList<T>>();
                 _current.Clear();
@@ -105,16 +107,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public Object[] GetCurrentAndReset()
         {
-            using (_iLock.Acquire())
-            {
+            using (_iLock.Acquire()) {
                 Object[] currentArray = _current.UnwrapIntoArray<object>();
                 _current.Clear();
                 return currentArray;
             }
         }
 
-        public bool HasValue
-        {
+        public bool HasValue {
             get { return _numRowLatch.Count <= 0; }
         }
 
@@ -131,14 +131,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         public Object[] GetValue(TimeSpan timeOut)
         {
             bool result = _numRowLatch.Await(timeOut);
-            if (!result)
-            {
+            if (!result) {
                 throw new TimeoutException("latch timed out");
             }
+
             return Current;
         }
 
-        public object[] GetValue(int units, TimeUnit timeUnit)
+        public object[] GetValue(
+            int units,
+            TimeUnit timeUnit)
         {
             return GetValue(TimeUnitHelper.ToTimeSpan(units, timeUnit));
         }
@@ -149,6 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             if (!result) {
                 throw new TimeoutException("latch timed out");
             }
+
             return _received[0].Cast<object>().ToArray();
         }
 
@@ -156,30 +159,28 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         /// <param name="msecWait">to wait</param>
         /// <param name="numberOfNewEvents">in any number of separate invocations required before returning</param>
         /// <throws>RuntimeException when no results or insufficient number of events were received</throws>
-        public void WaitForInvocation(long msecWait, int numberOfNewEvents)
+        public void WaitForInvocation(
+            long msecWait,
+            int numberOfNewEvents)
         {
             long startTime = DateTimeHelper.CurrentTimeMillis;
-            while (true)
-            {
-                using (_iLock.Acquire())
-                {
-                    if ((DateTimeHelper.CurrentTimeMillis - startTime) > msecWait)
-                    {
-                        throw new ApplicationException("No events or less then the number of expected events received, expected " + numberOfNewEvents + " received " + _current.Count);
+            while (true) {
+                using (_iLock.Acquire()) {
+                    if ((DateTimeHelper.CurrentTimeMillis - startTime) > msecWait) {
+                        throw new ApplicationException(
+                            "No events or less then the number of expected events received, expected " + numberOfNewEvents + " received " +
+                            _current.Count);
                     }
 
-                    if (_current.Count >= numberOfNewEvents)
-                    {
+                    if (_current.Count >= numberOfNewEvents) {
                         return;
                     }
                 }
 
-                try
-                {
+                try {
                     Thread.Sleep(50);
                 }
-                catch (ThreadInterruptedException)
-                {
+                catch (ThreadInterruptedException) {
                     return;
                 }
             }

@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
         string[][] UniqueIndexes { get; }
 
-        CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 
     public static class FireAndForgetProcessorForgeExtensions

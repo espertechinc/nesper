@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
@@ -32,10 +30,19 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         }
 
         public TableMetaData(
-            string tableName, string tableModuleName, NameAccessModifier tableVisibility, string optionalContextName,
-            NameAccessModifier optionalContextVisibility, string optionalContextModule, EventType internalEventType,
-            EventType publicEventType, string[] keyColumns, Type[] keyTypes, int[] keyColNums,
-            IDictionary<string, TableMetadataColumn> columns, int numMethodAggs)
+            string tableName,
+            string tableModuleName,
+            NameAccessModifier tableVisibility,
+            string optionalContextName,
+            NameAccessModifier optionalContextVisibility,
+            string optionalContextModule,
+            EventType internalEventType,
+            EventType publicEventType,
+            string[] keyColumns,
+            Type[] keyTypes,
+            int[] keyColNums,
+            IDictionary<string, TableMetadataColumn> columns,
+            int numMethodAggs)
         {
             TableName = tableName;
             TableModuleName = tableModuleName;
@@ -107,7 +114,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, ModuleTableInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ModuleTableInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(TableMetaData), GetType(), classScope);
             method.Block
@@ -154,7 +163,11 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             }
         }
 
-        public void AddIndex(string indexName, string indexModuleName, IndexMultiKey imk, QueryPlanIndexItem indexItem)
+        public void AddIndex(
+            string indexName,
+            string indexModuleName,
+            IndexMultiKey imk,
+            QueryPlanIndexItem indexItem)
         {
             IndexMetadata.AddIndexExplicit(false, imk, indexName, indexModuleName, indexItem, "");
         }

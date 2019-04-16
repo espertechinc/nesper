@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprEqualsNodeForgeNC : ExprEqualsNodeForge
     {
-        public ExprEqualsNodeForgeNC(ExprEqualsNodeImpl parent) : base(parent)
+        public ExprEqualsNodeForgeNC(ExprEqualsNodeImpl parent)
+            : base(parent)
         {
         }
 
@@ -37,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -46,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var lhs = ForgeRenderable.ChildNodes[0].Forge;

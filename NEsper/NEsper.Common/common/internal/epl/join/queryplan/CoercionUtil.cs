@@ -8,10 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.join.querygraph;
+using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.common.@internal.epl.lookupplan;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -19,176 +18,217 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
-	public class CoercionUtil {
+    public class CoercionUtil
+    {
+        private static readonly Type[] NULL_ARRAY = new Type[0];
 
-	    private static readonly Type[] NULL_ARRAY = new Type[0];
+        public static CoercionDesc GetCoercionTypesRange(
+            EventType[] typesPerStream,
+            int indexedStream,
+            string[] indexedProp,
+            IList<QueryGraphValueEntryRangeForge> rangeEntries)
+        {
+            if (rangeEntries.IsEmpty()) {
+                return new CoercionDesc(false, NULL_ARRAY);
+            }
 
-	    public static CoercionDesc GetCoercionTypesRange(EventType[] typesPerStream, int indexedStream, string[] indexedProp, IList<QueryGraphValueEntryRangeForge> rangeEntries) {
-	        if (rangeEntries.IsEmpty()) {
-	            return new CoercionDesc(false, NULL_ARRAY);
-	        }
+            var coercionTypes = new Type[rangeEntries.Count];
+            var mustCoerce = false;
+            for (var i = 0; i < rangeEntries.Count; i++) {
+                var entry = rangeEntries[i];
 
-	        Type[] coercionTypes = new Type[rangeEntries.Count];
-	        bool mustCoerce = false;
-	        for (int i = 0; i < rangeEntries.Count; i++) {
-	            QueryGraphValueEntryRangeForge entry = rangeEntries.Get(i);
+                var indexed = indexedProp[i];
+                var valuePropType = typesPerStream[indexedStream].GetPropertyType(indexed).GetBoxedType();
+                Type coercionType;
 
-	            string indexed = indexedProp[i];
-	            Type valuePropType = Boxing.GetBoxedType(typesPerStream[indexedStream].GetPropertyType(indexed));
-	            Type coercionType;
+                if (entry.Type.IsRange) {
+                    var rangeIn = (QueryGraphValueEntryRangeInForge) entry;
+                    coercionType = GetCoercionTypeRangeIn(valuePropType, rangeIn.ExprStart, rangeIn.ExprEnd);
+                }
+                else {
+                    var relOp = (QueryGraphValueEntryRangeRelOpForge) entry;
+                    coercionType = GetCoercionType(valuePropType, relOp.Expression.Forge.EvaluationType);
+                }
 
-	            if (entry.Type.IsRange) {
-	                QueryGraphValueEntryRangeInForge rangeIn = (QueryGraphValueEntryRangeInForge) entry;
-	                coercionType = GetCoercionTypeRangeIn(valuePropType, rangeIn.ExprStart, rangeIn.ExprEnd);
-	            } else {
-	                QueryGraphValueEntryRangeRelOpForge relOp = (QueryGraphValueEntryRangeRelOpForge) entry;
-	                coercionType = GetCoercionType(valuePropType, relOp.Expression.Forge.EvaluationType);
-	            }
+                if (coercionType == null) {
+                    coercionTypes[i] = valuePropType;
+                }
+                else {
+                    mustCoerce = true;
+                    coercionTypes[i] = coercionType;
+                }
+            }
 
-	            if (coercionType == null) {
-	                coercionTypes[i] = valuePropType;
-	            } else {
-	                mustCoerce = true;
-	                coercionTypes[i] = coercionType;
-	            }
-	        }
+            return new CoercionDesc(mustCoerce, coercionTypes);
+        }
 
-	        return new CoercionDesc(mustCoerce, coercionTypes);
-	    }
+        /// <summary>
+        ///     Returns null if no coercion is required, or an array of classes for use in coercing the
+        ///     lookup keys and index keys into a common type.
+        /// </summary>
+        /// <param name="typesPerStream">is the event types for each stream</param>
+        /// <param name="lookupStream">is the stream looked up from</param>
+        /// <param name="indexedStream">is the indexed stream</param>
+        /// <param name="keyProps">is the properties to use to look up</param>
+        /// <param name="indexProps">is the properties to index on</param>
+        /// <returns>coercion types, or null if none required</returns>
+        public static CoercionDesc GetCoercionTypesHash(
+            EventType[] typesPerStream,
+            int lookupStream,
+            int indexedStream,
+            IList<QueryGraphValueEntryHashKeyedForge> keyProps,
+            string[] indexProps)
+        {
+            if (indexProps.Length == 0 && keyProps.Count == 0) {
+                return new CoercionDesc(false, NULL_ARRAY);
+            }
 
-	    /// <summary>
-	    /// Returns null if no coercion is required, or an array of classes for use in coercing the
-	    /// lookup keys and index keys into a common type.
-	    /// </summary>
-	    /// <param name="typesPerStream">is the event types for each stream</param>
-	    /// <param name="lookupStream">is the stream looked up from</param>
-	    /// <param name="indexedStream">is the indexed stream</param>
-	    /// <param name="keyProps">is the properties to use to look up</param>
-	    /// <param name="indexProps">is the properties to index on</param>
-	    /// <returns>coercion types, or null if none required</returns>
-	    public static CoercionDesc GetCoercionTypesHash(EventType[] typesPerStream,
-	                                                    int lookupStream,
-	                                                    int indexedStream,
-	                                                    IList<QueryGraphValueEntryHashKeyedForge> keyProps,
-	                                                    string[] indexProps) {
-	        if (indexProps.Length == 0 && keyProps.Count == 0) {
-	            return new CoercionDesc(false, NULL_ARRAY);
-	        }
-	        if (indexProps.Length != keyProps.Count) {
-	            throw new IllegalStateException("Mismatch in the number of key and index properties");
-	        }
+            if (indexProps.Length != keyProps.Count) {
+                throw new IllegalStateException("Mismatch in the number of key and index properties");
+            }
 
-	        Type[] coercionTypes = new Type[indexProps.Length];
-	        bool mustCoerce = false;
-	        for (int i = 0; i < keyProps.Count; i++) {
-	            Type keyPropType;
-	            if (keyProps.Get(i) is QueryGraphValueEntryHashKeyedForgeExpr) {
-	                QueryGraphValueEntryHashKeyedForgeExpr hashExpr = (QueryGraphValueEntryHashKeyedForgeExpr) keyProps.Get(i);
-	                keyPropType = hashExpr.KeyExpr.Forge.EvaluationType;
-	            } else {
-	                QueryGraphValueEntryHashKeyedForgeProp hashKeyProp = (QueryGraphValueEntryHashKeyedForgeProp) keyProps.Get(i);
-	                keyPropType = Boxing.GetBoxedType(typesPerStream[lookupStream].GetPropertyType(hashKeyProp.KeyProperty));
-	            }
+            var coercionTypes = new Type[indexProps.Length];
+            var mustCoerce = false;
+            for (var i = 0; i < keyProps.Count; i++) {
+                Type keyPropType;
+                if (keyProps[i] is QueryGraphValueEntryHashKeyedForgeExpr) {
+                    var hashExpr = (QueryGraphValueEntryHashKeyedForgeExpr) keyProps[i];
+                    keyPropType = hashExpr.KeyExpr.Forge.EvaluationType;
+                }
+                else {
+                    var hashKeyProp = (QueryGraphValueEntryHashKeyedForgeProp) keyProps[i];
+                    keyPropType = typesPerStream[lookupStream].GetPropertyType(hashKeyProp.KeyProperty).GetBoxedType();
+                }
 
-	            Type indexedPropType = Boxing.GetBoxedType(typesPerStream[indexedStream].GetPropertyType(indexProps[i]));
-	            Type coercionType = indexedPropType;
-	            if (keyPropType != indexedPropType) {
-	                coercionType = TypeHelper.GetCompareToCoercionType(keyPropType, indexedPropType);
-	                mustCoerce = true;
-	            }
-	            coercionTypes[i] = coercionType;
-	        }
-	        return new CoercionDesc(mustCoerce, coercionTypes);
-	    }
+                var indexedPropType = typesPerStream[indexedStream].GetPropertyType(indexProps[i]).GetBoxedType();
+                var coercionType = indexedPropType;
+                if (keyPropType != indexedPropType) {
+                    coercionType = keyPropType.GetCompareToCoercionType(indexedPropType);
+                    mustCoerce = true;
+                }
 
-	    public static Type GetCoercionTypeRange(EventType indexedType, string indexedProp, SubordPropRangeKeyForge rangeKey) {
-	        QueryGraphValueEntryRangeForge desc = rangeKey.RangeInfo;
-	        if (desc.Type.IsRange) {
-	            QueryGraphValueEntryRangeInForge rangeIn = (QueryGraphValueEntryRangeInForge) desc;
-	            return GetCoercionTypeRangeIn(indexedType.GetPropertyType(indexedProp), rangeIn.ExprStart, rangeIn.ExprEnd);
-	        } else {
-	            QueryGraphValueEntryRangeRelOpForge relOp = (QueryGraphValueEntryRangeRelOpForge) desc;
-	            return GetCoercionType(indexedType.GetPropertyType(indexedProp), relOp.Expression.Forge.EvaluationType);
-	        }
-	    }
+                coercionTypes[i] = coercionType;
+            }
 
-	    public static CoercionDesc GetCoercionTypesRange(EventType viewableEventType, IDictionary<string, SubordPropRangeKeyForge> rangeProps, EventType[] typesPerStream) {
-	        if (rangeProps.IsEmpty()) {
-	            return new CoercionDesc(false, NULL_ARRAY);
-	        }
+            return new CoercionDesc(mustCoerce, coercionTypes);
+        }
 
-	        Type[] coercionTypes = new Type[rangeProps.Count];
-	        bool mustCoerce = false;
-	        int count = 0;
-	        foreach (KeyValuePair<string, SubordPropRangeKeyForge> entry in rangeProps) {
-	            SubordPropRangeKeyForge subQRange = entry.Value;
-	            QueryGraphValueEntryRangeForge rangeDesc = entry.Value.RangeInfo;
+        public static Type GetCoercionTypeRange(
+            EventType indexedType,
+            string indexedProp,
+            SubordPropRangeKeyForge rangeKey)
+        {
+            var desc = rangeKey.RangeInfo;
+            if (desc.Type.IsRange) {
+                var rangeIn = (QueryGraphValueEntryRangeInForge) desc;
+                return GetCoercionTypeRangeIn(indexedType.GetPropertyType(indexedProp), rangeIn.ExprStart, rangeIn.ExprEnd);
+            }
 
-	            Type valuePropType = Boxing.GetBoxedType(viewableEventType.GetPropertyType(entry.Key));
-	            Type coercionType;
+            var relOp = (QueryGraphValueEntryRangeRelOpForge) desc;
+            return GetCoercionType(indexedType.GetPropertyType(indexedProp), relOp.Expression.Forge.EvaluationType);
+        }
 
-	            if (rangeDesc.Type.IsRange) {
-	                QueryGraphValueEntryRangeInForge rangeIn = (QueryGraphValueEntryRangeInForge) rangeDesc;
-	                coercionType = GetCoercionTypeRangeIn(valuePropType, rangeIn.ExprStart, rangeIn.ExprEnd);
-	            } else {
-	                QueryGraphValueEntryRangeRelOpForge relOp = (QueryGraphValueEntryRangeRelOpForge) rangeDesc;
-	                coercionType = GetCoercionType(valuePropType, relOp.Expression.Forge.EvaluationType);
-	            }
+        public static CoercionDesc GetCoercionTypesRange(
+            EventType viewableEventType,
+            IDictionary<string, SubordPropRangeKeyForge> rangeProps,
+            EventType[] typesPerStream)
+        {
+            if (rangeProps.IsEmpty()) {
+                return new CoercionDesc(false, NULL_ARRAY);
+            }
 
-	            if (coercionType == null) {
-	                coercionTypes[count++] = valuePropType;
-	            } else {
-	                mustCoerce = true;
-	                coercionTypes[count++] = coercionType;
-	            }
-	        }
-	        return new CoercionDesc(mustCoerce, coercionTypes);
-	    }
+            var coercionTypes = new Type[rangeProps.Count];
+            var mustCoerce = false;
+            var count = 0;
+            foreach (var entry in rangeProps) {
+                var subQRange = entry.Value;
+                var rangeDesc = entry.Value.RangeInfo;
 
-	    private static Type GetCoercionType(Type valuePropType, Type keyPropTypeExpr) {
-	        Type coercionType = null;
-	        Type keyPropType = Boxing.GetBoxedType(keyPropTypeExpr);
-	        if (valuePropType != keyPropType) {
-	            coercionType = TypeHelper.GetCompareToCoercionType(valuePropType, keyPropType);
-	        }
-	        return coercionType;
-	    }
+                var valuePropType = viewableEventType.GetPropertyType(entry.Key).GetBoxedType();
+                Type coercionType;
 
-	    public static CoercionDesc GetCoercionTypesHash(EventType viewableEventType, string[] indexProps, IList<SubordPropHashKeyForge> hashKeys) {
-	        if (indexProps.Length == 0 && hashKeys.Count == 0) {
-	            return new CoercionDesc(false, NULL_ARRAY);
-	        }
-	        if (indexProps.Length != hashKeys.Count) {
-	            throw new IllegalStateException("Mismatch in the number of key and index properties");
-	        }
+                if (rangeDesc.Type.IsRange) {
+                    var rangeIn = (QueryGraphValueEntryRangeInForge) rangeDesc;
+                    coercionType = GetCoercionTypeRangeIn(valuePropType, rangeIn.ExprStart, rangeIn.ExprEnd);
+                }
+                else {
+                    var relOp = (QueryGraphValueEntryRangeRelOpForge) rangeDesc;
+                    coercionType = GetCoercionType(valuePropType, relOp.Expression.Forge.EvaluationType);
+                }
 
-	        Type[] coercionTypes = new Type[indexProps.Length];
-	        bool mustCoerce = false;
-	        for (int i = 0; i < hashKeys.Count; i++) {
-	            Type keyPropType = Boxing.GetBoxedType(hashKeys.Get(i).HashKey.KeyExpr.Forge.EvaluationType);
-	            Type indexedPropType = Boxing.GetBoxedType(viewableEventType.GetPropertyType(indexProps[i]));
-	            Type coercionType = indexedPropType;
-	            if (keyPropType != indexedPropType) {
-	                coercionType = TypeHelper.GetCompareToCoercionType(keyPropType, indexedPropType);
-	                mustCoerce = true;
-	            }
-	            coercionTypes[i] = coercionType;
-	        }
-	        return new CoercionDesc(mustCoerce, coercionTypes);
-	    }
+                if (coercionType == null) {
+                    coercionTypes[count++] = valuePropType;
+                }
+                else {
+                    mustCoerce = true;
+                    coercionTypes[count++] = coercionType;
+                }
+            }
 
-	    public static Type GetCoercionTypeRangeIn(Type valuePropType, ExprNode exprStart, ExprNode exprEnd) {
-	        Type coercionType = null;
-	        Type startPropType = Boxing.GetBoxedType(exprStart.Forge.EvaluationType);
-	        Type endPropType = Boxing.GetBoxedType(exprEnd.Forge.EvaluationType);
+            return new CoercionDesc(mustCoerce, coercionTypes);
+        }
 
-	        if (valuePropType != startPropType) {
-	            coercionType = TypeHelper.GetCompareToCoercionType(valuePropType, startPropType);
-	        }
-	        if (valuePropType != endPropType) {
-	            coercionType = TypeHelper.GetCompareToCoercionType(coercionType, endPropType);
-	        }
-	        return coercionType;
-	    }
-	}
+        private static Type GetCoercionType(
+            Type valuePropType,
+            Type keyPropTypeExpr)
+        {
+            Type coercionType = null;
+            var keyPropType = keyPropTypeExpr.GetBoxedType();
+            if (valuePropType != keyPropType) {
+                coercionType = valuePropType.GetCompareToCoercionType(keyPropType);
+            }
+
+            return coercionType;
+        }
+
+        public static CoercionDesc GetCoercionTypesHash(
+            EventType viewableEventType,
+            string[] indexProps,
+            IList<SubordPropHashKeyForge> hashKeys)
+        {
+            if (indexProps.Length == 0 && hashKeys.Count == 0) {
+                return new CoercionDesc(false, NULL_ARRAY);
+            }
+
+            if (indexProps.Length != hashKeys.Count) {
+                throw new IllegalStateException("Mismatch in the number of key and index properties");
+            }
+
+            var coercionTypes = new Type[indexProps.Length];
+            var mustCoerce = false;
+            for (var i = 0; i < hashKeys.Count; i++) {
+                var keyPropType = hashKeys[i].HashKey.KeyExpr.Forge.EvaluationType.GetBoxedType();
+                var indexedPropType = viewableEventType.GetPropertyType(indexProps[i]).GetBoxedType();
+                var coercionType = indexedPropType;
+                if (keyPropType != indexedPropType) {
+                    coercionType = keyPropType.GetCompareToCoercionType(indexedPropType);
+                    mustCoerce = true;
+                }
+
+                coercionTypes[i] = coercionType;
+            }
+
+            return new CoercionDesc(mustCoerce, coercionTypes);
+        }
+
+        public static Type GetCoercionTypeRangeIn(
+            Type valuePropType,
+            ExprNode exprStart,
+            ExprNode exprEnd)
+        {
+            Type coercionType = null;
+            var startPropType = exprStart.Forge.EvaluationType.GetBoxedType();
+            var endPropType = exprEnd.Forge.EvaluationType.GetBoxedType();
+
+            if (valuePropType != startPropType) {
+                coercionType = valuePropType.GetCompareToCoercionType(startPropType);
+            }
+
+            if (valuePropType != endPropType) {
+                coercionType = coercionType.GetCompareToCoercionType(endPropType);
+            }
+
+            return coercionType;
+        }
+    }
 } // end of namespace

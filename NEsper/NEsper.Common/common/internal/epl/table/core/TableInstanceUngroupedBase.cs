@@ -17,13 +17,19 @@ namespace com.espertech.esper.common.@internal.epl.table.core
     public abstract class TableInstanceUngroupedBase : TableInstanceBase,
         TableInstanceUngrouped
     {
-        public TableInstanceUngroupedBase(Table table, AgentInstanceContext agentInstanceContext) : base(
-            table, agentInstanceContext)
+        public TableInstanceUngroupedBase(
+            Table table,
+            AgentInstanceContext agentInstanceContext)
+            : base(
+                table, agentInstanceContext)
         {
         }
 
         public override void AddExplicitIndex(
-            string indexName, string indexModuleName, QueryPlanIndexItem explicitIndexDesc, bool isRecoveringResilient)
+            string indexName,
+            string indexModuleName,
+            QueryPlanIndexItem explicitIndexDesc,
+            bool isRecoveringResilient)
         {
             throw new UnsupportedOperationException("Ungrouped tables do not allow explicit indexes");
         }

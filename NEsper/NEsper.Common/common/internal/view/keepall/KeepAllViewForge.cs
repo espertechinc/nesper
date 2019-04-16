@@ -23,12 +23,18 @@ namespace com.espertech.esper.common.@internal.view.keepall
     {
         public override string ViewName => "Keep-All";
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             ViewForgeSupport.ValidateNoParameters(ViewName, parameters);
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
@@ -44,7 +50,9 @@ namespace com.espertech.esper.common.@internal.view.keepall
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
         }

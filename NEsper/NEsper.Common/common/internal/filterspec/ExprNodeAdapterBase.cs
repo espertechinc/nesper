@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <returns>boolean result of the expression</returns>
         public abstract bool Evaluate(EventBean theEvent);
 
-        public ExprNodeAdapterBase(FilterSpecParamExprNode factory, ExprEvaluatorContext evaluatorContext)
+        public ExprNodeAdapterBase(
+            FilterSpecParamExprNode factory,
+            ExprEvaluatorContext evaluatorContext)
         {
             this.factory = factory;
             this.evaluatorContext = evaluatorContext;

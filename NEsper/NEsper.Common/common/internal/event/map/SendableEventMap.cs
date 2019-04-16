@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         private readonly IDictionary<string, object> @event;
         private readonly string typeName;
 
-        public SendableEventMap(IDictionary<string, object> @event, string typeName)
+        public SendableEventMap(
+            IDictionary<string, object> @event,
+            string typeName)
         {
             this.@event = @event;
             this.typeName = typeName;

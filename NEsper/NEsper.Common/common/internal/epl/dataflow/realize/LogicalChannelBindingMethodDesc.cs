@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
     public class LogicalChannelBindingMethodDesc
     {
-        public LogicalChannelBindingMethodDesc(MethodInfo method, LogicalChannelBindingType bindingType)
+        public LogicalChannelBindingMethodDesc(
+            MethodInfo method,
+            LogicalChannelBindingType bindingType)
         {
             Method = method;
             BindingType = bindingType;

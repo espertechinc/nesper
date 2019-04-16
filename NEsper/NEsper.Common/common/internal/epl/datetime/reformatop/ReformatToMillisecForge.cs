@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public FilterExprAnalyzerAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DatetimeMethodEnum currentMethod,
+            DateTimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {

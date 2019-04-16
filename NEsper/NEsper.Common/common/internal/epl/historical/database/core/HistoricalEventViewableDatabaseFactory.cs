@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.hook.type;
@@ -80,7 +79,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             return new HistoricalEventViewableDatabase(this, pollExecStrategy, agentInstanceContext);
         }
 
-        public override void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public override void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             try {
                 columnTypeConversionHook = (SQLColumnTypeConversion) ImportUtil

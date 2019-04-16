@@ -21,8 +21,7 @@ namespace com.espertech.esper.common.@internal.collection
     {
         public static IEnumerable<int[]> New(int[] numberSet)
         {
-            if (numberSet.Length < 6)
-            {
+            if (numberSet.Length < 6) {
                 throw new ArgumentException("Only supported for at least 6-number sets");
             }
 
@@ -39,6 +38,7 @@ namespace com.espertech.esper.common.@internal.collection
                     if (index >= numberSet.Length) {
                         index -= numberSet.Length;
                     }
+
                     result[i] = numberSet[index];
                 }
 
@@ -48,8 +48,7 @@ namespace com.espertech.esper.common.@internal.collection
             // Initialize the permutation
             // simply always make 4 buckets
             var buckets = new Dictionary<int, List<int>>();
-            for (int i = 0; i < numberSet.Length; i++)
-            {
+            for (int i = 0; i < numberSet.Length; i++) {
                 int bucketNum = i % 4;
                 List<int> bucket = buckets.Get(bucketNum);
                 if (bucket == null) {
@@ -64,14 +63,15 @@ namespace com.espertech.esper.common.@internal.collection
             // we throw the first one away, it is the same as a shift result
             permutationEnumerator.MoveNext();
 
-            while(permutationEnumerator.MoveNext()) {
+            while (permutationEnumerator.MoveNext()) {
                 yield return Translate(numberSet, buckets, permutationEnumerator.Current);
             }
         }
 
-        private static int[] Translate(int[] numberSet,
-                                       IDictionary<int, List<int>> buckets,
-                                       int[] bucketsPermuted)
+        private static int[] Translate(
+            int[] numberSet,
+            IDictionary<int, List<int>> buckets,
+            int[] bucketsPermuted)
         {
             int[] result = new int[numberSet.Length];
             int count = 0;
@@ -81,7 +81,8 @@ namespace com.espertech.esper.common.@internal.collection
                     result[count++] = j;
                 }
             }
+
             return result;
-        }    
+        }
     }
 }

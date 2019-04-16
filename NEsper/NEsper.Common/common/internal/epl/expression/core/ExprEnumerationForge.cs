@@ -24,21 +24,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         Type ComponentTypeCollection { get; }
 
         EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices);
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices);
 
         EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices);
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices);
 
         CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         ExprNodeRenderable ForgeRenderable { get; }

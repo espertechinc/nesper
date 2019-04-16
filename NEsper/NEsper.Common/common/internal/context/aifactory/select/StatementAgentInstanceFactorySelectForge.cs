@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -73,7 +71,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         }
 
         public CodegenMethod InitializeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols)
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactorySelect), GetType(), classScope);
             method.Block
@@ -88,8 +88,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.DeclareVar(
                 typeof(ViewableActivator[]), "activators",
                 NewArrayByLength(typeof(ViewableActivator), Constant(_viewableActivatorForges.Length)));
-            for (var i = 0; i < _viewableActivatorForges.Length; i++)
-            {
+            for (var i = 0; i < _viewableActivatorForges.Length; i++) {
                 method.Block.AssignArrayElement(
                     "activators", Constant(i), _viewableActivatorForges[i].MakeCodegen(method, symbols, classScope));
             }
@@ -100,10 +99,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.DeclareVar(
                 typeof(ViewFactory[][]), "viewFactories",
                 NewArrayByLength(typeof(ViewFactory[]), Constant(_views.Length)));
-            for (var i = 0; i < _views.Length; i++)
-            {
-                if (_views[i] != null)
-                {
+            for (var i = 0; i < _views.Length; i++) {
+                if (_views[i] != null) {
                     var array = ViewFactoryForgeUtil.CodegenForgesWInit(
                         _views[i], i, null, method, symbols, classScope);
                     method.Block.AssignArrayElement("viewFactories", Constant(i), array);
@@ -116,8 +113,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.DeclareVar(
                 typeof(ViewResourceDelegateDesc[]), "viewResourceDelegates",
                 NewArrayByLength(typeof(ViewResourceDelegateDesc), Constant(_viewResourceDelegates.Length)));
-            for (var i = 0; i < _viewResourceDelegates.Length; i++)
-            {
+            for (var i = 0; i < _viewResourceDelegates.Length; i++) {
                 method.Block.AssignArrayElement(
                     "viewResourceDelegates", Constant(i), _viewResourceDelegates[i].ToExpression());
             }
@@ -131,12 +127,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .ExprDotMethod(Ref("saiff"), "setResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
 
             // where-clause evaluator
-            if (_whereClauseForge != null)
-            {
+            if (_whereClauseForge != null) {
                 var whereEval = CodegenEvaluator(_whereClauseForge, method, GetType(), classScope);
                 method.Block.ExprDotMethod(Ref("saiff"), "setWhereClauseEvaluator", whereEval);
-                if (classScope.IsInstrumented)
-                {
+                if (classScope.IsInstrumented) {
                     method.Block.ExprDotMethod(
                         Ref("saiff"), "setWhereClauseEvaluatorTextForAudit",
                         Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(_whereClauseForge)));
@@ -144,8 +138,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             }
 
             // joins
-            if (_joinSetComposerPrototypeForge != null)
-            {
+            if (_joinSetComposerPrototypeForge != null) {
                 method.Block.ExprDotMethod(
                     Ref("saiff"), "setJoinSetComposerPrototype",
                     _joinSetComposerPrototypeForge.Make(method, symbols, classScope));
@@ -158,16 +151,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .ExprDotMethod(Ref("saiff"), "setOutputProcessViewFactoryProvider", Ref(OPVFACTORYPROVIDER));
 
             // subselects
-            if (!_subselects.IsEmpty())
-            {
+            if (!_subselects.IsEmpty()) {
                 method.Block.ExprDotMethod(
                     Ref("saiff"), "setSubselects",
                     SubSelectFactoryForge.CodegenInitMap(_subselects, GetType(), method, symbols, classScope));
             }
 
             // table-access
-            if (!_tableAccesses.IsEmpty())
-            {
+            if (!_tableAccesses.IsEmpty()) {
                 method.Block.ExprDotMethod(
                     Ref("saiff"), "setTableAccesses",
                     ExprTableEvalStrategyUtil.CodegenInitMap(_tableAccesses, GetType(), method, symbols, classScope));

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -25,14 +23,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         private readonly ExprEnumerationEval evaluator;
         private readonly EnumExceptForge forge;
 
-        public EnumExceptForgeEval(EnumExceptForge forge, ExprEnumerationEval evaluator)
+        public EnumExceptForgeEval(
+            EnumExceptForge forge,
+            ExprEnumerationEval evaluator)
         {
             this.forge = forge;
             this.evaluator = evaluator;
         }
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             if (enumcoll == null) {
                 return null;
@@ -49,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public static CodegenExpression Codegen(
-            EnumExceptForge forge, EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope,
+            EnumExceptForge forge,
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
@@ -84,8 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         /// <param name="scalar">indicator</param>
         /// <returns>intersection</returns>
         public static ICollection<EventBean> EnumExceptForgeEvalSet<T>(
-            ICollection<T> other, 
-            ICollection<T> enumcoll, 
+            ICollection<T> other,
+            ICollection<T> enumcoll,
             bool scalar)
         {
             if (other == null || other.IsEmpty() || enumcoll.IsEmpty()) {

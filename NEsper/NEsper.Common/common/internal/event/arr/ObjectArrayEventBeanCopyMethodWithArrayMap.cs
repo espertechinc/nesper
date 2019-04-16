@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         private readonly int[] mapIndexesToCopy;
 
         public ObjectArrayEventBeanCopyMethodWithArrayMap(
-            ObjectArrayEventType eventType, EventBeanTypedEventFactory eventAdapterService, int[] mapIndexesToCopy,
+            ObjectArrayEventType eventType,
+            EventBeanTypedEventFactory eventAdapterService,
+            int[] mapIndexesToCopy,
             int[] arrayIndexesToCopy)
         {
             this.eventType = eventType;
@@ -49,10 +51,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             foreach (var index in arrayIndexesToCopy) {
-                var array = shallowCopy[index];
-                if (array != null && array.GetType().IsArray && Array.GetLength(array) != 0) {
-                    object copied = Array.CreateInstance(array.GetType().GetElementType(), Array.GetLength(array));
-                    Array.Copy(array, 0, copied, 0, Array.GetLength(array));
+                var array = shallowCopy[index] as Array;
+                if (array != null && array.Length != 0) {
+                    var copied = Array.CreateInstance(array.GetType().GetElementType(), array.Length);
+                    array.CopyTo(copied, 0);
                     shallowCopy[index] = copied;
                 }
             }

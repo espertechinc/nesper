@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,48 +20,63 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createindex
 {
-	public class StatementAgentInstanceFactoryCreateIndexForge {
+    public class StatementAgentInstanceFactoryCreateIndexForge
+    {
+        private readonly EventType eventType;
+        private readonly string indexName;
+        private readonly string indexModuleName;
+        private readonly QueryPlanIndexItemForge explicitIndexDesc;
+        private readonly IndexMultiKey imk;
+        private readonly NamedWindowMetaData namedWindow;
+        private readonly TableMetaData table;
 
-	    private readonly EventType eventType;
-	    private readonly string indexName;
-	    private readonly string indexModuleName;
-	    private readonly QueryPlanIndexItemForge explicitIndexDesc;
-	    private readonly IndexMultiKey imk;
-	    private readonly NamedWindowMetaData namedWindow;
-	    private readonly TableMetaData table;
+        public StatementAgentInstanceFactoryCreateIndexForge(
+            EventType eventType,
+            string indexName,
+            string indexModuleName,
+            QueryPlanIndexItemForge explicitIndexDesc,
+            IndexMultiKey imk,
+            NamedWindowMetaData namedWindow,
+            TableMetaData table)
+        {
+            this.eventType = eventType;
+            this.indexName = indexName;
+            this.indexModuleName = indexModuleName;
+            this.explicitIndexDesc = explicitIndexDesc;
+            this.imk = imk;
+            this.namedWindow = namedWindow;
+            this.table = table;
+        }
 
-	    public StatementAgentInstanceFactoryCreateIndexForge(EventType eventType, string indexName, string indexModuleName, QueryPlanIndexItemForge explicitIndexDesc, IndexMultiKey imk, NamedWindowMetaData namedWindow, TableMetaData table) {
-	        this.eventType = eventType;
-	        this.indexName = indexName;
-	        this.indexModuleName = indexModuleName;
-	        this.explicitIndexDesc = explicitIndexDesc;
-	        this.imk = imk;
-	        this.namedWindow = namedWindow;
-	        this.table = table;
-	    }
+        public CodegenMethod InitializeCodegen(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            CodegenMethod method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateIndex), this.GetType(), classScope);
+            CodegenExpressionRef saiff = @Ref("saiff");
+            method.Block
+                .DeclareVar(
+                    typeof(StatementAgentInstanceFactoryCreateIndex), saiff.Ref, NewInstance(typeof(StatementAgentInstanceFactoryCreateIndex)))
+                .ExprDotMethod(saiff, "setEventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
+                .ExprDotMethod(saiff, "setIndexName", Constant(indexName))
+                .ExprDotMethod(saiff, "setIndexModuleName", Constant(indexModuleName))
+                .ExprDotMethod(saiff, "setIndexMultiKey", imk.Make(method, classScope))
+                .ExprDotMethod(saiff, "setExplicitIndexDesc", explicitIndexDesc.Make(method, classScope));
+            if (namedWindow != null) {
+                method.Block.ExprDotMethod(
+                    saiff, "setNamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)));
+            }
+            else {
+                method.Block.ExprDotMethod(saiff, "setTable", TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)));
+            }
 
-	    public CodegenMethod InitializeCodegen(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        CodegenMethod method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateIndex), this.GetType(), classScope);
-	        CodegenExpressionRef saiff = @Ref("saiff");
-	        method.Block
-	                .DeclareVar(typeof(StatementAgentInstanceFactoryCreateIndex), saiff.Ref, NewInstance(typeof(StatementAgentInstanceFactoryCreateIndex)))
-	                .ExprDotMethod(saiff, "setEventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-	                .ExprDotMethod(saiff, "setIndexName", Constant(indexName))
-	                .ExprDotMethod(saiff, "setIndexModuleName", Constant(indexModuleName))
-	                .ExprDotMethod(saiff, "setIndexMultiKey", imk.Make(method, classScope))
-	                .ExprDotMethod(saiff, "setExplicitIndexDesc", explicitIndexDesc.Make(method, classScope));
-	        if (namedWindow != null) {
-	            method.Block.ExprDotMethod(saiff, "setNamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)));
-	        } else {
-	            method.Block.ExprDotMethod(saiff, "setTable", TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)));
-	        }
-	        method.Block.MethodReturn(saiff);
-	        return method;
-	    }
-	}
+            method.Block.MethodReturn(saiff);
+            return method;
+        }
+    }
 } // end of namespace

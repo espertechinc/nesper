@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.compat;
@@ -15,7 +14,12 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
-	public interface FAFQueryMethodSelectExec {
-	    EPPreparedQueryResult Execute(FAFQueryMethodSelect select, ContextPartitionSelector[] contextPartitionSelectors, FAFQueryMethodAssignerSetter assignerSetter, ContextManagementService contextManagementService);
-	}
+    public interface FAFQueryMethodSelectExec
+    {
+        EPPreparedQueryResult Execute(
+            FAFQueryMethodSelect select,
+            ContextPartitionSelector[] contextPartitionSelectors,
+            FAFQueryMethodAssignerSetter assignerSetter,
+            ContextManagementService contextManagementService);
+    }
 } // end of namespace

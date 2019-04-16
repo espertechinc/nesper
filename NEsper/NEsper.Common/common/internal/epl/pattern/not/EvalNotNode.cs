@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
         internal readonly EvalNotFactoryNode factoryNode;
 
         public EvalNotNode(
-            PatternAgentInstanceContext context, EvalNotFactoryNode factoryNode, EvalNode childNode) : base(context)
+            PatternAgentInstanceContext context,
+            EvalNotFactoryNode factoryNode,
+            EvalNode childNode)
+            : base(context)
         {
             this.factoryNode = factoryNode;
             ChildNode = childNode;

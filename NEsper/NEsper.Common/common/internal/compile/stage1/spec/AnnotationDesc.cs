@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
@@ -27,7 +26,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// </summary>
         /// <param name="name">name of annotation</param>
         /// <param name="attributes">are the attribute values</param>
-        public AnnotationDesc(String name, IList<Pair<String, Object>> attributes)
+        public AnnotationDesc(
+            String name,
+            IList<Pair<String, Object>> attributes)
         {
             Name = name;
             Attributes = attributes;
@@ -38,7 +39,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
-        public AnnotationDesc(String name, String value)
+        public AnnotationDesc(
+            String name,
+            String value)
             : this(name, Collections.SingletonList<Pair<String, Object>>(new Pair<String, Object>("Value", value)))
         {
         }

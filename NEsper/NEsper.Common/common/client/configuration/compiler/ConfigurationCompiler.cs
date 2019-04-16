@@ -50,9 +50,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns the list of plug-in aggregation multi-functions.
         /// </summary>
         /// <value>plug-in aggregation multi-functions</value>
-        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions {
-            get; private set;
-        }
+        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions { get; private set; }
 
         /// <summary>
         ///     Returns the list of plug-in single-row functions.
@@ -126,7 +124,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     function forge interface
         /// </param>
         /// <throws>ConfigurationException is thrown to indicate a problem adding the aggregation function</throws>
-        public void AddPlugInAggregationFunctionForge(string functionName, string aggregationForgeClassName)
+        public void AddPlugInAggregationFunctionForge(
+            string functionName,
+            string aggregationForgeClassName)
         {
             var entry = new ConfigurationCompilerPlugInAggregationFunction();
             entry.Name = functionName;
@@ -161,7 +161,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="className">is the fully-qualified class name of the class implementing the single-row function</param>
         /// <param name="methodName">is the public static method provided by the class that implements the single-row function</param>
         /// <throws>ConfigurationException is thrown to indicate a problem adding the single-row function</throws>
-        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName)
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            string className,
+            string methodName)
         {
             AddPlugInSingleRowFunction(
                 functionName, className, methodName,
@@ -179,7 +182,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="methodName">is the public static method provided by the class that implements the single-row function</param>
         /// <param name="valueCache">set the behavior for caching the return value when constant parameters are provided</param>
         public void AddPlugInSingleRowFunction(
-            string functionName, string className, string methodName,
+            string functionName,
+            string className,
+            string methodName,
             ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum valueCache)
         {
             AddPlugInSingleRowFunction(
@@ -201,7 +206,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     lookup based on the function result
         /// </param>
         public void AddPlugInSingleRowFunction(
-            string functionName, string className, string methodName,
+            string functionName,
+            string className,
+            string methodName,
             ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable)
         {
             AddPlugInSingleRowFunction(
@@ -218,7 +225,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="valueCache">value cache settings</param>
         /// <param name="filterOptimizable">settings whether subject to optimizations</param>
         public void AddPlugInSingleRowFunction(
-            string functionName, string className, string methodName,
+            string functionName,
+            string className,
+            string methodName,
             ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum valueCache,
             ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable)
         {
@@ -235,7 +244,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="filterOptimizable">settings whether subject to optimizations</param>
         /// <param name="rethrowExceptions">whether to rethrow exceptions</param>
         public void AddPlugInSingleRowFunction(
-            string functionName, string className, string methodName,
+            string functionName,
+            string className,
+            string methodName,
             ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum valueCache,
             ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable,
             bool rethrowExceptions)
@@ -256,7 +267,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="namespace">is the namespace the view should be available under</param>
         /// <param name="name">is the name of the view</param>
         /// <param name="viewForgeClass">is the view forge class to use</param>
-        public void AddPlugInView(string @namespace, string name, string viewForgeClass)
+        public void AddPlugInView(
+            string @namespace,
+            string name,
+            string viewForgeClass)
         {
             var configurationPlugInView = new ConfigurationCompilerPlugInView();
             configurationPlugInView.Namespace = @namespace;
@@ -271,7 +285,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="namespace">is the namespace the virtual data window should be available under</param>
         /// <param name="name">is the name of the data window</param>
         /// <param name="forgeClass">is the view forge class to use</param>
-        public void AddPlugInVirtualDataWindow(string @namespace, string name, string forgeClass)
+        public void AddPlugInVirtualDataWindow(
+            string @namespace,
+            string name,
+            string forgeClass)
         {
             AddPlugInVirtualDataWindow(@namespace, name, forgeClass, null);
         }
@@ -284,7 +301,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="forgeClass">is the view forge class to use</param>
         /// <param name="customConfigurationObject">additional configuration to be passed along</param>
         public void AddPlugInVirtualDataWindow(
-            string @namespace, string name, string forgeClass, object customConfigurationObject)
+            string @namespace,
+            string name,
+            string forgeClass,
+            object customConfigurationObject)
         {
             var configurationPlugInVirtualDataWindow = new ConfigurationCompilerPlugInVirtualDataWindow();
             configurationPlugInVirtualDataWindow.Namespace = @namespace;
@@ -300,7 +320,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="namespace">is the namespace the observer should be available under</param>
         /// <param name="name">is the name of the observer</param>
         /// <param name="observerForgeClass">is the observer forge class to use</param>
-        public void AddPlugInPatternObserver(string @namespace, string name, string observerForgeClass)
+        public void AddPlugInPatternObserver(
+            string @namespace,
+            string name,
+            string observerForgeClass)
         {
             var entry = new ConfigurationCompilerPlugInPatternObject();
             entry.Namespace = @namespace;
@@ -316,7 +339,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="namespace">is the namespace the guard should be available under</param>
         /// <param name="name">is the name of the guard</param>
         /// <param name="guardForgeClass">is the guard forge class to use</param>
-        public void AddPlugInPatternGuard(string @namespace, string name, string guardForgeClass)
+        public void AddPlugInPatternGuard(
+            string @namespace,
+            string name,
+            string guardForgeClass)
         {
             var entry = new ConfigurationCompilerPlugInPatternObject();
             entry.Namespace = @namespace;

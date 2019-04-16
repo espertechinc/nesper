@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             set => guardFactory = value;
         }
 
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        public override EvalNode MakeEvalNode(
+            PatternAgentInstanceContext agentInstanceContext,
+            EvalNode parentNode)
         {
             var child = EvalNodeUtil.MakeEvalNodeSingleChild(childNode, agentInstanceContext, parentNode);
             return new EvalGuardNode(agentInstanceContext, this, child);

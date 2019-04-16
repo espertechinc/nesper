@@ -37,14 +37,20 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         public override FilterValueSetParam[][] PopulateFilterAddendum(
-            FilterSpecActivatable filterSpec, bool forStatement, int nestingLevel, object partitionKey,
-            ContextControllerStatementDesc optionalStatementDesc, AgentInstanceContext agentInstanceContextStatement)
+            FilterSpecActivatable filterSpec,
+            bool forStatement,
+            int nestingLevel,
+            object partitionKey,
+            ContextControllerStatementDesc optionalStatementDesc,
+            AgentInstanceContext agentInstanceContextStatement)
         {
             // none
             return null;
         }
 
-        public override void PopulateContextProperties(IDictionary<string, object> props, object partitionKey)
+        public override void PopulateContextProperties(
+            IDictionary<string, object> props,
+            object partitionKey)
         {
             var key = (ContextControllerInitTermPartitionKey) partitionKey;
             props.Put(ContextPropertyEventType.PROP_CTX_STARTTIME, key.StartTime);

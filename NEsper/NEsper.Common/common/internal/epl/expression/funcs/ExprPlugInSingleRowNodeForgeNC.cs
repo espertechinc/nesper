@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly ExprDotNodeForgeStaticMethod inner;
 
         public ExprPlugInSingleRowNodeForgeNC(
-            ExprPlugInSingleRowNode parent, ExprDotNodeForgeStaticMethod inner) : base(parent, false)
+            ExprPlugInSingleRowNode parent,
+            ExprDotNodeForgeStaticMethod inner)
+            : base(parent, false)
         {
             this.inner = inner;
         }
@@ -36,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public override Type EvaluationType => inner.EvaluationType;
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -46,14 +50,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return inner.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public override CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return inner.EventBeanGetCodegen(beanExpression, codegenMethodScope, codegenClassScope);

@@ -12,6 +12,8 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public interface InsertIntoListener
     {
-        bool Inserted(EventBean theEvent, EPStatementHandle statementHandle);
+        bool Inserted(
+            EventBean theEvent,
+            EPStatementHandle statementHandle);
     }
 }

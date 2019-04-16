@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.activator
@@ -36,8 +35,8 @@ namespace com.espertech.esper.common.@internal.context.activator
             NamedWindowConsumerStreamSpec spec,
             NamedWindowMetaData namedWindow,
             ExprNode filterEvaluator,
-            QueryGraphForge filterQueryGraph, 
-            bool subquery, 
+            QueryGraphForge filterQueryGraph,
+            bool subquery,
             PropertyEvaluatorForge optPropertyEvaluator)
         {
             this.spec = spec;
@@ -49,7 +48,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (spec.NamedWindowConsumerId == -1) {
                 throw new IllegalStateException("Unassigned named window consumer id");

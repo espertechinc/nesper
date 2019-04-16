@@ -7,14 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.path
 {
-	public interface NamedWindowCompileTimeResolver : CompileTimeResolver {
-	    NamedWindowMetaData Resolve(string namedWindowName);
-	}
+    public interface NamedWindowCompileTimeResolver : CompileTimeResolver
+    {
+        NamedWindowMetaData Resolve(string namedWindowName);
+    }
 } // end of namespace

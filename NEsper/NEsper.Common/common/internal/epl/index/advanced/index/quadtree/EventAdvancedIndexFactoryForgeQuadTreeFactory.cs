@@ -23,13 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc,
             EventTableOrganization organization)
         {
-            return AdvancedIndexFactoryProviderQuadTree.ConfigureQuadTree(organization.IndexName, advancedIndexProvisionDesc.ParameterEvaluators, agentInstanceContext);
+            return AdvancedIndexFactoryProviderQuadTree.ConfigureQuadTree(
+                organization.IndexName, advancedIndexProvisionDesc.ParameterEvaluators, agentInstanceContext);
         }
 
         public abstract EventAdvancedIndexFactoryForge Forge { get; }
 
         public abstract EventTable Make(
-            EventAdvancedIndexConfigStatement configStatement, AdvancedIndexConfigContextPartition configContextPartition,
+            EventAdvancedIndexConfigStatement configStatement,
+            AdvancedIndexConfigContextPartition configContextPartition,
             EventTableOrganization organization);
 
         public abstract EventAdvancedIndexConfigStatementForge ToConfigStatement(ExprNode[] indexedExpr);

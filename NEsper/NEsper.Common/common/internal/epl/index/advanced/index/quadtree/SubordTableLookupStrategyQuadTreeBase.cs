@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
@@ -22,7 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         protected internal readonly EventTableQuadTree index;
 
         public SubordTableLookupStrategyQuadTreeBase(
-            EventTableQuadTree index, SubordTableLookupStrategyFactoryQuadTree factory)
+            EventTableQuadTree index,
+            SubordTableLookupStrategyFactoryQuadTree factory)
         {
             this.index = index;
             this.factory = factory;
@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         public LookupStrategyDesc StrategyDesc => factory.LookupStrategyDesc;
 
         protected ICollection<EventBean> LookupInternal(
-            EventBean[] events, ExprEvaluatorContext context, EventTableQuadTree index,
+            EventBean[] events,
+            ExprEvaluatorContext context,
+            EventTableQuadTree index,
             SubordTableLookupStrategy strategy)
         {
             var x = Eval(factory.X, events, context, "x");
@@ -39,8 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             var width = Eval(factory.Width, events, context, "width");
             var height = Eval(factory.Height, events, context, "height");
 
-            if (context.InstrumentationProvider.Activated())
-            {
+            if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(strategy, index, null);
                 var result = this.index.QueryRange(x, y, width, height);
                 context.InstrumentationProvider.AIndexSubordLookup(result, null);
@@ -55,11 +56,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             return GetType().GetSimpleName();
         }
 
-        private double Eval(ExprEvaluator eval, EventBean[] events, ExprEvaluatorContext context, string name)
+        private double Eval(
+            ExprEvaluator eval,
+            EventBean[] events,
+            ExprEvaluatorContext context,
+            string name)
         {
             var number = eval.Evaluate(events, true, context);
-            if (number == null)
-            {
+            if (number == null) {
                 throw new EPException("Invalid null value for '" + name + "'");
             }
 

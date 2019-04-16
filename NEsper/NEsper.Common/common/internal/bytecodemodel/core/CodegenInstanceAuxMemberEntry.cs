@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenInstanceAuxMemberEntry
     {
-        public CodegenInstanceAuxMemberEntry(string name, Type clazz, CodegenExpression initializer)
+        public CodegenInstanceAuxMemberEntry(
+            string name,
+            Type clazz,
+            CodegenExpression initializer)
         {
             Name = name;
             Clazz = clazz;

@@ -10,14 +10,14 @@ using System;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.guard
 {
-	/// <summary>Thrown to indicate a validation error in guard parameterization.</summary>
-	public class GuardParameterException : Exception
-	{
-	    /// <summary>Ctor.</summary>
-	    /// <param name="message">validation error message</param>
-	    public GuardParameterException(String message)
-	        : base(message)
-	    {
-	    }
-	}
+    /// <summary>Thrown to indicate a validation error in guard parameterization.</summary>
+    public class GuardParameterException : Exception
+    {
+        /// <summary>Ctor.</summary>
+        /// <param name="message">validation error message</param>
+        public GuardParameterException(String message)
+            : base(message)
+        {
+        }
+    }
 } // End of namespace

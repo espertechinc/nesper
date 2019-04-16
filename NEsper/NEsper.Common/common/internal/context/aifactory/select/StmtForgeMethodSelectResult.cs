@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
     public class StmtForgeMethodSelectResult
     {
-        public StmtForgeMethodSelectResult(StmtForgeMethodResult forgeResult, EventType eventType, int numStreams)
+        public StmtForgeMethodSelectResult(
+            StmtForgeMethodResult forgeResult,
+            EventType eventType,
+            int numStreams)
         {
             ForgeResult = forgeResult;
             EventType = eventType;

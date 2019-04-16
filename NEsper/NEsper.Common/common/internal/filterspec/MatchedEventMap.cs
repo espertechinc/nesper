@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// </summary>
         /// <param name="tag">is an identifier to retrieve the event from</param>
         /// <param name="theEvent">is the event object or array of event object to be added</param>
-        void Add(int tag, object theEvent);
+        void Add(
+            int tag,
+            object theEvent);
 
         /// <summary>
         ///     Returns a single event instance given the tag identifier, or null if the tag could not be located.

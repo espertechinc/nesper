@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
@@ -18,11 +17,15 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         SubordTableLookupStrategy
     {
         public SubordTableLookupStrategyQuadTreeNW(
-            EventTableQuadTree index, SubordTableLookupStrategyFactoryQuadTree factory) : base(index, factory)
+            EventTableQuadTree index,
+            SubordTableLookupStrategyFactoryQuadTree factory)
+            : base(index, factory)
         {
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             return LookupInternal(events, context, index, this);
         }

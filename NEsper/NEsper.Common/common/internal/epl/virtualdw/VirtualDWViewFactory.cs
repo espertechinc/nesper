@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public EventType EventType { get; set; }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
             try {
                 eventBeanFactory = EventTypeUtility.GetFactoryForType(

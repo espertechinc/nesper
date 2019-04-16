@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -17,14 +16,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     {
         private readonly int index;
 
-        public BeanEventPropertyWriterIndexedProp(Type clazz, MethodInfo writerMethod, int index) : base(clazz, writerMethod)
+        public BeanEventPropertyWriterIndexedProp(
+            Type clazz,
+            MethodInfo writerMethod,
+            int index)
+            : base(clazz, writerMethod)
         {
             this.index = index;
         }
 
-        public override void Write(object value, EventBean target)
+        public override void Write(
+            object value,
+            EventBean target)
         {
-            base.Invoke(new object[] { index, value }, target.Underlying);
+            Invoke(new[] {index, value}, target.Underlying);
         }
     }
 } // end of namespace

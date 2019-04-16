@@ -27,7 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         void AddDispatches(
             NamedWindowConsumerLatchFactory latchFactory,
             IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumersInContext,
-            NamedWindowDeltaData delta, AgentInstanceContext agentInstanceContext);
+            NamedWindowDeltaData delta,
+            AgentInstanceContext agentInstanceContext);
 
         NamedWindowConsumerView AddConsumerNoContext(NamedWindowConsumerDesc consumerDesc);
 

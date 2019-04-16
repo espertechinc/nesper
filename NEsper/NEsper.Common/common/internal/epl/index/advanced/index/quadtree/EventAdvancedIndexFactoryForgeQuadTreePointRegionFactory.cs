@@ -15,30 +15,33 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
     public class EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory : EventAdvancedIndexFactoryForgeQuadTreeFactory
     {
-        public readonly static EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory INSTANCE = new EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory();
+        public readonly static EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory INSTANCE =
+            new EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory();
 
         private EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory()
         {
         }
 
-        public override EventAdvancedIndexFactoryForge Forge
-        {
+        public override EventAdvancedIndexFactoryForge Forge {
             get => EventAdvancedIndexFactoryForgeQuadTreePointRegionForge.INSTANCE;
         }
 
         public override EventTable Make(
             EventAdvancedIndexConfigStatement configStatement,
-            AdvancedIndexConfigContextPartition configCP, EventTableOrganization organization)
+            AdvancedIndexConfigContextPartition configCP,
+            EventTableOrganization organization)
         {
-            AdvancedIndexConfigContextPartitionQuadTree qt = (AdvancedIndexConfigContextPartitionQuadTree)configCP;
-            PointRegionQuadTree<object> quadTree = PointRegionQuadTreeFactory.Make(qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
-            return new EventTableQuadTreePointRegionImpl(organization, (AdvancedIndexConfigStatementPointRegionQuadtree)configStatement, quadTree);
+            AdvancedIndexConfigContextPartitionQuadTree qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
+            PointRegionQuadTree<object> quadTree = PointRegionQuadTreeFactory.Make(
+                qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
+            return new EventTableQuadTreePointRegionImpl(organization, (AdvancedIndexConfigStatementPointRegionQuadtree) configStatement, quadTree);
         }
 
         public override EventAdvancedIndexConfigStatementForge ToConfigStatement(ExprNode[] indexedExpr)
         {
-            return new AdvancedIndexConfigStatementPointRegionQuadtreeForge(indexedExpr[0].Forge,
-                    indexedExpr[1].Forge);
+            return new AdvancedIndexConfigStatementPointRegionQuadtreeForge(
+                indexedExpr[0].Forge,
+                indexedExpr[1].Forge);
         }
     }
 } // end of namespace

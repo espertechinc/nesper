@@ -18,40 +18,40 @@ namespace com.espertech.esper.common.client.hook.vdw
     {
         /// <summary>Equals (=). </summary>
         EQUALS,
-    
+
         /// <summary>Less (&lt;). </summary>
         LESS,
-    
+
         /// <summary>Less or equal (&lt;=). </summary>
         LESS_OR_EQUAL,
-    
+
         /// <summary>Greater or equal (&gt;=). </summary>
         GREATER_OR_EQUAL,
-    
+
         /// <summary>Greater (&gt;). </summary>
         GREATER,
-    
+
         /// <summary>Range contains neither endpoint, i.e. (a,b) </summary>
         RANGE_OPEN,
-    
+
         /// <summary>Range contains low and high endpoint, i.e. [a,b] </summary>
         RANGE_CLOSED,
-    
+
         /// <summary>Range includes low endpoint but not high endpoint, i.e. [a,b) </summary>
         RANGE_HALF_OPEN,
-    
+
         /// <summary>Range includes high endpoint but not low endpoint, i.e. (a,b] </summary>
         RANGE_HALF_CLOSED,
-    
+
         /// <summary>Inverted-Range contains neither endpoint, i.e. (a,b) </summary>
         NOT_RANGE_OPEN,
-    
+
         /// <summary>Inverted-Range contains low and high endpoint, i.e. [a,b] </summary>
         NOT_RANGE_CLOSED,
-    
+
         /// <summary>Inverted-Range includes low endpoint but not high endpoint, i.e. [a,b) </summary>
         NOT_RANGE_HALF_OPEN,
-    
+
         /// <summary>Inverted-Range includes high endpoint but not low endpoint, i.e. (a,b] </summary>
         NOT_RANGE_HALF_CLOSED
     }

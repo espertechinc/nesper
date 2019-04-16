@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -21,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         internal readonly ExprEvaluator groupKeys;
 
         public SubselectAggregationPreprocessorBase(
-            AggregationService aggregationService, ExprEvaluator filterEval, ExprEvaluator groupKeys)
+            AggregationService aggregationService,
+            ExprEvaluator filterEval,
+            ExprEvaluator groupKeys)
         {
             this.aggregationService = aggregationService;
             this.filterEval = filterEval;
@@ -29,11 +30,14 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         }
 
         public abstract void Evaluate(
-            EventBean[] eventsPerStream, ICollection<EventBean> matchingEvents,
+            EventBean[] eventsPerStream,
+            ICollection<EventBean> matchingEvents,
             ExprEvaluatorContext exprEvaluatorContext);
 
         protected object GenerateGroupKey(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return groupKeys.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         }

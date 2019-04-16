@@ -27,20 +27,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private readonly ExprRelationalOpAllAnyNodeForge forge;
 
-        public ExprRelationalOpAllAnyNodeForgeEval(ExprRelationalOpAllAnyNodeForge forge, ExprEvaluator[] evaluators)
+        public ExprRelationalOpAllAnyNodeForgeEval(
+            ExprRelationalOpAllAnyNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             this.forge = forge;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
             return result;
         }
 
         private bool? EvaluateInternal(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (evaluators.Length == 1) {
                 return false;
@@ -61,17 +68,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         continue;
                     }
 
-                    if (valueRight is Array valueRightArray)
-                    {
+                    if (valueRight is Array valueRightArray) {
                         hasRows = true;
                         var arrayLength = valueRightArray.Length;
-                        for (var index = 0; index < arrayLength; index++)
-                        {
+                        for (var index = 0; index < arrayLength; index++) {
                             object item = valueRightArray.GetValue(index);
-                            if (item == null)
-                            {
-                                if (isAll)
-                                {
+                            if (item == null) {
+                                if (isAll) {
                                     return null;
                                 }
 
@@ -79,19 +82,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             }
 
                             hasNonNullRow = true;
-                            if (valueLeft != null)
-                            {
-                                if (isAll)
-                                {
-                                    if (!computer.Compare(valueLeft, item))
-                                    {
+                            if (valueLeft != null) {
+                                if (isAll) {
+                                    if (!computer.Compare(valueLeft, item)) {
                                         return false;
                                     }
                                 }
-                                else
-                                {
-                                    if (computer.Compare(valueLeft, item))
-                                    {
+                                else {
+                                    if (computer.Compare(valueLeft, item)) {
                                         return true;
                                     }
                                 }
@@ -125,16 +123,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             }
                         }
                     }
-                    else if (valueRight is ICollection<object>)
-                    {
+                    else if (valueRight is ICollection<object>) {
                         var coll = (ICollection<object>) valueRight;
                         hasRows = true;
-                        foreach (object item in coll)
-                        {
-                            if (!(item.IsNumber()))
-                            {
-                                if (isAll && item == null)
-                                {
+                        foreach (object item in coll) {
+                            if (!(item.IsNumber())) {
+                                if (isAll && item == null) {
                                     return null;
                                 }
 
@@ -142,19 +136,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             }
 
                             hasNonNullRow = true;
-                            if (valueLeft != null)
-                            {
-                                if (isAll)
-                                {
-                                    if (!computer.Compare(valueLeft, item))
-                                    {
+                            if (valueLeft != null) {
+                                if (isAll) {
+                                    if (!computer.Compare(valueLeft, item)) {
                                         return false;
                                     }
                                 }
-                                else
-                                {
-                                    if (computer.Compare(valueLeft, item))
-                                    {
+                                else {
+                                    if (computer.Compare(valueLeft, item)) {
                                         return true;
                                     }
                                 }
@@ -258,8 +247,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprRelationalOpAllAnyNodeForge forge, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            ExprRelationalOpAllAnyNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var forges = ExprNodeUtilityQuery.GetForges(forge.ForgeRenderable.ChildNodes);
             var valueLeftType = forges[0].EvaluationType;

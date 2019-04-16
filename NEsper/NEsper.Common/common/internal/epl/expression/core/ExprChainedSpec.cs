@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     [Serializable]
     public class ExprChainedSpec
     {
-        public ExprChainedSpec(string name, IList<ExprNode> parameters, bool property)
+        public ExprChainedSpec(
+            string name,
+            IList<ExprNode> parameters,
+            bool property)
         {
             Name = name;
             Parameters = parameters;

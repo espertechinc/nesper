@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         [NonSerialized] private readonly EventPropertyValueGetter getter;
 
         public ExprFilterSpecLookupable(
-            string expression, EventPropertyValueGetter getter, Type returnType, bool isNonPropertyGetter)
+            string expression,
+            EventPropertyValueGetter getter,
+            Type returnType,
+            bool isNonPropertyGetter)
         {
             Expression = expression;
             this.getter = getter;
@@ -58,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return Expression.GetHashCode();
         }
 
-        public void AppendTo(StringWriter writer)
+        public void AppendTo(TextWriter writer)
         {
             writer.Write(Expression);
         }

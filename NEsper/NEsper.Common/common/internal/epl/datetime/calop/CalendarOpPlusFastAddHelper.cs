@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.compat;
@@ -29,26 +28,23 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             TimeAbacus timeAbacus,
             long remainder)
         {
-            if (timeAbacus.DateTimeGet(reference, remainder) > currentTime)
-            {
+            if (timeAbacus.DateTimeGet(reference, remainder) > currentTime) {
                 return new CalendarOpPlusFastAddResult(0, reference);
             }
 
             // add one time period
             DateTimeEx work = reference.Clone();
-            if (DEBUG && Log.IsDebugEnabled)
-            {
+            if (DEBUG && Log.IsDebugEnabled) {
                 Log.Debug("Work date is " + work);
             }
 
             CalendarPlusMinusForgeOp.ActionSafeOverflow(work, 1, timePeriod);
             long inMillis = timeAbacus.DateTimeGet(work, remainder);
-            if (inMillis > currentTime)
-            {
+            if (inMillis > currentTime) {
                 return new CalendarOpPlusFastAddResult(1, work);
             }
-            if (DEBUG && Log.IsDebugEnabled)
-            {
+
+            if (DEBUG && Log.IsDebugEnabled) {
                 Log.Debug("Work date is {0}", work);
             }
 
@@ -58,17 +54,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             long refTime = timeAbacus.DateTimeGet(reference, remainder);
             long deltaCurrentToStart = currentTime - refTime;
             long deltaAddedOne = timeAbacus.DateTimeGet(work, remainder) - refTime;
-            double multiplierDbl = (deltaCurrentToStart/deltaAddedOne) - 1;
+            double multiplierDbl = (deltaCurrentToStart / deltaAddedOne) - 1;
             var multiplierRoundedLong = (long) multiplierDbl;
 
             // handle integer max
-            while (multiplierRoundedLong > Int32.MaxValue)
-            {
+            while (multiplierRoundedLong > Int32.MaxValue) {
                 CalendarPlusMinusForgeOp.ActionSafeOverflow(work, Int32.MaxValue, timePeriod);
                 factor += Int32.MaxValue;
                 multiplierRoundedLong -= Int32.MaxValue;
-                if (DEBUG && Log.IsDebugEnabled)
-                {
+                if (DEBUG && Log.IsDebugEnabled) {
                     Log.Debug("Work date is {0} factor {1}", work, factor);
                 }
             }
@@ -79,35 +73,32 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             factor += multiplierRoundedInt;
 
             // if below, add more
-            if (timeAbacus.DateTimeGet(work, remainder) <= currentTime)
-            {
-                while (timeAbacus.DateTimeGet(work, remainder) <= currentTime)
-                {
+            if (timeAbacus.DateTimeGet(work, remainder) <= currentTime) {
+                while (timeAbacus.DateTimeGet(work, remainder) <= currentTime) {
                     CalendarPlusMinusForgeOp.ActionSafeOverflow(work, 1, timePeriod);
                     factor += 1;
-                    if (DEBUG && Log.IsDebugEnabled)
-                    {
+                    if (DEBUG && Log.IsDebugEnabled) {
                         Log.Debug("Work date is {0} factor {1}", work, factor);
                     }
                 }
+
                 return new CalendarOpPlusFastAddResult(factor, work);
             }
 
             // we are over
-            while (timeAbacus.DateTimeGet(work, remainder) > currentTime)
-            {
+            while (timeAbacus.DateTimeGet(work, remainder) > currentTime) {
                 CalendarPlusMinusForgeOp.ActionSafeOverflow(work, -1, timePeriod);
                 factor -= 1;
-                if (DEBUG && Log.IsDebugEnabled)
-                {
+                if (DEBUG && Log.IsDebugEnabled) {
                     Log.Debug("Work date is {0} factor {1}", work, factor);
                 }
             }
+
             CalendarPlusMinusForgeOp.ActionSafeOverflow(work, 1, timePeriod);
-            if (DEBUG && Log.IsDebugEnabled)
-            {
+            if (DEBUG && Log.IsDebugEnabled) {
                 Log.Debug("Work date is {0} factor {1}", work, factor);
             }
+
             return new CalendarOpPlusFastAddResult(factor + 1, work);
         }
     }

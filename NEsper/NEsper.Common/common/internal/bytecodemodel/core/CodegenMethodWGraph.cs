@@ -20,7 +20,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         private readonly IList<Type> thrown;
 
         public CodegenMethodWGraph(
-            string name, CodegenMethodFootprint footprint, CodegenBlock block, bool isPublic, IList<Type> thrown)
+            string name,
+            CodegenMethodFootprint footprint,
+            CodegenBlock block,
+            bool isPublic,
+            IList<Type> thrown)
         {
             Name = name;
             Footprint = footprint;

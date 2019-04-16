@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class OnTriggerMergeDesc : OnTriggerWindowDesc
     {
         public OnTriggerMergeDesc(
-            string windowName, string optionalAsName, OnTriggerMergeActionInsert optionalInsertNoMatch,
+            string windowName,
+            string optionalAsName,
+            OnTriggerMergeActionInsert optionalInsertNoMatch,
             IList<OnTriggerMergeMatched> items)
             : base(windowName, optionalAsName, OnTriggerType.ON_MERGE, false)
         {

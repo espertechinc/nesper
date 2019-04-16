@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -51,19 +50,16 @@ namespace com.espertech.esper.common.@internal.view.union
             unionWindow = new RefCountedSet<EventBean>();
             oldEventsPerView = new EventBean[viewList.Count][];
 
-            for (var i = 0; i < viewList.Count; i++)
-            {
+            for (var i = 0; i < viewList.Count; i++) {
                 var view = new LastPostObserverView(i);
                 views[i].Child = view;
                 view.Observer = this;
             }
 
             // recover
-            for (var i = 0; i < views.Length; i++)
-            {
+            for (var i = 0; i < views.Length; i++) {
                 var viewSnapshot = views[i].GetEnumerator();
-                while (viewSnapshot.MoveNext())
-                {
+                while (viewSnapshot.MoveNext()) {
                     EventBean theEvent = viewSnapshot.Current;
                     unionWindow.Add(theEvent);
                 }
@@ -76,42 +72,37 @@ namespace com.espertech.esper.common.@internal.view.union
 
         public void Stop(AgentInstanceStopServices services)
         {
-            foreach (var view in views)
-            {
-                if (view is AgentInstanceStopCallback)
-                {
-                    ((AgentInstanceStopCallback)view).Stop(services);
+            foreach (var view in views) {
+                if (view is AgentInstanceStopCallback) {
+                    ((AgentInstanceStopCallback) view).Stop(services);
                 }
             }
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, ViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(ViewFactory, newData, oldData);
 
             OneEventCollection oldDataColl = null;
-            if (oldData != null)
-            {
+            if (oldData != null) {
                 isDiscardObserverEvents = true; // disable reaction logic in observer
 
-                try
-                {
-                    foreach (var view in views)
-                    {
+                try {
+                    foreach (var view in views) {
                         agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, oldData);
                         view.Update(null, oldData);
                         agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
-                finally
-                {
+                finally {
                     isDiscardObserverEvents = false;
                 }
 
                 // remove from union
-                foreach (var oldEvent in oldData)
-                {
+                foreach (var oldEvent in oldData) {
                     unionWindow.RemoveAll(oldEvent);
                 }
 
@@ -120,10 +111,8 @@ namespace com.espertech.esper.common.@internal.view.union
             }
 
             // add new event to union
-            if (newData != null)
-            {
-                foreach (var newEvent in newData)
-                {
+            if (newData != null) {
+                foreach (var newEvent in newData) {
                     unionWindow.Add(newEvent, views.Length);
                 }
 
@@ -131,31 +120,25 @@ namespace com.espertech.esper.common.@internal.view.union
                 // old events, such as when removing from a named window, get removed from all views
                 isHasRemovestreamData = false; // changed by observer logic to indicate new data
                 isRetainObserverEvents = true; // enable retain logic in observer
-                try
-                {
-                    foreach (var view in views)
-                    {
+                try {
+                    foreach (var view in views) {
                         agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newData, null);
                         view.Update(newData, null);
                         agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
-                finally
-                {
+                finally {
                     isRetainObserverEvents = false;
                 }
 
                 // see if any child view has removed any events.
                 // if there was an insert stream, handle pushed-out events
-                if (isHasRemovestreamData)
-                {
+                if (isHasRemovestreamData) {
                     IList<EventBean> removedEvents = null;
 
                     // process each buffer
-                    for (var i = 0; i < oldEventsPerView.Length; i++)
-                    {
-                        if (oldEventsPerView[i] == null)
-                        {
+                    for (var i = 0; i < oldEventsPerView.Length; i++) {
+                        if (oldEventsPerView[i] == null) {
                             continue;
                         }
 
@@ -163,13 +146,10 @@ namespace com.espertech.esper.common.@internal.view.union
                         oldEventsPerView[i] = null; // clear entry
 
                         // remove events for union, if the last event was removed then add it
-                        foreach (var old in viewOldData)
-                        {
+                        foreach (var old in viewOldData) {
                             var isNoMoreRef = unionWindow.Remove(old);
-                            if (isNoMoreRef)
-                            {
-                                if (removedEvents == null)
-                                {
+                            if (isNoMoreRef) {
+                                if (removedEvents == null) {
                                     removalEvents.Clear();
                                     removedEvents = removalEvents;
                                 }
@@ -179,23 +159,19 @@ namespace com.espertech.esper.common.@internal.view.union
                         }
                     }
 
-                    if (removedEvents != null)
-                    {
-                        if (oldDataColl == null)
-                        {
+                    if (removedEvents != null) {
+                        if (oldDataColl == null) {
                             oldDataColl = new OneEventCollection();
                         }
 
-                        foreach (var oldItem in removedEvents)
-                        {
+                        foreach (var oldItem in removedEvents) {
                             oldDataColl.Add(oldItem);
                         }
                     }
                 }
             }
 
-            if (child != null)
-            {
+            if (child != null) {
                 // indicate new and, possibly, old data
                 var oldEvents = oldDataColl != null ? oldDataColl.ToArray() : null;
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newData, oldEvents);
@@ -218,15 +194,16 @@ namespace com.espertech.esper.common.@internal.view.union
             throw new UnsupportedOperationException("Must visit container");
         }
 
-        public void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents)
+        public void NewData(
+            int streamId,
+            EventBean[] newEvents,
+            EventBean[] oldEvents)
         {
-            if (oldEvents == null || isDiscardObserverEvents)
-            {
+            if (oldEvents == null || isDiscardObserverEvents) {
                 return;
             }
 
-            if (isRetainObserverEvents)
-            {
+            if (isRetainObserverEvents) {
                 oldEventsPerView[streamId] = oldEvents;
                 isHasRemovestreamData = true;
                 return;
@@ -236,13 +213,10 @@ namespace com.espertech.esper.common.@internal.view.union
             IList<EventBean> removedEvents = null;
 
             // remove events for union, if the last event was removed then add it
-            foreach (var old in oldEvents)
-            {
+            foreach (var old in oldEvents) {
                 var isNoMoreRef = unionWindow.Remove(old);
-                if (isNoMoreRef)
-                {
-                    if (removedEvents == null)
-                    {
+                if (isNoMoreRef) {
+                    if (removedEvents == null) {
                         removalEvents.Clear();
                         removedEvents = removalEvents;
                     }
@@ -251,8 +225,7 @@ namespace com.espertech.esper.common.@internal.view.union
                 }
             }
 
-            if (removedEvents != null)
-            {
+            if (removedEvents != null) {
                 var removed = removedEvents.ToArray();
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, removed);
                 child.Update(null, removed);

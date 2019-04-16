@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         public Type[] DistinctTypes { get; set; }
 
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        public override EvalNode MakeEvalNode(
+            PatternAgentInstanceContext agentInstanceContext,
+            EvalNode parentNode)
         {
             var child = EvalNodeUtil.MakeEvalNodeSingleChild(childNode, agentInstanceContext, parentNode);
             return new EvalEveryDistinctNode(this, child, agentInstanceContext);

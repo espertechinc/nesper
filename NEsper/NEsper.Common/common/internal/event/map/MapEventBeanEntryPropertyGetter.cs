@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// </summary>
         /// <param name="propertyMap">the property to look at</param>
         /// <param name="eventBeanEntryGetter">the getter for the map entry</param>
-        public MapEventBeanEntryPropertyGetter(string propertyMap, EventPropertyGetterSPI eventBeanEntryGetter)
+        public MapEventBeanEntryPropertyGetter(
+            string propertyMap,
+            EventPropertyGetterSPI eventBeanEntryGetter)
         {
             this.propertyMap = propertyMap;
             this.eventBeanEntryGetter = eventBeanEntryGetter;
@@ -67,7 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public object GetFragment(EventBean obj)
         {
-            IDictionary<string, object> map = BaseNestableEventUtil.CheckedCastUnderlyingMap(obj);
+            var map = BaseNestableEventUtil.CheckedCastUnderlyingMap(obj);
 
             // If the map does not contain the key, this is allowed and represented as null
             var value = map.Get(propertyMap);
@@ -82,7 +84,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -91,14 +94,16 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
@@ -107,27 +112,32 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetMapCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
-        private CodegenMethod GetMapCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+        private CodegenMethod GetMapCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map").Block
@@ -139,7 +149,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         private CodegenMethod GetFragmentCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map").Block

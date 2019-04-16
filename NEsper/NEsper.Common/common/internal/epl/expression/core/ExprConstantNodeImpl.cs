@@ -61,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// </summary>
         /// <param name="value">is the constant's value.</param>
         /// <param name="valueType">is the constant's value type.</param>
-        public ExprConstantNodeImpl(object value, Type valueType)
+        public ExprConstantNodeImpl(
+            object value,
+            Type valueType)
         {
             ConstantValue = value;
             if (value == null) {
@@ -107,7 +109,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprConstantNodeImpl)) {
                 return false;
@@ -130,13 +134,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return other.ConstantValue.Equals(ConstantValue);
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return ConstantValue;
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -145,7 +154,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (ConstantValue == null) {
@@ -174,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ConstantValue = value;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             if (ConstantValue is string) {
                 writer.Write("\"" + ConstantValue + '\"');

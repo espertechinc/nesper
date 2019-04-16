@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.common
@@ -25,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         /// <param name="indexProperties">index properties</param>
         /// <param name="indexPropTypes">index property types</param>
         /// <param name="keyPropTypes">key property types</param>
-        public HistoricalStreamIndexDesc(IList<string> indexProperties, Type[] indexPropTypes, Type[] keyPropTypes)
+        public HistoricalStreamIndexDesc(
+            IList<string> indexProperties,
+            Type[] indexPropTypes,
+            Type[] keyPropTypes)
         {
             IndexProperties = indexProperties;
             IndexPropTypes = indexPropTypes;
@@ -57,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             if (this == obj) return true;
             if (obj == null || GetType() != obj.GetType()) return false;
 
-            HistoricalStreamIndexDesc that = (HistoricalStreamIndexDesc)obj;
+            HistoricalStreamIndexDesc that = (HistoricalStreamIndexDesc) obj;
 
             if (!Collections.AreEqual(IndexPropTypes, that.IndexPropTypes)) return false;
             if (!Collections.AreEqual(IndexProperties, that.IndexProperties)) return false;

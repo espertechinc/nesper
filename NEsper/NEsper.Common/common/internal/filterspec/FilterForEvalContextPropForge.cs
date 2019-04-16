@@ -30,7 +30,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         [NonSerialized] private readonly Type returnType;
 
         public FilterForEvalContextPropForge(
-            string propertyName, EventPropertyGetterSPI getter, SimpleNumberCoercer coercer, Type returnType)
+            string propertyName,
+            EventPropertyGetterSPI getter,
+            SimpleNumberCoercer coercer,
+            Type returnType)
         {
             this.propertyName = propertyName;
             this.getter = getter;
@@ -38,7 +41,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             this.returnType = returnType;
         }
 
-        public CodegenExpression MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
 
@@ -62,7 +67,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public bool IsConstant => false;
 
-        public object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        public object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext evaluatorContext)
         {
             if (evaluatorContext.ContextProperties == null) {
                 return null;

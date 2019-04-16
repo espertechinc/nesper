@@ -19,10 +19,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
     public class ExpressionResultCacheForDeclaredExprLastValueMulti : ExpressionResultCacheForDeclaredExprLastValue
     {
         private readonly int cacheSize;
-        private readonly ExpressionResultCacheEntryEventBeanArrayAndObj resultCacheEntry = new ExpressionResultCacheEntryEventBeanArrayAndObj(null, null);
+
+        private readonly ExpressionResultCacheEntryEventBeanArrayAndObj resultCacheEntry =
+            new ExpressionResultCacheEntryEventBeanArrayAndObj(null, null);
 
         private readonly Dictionary<object, SoftReference<RollingTwoValueBuffer<EventBean[], object>>> cache
-                = new Dictionary<object, SoftReference<RollingTwoValueBuffer<EventBean[], object>>>();
+            = new Dictionary<object, SoftReference<RollingTwoValueBuffer<EventBean[], object>>>();
 
         public ExpressionResultCacheForDeclaredExprLastValueMulti(int cacheSize)
         {
@@ -34,46 +36,47 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             return true;
         }
 
-        public ExpressionResultCacheEntryEventBeanArrayAndObj GetDeclaredExpressionLastValue(object node, EventBean[] eventsPerStream)
+        public ExpressionResultCacheEntryEventBeanArrayAndObj GetDeclaredExpressionLastValue(
+            object node,
+            EventBean[] eventsPerStream)
         {
             SoftReference<RollingTwoValueBuffer<EventBean[], object>> cacheRef = cache.Get(node);
-            if (cacheRef == null)
-            {
+            if (cacheRef == null) {
                 return null;
             }
+
             RollingTwoValueBuffer<EventBean[], object> entry = cacheRef.Get();
-            if (entry == null)
-            {
+            if (entry == null) {
                 return null;
             }
-            for (int i = 0; i < entry.BufferA.Length; i++)
-            {
+
+            for (int i = 0; i < entry.BufferA.Length; i++) {
                 EventBean[] key = entry.BufferA[i];
-                if (key != null && EventBeanUtility.CompareEventReferences(key, eventsPerStream))
-                {
+                if (key != null && EventBeanUtility.CompareEventReferences(key, eventsPerStream)) {
                     resultCacheEntry.Reference = key;
                     resultCacheEntry.Result = entry.BufferB[i];
                     return resultCacheEntry;
                 }
             }
+
             return null;
         }
 
-        public void SaveDeclaredExpressionLastValue(object node, EventBean[] eventsPerStream, object result)
+        public void SaveDeclaredExpressionLastValue(
+            object node,
+            EventBean[] eventsPerStream,
+            object result)
         {
             SoftReference<RollingTwoValueBuffer<EventBean[], object>> cacheRef = cache.Get(node);
 
             RollingTwoValueBuffer<EventBean[], object> buf;
-            if (cacheRef == null)
-            {
+            if (cacheRef == null) {
                 buf = new RollingTwoValueBuffer<EventBean[], object>(new EventBean[cacheSize][], new object[cacheSize]);
                 cache.Put(node, new SoftReference<RollingTwoValueBuffer<EventBean[], object>>(buf));
             }
-            else
-            {
+            else {
                 buf = cacheRef.Get();
-                if (buf == null)
-                {
+                if (buf == null) {
                     buf = new RollingTwoValueBuffer<EventBean[], object>(new EventBean[cacheSize][], new object[cacheSize]);
                     cache.Put(node, new SoftReference<RollingTwoValueBuffer<EventBean[], object>>(buf));
                 }

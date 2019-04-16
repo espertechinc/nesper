@@ -27,5 +27,7 @@ namespace com.espertech.esper.common.client.hook.exception
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="args">The <see cref="ExceptionHandlerEventArgs"/> instance containing the event data.</param>
-    public delegate void ExceptionHandler(object sender, ExceptionHandlerEventArgs args);
+    public delegate void ExceptionHandler(
+        object sender,
+        ExceptionHandlerEventArgs args);
 }

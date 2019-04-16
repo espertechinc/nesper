@@ -32,11 +32,12 @@ namespace com.espertech.esper.common.client.soda
         /// <value>contexts</value>
         public IList<CreateContextClause> Contexts { get; set; }
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             String delimiter = "";
-            foreach (CreateContextClause context in Contexts)
-            {
+            foreach (CreateContextClause context in Contexts) {
                 writer.Write(delimiter);
                 writer.Write("context ");
                 writer.Write(context.ContextName);

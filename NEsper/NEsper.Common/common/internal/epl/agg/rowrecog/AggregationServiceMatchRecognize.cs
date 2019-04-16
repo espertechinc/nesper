@@ -23,7 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.rowrecog
         /// <param name="eventsPerStream">events per stream</param>
         /// <param name="streamId">variable number that is the base</param>
         /// <param name="exprEvaluatorContext">context for expression evaluatiom</param>
-        void ApplyEnter(EventBean[] eventsPerStream, int streamId, ExprEvaluatorContext exprEvaluatorContext);
+        void ApplyEnter(
+            EventBean[] eventsPerStream,
+            int streamId,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     Clear current aggregation state.

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -15,7 +14,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public interface ExprDotEval
     {
-        object Evaluate(object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        object Evaluate(
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         ExprDotForge DotForge { get; }
     }
@@ -26,7 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public Func<ExprDotForge> ProcDotForge;
 
         public object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
             => ProcEvaluate?.Invoke(target, eventsPerStream, isNewData, exprEvaluatorContext);
 
         public ExprDotForge DotForge

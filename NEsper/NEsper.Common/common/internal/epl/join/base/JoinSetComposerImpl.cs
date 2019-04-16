@@ -38,8 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         public JoinSetComposerImpl(
             bool allowInitIndex,
             IDictionary<TableLookupIndexReqKey, EventTable>[] repositories,
-            QueryStrategy[] queryStrategies, bool isPureSelfJoin,
-            ExprEvaluatorContext exprEvaluatorContext, bool joinRemoveStream)
+            QueryStrategy[] queryStrategies,
+            bool isPureSelfJoin,
+            ExprEvaluatorContext exprEvaluatorContext,
+            bool joinRemoveStream)
         {
             this.allowInitIndex = allowInitIndex;
             this.repositories = JoinSetComposerUtil.ToArray(repositories);
@@ -66,7 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             return allowInitIndex;
         }
 
-        public virtual void Init(EventBean[][] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public virtual void Init(
+            EventBean[][] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!allowInitIndex) {
                 throw new IllegalStateException("Initialization by events not supported");
@@ -93,7 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         public virtual UniformPair<ISet<MultiKey<EventBean>>> Join(
-            EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QJoinCompositionWinToWin();

@@ -10,6 +10,8 @@ namespace com.espertech.esper.common.@internal.context.compile
 {
     public interface ContextCollector
     {
-        void RegisterContext(string contextName, ContextMetaData contextDetail);
+        void RegisterContext(
+            string contextName,
+            ContextMetaData contextDetail);
     }
 } // end of namespace

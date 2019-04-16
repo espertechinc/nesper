@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         }
 
         public Guard MakeGuard(
-            PatternAgentInstanceContext context, MatchedEventMap beginState, Quitable quitable, object guardState)
+            PatternAgentInstanceContext context,
+            MatchedEventMap beginState,
+            Quitable quitable,
+            object guardState)
         {
             return new ExpressionGuard(convertor, expression, quitable);
         }

@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
         {
             private readonly EventBeanManufacturerForge eventManufacturer;
 
-            public SelectExprInsertNativeNoEval(EventType eventType, EventBeanManufacturerForge eventManufacturer)
+            public SelectExprInsertNativeNoEval(
+                EventType eventType,
+                EventBeanManufacturerForge eventManufacturer)
             {
                 ResultEventType = eventType;
                 this.eventManufacturer = eventManufacturer;
@@ -41,7 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                 var manufacturer = codegenClassScope.AddFieldUnshared(
                     true, typeof(EventBeanManufacturer), eventManufacturer.Make(codegenMethodScope, codegenClassScope));
                 methodNode.Block.MethodReturn(
-                    CodegenExpressionBuilder.ExprDotMethod(manufacturer, "make", CodegenExpressionBuilder.PublicConstValue(typeof(CollectionUtil), "OBJECTARRAY_EMPTY")));
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        manufacturer, "make", CodegenExpressionBuilder.PublicConstValue(typeof(CollectionUtil), "OBJECTARRAY_EMPTY")));
                 return methodNode;
             }
         }

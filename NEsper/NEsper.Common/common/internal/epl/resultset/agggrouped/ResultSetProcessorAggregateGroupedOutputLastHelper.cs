@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.resultset.core;
@@ -17,18 +16,24 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 {
-	public interface ResultSetProcessorAggregateGroupedOutputLastHelper : ResultSetProcessorOutputHelper {
+    public interface ResultSetProcessorAggregateGroupedOutputLastHelper : ResultSetProcessorOutputHelper
+    {
+        void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic);
 
-	    void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic);
+        void ProcessJoin(
+            ISet<MultiKey<EventBean>> newData,
+            ISet<MultiKey<EventBean>> oldData,
+            bool isGenerateSynthetic);
 
-	    void ProcessJoin(ISet<MultiKey<EventBean>> newData, ISet<MultiKey<EventBean>> oldData, bool isGenerateSynthetic);
+        UniformPair<EventBean[]> OutputView(bool isSynthesize);
 
-	    UniformPair<EventBean[]> OutputView(bool isSynthesize);
+        UniformPair<EventBean[]> OutputJoin(bool isSynthesize);
 
-	    UniformPair<EventBean[]> OutputJoin(bool isSynthesize);
+        void Destroy();
 
-	    void Destroy();
-
-	    void Remove(object key);
-	}
+        void Remove(object key);
+    }
 } // end of namespace

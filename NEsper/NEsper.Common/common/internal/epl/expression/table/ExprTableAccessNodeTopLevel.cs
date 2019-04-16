@@ -29,7 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
     {
         private LinkedHashMap<string, object> eventType;
 
-        public ExprTableAccessNodeTopLevel(string tableName) : base(tableName)
+        public ExprTableAccessNodeTopLevel(string tableName)
+            : base(tableName)
         {
         }
 
@@ -51,13 +52,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             }
         }
 
-        public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object[] EvaluateTypableSingle(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         public object[][] EvaluateTypableMulti(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw new UnsupportedOperationException();
         }
@@ -69,13 +75,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public bool? IsMultirow => false;
 
         public CodegenExpression EvaluateTypableSingleCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(EVALTYPABLESINGLE, this, typeof(object[]), parent, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateTypableMultiCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             throw new UnsupportedOperationException("Typable-multi is not available for table top-level access");
@@ -93,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             }
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ToPrecedenceFreeEPLInternal(writer);
         }

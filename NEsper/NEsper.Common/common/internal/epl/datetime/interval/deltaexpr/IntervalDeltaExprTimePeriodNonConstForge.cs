@@ -13,17 +13,19 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
 {
-    public class IntervalDeltaExprTimePeriodNonConstForge : IntervalDeltaExprForge, IntervalDeltaExprEvaluator
+    public class IntervalDeltaExprTimePeriodNonConstForge : IntervalDeltaExprForge,
+        IntervalDeltaExprEvaluator
     {
         private readonly ExprTimePeriod timePeriod;
         private readonly TimeAbacus timeAbacus;
 
-        public IntervalDeltaExprTimePeriodNonConstForge(ExprTimePeriod timePeriod, TimeAbacus timeAbacus)
+        public IntervalDeltaExprTimePeriodNonConstForge(
+            ExprTimePeriod timePeriod,
+            TimeAbacus timeAbacus)
         {
             this.timePeriod = timePeriod;
             this.timeAbacus = timeAbacus;
@@ -34,18 +36,27 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
             return this;
         }
 
-        public long Evaluate(long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public long Evaluate(
+            long reference,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             double sec = timePeriod.EvaluateAsSeconds(eventsPerStream, isNewData, context);
             return timeAbacus.DeltaForSecondsDouble(sec);
         }
 
-        public CodegenExpression Codegen(CodegenExpression reference, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public CodegenExpression Codegen(
+            CodegenExpression reference,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(long), typeof(IntervalDeltaExprTimePeriodNonConstForge), codegenClassScope).AddParam(typeof(long), "reference");
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(long), typeof(IntervalDeltaExprTimePeriodNonConstForge), codegenClassScope)
+                .AddParam(typeof(long), "reference");
 
             methodNode.Block.DeclareVar(typeof(double), "sec", timePeriod.EvaluateAsSecondsCodegen(methodNode, exprSymbol, codegenClassScope))
-                    .MethodReturn(timeAbacus.DeltaForSecondsDoubleCodegen(@Ref("sec"), codegenClassScope));
+                .MethodReturn(timeAbacus.DeltaForSecondsDoubleCodegen(@Ref("sec"), codegenClassScope));
             return LocalMethod(methodNode, reference);
         }
     }

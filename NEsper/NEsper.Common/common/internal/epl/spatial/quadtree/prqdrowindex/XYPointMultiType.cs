@@ -17,7 +17,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
     public class XYPointMultiType : XYPoint
     {
-        public XYPointMultiType(double x, double y, object multityped)
+        public XYPointMultiType(
+            double x,
+            double y,
+            object multityped)
             : base(x, y)
         {
             Multityped = multityped;
@@ -33,14 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
         public void AddSingleValue(object value)
         {
-            if (Multityped == null)
-            {
+            if (Multityped == null) {
                 Multityped = value;
                 return;
             }
 
-            if (Multityped is Collection)
-            {
+            if (Multityped is Collection) {
                 ((Collection) Multityped).Add(value);
                 return;
             }
@@ -54,15 +55,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
         public void AddMultiType(XYPointMultiType other)
         {
             if (other.X != X || other.Y != Y) throw new ArgumentException("Coordinate mismatch");
-            if (!(other.Multityped is Collection))
-            {
+            if (!(other.Multityped is Collection)) {
                 AddSingleValue(other.Multityped);
                 return;
             }
 
             var otherCollection = (Collection) other.Multityped;
-            if (Multityped is Collection)
-            {
+            if (Multityped is Collection) {
                 ((Collection) Multityped).AddAll(otherCollection);
                 return;
             }
@@ -75,8 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
         public void CollectInto(Collection result)
         {
-            if (!(Multityped is Collection))
-            {
+            if (!(Multityped is Collection)) {
                 result.Add(Multityped);
                 return;
             }
@@ -87,8 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
         public bool Remove(object value)
         {
             if (Multityped == null) return false;
-            if (Multityped.Equals(value))
-            {
+            if (Multityped.Equals(value)) {
                 Multityped = null;
                 return true;
             }

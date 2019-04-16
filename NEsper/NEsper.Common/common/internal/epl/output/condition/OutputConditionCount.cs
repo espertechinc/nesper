@@ -26,9 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         private readonly VariableReader variableReader;
 
         public OutputConditionCount(
-            OutputCallback outputCallback, 
-            long eventRate, 
-            VariableReader variableReader) : base(outputCallback)
+            OutputCallback outputCallback,
+            long eventRate,
+            VariableReader variableReader)
+            : base(outputCallback)
         {
             this.eventRate = eventRate;
             this.variableReader = variableReader;
@@ -46,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         /// <returns>number of old events</returns>
         public int OldEventsCount { get; private set; }
 
-        public override void UpdateOutputCondition(int newDataCount, int oldDataCount)
+        public override void UpdateOutputCondition(
+            int newDataCount,
+            int oldDataCount)
         {
             if (variableReader != null) {
                 var value = variableReader.Value;

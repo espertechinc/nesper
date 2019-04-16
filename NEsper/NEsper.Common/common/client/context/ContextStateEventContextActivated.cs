@@ -19,7 +19,11 @@ namespace com.espertech.esper.common.client.context
         /// <param name="runtimeURI">runtime URI</param>
         /// <param name="contextDeploymentId">deployment id of create-context statement</param>
         /// <param name="contextName">context name</param>
-        public ContextStateEventContextActivated(string runtimeURI, string contextDeploymentId, string contextName) :
+        public ContextStateEventContextActivated(
+            string runtimeURI,
+            string contextDeploymentId,
+            string contextName)
+            :
             base(runtimeURI, contextDeploymentId, contextName)
         {
         }

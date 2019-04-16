@@ -15,17 +15,23 @@ namespace com.espertech.esper.common.@internal.@event.util
 {
     public class PropertyUtility
     {
-        public static PropertyAccessException GetMemberAccessException(FieldInfo field, MemberAccessException e)
+        public static PropertyAccessException GetMemberAccessException(
+            FieldInfo field,
+            MemberAccessException e)
         {
             return GetAccessExceptionField(field, e);
         }
 
-        public static PropertyAccessException GetArgumentException(FieldInfo field, ArgumentException e)
+        public static PropertyAccessException GetArgumentException(
+            FieldInfo field,
+            ArgumentException e)
         {
             return GetAccessExceptionField(field, e);
         }
 
-        private static PropertyAccessException GetAccessExceptionField(FieldInfo field, Exception e)
+        private static PropertyAccessException GetAccessExceptionField(
+            FieldInfo field,
+            Exception e)
         {
             var declaring = field.DeclaringType;
             var message = "Failed to obtain field value for field " + field.Name + " on class " +
@@ -34,7 +40,9 @@ namespace com.espertech.esper.common.@internal.@event.util
         }
 
         private static PropertyAccessException GetMismatchException(
-            Type declared, object @object, InvalidCastException e)
+            Type declared,
+            object @object,
+            InvalidCastException e)
         {
             var classNameExpected = declared.GetCleanName();
             string classNameReceived;
@@ -55,17 +63,23 @@ namespace com.espertech.esper.common.@internal.@event.util
             throw new PropertyAccessException(message, e);
         }
 
-        public static PropertyAccessException GetMemberAccessException(MethodInfo method, MemberAccessException e)
+        public static PropertyAccessException GetMemberAccessException(
+            MethodInfo method,
+            MemberAccessException e)
         {
             return GetAccessExceptionMethod(method, e);
         }
 
-        public static PropertyAccessException GetArgumentException(MethodInfo method, ArgumentException e)
+        public static PropertyAccessException GetArgumentException(
+            MethodInfo method,
+            ArgumentException e)
         {
             return GetAccessExceptionMethod(method, e);
         }
 
-        private static PropertyAccessException GetAccessExceptionMethod(MethodInfo method, Exception e)
+        private static PropertyAccessException GetAccessExceptionMethod(
+            MethodInfo method,
+            Exception e)
         {
             var declaring = method.DeclaringType;
             var message = "Failed to invoke method " + method.Name + " on class " + declaring.GetCleanName() + ": " +
@@ -74,18 +88,24 @@ namespace com.espertech.esper.common.@internal.@event.util
         }
 
         public static PropertyAccessException GetMismatchException(
-            MethodInfo method, object @object, InvalidCastException e)
+            MethodInfo method,
+            object @object,
+            InvalidCastException e)
         {
             return GetMismatchException(method.DeclaringType, @object, e);
         }
 
         public static PropertyAccessException GetMismatchException(
-            FieldInfo field, object @object, InvalidCastException e)
+            FieldInfo field,
+            object @object,
+            InvalidCastException e)
         {
             return GetMismatchException(field.DeclaringType, @object, e);
         }
 
-        public static PropertyAccessException GetTargetException(MethodInfo method, TargetException e)
+        public static PropertyAccessException GetTargetException(
+            MethodInfo method,
+            TargetException e)
         {
             var declaring = method.DeclaringType;
             var message = "Failed to invoke method " + method.Name + " on class " + declaring.GetCleanName() + ": " +
@@ -93,7 +113,9 @@ namespace com.espertech.esper.common.@internal.@event.util
             throw new PropertyAccessException(message, e);
         }
 
-        public static PropertyAccessException GetGeneralException(MethodInfo method, Exception t)
+        public static PropertyAccessException GetGeneralException(
+            MethodInfo method,
+            Exception t)
         {
             var declaring = method.DeclaringType;
             var message = "Failed to invoke method " + method.Name + " on class " + declaring.GetCleanName() + ": " +

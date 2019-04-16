@@ -38,12 +38,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
         private readonly SimpleTypeParser simpleTypeParser;
 
         public XPathPropertyGetter(
-            BaseXMLEventType baseXMLEventType, 
-            string propertyName, 
+            BaseXMLEventType baseXMLEventType,
+            string propertyName,
             string expressionText,
             XPathExpression xPathExpression,
-            XPathResultType resultType, 
-            Type optionalCastToType, 
+            XPathResultType resultType,
+            Type optionalCastToType,
             FragmentFactory fragmentFactory)
         {
             expression = xPathExpression;
@@ -127,7 +127,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -135,14 +136,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
@@ -150,7 +153,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             var xpathGetter = codegenClassScope.AddOrGetFieldSharable(
@@ -159,14 +163,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             if (fragmentFactory == null) {
@@ -198,13 +204,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="simpleTypeParser">parse</param>
         /// <returns>value</returns>
         public static object EvaluateXPathGet(
-            XmlNode und, 
-            XPathExpression expression, 
-            string expressionText, 
-            string property, 
+            XmlNode und,
+            XPathExpression expression,
+            string expressionText,
+            string property,
             Type optionalCastToType,
-            XPathResultType resultType, 
-            bool isCastToArray, 
+            XPathResultType resultType,
+            bool isCastToArray,
             SimpleTypeParser simpleTypeParser)
         {
             try {
@@ -285,8 +291,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public static object EvaluateXPathFragment(
             object und,
-            XPathExpression expression, 
-            string expressionText, 
+            XPathExpression expression,
+            string expressionText,
             string property,
             FragmentFactory fragmentFactory,
             XPathResultType resultType)
@@ -330,7 +336,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         private static object CastToArray(
-            object result, Type optionalCastToType, SimpleTypeParser simpleTypeParser, XPathExpression expression)
+            object result,
+            Type optionalCastToType,
+            SimpleTypeParser simpleTypeParser,
+            XPathExpression expression)
         {
             if (!(result is XmlNodeList)) {
                 return null;

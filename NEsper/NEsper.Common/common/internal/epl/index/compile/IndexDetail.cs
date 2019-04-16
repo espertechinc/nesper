@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.compat;
@@ -15,21 +14,25 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.index.compile
 {
-	public class IndexDetail {
-	    private readonly IndexMultiKey indexMultiKey;
-	    private readonly QueryPlanIndexItem queryPlanIndexItem;
+    public class IndexDetail
+    {
+        private readonly IndexMultiKey indexMultiKey;
+        private readonly QueryPlanIndexItem queryPlanIndexItem;
 
-	    public IndexDetail(IndexMultiKey indexMultiKey, QueryPlanIndexItem queryPlanIndexItem) {
-	        this.indexMultiKey = indexMultiKey;
-	        this.queryPlanIndexItem = queryPlanIndexItem;
-	    }
+        public IndexDetail(
+            IndexMultiKey indexMultiKey,
+            QueryPlanIndexItem queryPlanIndexItem)
+        {
+            this.indexMultiKey = indexMultiKey;
+            this.queryPlanIndexItem = queryPlanIndexItem;
+        }
 
-	    public IndexMultiKey IndexMultiKey {
-	        get => indexMultiKey;
-	    }
+        public IndexMultiKey IndexMultiKey {
+            get => indexMultiKey;
+        }
 
-	    public QueryPlanIndexItem QueryPlanIndexItem {
-	        get => queryPlanIndexItem;
-	    }
-	}
+        public QueryPlanIndexItem QueryPlanIndexItem {
+            get => queryPlanIndexItem;
+        }
+    }
 } // end of namespace

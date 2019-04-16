@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -22,29 +21,49 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class ExprDotForgeOrderByAscDesc : ExprDotForgeEnumMethodBase {
+    public class ExprDotForgeOrderByAscDesc : ExprDotForgeEnumMethodBase
+    {
+        public override EventType[] GetAddStreamTypes(
+            string enumMethodUsedName,
+            IList<string> goesToNames,
+            EventType inputEventType,
+            Type collectionComponentType,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            return ExprDotNodeUtility.GetSingleLambdaParamEventType(
+                enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
+        }
 
-	    public override EventType[] GetAddStreamTypes(string enumMethodUsedName, IList<string> goesToNames, EventType inputEventType, Type collectionComponentType, IList<ExprDotEvalParam> bodiesAndParameters, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
-	        return ExprDotNodeUtility.GetSingleLambdaParamEventType(enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
-	    }
+        public override EnumForge GetEnumForge(
+            StreamTypeService streamTypeService,
+            string enumMethodUsedName,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            EventType inputEventType,
+            Type collectionComponentType,
+            int numStreamsIncoming,
+            bool disablePropertyExpressionEventCollCache,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            bool isDescending = this.EnumMethodEnum == EnumMethodEnum.ORDERBYDESC;
 
-	    public override EnumForge GetEnumForge(StreamTypeService streamTypeService, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
+            if (bodiesAndParameters.IsEmpty()) {
+                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+                return new EnumOrderByAscDescScalarForge(numStreamsIncoming, isDescending);
+            }
 
-	        bool isDescending = this.EnumMethodEnum == EnumMethodEnum.ORDERBYDESC;
+            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            if (inputEventType == null) {
+                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+                return new EnumOrderByAscDescScalarLambdaForge(
+                    first.BodyForge, first.StreamCountIncoming, isDescending,
+                    (ObjectArrayEventType) first.GoesToTypes[0]);
+            }
 
-	        if (bodiesAndParameters.IsEmpty()) {
-	            base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
-	            return new EnumOrderByAscDescScalarForge(numStreamsIncoming, isDescending);
-	        }
-
-	        ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-	        if (inputEventType == null) {
-	            base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
-	            return new EnumOrderByAscDescScalarLambdaForge(first.BodyForge, first.StreamCountIncoming, isDescending,
-	                    (ObjectArrayEventType) first.GoesToTypes[0]);
-	        }
-	        base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
-	        return new EnumOrderByAscDescEventsForge(first.BodyForge, first.StreamCountIncoming, isDescending);
-	    }
-	}
+            base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+            return new EnumOrderByAscDescEventsForge(first.BodyForge, first.StreamCountIncoming, isDescending);
+        }
+    }
 } // end of namespace

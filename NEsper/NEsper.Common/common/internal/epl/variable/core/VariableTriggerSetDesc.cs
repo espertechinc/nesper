@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 {
     public class VariableTriggerSetDesc
     {
-        public VariableTriggerSetDesc(string variableName, ExprEvaluator evaluator)
+        public VariableTriggerSetDesc(
+            string variableName,
+            ExprEvaluator evaluator)
         {
             VariableName = variableName;
             Evaluator = evaluator;

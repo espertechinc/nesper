@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         ///     Ctor.
         /// </summary>
         /// <param name="distinct">flag indicating unique or non-unique value aggregation</param>
-        public ExprAvedevNode(bool distinct) : base(distinct)
+        public ExprAvedevNode(bool distinct)
+            : base(distinct)
         {
         }
 
@@ -35,8 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             HasFilter = positionalParams.Length > 1;
-            if (HasFilter)
-            {
+            if (HasFilter) {
                 optionalFilter = positionalParams[1];
             }
 
@@ -46,8 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
-            if (!(node is ExprAvedevNode))
-            {
+            if (!(node is ExprAvedevNode)) {
                 return false;
             }
 

@@ -14,14 +14,16 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
 {
     public class MultiMatchHandlerNoSubqueryNoDedup : MultiMatchHandler
     {
-        protected internal static readonly MultiMatchHandlerNoSubqueryNoDedup INSTANCE = 
+        protected internal static readonly MultiMatchHandlerNoSubqueryNoDedup INSTANCE =
             new MultiMatchHandlerNoSubqueryNoDedup();
 
         private MultiMatchHandlerNoSubqueryNoDedup()
         {
         }
 
-        public void Handle(ICollection<FilterHandleCallback> callbacks, EventBean theEvent)
+        public void Handle(
+            ICollection<FilterHandleCallback> callbacks,
+            EventBean theEvent)
         {
             foreach (var callback in callbacks) {
                 callback.MatchFound(theEvent, callbacks);

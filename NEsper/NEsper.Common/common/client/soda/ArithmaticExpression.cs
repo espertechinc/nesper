@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -44,7 +43,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="left">the left hand side</param>
         /// <param name="operator">can be any of '-', '+', '*', '/' or '%' (modulo).</param>
         /// <param name="right">the right hand side</param>
-        public ArithmaticExpression(Expression left, string @operator, Expression right)
+        public ArithmaticExpression(
+            Expression left,
+            string @operator,
+            Expression right)
         {
             this.@operator = @operator;
             AddChild(left);

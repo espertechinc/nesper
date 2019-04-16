@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, 
+            CodegenExpression beanExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, 
+            CodegenExpression underlyingExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {

@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// </summary>
         /// <param name="getter">is the getter to use to interrogate the property in the map</param>
         /// <param name="index">index</param>
-        public ObjectArrayMapPropertyGetter(int index, MapEventPropertyGetter getter)
+        public ObjectArrayMapPropertyGetter(
+            int index,
+            MapEventPropertyGetter getter)
         {
             if (getter == null) {
                 throw new ArgumentException("Getter is a required parameter");
@@ -49,18 +51,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return getter.GetMap((Map) valueTopObj);
         }
 
-        private CodegenMethod GetObjectArrayCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
-        {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array").Block
-                .DeclareVar(typeof(object), "valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
-                .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), null)
-                .MethodReturn(
-                    getter.UnderlyingGetCodegen(
-                        Cast(typeof(Map), Ref("valueTopObj")), codegenMethodScope, codegenClassScope));
-        }
-
         public bool IsObjectArrayExistsProperty(object[] array)
         {
             var valueTopObj = array[index];
@@ -69,18 +59,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             return getter.IsMapExistsProperty((Map) valueTopObj);
-        }
-
-        private CodegenMethod IsObjectArrayExistsPropertyCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
-        {
-            return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array").Block
-                .DeclareVar(typeof(object), "valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
-                .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), false)
-                .MethodReturn(
-                    getter.UnderlyingExistsCodegen(
-                        Cast(typeof(Map), Ref("valueTopObj")), codegenMethodScope, codegenClassScope));
         }
 
         public object Get(EventBean eventBean)
@@ -101,7 +79,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -109,7 +88,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -117,21 +97,24 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetObjectArrayCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
@@ -139,10 +122,37 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
+        }
+
+        private CodegenMethod GetObjectArrayCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "array").Block
+                .DeclareVar(typeof(object), "valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
+                .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), null)
+                .MethodReturn(
+                    getter.UnderlyingGetCodegen(
+                        Cast(typeof(Map), Ref("valueTopObj")), codegenMethodScope, codegenClassScope));
+        }
+
+        private CodegenMethod IsObjectArrayExistsPropertyCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "array").Block
+                .DeclareVar(typeof(object), "valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
+                .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), false)
+                .MethodReturn(
+                    getter.UnderlyingExistsCodegen(
+                        Cast(typeof(Map), Ref("valueTopObj")), codegenMethodScope, codegenClassScope));
         }
     }
 } // end of namespace

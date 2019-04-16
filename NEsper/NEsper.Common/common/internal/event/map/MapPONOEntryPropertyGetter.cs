@@ -30,10 +30,14 @@ namespace com.espertech.esper.common.@internal.@event.map
         private readonly string propertyMap;
 
         public MapPONOEntryPropertyGetter(
-            string propertyMap, BeanEventPropertyGetter mapEntryGetter,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, Type returnType, Type nestedComponentType,
-            BeanEventTypeFactory beanEventTypeFactory) : base(
-            eventBeanTypedEventFactory, beanEventTypeFactory, returnType, nestedComponentType)
+            string propertyMap,
+            BeanEventPropertyGetter mapEntryGetter,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            Type returnType,
+            Type nestedComponentType,
+            BeanEventTypeFactory beanEventTypeFactory)
+            : base(
+                eventBeanTypedEventFactory, beanEventTypeFactory, returnType, nestedComponentType)
         {
             this.propertyMap = propertyMap;
             this.mapEntryGetter = mapEntryGetter;
@@ -75,7 +79,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public override CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -84,27 +89,32 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetMapCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
-        private CodegenMethod GetMapCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+        private CodegenMethod GetMapCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map").Block

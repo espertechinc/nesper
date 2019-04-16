@@ -6,71 +6,97 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
 {
-	public class MapDynamicPropertyGetter : MapEventPropertyGetter {
+    public class MapDynamicPropertyGetter : MapEventPropertyGetter
+    {
+        private readonly string propertyName;
 
-	    private readonly string propertyName;
+        public MapDynamicPropertyGetter(string propertyName)
+        {
+            this.propertyName = propertyName;
+        }
 
-	    public MapDynamicPropertyGetter(string propertyName) {
-	        this.propertyName = propertyName;
-	    }
+        public object GetMap(IDictionary<string, object> map)
+        {
+            return map.Get(propertyName);
+        }
 
-	    public object GetMap(IDictionary<string, object> map) {
-	        return map.Get(propertyName);
-	    }
+        public bool IsMapExistsProperty(IDictionary<string, object> map)
+        {
+            return map.ContainsKey(propertyName);
+        }
 
-	    public bool IsMapExistsProperty(IDictionary<string, object> map) {
-	        return map.ContainsKey(propertyName);
-	    }
+        public object Get(EventBean eventBean)
+        {
+            var map = (IDictionary<object, object>) eventBean.Underlying;
+            return map.Get(propertyName);
+        }
 
-	    public object Get(EventBean eventBean) {
-	        IDictionary<object, object> map = (IDictionary<object, object>) eventBean.Underlying;
-	        return map.Get(propertyName);
-	    }
+        public bool IsExistsProperty(EventBean eventBean)
+        {
+            var map = (IDictionary<object, object>) eventBean.Underlying;
+            return map.ContainsKey(propertyName);
+        }
 
-	    public bool IsExistsProperty(EventBean eventBean) {
-	        IDictionary<object, object> map = (IDictionary<object, object>) eventBean.Underlying;
-	        return map.ContainsKey(propertyName);
-	    }
+        public object GetFragment(EventBean eventBean)
+        {
+            return null;
+        }
 
-	    public object GetFragment(EventBean eventBean) {
-	        return null;
-	    }
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ExprDotMethod(CastUnderlying(typeof(IDictionary<object, object>), beanExpression), "get", Constant(propertyName));
+        }
 
-	    public CodegenExpression EventBeanGetCodegen(CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ExprDotMethod(CastUnderlying(typeof(IDictionary<object, object>), beanExpression), "get", Constant(propertyName));
-	    }
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ExprDotMethod(CastUnderlying(typeof(IDictionary<object, object>), beanExpression), "containsKey", Constant(propertyName));
+        }
 
-	    public CodegenExpression EventBeanExistsCodegen(CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ExprDotMethod(CastUnderlying(typeof(IDictionary<object, object>), beanExpression), "containsKey", Constant(propertyName));
-	    }
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EventBeanFragmentCodegen(CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ExprDotMethod(underlyingExpression, "get", Constant(propertyName));
+        }
 
-	    public CodegenExpression UnderlyingGetCodegen(CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ExprDotMethod(underlyingExpression, "get", Constant(propertyName));
-	    }
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ExprDotMethod(underlyingExpression, "containsKey", Constant(propertyName));
+        }
 
-	    public CodegenExpression UnderlyingExistsCodegen(CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ExprDotMethod(underlyingExpression, "containsKey", Constant(propertyName));
-	    }
-
-	    public CodegenExpression UnderlyingFragmentCodegen(CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
-	}
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
+    }
 } // end of namespace

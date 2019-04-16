@@ -44,9 +44,17 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="hasTableAccess">if set to <c>true</c> [has table access].</param>
         /// <param name="multiMatchHandler">The multi match handler.</param>
         public EPStatementHandle(
-            int statementId, string statementName, string statementText, StatementType statementType,
-            string expressionText, bool hasVariables, StatementMetricHandle metricsHandle, int priority,
-            bool preemptive, bool hasTableAccess, MultiMatchHandler multiMatchHandler)
+            int statementId,
+            string statementName,
+            string statementText,
+            StatementType statementType,
+            string expressionText,
+            bool hasVariables,
+            StatementMetricHandle metricsHandle,
+            int priority,
+            bool preemptive,
+            bool hasTableAccess,
+            MultiMatchHandler multiMatchHandler)
         {
             StatementId = statementId;
             StatementName = statementName;

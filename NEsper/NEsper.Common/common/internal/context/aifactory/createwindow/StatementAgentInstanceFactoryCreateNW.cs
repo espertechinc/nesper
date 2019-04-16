@@ -26,9 +26,9 @@ using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
-    public class StatementAgentInstanceFactoryCreateNW 
-        : StatementAgentInstanceFactory
-        , StatementReadyCallback
+    public class StatementAgentInstanceFactoryCreateNW
+        : StatementAgentInstanceFactory,
+            StatementReadyCallback
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -100,7 +100,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         }
 
         public StatementAgentInstanceFactoryResult NewContext(
-            AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
         {
             IList<AgentInstanceStopCallback> stopCallbacks = new List<AgentInstanceStopCallback>();
 
@@ -219,21 +220,27 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         }
 
         public StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
         }
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             var namedWindow = statementContext.NamedWindowManagementService.GetNamedWindow(
                 statementContext.DeploymentId, namedWindowName);
             namedWindow.StatementContext = statementContext;
         }
 
-        private void HandleInsertFrom(AgentInstanceContext agentInstanceContext, NamedWindowInstance processorInstance)
+        private void HandleInsertFrom(
+            AgentInstanceContext agentInstanceContext,
+            NamedWindowInstance processorInstance)
         {
             var sourceWindowInstances = insertFromNamedWindow.GetNamedWindowInstance(agentInstanceContext);
             IList<EventBean> events = new List<EventBean>();

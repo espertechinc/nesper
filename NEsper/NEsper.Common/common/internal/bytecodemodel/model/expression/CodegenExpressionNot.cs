@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         private readonly bool _isNot;
 
-        public CodegenExpressionNot(bool isNot, CodegenExpression expression)
+        public CodegenExpressionNot(
+            bool isNot,
+            CodegenExpression expression)
         {
             this._isNot = isNot;
             Expression = expression;
@@ -29,7 +31,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Expression.MergeClasses(classes);
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             if (_isNot) {
                 builder.Append("!(");

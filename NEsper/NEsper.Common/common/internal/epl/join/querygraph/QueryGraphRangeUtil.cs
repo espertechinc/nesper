@@ -29,7 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             Add(QueryGraphRangeEnum.LESS, QueryGraphRangeEnum.GREATER_OR_EQUAL, QueryGraphRangeEnum.RANGE_HALF_OPEN);
         }
 
-        private static void Add(QueryGraphRangeEnum opOne, QueryGraphRangeEnum opTwo, QueryGraphRangeEnum range)
+        private static void Add(
+            QueryGraphRangeEnum opOne,
+            QueryGraphRangeEnum opTwo,
+            QueryGraphRangeEnum range)
         {
             var keyOne = GetKey(opOne, opTwo);
             OPS_TABLE.Put(keyOne, new QueryGraphRangeConsolidateDesc(range, false));
@@ -37,12 +40,16 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             OPS_TABLE.Put(keyRev, new QueryGraphRangeConsolidateDesc(range, true));
         }
 
-        private static HashableMultiKey GetKey(QueryGraphRangeEnum op1, QueryGraphRangeEnum op2)
+        private static HashableMultiKey GetKey(
+            QueryGraphRangeEnum op1,
+            QueryGraphRangeEnum op2)
         {
             return new HashableMultiKey(new object[] {op1, op2});
         }
 
-        public static QueryGraphRangeConsolidateDesc GetCanConsolidate(QueryGraphRangeEnum op1, QueryGraphRangeEnum op2)
+        public static QueryGraphRangeConsolidateDesc GetCanConsolidate(
+            QueryGraphRangeEnum op1,
+            QueryGraphRangeEnum op2)
         {
             return OPS_TABLE.Get(GetKey(op1, op2));
         }

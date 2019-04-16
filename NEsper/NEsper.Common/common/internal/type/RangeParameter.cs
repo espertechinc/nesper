@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>Ctor. </summary>
         /// <param name="low">start of range</param>
         /// <param name="high">end of range</param>
-        public RangeParameter(int low, int high)
+        public RangeParameter(
+            int low,
+            int high)
         {
             Low = low;
             High = high;
@@ -39,24 +41,27 @@ namespace com.espertech.esper.common.@internal.type
         /// <value>end of range</value>
         public int High { get; set; }
 
-        public bool IsWildcard(int min, int max)
+        public bool IsWildcard(
+            int min,
+            int max)
         {
-            if ((min >= Low) && (max <= High))
-            {
+            if ((min >= Low) && (max <= High)) {
                 return true;
             }
+
             return false;
         }
 
-        public ICollection<int> GetValuesInRange(int min, int max)
+        public ICollection<int> GetValuesInRange(
+            int min,
+            int max)
         {
             ICollection<int> values = new HashSet<int>();
 
             int start = (min > Low) ? min : Low;
             int end = (max > High) ? High : max;
 
-            while (start <= end)
-            {
+            while (start <= end) {
                 values.Add(start);
                 start++;
             }

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.compat;
@@ -16,27 +15,33 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-	/// <summary>
-	/// Specification for use of an existing table.
-	/// </summary>
-	public class TableQueryStreamSpec : StreamSpecBase , StreamSpecCompiled {
-	    private readonly TableMetaData table;
-	    private IList<ExprNode> filterExpressions;
+    /// <summary>
+    /// Specification for use of an existing table.
+    /// </summary>
+    public class TableQueryStreamSpec : StreamSpecBase,
+        StreamSpecCompiled
+    {
+        private readonly TableMetaData table;
+        private IList<ExprNode> filterExpressions;
 
-	    public TableQueryStreamSpec(string optionalStreamName, ViewSpec[] viewSpecs, StreamSpecOptions streamSpecOptions, TableMetaData table, IList<ExprNode> filterExpressions) : base(optionalStreamName, viewSpecs, streamSpecOptions)
-	        {
-	        this.table = table;
-	        this.filterExpressions = filterExpressions;
-	    }
+        public TableQueryStreamSpec(
+            string optionalStreamName,
+            ViewSpec[] viewSpecs,
+            StreamSpecOptions streamSpecOptions,
+            TableMetaData table,
+            IList<ExprNode> filterExpressions)
+            : base(optionalStreamName, viewSpecs, streamSpecOptions)
+        {
+            this.table = table;
+            this.filterExpressions = filterExpressions;
+        }
 
-	    public TableMetaData Table
-	    {
-	        get => table;
-	    }
+        public TableMetaData Table {
+            get => table;
+        }
 
-	    public IList<ExprNode> FilterExpressions
-	    {
-	        get => filterExpressions;
-	    }
-	}
+        public IList<ExprNode> FilterExpressions {
+            get => filterExpressions;
+        }
+    }
 } // end of namespace

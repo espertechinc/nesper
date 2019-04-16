@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.support
 {
-	public interface SupportMarkerInterface
-	{
-	}
+    public interface SupportMarkerInterface
+    {
+    }
 } // End of namespace

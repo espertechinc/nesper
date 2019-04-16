@@ -44,8 +44,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         /// <param name="oldDataMultiKey">old data keys</param>
         /// <param name="eventsPerStream">event buffer, transient buffer</param>
         public static void ApplyAggViewResultKeyedView(
-            AggregationService aggregationService, AgentInstanceContext agentInstanceContext, EventBean[] newData,
-            object[] newDataMultiKey, EventBean[] oldData, object[] oldDataMultiKey, EventBean[] eventsPerStream)
+            AggregationService aggregationService,
+            AgentInstanceContext agentInstanceContext,
+            EventBean[] newData,
+            object[] newDataMultiKey,
+            EventBean[] oldData,
+            object[] oldDataMultiKey,
+            EventBean[] eventsPerStream)
         {
             // update aggregates
             if (newData != null) {
@@ -75,8 +80,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         /// <param name="oldEvents">old data</param>
         /// <param name="oldDataMultiKey">old data keys</param>
         public static void ApplyAggJoinResultKeyedJoin(
-            AggregationService aggregationService, AgentInstanceContext agentInstanceContext,
-            ISet<MultiKey<EventBean>> newEvents, object[] newDataMultiKey, ISet<MultiKey<EventBean>> oldEvents,
+            AggregationService aggregationService,
+            AgentInstanceContext agentInstanceContext,
+            ISet<MultiKey<EventBean>> newEvents,
+            object[] newDataMultiKey,
+            ISet<MultiKey<EventBean>> oldEvents,
             object[] oldDataMultiKey)
         {
             // update aggregates
@@ -100,7 +108,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         }
 
         public static CodegenMethod GenerateGroupKeySingleCodegen(
-            ExprNode[] groupKeyExpressions, CodegenClassScope classScope, CodegenInstanceAux instance)
+            ExprNode[] groupKeyExpressions,
+            CodegenClassScope classScope,
+            CodegenInstanceAux instance)
         {
             Consumer<CodegenMethod> code = methodNode => {
                 string[] expressions = null;
@@ -157,7 +167,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         }
 
         public static CodegenMethod GenerateGroupKeyArrayViewCodegen(
-            ExprNode[] groupKeyExpressions, CodegenClassScope classScope, CodegenInstanceAux instance)
+            ExprNode[] groupKeyExpressions,
+            CodegenClassScope classScope,
+            CodegenInstanceAux instance)
         {
             var generateGroupKeySingle = GenerateGroupKeySingleCodegen(groupKeyExpressions, classScope, instance);
 
@@ -184,7 +196,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         }
 
         public static CodegenMethod GenerateGroupKeyArrayJoinCodegen(
-            ExprNode[] groupKeyExpressions, CodegenClassScope classScope, CodegenInstanceAux instance)
+            ExprNode[] groupKeyExpressions,
+            CodegenClassScope classScope,
+            CodegenInstanceAux instance)
         {
             var generateGroupKeySingle = GenerateGroupKeySingleCodegen(groupKeyExpressions, classScope, instance);
             Consumer<CodegenMethod> code = method => {

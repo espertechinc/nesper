@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggmultifunc;
@@ -23,7 +22,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.rettype;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
@@ -42,8 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         private AggregationForgeFactoryAccessPlugin factory;
 
         public ExprPlugInMultiFunctionAggNode(
-            bool distinct, ConfigurationCompilerPlugInAggregationMultiFunction config,
-            AggregationMultiFunctionForge aggregationMultiFunctionForge, string functionName)
+            bool distinct,
+            ConfigurationCompilerPlugInAggregationMultiFunction config,
+            AggregationMultiFunctionForge aggregationMultiFunctionForge,
+            string functionName)
             : base(distinct)
         {
             this.aggregationMultiFunctionForge = aggregationMultiFunctionForge;
@@ -56,7 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         internal override bool IsFilterExpressionAsLastParameter => false;
 
         public AggregationTableReadDesc ValidateAggregationTableRead(
-            ExprValidationContext validationContext, TableMetadataColumnAggregation tableAccessColumn,
+            ExprValidationContext validationContext,
+            TableMetadataColumnAggregation tableAccessColumn,
             TableMetaData table)
         {
             // child node validation
@@ -64,8 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
             // portable validation
             var validation = tableAccessColumn.AggregationPortableValidation;
-            if (!(validation is AggregationPortableValidationPluginMultiFunc))
-            {
+            if (!(validation is AggregationPortableValidationPluginMultiFunc)) {
                 throw new ExprValidationException("Invalid aggregation column type");
             }
 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             var epType = handler.ReturnType;
             Type returnType = EPTypeHelper.GetNormalizedClass(epType);
             var forge = new AggregationTableAccessAggReaderForgePlugIn(
-                returnType, (AggregationMultiFunctionTableReaderModeManaged)handler.TableReaderMode);
+                returnType, (AggregationMultiFunctionTableReaderModeManaged) handler.TableReaderMode);
             EventType eventTypeCollection = EPTypeHelper.OptionalIsEventTypeColl(epType);
             EventType eventTypeSingle = EPTypeHelper.OptionalIsEventTypeSingle(epType);
             Type componentTypeCollection = EPTypeHelper.OptionalIsComponentTypeColl(epType);
@@ -89,19 +89,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         public Type ComponentTypeCollection => factory.ComponentTypeCollection;
 
         public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return factory.EventTypeCollection;
         }
 
         public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return factory.EventTypeSingle;
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
@@ -110,7 +114,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
@@ -119,7 +125,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
@@ -130,18 +138,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }

@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
     public class DataFlowOpFactoryInitializeContext
     {
         public DataFlowOpFactoryInitializeContext(
-            string dataFlowName, int operatorNumber, StatementContext statementContext)
+            string dataFlowName,
+            int operatorNumber,
+            StatementContext statementContext)
         {
             DataFlowName = dataFlowName;
             OperatorNumber = operatorNumber;

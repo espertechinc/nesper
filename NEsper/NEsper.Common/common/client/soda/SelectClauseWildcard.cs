@@ -14,14 +14,14 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a wildcard in the select-clause.
     /// </summary>
-	[Serializable]
+    [Serializable]
     public class SelectClauseWildcard : SelectClauseElement
-	{
-	    /// <summary>Renders the element in textual representation.</summary>
-	    /// <param name="writer">to output to</param>
+    {
+        /// <summary>Renders the element in textual representation.</summary>
+        /// <param name="writer">to output to</param>
         public void ToEPLElement(TextWriter writer)
-	    {
-	        writer.Write("*");
-	    }
-	}
+        {
+            writer.Write("*");
+        }
+    }
 } // End of namespace

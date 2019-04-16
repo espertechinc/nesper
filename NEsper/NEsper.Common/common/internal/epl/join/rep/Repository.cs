@@ -30,6 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
         /// <param name="cursor">provides result position and parent event and node information</param>
         /// <param name="lookupResults">is the events found</param>
         /// <param name="resultStream">is the stream number of the stream providing the results</param>
-        void AddResult(Cursor cursor, ISet<EventBean> lookupResults, int resultStream);
+        void AddResult(
+            Cursor cursor,
+            ICollection<EventBean> lookupResults,
+            int resultStream);
     }
 } // end of namespace

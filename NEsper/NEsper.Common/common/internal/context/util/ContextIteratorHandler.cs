@@ -7,19 +7,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-	public interface ContextIteratorHandler {
-	    IEnumerator<EventBean> GetEnumerator(int statementId);
+    public interface ContextIteratorHandler
+    {
+        IEnumerator<EventBean> GetEnumerator(int statementId);
 
-	    IEnumerator<EventBean> GetSafeEnumerator(int statementId);
+        IEnumerator<EventBean> GetSafeEnumerator(int statementId);
 
-	    IEnumerator<EventBean> GetEnumerator(int statementId, ContextPartitionSelector selector);
+        IEnumerator<EventBean> GetEnumerator(
+            int statementId,
+            ContextPartitionSelector selector);
 
-	    IEnumerator<EventBean> GetSafeEnumerator(int statementId, ContextPartitionSelector selector);
-	}
+        IEnumerator<EventBean> GetSafeEnumerator(
+            int statementId,
+            ContextPartitionSelector selector);
+    }
 } // end of namespace

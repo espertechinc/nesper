@@ -12,7 +12,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 {
     public class XYPointWValue<TL> : XYPoint
     {
-        public XYPointWValue(double x, double y, TL value) : base(x, y)
+        public XYPointWValue(
+            double x,
+            double y,
+            TL value)
+            : base(x, y)
         {
             Value = value;
         }

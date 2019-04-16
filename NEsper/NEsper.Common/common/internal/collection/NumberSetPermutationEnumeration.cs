@@ -15,27 +15,25 @@ namespace com.espertech.esper.common.@internal.collection
     /// values, all permutations of order these values can come in, ie.
     /// Example: {0, 2, 3} results in 6 enumeration values ending in {3, 2, 0}.
     /// </summary>
-	public class NumberSetPermutationEnumeration
-	{
-	    /// <summary>
-	    /// Creates the specified number set.
-	    /// </summary>
-	    /// <param name="numberSet">The number set.</param>
-	    /// <returns></returns>
-	    public static IEnumerable<int[]> New(int[] numberSet)
-	    {
-	        var permutationEnumerator = PermutationEnumerator.Create(numberSet.Length).GetEnumerator();
-	        while (permutationEnumerator.MoveNext())
-	        {
-	            var permutation = permutationEnumerator.Current;
-	            var result = new int[numberSet.Length];
-	            for (var i = 0; i < numberSet.Length; i++)
-	            {
-	                result[i] = numberSet[permutation[i]];
-	            }
+    public class NumberSetPermutationEnumeration
+    {
+        /// <summary>
+        /// Creates the specified number set.
+        /// </summary>
+        /// <param name="numberSet">The number set.</param>
+        /// <returns></returns>
+        public static IEnumerable<int[]> New(int[] numberSet)
+        {
+            var permutationEnumerator = PermutationEnumerator.Create(numberSet.Length).GetEnumerator();
+            while (permutationEnumerator.MoveNext()) {
+                var permutation = permutationEnumerator.Current;
+                var result = new int[numberSet.Length];
+                for (var i = 0; i < numberSet.Length; i++) {
+                    result[i] = numberSet[permutation[i]];
+                }
 
-	            yield return result;
-	        }
-	    }
+                yield return result;
+            }
+        }
     }
 }

@@ -23,7 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator _valueEval;
 
         public ExprBetweenNodeForgeEval(
-            ExprBetweenNodeForge forge, ExprEvaluator valueEval, ExprEvaluator lowerEval, ExprEvaluator higherEval)
+            ExprBetweenNodeForge forge,
+            ExprEvaluator valueEval,
+            ExprEvaluator lowerEval,
+            ExprEvaluator higherEval)
         {
             _forge = forge;
             _valueEval = valueEval;
@@ -31,7 +34,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             _higherEval = higherEval;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             // Evaluate first child which is the base value to compare to
             var value = _valueEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
@@ -49,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprBetweenNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprBetweenNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var nodes = forge.ForgeRenderable.ChildNodes;

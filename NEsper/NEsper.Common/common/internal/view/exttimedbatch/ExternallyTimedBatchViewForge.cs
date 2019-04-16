@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,7 +18,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -40,24 +38,28 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
         private string ViewParamMessage => ViewName +
                                            " view requires a timestamp expression and a numeric or time period parameter for window size and an optional long-typed reference point in msec, and an optional list of control keywords as a string parameter (please see the documentation)";
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             viewParameters = parameters;
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             var windowName = ViewName;
             var validated = ViewForgeSupport.Validate(
                 windowName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
-            if (viewParameters.Count < 2 || viewParameters.Count > 3)
-            {
+            if (viewParameters.Count < 2 || viewParameters.Count > 3) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
             // validate first parameter: timestamp expression
-            if (!validated[0].Forge.EvaluationType.IsNumeric())
-            {
+            if (!validated[0].Forge.EvaluationType.IsNumeric()) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
@@ -68,12 +70,10 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
                 ViewName, viewParameters[1], ViewParamMessage, 1, viewForgeEnv, streamNumber);
 
             // validate optional parameters
-            if (validated.Length == 3)
-            {
+            if (validated.Length == 3) {
                 var constant = ViewForgeSupport.ValidateAndEvaluate(
                     windowName, validated[2], viewForgeEnv, streamNumber);
-                if (!constant.IsNumber() || constant.IsFloatingPointNumber())
-                {
+                if (!constant.IsNumber() || constant.IsFloatingPointNumber()) {
                     throw new ViewParameterException(
                         "Externally-timed batch view requires a Long-typed reference point in msec as a third parameter");
                 }
@@ -95,7 +95,9 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block

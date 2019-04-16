@@ -26,7 +26,11 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         private readonly int statementId;
         private readonly string text;
 
-        public AuditPatternInstanceKey(string runtimeURI, int statementId, int agentInstanceId, string text)
+        public AuditPatternInstanceKey(
+            string runtimeURI,
+            int statementId,
+            int agentInstanceId,
+            string text)
         {
             this.runtimeURI = runtimeURI;
             this.statementId = statementId;

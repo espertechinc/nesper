@@ -12,6 +12,8 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public interface FilterFaultHandler
     {
-        bool HandleFilterFault(EventBean theEvent, long version);
+        bool HandleFilterFault(
+            EventBean theEvent,
+            long version);
     }
 }

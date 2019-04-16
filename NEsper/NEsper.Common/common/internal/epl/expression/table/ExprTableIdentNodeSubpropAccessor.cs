@@ -41,8 +41,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         private AggregationTableReadDesc tableAccessDesc;
 
         public ExprTableIdentNodeSubpropAccessor(
-            int streamNum, string optionalStreamName, TableMetaData table,
-            TableMetadataColumnAggregation tableAccessColumn, ExprNode aggregateAccessMultiValueNode)
+            int streamNum,
+            string optionalStreamName,
+            TableMetaData table,
+            TableMetadataColumnAggregation tableAccessColumn,
+            ExprNode aggregateAccessMultiValueNode)
         {
             this.streamNum = streamNum;
             this.optionalStreamName = optionalStreamName;
@@ -58,18 +61,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public bool IsConstantResult => false;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
@@ -77,7 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             var reader = classScope.AddOrGetFieldSharable(
                 new AggregationTableAccessAggReaderCodegenField(tableAccessDesc.Reader, classScope, GetType()));
@@ -89,7 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         }
 
         public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return tableAccessDesc.EventTypeCollection;
         }
@@ -97,7 +110,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public Type ComponentTypeCollection => tableAccessDesc.ComponentTypeCollection;
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             var reader = classScope.AddOrGetFieldSharable(
                 new AggregationTableAccessAggReaderCodegenField(tableAccessDesc.Reader, classScope, GetType()));
@@ -109,25 +124,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         }
 
         public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return tableAccessDesc.EventTypeSingle;
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             var reader = classScope.AddOrGetFieldSharable(
                 new AggregationTableAccessAggReaderCodegenField(tableAccessDesc.Reader, classScope, GetType()));
@@ -139,7 +162,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             return EvaluateCodegenUninstrumented(requiredType, parent, symbols, classScope);
         }
@@ -164,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             if (optionalStreamName != null) {
                 writer.Write(optionalStreamName);
@@ -176,7 +202,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             aggregateAccessMultiValueNode.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             return false;
         }
@@ -192,8 +220,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         /// <param name="exprEvaluatorContext">expr ctx</param>
         /// <returns>value</returns>
         public static object EvaluateTableWithReader(
-            int streamNum, AggregationMultiFunctionTableReader reader, int aggColNum, EventBean[] eventsPerStream,
-            bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            int streamNum,
+            AggregationMultiFunctionTableReader reader,
+            int aggColNum,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
             if (@event == null) {
@@ -215,8 +247,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         /// <param name="exprEvaluatorContext">expr ctx</param>
         /// <returns>value</returns>
         public static ICollection<object> EvaluateTableWithReaderCollectionEvents(
-            int streamNum, AggregationMultiFunctionTableReader reader, int aggColNum, EventBean[] eventsPerStream,
-            bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            int streamNum,
+            AggregationMultiFunctionTableReader reader,
+            int aggColNum,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
             if (@event == null) {
@@ -238,8 +274,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         /// <param name="exprEvaluatorContext">expr ctx</param>
         /// <returns>value</returns>
         public static ICollection<object> EvaluateTableWithReaderCollectionScalar(
-            int streamNum, AggregationMultiFunctionTableReader reader, int aggColNum, EventBean[] eventsPerStream,
-            bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            int streamNum,
+            AggregationMultiFunctionTableReader reader,
+            int aggColNum,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
             if (@event == null) {

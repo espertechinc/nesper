@@ -41,7 +41,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="left">provides a value to compare against</param>
         /// <param name="operator">is the operator to use</param>
         /// <param name="right">provides a value to compare against</param>
-        public RelationalOpExpression(Expression left, string @operator, Expression right)
+        public RelationalOpExpression(
+            Expression left,
+            string @operator,
+            Expression right)
         {
             this.@operator = @operator.Trim();
             AddChild(left);

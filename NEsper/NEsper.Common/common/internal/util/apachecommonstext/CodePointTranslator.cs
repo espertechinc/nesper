@@ -24,31 +24,36 @@ using System.IO;
 
 namespace com.espertech.esper.common.@internal.util.apachecommonstext
 {
-	/// <summary>
-	/// Helper subclass to CharSequenceTranslator to allow for translations that
-	/// will replace up to one character at a time.
-	/// </summary>
-	/// <unknown>@since 1.0</unknown>
-	public abstract class CodePointTranslator : CharSequenceTranslator {
+    /// <summary>
+    /// Helper subclass to CharSequenceTranslator to allow for translations that
+    /// will replace up to one character at a time.
+    /// </summary>
+    /// <unknown>@since 1.0</unknown>
+    public abstract class CodePointTranslator : CharSequenceTranslator
+    {
+        /// <summary>
+        /// Implementation of translate that maps onto the abstract translate(int, Writer) method.
+        /// {@inheritDoc}
+        /// </summary>
+        public override int Translate(
+            string input,
+            int index,
+            TextWriter @out)
+        {
+            int codepoint = Character.CodePointAt(input, index);
+            bool consumed = Translate(codepoint, @out);
+            return consumed ? 1 : 0;
+        }
 
-	    /// <summary>
-	    /// Implementation of translate that maps onto the abstract translate(int, Writer) method.
-	    /// {@inheritDoc}
-	    /// </summary>
-	    public override int Translate(string input, int index, TextWriter @out) {
-	        int codepoint = Character.CodePointAt(input, index);
-	        bool consumed = Translate(codepoint, @out);
-	        return consumed ? 1 : 0;
-	    }
-
-	    /// <summary>
-	    /// Translate the specified codepoint into another.
-	    /// </summary>
-	    /// <param name="codepoint">int character input to translate</param>
-	    /// <param name="out">Writer to optionally push the translated output to</param>
-	    /// <returns>boolean as to whether translation occurred or not</returns>
-	    /// <throws>IOException if and only if the Writer produces an IOException</throws>
-	    public abstract bool Translate(int codepoint, TextWriter @out) ;
-
-	}
+        /// <summary>
+        /// Translate the specified codepoint into another.
+        /// </summary>
+        /// <param name="codepoint">int character input to translate</param>
+        /// <param name="out">Writer to optionally push the translated output to</param>
+        /// <returns>boolean as to whether translation occurred or not</returns>
+        /// <throws>IOException if and only if the Writer produces an IOException</throws>
+        public abstract bool Translate(
+            int codepoint,
+            TextWriter @out);
+    }
 } // end of namespace

@@ -78,9 +78,10 @@ namespace com.espertech.esper.common.client
         /// <param name="pMethodGet">The _p method get.</param>
         /// <param name="pMethodGetFragment">The _p method get fragment.</param>
         /// <param name="pMethodIsExistsProperty">The _p method is exists property.</param>
-        public ProxyEventPropertyGetter(Func<EventBean, object> pMethodGet,
-                                        Func<EventBean, object> pMethodGetFragment,
-                                        Func<EventBean, bool> pMethodIsExistsProperty)
+        public ProxyEventPropertyGetter(
+            Func<EventBean, object> pMethodGet,
+            Func<EventBean, object> pMethodGetFragment,
+            Func<EventBean, bool> pMethodIsExistsProperty)
         {
             ProcGet = pMethodGet;
             ProcGetFragment = pMethodGetFragment;

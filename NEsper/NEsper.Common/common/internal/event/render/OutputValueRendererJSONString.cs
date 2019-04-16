@@ -6,20 +6,20 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Text;
 
 namespace com.espertech.esper.common.@internal.@event.render
 {
     /// <summary>
-    /// Renderer for a String-value into JSON strings.
+    ///     Renderer for a String-value into JSON strings.
     /// </summary>
     public class OutputValueRendererJSONString : OutputValueRenderer
     {
-        public void Render(Object o, StringBuilder buf)
+        public void Render(
+            object o,
+            StringBuilder buf)
         {
-            if (o == null)
-            {
+            if (o == null) {
                 buf.Append("null");
                 return;
             }
@@ -28,66 +28,58 @@ namespace com.espertech.esper.common.@internal.@event.render
         }
 
         /// <summary>
-        /// JSON-Enquote the passed string.
+        ///     JSON-Enquote the passed string.
         /// </summary>
         /// <param name="s">string to enqoute</param>
         /// <param name="sb">buffer to populate</param>
-        public static void Enquote(String s, StringBuilder sb)
+        public static void Enquote(
+            string s,
+            StringBuilder sb)
         {
-            if (string.IsNullOrEmpty(s))
-            {
+            if (string.IsNullOrEmpty(s)) {
                 sb.Append("\"\"");
                 return;
             }
 
             char c;
             int i;
-            int len = s.Length;
-            String t;
+            var len = s.Length;
+            string t;
 
             sb.Append('"');
-            for (i = 0; i < len; i += 1)
-            {
+            for (i = 0; i < len; i += 1) {
                 c = s[i];
-                if ((c == '\\') || (c == '"'))
-                {
+                if (c == '\\' || c == '"') {
                     sb.Append('\\');
                     sb.Append(c);
                 }
-                else if (c == '\b')
-                {
+                else if (c == '\b') {
                     sb.Append("\\b");
                 }
-                else if (c == '\t')
-                {
+                else if (c == '\t') {
                     sb.Append("\\t");
                 }
-                else if (c == '\n')
-                {
+                else if (c == '\n') {
                     sb.Append("\\n");
                 }
-                else if (c == '\f')
-                {
+                else if (c == '\f') {
                     sb.Append("\\f");
                 }
-                else if (c == '\r')
-                {
+                else if (c == '\r') {
                     sb.Append("\\r");
                 }
-                else
-                {
-                    if (c < ' ')
-                    {
+                else {
+                    if (c < ' ') {
                         t = "000" + ((short) c).ToString("X2");
                         sb.Append("\\u");
                         sb.Append(t.Substring(t.Length - 4));
                     }
-                    else
-                    {
+                    else {
                         sb.Append(c);
                     }
                 }
             }
+
             sb.Append('"');
         }
     }

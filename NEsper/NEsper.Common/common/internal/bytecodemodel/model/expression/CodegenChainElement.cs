@@ -17,13 +17,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly string _method;
         private readonly CodegenExpression[] _optionalParams;
 
-        public CodegenChainElement(string method, CodegenExpression[] optionalParams)
+        public CodegenChainElement(
+            string method,
+            CodegenExpression[] optionalParams)
         {
             this._method = method;
             this._optionalParams = optionalParams;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append(_method).Append("(");
             if (_optionalParams != null) {

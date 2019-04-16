@@ -8,13 +8,11 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -36,7 +34,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return Environment.GetEnvironmentVariable(systemPropertyName);
         }
@@ -44,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(typeof(Environment), "GetEnvironmentVariable", Constant(systemPropertyName));
@@ -59,18 +62,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return null;
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
-            get
-            {
-                return new ProxyExprNodeRenderable
-                {
-                    ProcToEPL = (writer, parentPrecedence) => { ToPrecedenceFreeEPL(writer); }
+        public ExprNodeRenderable ForgeRenderable {
+            get {
+                return new ProxyExprNodeRenderable {
+                    ProcToEPL = (
+                        writer,
+                        parentPrecedence) => {
+                        ToPrecedenceFreeEPL(writer);
+                    }
                 };
             }
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(SYSTEM_PROPETIES_NAME);
             writer.Write("'");
@@ -78,19 +82,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             writer.Write("'");
         }
 
-        public override bool EqualsNode(ExprNode other, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode other,
+            bool ignoreStreamPrefix)
         {
-            if (this == other)
-            {
+            if (this == other) {
                 return true;
             }
 
-            if (other == null || GetType() != other.GetType())
-            {
+            if (other == null || GetType() != other.GetType()) {
                 return false;
             }
 
-            var that = (ExprEvalSystemProperty)other;
+            var that = (ExprEvalSystemProperty) other;
 
             return systemPropertyName.Equals(that.systemPropertyName);
         }

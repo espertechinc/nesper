@@ -8,7 +8,11 @@
 
 namespace com.espertech.esper.common.@internal.util
 {
-    public interface TriFunction<A, B, C, R> {
-        R Apply(A a, B b, C c);
+    public interface TriFunction<A, B, C, R>
+    {
+        R Apply(
+            A a,
+            B b,
+            C c);
     }
 } // end of namespace

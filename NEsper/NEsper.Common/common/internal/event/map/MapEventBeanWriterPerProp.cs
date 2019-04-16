@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// </summary>
         /// <param name="values">to write</param>
         /// <param name="theEvent">to write to</param>
-        public void Write(object[] values, EventBean theEvent)
+        public void Write(
+            object[] values,
+            EventBean theEvent)
         {
             var mappedEvent = (MappedEventBean) theEvent;
             var map = mappedEvent.Properties;

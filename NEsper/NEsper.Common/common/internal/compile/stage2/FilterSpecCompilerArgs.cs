@@ -28,8 +28,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public FilterSpecCompilerArgs(
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
-            IDictionary<string, Pair<EventType, string>> arrayEventTypes, StreamTypeService streamTypeService,
-            ContextCompileTimeDescriptor contextDescriptor, StatementRawInfo statementRawInfo,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            StreamTypeService streamTypeService,
+            ContextCompileTimeDescriptor contextDescriptor,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
             this.taggedEventTypes = taggedEventTypes;

@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         private readonly EPStatementAgentInstanceHandleComparator _innerComparator = new EPStatementAgentInstanceHandleComparator();
 
-        public int Compare(AgentInstance ai1, AgentInstance ai2)
+        public int Compare(
+            AgentInstance ai1,
+            AgentInstance ai2)
         {
             EPStatementAgentInstanceHandle o1 = ai1.AgentInstanceContext.EpStatementAgentInstanceHandle;
             EPStatementAgentInstanceHandle o2 = ai2.AgentInstanceContext.EpStatementAgentInstanceHandle;

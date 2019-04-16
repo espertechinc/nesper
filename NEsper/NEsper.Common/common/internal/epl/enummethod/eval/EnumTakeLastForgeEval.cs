@@ -30,7 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var sizeObj = sizeEval.Evaluate(eventsLambda, isNewData, context);
             if (sizeObj == null) {
@@ -41,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public static CodegenExpression Codegen(
-            EnumTakeLastForge forge, EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope,
+            EnumTakeLastForge forge,
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             var sizeType = forge.sizeEval.EvaluationType;
@@ -64,7 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
 
-        public static ICollection<object> EvaluateEnumMethodTakeLast(ICollection<object> enumcoll, int size)
+        public static ICollection<object> EvaluateEnumMethodTakeLast(
+            ICollection<object> enumcoll,
+            int size)
         {
             if (enumcoll.IsEmpty()) {
                 return enumcoll;

@@ -41,7 +41,10 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="left">provides the value to match</param>
         /// <param name="right">provides the like-expression to match against</param>
-        public LikeExpression(Expression left, Expression right) : this(left, right, null)
+        public LikeExpression(
+            Expression left,
+            Expression right)
+            : this(left, right, null)
         {
         }
 
@@ -51,7 +54,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="left">provides the value to match</param>
         /// <param name="right">provides the like-expression to match against</param>
         /// <param name="escape">is the expression providing the string escape character</param>
-        public LikeExpression(Expression left, Expression right, Expression escape)
+        public LikeExpression(
+            Expression left,
+            Expression right,
+            Expression escape)
         {
             Children.Add(left);
             Children.Add(right);
@@ -68,7 +74,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="left">provides the value to match</param>
         /// <param name="right">provides the like-expression to match against</param>
         /// <param name="isNot">if the like-expression is negated</param>
-        public LikeExpression(Expression left, Expression right, bool isNot) : this(left, right, null, isNot)
+        public LikeExpression(
+            Expression left,
+            Expression right,
+            bool isNot)
+            : this(left, right, null, isNot)
         {
         }
 
@@ -79,7 +89,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="right">provides the like-expression to match against</param>
         /// <param name="escape">is the expression providing the string escape character</param>
         /// <param name="isNot">if the like-expression is negated</param>
-        public LikeExpression(Expression left, Expression right, Expression escape, bool isNot)
+        public LikeExpression(
+            Expression left,
+            Expression right,
+            Expression escape,
+            bool isNot)
         {
             Children.Add(left);
             Children.Add(right);

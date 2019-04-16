@@ -24,14 +24,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         private readonly EnumMostLeastFrequentEventForge forge;
         private readonly ExprEvaluator innerExpression;
 
-        public EnumMostLeastFrequentEventForgeEval(EnumMostLeastFrequentEventForge forge, ExprEvaluator innerExpression)
+        public EnumMostLeastFrequentEventForgeEval(
+            EnumMostLeastFrequentEventForge forge,
+            ExprEvaluator innerExpression)
         {
             this.forge = forge;
             this.innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             if (enumcoll.IsEmpty()) {
                 return null;
@@ -104,7 +109,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         /// <param name="items">items</param>
         /// <param name="mostFrequent">flag</param>
         /// <returns>value</returns>
-        public static object GetEnumMostLeastFrequentResult(IDictionary<object, int> items, bool mostFrequent)
+        public static object GetEnumMostLeastFrequentResult(
+            IDictionary<object, int> items,
+            bool mostFrequent)
         {
             if (mostFrequent) {
                 object maxKey = null;

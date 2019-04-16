@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly TableInstance tableInstance;
 
         public OnExprViewTableMergeInsertUnmatched(
-            TableInstance tableInstance, AgentInstanceContext agentInstanceContext, InfraOnMergeViewFactory parent)
+            TableInstance tableInstance,
+            AgentInstanceContext agentInstanceContext,
+            InfraOnMergeViewFactory parent)
         {
             this.tableInstance = tableInstance;
             this.agentInstanceContext = agentInstanceContext;
@@ -43,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             return EnumerationHelper.Empty<EventBean>();
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
                 OnTriggerType.ON_MERGE, newData, CollectionUtil.EVENTBEANARRAY_EMPTY);

@@ -109,7 +109,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
         }
 
         public StatementAgentInstanceFactoryResult NewContext(
-            AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
         {
             AgentInstanceStopCallback stopCallback;
 
@@ -169,7 +170,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
         public StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
         }

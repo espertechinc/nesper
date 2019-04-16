@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.view.util
         /// </summary>
         private const string START_EAGER_KEYWORD = "start_eager";
 
-        public TimeBatchFlags(bool isForceUpdate, bool isStartEager)
+        public TimeBatchFlags(
+            bool isForceUpdate,
+            bool isStartEager)
         {
             IsForceUpdate = isForceUpdate;
             IsStartEager = isStartEager;
@@ -33,7 +35,9 @@ namespace com.espertech.esper.common.@internal.view.util
 
         public bool IsStartEager { get; }
 
-        public static TimeBatchFlags ProcessKeywords(object keywords, string errorMessage)
+        public static TimeBatchFlags ProcessKeywords(
+            object keywords,
+            string errorMessage)
         {
             var isForceUpdate = false;
             var isStartEager = false;

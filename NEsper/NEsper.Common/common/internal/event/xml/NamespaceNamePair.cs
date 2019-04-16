@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// </summary>
         /// <param name="namespace">namespace</param>
         /// <param name="name">name</param>
-        public NamespaceNamePair(string @namespace, string name)
+        public NamespaceNamePair(
+            string @namespace,
+            string name)
         {
             Namespace = @namespace;
             Name = name;
@@ -51,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 

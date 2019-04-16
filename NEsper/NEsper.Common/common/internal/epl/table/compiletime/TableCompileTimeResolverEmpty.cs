@@ -7,25 +7,28 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
-	public class TableCompileTimeResolverEmpty : TableCompileTimeResolver {
-	    public readonly static TableCompileTimeResolverEmpty INSTANCE = new TableCompileTimeResolverEmpty();
+    public class TableCompileTimeResolverEmpty : TableCompileTimeResolver
+    {
+        public readonly static TableCompileTimeResolverEmpty INSTANCE = new TableCompileTimeResolverEmpty();
 
-	    private TableCompileTimeResolverEmpty() {
-	    }
+        private TableCompileTimeResolverEmpty()
+        {
+        }
 
-	    public TableMetaData Resolve(string tableName) {
-	        return null;
-	    }
+        public TableMetaData Resolve(string tableName)
+        {
+            return null;
+        }
 
-	    public TableMetaData ResolveTableFromEventType(EventType containedType) {
-	        return null;
-	    }
-	}
+        public TableMetaData ResolveTableFromEventType(EventType containedType)
+        {
+            return null;
+        }
+    }
 } // end of namespace

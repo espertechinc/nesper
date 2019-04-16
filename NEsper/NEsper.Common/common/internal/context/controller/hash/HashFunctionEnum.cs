@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -23,11 +22,13 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
     public static class HashFunctionEnumExtensions
     {
-        public static HashFunctionEnum Determine(string contextName, string name)
+        public static HashFunctionEnum? Determine(
+            string contextName,
+            string name)
         {
             string nameTrim = name.ToLowerInvariant().Trim();
-            foreach (HashFunctionEnum val in HashFunctionEnum.Values()) {
-                if (val.Name().ToLowerInvariant().Trim().Equals(nameTrim)) {
+            foreach (HashFunctionEnum val in EnumHelper.GetValues<HashFunctionEnum>()) {
+                if (val.GetName().ToLowerInvariant().Trim() == nameTrim) {
                     return val;
                 }
             }
@@ -39,9 +40,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         {
             StringWriter message = new StringWriter();
             string delimiter = "";
-            foreach (HashFunctionEnum val in HashFunctionEnum.Values()) {
-                message.Append(delimiter);
-                message.Append(val.Name().ToLowerInvariant().Trim());
+            foreach (HashFunctionEnum val in EnumHelper.GetValues<HashFunctionEnum>()) {
+                message.Write(delimiter);
+                message.Write(val.GetName().ToLowerInvariant().Trim());
                 delimiter = ", ";
             }
 

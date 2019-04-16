@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
         internal readonly bool scalar;
 
-        public EnumExceptForge(int numStreams, ExprEnumerationForge evaluatorForge, bool scalar)
+        public EnumExceptForge(
+            int numStreams,
+            ExprEnumerationForge evaluatorForge,
+            bool scalar)
         {
             StreamNumSize = numStreams;
             this.evaluatorForge = evaluatorForge;
@@ -31,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public EnumEval EnumEvaluator => new EnumExceptForgeEval(this, evaluatorForge.ExprEvaluatorEnumeration);
 
         public CodegenExpression Codegen(
-            EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return EnumExceptForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
         }

@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         /// </summary>
         /// <param name="numStreams">number of streams</param>
         /// <param name="joinSetComposer">the composer holding stream indexes</param>
-        public JoinPreloadMethodImpl(int numStreams, JoinSetComposer joinSetComposer)
+        public JoinPreloadMethodImpl(
+            int numStreams,
+            JoinSetComposer joinSetComposer)
         {
             this.numStreams = numStreams;
             bufferViews = new BufferView[numStreams];
@@ -41,12 +43,16 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         /// </summary>
         /// <param name="view">buffer</param>
         /// <param name="stream">the stream number for the buffer</param>
-        public void SetBuffer(BufferView view, int stream)
+        public void SetBuffer(
+            BufferView view,
+            int stream)
         {
             bufferViews[stream] = view;
         }
 
-        public void PreloadFromBuffer(int stream, ExprEvaluatorContext exprEvaluatorContext)
+        public void PreloadFromBuffer(
+            int stream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean[] preloadEvents = bufferViews[stream].NewDataBuffer.GetAndFlush();
             var eventsPerStream = new EventBean[numStreams][];

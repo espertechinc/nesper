@@ -11,7 +11,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
     public class RowRecogStatePoolStmtSvc
     {
         public RowRecogStatePoolStmtSvc(
-            RowRecogStatePoolRuntimeSvc runtimeSvc, RowRecogStatePoolStmtHandler stmtHandler)
+            RowRecogStatePoolRuntimeSvc runtimeSvc,
+            RowRecogStatePoolStmtHandler stmtHandler)
         {
             RuntimeSvc = runtimeSvc;
             StmtHandler = stmtHandler;

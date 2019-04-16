@@ -26,15 +26,20 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         private readonly QueryGraphValueEntryRange[] rangeKeyPairs;
 
         public CompositeTableLookupPlanFactory(
-            int lookupStream, int indexedStream, TableLookupIndexReqKey[] indexNum, ExprEvaluator hashKeys,
-            QueryGraphValueEntryRange[] rangeKeyPairs) : base(lookupStream, indexedStream, indexNum)
+            int lookupStream,
+            int indexedStream,
+            TableLookupIndexReqKey[] indexNum,
+            ExprEvaluator hashKeys,
+            QueryGraphValueEntryRange[] rangeKeyPairs)
+            : base(lookupStream, indexedStream, indexNum)
         {
             this.hashKeys = hashKeys;
             this.rangeKeyPairs = rangeKeyPairs;
         }
 
         protected override JoinExecTableLookupStrategy MakeStrategyInternal(
-            EventTable[] eventTables, EventType[] eventTypes)
+            EventTable[] eventTables,
+            EventType[] eventTypes)
         {
             var index = (PropertyCompositeEventTable) eventTables[0];
             return new CompositeTableLookupStrategy(

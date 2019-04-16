@@ -15,9 +15,15 @@ namespace com.espertech.esper.common.@internal.metrics.audit
     public interface AuditProviderPattern
     {
         void PatternTrue(
-            EvalFactoryNode factoryNode, object from, MatchedEventMapMinimal matchEvent, bool isQuitted,
+            EvalFactoryNode factoryNode,
+            object from,
+            MatchedEventMapMinimal matchEvent,
+            bool isQuitted,
             AgentInstanceContext agentInstanceContext);
 
-        void PatternFalse(EvalFactoryNode factoryNode, object from, AgentInstanceContext agentInstanceContext);
+        void PatternFalse(
+            EvalFactoryNode factoryNode,
+            object from,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

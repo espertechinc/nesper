@@ -36,7 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.MINIMUM;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var value = evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (value == null) {
@@ -56,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprForgeConstantType ForgeConstantType => ChildNodes[0].Forge.ForgeConstantType;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var forge = ChildNodes[0].Forge;
@@ -79,13 +84,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return LocalMethod(methodNode);
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("*/");
             ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprNumberSetFrequency)) {
                 return false;

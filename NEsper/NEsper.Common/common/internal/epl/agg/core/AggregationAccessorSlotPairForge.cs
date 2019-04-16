@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         /// </summary>
         /// <param name="slot">number of accessorForge</param>
         /// <param name="accessorForge">accessorForge</param>
-        public AggregationAccessorSlotPairForge(int slot, AggregationAccessorForge accessorForge)
+        public AggregationAccessorSlotPairForge(
+            int slot,
+            AggregationAccessorForge accessorForge)
         {
             Slot = slot;
             AccessorForge = accessorForge;

@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             return ((DateTimeEx) date).TimeInMillis;
         }
 
-        public CodegenExpression Codegen(CodegenExpression value, Type valueType, CodegenClassScope codegenClassScope)
+        public CodegenExpression Codegen(
+            CodegenExpression value,
+            Type valueType,
+            CodegenClassScope codegenClassScope)
         {
             if (valueType != typeof(DateTimeEx)) {
                 throw new IllegalStateException("Expected a DateTimeEx type");

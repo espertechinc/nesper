@@ -12,7 +12,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeUtilMethodDesc
     {
-        public ExprNodeUtilMethodDesc(bool allConstants, ExprForge[] childForges, MethodInfo reflectionMethod)
+        public ExprNodeUtilMethodDesc(
+            bool allConstants,
+            ExprForge[] childForges,
+            MethodInfo reflectionMethod)
         {
             IsAllConstants = allConstants;
             ChildForges = childForges;

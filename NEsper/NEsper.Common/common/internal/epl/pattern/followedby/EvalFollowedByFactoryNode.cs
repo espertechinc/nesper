@@ -45,7 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
         public override bool IsStateful => true;
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             var hasMax = maxPerChildEvals != null;
             var hasEngineWidePatternCount =
@@ -63,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             }
         }
 
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        public override EvalNode MakeEvalNode(
+            PatternAgentInstanceContext agentInstanceContext,
+            EvalNode parentNode)
         {
             var nodes = EvalNodeUtil.MakeEvalNodeChildren(children, agentInstanceContext, parentNode);
             return new EvalFollowedByNode(agentInstanceContext, this, nodes);

@@ -16,8 +16,8 @@ using com.espertech.esper.compat;
 namespace com.espertech.esper.common.@internal.context.util
 {
     public class ContextMergeView
-        : ViewSupport
-        , UpdateDispatchView
+        : ViewSupport,
+            UpdateDispatchView
     {
         public ContextMergeView(EventType eventType)
         {
@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public override EventType EventType { get; }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             // no action required
         }

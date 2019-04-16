@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             services = new Dictionary<int, AggregationService>();
         }
 
-        public void AssignService(int serviceId, AggregationService aggregationService)
+        public void AssignService(
+            int serviceId,
+            AggregationService aggregationService)
         {
             services.Put(serviceId, aggregationService);
         }
@@ -37,20 +39,27 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         public int InstanceCount => services.Count;
 
         public void ApplyEnter(
-            EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             services.Get(exprEvaluatorContext.AgentInstanceId).ApplyEnter(
                 eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
         public void ApplyLeave(
-            EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             services.Get(exprEvaluatorContext.AgentInstanceId).ApplyLeave(
                 eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
-        public void SetCurrentAccess(object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
+        public void SetCurrentAccess(
+            object groupKey,
+            int agentInstanceId,
+            AggregationGroupByRollupLevel rollupLevel)
         {
             services.Get(agentInstanceId).SetCurrentAccess(groupKey, agentInstanceId, null);
         }
@@ -66,7 +75,10 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         }
 
         public object GetValue(
-            int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData,
+            int column,
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return services.Get(agentInstanceId).GetValue(
@@ -74,21 +86,30 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         }
 
         public ICollection<EventBean> GetCollectionOfEvents(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return services.Get(context.AgentInstanceId)
                 .GetCollectionOfEvents(column, eventsPerStream, isNewData, context);
         }
 
         public ICollection<object> GetCollectionScalar(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return services.Get(context.AgentInstanceId)
                 .GetCollectionScalar(column, eventsPerStream, isNewData, context);
         }
 
         public EventBean GetEventBean(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return services.Get(context.AgentInstanceId).GetEventBean(column, eventsPerStream, isNewData, context);
         }

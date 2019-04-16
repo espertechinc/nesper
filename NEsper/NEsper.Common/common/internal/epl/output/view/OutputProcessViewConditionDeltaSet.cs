@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
@@ -16,19 +15,20 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
-	public interface OutputProcessViewConditionDeltaSet {
-	    int NumChangesetRows { get; }
+    public interface OutputProcessViewConditionDeltaSet
+    {
+        int NumChangesetRows { get; }
 
-	    void AddView(UniformPair<EventBean[]> events);
+        void AddView(UniformPair<EventBean[]> events);
 
-	    void AddJoin(UniformPair<ISet<MultiKey<EventBean>>> events);
+        void AddJoin(UniformPair<ISet<MultiKey<EventBean>>> events);
 
-	    void Clear();
+        void Clear();
 
-	    IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet { get; }
+        IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet { get; }
 
-	    IList<UniformPair<EventBean[]>> ViewEventsSet { get; }
+        IList<UniformPair<EventBean[]>> ViewEventsSet { get; }
 
-	    void Destroy();
-	}
+        void Destroy();
+    }
 } // end of namespace

@@ -19,34 +19,37 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static object EvaluateValidationTimeNoStreams(ExprEvaluator evaluator, ExprEvaluatorContext context, string expressionName)
+        public static object EvaluateValidationTimeNoStreams(
+            ExprEvaluator evaluator,
+            ExprEvaluatorContext context,
+            string expressionName)
         {
-            try
-            {
+            try {
                 return evaluator.Evaluate(null, true, context);
             }
-            catch (EPException ex)
-            {
+            catch (EPException ex) {
                 throw new ExprValidationException("Invalid " + expressionName + " expression: " + ex.Message, ex);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 Log.Warn("Invalid " + expressionName + " expression evaluation: {}", ex.Message, ex);
                 throw new ExprValidationException("Invalid " + expressionName + " expression");
             }
         }
 
-        public static void ApplyFilterExpressionIterable(IEnumerator<EventBean> iterator, ExprEvaluator filterExpression, ExprEvaluatorContext exprEvaluatorContext, ICollection<EventBean> eventsInWindow)
+        public static void ApplyFilterExpressionIterable(
+            IEnumerator<EventBean> iterator,
+            ExprEvaluator filterExpression,
+            ExprEvaluatorContext exprEvaluatorContext,
+            ICollection<EventBean> eventsInWindow)
         {
             EventBean[] events = new EventBean[1];
-            while (iterator.MoveNext())
-            {
+            while (iterator.MoveNext()) {
                 events[0] = iterator.Current;
                 object result = filterExpression.Evaluate(events, true, exprEvaluatorContext);
-                if ((result == null) || (!((Boolean)result)))
-                {
+                if ((result == null) || (!((Boolean) result))) {
                     continue;
                 }
+
                 eventsInWindow.Add(events[0]);
             }
         }
@@ -59,7 +62,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="streamOneEvents">all events thate are stream one events</param>
         /// <param name="exprEvaluatorContext">context for expression evaluation</param>
         /// <returns>filtered stream one events</returns>
-        public static EventBean[] ApplyFilterExpression(ExprEvaluator filter, EventBean streamZeroEvent, EventBean[] streamOneEvents, ExprEvaluatorContext exprEvaluatorContext)
+        public static EventBean[] ApplyFilterExpression(
+            ExprEvaluator filter,
+            EventBean streamZeroEvent,
+            EventBean[] streamOneEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean[] eventsPerStream = new EventBean[2];
             eventsPerStream[0] = streamZeroEvent;
@@ -67,22 +74,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean[] filtered = new EventBean[streamOneEvents.Length];
             int countPass = 0;
 
-            foreach (EventBean eventBean in streamOneEvents)
-            {
+            foreach (EventBean eventBean in streamOneEvents) {
                 eventsPerStream[1] = eventBean;
 
-                Boolean result = (Boolean)filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if ((result != null) && result)
-                {
+                Boolean result = (Boolean) filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if ((result != null) && result) {
                     filtered[countPass] = eventBean;
                     countPass++;
                 }
             }
 
-            if (countPass == streamOneEvents.Length)
-            {
+            if (countPass == streamOneEvents.Length) {
                 return streamOneEvents;
             }
+
             return EventBeanUtility.ResizeArray(filtered, countPass);
         }
 
@@ -93,34 +98,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="eventsPerStream">events per stream</param>
         /// <param name="exprEvaluatorContext">context for expression evaluation</param>
         /// <returns>pass indicator</returns>
-        public static bool ApplyFilterExpression(ExprEvaluator filter, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public static bool ApplyFilterExpression(
+            ExprEvaluator filter,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            Boolean result = (Boolean)filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            Boolean result = (Boolean) filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
             return (result != null) && result;
         }
 
-        public static object[] EvaluateExpressions(ExprEvaluator[] parameters, ExprEvaluatorContext exprEvaluatorContext)
+        public static object[] EvaluateExpressions(
+            ExprEvaluator[] parameters,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             object[] results = new object[parameters.Length];
             int count = 0;
-            foreach (ExprEvaluator expr in parameters)
-            {
-                try
-                {
+            foreach (ExprEvaluator expr in parameters) {
+                try {
                     results[count] = expr.Evaluate(null, true, exprEvaluatorContext);
                     count++;
                 }
-                catch (EPException)
-                {
+                catch (EPException) {
                     throw;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     string message = "Failed expression evaluation in crontab timer-at for parameter " + count + ": " + ex.Message;
                     Log.Error(message, ex);
                     throw new ArgumentException(message);
                 }
             }
+
             return results;
         }
     }

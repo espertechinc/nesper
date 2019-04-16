@@ -270,7 +270,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static void AddEquivalent(
-            ExprAggregateNode aggNodeToAdd, IList<AggregationServiceAggExpressionDesc> equivalencyList)
+            ExprAggregateNode aggNodeToAdd,
+            IList<AggregationServiceAggExpressionDesc> equivalencyList)
         {
             // Check any same aggregation nodes among all aggregation clauses
             var foundEquivalent = false;
@@ -319,8 +320,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static void CompileReclaim(
-            AggGroupByDesc groupDesc, HintAttribute reclaimGroupAged, HintAttribute reclaimGroupFrequency,
-            VariableCompileTimeResolver variableCompileTimeResolver, string optionalContextName)
+            AggGroupByDesc groupDesc,
+            HintAttribute reclaimGroupAged,
+            HintAttribute reclaimGroupFrequency,
+            VariableCompileTimeResolver variableCompileTimeResolver,
+            string optionalContextName)
         {
             var hintValueMaxAge = HintEnum.RECLAIM_GROUP_AGED.GetHintAssignedValue(reclaimGroupAged);
             if (hintValueMaxAge == null) {
@@ -347,8 +351,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static AggregationGroupByLocalGroupDesc AnalyzeLocalGroupBy(
-            IList<AggregationServiceAggExpressionDesc> aggregations, ExprNode[] groupByNodes,
-            AggregationGroupByRollupDesc groupByRollupDesc, IntoTableSpec intoTableSpec)
+            IList<AggregationServiceAggExpressionDesc> aggregations,
+            ExprNode[] groupByNodes,
+            AggregationGroupByRollupDesc groupByRollupDesc,
+            IntoTableSpec intoTableSpec)
         {
             var hasOver = false;
             foreach (var desc in aggregations) {
@@ -395,7 +401,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static IList<AggregationServiceAggExpressionDesc> FindPartition(
-            IList<AggregationGroupByLocalGroupLevel> partitions, ExprNode[] partitionExpressions)
+            IList<AggregationGroupByLocalGroupLevel> partitions,
+            ExprNode[] partitionExpressions)
         {
             foreach (var level in partitions) {
                 if (ExprNodeUtilityCompare.DeepEqualsIgnoreDupAndOrder(level.PartitionExpr, partitionExpressions)) {
@@ -493,7 +500,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static string FindColumnNameForAggregation(
-            IDictionary<ExprNode, string> selectClauseNamedNodes, IList<ExprDeclaredNode> declaredExpressions,
+            IDictionary<ExprNode, string> selectClauseNamedNodes,
+            IList<ExprDeclaredNode> declaredExpressions,
             ExprAggregateNode aggregationNode)
         {
             if (selectClauseNamedNodes.ContainsKey(aggregationNode)) {
@@ -510,7 +518,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static void ValidateIntoTableCompatible(
-            string tableName, string columnName, TableMetadataColumnAggregation columnMetadata,
+            string tableName,
+            string columnName,
+            TableMetadataColumnAggregation columnMetadata,
             AggregationServiceAggExpressionDesc aggDesc)
         {
             var factoryProvided = aggDesc.Factory.AggregationPortableValidation;
@@ -529,7 +539,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static string GetMessage(
-            string tableName, string columnName, string aggregationRequired, ExprAggregateNodeBase aggregationProvided)
+            string tableName,
+            string columnName,
+            string aggregationRequired,
+            ExprAggregateNodeBase aggregationProvided)
         {
             return "Incompatible aggregation function for table '" +
                    tableName +
@@ -542,7 +555,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static AggSvcGroupByReclaimAgedEvalFuncFactoryForge GetEvaluationFunction(
-            VariableCompileTimeResolver variableCompileTimeResolver, string hintValue, string optionalContextName)
+            VariableCompileTimeResolver variableCompileTimeResolver,
+            string hintValue,
+            string optionalContextName)
         {
             var variableMetaData = variableCompileTimeResolver.Resolve(hintValue);
             if (variableMetaData != null) {
@@ -589,10 +604,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         private class BindingMatchResult
         {
             public BindingMatchResult(
-                TableColumnMethodPairForge[] methodPairs, 
+                TableColumnMethodPairForge[] methodPairs,
                 AggregationAccessorSlotPairForge[] accessors,
-                int[] targetStates, 
-                ExprNode[] accessStateExpr, 
+                int[] targetStates,
+                ExprNode[] accessStateExpr,
                 AggregationAgentForge[] agents)
             {
                 MethodPairs = methodPairs;

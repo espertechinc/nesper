@@ -8,7 +8,8 @@
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
-	public interface FilterSharedBoolExprRegistery {
-	    void RegisterBoolExpr(FilterSpecParamExprNode node);
-	}
+    public interface FilterSharedBoolExprRegistery
+    {
+        void RegisterBoolExpr(FilterSpecParamExprNode node);
+    }
 } // end of namespace

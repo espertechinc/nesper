@@ -13,7 +13,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public class PopulateFieldWValueDescriptor
     {
         public PopulateFieldWValueDescriptor(
-            string propertyName, Type fieldType, Type containerType, PopulateFieldValueSetter setter, bool forceNumeric)
+            string propertyName,
+            Type fieldType,
+            Type containerType,
+            PopulateFieldValueSetter setter,
+            bool forceNumeric)
         {
             PropertyName = propertyName;
             FieldType = fieldType;

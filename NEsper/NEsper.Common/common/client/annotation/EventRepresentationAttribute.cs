@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.annotation
     /// <summary>
     /// Annotation that can be attached to specify which underlying event representation to use for events.
     /// </summary>
-
     public class EventRepresentationAttribute : Attribute
     {
         /// <summary>
@@ -24,5 +23,5 @@ namespace com.espertech.esper.common.client.annotation
         /// The event underlying type.
         /// </value>
         public virtual EventUnderlyingType Value { get; set; }
-	}
+    }
 } // end of namespace

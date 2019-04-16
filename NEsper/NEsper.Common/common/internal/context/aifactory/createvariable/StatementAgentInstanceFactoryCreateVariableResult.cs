@@ -18,11 +18,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
     public class StatementAgentInstanceFactoryCreateVariableResult : StatementAgentInstanceFactoryResult
     {
         public StatementAgentInstanceFactoryCreateVariableResult(
-            Viewable finalView, AgentInstanceStopCallback stopCallback, AgentInstanceContext agentInstanceContext) :
+            Viewable finalView,
+            AgentInstanceStopCallback stopCallback,
+            AgentInstanceContext agentInstanceContext)
+            :
             base(
-                finalView, stopCallback, agentInstanceContext, null, 
+                finalView, stopCallback, agentInstanceContext, null,
                 Collections.GetEmptyMap<int, SubSelectFactoryResult>(), null, null, null,
-                Collections.GetEmptyMap<int, ExprTableEvalStrategy>(), 
+                Collections.GetEmptyMap<int, ExprTableEvalStrategy>(),
                 Collections.GetEmptyList<StatementAgentInstancePreload>())
         {
         }

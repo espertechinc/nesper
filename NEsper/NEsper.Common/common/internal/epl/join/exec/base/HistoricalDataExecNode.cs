@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.common;
@@ -72,17 +71,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             var indexPerLookupRow = historicalEventViewable.Poll(
                 lookupRows1Event, indexingStrategy, exprEvaluatorContext);
 
-            foreach (var index in indexPerLookupRow)
-            {
+            foreach (var index in indexPerLookupRow) {
                 // Using the index, determine a subset of the whole indexed table to process, unless
                 // the strategy is a full table scan
                 var subsetIter = indexLookupStrategy.Lookup(lookupEvent, index, exprEvaluatorContext);
 
-                if (subsetIter != null)
-                {
+                if (subsetIter != null) {
                     // Add each row to the join result or, for outer joins, run through the outer join filter
-                    while (subsetIter.MoveNext())
-                    {
+                    while (subsetIter.MoveNext()) {
                         var resultRow = new EventBean[numStreams];
                         Array.Copy(prefillPath, 0, resultRow, 0, numStreams);
                         resultRow[historicalStreamNumber] = subsetIter.Current;

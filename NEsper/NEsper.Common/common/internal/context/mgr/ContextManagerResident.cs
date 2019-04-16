@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
     {
         protected internal CopyOnWriteList<ContextPartitionStateListener> listenersLazy;
 
-        public ContextManagerResident(string deploymentId, ContextDefinition contextDefinition)
+        public ContextManagerResident(
+            string deploymentId,
+            ContextDefinition contextDefinition)
         {
             ContextDefinition = contextDefinition;
             ContextRuntimeDescriptor = new ContextRuntimeDescriptor(contextDefinition.ContextName, deploymentId, this);
@@ -55,7 +57,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return AgentInstanceArraySafeIterator.Create(instances);
         }
 
-        public IEnumerator<EventBean> GetEnumerator(int statementId, ContextPartitionSelector selector)
+        public IEnumerator<EventBean> GetEnumerator(
+            int statementId,
+            ContextPartitionSelector selector)
         {
             var instances = GetAgentInstancesForStmt(statementId, selector);
             return AgentInstanceArrayIterator.Create(instances);
@@ -70,7 +74,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 .GetContextPartitionIdService(StatementContextCreate, ContextPartitionKeySerdes);
         }
 
-        public void AddStatement(ContextControllerStatementDesc statement, bool recovery)
+        public void AddStatement(
+            ContextControllerStatementDesc statement,
+            bool recovery)
         {
             var statementContextOfStatement = statement.Lightweight.StatementContext;
             Statements.Put(statementContextOfStatement.StatementId, statement);
@@ -84,7 +90,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
                     ContextDefinition.ContextName,
                     statementContextOfStatement.DeploymentId,
                     statementContextOfStatement.StatementName),
-                (listener, context) => listener.OnContextStatementAdded(context));
+                (
+                    listener,
+                    context) => listener.OnContextStatementAdded(context));
 
             if (recovery) {
                 if (statement.Lightweight.StatementInformationals.StatementType == StatementType.CREATE_VARIABLE) {
@@ -103,7 +111,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
                         StatementContextCreate.RuntimeURI,
                         ContextRuntimeDescriptor.ContextDeploymentId,
                         ContextDefinition.ContextName),
-                    (listener, context) => listener.OnContextActivated(context));
+                    (
+                        listener,
+                        context) => listener.OnContextActivated(context));
             }
             else {
                 // activate statement in respect to existing context partitions
@@ -127,7 +137,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
                     ContextRuntimeDescriptor.ContextName,
                     statement.Lightweight.StatementContext.DeploymentId,
                     statement.Lightweight.StatementContext.StatementName),
-                (listener, context) => listener.OnContextStatementRemoved(context));
+                (
+                    listener,
+                    context) => listener.OnContextStatementRemoved(context));
 
             if (Statements.IsEmpty()) {
                 Realization.StopContext();
@@ -137,7 +149,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
                         StatementContextCreate.RuntimeURI,
                         ContextRuntimeDescriptor.ContextDeploymentId,
                         ContextRuntimeDescriptor.ContextName),
-                    (listener, context) => listener.OnContextDeactivated(context));
+                    (
+                        listener,
+                        context) => listener.OnContextDeactivated(context));
             }
         }
 
@@ -185,7 +199,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
             new LinkedHashMap<int, ContextControllerStatementDesc>();
 
         public ContextAgentInstanceInfo GetContextAgentInstanceInfo(
-            StatementContext statementContextOfStatement, int agentInstanceId)
+            StatementContext statementContextOfStatement,
+            int agentInstanceId)
         {
             var partitionKeys = ContextPartitionIdService.GetPartitionKeys(agentInstanceId);
             if (partitionKeys == null) {
@@ -313,7 +328,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             listenersLazy?.Clear();
         }
 
-        public bool HandleFilterFault(EventBean theEvent, long version)
+        public bool HandleFilterFault(
+            EventBean theEvent,
+            long version)
         {
             return Realization.HandleFilterFault(theEvent, version);
         }
@@ -330,7 +347,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         public AgentInstanceFilterProxy ComputeFilterAddendum(
-            ContextControllerStatementDesc statement, object[] contextPartitionKeys)
+            ContextControllerStatementDesc statement,
+            object[] contextPartitionKeys)
         {
             Func<AgentInstanceContext, IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator =
                 agentInstanceContext =>
@@ -339,7 +357,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return new AgentInstanceFilterProxyImpl(generator);
         }
 
-        public IEnumerator<EventBean> GetSafeEnumerator(int statementId, ContextPartitionSelector selector)
+        public IEnumerator<EventBean> GetSafeEnumerator(
+            int statementId,
+            ContextPartitionSelector selector)
         {
             var instances = GetAgentInstancesForStmt(statementId, selector);
             return AgentInstanceArraySafeIterator.Create(instances);
@@ -375,7 +395,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return serdes;
         }
 
-        private AgentInstance[] GetAgentInstancesForStmt(int statementId, ContextPartitionSelector selector)
+        private AgentInstance[] GetAgentInstancesForStmt(
+            int statementId,
+            ContextPartitionSelector selector)
         {
             var agentInstanceIds = GetAgentInstanceIds(selector);
             if (agentInstanceIds == null || agentInstanceIds.IsEmpty()) {

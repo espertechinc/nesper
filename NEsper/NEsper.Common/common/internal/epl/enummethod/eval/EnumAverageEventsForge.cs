@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -17,21 +16,26 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumAverageEventsForge : EnumForgeBase {
+    public class EnumAverageEventsForge : EnumForgeBase
+    {
+        public EnumAverageEventsForge(
+            ExprForge innerExpression,
+            int streamCountIncoming)
+            : base(innerExpression, streamCountIncoming)
 
-	    public EnumAverageEventsForge(ExprForge innerExpression, int streamCountIncoming)
+        {
+        }
 
-	    	 : base(innerExpression, streamCountIncoming)
+        public override EnumEval EnumEvaluator {
+            get => new EnumAverageEventsForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    {
-	    }
-
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumAverageEventsForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumAverageEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumAverageEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

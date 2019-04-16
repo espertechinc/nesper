@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeFilterAnalyzerInputProp : ExprDotNodeFilterAnalyzerInput
     {
-        public ExprDotNodeFilterAnalyzerInputProp(int streamNum, string propertyName)
+        public ExprDotNodeFilterAnalyzerInputProp(
+            int streamNum,
+            string propertyName)
         {
             StreamNum = streamNum;
             PropertyName = propertyName;

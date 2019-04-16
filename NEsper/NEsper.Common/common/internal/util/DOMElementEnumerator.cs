@@ -11,18 +11,27 @@ using System.Xml;
 
 namespace com.espertech.esper.common.@internal.util
 {
-	/// <summary>
-	/// Enumerator over DOM nodes that positions between elements.
-	/// </summary>
-	public class DOMElementEnumerator
-	{
-	    public static IEnumerator<XmlElement> Create(XmlNodeList nodeList)
-	    {
-	        foreach (var node in nodeList) {
-	            if (node is XmlElement element) {
-	                yield return element;
-	            }
-	        }
-	    }
-	}
+    /// <summary>
+    /// Enumerator over DOM nodes that positions between elements.
+    /// </summary>
+    public class DOMElementEnumerator
+    {
+        public static IEnumerator<XmlElement> Create(XmlNodeList nodeList)
+        {
+            foreach (var node in nodeList) {
+                if (node is XmlElement element) {
+                    yield return element;
+                }
+            }
+        }
+
+        public static IEnumerable<XmlElement> For(XmlNodeList nodeList)
+        {
+            foreach (var node in nodeList) {
+                if (node is XmlElement element) {
+                    yield return element;
+                }
+            }
+        }
+    }
 } // end of namespace

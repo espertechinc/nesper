@@ -20,18 +20,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly ExprCastNodeForge forge;
         private readonly object theConstant;
 
-        public ExprCastNodeForgeConstEval(ExprCastNodeForge forge, object theConstant)
+        public ExprCastNodeForgeConstEval(
+            ExprCastNodeForge forge,
+            object theConstant)
         {
             this.forge = forge;
             this.theConstant = theConstant;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return theConstant;
         }
 
-        public static CodegenExpression Codegen(ExprCastNodeForge forge, CodegenClassScope codegenClassScope)
+        public static CodegenExpression Codegen(
+            ExprCastNodeForge forge,
+            CodegenClassScope codegenClassScope)
         {
             if (forge.EvaluationType == null) {
                 return ConstantNull();

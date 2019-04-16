@@ -11,34 +11,36 @@ using System;
 namespace com.espertech.esper.common.client
 {
     public class EPRuntimeException : EPException
-	{
-	    private static readonly Type MyType = 
+    {
+        private static readonly Type MyType =
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
 
-		/// <summary> Ctor.</summary>
-		/// <param name="message">error message
-		/// </param>
-		public EPRuntimeException(String message)
-			: base(message)
-		{
-		}
-		
-		/// <summary> Ctor for an inner exception and message.</summary>
-		/// <param name="message">error message
-		/// </param>
-		/// <param name="cause">inner exception
-		/// </param>
-		public EPRuntimeException(String message, Exception cause)
-			: base(message, cause)
-		{
-		}
-		
-		/// <summary> Ctor - just an inner exception.</summary>
-		/// <param name="cause">inner exception
-		/// </param>
+        /// <summary> Ctor.</summary>
+        /// <param name="message">error message
+        /// </param>
+        public EPRuntimeException(String message)
+            : base(message)
+        {
+        }
+
+        /// <summary> Ctor for an inner exception and message.</summary>
+        /// <param name="message">error message
+        /// </param>
+        /// <param name="cause">inner exception
+        /// </param>
+        public EPRuntimeException(
+            String message,
+            Exception cause)
+            : base(message, cause)
+        {
+        }
+
+        /// <summary> Ctor - just an inner exception.</summary>
+        /// <param name="cause">inner exception
+        /// </param>
         public EPRuntimeException(Exception cause)
-			: base(MyType.FullName + ": " + cause.Message, cause)
-		{
-		}
-	}
+            : base(MyType.FullName + ": " + cause.Message, cause)
+        {
+        }
+    }
 }

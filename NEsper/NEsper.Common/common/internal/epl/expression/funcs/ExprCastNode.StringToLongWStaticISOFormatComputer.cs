@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -54,12 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             /// <returns>msec</returns>
             public static long StringToLongWStaticISOParse(string input)
             {
-                try
-                {
+                try {
                     return TimerScheduleISO8601Parser.ParseDate(input).TimeInMillis;
                 }
-                catch (ScheduleParameterException ex)
-                {
+                catch (ScheduleParameterException ex) {
                     throw HandleParseISOException(input, ex);
                 }
             }

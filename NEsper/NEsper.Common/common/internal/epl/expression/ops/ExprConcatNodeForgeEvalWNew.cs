@@ -21,21 +21,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprConcatNodeForge forge;
 
-        internal ExprConcatNodeForgeEvalWNew(ExprConcatNodeForge forge, ExprEvaluator[] evaluators)
+        internal ExprConcatNodeForgeEvalWNew(
+            ExprConcatNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             this.forge = forge;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var buffer = new StringBuilder();
             return Evaluate(eventsPerStream, isNewData, context, buffer, evaluators, forge);
         }
 
         protected internal static string Evaluate(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context, StringBuilder buffer,
-            ExprEvaluator[] evaluators, ExprConcatNodeForge form)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context,
+            StringBuilder buffer,
+            ExprEvaluator[] evaluators,
+            ExprConcatNodeForge form)
         {
             foreach (var child in evaluators) {
                 var result = (string) child.Evaluate(eventsPerStream, isNewData, context);
@@ -50,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprConcatNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprConcatNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(

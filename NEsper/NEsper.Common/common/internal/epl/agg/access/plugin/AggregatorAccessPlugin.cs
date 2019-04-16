@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
@@ -27,15 +26,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         private readonly CodegenExpressionRef state;
 
         public AggregatorAccessPlugin(
-            int col, bool join, CodegenCtor ctor, CodegenMemberCol membersColumnized, CodegenClassScope classScope,
-            ExprNode optionalFilter, AggregationMultiFunctionStateModeManaged mode)
+            int col,
+            bool join,
+            CodegenCtor ctor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            ExprNode optionalFilter,
+            AggregationMultiFunctionStateModeManaged mode)
             : base(optionalFilter)
 
         {
             state = membersColumnized.AddMember(col, typeof(AggregationMultiFunctionState), "state");
             this.mode = mode;
 
-            var injectionStrategy = (InjectionStrategyClassNewInstance)mode.InjectionStrategyAggregationStateFactory;
+            var injectionStrategy = (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationStateFactory;
             var factoryField = classScope.AddFieldUnshared(
                 true, typeof(AggregationMultiFunctionStateFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
@@ -43,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         }
 
         internal override void ApplyEnterFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             method.Block.ExprDotMethod(
@@ -51,34 +57,45 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         }
 
         internal override void ApplyLeaveFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             method.Block.ExprDotMethod(
                 state, "applyLeave", symbols.GetAddEPS(method), symbols.GetAddExprEvalCtx(method));
         }
 
-        public override void ClearCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void ClearCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(state, "clear");
         }
 
         public override void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef @ref, CodegenExpressionRef unitKey,
-            CodegenExpressionRef output, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef @ref,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef output,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
-            if (mode.HasHA)
-            {
+            if (mode.HasHA) {
                 method.Block.Expression(StaticMethod(mode.Serde, "write", output, RowDotRef(row, state)));
             }
         }
 
         public override void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenMethod method,
-            CodegenExpressionRef unitKey, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenMethod method,
+            CodegenExpressionRef unitKey,
+            CodegenClassScope classScope)
         {
-            if (mode.HasHA)
-            {
+            if (mode.HasHA) {
                 method.Block.AssignRef(RowDotRef(row, state), StaticMethod(mode.Serde, "read", input));
             }
         }

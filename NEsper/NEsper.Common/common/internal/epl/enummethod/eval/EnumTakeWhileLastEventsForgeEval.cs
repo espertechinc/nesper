@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
@@ -42,20 +40,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            if (enumcoll.IsEmpty())
-            {
+            if (enumcoll.IsEmpty()) {
                 return enumcoll;
             }
 
             ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-            if (enumcoll.Count == 1)
-            {
+            if (enumcoll.Count == 1) {
                 EventBean item = beans.First();
                 eventsLambda[forge.streamNumLambda] = item;
 
                 object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
-                if (pass == null || false.Equals(pass))
-                {
+                if (pass == null || false.Equals(pass)) {
                     return Collections.GetEmptyList<object>();
                 }
 
@@ -65,13 +60,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             EventBean[] all = TakeWhileLastEventBeanToArray(beans);
             ArrayDeque<object> result = new ArrayDeque<object>();
 
-            for (int i = all.Length - 1; i >= 0; i--)
-            {
+            for (int i = all.Length - 1; i >= 0; i--) {
                 eventsLambda[forge.streamNumLambda] = all[i];
 
                 object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
-                if (pass == null || false.Equals(pass))
-                {
+                if (pass == null || false.Equals(pass)) {
                     break;
                 }
 
@@ -129,8 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             int size = enumcoll.Count;
             T[] all = new T[size];
             int count = 0;
-            foreach (var item in enumcoll)
-            {
+            foreach (var item in enumcoll) {
                 all[count++] = item;
             }
 

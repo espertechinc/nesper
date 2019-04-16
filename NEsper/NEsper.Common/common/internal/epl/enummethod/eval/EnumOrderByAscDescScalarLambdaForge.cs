@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -18,24 +17,32 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumOrderByAscDescScalarLambdaForge : EnumForgeBase {
+    public class EnumOrderByAscDescScalarLambdaForge : EnumForgeBase
+    {
+        internal readonly bool descending;
+        internal readonly ObjectArrayEventType resultEventType;
 
-	    internal readonly bool descending;
-	    internal readonly ObjectArrayEventType resultEventType;
+        public EnumOrderByAscDescScalarLambdaForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            bool descending,
+            ObjectArrayEventType resultEventType)
+            : base(innerExpression, streamCountIncoming)
+        {
+            this.descending = descending;
+            this.resultEventType = resultEventType;
+        }
 
-	    public EnumOrderByAscDescScalarLambdaForge(ExprForge innerExpression, int streamCountIncoming, bool descending, ObjectArrayEventType resultEventType)
-	    	 : base(innerExpression, streamCountIncoming)
-	    {
-	        this.descending = descending;
-	        this.resultEventType = resultEventType;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumOrderByAscDescScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumOrderByAscDescScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumOrderByAscDescScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumOrderByAscDescScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

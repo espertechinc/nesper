@@ -7,16 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
-	public interface FAFQueryMethodAssignerSetter {
-	    void Assign(StatementAIFactoryAssignments assignments);
+    public interface FAFQueryMethodAssignerSetter
+    {
+        void Assign(StatementAIFactoryAssignments assignments);
 
-	    void SetValue(int number, object value);
-	}
+        void SetValue(
+            int number,
+            object value);
+    }
 } // end of namespace

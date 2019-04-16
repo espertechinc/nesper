@@ -8,39 +8,46 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 {
-	public class EventArrayAndSortKeyArray {
-	    private readonly IList<EventBean>[] eventsPerLevel;
-	    private readonly IList<object>[] sortKeyPerLevel;
+    public class EventArrayAndSortKeyArray
+    {
+        private readonly IList<EventBean>[] eventsPerLevel;
+        private readonly IList<object>[] sortKeyPerLevel;
 
-	    public EventArrayAndSortKeyArray(IList<EventBean>[] eventsPerLevel, IList<object>[] sortKeyPerLevel) {
-	        this.eventsPerLevel = eventsPerLevel;
-	        this.sortKeyPerLevel = sortKeyPerLevel;
-	    }
+        public EventArrayAndSortKeyArray(
+            IList<EventBean>[] eventsPerLevel,
+            IList<object>[] sortKeyPerLevel)
+        {
+            this.eventsPerLevel = eventsPerLevel;
+            this.sortKeyPerLevel = sortKeyPerLevel;
+        }
 
-	    public IList<EventBean>[] GetEventsPerLevel() {
-	        return eventsPerLevel;
-	    }
+        public IList<EventBean>[] GetEventsPerLevel()
+        {
+            return eventsPerLevel;
+        }
 
-	    public IList<object>[] GetSortKeyPerLevel() {
-	        return sortKeyPerLevel;
-	    }
+        public IList<object>[] GetSortKeyPerLevel()
+        {
+            return sortKeyPerLevel;
+        }
 
-	    public void Reset() {
-	        foreach (IList<EventBean> anEventsPerLevel in eventsPerLevel) {
-	            anEventsPerLevel.Clear();
-	        }
-	        if (sortKeyPerLevel != null) {
-	            foreach (IList<object> anSortKeyPerLevel in sortKeyPerLevel) {
-	                anSortKeyPerLevel.Clear();
-	            }
-	        }
-	    }
-	}
+        public void Reset()
+        {
+            foreach (IList<EventBean> anEventsPerLevel in eventsPerLevel) {
+                anEventsPerLevel.Clear();
+            }
+
+            if (sortKeyPerLevel != null) {
+                foreach (IList<object> anSortKeyPerLevel in sortKeyPerLevel) {
+                    anSortKeyPerLevel.Clear();
+                }
+            }
+        }
+    }
 } // end of namespace

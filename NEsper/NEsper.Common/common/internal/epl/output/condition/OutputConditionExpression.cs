@@ -45,8 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         private int totalOldEventsSum;
 
         public OutputConditionExpression(
-            OutputCallback outputCallback, AgentInstanceContext agentInstanceContext,
-            OutputConditionExpressionFactory parent) : base(outputCallback)
+            OutputCallback outputCallback,
+            AgentInstanceContext agentInstanceContext,
+            OutputConditionExpressionFactory parent)
+            : base(outputCallback)
         {
             this.agentInstanceContext = agentInstanceContext;
             this.parent = parent;
@@ -82,7 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             }
         }
 
-        public override void UpdateOutputCondition(int newEventsCount, int oldEventsCount)
+        public override void UpdateOutputCondition(
+            int newEventsCount,
+            int oldEventsCount)
         {
             totalNewEventsCount += newEventsCount;
             totalOldEventsCount += oldEventsCount;
@@ -136,7 +140,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             }
         }
 
-        public void Update(object newValue, object oldValue)
+        public void Update(
+            object newValue,
+            object oldValue)
         {
             if (ignoreVariableCallbacks) {
                 Log.Debug(".update Ignoring variable callback");

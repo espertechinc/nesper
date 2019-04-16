@@ -9,14 +9,14 @@
 
 namespace com.espertech.esper.common.@internal.statement.dispatch
 {
-	/// <summary>
-	/// Implementations are executed when the DispatchService receives a dispatch invocation.
-	/// </summary>
-	public interface Dispatchable
-	{
-		/// <summary>
-		/// Execute dispatch.
-		/// </summary>
-		void Execute();
-	}
+    /// <summary>
+    /// Implementations are executed when the DispatchService receives a dispatch invocation.
+    /// </summary>
+    public interface Dispatchable
+    {
+        /// <summary>
+        /// Execute dispatch.
+        /// </summary>
+        void Execute();
+    }
 }

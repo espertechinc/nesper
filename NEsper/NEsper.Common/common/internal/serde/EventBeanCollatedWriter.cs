@@ -11,26 +11,33 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde
 {
-	/// <summary>
-	/// Collated writer for events, intented for passing along as a parameter and not intended to be implemented by an application
-	/// </summary>
-	public interface EventBeanCollatedWriter {
-	    /// <summary>
-	    /// Write event collated.
-	    /// </summary>
-	    /// <param name="event">to write</param>
-	    /// <param name="dataOutput">destination</param>
-	    /// <param name="pageFullKey">page key</param>
-	    /// <throws>IOException for io exceptions</throws>
-	    void WriteEventCollated(EventBean @event, DataOutput dataOutput, byte[] pageFullKey) ;
+    /// <summary>
+    /// Collated writer for events, intented for passing along as a parameter and not intended to be implemented by an application
+    /// </summary>
+    public interface EventBeanCollatedWriter
+    {
+        /// <summary>
+        /// Write event collated.
+        /// </summary>
+        /// <param name="event">to write</param>
+        /// <param name="dataOutput">destination</param>
+        /// <param name="pageFullKey">page key</param>
+        /// <throws>IOException for io exceptions</throws>
+        void WriteEventCollated(
+            EventBean @event,
+            DataOutput dataOutput,
+            byte[] pageFullKey);
 
-	    /// <summary>
-	    /// Write event id collated.
-	    /// </summary>
-	    /// <param name="id">to write</param>
-	    /// <param name="output">destination</param>
-	    /// <param name="pageFullKey">page key</param>
-	    /// <throws>IOException for io exceptions</throws>
-	    void WriteEventCollated(long id, DataOutput output, byte[] pageFullKey) ;
-	}
+        /// <summary>
+        /// Write event id collated.
+        /// </summary>
+        /// <param name="id">to write</param>
+        /// <param name="output">destination</param>
+        /// <param name="pageFullKey">page key</param>
+        /// <throws>IOException for io exceptions</throws>
+        void WriteEventCollated(
+            long id,
+            DataOutput output,
+            byte[] pageFullKey);
+    }
 } // end of namespace

@@ -20,13 +20,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         internal readonly bool isNotIn;
 
         public SubselectForgeNREqualsInBase(
-            ExprSubselectNode subselect, 
-            ExprForge valueEval, 
+            ExprSubselectNode subselect,
+            ExprForge valueEval,
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
             bool isNotIn,
-            SimpleNumberCoercer coercer) : base(
-            subselect, valueEval, selectEval, resultWhenNoMatchingEvents)
+            SimpleNumberCoercer coercer)
+            : base(
+                subselect, valueEval, selectEval, resultWhenNoMatchingEvents)
         {
             this.isNotIn = isNotIn;
             this.coercer = coercer;

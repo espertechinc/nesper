@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
 {
     public class GroupByRollupKey
     {
-        public GroupByRollupKey(EventBean[] generator, AggregationGroupByRollupLevel level, object groupKey)
+        public GroupByRollupKey(
+            EventBean[] generator,
+            AggregationGroupByRollupLevel level,
+            object groupKey)
         {
             Generator = generator;
             Level = level;

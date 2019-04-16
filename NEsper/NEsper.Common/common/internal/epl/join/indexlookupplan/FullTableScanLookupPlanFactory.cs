@@ -19,13 +19,18 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
     /// </summary>
     public class FullTableScanLookupPlanFactory : TableLookupPlan
     {
-        public FullTableScanLookupPlanFactory(int lookupStream, int indexedStream, TableLookupIndexReqKey[] indexes) :
+        public FullTableScanLookupPlanFactory(
+            int lookupStream,
+            int indexedStream,
+            TableLookupIndexReqKey[] indexes)
+            :
             base(lookupStream, indexedStream, indexes)
         {
         }
 
         protected override JoinExecTableLookupStrategy MakeStrategyInternal(
-            EventTable[] eventTable, EventType[] eventTypes)
+            EventTable[] eventTable,
+            EventType[] eventTypes)
         {
             var index = (UnindexedEventTable) eventTable[0];
             return new FullTableScanLookupStrategy(index);

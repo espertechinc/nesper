@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="emitter">to emit into the data flow</param>
         /// <param name="submitEventBean">indicator whether to submit EventBean or underlying events</param>
         /// <param name="theEvent">to process</param>
-        public EPDataFlowEventBeanCollectorContext(EPDataFlowEmitter emitter, bool submitEventBean, EventBean theEvent)
+        public EPDataFlowEventBeanCollectorContext(
+            EPDataFlowEmitter emitter,
+            bool submitEventBean,
+            EventBean theEvent)
         {
             Emitter = emitter;
             IsSubmitEventBean = submitEventBean;

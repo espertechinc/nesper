@@ -14,13 +14,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 {
     public class PointRegionQuadTreeFilterIndexGet<TL>
     {
-        public static TL Get(double x, double y, PointRegionQuadTree<object> tree)
+        public static TL Get(
+            double x,
+            double y,
+            PointRegionQuadTree<object> tree)
         {
             PointRegionQuadTreeFilterIndexCheckBB.CheckBB(tree.Root.Bb, x, y);
             return Get(x, y, tree.Root);
         }
 
-        private static TL Get(double x, double y, PointRegionQuadTreeNode node)
+        private static TL Get(
+            double x,
+            double y,
+            PointRegionQuadTreeNode node)
         {
             if (node is PointRegionQuadTreeNodeLeaf<object>) {
                 var leaf = (PointRegionQuadTreeNodeLeaf<object>) node;

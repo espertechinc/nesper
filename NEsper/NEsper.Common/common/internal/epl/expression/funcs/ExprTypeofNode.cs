@@ -45,7 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public ExprFilterSpecLookupableForge FilterLookupable {
             get {
                 EventPropertyValueGetterForge eventPropertyForge = new ProxyEventPropertyValueGetterForge {
-                    ProcEventBeanGetCodegen = (beanExpression, parent, classScope) => {
+                    ProcEventBeanGetCodegen = (
+                        beanExpression,
+                        parent,
+                        classScope) => {
                         CodegenMethod method = parent.MakeChild(typeof(string), GetType(), classScope)
                             .AddParam(typeof(EventBean), "bean");
                         method.Block.MethodReturn(ExprDotMethodChain(Ref("bean")).Add("getEventType").Add("getName"));
@@ -93,14 +96,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("typeof(");
             ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
             writer.Write(')');
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             return node is ExprTypeofNode;
         }

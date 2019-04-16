@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
             this.subselectPreeval = subselectPreeval;
         }
 
-        public void Handle(ICollection<FilterHandleCallback> callbacks, EventBean theEvent)
+        public void Handle(
+            ICollection<FilterHandleCallback> callbacks,
+            EventBean theEvent)
         {
             var dedup = MultiMatchHandlerNoSubqueryWDedup.DEDUPS.GetOrCreate();
             dedup.Clear();

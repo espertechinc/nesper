@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         /// <param name="cursor">the path in the query that the lookup took</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         /// <returns>set of matching events, or null if none matching</returns>
-        ISet<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext);
+        ICollection<EventBean> Lookup(
+            EventBean theEvent,
+            Cursor cursor,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         LookupStrategyType LookupStrategyType { get; }
     }

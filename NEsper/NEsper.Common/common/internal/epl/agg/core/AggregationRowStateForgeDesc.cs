@@ -13,9 +13,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class AggregationRowStateForgeDesc
     {
         public AggregationRowStateForgeDesc(
-            AggregationForgeFactory[] optionalMethodFactories, ExprForge[][] methodForges,
+            AggregationForgeFactory[] optionalMethodFactories,
+            ExprForge[][] methodForges,
             AggregationStateFactoryForge[] accessFactoriesForges,
-            AggregationAccessorSlotPairForge[] accessAccessorsForges, AggregationUseFlags useFlags)
+            AggregationAccessorSlotPairForge[] accessAccessorsForges,
+            AggregationUseFlags useFlags)
         {
             MethodForges = methodForges;
             OptionalMethodFactories = optionalMethodFactories;

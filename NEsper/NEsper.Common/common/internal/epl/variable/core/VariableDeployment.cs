@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     {
         public IDictionary<string, Variable> Variables { get; } = new Dictionary<string, Variable>(4);
 
-        public void AddVariable(string variableName, Variable variable)
+        public void AddVariable(
+            string variableName,
+            Variable variable)
         {
             Variables.Put(variableName, variable);
         }

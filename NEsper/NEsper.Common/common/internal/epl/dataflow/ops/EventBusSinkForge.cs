@@ -8,46 +8,46 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
-using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 {
-	public class EventBusSinkForge : DataFlowOperatorForge {
+    public class EventBusSinkForge : DataFlowOperatorForge
+    {
+        [DataFlowOpParameter] private IDictionary<string, object> collector;
 
-	    [DataFlowOpParameter]
-	    private IDictionary<string, object> collector;
+        private EventType[] eventTypes;
 
-	    private EventType[] eventTypes;
+        public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
+        {
+            if (!context.OutputPorts.IsEmpty()) {
+                throw new ArgumentException("EventBusSink operator does not provide an output stream");
+            }
 
-	    public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context) {
-	        if (!context.OutputPorts.IsEmpty()) {
-	            throw new ArgumentException("EventBusSink operator does not provide an output stream");
-	        }
+            eventTypes = new EventType[context.InputPorts.Count];
+            for (var i = 0; i < eventTypes.Length; i++) {
+                eventTypes[i] = context.InputPorts[i].TypeDesc.EventType;
+            }
 
-	        eventTypes = new EventType[context.InputPorts.Count];
-	        for (int i = 0; i < eventTypes.Length; i++) {
-	            eventTypes[i] = context.InputPorts.Get(i).TypeDesc.EventType;
-	        }
+            return null;
+        }
 
-	        return null;
-	    }
-
-	    public CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        return new SAIFFInitializeBuilder(OP_PACKAGE_NAME + ".eventbussink.EventBusSinkFactory", this.GetType(), "sink", parent, symbols, classScope)
-	                .EventtypesMayNull("eventTypes", eventTypes)
-	                .Map("collector", collector)
-	                .Build();
-	    }
-	}
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            return new SAIFFInitializeBuilder(OP_PACKAGE_NAME + ".eventbussink.EventBusSinkFactory", GetType(), "sink", parent, symbols, classScope)
+                .EventtypesMayNull("eventTypes", eventTypes)
+                .Map("collector", collector)
+                .Build();
+        }
+    }
 } // end of namespace

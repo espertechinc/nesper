@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         }
 
         public PatternContext(
-            int streamNumber, MatchedEventMapMeta matchedEventMapMeta, bool isContextDeclaration, int nestingLevel,
+            int streamNumber,
+            MatchedEventMapMeta matchedEventMapMeta,
+            bool isContextDeclaration,
+            int nestingLevel,
             bool isStartCondition)
         {
             StreamNumber = streamNumber;
@@ -45,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         public bool IsStartCondition { get; set; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PatternContext), GetType(), classScope);
             method.Block

@@ -7,49 +7,55 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.util
 {
-	public class SimpleTypeParserCodegenFieldSharable : CodegenFieldSharable {
-	    private readonly SimpleTypeParserSPI parser;
-	    private readonly CodegenClassScope classScope;
+    public class SimpleTypeParserCodegenFieldSharable : CodegenFieldSharable
+    {
+        private readonly SimpleTypeParserSPI parser;
+        private readonly CodegenClassScope classScope;
 
-	    public SimpleTypeParserCodegenFieldSharable(SimpleTypeParserSPI parser, CodegenClassScope classScope) {
-	        this.parser = parser;
-	        this.classScope = classScope;
-	    }
+        public SimpleTypeParserCodegenFieldSharable(
+            SimpleTypeParserSPI parser,
+            CodegenClassScope classScope)
+        {
+            this.parser = parser;
+            this.classScope = classScope;
+        }
 
-	    public Type Type() {
-	        return typeof(SimpleTypeParser);
-	    }
+        public Type Type()
+        {
+            return typeof(SimpleTypeParser);
+        }
 
-	    public CodegenExpression InitCtorScoped() {
-	        CodegenExpressionNewAnonymousClass anonymousClass = NewAnonymousClass(classScope.PackageScope.InitMethod.Block, typeof(SimpleTypeParser));
-	        CodegenMethod parse = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope).AddParam(typeof(string), "text");
-	        anonymousClass.AddMethod("parse", parse);
-	        parse.Block.MethodReturn(parser.Codegen(@Ref("text")));
-	        return anonymousClass;
-	    }
+        public CodegenExpression InitCtorScoped()
+        {
+            CodegenExpressionNewAnonymousClass anonymousClass = NewAnonymousClass(classScope.PackageScope.InitMethod.Block, typeof(SimpleTypeParser));
+            CodegenMethod parse = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope).AddParam(typeof(string), "text");
+            anonymousClass.AddMethod("parse", parse);
+            parse.Block.MethodReturn(parser.Codegen(@Ref("text")));
+            return anonymousClass;
+        }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+        public override bool Equals(object o)
+        {
+            if (this == o) return true;
+            if (o == null || GetType() != o.GetType()) return false;
 
-	        SimpleTypeParserCodegenFieldSharable that = (SimpleTypeParserCodegenFieldSharable) o;
+            SimpleTypeParserCodegenFieldSharable that = (SimpleTypeParserCodegenFieldSharable) o;
 
-	        return parser.Equals(that.parser);
-	    }
+            return parser.Equals(that.parser);
+        }
 
-	    public override int GetHashCode() {
-	        return parser.GetHashCode();
-	    }
-	}
+        public override int GetHashCode()
+        {
+            return parser.GetHashCode();
+        }
+    }
 } // end of namespace

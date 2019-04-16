@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.view.timebatch
@@ -50,21 +48,21 @@ namespace com.espertech.esper.common.@internal.view.timebatch
 
         public override string ViewName => "Time-Batch";
 
-        public int ScheduleCallbackId
-        {
+        public int ScheduleCallbackId {
             set => scheduleCallbackId = value;
         }
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
-            if (parameters.Count < 1 || parameters.Count > 3)
-            {
+            if (parameters.Count < 1 || parameters.Count > 3) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
             var viewParamValues = new object[parameters.Count];
-            for (var i = 1; i < viewParamValues.Length; i++)
-            {
+            for (var i = 1; i < viewParamValues.Length; i++) {
                 viewParamValues[i] = ViewForgeSupport.ValidateAndEvaluate(
                     ViewName, parameters[i], viewForgeEnv, streamNumber);
             }
@@ -73,17 +71,13 @@ namespace com.espertech.esper.common.@internal.view.timebatch
                 ViewName, parameters[0], ViewParamMessage, 0, viewForgeEnv, streamNumber);
 
             var timeBatchFlags = new TimeBatchFlags(false, false);
-            if (viewParamValues.Length == 2 && viewParamValues[1] is string)
-            {
+            if (viewParamValues.Length == 2 && viewParamValues[1] is string) {
                 timeBatchFlags = TimeBatchFlags.ProcessKeywords(viewParamValues[1], ViewParamMessage);
             }
-            else
-            {
-                if (viewParamValues.Length >= 2)
-                {
+            else {
+                if (viewParamValues.Length >= 2) {
                     var paramRef = viewParamValues[1];
-                    if (!paramRef.IsNumber() || paramRef.IsFloatingPointNumber())
-                    {
+                    if (!paramRef.IsNumber() || paramRef.IsFloatingPointNumber()) {
                         throw new ViewParameterException(
                             ViewName + " view requires a Long-typed reference point in msec as a second parameter");
                     }
@@ -91,8 +85,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
                     optionalReferencePoint = paramRef.AsLong();
                 }
 
-                if (viewParamValues.Length == 3)
-                {
+                if (viewParamValues.Length == 3) {
                     timeBatchFlags = TimeBatchFlags.ProcessKeywords(viewParamValues[2], ViewParamMessage);
                 }
             }
@@ -101,7 +94,10 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             isStartEager = timeBatchFlags.IsStartEager;
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
@@ -117,11 +113,12 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (scheduleCallbackId == -1)
-            {
+            if (scheduleCallbackId == -1) {
                 throw new IllegalStateException("No schedule callback id");
             }
 

@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
     public class ResultSetProcessorRowPerGroupUnbound
     {
         public static void ApplyViewResultCodegen(
-            ResultSetProcessorRowPerGroupForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorRowPerGroupForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             CodegenMethod generateGroupKeyViewSingle = GenerateGroupKeySingleCodegen(
@@ -60,7 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         protected internal static void ProcessViewResultUnboundCodegen(
-            ResultSetProcessorRowPerGroupForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorRowPerGroupForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             CodegenMethod generateGroupKeysKeepEvent = GenerateGroupKeysKeepEventCodegen(forge, classScope, instance);
@@ -126,7 +130,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         public static void GetIteratorViewUnboundedCodegen(
-            ResultSetProcessorRowPerGroupForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorRowPerGroupForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             if (!forge.IsSorting) {
@@ -144,7 +150,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         protected internal static CodegenMethod ProcessViewResultNewDepthOneUnboundCodegen(
-            ResultSetProcessorRowPerGroupForge forge, CodegenClassScope classScope, CodegenInstanceAux instance)
+            ResultSetProcessorRowPerGroupForge forge,
+            CodegenClassScope classScope,
+            CodegenInstanceAux instance)
         {
             CodegenMethod shortcutEvalGivenKey =
                 ResultSetProcessorRowPerGroupImpl.ShortcutEvalGivenKeyCodegen(
@@ -189,7 +197,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         public static void StopMethodCodegenUnbound(
-            ResultSetProcessorRowPerGroupForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorRowPerGroupForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.StopMethodCodegenBound(method, instance);

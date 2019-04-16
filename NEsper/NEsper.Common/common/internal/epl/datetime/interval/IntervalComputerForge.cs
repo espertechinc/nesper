@@ -17,8 +17,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         IntervalComputerEval MakeComputerEval();
 
         CodegenExpression Codegen(
-            CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-            CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression leftStart,
+            CodegenExpression leftEnd,
+            CodegenExpression rightStart,
+            CodegenExpression rightEnd,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
     }
 } // end of namespace

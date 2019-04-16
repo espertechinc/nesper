@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             long leftStart,
             long leftEnd,
             long rightStart,
-            long rightEnd, 
+            long rightEnd,
             EventBean[] eventsPerStream,
             bool newData,
             ExprEvaluatorContext context);

@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         private readonly CodegenExpressionField spec;
 
         public AggregatorAccessCountMinSketch(
-            AggregationStateCountMinSketchForge forge, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
+            AggregationStateCountMinSketchForge forge,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
             CodegenClassScope classScope)
         {
             this.forge = forge;
@@ -39,27 +42,38 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         }
 
         public void ApplyEnterCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             method.Block.MethodThrowUnsupported();
         }
 
         public void ApplyLeaveCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             method.Block.MethodThrowUnsupported();
         }
 
-        public void ClearCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void ClearCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodThrowUnsupported();
         }
 
         public void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Expression(
                 StaticMethod(
@@ -67,8 +81,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         }
 
         public void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenMethod method,
-            CodegenExpressionRef unitKey, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenMethod method,
+            CodegenExpressionRef unitKey,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(
                 RowDotRef(row, state),
@@ -76,7 +94,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         }
 
         public static CodegenExpression CodegenGetAccessTableState(
-            int column, CodegenMethodScope parent, CodegenClassScope classScope)
+            int column,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             return RefCol("state", column);
         }

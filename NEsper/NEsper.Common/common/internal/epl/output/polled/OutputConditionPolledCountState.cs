@@ -8,21 +8,26 @@
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
-	public class OutputConditionPolledCountState : OutputConditionPolledState
-	{
-	    public OutputConditionPolledCountState(long eventRate, int newEventsCount, int oldEventsCount, bool isFirst) {
-	        EventRate = eventRate;
-	        NewEventsCount = newEventsCount;
-	        OldEventsCount = oldEventsCount;
-	        IsFirst = isFirst;
-	    }
+    public class OutputConditionPolledCountState : OutputConditionPolledState
+    {
+        public OutputConditionPolledCountState(
+            long eventRate,
+            int newEventsCount,
+            int oldEventsCount,
+            bool isFirst)
+        {
+            EventRate = eventRate;
+            NewEventsCount = newEventsCount;
+            OldEventsCount = oldEventsCount;
+            IsFirst = isFirst;
+        }
 
-	    public long EventRate { get; set; }
+        public long EventRate { get; set; }
 
-	    public int NewEventsCount { get; set; }
+        public int NewEventsCount { get; set; }
 
-	    public int OldEventsCount { get; set; }
+        public int OldEventsCount { get; set; }
 
-	    public bool IsFirst { get; set; }
-	}
+        public bool IsFirst { get; set; }
+    }
 } // end of namespace

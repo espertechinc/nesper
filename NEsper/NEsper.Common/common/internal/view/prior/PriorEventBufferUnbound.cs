@@ -68,7 +68,9 @@ namespace com.espertech.esper.common.@internal.view.prior
 
         public int WindowCount => 0;
 
-        public void Update(EventBean[] newData, EventBean[] oldData)
+        public void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             // Post new data to rolling buffer starting with the oldest
             if (newData != null) {

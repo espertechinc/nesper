@@ -37,7 +37,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
         /// </summary>
         /// <param name="variantSpec">the variant specification</param>
         /// <param name="metadata">event type metadata</param>
-        public VariantEventType(EventTypeMetadata metadata, VariantSpec variantSpec)
+        public VariantEventType(
+            EventTypeMetadata metadata,
+            VariantSpec variantSpec)
         {
             Metadata = metadata;
             Variants = variantSpec.EventTypes;
@@ -218,12 +220,14 @@ namespace com.espertech.esper.common.@internal.@event.variant
             return null;
         }
 
-        public void SetMetadataId(long publicId, long protectedId)
+        public void SetMetadataId(
+            long publicId,
+            long protectedId)
         {
             Metadata = Metadata.WithIds(publicId, protectedId);
         }
 
-        public ISet<EventType> DeepSuperTypesAsSet => Collections.GetEmptySet<EventType>();
+        public ICollection<EventType> DeepSuperTypesCollection => Collections.GetEmptySet<EventType>();
 
         private VariantPropertyDesc FindProperty(string propertyName)
         {

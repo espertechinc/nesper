@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.client
         /// <param name="fragmentType">the event type for a property value for an event.</param>
         /// <param name="indexed">true to indicate that property value is an array of events</param>
         /// <param name="isNative">true</param>
-        public FragmentEventType(EventType fragmentType, bool  indexed, bool  isNative)
+        public FragmentEventType(
+            EventType fragmentType,
+            bool indexed,
+            bool isNative)
         {
             FragmentType = fragmentType;
             IsIndexed = indexed;

@@ -81,14 +81,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .MethodReturn(
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                         .Add(EPStatementInitServicesConstants.GETAGGREGATIONSERVICEFACTORYSERVICE)
-                        .Add("groupBy", 
-                            Ref("svcFactory"), 
+                        .Add(
+                            "groupBy",
+                            Ref("svcFactory"),
                             Ref("rowFactory"),
                             aggGroupByDesc.RowStateForgeDescs.UseFlags.ToExpression(),
                             Ref("rowSerde"),
-                            Constant(groupByTypes), 
-                            reclaimAge, 
-                            reclaimFreq, 
+                            Constant(groupByTypes),
+                            reclaimAge,
+                            reclaimFreq,
                             timeAbacus));
         }
 

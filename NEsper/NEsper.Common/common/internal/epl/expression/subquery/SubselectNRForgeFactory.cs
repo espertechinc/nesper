@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
@@ -185,7 +184,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 subselectExpression, valueEval, selectEval, isNot, isNot, coercer, filterEval);
         }
 
-        private static SimpleNumberCoercer GetCoercer(Type typeOne, Type typeTwo)
+        private static SimpleNumberCoercer GetCoercer(
+            Type typeOne,
+            Type typeTwo)
         {
             // Get the common type such as Bool, String or Double and Long
             Type coercionType;

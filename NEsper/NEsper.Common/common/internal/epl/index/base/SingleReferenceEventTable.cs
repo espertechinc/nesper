@@ -19,92 +19,112 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
 {
-	public class SingleReferenceEventTable : EventTable, EventTableAsSet {
-	    private readonly EventTableOrganization organization;
-	    private readonly AtomicReference<ObjectArrayBackedEventBean> eventReference;
+    public class SingleReferenceEventTable : EventTable,
+        EventTableAsSet
+    {
+        private readonly EventTableOrganization organization;
+        private readonly AtomicReference<ObjectArrayBackedEventBean> eventReference;
 
-	    public SingleReferenceEventTable(EventTableOrganization organization, AtomicReference<ObjectArrayBackedEventBean> eventReference) {
-	        this.organization = organization;
-	        this.eventReference = eventReference;
-	    }
+        public SingleReferenceEventTable(
+            EventTableOrganization organization,
+            AtomicReference<ObjectArrayBackedEventBean> eventReference)
+        {
+            this.organization = organization;
+            this.eventReference = eventReference;
+        }
 
-	    public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext) {
-	        throw new UnsupportedOperationException();
-	    }
+        public void AddRemove(
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException();
+        }
 
-	    public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext) {
-	        throw new UnsupportedOperationException();
-	    }
+        public void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException();
+        }
 
-	    public void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext) {
-	        throw new UnsupportedOperationException();
-	    }
+        public void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException();
+        }
 
-	    public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext) {
-	        throw new UnsupportedOperationException();
-	    }
+        public void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException();
+        }
 
-	    public void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext) {
-	        throw new UnsupportedOperationException();
-	    }
+        public void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException();
+        }
 
-	    IEnumerator IEnumerable.GetEnumerator()
-	    {
-	        return GetEnumerator();
-	    }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-	    public IEnumerator<EventBean> GetEnumerator()
-	    {
-	        return EnumerationHelper.SingletonNullable(eventReference.Get());
-	    }
+        public IEnumerator<EventBean> GetEnumerator()
+        {
+            return EnumerationHelper.SingletonNullable(eventReference.Get());
+        }
 
-	    public bool IsEmpty
-	    {
-	        get => eventReference.Get() == null;
-	    }
+        public bool IsEmpty {
+            get => eventReference.Get() == null;
+        }
 
-	    public void Clear() {
-	        throw new UnsupportedOperationException();
-	    }
+        public void Clear()
+        {
+            throw new UnsupportedOperationException();
+        }
 
-	    public void Destroy() {
-	    }
+        public void Destroy()
+        {
+        }
 
-	    public string ToQueryPlan() {
-	        return "single-reference";
-	    }
+        public string ToQueryPlan()
+        {
+            return "single-reference";
+        }
 
-	    public int? NumberOfEvents
-	    {
-	        get => eventReference.Get() == null ? 0 : 1;
-	    }
+        public int? NumberOfEvents {
+            get => eventReference.Get() == null ? 0 : 1;
+        }
 
-	    public int NumKeys
-	    {
-	        get => 0;
-	    }
+        public int NumKeys {
+            get => 0;
+        }
 
-	    public object Index
-	    {
-	        get => null;
-	    }
+        public object Index {
+            get => null;
+        }
 
-	    public EventTableOrganization Organization
-	    {
-	        get => organization;
-	    }
+        public EventTableOrganization Organization {
+            get => organization;
+        }
 
-	    public ISet<EventBean> AllValues() {
-	        EventBean @event = eventReference.Get();
-	        if (@event != null) {
-	            return Collections.SingletonSet(@event);
-	        }
-	        return Collections.GetEmptySet<EventBean>();
-	    }
+        public ISet<EventBean> AllValues()
+        {
+            EventBean @event = eventReference.Get();
+            if (@event != null) {
+                return Collections.SingletonSet(@event);
+            }
 
-	    public Type ProviderClass
-	    {
-	        get => typeof(SingleReferenceEventTable);
-	    }
-	}
+            return Collections.GetEmptySet<EventBean>();
+        }
+
+        public Type ProviderClass {
+            get => typeof(SingleReferenceEventTable);
+        }
+    }
 } // end of namespace

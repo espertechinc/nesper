@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.util;
@@ -23,7 +22,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
     public class StatementAgentInstanceFactoryCreateNWResult : StatementAgentInstanceFactoryResult
     {
-
         private readonly Viewable eventStreamParentViewable;
         private readonly Viewable topView;
         private readonly NamedWindowInstance namedWindowInstance;
@@ -40,13 +38,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             : base(
                 finalView,
                 stopCallback,
-                agentInstanceContext, 
+                agentInstanceContext,
                 null,
-                new EmptyDictionary<int, SubSelectFactoryResult>(), 
+                new EmptyDictionary<int, SubSelectFactoryResult>(),
                 null,
                 null,
                 null,
-                new EmptyDictionary<int, ExprTableEvalStrategy>(), 
+                new EmptyDictionary<int, ExprTableEvalStrategy>(),
                 null)
         {
             this.eventStreamParentViewable = eventStreamParentViewable;

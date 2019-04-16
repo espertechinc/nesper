@@ -47,6 +47,30 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return GetNodePropertyValue(node, propertyName);
         }
 
+        public CodegenExpression GetValueAsNodeCodegen(
+            CodegenExpression value,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingGetCodegen(value, codegenMethodScope, codegenClassScope);
+        }
+
+        public CodegenExpression GetValueAsNodeArrayCodegen(
+            CodegenExpression value,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
+
+        public CodegenExpression GetValueAsFragmentCodegen(
+            CodegenExpression value,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
+
         public object Get(EventBean obj)
         {
             // The underlying is expected to be a map
@@ -79,7 +103,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -87,7 +112,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -95,28 +121,32 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(GetType(), "getNodePropertyValue", underlyingExpression, Constant(propertyName));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(GetType(), "getNodePropertyExists", underlyingExpression, Constant(propertyName));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
@@ -128,7 +158,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="node">node</param>
         /// <param name="propertyName">property</param>
         /// <returns>value</returns>
-        public static XmlNode GetNodePropertyValue(XmlNode node, string propertyName)
+        public static XmlNode GetNodePropertyValue(
+            XmlNode node,
+            string propertyName)
         {
             var namedNodeMap = node.Attributes;
             if (namedNodeMap != null) {
@@ -181,7 +213,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="node">node</param>
         /// <param name="propertyName">property</param>
         /// <returns>value</returns>
-        public static bool GetNodePropertyExists(XmlNode node, string propertyName)
+        public static bool GetNodePropertyExists(
+            XmlNode node,
+            string propertyName)
         {
             var namedNodeMap = node.Attributes;
             if (namedNodeMap != null) {
@@ -202,7 +236,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             var list = node.ChildNodes;
-            for (var i = 0; i < list.Length; i++) {
+            for (var i = 0; i < list.Count; i++) {
                 var childNode = list.Item(i);
                 if (childNode == null) {
                     continue;
@@ -226,24 +260,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             return false;
-        }
-
-        public CodegenExpression GetValueAsNodeCodegen(
-            CodegenExpression value, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
-        {
-            return UnderlyingGetCodegen(value, codegenMethodScope, codegenClassScope);
-        }
-
-        public CodegenExpression GetValueAsNodeArrayCodegen(
-            CodegenExpression value, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
-        {
-            return ConstantNull();
-        }
-
-        public CodegenExpression GetValueAsFragmentCodegen(
-            CodegenExpression value, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
-        {
-            return ConstantNull();
         }
     }
 } // end of namespace

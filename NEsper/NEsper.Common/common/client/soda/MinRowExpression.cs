@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     [Serializable]
     public class MinRowExpression : ExpressionBase
     {
-
         /// <summary>
         ///     Ctor - for use to create an expression tree, without child expression.
         ///     <para />
@@ -33,7 +32,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="propertyOne">the name of the property providing a value to determine the minimum of</param>
         /// <param name="propertyTwo">the name of the property providing a value to determine the minimum of</param>
         /// <param name="moreProperties">optional additional properties to consider</param>
-        public MinRowExpression(string propertyOne, string propertyTwo, string[] moreProperties)
+        public MinRowExpression(
+            string propertyOne,
+            string propertyTwo,
+            string[] moreProperties)
         {
             AddChild(new PropertyValueExpression(propertyOne));
             AddChild(new PropertyValueExpression(propertyTwo));
@@ -48,7 +50,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="exprOne">provides a value to determine the maximum of</param>
         /// <param name="exprTwo">provides a value to determine the maximum of</param>
         /// <param name="moreExpressions">optional additional values to consider</param>
-        public MinRowExpression(Expression exprOne, Expression exprTwo, params Expression[] moreExpressions)
+        public MinRowExpression(
+            Expression exprOne,
+            Expression exprTwo,
+            params Expression[] moreExpressions)
         {
             AddChild(exprOne);
             AddChild(exprTwo);

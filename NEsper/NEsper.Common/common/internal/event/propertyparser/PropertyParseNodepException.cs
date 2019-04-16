@@ -12,7 +12,8 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
 {
     public class PropertyParseNodepException : Exception
     {
-        public PropertyParseNodepException(string message) : base(message)
+        public PropertyParseNodepException(string message)
+            : base(message)
         {
         }
     }

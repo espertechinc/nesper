@@ -10,12 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.schedule
@@ -82,8 +80,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <value>map of 5 or 6 entries each with a set of integers</value>
         public IDictionary<ScheduleUnit, ICollection<int>> UnitValues { get; }
 
-        public string OptionalTimeZone
-        {
+        public string OptionalTimeZone {
             get => _optionalTimeZone;
             set => _optionalTimeZone = value;
         }
@@ -96,8 +93,7 @@ namespace com.espertech.esper.common.@internal.schedule
             int value)
         {
             var set = UnitValues.Get(element);
-            if (set == null)
-            {
+            if (set == null) {
                 set = new SortedSet<int>();
                 UnitValues.Put(element, set);
             }
@@ -108,24 +104,19 @@ namespace com.espertech.esper.common.@internal.schedule
         public override string ToString()
         {
             var buffer = new StringBuilder();
-            foreach (var element in ScheduleUnit.Values)
-            {
-                if (!UnitValues.ContainsKey(element))
-                {
+            foreach (var element in ScheduleUnit.Values) {
+                if (!UnitValues.ContainsKey(element)) {
                     continue;
                 }
 
                 var valueSet = UnitValues.Get(element);
                 buffer.Append(element + "={");
-                if (valueSet == null)
-                {
+                if (valueSet == null) {
                     buffer.Append("null");
                 }
-                else
-                {
+                else {
                     var delimiter = "";
-                    foreach (var i in valueSet)
-                    {
+                    foreach (var i in valueSet) {
                         buffer.Append(delimiter + i);
                         delimiter = ",";
                     }
@@ -139,55 +130,45 @@ namespace com.espertech.esper.common.@internal.schedule
 
         public override bool Equals(object otherObject)
         {
-            if (otherObject == this)
-            {
+            if (otherObject == this) {
                 return true;
             }
 
-            if (otherObject == null)
-            {
+            if (otherObject == null) {
                 return false;
             }
 
-            if (GetType() != otherObject.GetType())
-            {
+            if (GetType() != otherObject.GetType()) {
                 return false;
             }
 
             var other = (ScheduleSpec) otherObject;
-            if (UnitValues.Count != other.UnitValues.Count)
-            {
+            if (UnitValues.Count != other.UnitValues.Count) {
                 return false;
             }
 
-            foreach (var entry in UnitValues)
-            {
+            foreach (var entry in UnitValues) {
                 var mySet = entry.Value;
                 var otherSet = other.UnitValues.Get(entry.Key);
 
-                if (otherSet == null && mySet != null)
-                {
+                if (otherSet == null && mySet != null) {
                     return false;
                 }
 
-                if (otherSet != null && mySet == null)
-                {
+                if (otherSet != null && mySet == null) {
                     return false;
                 }
 
-                if (otherSet == null && mySet == null)
-                {
+                if (otherSet == null && mySet == null) {
                     continue;
                 }
 
-                if (mySet.Count != otherSet.Count)
-                {
+                if (mySet.Count != otherSet.Count) {
                     return false;
                 }
 
                 // Commpare value by value
-                if (mySet.Any(i => !otherSet.Contains(i)))
-                {
+                if (mySet.Any(i => !otherSet.Contains(i))) {
                     return false;
                 }
             }
@@ -198,10 +179,8 @@ namespace com.espertech.esper.common.@internal.schedule
         public override int GetHashCode()
         {
             var hashCode = 0;
-            foreach (var entry in UnitValues)
-            {
-                if (entry.Value != null)
-                {
+            foreach (var entry in UnitValues) {
+                if (entry.Value != null) {
                     hashCode *= 31;
                     hashCode ^= entry.Value.First();
                 }
@@ -219,20 +198,16 @@ namespace com.espertech.esper.common.@internal.schedule
         {
             var termList = new List<ScheduleUnit>();
 
-            foreach (var entry in unitValues)
-            {
+            foreach (var entry in unitValues) {
                 var elementValueSetSize = entry.Key.Max() - entry.Key.Min() + 1;
-                if (entry.Value != null)
-                {
-                    if (entry.Value.Count == elementValueSetSize)
-                    {
+                if (entry.Value != null) {
+                    if (entry.Value.Count == elementValueSetSize) {
                         termList.Add(entry.Key);
                     }
                 }
             }
 
-            foreach (var term in termList)
-            {
+            foreach (var term in termList) {
                 unitValues[term] = null;
             }
         }
@@ -245,15 +220,13 @@ namespace com.espertech.esper.common.@internal.schedule
                 !unitValues.ContainsKey(ScheduleUnit.DAYS_OF_WEEK) ||
                 !unitValues.ContainsKey(ScheduleUnit.HOURS) ||
                 !unitValues.ContainsKey(ScheduleUnit.MINUTES) ||
-                !unitValues.ContainsKey(ScheduleUnit.DAYS_OF_MONTH))
-            {
+                !unitValues.ContainsKey(ScheduleUnit.DAYS_OF_MONTH)) {
                 throw new ArgumentException(
                     "Incomplete information for schedule specification, only the following keys are supplied=" +
                     unitValues.Keys.Render());
             }
 
-            foreach (var unit in ScheduleUnit.Values)
-            {
+            foreach (var unit in ScheduleUnit.Values) {
                 if (unit == ScheduleUnit.SECONDS && !unitValues.ContainsKey(unit)) // Seconds are optional
                 {
                     continue;
@@ -265,10 +238,8 @@ namespace com.espertech.esper.common.@internal.schedule
                 }
 
                 var values = unitValues.Get(unit);
-                foreach (var value in values)
-                {
-                    if (value < unit.Min() || value > unit.Max())
-                    {
+                foreach (var value in values) {
+                    if (value < unit.Min() || value > unit.Max()) {
                         throw new ArgumentException(
                             "Invalid value found for schedule unit, value of " +
                             value + " is not valid for unit " + unit);
@@ -284,17 +255,14 @@ namespace com.espertech.esper.common.@internal.schedule
             var method = parent.MakeChild(typeof(ScheduleSpec), GetType(), classScope);
             var spec = Ref("spec");
             method.Block.DeclareVar(typeof(ScheduleSpec), spec.Ref, NewInstance(typeof(ScheduleSpec)));
-            if (_optionalTimeZone != null)
-            {
+            if (_optionalTimeZone != null) {
                 method.Block.ExprDotMethod(spec, "setOptionalTimeZone", Constant(_optionalTimeZone));
             }
 
-            foreach (var unit in UnitValues.Keys)
-            {
+            foreach (var unit in UnitValues.Keys) {
                 var values = UnitValues.Get(unit);
                 var valuesExpr = ConstantNull();
-                if (values != null)
-                {
+                if (values != null) {
                     valuesExpr = NewInstance(
                         typeof(SortedSet<object>),
                         StaticMethod(
@@ -306,13 +274,11 @@ namespace com.espertech.esper.common.@internal.schedule
                     ExprDotMethodChain(spec).Add("getUnitValues").Add("put", Constant(unit), valuesExpr));
             }
 
-            if (OptionalDayOfWeekOperator != null)
-            {
+            if (OptionalDayOfWeekOperator != null) {
                 method.Block.ExprDotMethod(spec, "setOptionalDayOfWeekOperator", OptionalDayOfWeekOperator.Make());
             }
 
-            if (OptionalDayOfMonthOperator != null)
-            {
+            if (OptionalDayOfMonthOperator != null) {
                 method.Block.ExprDotMethod(spec, "setOptionalDayOfMonthOperator", OptionalDayOfMonthOperator.Make());
             }
 

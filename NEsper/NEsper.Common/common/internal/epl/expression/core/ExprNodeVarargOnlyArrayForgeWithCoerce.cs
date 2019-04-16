@@ -16,13 +16,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private readonly ExprEvaluator[] evals;
         private readonly ExprNodeVarargOnlyArrayForge forge;
 
-        public ExprNodeVarargOnlyArrayForgeWithCoerce(ExprNodeVarargOnlyArrayForge forge, ExprEvaluator[] evals)
+        public ExprNodeVarargOnlyArrayForgeWithCoerce(
+            ExprNodeVarargOnlyArrayForge forge,
+            ExprEvaluator[] evals)
         {
             this.forge = forge;
             this.evals = evals;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var array = Array.CreateInstance(forge.varargClass, evals.Length);
             for (var i = 0; i < evals.Length; i++) {

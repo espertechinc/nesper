@@ -19,20 +19,24 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private readonly IDictionary<string, Pair<int, bool>> variableStreams;
 
         public RowRecogPartitionTerminationStateComparator(
-            int[] multimatchStreamNumToVariable, IDictionary<string, Pair<int, bool>> variableStreams)
+            int[] multimatchStreamNumToVariable,
+            IDictionary<string, Pair<int, bool>> variableStreams)
         {
             this.multimatchStreamNumToVariable = multimatchStreamNumToVariable;
             this.variableStreams = variableStreams;
         }
 
-        public override int Compare(RowRecogNFAStateEntry o1, RowRecogNFAStateEntry o2)
+        public override int Compare(
+            RowRecogNFAStateEntry o1,
+            RowRecogNFAStateEntry o2)
         {
             return CompareTerminationStateToEndState(o1, o2) ? 0 : 1;
         }
 
         // End-state may have less events then the termination state
         public bool CompareTerminationStateToEndState(
-            RowRecogNFAStateEntry terminationState, RowRecogNFAStateEntry endState)
+            RowRecogNFAStateEntry terminationState,
+            RowRecogNFAStateEntry endState)
         {
             if (terminationState.MatchBeginEventSeqNo != endState.MatchBeginEventSeqNo) {
                 return false;

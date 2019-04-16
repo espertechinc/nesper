@@ -14,13 +14,11 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.@event.eventtyperepo.EventTypeRepositoryMapTypeUtil;
 
 namespace com.espertech.esper.common.@internal.@event.eventtyperepo
@@ -61,8 +59,10 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
         }
 
         private static void AddNestableObjectArrayType(
-            string eventTypeName, LinkedHashMap<string, object> propertyTypesMayHavePrimitive,
-            ConfigurationCommonEventTypeObjectArray optionalConfig, BeanEventTypeFactory beanEventTypeFactory,
+            string eventTypeName,
+            IDictionary<string, object> propertyTypesMayHavePrimitive,
+            ConfigurationCommonEventTypeObjectArray optionalConfig,
+            BeanEventTypeFactory beanEventTypeFactory,
             EventTypeRepositoryImpl repo)
         {
             if (optionalConfig != null && optionalConfig.SuperTypes.Count > 1) {
@@ -86,11 +86,11 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 optionalConfig != null ? optionalConfig.EndTimestampPropertyName : null,
                 beanEventTypeFactory, repo);
 
-            EventType existingType = repo.GetTypeByName(eventTypeName);
+            var existingType = repo.GetTypeByName(eventTypeName);
             if (existingType != null) {
                 // The existing type must be the same as the type createdStatement
                 if (newEventType.EqualsCompareType(existingType) != null) {
-                    ExprValidationException message = newEventType.CompareEquals(existingType);
+                    var message = newEventType.CompareEquals(existingType);
                     throw new EPException(
                         "Event type named '" + eventTypeName +
                         "' has already been declared with differing column name or type information: " +
@@ -105,7 +105,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
         }
 
         private static IDictionary<string, object> ResolveClassesForStringPropertyTypes(
-            IDictionary<string, object> properties, ImportService importService)
+            IDictionary<string, object> properties,
+            ImportService importService)
         {
             IDictionary<string, object> propertyTypes = new LinkedHashMap<string, object>();
             foreach (var entry in properties) {
@@ -125,7 +126,9 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             return propertyTypes;
         }
 
-        private static Type ResolveClassForTypeName(string type, ImportService importService)
+        private static Type ResolveClassForTypeName(
+            string type,
+            ImportService importService)
         {
             var isArray = false;
             if (type != null && EventTypeUtility.IsPropertyArray(type)) {

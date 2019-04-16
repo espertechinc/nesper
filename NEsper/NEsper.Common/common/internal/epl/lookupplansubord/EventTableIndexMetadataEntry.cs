@@ -18,9 +18,13 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         private readonly ISet<string> referencedByDeployment;
 
         public EventTableIndexMetadataEntry(
-            string optionalIndexName, string optionalIndexModuleName, bool primary,
-            QueryPlanIndexItem optionalQueryPlanIndexItem, string explicitIndexNameIfExplicit,
-            string explicitIndexModuleNameIfExplicit, string deploymentId)
+            string optionalIndexName,
+            string optionalIndexModuleName,
+            bool primary,
+            QueryPlanIndexItem optionalQueryPlanIndexItem,
+            string explicitIndexNameIfExplicit,
+            string explicitIndexModuleNameIfExplicit,
+            string deploymentId)
             : base(optionalIndexName, optionalIndexModuleName)
         {
             IsPrimary = primary;

@@ -73,17 +73,24 @@ namespace com.espertech.esper.common.@internal.type
                     .DeclareVar(typeof(decimal?), "s1", convOne.CoerceBoxedDecimalCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
                     .DeclareVar(typeof(decimal?), "s2", convTwo.CoerceBoxedDecimalCodegen(CodegenExpressionBuilder.Ref("d2"), rtype));
                 var ifZeroDivisor =
-                    block.IfCondition(CodegenExpressionBuilder.EqualsIdentity(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s2"), "doubleValue"), CodegenExpressionBuilder.Constant(0)));
+                    block.IfCondition(
+                        CodegenExpressionBuilder.EqualsIdentity(
+                            CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s2"), "doubleValue"),
+                            CodegenExpressionBuilder.Constant(0)));
                 if (divisionByZeroReturnsNull) {
                     ifZeroDivisor.BlockReturn(CodegenExpressionBuilder.ConstantNull());
                 }
                 else {
                     ifZeroDivisor.DeclareVar(
-                            typeof(double), "result", CodegenExpressionBuilder.Op(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s1"), "doubleValue"), "/", CodegenExpressionBuilder.Constant(0)))
+                            typeof(double), "result",
+                            CodegenExpressionBuilder.Op(
+                                CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s1"), "doubleValue"), "/",
+                                CodegenExpressionBuilder.Constant(0)))
                         .BlockReturn(CodegenExpressionBuilder.NewInstance(typeof(decimal?), CodegenExpressionBuilder.Ref("result")));
                 }
 
-                var method = block.MethodReturn(DoDivideCodegen(CodegenExpressionBuilder.Ref("s1"), CodegenExpressionBuilder.Ref("s2"), codegenClassScope));
+                var method = block.MethodReturn(
+                    DoDivideCodegen(CodegenExpressionBuilder.Ref("s1"), CodegenExpressionBuilder.Ref("s2"), codegenClassScope));
                 return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
 

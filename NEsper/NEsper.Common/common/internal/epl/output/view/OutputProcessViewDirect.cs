@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         private readonly AgentInstanceContext agentInstanceContext;
         private readonly ResultSetProcessor resultSetProcessor;
 
-        public OutputProcessViewDirect(AgentInstanceContext agentInstanceContext, ResultSetProcessor resultSetProcessor)
+        public OutputProcessViewDirect(
+            AgentInstanceContext agentInstanceContext,
+            ResultSetProcessor resultSetProcessor)
         {
             this.agentInstanceContext = agentInstanceContext;
             this.resultSetProcessor = resultSetProcessor;
@@ -45,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// </summary>
         /// <param name="newData">new events</param>
         /// <param name="oldData">old events</param>
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             var statementResultService = agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
@@ -79,7 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="newEvents">new events</param>
         /// <param name="oldEvents">old events</param>
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var statementResultService = agentInstanceContext.StatementResultService;
@@ -106,7 +111,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             }
         }
 
-        protected void PostProcess(bool force, UniformPair<EventBean[]> newOldEvents, UpdateDispatchView childView)
+        protected void PostProcess(
+            bool force,
+            UniformPair<EventBean[]> newOldEvents,
+            UpdateDispatchView childView)
         {
             OutputStrategyUtil.Output(force, newOldEvents, childView);
         }

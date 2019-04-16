@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     public interface FilterBooleanExpressionFactory
     {
         ExprNodeAdapterBase Make(
-            FilterSpecParamExprNode filterSpecParamExprNode, 
+            FilterSpecParamExprNode filterSpecParamExprNode,
             EventBean[] events,
             ExprEvaluatorContext exprEvaluatorContext,
             int agentInstanceId,

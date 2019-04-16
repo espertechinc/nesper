@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly string _method;
 
         public CodegenExpressionBeanUndCastDotMethodConst(
-            Type clazz, CodegenExpression expression, string method, object constant)
+            Type clazz,
+            CodegenExpression expression,
+            string method,
+            object constant)
         {
             this._clazz = clazz;
             this._expression = expression;
@@ -30,7 +33,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this._constant = constant;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("((");
             AppendClassName(builder, _clazz, null, imports);

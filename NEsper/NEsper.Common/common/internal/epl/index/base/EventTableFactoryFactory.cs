@@ -13,6 +13,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
 {
     public interface EventTableFactoryFactory
     {
-        EventTableFactory Create(EventType eventType, StatementContext statementContext);
+        EventTableFactory Create(
+            EventType eventType,
+            StatementContext statementContext);
     }
 } // end of namespace

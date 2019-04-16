@@ -15,10 +15,29 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public interface ViewDataVisitor
     {
-        void VisitPrimary(EventBean @event, string viewName);
-        void VisitPrimary(EventBean[] events, string viewName);
-        void VisitPrimary<K>(ICollection<K> primary, bool countsEvents, String viewName, int? count);
-        void VisitPrimary<K,V>(IDictionary<K, V> currentBatch, bool countsEvents, String viewName, int? count, int? keyCountWhenAvailable);
-        void VisitPrimary(ViewUpdatedCollection buffer, String viewName);
+        void VisitPrimary(
+            EventBean @event,
+            string viewName);
+
+        void VisitPrimary(
+            EventBean[] events,
+            string viewName);
+
+        void VisitPrimary<K>(
+            ICollection<K> primary,
+            bool countsEvents,
+            String viewName,
+            int? count);
+
+        void VisitPrimary<K, V>(
+            IDictionary<K, V> currentBatch,
+            bool countsEvents,
+            String viewName,
+            int? count,
+            int? keyCountWhenAvailable);
+
+        void VisitPrimary(
+            ViewUpdatedCollection buffer,
+            String viewName);
     }
 }

@@ -30,19 +30,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         bool IsSelectRStream { get; }
 
         bool EvaluateHavingClause(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         object GenerateGroupKeySingle(
-            EventBean[] eventsPerStream, bool isNewData);
+            EventBean[] eventsPerStream,
+            bool isNewData);
 
         object[] GenerateGroupKeyArrayJoin(
-            ISet<MultiKey<EventBean>> newData, bool isNewData);
+            ISet<MultiKey<EventBean>> newData,
+            bool isNewData);
 
         object[] GenerateGroupKeyArrayView(
-            EventBean[] oldData, bool isNewData);
+            EventBean[] oldData,
+            bool isNewData);
 
         EventBean GenerateOutputBatchedSingle(
-            object key, EventBean[] @event, bool isNewData, bool isSynthesize);
+            object key,
+            EventBean[] @event,
+            bool isNewData,
+            bool isSynthesize);
 
         void GenerateOutputBatchedViewUnkeyed(
             EventBean[] outputEvents,

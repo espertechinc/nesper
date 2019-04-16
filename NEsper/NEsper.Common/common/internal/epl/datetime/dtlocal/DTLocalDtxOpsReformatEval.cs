@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,20 +17,25 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public class DTLocalDtxOpsReformatEval : DTLocalEvaluatorCalopReformatBase
     {
-        public DTLocalDtxOpsReformatEval(IList<CalendarOp> calendarOps, ReformatOp reformatOp) : base(
-            calendarOps, reformatOp)
+        public DTLocalDtxOpsReformatEval(
+            IList<CalendarOp> calendarOps,
+            ReformatOp reformatOp)
+            : base(
+                calendarOps, reformatOp)
         {
         }
 
         public override object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             DateTimeEx cal = (DateTimeEx) ((DateTimeEx) target).Clone();
             DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -39,8 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDtxOpsReformatForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            DTLocalDtxOpsReformatForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                     forge.reformatForge.ReturnType, typeof(DTLocalDateOpsReformatEval), codegenClassScope)
@@ -48,10 +55,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             CodegenBlock block = methodNode.Block
                 .DeclareVar(
-                    typeof(DateTimeEx), "cal", Cast(typeof(DateTimeEx), ExprDotMethod(@Ref("target"), "clone")));
+                    typeof(DateTimeEx), "dtx", Cast(typeof(DateTimeEx), ExprDotMethod(@Ref("target"), "clone")));
             DTLocalUtil.EvaluateCalOpsCalendarCodegen(
-                block, forge.calendarForges, @Ref("cal"), methodNode, exprSymbol, codegenClassScope);
-            block.MethodReturn(forge.reformatForge.CodegenDateTimeEx(@Ref("cal"), methodNode, exprSymbol, codegenClassScope));
+                block, forge.calendarForges, @Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
+            block.MethodReturn(forge.reformatForge.CodegenDateTimeEx(@Ref("dtx"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
     }

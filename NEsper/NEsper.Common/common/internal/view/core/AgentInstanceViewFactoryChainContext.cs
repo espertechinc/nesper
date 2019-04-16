@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.view.core
     public class AgentInstanceViewFactoryChainContext : ExprEvaluatorContext
     {
         public AgentInstanceViewFactoryChainContext(
-            AgentInstanceContext agentInstanceContext, bool isRemoveStream, PreviousGetterStrategy previousNodeGetter,
+            AgentInstanceContext agentInstanceContext,
+            bool isRemoveStream,
+            PreviousGetterStrategy previousNodeGetter,
             ViewUpdatedCollection priorViewUpdatedCollection)
         {
             AgentInstanceContext = agentInstanceContext;
@@ -102,7 +104,8 @@ namespace com.espertech.esper.common.@internal.view.core
         public InstrumentationCommon InstrumentationProvider => AgentInstanceContext.InstrumentationProvider;
 
         public static AgentInstanceViewFactoryChainContext Create(
-            ViewFactory[] viewFactoryChain, AgentInstanceContext agentInstanceContext,
+            ViewFactory[] viewFactoryChain,
+            AgentInstanceContext agentInstanceContext,
             ViewResourceDelegateDesc viewResourceDelegate)
         {
             PreviousGetterStrategy previousNodeGetter = null;

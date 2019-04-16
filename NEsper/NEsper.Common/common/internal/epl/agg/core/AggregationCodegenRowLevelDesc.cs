@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public static readonly AggregationCodegenRowLevelDesc EMPTY = new AggregationCodegenRowLevelDesc(null, null);
 
         public AggregationCodegenRowLevelDesc(
-            AggregationCodegenRowDetailDesc optionalTopRow, AggregationCodegenRowDetailDesc[] optionalAdditionalRows)
+            AggregationCodegenRowDetailDesc optionalTopRow,
+            AggregationCodegenRowDetailDesc[] optionalAdditionalRows)
         {
             OptionalTopRow = optionalTopRow;
             OptionalAdditionalRows = optionalAdditionalRows;

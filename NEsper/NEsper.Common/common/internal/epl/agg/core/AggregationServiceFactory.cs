@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
@@ -15,12 +14,18 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
-	/// <summary>
-	/// Factory for aggregation service instances.
-	/// <para />Consolidates aggregation nodes such that result futures point to a single instance and
-	/// no re-evaluation of the same result occurs.
-	/// </summary>
-	public interface AggregationServiceFactory {
-	    AggregationService MakeService(AgentInstanceContext agentInstanceContext, ImportServiceRuntime importService, bool isSubquery, int? subqueryNumber, int[] groupId);
-	}
+    /// <summary>
+    /// Factory for aggregation service instances.
+    /// <para />Consolidates aggregation nodes such that result futures point to a single instance and
+    /// no re-evaluation of the same result occurs.
+    /// </summary>
+    public interface AggregationServiceFactory
+    {
+        AggregationService MakeService(
+            AgentInstanceContext agentInstanceContext,
+            ImportServiceRuntime importService,
+            bool isSubquery,
+            int? subqueryNumber,
+            int[] groupId);
+    }
 } // end of namespace

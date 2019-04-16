@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.collection
         private int _lastIndex;
         private int _currentIndex;
         private T[] _handles;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="currentSize">is the initial size of the backing array.</param>
         public ArrayBackedCollection(int currentSize)
@@ -40,28 +40,26 @@ namespace com.espertech.esper.common.@internal.collection
             _currentIndex = 0;
             _handles = new T[currentSize];
         }
-    
+
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
-
         public void Add(T item)
         {
-            if (_currentIndex <= _lastIndex)
-            {
+            if (_currentIndex <= _lastIndex) {
                 _handles[_currentIndex++] = item;
                 return;
             }
-    
+
             // allocate more by duplicating the current size
             int newSize = _lastIndex * 2 + 2;
             T[] newHandles = new T[newSize];
             _handles.CopyTo(newHandles, 0);
             _handles = newHandles;
             _lastIndex = newSize - 1;
-    
+
             // add
             _handles[_currentIndex++] = item;
             return;
@@ -81,8 +79,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <value></value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-        public int Count
-        {
+        public int Count {
             get { return _currentIndex; }
         }
 
@@ -92,8 +89,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// Applications must ensure to not read past current size as old elements can be encountered.
         /// </summary>
         /// <value>backing array</value>
-        public T[] Array
-        {
+        public T[] Array {
             get { return _handles; }
         }
 
@@ -101,8 +97,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets a value indicating whether this instance is empty.
         /// </summary>
         /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
-        public bool IsEmpty
-        {
+        public bool IsEmpty {
             get { throw new UnsupportedOperationException(); }
         }
 
@@ -126,8 +121,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            for (int ii = 0; ii < _currentIndex; ii++ )
-            {
+            for (int ii = 0; ii < _currentIndex; ii++) {
                 yield return _handles[ii];
             }
         }
@@ -151,7 +145,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex is less than 0.</exception>
         /// <exception cref="T:System.ArgumentNullException">array is null.</exception>
         /// <exception cref="T:System.ArgumentException">array is multidimensional.-or-arrayIndex is equal to or greater than the length of array.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"></see> is greater than the available space from arrayIndex to the end of the destination array.-or-Type T cannot be cast automatically to the type of the destination array.</exception>
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(
+            T[] array,
+            int arrayIndex)
         {
             throw new UnsupportedOperationException();
         }
@@ -161,8 +157,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-        public bool IsReadOnly
-        {
+        public bool IsReadOnly {
             get { return false; }
         }
 
@@ -184,7 +179,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
             throw new UnsupportedOperationException();
         }
-    
+
         public T[] ToArray(T[] a)
         {
             throw new UnsupportedOperationException();

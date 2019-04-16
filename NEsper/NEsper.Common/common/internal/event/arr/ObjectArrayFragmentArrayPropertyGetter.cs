@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="fragmentEventType">event type of fragment</param>
         /// <param name="eventBeanTypedEventFactory">for creating event instances</param>
         public ObjectArrayFragmentArrayPropertyGetter(
-            int propertyIndex, EventType fragmentEventType, EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            int propertyIndex,
+            EventType fragmentEventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.propertyIndex = propertyIndex;
             this.fragmentEventType = fragmentEventType;
@@ -69,8 +71,59 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return BaseNestableEventUtil.GetBNFragmentArray(value, fragmentEventType, eventBeanTypedEventFactory);
         }
 
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+        }
+
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantTrue();
+        }
+
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingFragmentCodegen(
+                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+        }
+
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ArrayAtIndex(underlyingExpression, Constant(propertyIndex));
+        }
+
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantTrue();
+        }
+
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return LocalMethod(GetFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
+        }
+
         private CodegenMethod GetFragmentCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var mSvc = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var mType = codegenClassScope.AddFieldUnshared(
@@ -84,50 +137,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 .BlockReturn(Ref("value"))
                 .MethodReturn(
                     StaticMethod(typeof(BaseNestableEventUtil), "getBNFragmentArray", Ref("value"), mType, mSvc));
-        }
-
-        public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
-        }
-
-        public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return ConstantTrue();
-        }
-
-        public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
-        }
-
-        public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return ArrayAtIndex(underlyingExpression, Constant(propertyIndex));
-        }
-
-        public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return ConstantTrue();
-        }
-
-        public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return LocalMethod(GetFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
     }
 } // end of namespace

@@ -8,27 +8,26 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.compile
 {
-	/*
-	 * On the level of enumeration method:
-	 *     If a enumeration method expression is invoked within another enumeration method expression (not counting expression declarations),
-	 *     for example "source.where(a => source.minBy(b => b.x))" the "source.minBy(b => b.x)" is not dependent on any other lambda so the result gets cached.
-	 *     The cache is keyed by the enumeration-method-node as an IdentityDictionary and verified by a context stack (Long[]) that is built in nested evaluation calls.
-	 *
-	 * NOTE: ExpressionResultCacheForEnumerationMethod should not be held onto since the instance returned can be reused.
-	 */
-	public interface EnumMethodCallStackHelper {
+    /*
+     * On the level of enumeration method:
+     *     If a enumeration method expression is invoked within another enumeration method expression (not counting expression declarations),
+     *     for example "source.where(a => source.minBy(b => b.x))" the "source.minBy(b => b.x)" is not dependent on any other lambda so the result gets cached.
+     *     The cache is keyed by the enumeration-method-node as an IdentityDictionary and verified by a context stack (Long[]) that is built in nested evaluation calls.
+     *
+     * NOTE: ExpressionResultCacheForEnumerationMethod should not be held onto since the instance returned can be reused.
+     */
+    public interface EnumMethodCallStackHelper
+    {
+        void PushStack(ExpressionResultCacheStackEntry lambda);
 
-	    void PushStack(ExpressionResultCacheStackEntry lambda);
+        bool PopLambda();
 
-	    bool PopLambda();
-
-	    Deque<ExpressionResultCacheStackEntry> GetStack();
-	}
+        Deque<ExpressionResultCacheStackEntry> GetStack();
+    }
 } // end of namespace

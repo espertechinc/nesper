@@ -24,14 +24,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator patternEval;
 
         public ExprRegexpNodeForgeNonconstEval(
-            ExprRegexpNodeForgeNonconst forge, ExprEvaluator lhsEval, ExprEvaluator patternEval)
+            ExprRegexpNodeForgeNonconst forge,
+            ExprEvaluator lhsEval,
+            ExprEvaluator patternEval)
         {
             this.forge = forge;
             this.lhsEval = lhsEval;
             this.patternEval = patternEval;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var patternText = (string) patternEval.Evaluate(eventsPerStream, isNewData, context);
             if (patternText == null) {
@@ -70,8 +75,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenMethod Codegen(
-            ExprRegexpNodeForgeNonconst forge, ExprNode lhs, ExprNode pattern, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            ExprRegexpNodeForgeNonconst forge,
+            ExprNode lhs,
+            ExprNode pattern,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?), typeof(ExprRegexpNodeForgeNonconstEval), codegenClassScope);

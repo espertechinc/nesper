@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.activator;
@@ -16,7 +15,6 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.subselect
@@ -28,7 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         private readonly int subqueryNumber;
 
         public SubSelectFactoryForge(
-            int subqueryNumber, ViewableActivatorForge activator, SubSelectStrategyFactoryForge strategyFactoryForge)
+            int subqueryNumber,
+            ViewableActivatorForge activator,
+            SubSelectStrategyFactoryForge strategyFactoryForge)
         {
             this.subqueryNumber = subqueryNumber;
             this.activator = activator;
@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         public IList<ViewFactoryForge> ViewForges => strategyFactoryForge.ViewForges;
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(SubSelectFactory), GetType(), classScope);
             method.Block
@@ -56,16 +58,18 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         }
 
         public static CodegenExpression CodegenInitMap(
-            IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects, Type generator, CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects,
+            Type generator,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(IDictionary<object, object>), generator, classScope);
             method.Block
                 .DeclareVar(
                     typeof(IDictionary<object, object>), "subselects",
                     NewInstance(typeof(LinkedHashMap<object, object>), Constant(subselects.Count + 2)));
-            foreach (var entry in subselects)
-            {
+            foreach (var entry in subselects) {
                 method.Block.ExprDotMethod(
                     Ref("subselects"), "put", Constant(entry.Key.SubselectNumber),
                     entry.Value.Make(method, symbols, classScope));

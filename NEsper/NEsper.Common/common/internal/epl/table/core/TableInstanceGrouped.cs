@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         ICollection<object> GroupKeys { get; }
         ObjectArrayBackedEventBean GetRowForGroupKey(object groupKey);
 
-        ObjectArrayBackedEventBean GetCreateRowIntoTable(object groupByKey, ExprEvaluatorContext exprEvaluatorContext);
+        ObjectArrayBackedEventBean GetCreateRowIntoTable(
+            object groupByKey,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         //Table Table { get; }
     }

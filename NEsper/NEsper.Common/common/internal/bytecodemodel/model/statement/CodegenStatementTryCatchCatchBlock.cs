@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementTryCatchCatchBlock
     {
-        public CodegenStatementTryCatchCatchBlock(Type ex, string name, CodegenBlock block)
+        public CodegenStatementTryCatchCatchBlock(
+            Type ex,
+            string name,
+            CodegenBlock block)
         {
             Ex = ex;
             Name = name;

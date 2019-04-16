@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filterspec;
 
@@ -45,7 +44,9 @@ namespace com.espertech.esper.common.@internal.filtersvc
         /// <param name="theEvent">is the event to be matched against filters</param>
         /// <param name="matches">is a collection that is populated via add method with any handles for matching filters</param>
         /// <returns>filter current version</returns>
-        long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches);
+        long Evaluate(
+            EventBean theEvent,
+            ICollection<FilterHandle> matches);
 
         /// <summary>
         ///     Finds matching filters to the event passed in and collects their associated callback method, for a particular
@@ -55,7 +56,10 @@ namespace com.espertech.esper.common.@internal.filtersvc
         /// <param name="matches">is a collection that is populated via add method with any handles for matching filters</param>
         /// <param name="statementId">statement for which to return results for</param>
         /// <returns>filter current version</returns>
-        long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, int statementId);
+        long Evaluate(
+            EventBean theEvent,
+            ICollection<FilterHandle> matches,
+            int statementId);
 
         /// <summary>
         ///     Add a filter for events as defined by the filter specification, and register a
@@ -66,7 +70,10 @@ namespace com.espertech.esper.common.@internal.filtersvc
         ///     is a specification of filter parameters, containsevent type information, event property values and operators
         /// </param>
         /// <param name="callback">is the callback to be invoked when the filter matches an event</param>
-        void Add(EventType eventType, FilterValueSetParam[][] valueSet, FilterHandle callback);
+        void Add(
+            EventType eventType,
+            FilterValueSetParam[][] valueSet,
+            FilterHandle callback);
 
         /// <summary>
         ///     Remove a filter callback.
@@ -74,7 +81,10 @@ namespace com.espertech.esper.common.@internal.filtersvc
         /// <param name="eventType">event type</param>
         /// <param name="valueSet">values</param>
         /// <param name="callback">is the callback to be removed</param>
-        void Remove(FilterHandle callback, EventType eventType, FilterValueSetParam[][] valueSet);
+        void Remove(
+            FilterHandle callback,
+            EventType eventType,
+            FilterValueSetParam[][] valueSet);
 
         /// <summary>
         ///     Reset the number of events evaluated

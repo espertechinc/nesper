@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
 
         double Compute(double value);
 
-        void Add(DateTimeEx dtx, int value);
+        void Add(
+            DateTimeEx dtx,
+            int value);
 
         CodegenExpression ComputeCodegen(CodegenExpression doubleValue);
     }

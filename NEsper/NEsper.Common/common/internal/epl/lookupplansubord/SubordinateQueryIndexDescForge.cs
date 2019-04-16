@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     public class SubordinateQueryIndexDescForge
     {
         public SubordinateQueryIndexDescForge(
-            IndexKeyInfo optionalIndexKeyInfo, string indexName, string indexModuleName, IndexMultiKey indexMultiKey,
+            IndexKeyInfo optionalIndexKeyInfo,
+            string indexName,
+            string indexModuleName,
+            IndexMultiKey indexMultiKey,
             QueryPlanIndexItemForge optionalQueryPlanIndexItem)
         {
             OptionalIndexKeyInfo = optionalIndexKeyInfo;
@@ -39,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         public QueryPlanIndexItemForge OptionalQueryPlanIndexItem { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(SubordinateQueryIndexDesc), GetType(), classScope);
             method.Block

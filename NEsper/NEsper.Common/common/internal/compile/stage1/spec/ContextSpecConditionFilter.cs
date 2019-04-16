@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public class ContextSpecConditionFilter : ContextSpecCondition
     {
-        public ContextSpecConditionFilter(FilterSpecRaw filterSpecRaw, string optionalFilterAsName)
+        public ContextSpecConditionFilter(
+            FilterSpecRaw filterSpecRaw,
+            string optionalFilterAsName)
         {
             FilterSpecRaw = filterSpecRaw;
             OptionalFilterAsName = optionalFilterAsName;
@@ -30,7 +32,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public FilterSpecCompiled FilterSpecCompiled { get; set; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContextConditionDescriptorFilter), GetType(), classScope);
             method.Block

@@ -21,7 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
     public class AggregationForgeFactoryAccessCountMinSketchAdd : AggregationForgeFactoryAccessBase
     {
         public AggregationForgeFactoryAccessCountMinSketchAdd(
-            ExprAggMultiFunctionCountMinSketchNode parent, ExprForge addOrFrequencyEvaluator,
+            ExprAggMultiFunctionCountMinSketchNode parent,
+            ExprForge addOrFrequencyEvaluator,
             Type addOrFrequencyEvaluatorReturnType)
         {
             Parent = parent;
@@ -55,7 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         }
 
         public override AggregationAgentForge GetAggregationStateAgent(
-            ImportService importService, string statementName)
+            ImportService importService,
+            string statementName)
         {
             return new AggregationAgentCountMinSketchForge(
                 AddOrFrequencyEvaluator, Parent.OptionalFilter == null ? null : Parent.OptionalFilter.Forge);

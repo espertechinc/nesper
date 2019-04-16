@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.type
         private readonly string hook;
         private readonly HookType type;
 
-        public AnnotationHookAttribute(HookType type, string hook)
+        public AnnotationHookAttribute(
+            HookType type,
+            string hook)
         {
             this.type = type;
             this.hook = hook;

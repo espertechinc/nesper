@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// </summary>
         /// <param name="start">range start</param>
         /// <param name="end">range end</param>
-        public VirtualDataWindowKeyRange(object start, object end)
+        public VirtualDataWindowKeyRange(
+            object start,
+            object end)
         {
             Start = start;
             End = end;

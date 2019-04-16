@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class DeploymentIdNamePair
     {
-        public DeploymentIdNamePair(string deploymentId, string name)
+        public DeploymentIdNamePair(
+            string deploymentId,
+            string name)
         {
             if (name == null) {
                 throw new ArgumentException("Name is null");

@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 decimal s1 = convOne.CoerceBoxedDecimal(d1);
                 decimal s2 = convTwo.CoerceBoxedDecimal(d2);
-                return s1.Add(s2);
+                return s1 + s2;
             }
 
             public CodegenExpression Codegen(

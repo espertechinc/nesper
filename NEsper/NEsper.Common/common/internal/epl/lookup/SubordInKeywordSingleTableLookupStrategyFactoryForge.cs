@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly int _streamCountOuter;
 
         public SubordInKeywordSingleTableLookupStrategyFactoryForge(
-            bool isNWOnTrigger, int streamCountOuter, IList<ExprNode> exprNodes)
+            bool isNWOnTrigger,
+            int streamCountOuter,
+            IList<ExprNode> exprNodes)
         {
             this._streamCountOuter = streamCountOuter;
             this._isNwOnTrigger = isNWOnTrigger;
@@ -30,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
                 typeof(SubordInKeywordSingleTableLookupStrategyFactory), GetType(), classScope);

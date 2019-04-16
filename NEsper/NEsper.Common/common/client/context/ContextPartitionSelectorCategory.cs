@@ -34,8 +34,7 @@ namespace com.espertech.esper.common.client.context
             ProcLabels = procLabels;
         }
 
-        public ICollection<string> Labels
-        {
+        public ICollection<string> Labels {
             get { return ProcLabels.Invoke(); }
         }
     }

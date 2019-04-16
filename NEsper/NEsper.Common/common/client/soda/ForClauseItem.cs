@@ -52,25 +52,24 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
-            if (Keyword == null)
-            {
+            if (Keyword == null) {
                 return;
             }
+
             writer.Write("for ");
             writer.Write(Keyword.GetValueOrDefault().GetName());
-            if (Expressions.Count == 0)
-            {
+            if (Expressions.Count == 0) {
                 return;
             }
 
             writer.Write("(");
             String delimiter = "";
-            foreach (Expression child in Expressions)
-            {
+            foreach (Expression child in Expressions) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";
             }
+
             writer.Write(")");
         }
     }

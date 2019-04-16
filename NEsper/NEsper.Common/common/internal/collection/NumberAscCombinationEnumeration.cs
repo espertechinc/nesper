@@ -28,10 +28,10 @@ namespace com.espertech.esper.common.@internal.collection
 
         public NumberAscCombinationEnumeration(int n)
         {
-            if (n < 1)
-            {
+            if (n < 1) {
                 throw new ArgumentException();
             }
+
             _n = n;
             _level = n;
             _first = true;
@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public bool MoveNext()
         {
-            if (_first)
-            {
+            if (_first) {
                 _current = LevelCurrent(_n);
                 _first = false;
                 return _current != null;
@@ -61,17 +60,13 @@ namespace com.espertech.esper.common.@internal.collection
             throw new NotSupportedException();
         }
 
-        object IEnumerator.Current
-        {
+        object IEnumerator.Current {
             get { return Current; }
         }
 
-        public int[] Current
-        {
-            get
-            {
-                if (_current == null)
-                {
+        public int[] Current {
+            get {
+                if (_current == null) {
                     throw new InvalidOperationException();
                 }
 
@@ -85,37 +80,33 @@ namespace com.espertech.esper.common.@internal.collection
         {
             // determine whether there is a next for the outermost
             int last = _current.Length - 1;
-            if (_current[last] + 1 < _n)
-            {
+            if (_current[last] + 1 < _n) {
                 _current[last]++;
                 return;
             }
 
             // overflow
             int currOverflowedLevel = last - 1;
-            while (currOverflowedLevel >= 0)
-            {
+            while (currOverflowedLevel >= 0) {
                 int maxAtPosition = _n - _level + currOverflowedLevel;
-                if (_current[currOverflowedLevel] < maxAtPosition)
-                {
+                if (_current[currOverflowedLevel] < maxAtPosition) {
                     _current[currOverflowedLevel]++;
-                    for (int i = currOverflowedLevel + 1; i < _current.Length; i++)
-                    {
+                    for (int i = currOverflowedLevel + 1; i < _current.Length; i++) {
                         _current[i] = _current[i - 1] + 1;
                     }
+
                     return;
                 }
+
                 currOverflowedLevel--;
             }
 
             // bump level down
             _level--;
-            if (_level == 0)
-            {
+            if (_level == 0) {
                 _current = null;
             }
-            else
-            {
+            else {
                 _current = LevelCurrent(_level);
             }
         }
@@ -123,10 +114,10 @@ namespace com.espertech.esper.common.@internal.collection
         private static int[] LevelCurrent(int level)
         {
             var current = new int[level];
-            for (int i = 0; i < level; i++)
-            {
+            for (int i = 0; i < level; i++) {
                 current[i] = i;
             }
+
             return current;
         }
 

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
@@ -30,20 +29,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             this.processor = processor;
         }
 
-        public void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic)
+        public void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic)
         {
             var newDataMultiKey = processor.GenerateGroupKeyArrayView(newData, true);
             var oldDataMultiKey = processor.GenerateGroupKeyArrayView(oldData, false);
             ISet<object> keysSeenRemoved = new HashSet<object>();
 
             var eventsPerStreamOneStream = new EventBean[1];
-            if (newData != null)
-            {
+            if (newData != null) {
                 // apply new data to aggregates
                 var count = 0;
-                foreach (var aNewData in newData)
-                {
-                    EventBean[] eventsPerStream = { aNewData };
+                foreach (var aNewData in newData) {
+                    EventBean[] eventsPerStream = {aNewData};
                     var mk = newDataMultiKey[count];
                     repsPerGroup.Put(mk, eventsPerStream);
                     lastSeenKeys.Add(mk);
@@ -52,12 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 }
             }
 
-            if (oldData != null)
-            {
+            if (oldData != null) {
                 // apply old data to aggregates
                 var count = 0;
-                foreach (var anOldData in oldData)
-                {
+                foreach (var anOldData in oldData) {
                     var mk = oldDataMultiKey[count];
                     lastSeenKeys.Add(mk);
                     keysSeenRemoved.Add(mk);
@@ -68,8 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 }
             }
 
-            if (processor.IsSelectRStream)
-            {
+            if (processor.IsSelectRStream) {
                 processor.GenerateOutputBatchedViewUnkeyed(
                     oldData, oldDataMultiKey, false, isGenerateSynthetic, eventsOld, null, eventsPerStreamOneStream);
             }
@@ -77,30 +74,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             processor.GenerateOutputBatchedViewUnkeyed(
                 newData, newDataMultiKey, true, isGenerateSynthetic, eventsNew, null, eventsPerStreamOneStream);
 
-            foreach (var keySeen in keysSeenRemoved)
-            {
+            foreach (var keySeen in keysSeenRemoved) {
                 var newEvent = processor.GenerateOutputBatchedSingle(
                     keySeen, repsPerGroup.Get(keySeen), true, isGenerateSynthetic);
-                if (newEvent != null)
-                {
+                if (newEvent != null) {
                     eventsNew.Add(newEvent);
                 }
             }
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newData, ISet<MultiKey<EventBean>> oldData, bool isGenerateSynthetic)
+            ISet<MultiKey<EventBean>> newData,
+            ISet<MultiKey<EventBean>> oldData,
+            bool isGenerateSynthetic)
         {
             var newDataMultiKey = processor.GenerateGroupKeyArrayJoin(newData, true);
             var oldDataMultiKey = processor.GenerateGroupKeyArrayJoin(oldData, false);
             ISet<object> keysSeenRemoved = new HashSet<object>();
 
-            if (newData != null)
-            {
+            if (newData != null) {
                 // apply new data to aggregates
                 var count = 0;
-                foreach (var aNewData in newData)
-                {
+                foreach (var aNewData in newData) {
                     var mk = newDataMultiKey[count];
                     repsPerGroup.Put(mk, aNewData.Array);
                     lastSeenKeys.Add(mk);
@@ -109,12 +104,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 }
             }
 
-            if (oldData != null)
-            {
+            if (oldData != null) {
                 // apply old data to aggregates
                 var count = 0;
-                foreach (var anOldData in oldData)
-                {
+                foreach (var anOldData in oldData) {
                     var mk = oldDataMultiKey[count];
                     lastSeenKeys.Add(mk);
                     keysSeenRemoved.Add(mk);
@@ -124,8 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 }
             }
 
-            if (processor.IsSelectRStream)
-            {
+            if (processor.IsSelectRStream) {
                 processor.GenerateOutputBatchedJoinUnkeyed(
                     oldData, oldDataMultiKey, false, isGenerateSynthetic, eventsOld, null);
             }
@@ -133,12 +125,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             processor.GenerateOutputBatchedJoinUnkeyed(
                 newData, newDataMultiKey, false, isGenerateSynthetic, eventsNew, null);
 
-            foreach (var keySeen in keysSeenRemoved)
-            {
+            foreach (var keySeen in keysSeenRemoved) {
                 var newEvent = processor.GenerateOutputBatchedSingle(
                     keySeen, repsPerGroup.Get(keySeen), true, isGenerateSynthetic);
-                if (newEvent != null)
-                {
+                if (newEvent != null) {
                     eventsNew.Add(newEvent);
                 }
             }
@@ -167,16 +157,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         private UniformPair<EventBean[]> Output(bool isSynthesize)
         {
             // generate remaining key events
-            foreach (var entry in repsPerGroup)
-            {
-                if (lastSeenKeys.Contains(entry.Key))
-                {
+            foreach (var entry in repsPerGroup) {
+                if (lastSeenKeys.Contains(entry.Key)) {
                     continue;
                 }
 
                 var newEvent = processor.GenerateOutputBatchedSingle(entry.Key, entry.Value, true, isSynthesize);
-                if (newEvent != null)
-                {
+                if (newEvent != null) {
                     eventsNew.Add(newEvent);
                 }
             }
@@ -185,15 +172,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             var newEventsArr = eventsNew.ToArrayOrNull();
             EventBean[] oldEventsArr = null;
-            if (processor.IsSelectRStream)
-            {
+            if (processor.IsSelectRStream) {
                 oldEventsArr = eventsOld.ToArrayOrNull();
             }
 
             eventsNew.Clear();
             eventsOld.Clear();
-            if (newEventsArr == null && oldEventsArr == null)
-            {
+            if (newEventsArr == null && oldEventsArr == null) {
                 return null;
             }
 

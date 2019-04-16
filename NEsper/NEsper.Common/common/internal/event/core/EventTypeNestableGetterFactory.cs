@@ -19,69 +19,116 @@ namespace com.espertech.esper.common.@internal.@event.core
     public interface EventTypeNestableGetterFactory
     {
         EventPropertyGetterSPI GetPropertyProvidedGetter(
-            IDictionary<string, object> nestableTypes, string propertyName, Property prop,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory);
+            IDictionary<string, object> nestableTypes,
+            string propertyName,
+            Property prop,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         EventPropertyGetterMappedSPI GetPropertyProvidedGetterMap(
-            IDictionary<string, object> nestableTypes, string mappedPropertyName, MappedProperty mappedProperty,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory);
+            IDictionary<string, object> nestableTypes,
+            string mappedPropertyName,
+            MappedProperty mappedProperty,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         EventPropertyGetterIndexedSPI GetPropertyProvidedGetterIndexed(
-            IDictionary<string, object> nestableTypes, string indexedPropertyName, IndexedProperty indexedProperty,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory);
+            IDictionary<string, object> nestableTypes,
+            string indexedPropertyName,
+            IndexedProperty indexedProperty,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         EventPropertyGetterSPI GetGetterProperty(
-            string name, BeanEventType nativeFragmentType, EventBeanTypedEventFactory eventBeanTypedEventFactory);
+            string name,
+            BeanEventType nativeFragmentType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory);
 
-        EventPropertyGetterSPI GetGetterEventBean(string name, Type underlyingType);
+        EventPropertyGetterSPI GetGetterEventBean(
+            string name,
+            Type underlyingType);
 
-        EventPropertyGetterSPI GetGetterEventBeanArray(string name, EventType eventType);
+        EventPropertyGetterSPI GetGetterEventBeanArray(
+            string name,
+            EventType eventType);
 
         EventPropertyGetterSPI GetGetterBeanNested(
-            string name, EventType eventType, EventBeanTypedEventFactory eventBeanTypedEventFactory);
+            string name,
+            EventType eventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory);
 
         EventPropertyGetterSPI GetGetterBeanNestedArray(
-            string name, EventType eventType, EventBeanTypedEventFactory eventBeanTypedEventFactory);
+            string name,
+            EventType eventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory);
 
-        EventPropertyGetterSPI GetGetterIndexedEventBean(string propertyNameAtomic, int index);
+        EventPropertyGetterSPI GetGetterIndexedEventBean(
+            string propertyNameAtomic,
+            int index);
 
         EventPropertyGetterSPI GetGetterIndexedUnderlyingArray(
-            string propertyNameAtomic, int index, EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            string propertyNameAtomic,
+            int index,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             EventType innerType);
 
         EventPropertyGetterSPI GetGetterIndexedPOJO(
-            string propertyNameAtomic, int index, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            Type componentType, BeanEventTypeFactory beanEventTypeFactory);
+            string propertyNameAtomic,
+            int index,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            Type componentType,
+            BeanEventTypeFactory beanEventTypeFactory);
 
-        EventPropertyGetterSPI GetGetterMappedProperty(string propertyNameAtomic, string key);
+        EventPropertyGetterSPI GetGetterMappedProperty(
+            string propertyNameAtomic,
+            string key);
 
         EventPropertyGetterSPI GetGetterNestedEntryBeanArray(
-            string propertyNameAtomic, int index, EventPropertyGetter getter, EventType innerType,
+            string propertyNameAtomic,
+            int index,
+            EventPropertyGetter getter,
+            EventType innerType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory);
 
         EventPropertyGetterSPI GetGetterIndexedEntryEventBeanArrayElement(
-            string propertyNameAtomic, int index, EventPropertyGetterSPI nestedGetter);
+            string propertyNameAtomic,
+            int index,
+            EventPropertyGetterSPI nestedGetter);
 
         EventPropertyGetterSPI GetGetterIndexedEntryPOJO(
-            string propertyNameAtomic, int index, BeanEventPropertyGetter nestedGetter,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory,
+            string propertyNameAtomic,
+            int index,
+            BeanEventPropertyGetter nestedGetter,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
             Type propertyTypeGetter);
 
-        EventPropertyGetterSPI GetGetterNestedMapProp(string propertyName, MapEventPropertyGetter getterNestedMap);
+        EventPropertyGetterSPI GetGetterNestedMapProp(
+            string propertyName,
+            MapEventPropertyGetter getterNestedMap);
 
         EventPropertyGetterSPI GetGetterNestedPOJOProp(
-            string propertyName, BeanEventPropertyGetter nestedGetter,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory,
-            Type nestedReturnType, Type nestedComponentType);
+            string propertyName,
+            BeanEventPropertyGetter nestedGetter,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
+            Type nestedReturnType,
+            Type nestedComponentType);
 
-        EventPropertyGetterSPI GetGetterNestedEventBean(string propertyName, EventPropertyGetterSPI nestedGetter);
+        EventPropertyGetterSPI GetGetterNestedEventBean(
+            string propertyName,
+            EventPropertyGetterSPI nestedGetter);
 
         EventPropertyGetterSPI GetGetterNestedPropertyProvidedGetterDynamic(
-            IDictionary<string, object> nestableTypes, string propertyName, EventPropertyGetter nestedGetter,
+            IDictionary<string, object> nestableTypes,
+            string propertyName,
+            EventPropertyGetter nestedGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory);
 
         EventPropertyGetterSPI GetGetterNestedEntryBean(
-            string propertyName, EventPropertyGetter innerGetter, EventType innerType,
+            string propertyName,
+            EventPropertyGetter innerGetter,
+            EventType innerType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory);
     }
 } // end of namespace

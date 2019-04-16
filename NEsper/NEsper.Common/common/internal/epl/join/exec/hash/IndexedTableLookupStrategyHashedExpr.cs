@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -22,42 +21,50 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.exec.hash
 {
-	public class IndexedTableLookupStrategyHashedExpr : JoinExecTableLookupStrategy {
-	    private readonly IndexedTableLookupPlanHashedOnlyFactory factory;
-	    private readonly PropertyHashedEventTable index;
-	    private readonly EventBean[] eventsPerStream;
+    public class IndexedTableLookupStrategyHashedExpr : JoinExecTableLookupStrategy
+    {
+        private readonly IndexedTableLookupPlanHashedOnlyFactory factory;
+        private readonly PropertyHashedEventTable index;
+        private readonly EventBean[] eventsPerStream;
 
-	    public IndexedTableLookupStrategyHashedExpr(IndexedTableLookupPlanHashedOnlyFactory factory, PropertyHashedEventTable index, int numStreams) {
-	        this.factory = factory;
-	        this.index = index;
-	        this.eventsPerStream = new EventBean[numStreams + 1];
-	    }
+        public IndexedTableLookupStrategyHashedExpr(
+            IndexedTableLookupPlanHashedOnlyFactory factory,
+            PropertyHashedEventTable index,
+            int numStreams)
+        {
+            this.factory = factory;
+            this.index = index;
+            this.eventsPerStream = new EventBean[numStreams + 1];
+        }
 
-	    public PropertyHashedEventTable Index
-	    {
-	        get => index;
-	    }
+        public PropertyHashedEventTable Index {
+            get => index;
+        }
 
-	    public ISet<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext) {
-	        InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-	        instrumentationCommon.QIndexJoinLookup(this, index);
+        public ICollection<EventBean> Lookup(
+            EventBean theEvent,
+            Cursor cursor,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            instrumentationCommon.QIndexJoinLookup(this, index);
 
-	        eventsPerStream[factory.LookupStream] = theEvent;
-	        object key = factory.ExprEvaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-	        ISet<EventBean> result = index.Lookup(key);
+            eventsPerStream[factory.LookupStream] = theEvent;
+            object key = factory.ExprEvaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            ISet<EventBean> result = index.Lookup(key);
 
-	        instrumentationCommon.AIndexJoinLookup(result, key);
-	        return result;
-	    }
+            instrumentationCommon.AIndexJoinLookup(result, key);
+            return result;
+        }
 
-	    public override string ToString() {
-	        return "IndexedTableLookupStrategySingleExpr evaluation" +
-	                " index=(" + index + ')';
-	    }
+        public override string ToString()
+        {
+            return "IndexedTableLookupStrategySingleExpr evaluation" +
+                   " index=(" + index + ')';
+        }
 
-	    public LookupStrategyType LookupStrategyType
-	    {
-	        get => LookupStrategyType.MULTIEXPR;
-	    }
-	}
+        public LookupStrategyType LookupStrategyType {
+            get => LookupStrategyType.MULTIEXPR;
+        }
+    }
 } // end of namespace

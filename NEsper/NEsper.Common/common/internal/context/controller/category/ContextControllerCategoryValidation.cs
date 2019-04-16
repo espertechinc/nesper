@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         }
 
         public void ValidateStatement(
-            string contextName, StatementSpecCompiled spec, StatementCompileTimeServices compileTimeServices)
+            string contextName,
+            StatementSpecCompiled spec,
+            StatementCompileTimeServices compileTimeServices)
         {
             var streamAnalysis = StatementSpecCompiledAnalyzer.AnalyzeFilters(spec);
             var filters = streamAnalysis.Filters;

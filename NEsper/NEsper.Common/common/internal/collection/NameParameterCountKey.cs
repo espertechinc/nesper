@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.collection
     /// </summary>
     public class NameParameterCountKey
     {
-        public NameParameterCountKey(string name, int count)
+        public NameParameterCountKey(
+            string name,
+            int count)
         {
             Name = name;
             Count = count;
@@ -25,13 +27,11 @@ namespace com.espertech.esper.common.@internal.collection
 
         public bool Equals(NameParameterCountKey other)
         {
-            if (ReferenceEquals(null, other))
-            {
+            if (ReferenceEquals(null, other)) {
                 return false;
             }
 
-            if (ReferenceEquals(this, other))
-            {
+            if (ReferenceEquals(this, other)) {
                 return true;
             }
 
@@ -50,22 +50,19 @@ namespace com.espertech.esper.common.@internal.collection
         /// <filterpriority>2</filterpriority>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
+            if (ReferenceEquals(null, obj)) {
                 return false;
             }
 
-            if (ReferenceEquals(this, obj))
-            {
+            if (ReferenceEquals(this, obj)) {
                 return true;
             }
 
-            if (obj.GetType() != typeof(NameParameterCountKey))
-            {
+            if (obj.GetType() != typeof(NameParameterCountKey)) {
                 return false;
             }
 
-            return Equals((NameParameterCountKey)obj);
+            return Equals((NameParameterCountKey) obj);
         }
 
         /// <summary>
@@ -77,8 +74,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <filterpriority>2</filterpriority>
         public override int GetHashCode()
         {
-            unchecked
-            {
+            unchecked {
                 return (Count * 397) ^ (Name != null ? Name.GetHashCode() : 0);
             }
         }

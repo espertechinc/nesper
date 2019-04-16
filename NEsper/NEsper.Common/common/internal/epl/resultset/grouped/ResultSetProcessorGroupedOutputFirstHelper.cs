@@ -15,7 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
     public interface ResultSetProcessorGroupedOutputFirstHelper : ResultSetProcessorOutputHelper
     {
         OutputConditionPolled GetOrAllocate(
-            object mk, AgentInstanceContext agentInstanceContext,
+            object mk,
+            AgentInstanceContext agentInstanceContext,
             OutputConditionPolledFactory optionalOutputFirstConditionFactory);
 
         void Remove(object key);

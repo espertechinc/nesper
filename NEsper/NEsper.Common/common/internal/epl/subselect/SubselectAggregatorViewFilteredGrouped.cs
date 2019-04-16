@@ -15,13 +15,18 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     public class SubselectAggregatorViewFilteredGrouped : SubselectAggregatorViewBase
     {
         public SubselectAggregatorViewFilteredGrouped(
-            AggregationService aggregationService, ExprEvaluator optionalFilterExpr,
-            ExprEvaluatorContext exprEvaluatorContext, ExprEvaluator groupKeys) : base(
-            aggregationService, optionalFilterExpr, exprEvaluatorContext, groupKeys)
+            AggregationService aggregationService,
+            ExprEvaluator optionalFilterExpr,
+            ExprEvaluatorContext exprEvaluatorContext,
+            ExprEvaluator groupKeys)
+            : base(
+                aggregationService, optionalFilterExpr, exprEvaluatorContext, groupKeys)
         {
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             exprEvaluatorContext.InstrumentationProvider.QSubselectAggregation();
 

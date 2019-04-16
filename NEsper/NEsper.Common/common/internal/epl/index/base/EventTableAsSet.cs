@@ -8,14 +8,14 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
 {
-	public interface EventTableAsSet : EventTable {
-	    ISet<EventBean> AllValues();
-	}
+    public interface EventTableAsSet : EventTable
+    {
+        ISet<EventBean> AllValues();
+    }
 } // end of namespace

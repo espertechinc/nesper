@@ -16,6 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
     {
         string ToQueryPlan();
 
-        CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

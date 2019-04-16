@@ -58,9 +58,14 @@ namespace com.espertech.esper.common.@internal.view.expression
             set => scheduleCallbackId = value;
         }
 
-        internal abstract void MakeSetters(CodegenExpressionRef factory, CodegenBlock block);
+        internal abstract void MakeSetters(
+            CodegenExpressionRef factory,
+            CodegenBlock block);
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
             this.streamNumber = streamNumber;
@@ -114,16 +119,16 @@ namespace com.espertech.esper.common.@internal.view.expression
                 try {
                     aggregationServiceForgeDesc = AggregationServiceFactoryFactory.GetService(
                         Collections.GetEmptyList<ExprAggregateNode>(),
-                        Collections.GetEmptyMap<ExprNode,string>(),
+                        Collections.GetEmptyMap<ExprNode, string>(),
                         Collections.GetEmptyList<ExprDeclaredNode>(), null, aggregateNodes,
                         Collections.GetEmptyList<ExprAggregateNode>(),
                         Collections.GetEmptyList<ExprAggregateNodeGroupKey>(),
                         false,
-                        viewForgeEnv.Annotations, 
+                        viewForgeEnv.Annotations,
                         viewForgeEnv.VariableCompileTimeResolver, false, null, null,
-                        streamTypeService.EventTypes, null, 
+                        streamTypeService.EventTypes, null,
                         viewForgeEnv.ContextName, null, null, false, false, false,
-                        viewForgeEnv.ImportServiceCompileTime, 
+                        viewForgeEnv.ImportServiceCompileTime,
                         viewForgeEnv.OptionalStatementName);
                 }
                 catch (ExprValidationException ex) {
@@ -133,7 +138,9 @@ namespace com.espertech.esper.common.@internal.view.expression
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             if (scheduleCallbackId == -1) {
@@ -164,7 +171,9 @@ namespace com.espertech.esper.common.@internal.view.expression
         }
 
         private CodegenExpression MakeAggregationService(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols)
         {
             if (aggregationServiceForgeDesc == null) {
                 return ConstantNull();

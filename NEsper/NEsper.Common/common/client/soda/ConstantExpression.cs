@@ -44,7 +44,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="constant">value</param>
         /// <param name="constantType">type</param>
-        public ConstantExpression(object constant, string constantType)
+        public ConstantExpression(
+            object constant,
+            string constantType)
         {
             this.constant = constant;
             this.constantType = constantType;

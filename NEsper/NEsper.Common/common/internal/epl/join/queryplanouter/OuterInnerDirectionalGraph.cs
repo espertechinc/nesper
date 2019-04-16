@@ -10,7 +10,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
@@ -20,7 +19,6 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
     /// To add a full outer join between streams 0 and 1 use "Add(0, 1)" and "Add(1, 0)".
     /// To add a right outer join between streams 0 and 1 use "Add(1, 0)".
     /// </summary>
-
     public class OuterInnerDirectionalGraph
     {
         private readonly IDictionary<int, ICollection<int>> _streamToInnerMap;
@@ -30,7 +28,6 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         /// <summary> Ctor.</summary>
         /// <param name="numStreams">number of streams
         /// </param>
-
         public OuterInnerDirectionalGraph(int numStreams)
         {
             _numStreams = numStreams;
@@ -45,21 +42,21 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         /// </param>
         /// <returns> graph object
         /// </returns>
-        public virtual OuterInnerDirectionalGraph Add(int outerStream, int innerStream)
+        public virtual OuterInnerDirectionalGraph Add(
+            int outerStream,
+            int innerStream)
         {
             CheckArgs(outerStream, innerStream);
 
             // add set
-            ICollection<int> innerSet = _streamToInnerMap.Get( outerStream, null ) ;
-            if ( innerSet == null )
-            {
+            ICollection<int> innerSet = _streamToInnerMap.Get(outerStream, null);
+            if (innerSet == null) {
                 innerSet = new HashSet<int>();
                 _streamToInnerMap[outerStream] = innerSet;
             }
 
             // populate
-            if (innerSet.Contains(innerStream))
-            {
+            if (innerSet.Contains(innerStream)) {
                 throw new ArgumentException("Inner stream already in collection");
             }
 
@@ -89,19 +86,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             CheckArgs(innerStream);
 
             ICollection<int> result = new HashSet<int>();
-            foreach( KeyValuePair<int, ICollection<int>> keyValuePair in _streamToInnerMap )
-            {
+            foreach (KeyValuePair<int, ICollection<int>> keyValuePair in _streamToInnerMap) {
                 int key = keyValuePair.Key;
                 ICollection<int> set = keyValuePair.Value;
 
-                if (set.Contains(innerStream))
-                {
+                if (set.Contains(innerStream)) {
                     result.Add(key);
                 }
             }
 
-            if (result.Count == 0)
-            {
+            if (result.Count == 0) {
                 return null;
             }
 
@@ -115,15 +109,17 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         /// </param>
         /// <returns> true if outer-inner relationship between streams, false if not
         /// </returns>
-        public virtual bool IsInner(int outerStream, int innerStream)
+        public virtual bool IsInner(
+            int outerStream,
+            int innerStream)
         {
             CheckArgs(outerStream, innerStream);
 
             ICollection<int> innerSet = _streamToInnerMap.Get(outerStream, null);
-            if (innerSet == null)
-            {
+            if (innerSet == null) {
                 return false;
             }
+
             return innerSet.Contains(innerStream);
         }
 
@@ -134,14 +130,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         /// </param>
         /// <returns> true if outer-inner relationship between streams, false if not
         /// </returns>
-        public virtual bool IsOuter(int outerStream, int innerStream)
+        public virtual bool IsOuter(
+            int outerStream,
+            int innerStream)
         {
             CheckArgs(outerStream, innerStream);
             ICollection<int> outerStreams = GetOuter(innerStream);
-            if (outerStreams == null)
-            {
+            if (outerStreams == null) {
                 return false;
             }
+
             return outerStreams.Contains(outerStream);
         }
 
@@ -153,8 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             StringBuilder buffer = new StringBuilder();
             String delimiter = "";
 
-            foreach( KeyValuePair<int, ICollection<int>> kvPair in _streamToInnerMap )
-            {
+            foreach (KeyValuePair<int, ICollection<int>> kvPair in _streamToInnerMap) {
                 ICollection<int> set = kvPair.Value;
 
                 buffer.Append(delimiter);
@@ -168,44 +165,47 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             return buffer.ToString();
         }
 
-        public IDictionary<int, ICollection<int>> UnqualifiedNavigableStreams
-        {
+        public IDictionary<int, ICollection<int>> UnqualifiedNavigableStreams {
             get { return _unqualifiedNavigableStreams; }
         }
 
-        public void AddUnqualifiedNavigable(int streamOne, int streamTwo)
+        public void AddUnqualifiedNavigable(
+            int streamOne,
+            int streamTwo)
         {
             AddUnqualifiedInternal(streamOne, streamTwo);
             AddUnqualifiedInternal(streamTwo, streamOne);
         }
 
-        private void AddUnqualifiedInternal(int streamOne, int streamTwo)
+        private void AddUnqualifiedInternal(
+            int streamOne,
+            int streamTwo)
         {
             var set = _unqualifiedNavigableStreams.Get(streamOne);
-            if (set == null)
-            {
+            if (set == null) {
                 set = new HashSet<int>();
                 _unqualifiedNavigableStreams.Put(streamOne, set);
             }
+
             set.Add(streamTwo);
         }
 
         private void CheckArgs(int stream)
         {
-            if ((stream >= _numStreams) || (stream < 0))
-            {
+            if ((stream >= _numStreams) || (stream < 0)) {
                 throw new ArgumentException("Out of bounds parameter for stream num");
             }
         }
 
-        private void CheckArgs(int outerStream, int innerStream)
+        private void CheckArgs(
+            int outerStream,
+            int innerStream)
         {
-            if ((outerStream >= _numStreams) || (innerStream >= _numStreams) || (outerStream < 0) || (innerStream < 0))
-            {
+            if ((outerStream >= _numStreams) || (innerStream >= _numStreams) || (outerStream < 0) || (innerStream < 0)) {
                 throw new ArgumentException("Out of bounds parameter for inner or outer stream num");
             }
-            if (outerStream == innerStream)
-            {
+
+            if (outerStream == innerStream) {
                 throw new ArgumentException("Unexpected equal stream num for inner and outer stream");
             }
         }

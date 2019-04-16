@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -25,7 +24,6 @@ using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.filter;
@@ -35,7 +33,7 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
-    public class StatementAgentInstanceFactorySelect : StatementAgentInstanceFactory
+    public partial class StatementAgentInstanceFactorySelect : StatementAgentInstanceFactory
     {
         private JoinSetComposerPrototype joinSetComposerPrototype;
         private bool orderByWithoutOutputRateLimit;
@@ -52,68 +50,55 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         private ExprEvaluator whereClauseEvaluator;
         private string whereClauseEvaluatorTextForAudit;
 
-        public ViewableActivator[] ViewableActivators
-        {
+        public ViewableActivator[] ViewableActivators {
             set => viewableActivators = value;
         }
 
-        public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider
-        {
+        public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider {
             set => resultSetProcessorFactoryProvider = value;
         }
 
-        public ViewFactory[][] ViewFactories
-        {
+        public ViewFactory[][] ViewFactories {
             set => viewFactories = value;
         }
 
-        public OutputProcessViewFactoryProvider OutputProcessViewFactoryProvider
-        {
+        public OutputProcessViewFactoryProvider OutputProcessViewFactoryProvider {
             set => outputProcessViewFactoryProvider = value;
         }
 
-        public ViewResourceDelegateDesc[] ViewResourceDelegates
-        {
+        public ViewResourceDelegateDesc[] ViewResourceDelegates {
             set => viewResourceDelegates = value;
         }
 
-        public ExprEvaluator WhereClauseEvaluator
-        {
+        public ExprEvaluator WhereClauseEvaluator {
             set => whereClauseEvaluator = value;
         }
 
-        public string[] StreamNames
-        {
+        public string[] StreamNames {
             set => streamNames = value;
         }
 
-        public JoinSetComposerPrototype JoinSetComposerPrototype
-        {
+        public JoinSetComposerPrototype JoinSetComposerPrototype {
             set => joinSetComposerPrototype = value;
         }
 
-        public IDictionary<int, SubSelectFactory> Subselects
-        {
+        public IDictionary<int, SubSelectFactory> Subselects {
             set => subselects = value;
         }
 
-        public bool OrderByWithoutOutputRateLimit
-        {
+        public bool OrderByWithoutOutputRateLimit {
             set => orderByWithoutOutputRateLimit = value;
         }
 
-        public bool IsUnidirectionalJoin
-        {
+        public bool IsUnidirectionalJoin {
             set => unidirectionalJoin = value;
         }
 
-        public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses
-        {
+        public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses {
             set => tableAccesses = value;
         }
 
-        public string WhereClauseEvaluatorTextForAudit
-        {
+        public string WhereClauseEvaluatorTextForAudit {
             set => whereClauseEvaluatorTextForAudit = value;
         }
 
@@ -130,13 +115,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         }
 
         public StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
         }
 
         public StatementAgentInstanceFactoryResult NewContext(
-            AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
         {
             IList<AgentInstanceStopCallback> stopCallbacks = new List<AgentInstanceStopCallback>();
             IList<StatementAgentInstancePreload> preloadList = new List<StatementAgentInstancePreload>();
@@ -149,8 +136,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             var suppressSameEventMatches = false;
             var discardPartialsOnMatch = false;
 
-            for (var stream = 0; stream < numStreams; stream++)
-            {
+            for (var stream = 0; stream < numStreams; stream++) {
                 var activationResult = viewableActivators[stream].Activate(
                     agentInstanceContext, false, isRecoveringResilient);
                 stopCallbacks.Add(activationResult.StopCallback);
@@ -159,8 +145,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 suppressSameEventMatches = activationResult.IsSuppressSameEventMatches;
                 discardPartialsOnMatch = activationResult.IsDiscardPartialsOnMatch;
 
-                if (stream == 0)
-                {
+                if (stream == 0) {
                     evalRootMatchRemover = activationResult.OptEvalRootMatchRemover;
                 }
             }
@@ -171,8 +156,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             var previousGetterStrategies = new PreviousGetterStrategy[numStreams];
             RowRecogPreviousStrategy rowRecogPreviousStrategy = null;
 
-            for (var i = 0; i < numStreams; i++)
-            {
+            for (var i = 0; i < numStreams; i++) {
                 viewFactoryChainContexts[i] = AgentInstanceViewFactoryChainContext.Create(
                     viewFactories[i], agentInstanceContext, viewResourceDelegates[i]);
                 priorEvalStrategies[i] = PriorHelper.ToStrategy(viewFactoryChainContexts[i]);
@@ -182,8 +166,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             // materialize views
             var topViews = new Viewable[numStreams];
             var streamViews = new Viewable[numStreams];
-            for (var stream = 0; stream < numStreams; stream++)
-            {
+            for (var stream = 0; stream < numStreams; stream++) {
                 var viewables = ViewFactoryUtil.Materialize(
                     viewFactories[stream], eventStreamParentViewable[stream], viewFactoryChainContexts[stream],
                     stopCallbacks);
@@ -193,8 +176,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // determine match-recognize "previous"-node strategy (none if not present, or one handling and number of nodes)
             var matchRecognize = RowRecogHelper.RecursiveFindRegexService(topViews[0]);
-            if (matchRecognize != null)
-            {
+            if (matchRecognize != null) {
                 rowRecogPreviousStrategy = matchRecognize.PreviousEvaluationStrategy;
                 stopCallbacks.Add(matchRecognize);
             }
@@ -210,10 +192,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             var processorPair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
                 resultSetProcessorFactoryProvider, agentInstanceContext, false, null);
             stopCallbacks.Add(
-                new ProxyAgentInstanceStopCallback
-                {
-                    ProcStop = services =>
-                    {
+                new ProxyAgentInstanceStopCallback {
+                    ProcStop = services => {
                         processorPair.First.Stop();
                         processorPair.Second.Stop();
                     }
@@ -223,16 +203,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             JoinSetComposer joinSetComposer;
             JoinPreloadMethod joinPreloadMethod;
             OutputProcessView outputProcessView;
-            if (streamViews.Length == 1)
-            {
+            if (streamViews.Length == 1) {
                 outputProcessView = HandleSimpleSelect(
                     streamViews, processorPair.First, evalRootMatchRemover, suppressSameEventMatches,
                     discardPartialsOnMatch, agentInstanceContext);
                 joinSetComposer = null;
                 joinPreloadMethod = null;
             }
-            else
-            {
+            else {
                 var joinPlanResult = HandleJoin(
                     streamViews, processorPair.First,
                     agentInstanceContext, stopCallbacks, isRecoveringResilient);
@@ -244,9 +222,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             stopCallbacks.Add(outputProcessView);
 
             // handle preloads
-            if (!isRecoveringResilient)
-            {
-                bool aggregated = resultSetProcessorFactoryProvider.ResultSetProcessorType.IsAggregated;
+            if (!isRecoveringResilient) {
+                bool aggregated = resultSetProcessorFactoryProvider.ResultSetProcessorType.IsAggregated();
                 HandlePreloads(
                     preloadList, aggregated, joinPreloadMethod, activationResults, agentInstanceContext,
                     processorPair.First);
@@ -263,17 +240,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
         public EventType StatementEventType => resultSetProcessorFactoryProvider.ResultEventType;
 
-        public AIRegistryRequirements RegistryRequirements
-        {
-            get
-            {
+        public AIRegistryRequirements RegistryRequirements {
+            get {
                 var hasPrior = false;
                 var hasPrevious = false;
-                for (var i = 0; i < viewResourceDelegates.Length; i++)
-                {
+                for (var i = 0; i < viewResourceDelegates.Length; i++) {
                     if (viewResourceDelegates[i].PriorRequests != null &&
-                        !viewResourceDelegates[i].PriorRequests.IsEmpty())
-                    {
+                        !viewResourceDelegates[i].PriorRequests.IsEmpty()) {
                         hasPrior = true;
                     }
 
@@ -281,25 +254,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 }
 
                 bool[] prior = null;
-                if (hasPrior)
-                {
+                if (hasPrior) {
                     prior = new bool[viewResourceDelegates.Length];
-                    for (var i = 0; i < viewResourceDelegates.Length; i++)
-                    {
+                    for (var i = 0; i < viewResourceDelegates.Length; i++) {
                         if (viewResourceDelegates[i].PriorRequests != null &&
-                            !viewResourceDelegates[i].PriorRequests.IsEmpty())
-                        {
+                            !viewResourceDelegates[i].PriorRequests.IsEmpty()) {
                             prior[i] = true;
                         }
                     }
                 }
 
                 bool[] previous = null;
-                if (hasPrevious)
-                {
+                if (hasPrevious) {
                     previous = new bool[viewResourceDelegates.Length];
-                    for (var i = 0; i < viewResourceDelegates.Length; i++)
-                    {
+                    for (var i = 0; i < viewResourceDelegates.Length; i++) {
                         previous[i] = viewResourceDelegates[i].HasPrevious;
                     }
                 }
@@ -307,11 +275,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 var subqueries = AIRegistryRequirements.GetSubqueryRequirements(subselects);
 
                 var hasRowRecogWithPrevious = false;
-                foreach (var viewFactory in viewFactories[0])
-                {
-                    if (viewFactory is RowRecogNFAViewFactory)
-                    {
-                        var recog = (RowRecogNFAViewFactory)viewFactory;
+                foreach (var viewFactory in viewFactories[0]) {
+                    if (viewFactory is RowRecogNFAViewFactory) {
+                        var recog = (RowRecogNFAViewFactory) viewFactory;
                         hasRowRecogWithPrevious = recog.Desc.PreviousRandomAccessIndexes != null;
                     }
                 }
@@ -323,15 +289,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         }
 
         private OutputProcessView HandleSimpleSelect(
-            Viewable[] streamViews, ResultSetProcessor resultSetProcessor, EvalRootMatchRemover evalRootMatchRemover,
-            bool suppressSameEventMatches, bool discardPartialsOnMatch, AgentInstanceContext agentInstanceContext)
+            Viewable[] streamViews,
+            ResultSetProcessor resultSetProcessor,
+            EvalRootMatchRemover evalRootMatchRemover,
+            bool suppressSameEventMatches,
+            bool discardPartialsOnMatch,
+            AgentInstanceContext agentInstanceContext)
         {
             Deque<EPStatementDispatch> dispatches = null;
             var finalView = streamViews[0];
 
             // where-clause
-            if (whereClauseEvaluator != null)
-            {
+            if (whereClauseEvaluator != null) {
                 var filterView = new FilterExprView(
                     whereClauseEvaluator, agentInstanceContext, whereClauseEvaluatorTextForAudit);
                 finalView.Child = filterView;
@@ -339,8 +308,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 finalView = filterView;
             }
 
-            if (evalRootMatchRemover != null && (suppressSameEventMatches || discardPartialsOnMatch))
-            {
+            if (evalRootMatchRemover != null && (suppressSameEventMatches || discardPartialsOnMatch)) {
                 var v = new PatternRemoveDispatchView(
                     evalRootMatchRemover, suppressSameEventMatches, discardPartialsOnMatch);
                 dispatches = new ArrayDeque<EPStatementDispatch>(2);
@@ -351,11 +319,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             }
 
             // for ordered deliver without output limit/buffer
-            if (orderByWithoutOutputRateLimit)
-            {
+            if (orderByWithoutOutputRateLimit) {
                 var bf = new SingleStreamDispatchView();
-                if (dispatches == null)
-                {
+                if (dispatches == null) {
                     dispatches = new ArrayDeque<EPStatementDispatch>(1);
                 }
 
@@ -365,22 +331,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 finalView = bf;
             }
 
-            if (dispatches != null)
-            {
+            if (dispatches != null) {
                 var handle = agentInstanceContext.EpStatementAgentInstanceHandle;
-                if (dispatches.Count == 1)
-                {
+                if (dispatches.Count == 1) {
                     handle.OptionalDispatchable = dispatches.First;
                 }
-                else
-                {
+                else {
                     var dispatchArray = dispatches.ToArray();
-                    handle.OptionalDispatchable = new ProxyEPStatementDispatch
-                    {
-                        ProcExecute = () =>
-                        {
-                            foreach (var dispatch in dispatchArray)
-                            {
+                    handle.OptionalDispatchable = new ProxyEPStatementDispatch {
+                        ProcExecute = () => {
+                            foreach (var dispatch in dispatchArray) {
                                 dispatch.Execute();
                             }
                         }
@@ -408,8 +368,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 streamViews, false, agentInstanceContext, isRecoveringResilient);
 
             stopCallbacks.Add(
-                new ProxyAgentInstanceStopCallback
-                {
+                new ProxyAgentInstanceStopCallback {
                     ProcStop = services => { joinSetComposerDesc.JoinSetComposer.Destroy(); }
                 });
 
@@ -431,17 +390,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable = joinStatementDispatch;
 
             JoinPreloadMethod preloadMethod;
-            if (unidirectionalJoin || !joinSetComposerDesc.JoinSetComposer.AllowsInit())
-            {
+            if (unidirectionalJoin || !joinSetComposerDesc.JoinSetComposer.AllowsInit()) {
                 preloadMethod = new JoinPreloadMethodNull();
             }
-            else
-            {
+            else {
                 preloadMethod = new JoinPreloadMethodImpl(streamNames.Length, joinSetComposerDesc.JoinSetComposer);
             }
 
-            for (var i = 0; i < streamViews.Length; i++)
-            {
+            for (var i = 0; i < streamViews.Length; i++) {
                 var buffer = new BufferView(i);
                 streamViews[i].Child = buffer;
                 buffer.Observer = joinStatementDispatch;
@@ -452,175 +408,43 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         }
 
         private void HandlePreloads(
-            IList<StatementAgentInstancePreload> preloadList, bool isAggregated, JoinPreloadMethod joinPreloadMethod,
-            ViewableActivationResult[] activationResults, AgentInstanceContext agentInstanceContext,
+            IList<StatementAgentInstancePreload> preloadList,
+            bool isAggregated,
+            JoinPreloadMethod joinPreloadMethod,
+            ViewableActivationResult[] activationResults,
+            AgentInstanceContext agentInstanceContext,
             ResultSetProcessor resultSetProcessor)
         {
             var hasNamedWindow = false;
 
-            for (var stream = 0; stream < activationResults.Length; stream++)
-            {
+            for (var stream = 0; stream < activationResults.Length; stream++) {
                 var activationResult = activationResults[stream];
-                if (!(activationResult.Viewable is NamedWindowConsumerView))
-                {
+                if (!(activationResult.Viewable is NamedWindowConsumerView)) {
                     continue;
                 }
 
                 hasNamedWindow = true;
-                var consumer = (NamedWindowConsumerView)activationResult.Viewable;
-                if (consumer.ConsumerCallback.IsParentBatchWindow)
-                {
+                var consumer = (NamedWindowConsumerView) activationResult.Viewable;
+                if (consumer.ConsumerCallback.IsParentBatchWindow) {
                     continue;
                 }
 
-                var nwActivator = (ViewableActivatorNamedWindow)viewableActivators[stream];
+                var nwActivator = (ViewableActivatorNamedWindow) viewableActivators[stream];
                 preloadList.Add(
                     new NamedWindowConsumerPreload(nwActivator, consumer, agentInstanceContext, joinPreloadMethod));
 
-                if (streamNames.Length == 1)
-                {
+                if (streamNames.Length == 1) {
                     preloadList.Add(new NamedWindowConsumerPreloadDispatchNonJoin(agentInstanceContext));
                 }
-                else
-                {
+                else {
                     preloadList.Add(
                         new NamedWindowConsumerPreloadDispatchJoin(joinPreloadMethod, stream, agentInstanceContext));
                 }
             }
 
             // last, for aggregation we need to send the current join results to the result set processor
-            if (hasNamedWindow && joinPreloadMethod != null && isAggregated)
-            {
+            if (hasNamedWindow && joinPreloadMethod != null && isAggregated) {
                 preloadList.Add(new NamedWindowConsumerPreloadAggregationJoin(joinPreloadMethod, resultSetProcessor));
-            }
-        }
-
-        private class JoinPlanResult
-        {
-            private JoinPlanResult(
-                OutputProcessView viewable, JoinPreloadMethod preloadMethod, JoinSetComposerDesc joinSetComposerDesc)
-            {
-                Viewable = viewable;
-                PreloadMethod = preloadMethod;
-                JoinSetComposerDesc = joinSetComposerDesc;
-            }
-
-            public OutputProcessView Viewable { get; }
-
-            public JoinPreloadMethod PreloadMethod { get; }
-
-            public JoinSetComposerDesc JoinSetComposerDesc { get; }
-        }
-
-        private class NamedWindowConsumerPreload : StatementAgentInstancePreload
-        {
-            private readonly AgentInstanceContext agentInstanceContext;
-            private readonly NamedWindowConsumerView consumer;
-            private readonly JoinPreloadMethod joinPreloadMethod;
-            private readonly ViewableActivatorNamedWindow nwActivator;
-
-            public NamedWindowConsumerPreload(
-                ViewableActivatorNamedWindow nwActivator, NamedWindowConsumerView consumer,
-                AgentInstanceContext agentInstanceContext, JoinPreloadMethod joinPreloadMethod)
-            {
-                this.nwActivator = nwActivator;
-                this.consumer = consumer;
-                this.agentInstanceContext = agentInstanceContext;
-                this.joinPreloadMethod = joinPreloadMethod;
-            }
-
-            public void ExecutePreload()
-            {
-                if (nwActivator.NamedWindowContextName != null &&
-                    !nwActivator.NamedWindowContextName.Equals(agentInstanceContext.StatementContext.ContextName))
-                {
-                    return;
-                }
-
-                var snapshot = consumer.ConsumerCallback.Snapshot(
-                    nwActivator.FilterQueryGraph, agentInstanceContext.Annotations);
-
-                EventBean[] events;
-                if (consumer.Filter == null)
-                {
-                    events = CollectionUtil.ToArrayEvents(snapshot);
-                }
-                else
-                {
-                    IList<EventBean> eventsInWindow = new List<EventBean>(snapshot.Count);
-                    ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
-                        snapshot.GetEnumerator(), consumer.Filter, agentInstanceContext, eventsInWindow);
-                    events = eventsInWindow.ToArray();
-                }
-
-                if (events.Length == 0)
-                {
-                    return;
-                }
-
-                consumer.Update(events, null);
-
-                if (joinPreloadMethod != null && !joinPreloadMethod.IsPreloading &&
-                    agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable != null)
-                {
-                    agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable.Execute();
-                }
-            }
-        }
-
-        private class NamedWindowConsumerPreloadDispatchNonJoin : StatementAgentInstancePreload
-        {
-            private readonly AgentInstanceContext agentInstanceContext;
-
-            public NamedWindowConsumerPreloadDispatchNonJoin(AgentInstanceContext agentInstanceContext)
-            {
-                this.agentInstanceContext = agentInstanceContext;
-            }
-
-            public void ExecutePreload()
-            {
-                if (agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable != null)
-                {
-                    agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable.Execute();
-                }
-            }
-        }
-
-        private class NamedWindowConsumerPreloadDispatchJoin : StatementAgentInstancePreload
-        {
-            private readonly AgentInstanceContext agentInstanceContext;
-            private readonly JoinPreloadMethod joinPreloadMethod;
-            private readonly int stream;
-
-            public NamedWindowConsumerPreloadDispatchJoin(
-                JoinPreloadMethod joinPreloadMethod, int stream, AgentInstanceContext agentInstanceContext)
-            {
-                this.joinPreloadMethod = joinPreloadMethod;
-                this.stream = stream;
-                this.agentInstanceContext = agentInstanceContext;
-            }
-
-            public void ExecutePreload()
-            {
-                joinPreloadMethod.PreloadFromBuffer(stream, agentInstanceContext);
-            }
-        }
-
-        private class NamedWindowConsumerPreloadAggregationJoin : StatementAgentInstancePreload
-        {
-            private readonly JoinPreloadMethod joinPreloadMethod;
-            private readonly ResultSetProcessor resultSetProcessor;
-
-            public NamedWindowConsumerPreloadAggregationJoin(
-                JoinPreloadMethod joinPreloadMethod, ResultSetProcessor resultSetProcessor)
-            {
-                this.joinPreloadMethod = joinPreloadMethod;
-                this.resultSetProcessor = resultSetProcessor;
-            }
-
-            public void ExecutePreload()
-            {
-                joinPreloadMethod.PreloadAggregation(resultSetProcessor);
             }
         }
     }

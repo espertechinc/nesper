@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.util
     {
         public Action ProcDestroy;
 
-        public ProxyDestroyCallback() { }
+        public ProxyDestroyCallback()
+        {
+        }
+
         public ProxyDestroyCallback(Action procDestroy)
         {
             ProcDestroy = procDestroy;

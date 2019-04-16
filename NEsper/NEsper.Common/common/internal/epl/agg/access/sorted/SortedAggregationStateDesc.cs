@@ -17,9 +17,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     public class SortedAggregationStateDesc
     {
         public SortedAggregationStateDesc(
-            bool max, ImportServiceCompileTime importService, ExprNode[] criteria,
-            Type[] criteriaTypes, bool[] sortDescending, bool ever, int streamNum,
-            ExprAggMultiFunctionSortedMinMaxByNode parent, ExprForge optionalFilter, EventType streamEventType)
+            bool max,
+            ImportServiceCompileTime importService,
+            ExprNode[] criteria,
+            Type[] criteriaTypes,
+            bool[] sortDescending,
+            bool ever,
+            int streamNum,
+            ExprAggMultiFunctionSortedMinMaxByNode parent,
+            ExprForge optionalFilter,
+            EventType streamEventType)
         {
             IsMax = max;
             ImportService = importService;
@@ -51,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public bool IsEver { get; }
 
-        public bool IsSortUsingCollator => ImportService.IsSortUsingCollator;
+        public bool IsSortUsingCollator => ImportService.IsSortUsingCollator();
 
         public bool IsMax { get; }
     }

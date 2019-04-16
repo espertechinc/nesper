@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
         }
 
         public abstract StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, 
+            StatementContext statementContext,
             int agentInstanceId);
 
         public abstract InfraOnExprBaseViewResult DetermineOnExprView(
@@ -67,11 +67,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             IList<AgentInstanceStopCallback> stopCallbacks,
             bool isRecoveringReslient);
 
-        public abstract View DetermineFinalOutputView(AgentInstanceContext agentInstanceContext, View onExprView);
+        public abstract View DetermineFinalOutputView(
+            AgentInstanceContext agentInstanceContext,
+            View onExprView);
 
         // public StatementAgentInstanceFactoryOnTriggerResult NewContext()
         public StatementAgentInstanceFactoryResult NewContext(
-            AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
         {
             IList<AgentInstanceStopCallback> stopCallbacks = new List<AgentInstanceStopCallback>();
 

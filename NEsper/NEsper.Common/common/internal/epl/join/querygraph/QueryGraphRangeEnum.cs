@@ -75,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         /// </summary>
         public static readonly QueryGraphRangeEnum NOT_RANGE_HALF_CLOSED = new QueryGraphRangeEnum(true, "-(,])");
 
-        private QueryGraphRangeEnum(bool range, string stringOp)
+        private QueryGraphRangeEnum(
+            bool range,
+            string stringOp)
         {
             IsRange = range;
             StringOp = StringOp;
@@ -181,7 +183,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             throw new ArgumentException("Failed to map code " + relationalOpEnum);
         }
 
-        public static QueryGraphRangeEnum GetRangeOp(bool includeStart, bool includeEnd, bool isInverted)
+        public static QueryGraphRangeEnum GetRangeOp(
+            bool includeStart,
+            bool includeEnd,
+            bool isInverted)
         {
             if (!isInverted) {
                 if (includeStart) {

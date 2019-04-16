@@ -21,14 +21,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEqualsNodeImpl parent;
         private readonly ExprEvaluator rhs;
 
-        internal ExprEqualsNodeForgeNCEvalEquals(ExprEqualsNodeImpl parent, ExprEvaluator lhs, ExprEvaluator rhs)
+        internal ExprEqualsNodeForgeNCEvalEquals(
+            ExprEqualsNodeImpl parent,
+            ExprEvaluator lhs,
+            ExprEvaluator rhs)
         {
             this.parent = parent;
             this.lhs = lhs;
             this.rhs = rhs;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var left = lhs.Evaluate(eventsPerStream, isNewData, context);
             var right = rhs.Evaluate(eventsPerStream, isNewData, context);
@@ -42,8 +48,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenMethod Codegen(
-            ExprEqualsNodeForgeNC forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope, ExprForge lhs, ExprForge rhs)
+            ExprEqualsNodeForgeNC forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope,
+            ExprForge lhs,
+            ExprForge rhs)
         {
             var lhsType = lhs.EvaluationType;
             var rhsType = rhs.EvaluationType;

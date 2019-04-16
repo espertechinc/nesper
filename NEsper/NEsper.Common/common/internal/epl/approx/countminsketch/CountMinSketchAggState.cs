@@ -15,70 +15,86 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 {
-	public class CountMinSketchAggState : AggregationMultiFunctionState {
+    public class CountMinSketchAggState : AggregationMultiFunctionState
+    {
+        internal readonly CountMinSketchState state;
+        private readonly CountMinSketchAgent agent;
 
-	    internal readonly CountMinSketchState state;
-	    private readonly CountMinSketchAgent agent;
+        private readonly CountMinSketchAgentContextAdd add;
+        private readonly CountMinSketchAgentContextEstimate estimate;
+        private readonly CountMinSketchAgentContextFromBytes fromBytes;
 
-	    private readonly CountMinSketchAgentContextAdd add;
-	    private readonly CountMinSketchAgentContextEstimate estimate;
-	    private readonly CountMinSketchAgentContextFromBytes fromBytes;
+        public CountMinSketchAggState(
+            CountMinSketchState state,
+            CountMinSketchAgent agent)
+        {
+            this.state = state;
+            this.agent = agent;
+            add = new CountMinSketchAgentContextAdd(state);
+            estimate = new CountMinSketchAgentContextEstimate(state);
+            fromBytes = new CountMinSketchAgentContextFromBytes(state);
+        }
 
-	    public CountMinSketchAggState(CountMinSketchState state, CountMinSketchAgent agent) {
-	        this.state = state;
-	        this.agent = agent;
-	        add = new CountMinSketchAgentContextAdd(state);
-	        estimate = new CountMinSketchAgentContextEstimate(state);
-	        fromBytes = new CountMinSketchAgentContextFromBytes(state);
-	    }
+        public void ApplyEnter(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException("values are added through the add method");
+        }
 
-	    public void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext) {
-	        throw new UnsupportedOperationException("values are added through the add method");
-	    }
+        public void ApplyLeave(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException();
+        }
 
-	    public void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext) {
-	        throw new UnsupportedOperationException();
-	    }
+        public void Add(object value)
+        {
+            add.Value = value;
+            agent.Add(add);
+        }
 
-	    public void Add(object value) {
-	        add.Value = value;
-	        agent.Add(add);
-	    }
+        public long? Frequency(object value)
+        {
+            estimate.Value = value;
+            return agent.Estimate(estimate);
+        }
 
-	    public long? Frequency(object value) {
-	        estimate.Value = value;
-	        return agent.Estimate(estimate);
-	    }
+        public void Clear()
+        {
+            throw new UnsupportedOperationException();
+        }
 
-	    public void Clear() {
-	        throw new UnsupportedOperationException();
-	    }
+        public CountMinSketchTopK[] GetFromBytes()
+        {
+            ICollection<ByteBuffer> bytes = state.TopKValues;
+            if (bytes.IsEmpty()) {
+                return new CountMinSketchTopK[0];
+            }
 
-	    public CountMinSketchTopK[] GetFromBytes() {
-	        ICollection<ByteBuffer> bytes = state.TopKValues;
-	        if (bytes.IsEmpty()) {
-	            return new CountMinSketchTopK[0];
-	        }
-	        CountMinSketchTopK[] arr = new CountMinSketchTopK[bytes.Count];
-	        int index = 0;
-	        foreach (ByteBuffer buf in bytes) {
-	            long? frequency = state.Frequency(buf.Array());
-	            fromBytes.Bytes = buf.Array();
-	            object value = agent.FromBytes(fromBytes);
-	            if (frequency == null) {
-	                continue;
-	            }
-	            arr[index++] = new CountMinSketchTopK(frequency, value);
-	        }
-	        return arr;
-	    }
+            CountMinSketchTopK[] arr = new CountMinSketchTopK[bytes.Count];
+            int index = 0;
+            foreach (ByteBuffer buf in bytes) {
+                long frequency = state.Frequency(buf.Array);
+                fromBytes.Bytes = buf.Array;
+                object value = agent.FromBytes(fromBytes);
+                if (frequency == null) {
+                    continue;
+                }
 
-	    public CountMinSketchState State
-	    {
-	        get => state;
-	    }
-	}
+                arr[index++] = new CountMinSketchTopK(frequency, value);
+            }
+
+            return arr;
+        }
+
+        public CountMinSketchState State {
+            get => state;
+        }
+    }
 } // end of namespace

@@ -17,70 +17,69 @@ namespace com.espertech.esper.common.@internal.collection
     public class RefCountedSetAtomicInteger<K>
     {
         private readonly IDictionary<K, Object> _refs;
-    
-        public RefCountedSetAtomicInteger() {
+
+        public RefCountedSetAtomicInteger()
+        {
             _refs = new Dictionary<K, Object>();
         }
-    
+
         /// <summary>Clear out the collection. </summary>
         public void Clear()
         {
             _refs.Clear();
         }
-    
-        public bool Add(K key) {
+
+        public bool Add(K key)
+        {
             var count = _refs.Get(key);
-            if (count == null)
-            {
+            if (count == null) {
                 _refs[key] = 1;
                 return true;
             }
-            else if (count is Mutable<int>)
-            {
+            else if (count is Mutable<int>) {
                 var mutable = (Mutable<int>) count;
                 Interlocked.Increment(ref mutable.Value);
                 return false;
             }
-            else
-            {
+            else {
                 _refs[key] = new Mutable<int>(2);
                 return false;
             }
         }
-    
-        public bool Remove(K key) {
+
+        public bool Remove(K key)
+        {
             var count = _refs.Get(key);
             if (count == null) {
                 return false;
             }
-            else if (count is Mutable<int>) 
-            {
-                var mutable = (Mutable<int>)count;
+            else if (count is Mutable<int>) {
+                var mutable = (Mutable<int>) count;
                 var val = Interlocked.Decrement(ref mutable.Value);
                 if (val == 0) {
                     _refs.Remove(key);
                     return true;
                 }
+
                 return false;
             }
-            else
-            {
+            else {
                 _refs.Remove(key);
                 return true;
             }
         }
-    
+
         public void RemoveAll(K key)
         {
             _refs.Remove(key);
         }
-    
-        public bool IsEmpty() {
+
+        public bool IsEmpty()
+        {
             return _refs.IsEmpty();
         }
 
-        public IDictionary<K, object> Refs
-        {
+        public IDictionary<K, object> Refs {
             get { return _refs; }
         }
     }

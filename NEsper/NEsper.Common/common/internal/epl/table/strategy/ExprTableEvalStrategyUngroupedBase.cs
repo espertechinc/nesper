@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -21,26 +20,37 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
         protected internal readonly TableAndLockProviderUngrouped provider;
 
         public ExprTableEvalStrategyUngroupedBase(
-            TableAndLockProviderUngrouped provider, ExprTableEvalStrategyFactory factory)
+            TableAndLockProviderUngrouped provider,
+            ExprTableEvalStrategyFactory factory)
         {
             this.provider = provider;
             this.factory = factory;
         }
 
         public abstract object Evaluate(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         public abstract ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
         public abstract EventBean EvaluateGetEventBean(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
         public abstract ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
         public abstract object[] EvaluateTypableSingle(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
         protected ObjectArrayBackedEventBean LockTableReadAndGet(ExprEvaluatorContext context)
         {

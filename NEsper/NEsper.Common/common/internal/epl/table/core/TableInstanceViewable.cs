@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         private readonly Table tableMetadata;
         private readonly TableInstance tableStateInstance;
 
-        public TableInstanceViewable(Table tableMetadata, TableInstance tableStateInstance)
+        public TableInstanceViewable(
+            Table tableMetadata,
+            TableInstance tableStateInstance)
         {
             this.tableMetadata = tableMetadata;
             this.tableStateInstance = tableStateInstance;
@@ -26,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         public override EventType EventType => tableMetadata.MetaData.PublicEventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             // no action required
         }

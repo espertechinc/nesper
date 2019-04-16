@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -24,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             _moduleTables = moduleTables;
         }
 
-        public void RegisterTable(string tableName, TableMetaData table)
+        public void RegisterTable(
+            string tableName,
+            TableMetaData table)
         {
             _moduleTables.Put(tableName, table);
         }

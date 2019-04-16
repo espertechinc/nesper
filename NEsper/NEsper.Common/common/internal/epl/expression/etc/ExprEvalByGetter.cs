@@ -8,14 +8,12 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -27,18 +25,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         private readonly EventPropertyGetterSPI getter;
         private readonly int streamNum;
 
-        public ExprEvalByGetter(int streamNum, EventPropertyGetterSPI getter, Type returnType)
+        public ExprEvalByGetter(
+            int streamNum,
+            EventPropertyGetterSPI getter,
+            Type returnType)
         {
             this.streamNum = streamNum;
             this.getter = getter;
             EvaluationType = returnType;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
-            if (@event == null)
-            {
+            if (@event == null) {
                 return null;
             }
 
@@ -50,7 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(EvaluationType, typeof(ExprEvalByGetter), codegenClassScope);
@@ -69,7 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprNodeRenderable ForgeRenderable => this;
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(GetType().Name);
         }

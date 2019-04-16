@@ -22,7 +22,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="indexName">index name</param>
         /// <param name="windowName">window name</param>
         /// <param name="columns">properties to index</param>
-        public CreateIndexDesc(bool isUnique, String indexName, String windowName, IList<CreateIndexItem> columns)
+        public CreateIndexDesc(
+            bool isUnique,
+            String indexName,
+            String windowName,
+            IList<CreateIndexItem> columns)
         {
             IsUnique = isUnique;
             IndexName = indexName;

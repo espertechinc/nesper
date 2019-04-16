@@ -21,7 +21,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         private readonly ExprNode[] criteraExprNodes;
         private readonly ExprNode filterExprNode;
 
-        public AggregationStateKeyWStream(int streamNum, EventType eventType, AggregationStateTypeWStream stateType, ExprNode[] criteraExprNodes, ExprNode filterExprNode)
+        public AggregationStateKeyWStream(
+            int streamNum,
+            EventType eventType,
+            AggregationStateTypeWStream stateType,
+            ExprNode[] criteraExprNodes,
+            ExprNode filterExprNode)
         {
             this.streamNum = streamNum;
             this.eventType = eventType;
@@ -35,24 +40,23 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             if (this == o) return true;
             if (o == null || GetType() != o.GetType()) return false;
 
-            AggregationStateKeyWStream that = (AggregationStateKeyWStream)o;
+            AggregationStateKeyWStream that = (AggregationStateKeyWStream) o;
 
             if (streamNum != that.streamNum) return false;
             if (stateType != that.stateType) return false;
             if (!ExprNodeUtilityCompare.DeepEquals(criteraExprNodes, that.criteraExprNodes, false)) return false;
-            if (eventType != null)
-            {
-                if (that.eventType == null)
-                {
+            if (eventType != null) {
+                if (that.eventType == null) {
                     return false;
                 }
+
                 if (!EventTypeUtility.IsTypeOrSubTypeOf(that.eventType, eventType)) return false;
             }
 
-            if (filterExprNode == null)
-            {
+            if (filterExprNode == null) {
                 return that.filterExprNode == null;
             }
+
             return that.filterExprNode != null && ExprNodeUtilityCompare.DeepEquals(filterExprNode, that.filterExprNode, false);
         }
 

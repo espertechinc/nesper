@@ -31,8 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         }
 
         public EventObserver MakeObserver(
-            PatternAgentInstanceContext context, MatchedEventMap beginState,
-            ObserverEventEvaluator observerEventEvaluator, object observerState, bool isFilterChildNonQuitting)
+            PatternAgentInstanceContext context,
+            MatchedEventMap beginState,
+            ObserverEventEvaluator observerEventEvaluator,
+            object observerState,
+            bool isFilterChildNonQuitting)
         {
             return new TimerIntervalObserver(
                 deltaCompute.ComputeDelta(beginState, context), beginState, observerEventEvaluator);

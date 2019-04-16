@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -17,26 +16,38 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
-	public class OutputProcessViewAfterStateNone : OutputProcessViewAfterState {
-	    public readonly static OutputProcessViewAfterStateNone INSTANCE = new OutputProcessViewAfterStateNone();
+    public class OutputProcessViewAfterStateNone : OutputProcessViewAfterState
+    {
+        public readonly static OutputProcessViewAfterStateNone INSTANCE = new OutputProcessViewAfterStateNone();
 
-	    private OutputProcessViewAfterStateNone() {
-	    }
+        private OutputProcessViewAfterStateNone()
+        {
+        }
 
-	    public bool CheckUpdateAfterCondition(EventBean[] newEvents, StatementContext statementContext) {
-	        return true;
-	    }
+        public bool CheckUpdateAfterCondition(
+            EventBean[] newEvents,
+            StatementContext statementContext)
+        {
+            return true;
+        }
 
-	    public bool CheckUpdateAfterCondition(ISet<MultiKey<EventBean>> newEvents, StatementContext statementContext) {
-	        return true;
-	    }
+        public bool CheckUpdateAfterCondition(
+            ISet<MultiKey<EventBean>> newEvents,
+            StatementContext statementContext)
+        {
+            return true;
+        }
 
-	    public bool CheckUpdateAfterCondition(UniformPair<EventBean[]> newOldEvents, StatementContext statementContext) {
-	        return true;
-	    }
+        public bool CheckUpdateAfterCondition(
+            UniformPair<EventBean[]> newOldEvents,
+            StatementContext statementContext)
+        {
+            return true;
+        }
 
-	    public void Destroy() {
-	        // no action required
-	    }
-	}
+        public void Destroy()
+        {
+            // no action required
+        }
+    }
 } // end of namespace

@@ -17,8 +17,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
     public class StatementAgentInstanceFactoryUtil
     {
         public static Pair<ResultSetProcessor, AggregationService> StartResultSetAndAggregation(
-            ResultSetProcessorFactoryProvider resultSetProcessorPrototype, AgentInstanceContext agentInstanceContext,
-            bool isSubquery, int? subqueryNumber)
+            ResultSetProcessorFactoryProvider resultSetProcessorPrototype,
+            AgentInstanceContext agentInstanceContext,
+            bool isSubquery,
+            int? subqueryNumber)
         {
             AggregationService aggregationService = null;
             if (resultSetProcessorPrototype.AggregationServiceFactory != null) {

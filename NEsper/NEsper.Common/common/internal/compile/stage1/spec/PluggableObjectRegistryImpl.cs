@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
@@ -23,7 +22,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             _collections = collections;
         }
 
-        public Pair<Type, PluggableObjectEntry> Lookup(string nameSpace, string name)
+        public Pair<Type, PluggableObjectEntry> Lookup(
+            string nameSpace,
+            string name)
         {
             // Handle namespace-provided
             if (nameSpace != null) {
@@ -32,12 +33,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     if (names == null) {
                         continue;
                     }
+
                     Pair<Type, PluggableObjectEntry> entry = names.Get(name);
                     if (entry == null) {
                         continue;
                     }
+
                     return entry;
                 }
+
                 return null;
             }
 
@@ -52,8 +56,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                                 if (entriesDuplicate == null) {
                                     entriesDuplicate = new HashSet<string>();
                                 }
+
                                 entriesDuplicate.Add(viewEntry.Key);
-                            } else {
+                            }
+                            else {
                                 found = viewEntry;
                             }
                         }

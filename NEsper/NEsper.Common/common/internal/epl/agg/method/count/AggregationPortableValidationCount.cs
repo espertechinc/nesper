@@ -28,7 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         }
 
         public AggregationPortableValidationCount(
-            bool distinct, bool ever, bool hasFilter, Type countedValueType, bool ignoreNulls)
+            bool distinct,
+            bool ever,
+            bool hasFilter,
+            Type countedValueType,
+            bool ignoreNulls)
             : base(distinct)
 
         {
@@ -55,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         }
 
         protected override void ValidateIntoTable(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory)
         {
             var that = (AggregationPortableValidationCount) intoTableAgg;
@@ -80,7 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         }
 
         protected override void CodegenInlineSet(
-            CodegenExpressionRef @ref, CodegenMethod method, ModuleTableInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block

@@ -9,7 +9,6 @@
 using System;
 using System.Numerics;
 using System.Reflection;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,7 +20,6 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -192,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         {
             method.Block
                 .Apply(WriteLong(output, row, cnt))
-                .StaticMethod(typeof(DIOSerdeBigDecimalBigInteger), "writeBigDec", RowDotRef(row, sum), output);
+                .StaticMethod(typeof(DIOSerdeBigInteger), "writeBigDec", RowDotRef(row, sum), output);
         }
 
         protected override void ReadWODistinct(
@@ -206,7 +204,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             method.Block
                 .Apply(ReadLong(row, cnt, input))
                 .AssignRef(
-                    RowDotRef(row, sum), StaticMethod(typeof(DIOSerdeBigDecimalBigInteger), "readBigDec", input));
+                    RowDotRef(row, sum), StaticMethod(typeof(DIOSerdeBigInteger), "readBigDec", input));
         }
 
         /// <summary>

@@ -40,8 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         [NonSerialized] private ExprForge forge;
 
         public ExprDeclaredNodeImpl(
-            ExpressionDeclItem prototype, IList<ExprNode> chainParameters,
-            ContextCompileTimeDescriptor contextDescriptor, ExprNode expressionBodyCopy)
+            ExpressionDeclItem prototype,
+            IList<ExprNode> chainParameters,
+            ContextCompileTimeDescriptor contextDescriptor,
+            ExprNode expressionBodyCopy)
         {
             PrototypeWVisibility = prototype;
             ChainParameters = chainParameters;
@@ -252,7 +254,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             return null;
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprDeclaredNodeImpl)) {
                 return false;
@@ -278,7 +282,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             }
         }
 
-        public override void AcceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
+        public override void AcceptChildnodes(
+            ExprNodeVisitorWithParent visitor,
+            ExprNode parent)
         {
             base.AcceptChildnodes(visitor, parent);
             if (visitor.IsVisit(this) && ChildNodes.Length == 0) {
@@ -323,7 +329,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             }
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var prototype = PrototypeWVisibility;
             writer.Write(prototype.Name);
@@ -353,7 +359,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             }
 
             public CodegenExpression EventBeanGetCodegen(
-                CodegenExpression beanExpression, CodegenMethodScope parent, CodegenClassScope codegenClassScope)
+                CodegenExpression beanExpression,
+                CodegenMethodScope parent,
+                CodegenClassScope codegenClassScope)
             {
                 var method = parent.MakeChild(exprForge.EvaluationType, GetType(), codegenClassScope)
                     .AddParam(typeof(EventBean), "bean");

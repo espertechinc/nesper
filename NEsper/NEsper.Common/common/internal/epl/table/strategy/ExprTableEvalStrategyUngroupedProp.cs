@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -16,51 +15,69 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 {
     public class ExprTableEvalStrategyUngroupedProp : ExprTableEvalStrategyUngroupedBase
     {
-        public ExprTableEvalStrategyUngroupedProp(TableAndLockProviderUngrouped provider, ExprTableEvalStrategyFactory factory) : base(provider, factory)
+        public ExprTableEvalStrategyUngroupedProp(
+            TableAndLockProviderUngrouped provider,
+            ExprTableEvalStrategyFactory factory)
+            : base(provider, factory)
         {
         }
 
-        public override object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public override object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             ObjectArrayBackedEventBean row = LockTableReadAndGet(exprEvaluatorContext);
-            if (row == null)
-            {
+            if (row == null) {
                 return null;
             }
+
             return row.Properties[factory.PropertyIndex];
         }
 
-        public override ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             ObjectArrayBackedEventBean row = LockTableReadAndGet(context);
-            if (row == null)
-            {
+            if (row == null) {
                 return null;
             }
+
             return factory.OptionalEnumEval.EvaluateEventGetROCollectionEvents(row, context);
         }
 
-        public override EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             ObjectArrayBackedEventBean row = LockTableReadAndGet(context);
-            if (row == null)
-            {
+            if (row == null) {
                 return null;
             }
+
             return factory.OptionalEnumEval.EvaluateEventGetEventBean(row, context);
         }
 
-        public override ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             ObjectArrayBackedEventBean row = LockTableReadAndGet(context);
-            if (row == null)
-            {
+            if (row == null) {
                 return null;
             }
+
             return factory.OptionalEnumEval.EvaluateEventGetROCollectionScalar(row, context);
         }
 
-        public override object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override object[] EvaluateTypableSingle(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }

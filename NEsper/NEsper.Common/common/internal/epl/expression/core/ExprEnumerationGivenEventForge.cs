@@ -17,15 +17,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public interface ExprEnumerationGivenEventForge
     {
         CodegenExpression EvaluateEventGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope, ExprEnumerationGivenEventSymbol symbols,
+            CodegenMethodScope codegenMethodScope,
+            ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope);
 
         CodegenExpression EvaluateEventGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope, ExprEnumerationGivenEventSymbol symbols,
+            CodegenMethodScope codegenMethodScope,
+            ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope);
 
         CodegenExpression EvaluateEventGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope, ExprEnumerationGivenEventSymbol symbols,
+            CodegenMethodScope codegenMethodScope,
+            ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope);
     }
 } // end of namespace

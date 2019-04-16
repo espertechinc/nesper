@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// </summary>
         /// <param name="theEvent">is the node with event property information</param>
         /// <param name="type">is the event type for this event wrapper</param>
-        public XMLEventBean(XmlNode theEvent, EventType type)
+        public XMLEventBean(
+            XmlNode theEvent,
+            EventType type)
         {
             _theEvent = theEvent;
             EventType = type;

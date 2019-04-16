@@ -75,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
         public string InstrumentedQName => "ResultSetProcessUngroupedNonfullyAgg";
 
         public void InstanceCodegen(
-            CodegenInstanceAux instance, CodegenClassScope classScope, CodegenCtor factoryCtor,
+            CodegenInstanceAux instance,
+            CodegenClassScope classScope,
+            CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
             instance.Methods.AddMethod(
@@ -89,91 +91,122 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
         }
 
         public void ProcessViewResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ProcessViewResultCodegen(this, classScope, method, instance);
         }
 
         public void ProcessJoinResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ProcessJoinResultCodegen(this, classScope, method, instance);
         }
 
         public void GetIteratorViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.GetIteratorViewCodegen(this, classScope, method);
         }
 
         public void GetIteratorJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.GetIteratorJoinCodegen(this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ProcessOutputLimitedViewCodegen(this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ProcessOutputLimitedJoinCodegen(this, classScope, method, instance);
         }
 
         public void ApplyViewResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ApplyViewResultCodegen(method);
         }
 
         public void ApplyJoinResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ApplyJoinResultCodegen(method);
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ContinueOutputLimitedLastAllNonBufferedViewCodegen(this, method);
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ContinueOutputLimitedLastAllNonBufferedJoinCodegen(this, method);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ProcessOutputLimitedLastAllNonBufferedViewCodegen(
                 this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
                 this, classScope, method, instance);
         }
 
         public void AcceptHelperVisitorCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.AcceptHelperVisitorCodegen(method, instance);
         }
 
-        public void StopMethodCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+        public void StopMethodCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.StopCodegen(method, instance);
         }
 
-        public void ClearMethodCodegen(CodegenClassScope classScope, CodegenMethod method)
+        public void ClearMethodCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method)
         {
             ResultSetProcessorRowPerEventImpl.ClearMethodCodegen(method);
         }

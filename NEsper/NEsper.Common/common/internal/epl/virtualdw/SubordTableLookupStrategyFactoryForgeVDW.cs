@@ -41,10 +41,17 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         private readonly string _statementName;
 
         public SubordTableLookupStrategyFactoryForgeVDW(
-            string statementName, Attribute[] annotations, EventType[] outerStreams,
-            IList<SubordPropHashKeyForge> hashKeys, CoercionDesc hashKeyCoercionTypes,
-            IList<SubordPropRangeKeyForge> rangeKeys, CoercionDesc rangeKeyCoercionTypes, bool nwOnTrigger,
-            SubordPropPlan joinDesc, bool forceTableScan, SubordinateQueryPlannerIndexPropListPair hashAndRanges)
+            string statementName,
+            Attribute[] annotations,
+            EventType[] outerStreams,
+            IList<SubordPropHashKeyForge> hashKeys,
+            CoercionDesc hashKeyCoercionTypes,
+            IList<SubordPropRangeKeyForge> rangeKeys,
+            CoercionDesc rangeKeyCoercionTypes,
+            bool nwOnTrigger,
+            SubordPropPlan joinDesc,
+            bool forceTableScan,
+            SubordinateQueryPlannerIndexPropListPair hashAndRanges)
         {
             _statementName = statementName;
             _annotations = annotations;
@@ -60,7 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var hashes = new ExprNode[_hashKeys.Count];
             var hashTypes = new Type[_hashKeys.Count];
@@ -85,10 +94,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 .Constant("numOuterStreams", _outerStreams.Length)
                 .Expression(
                     "hashEvals",
-                    ExprNodeUtilityCodegen.CodegenEvaluators(hashes, builder.Method, GetType(), classScope))
+                    ExprNodeUtilityCodegen.CodegenEvaluators(hashes, builder.Method(), GetType(), classScope))
                 .Constant("hashCoercionTypes", hashTypes)
                 .Expression(
-                    "rangeEvals", QueryGraphValueEntryRangeForge.MakeArray(ranges, builder.Method, symbols, classScope))
+                    "rangeEvals", QueryGraphValueEntryRangeForge.MakeArray(ranges, builder.Method(), symbols, classScope))
                 .Constant("rangeCoercionTypes", rangesTypes);
             return builder.Build();
         }

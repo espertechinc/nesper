@@ -15,7 +15,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
     public class OnTriggerSetPlan
     {
         public OnTriggerSetPlan(
-            StmtClassForgableAIFactoryProviderBase forgable, IList<StmtClassForgable> forgables,
+            StmtClassForgableAIFactoryProviderBase forgable,
+            IList<StmtClassForgable> forgables,
             SelectSubscriberDescriptor selectSubscriberDescriptor)
         {
             Forgable = forgable;

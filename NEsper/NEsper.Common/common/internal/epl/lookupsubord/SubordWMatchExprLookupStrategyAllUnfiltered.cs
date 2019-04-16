@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
             this.source = source;
         }
 
-        public EventBean[] Lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext)
+        public EventBean[] Lookup(
+            EventBean[] newData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             exprEvaluatorContext.InstrumentationProvider.QInfraTriggeredLookup("fulltablescan_unfiltered");
             var @out = source.ToArray();

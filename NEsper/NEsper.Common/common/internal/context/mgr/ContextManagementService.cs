@@ -18,17 +18,29 @@ namespace com.espertech.esper.common.@internal.context.mgr
         int ContextCount { get; }
 
         CopyOnWriteList<ContextStateListener> Listeners { get; }
-        void AddContext(ContextDefinition contextDefinition, EPStatementInitServices services);
+
+        void AddContext(
+            ContextDefinition contextDefinition,
+            EPStatementInitServices services);
 
         void AddStatement(
-            string deploymentIdCreateContext, string contextName, ContextControllerStatementDesc statement,
+            string deploymentIdCreateContext,
+            string contextName,
+            ContextControllerStatementDesc statement,
             bool recovery);
 
         void StoppedStatement(
-            string deploymentIdCreateContext, string contextName, ContextControllerStatementDesc statement);
+            string deploymentIdCreateContext,
+            string contextName,
+            ContextControllerStatementDesc statement);
 
-        ContextManager GetContextManager(string deploymentIdCreateContext, string contextName);
+        ContextManager GetContextManager(
+            string deploymentIdCreateContext,
+            string contextName);
 
-        void DestroyedContext(string runtimeURI, string deploymentId, string contextName);
+        void DestroyedContext(
+            string runtimeURI,
+            string deploymentId,
+            string contextName);
     }
 } // end of namespace

@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="items">list of hash code functions and event types to apply to</param>
         /// <param name="granularity">a number between 1 and Integer.MAX for parallelism</param>
         /// <param name="preallocate">true to allocate each context partition at time of statement creation</param>
-        public ContextDescriptorHashSegmented(IList<ContextDescriptorHashSegmentedItem> items, int granularity, bool preallocate)
+        public ContextDescriptorHashSegmented(
+            IList<ContextDescriptorHashSegmentedItem> items,
+            int granularity,
+            bool preallocate)
         {
             Items = items;
             Granularity = granularity;
@@ -45,20 +48,21 @@ namespace com.espertech.esper.common.client.soda
         /// <value>preallocation flag</value>
         public bool IsPreallocate { get; set; }
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             writer.Write("coalesce ");
             String delimiter = "";
-            foreach (ContextDescriptorHashSegmentedItem item in Items)
-            {
+            foreach (ContextDescriptorHashSegmentedItem item in Items) {
                 writer.Write(delimiter);
                 item.ToEPL(writer, formatter);
                 delimiter = ", ";
             }
+
             writer.Write(" granularity ");
             writer.Write(Convert.ToString(Granularity));
-            if (IsPreallocate)
-            {
+            if (IsPreallocate) {
                 writer.Write(" preallocate");
             }
         }

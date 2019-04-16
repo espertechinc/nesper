@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
             internal readonly ExprForge exprForge;
             internal ExprEvaluator evaluator;
 
-            protected SelectExprInsertNativeExpressionCoerceBase(EventType eventType, ExprForge exprForge)
+            protected SelectExprInsertNativeExpressionCoerceBase(
+                EventType eventType,
+                ExprForge exprForge)
             {
                 this.eventType = eventType;
                 this.exprForge = exprForge;

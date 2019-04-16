@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="emitters">any emitters that are part of the data flow</param>
         /// <param name="runnables">any runnables that represent source operators</param>
         public EPDataFlowInstanceCaptive(
-            IDictionary<string, EPDataFlowEmitterOperator> emitters, IList<GraphSourceRunnable> runnables)
+            IDictionary<string, EPDataFlowEmitterOperator> emitters,
+            IList<GraphSourceRunnable> runnables)
         {
             Emitters = emitters;
             Runnables = runnables;

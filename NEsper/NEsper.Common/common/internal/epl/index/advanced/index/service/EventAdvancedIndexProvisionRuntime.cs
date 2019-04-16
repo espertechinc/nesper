@@ -38,28 +38,24 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
         public bool IsIndexExpressionsAllProps { get; set; }
 
         public EventAdvancedIndexProvisionCompileTime ToCompileTime(
-            EventType eventTypeIndexed, StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            EventType eventTypeIndexed,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             ExprNode[] indexedExpr;
-            if (IndexExpressionsOpt != null)
-            {
+            if (IndexExpressionsOpt != null) {
                 indexedExpr = IndexExpressionsOpt;
             }
-            else
-            {
-                if (IsIndexExpressionsAllProps)
-                {
+            else {
+                if (IsIndexExpressionsAllProps) {
                     indexedExpr = new ExprNode[IndexProperties.Length];
-                    for (var i = 0; i < IndexProperties.Length; i++)
-                    {
+                    for (var i = 0; i < IndexProperties.Length; i++) {
                         indexedExpr[i] = new ExprIdentNodeImpl(eventTypeIndexed, IndexProperties[i], 0);
                     }
                 }
-                else
-                {
+                else {
                     indexedExpr = new ExprNode[IndexProperties.Length];
-                    for (var i = 0; i < IndexProperties.Length; i++)
-                    {
+                    for (var i = 0; i < IndexProperties.Length; i++) {
                         indexedExpr[i] = services.CompilerServices.CompileExpression(IndexExpressionTexts[i], services);
                         indexedExpr[i] = EPLValidationUtil.ValidateSimpleGetSubtree(
                             ExprNodeOrigin.CREATEINDEXCOLUMN, indexedExpr[i], eventTypeIndexed, false, statementRawInfo,
@@ -71,15 +67,12 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             var desc = new AdvancedIndexDescWExpr(IndexTypeName, indexedExpr);
 
             ExprNode[] parameters;
-            if (ParameterExpressionsOpt != null)
-            {
+            if (ParameterExpressionsOpt != null) {
                 parameters = ParameterExpressionsOpt;
             }
-            else
-            {
+            else {
                 parameters = new ExprNode[ParameterExpressionTexts.Length];
-                for (var i = 0; i < ParameterExpressionTexts.Length; i++)
-                {
+                for (var i = 0; i < ParameterExpressionTexts.Length; i++) {
                     parameters[i] = services.CompilerServices.CompileExpression(ParameterExpressionTexts[i], services);
                 }
             }

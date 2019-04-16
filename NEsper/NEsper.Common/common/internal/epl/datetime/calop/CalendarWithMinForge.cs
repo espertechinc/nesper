@@ -7,63 +7,84 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
-
+using com.espertech.esper.compat.datetime;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
-    public class CalendarWithMinForge : CalendarForge, CalendarOp
+    public class CalendarWithMinForge : CalendarForge,
+        CalendarOp
     {
-        private readonly CalendarFieldEnum fieldName;
+        private readonly DateTimeFieldEnum fieldName;
 
-        public CalendarWithMinForge(CalendarFieldEnum fieldName)
+        public CalendarWithMinForge(DateTimeFieldEnum fieldName)
         {
             this.fieldName = fieldName;
         }
 
-        public CalendarOp EvalOp
+        public CalendarOp EvalOp => this;
+
+        public CodegenExpression CodegenDateTimeEx(
+            CodegenExpression dateTimeEx,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            get => this;
+            var field = Constant(fieldName);
+            return ExprDotMethod(dateTimeEx, "set", field, ExprDotMethod(dateTimeEx, "GetActualMinimum", field));
         }
 
-        public void Evaluate(DateTimeEx dateTimeEx, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public CodegenExpression CodegenDateTimeOffset(
+            CodegenExpression dateTimeOffset,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            dateTimeEx.Set(fieldName.CalendarField, dateTimeEx.GetActualMinimum(fieldName.CalendarField));
+            return CodegenDateTimeOffsetDtxMinMax(dateTimeOffset, false, fieldName);
         }
 
-        public CodegenExpression CodegenDateTimeEx(CodegenExpression dateTimeEx, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public CodegenExpression CodegenDateTime(
+            CodegenExpression dateTime,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            CodegenExpression field = Constant(fieldName.CalendarField);
-            return ExprDotMethod(dateTimeEx, "set", field, ExprDotMethod(dateTimeEx, "getActualMinimum", field));
+            return CodegenDateTimeOffsetDtxMinMax(dateTime, false, fieldName);
         }
 
-        public DateTimeOffset Evaluate(DateTimeOffset dateTimeOffset, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public DateTimeEx Evaluate(
+            DateTimeEx dateTimeEx,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
-            ValueRange range = dateTimeOffset.Range(fieldName.ChronoField);
-            return dateTimeOffset.With(fieldName.ChronoField, range.Minimum);
+            return dateTimeEx.Set(fieldName, dateTimeEx.GetActualMinimum(fieldName));
         }
 
-        public DateTime Evaluate(DateTime dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public DateTimeOffset Evaluate(
+            DateTimeOffset dateTimeOffset,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
-            ValueRange range = dateTime.Range(fieldName.ChronoField);
-            return dateTime.With(fieldName.ChronoField, range.Minimum);
+            ValueRange range = dateTimeOffset.Range(fieldName);
+            return dateTimeOffset.With(fieldName, range.Minimum);
         }
 
-        public CodegenExpression CodegenDateTimeOffset(CodegenExpression dateTimeOffset, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public DateTime Evaluate(
+            DateTime dateTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
-            return CodegenDateTimeOffsetZDTMinMax(dateTimeOffset, false, fieldName);
-        }
-
-        public CodegenExpression CodegenDateTime(CodegenExpression dateTime, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
-        {
-            return CodegenDateTimeOffsetZDTMinMax(dateTime, false, fieldName);
+            ValueRange range = dateTime.Range(fieldName);
+            return dateTime.With(fieldName, range.Minimum);
         }
     }
 } // end of namespace

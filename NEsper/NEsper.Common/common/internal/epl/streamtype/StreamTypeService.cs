@@ -54,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <returns>descriptor with stream number, property type and property name</returns>
         /// <throws>DuplicatePropertyException to indicate property was found twice</throws>
         /// <throws>PropertyNotFoundException  to indicate property could not be resolved</throws>
-        PropertyResolutionDescriptor ResolveByPropertyName(string propertyName, bool obtainFragment);
+        PropertyResolutionDescriptor ResolveByPropertyName(
+            string propertyName,
+            bool obtainFragment);
 
         /// <summary>
         ///     Returns the offset of the stream and the type of the property for the given property name,
@@ -67,7 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <returns>descriptor with stream number, property type and property name</returns>
         /// <throws>DuplicatePropertyException to indicate property was found twice</throws>
         /// <throws>PropertyNotFoundException  to indicate property could not be resolved</throws>
-        PropertyResolutionDescriptor ResolveByPropertyNameExplicitProps(string propertyName, bool obtainFragment);
+        PropertyResolutionDescriptor ResolveByPropertyNameExplicitProps(
+            string propertyName,
+            bool obtainFragment);
 
         /// <summary>
         ///     Returns the offset of the stream and the type of the property for the given property name,
@@ -82,7 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <throws>PropertyNotFoundException to indicate property could not be resolved</throws>
         /// <throws>StreamNotFoundException   to indicate stream name could not be resolved</throws>
         PropertyResolutionDescriptor ResolveByStreamAndPropName(
-            string streamName, string propertyName, bool obtainFragment);
+            string streamName,
+            string propertyName,
+            bool obtainFragment);
 
         /// <summary>
         ///     Returns the offset of the stream and the type of the property for the given property name,
@@ -97,7 +103,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <throws>PropertyNotFoundException to indicate property could not be resolved</throws>
         /// <throws>StreamNotFoundException   to indicate stream name could not be resolved</throws>
         PropertyResolutionDescriptor ResolveByStreamAndPropNameExplicitProps(
-            string streamName, string propertyName, bool obtainFragment);
+            string streamName,
+            string propertyName,
+            bool obtainFragment);
 
         /// <summary>
         ///     Returns the offset of the stream and the type of the property for the given property name,
@@ -112,7 +120,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <returns>descriptor with stream number, property type and property name</returns>
         /// <throws>DuplicatePropertyException to indicate property was found twice</throws>
         /// <throws>PropertyNotFoundException  to indicate property could not be resolved</throws>
-        PropertyResolutionDescriptor ResolveByStreamAndPropName(string streamAndPropertyName, bool obtainFragment);
+        PropertyResolutionDescriptor ResolveByStreamAndPropName(
+            string streamAndPropertyName,
+            bool obtainFragment);
 
         int GetStreamNumForStreamName(string streamWildcard);
     }

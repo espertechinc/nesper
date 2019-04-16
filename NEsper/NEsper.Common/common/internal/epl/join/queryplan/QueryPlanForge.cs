@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// </summary>
         /// <param name="indexSpecs">specs for indexes to create</param>
         /// <param name="execNodeSpecs">specs for execution nodes to create</param>
-        public QueryPlanForge(QueryPlanIndexForge[] indexSpecs, QueryPlanNodeForge[] execNodeSpecs)
+        public QueryPlanForge(
+            QueryPlanIndexForge[] indexSpecs,
+            QueryPlanNodeForge[] execNodeSpecs)
         {
             IndexSpecs = indexSpecs;
             ExecNodeSpecs = execNodeSpecs;
@@ -57,7 +59,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             return buffer.ToString();
         }
 
-        public CodegenExpression Make(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return NewInstance(
                 typeof(QueryPlan), MakeIndexes(method, symbols, classScope),
@@ -65,14 +70,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         }
 
         private CodegenExpression MakeStrategies(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return CodegenMakeableUtil.MakeArray(
                 "spec", typeof(QueryPlanNode), ExecNodeSpecs, GetType(), parent, symbols, classScope);
         }
 
         private CodegenExpression MakeIndexes(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return CodegenMakeableUtil.MakeArray(
                 "indexes", typeof(QueryPlanIndex), IndexSpecs, GetType(), parent, symbols, classScope);

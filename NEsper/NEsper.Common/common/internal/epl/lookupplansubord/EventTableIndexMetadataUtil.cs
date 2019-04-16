@@ -6,40 +6,46 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
-using com.espertech.esper.common.@internal.epl.join.lookup;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using System.Linq;
+using com.espertech.esper.common.@internal.epl.@join.lookup;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 {
-	public class EventTableIndexMetadataUtil {
-	    public static string[][] GetUniqueness(EventTableIndexMetadata indexMetadata, string[] optionalViewUniqueness) {
-	        IList<string[]> unique = null;
+    public class EventTableIndexMetadataUtil
+    {
+        public static string[][] GetUniqueness(
+            EventTableIndexMetadata indexMetadata,
+            string[] optionalViewUniqueness)
+        {
+            IList<string[]> unique = null;
 
-	        ISet<IndexMultiKey> indexDescriptors = indexMetadata.Indexes.Keys;
-	        foreach (IndexMultiKey index in indexDescriptors) {
-	            if (!index.IsUnique) {
-	                continue;
-	            }
-	            string[] uniqueKeys = IndexedPropDesc.GetIndexProperties(index.HashIndexedProps);
-	            if (unique == null) {
-	                unique = new List<>();
-	            }
-	            unique.Add(uniqueKeys);
-	        }
-	        if (optionalViewUniqueness != null) {
-	            if (unique == null) {
-	                unique = new List<>();
-	            }
-	            unique.Add(optionalViewUniqueness);
-	        }
-	        if (unique == null) {
-	            return null;
-	        }
-	        return unique.ToArray();
-	    }
-	}
+            foreach (var index in indexMetadata.Indexes.Keys) {
+                if (!index.IsUnique) {
+                    continue;
+                }
+
+                var uniqueKeys = IndexedPropDesc.GetIndexProperties(index.HashIndexedProps);
+                if (unique == null) {
+                    unique = new List<string[]>();
+                }
+
+                unique.Add(uniqueKeys);
+            }
+
+            if (optionalViewUniqueness != null) {
+                if (unique == null) {
+                    unique = new List<string[]>();
+                }
+
+                unique.Add(optionalViewUniqueness);
+            }
+
+            if (unique == null) {
+                return null;
+            }
+
+            return unique.ToArray();
+        }
+    }
 } // end of namespace

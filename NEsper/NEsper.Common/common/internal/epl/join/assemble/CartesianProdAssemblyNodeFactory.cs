@@ -30,8 +30,12 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// <param name="allSubStreamsOptional">
         ///     true if all child nodes to this node are optional, or false ifone or more child nodes are required for a result.
         /// </param>
-        public CartesianProdAssemblyNodeFactory(int streamNum, int numStreams, bool allSubStreamsOptional) : base(
-            streamNum, numStreams)
+        public CartesianProdAssemblyNodeFactory(
+            int streamNum,
+            int numStreams,
+            bool allSubStreamsOptional)
+            : base(
+                streamNum, numStreams)
         {
             childStreamIndex = new int[numStreams];
             this.allSubStreamsOptional = allSubStreamsOptional;
@@ -54,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return NewInstance(
                 typeof(CartesianProdAssemblyNodeFactory), Constant(streamNum), Constant(numStreams),

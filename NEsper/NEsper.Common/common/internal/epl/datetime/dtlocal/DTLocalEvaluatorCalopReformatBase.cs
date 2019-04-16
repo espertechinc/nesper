@@ -22,13 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         internal readonly IList<CalendarOp> calendarOps;
         internal readonly ReformatOp reformatOp;
 
-        protected DTLocalEvaluatorCalopReformatBase(IList<CalendarOp> calendarOps, ReformatOp reformatOp)
+        protected DTLocalEvaluatorCalopReformatBase(
+            IList<CalendarOp> calendarOps,
+            ReformatOp reformatOp)
         {
             this.calendarOps = calendarOps;
             this.reformatOp = reformatOp;
         }
 
         public abstract object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

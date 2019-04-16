@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
         private readonly int numSubStreams;
         private readonly int[] optionalSubStreams;
         private readonly int[] requiredSubStreams;
-        private readonly ISet<EventBean>[] resultPerStream;
+        private readonly ICollection<EventBean>[] resultPerStream;
 
         /// <summary>
         ///     Ctor.
@@ -42,7 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
         /// <param name="lookupStrategies">the strategy to use for each stream to look up in</param>
         /// <param name="requiredPerStream">indicates which of the lookup streams are required to build a result and which are not</param>
         public LookupInstructionExec(
-            int fromStream, string fromStreamName, int[] toStreams, JoinExecTableLookupStrategy[] lookupStrategies,
+            int fromStream,
+            string fromStreamName,
+            int[] toStreams,
+            JoinExecTableLookupStrategy[] lookupStrategies,
             bool[] requiredPerStream)
         {
             if (toStreams.Length != lookupStrategies.Length) {
@@ -100,7 +103,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
         /// <param name="repository">supplies events for lookup, and place to add results to</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         /// <returns>true if one or more results, false if no results</returns>
-        public bool Process(Repository repository, ExprEvaluatorContext exprEvaluatorContext)
+        public bool Process(
+            Repository repository,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var hasOneResultRow = false;
             var it = repository.GetCursors(FromStream);
@@ -113,7 +118,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
 
                 // For that event, lookup in all required streams
                 while (streamCount < requiredSubStreams.Length) {
-                    var lookupResult = lookupStrategies[streamCount].Lookup(lookupEvent, cursor, exprEvaluatorContext);
+                    var lookupResult = lookupStrategies[streamCount]
+                        .Lookup(lookupEvent, cursor, exprEvaluatorContext);
 
                     // There is no result, break if this is a required stream
                     if (lookupResult == null || lookupResult.IsEmpty()) {

@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         internal readonly int streamCountOuter;
 
         public SubordInKeywordMultiTableLookupStrategyFactoryForge(
-            bool isNWOnTrigger, int streamCountOuter, ExprNode exprNode)
+            bool isNWOnTrigger,
+            int streamCountOuter,
+            ExprNode exprNode)
         {
             this.streamCountOuter = streamCountOuter;
             this.isNWOnTrigger = isNWOnTrigger;
@@ -32,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
                 typeof(SubordInKeywordMultiTableLookupStrategyFactory), GetType(), classScope);

@@ -96,8 +96,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     {
         public static AssignedType ParseKeyword(string keywordNodeText)
         {
-            switch (keywordNodeText.ToLowerInvariant())
-            {
+            switch (keywordNodeText.ToLowerInvariant()) {
                 case "variant":
                     return AssignedType.VARIANT;
                 case "map":
@@ -108,7 +107,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     return AssignedType.AVRO;
             }
 
-            throw new EPException("Expected 'variant', 'map', 'objectarray' or 'avro' keyword after create-schema clause but encountered '" + keywordNodeText + "'");
+            throw new EPException(
+                "Expected 'variant', 'map', 'objectarray' or 'avro' keyword after create-schema clause but encountered '" + keywordNodeText + "'");
         }
 
         public static AssignedType MapFrom(CreateSchemaClauseTypeDef? typeDefinition)
@@ -131,8 +131,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public static CreateSchemaClauseTypeDef MapToSoda(this AssignedType value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case AssignedType.VARIANT:
                     return CreateSchemaClauseTypeDef.VARIANT;
                 case AssignedType.MAP:

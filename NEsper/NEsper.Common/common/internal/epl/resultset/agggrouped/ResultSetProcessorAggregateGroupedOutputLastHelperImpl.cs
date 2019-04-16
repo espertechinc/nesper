@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
@@ -30,18 +29,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             outputLastUnordGroupOld = new LinkedHashMap<object, EventBean>();
         }
 
-        public void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic)
+        public void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic)
         {
             var newDataMultiKey = processor.GenerateGroupKeyArrayView(newData, true);
             var oldDataMultiKey = processor.GenerateGroupKeyArrayView(oldData, false);
             var eventsPerStream = new EventBean[1];
 
-            if (newData != null)
-            {
+            if (newData != null) {
                 // apply new data to aggregates
                 var count = 0;
-                foreach (var aNewData in newData)
-                {
+                foreach (var aNewData in newData) {
                     var mk = newDataMultiKey[count];
                     eventsPerStream[0] = aNewData;
                     processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.AgentInstanceContext);
@@ -49,12 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 }
             }
 
-            if (oldData != null)
-            {
+            if (oldData != null) {
                 // apply old data to aggregates
                 var count = 0;
-                foreach (var anOldData in oldData)
-                {
+                foreach (var anOldData in oldData) {
                     eventsPerStream[0] = anOldData;
                     processor.AggregationService.ApplyLeave(
                         eventsPerStream, oldDataMultiKey[count], processor.AgentInstanceContext);
@@ -62,8 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 }
             }
 
-            if (processor.IsSelectRStream)
-            {
+            if (processor.IsSelectRStream) {
                 processor.GenerateOutputBatchedViewPerKey(
                     oldData, oldDataMultiKey, false, isGenerateSynthetic, outputLastUnordGroupOld, null,
                     eventsPerStream);
@@ -74,37 +71,34 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newData, ISet<MultiKey<EventBean>> oldData, bool isGenerateSynthetic)
+            ISet<MultiKey<EventBean>> newData,
+            ISet<MultiKey<EventBean>> oldData,
+            bool isGenerateSynthetic)
         {
             var newDataMultiKey = processor.GenerateGroupKeyArrayJoin(newData, true);
             var oldDataMultiKey = processor.GenerateGroupKeyArrayJoin(oldData, false);
 
-            if (newData != null)
-            {
+            if (newData != null) {
                 // apply new data to aggregates
                 var count = 0;
-                foreach (var aNewData in newData)
-                {
+                foreach (var aNewData in newData) {
                     var mk = newDataMultiKey[count];
                     processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.AgentInstanceContext);
                     count++;
                 }
             }
 
-            if (oldData != null)
-            {
+            if (oldData != null) {
                 // apply old data to aggregates
                 var count = 0;
-                foreach (var anOldData in oldData)
-                {
+                foreach (var anOldData in oldData) {
                     processor.AggregationService.ApplyLeave(
                         anOldData.Array, oldDataMultiKey[count], processor.AgentInstanceContext);
                     count++;
                 }
             }
 
-            if (processor.IsSelectRStream)
-            {
+            if (processor.IsSelectRStream) {
                 processor.GenerateOutputBatchedJoinPerKey(
                     oldData, oldDataMultiKey, false, isGenerateSynthetic, outputLastUnordGroupOld, null);
             }
@@ -137,13 +131,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         {
             var newEventsArr = outputLastUnordGroupNew.IsEmpty() ? null : outputLastUnordGroupNew.Values.ToArray();
             EventBean[] oldEventsArr = null;
-            if (processor.IsSelectRStream)
-            {
+            if (processor.IsSelectRStream) {
                 oldEventsArr = outputLastUnordGroupOld.IsEmpty() ? null : outputLastUnordGroupOld.Values.ToArray();
             }
 
-            if (newEventsArr == null && oldEventsArr == null)
-            {
+            if (newEventsArr == null && oldEventsArr == null) {
                 return null;
             }
 

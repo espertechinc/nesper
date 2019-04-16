@@ -84,13 +84,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             }
 
             return new ColumnSettings(
-                config.MetadataRetrievalEnum, 
-                config.ColumnChangeCase, 
+                config.MetadataRetrievalEnum,
+                config.ColumnChangeCase,
                 config.SqlTypesMapping);
         }
 
         public HistoricalDataCache GetDataCache(
-            string databaseName, AgentInstanceContext agentInstanceContext, int streamNumber, int scheduleCallbackId)
+            string databaseName,
+            AgentInstanceContext agentInstanceContext,
+            int streamNumber,
+            int scheduleCallbackId)
         {
             var config = mapDatabaseRef.Get(databaseName);
             if (config == null) {

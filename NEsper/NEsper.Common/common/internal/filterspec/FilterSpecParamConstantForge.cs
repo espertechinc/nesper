@@ -7,80 +7,97 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
-	/// <summary>
-	/// This class represents a single, constant value filter parameter in an <seealso cref="FilterSpecActivatable" /> filter specification.
-	/// </summary>
-	public sealed class FilterSpecParamConstantForge : FilterSpecParamForge {
-	    private readonly object _filterConstant;
+    /// <summary>
+    ///     This class represents a single, constant value filter parameter in an <seealso cref="FilterSpecActivatable" />
+    ///     filter specification.
+    /// </summary>
+    public sealed class FilterSpecParamConstantForge : FilterSpecParamForge
+    {
+        private readonly object _filterConstant;
 
-	    public FilterSpecParamConstantForge(ExprFilterSpecLookupableForge lookupable, FilterOperator filterOperator, object filterConstant)
-	           
-	           	 : base(lookupable, filterOperator)
-	           {
-	        this.filterConstant = filterConstant;
+        public FilterSpecParamConstantForge(
+            ExprFilterSpecLookupableForge lookupable,
+            FilterOperator filterOperator,
+            object filterConstant)
+            : base(lookupable, filterOperator)
+        {
+            this._filterConstant = filterConstant;
 
-	        if (filterOperator.IsRangeOperator) {
-	            throw new ArgumentException("Illegal filter operator " + filterOperator + " supplied to " +
-	                    "constant filter parameter");
-	        }
-	    }
+            if (filterOperator.IsRangeOperator()) {
+                throw new ArgumentException(
+                    "Illegal filter operator " + filterOperator + " supplied to " +
+                    "constant filter parameter");
+            }
+        }
 
-	    public override CodegenMethod MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbolWEventType symbols) {
-	        CodegenMethod method = parent.MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
-	        method.Block
-	                .DeclareVar(typeof(ExprFilterSpecLookupable), "lookupable", LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-	                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()));
+        /// <summary>
+        ///     Returns the constant value.
+        /// </summary>
+        /// <returns>constant value</returns>
+        public object FilterConstant => _filterConstant;
 
-	        CodegenExpressionNewAnonymousClass inner = NewAnonymousClass(method.Block, typeof(FilterSpecParam), CompatExtensions.AsList(@Ref("lookupable"), @Ref("op")));
-	        CodegenMethod getFilterValue = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope).AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-	        inner.AddMethod("getFilterValue", getFilterValue);
-	        getFilterValue.Block.MethodReturn(Constant(filterConstant));
+        public override CodegenMethod MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols)
+        {
+            var method = parent.MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
+            method.Block
+                .DeclareVar(typeof(ExprFilterSpecLookupable), "lookupable", LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
+                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()));
 
-	        method.Block.MethodReturn(inner);
-	        return method;
-	    }
+            var inner = NewAnonymousClass(
+                method.Block, typeof(FilterSpecParam),
+                CompatExtensions.AsList(Ref("lookupable"), Ref("op")));
+            var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope).AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
+            inner.AddMethod("getFilterValue", getFilterValue);
+            getFilterValue.Block.MethodReturn(Constant(_filterConstant));
 
-	    /// <summary>
-	    /// Returns the constant value.
-	    /// </summary>
-	    /// <returns>constant value</returns>
-	    public object FilterConstant {
-	        get => filterConstant;	    }
+            method.Block.MethodReturn(inner);
+            return method;
+        }
 
-	    public override string ToString() {
-	        return base.ToString() + " filterConstant=" + filterConstant;
-	    }
+        public override string ToString()
+        {
+            return base.ToString() + " filterConstant=" + _filterConstant;
+        }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
-	        if (!base.Equals(o)) return false;
+        public override bool Equals(object o)
+        {
+            if (this == o) {
+                return true;
+            }
 
-	        FilterSpecParamConstantForge that = (FilterSpecParamConstantForge) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
 
-	        if (filterConstant != null ? !filterConstant.Equals(that.filterConstant) : that.filterConstant != null)
-	            return false;
+            if (!base.Equals(o)) {
+                return false;
+            }
 
-	        return true;
-	    }
+            var that = (FilterSpecParamConstantForge) o;
 
-	    public override int GetHashCode() {
-	        int result = base.GetHashCode();
-	        result = 31 * result + (filterConstant != null ? filterConstant.GetHashCode() : 0);
-	        return result;
-	    }
-	}
+            if (_filterConstant != null ? !_filterConstant.Equals(that._filterConstant) : that._filterConstant != null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            var result = base.GetHashCode();
+            result = 31 * result + (_filterConstant != null ? _filterConstant.GetHashCode() : 0);
+            return result;
+        }
+    }
 } // end of namespace

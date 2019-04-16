@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
@@ -21,23 +20,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static BeanInstantiatorForge MakeInstantiator(
-            BeanEventType beanEventType, ImportService importService)
+            BeanEventType beanEventType,
+            ImportService importService)
         {
             // see if we use a factory method
-            if (beanEventType.FactoryMethodName != null)
-            {
+            if (beanEventType.FactoryMethodName != null) {
                 return ResolveFactoryMethod(beanEventType, importService);
             }
 
             // find public ctor
             ImportException ctorNotFoundEx;
-            try
-            {
+            try {
                 importService.ResolveCtor(beanEventType.UnderlyingType, new Type[0]);
                 return new BeanInstantiatorForgeByNewInstanceReflection(beanEventType.UnderlyingType);
             }
-            catch (ImportException ex)
-            {
+            catch (ImportException ex) {
                 ctorNotFoundEx = ex;
             }
 
@@ -47,21 +44,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
         }
 
         private static BeanInstantiatorForge ResolveFactoryMethod(
-            BeanEventType beanEventType, ImportService importService)
+            BeanEventType beanEventType,
+            ImportService importService)
         {
             var factoryMethodName = beanEventType.FactoryMethodName;
 
             var lastDotIndex = factoryMethodName.LastIndexOf('.');
-            if (lastDotIndex == -1)
-            {
-                try
-                {
+            if (lastDotIndex == -1) {
+                try {
                     var method = importService.ResolveMethod(
                         beanEventType.UnderlyingType, factoryMethodName, new Type[0], new bool[0], new bool[0]);
                     return new BeanInstantiatorForgeByReflection(method);
                 }
-                catch (ImportException e)
-                {
+                catch (ImportException e) {
                     var message = "Failed to resolve configured factory method '" + factoryMethodName +
                                   "' expected to exist for class '" + beanEventType.UnderlyingType + "'";
                     Log.Info(message, e);
@@ -71,14 +66,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 
             var className = factoryMethodName.Substring(0, lastDotIndex);
             var methodName = factoryMethodName.Substring(lastDotIndex + 1);
-            try
-            {
+            try {
                 var method = importService.ResolveMethodOverloadChecked(
                     className, methodName, new Type[0], new bool[0], new bool[0]);
                 return new BeanInstantiatorForgeByReflection(method);
             }
-            catch (ImportException e)
-            {
+            catch (ImportException e) {
                 var message = "Failed to resolve configured factory method '" + methodName +
                               "' expected to exist for class '" + className + "'";
                 Log.Info(message, e);

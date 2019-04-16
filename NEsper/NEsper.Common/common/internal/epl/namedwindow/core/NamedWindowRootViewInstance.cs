@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -41,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         private IEnumerable<EventBean> dataWindowContents;
 
         public NamedWindowRootViewInstance(
-            NamedWindowRootView rootView, AgentInstanceContext agentInstanceContext,
+            NamedWindowRootView rootView,
+            AgentInstanceContext agentInstanceContext,
             EventTableIndexMetadata eventTableIndexMetadata)
         {
             this.rootView = rootView;
@@ -106,7 +106,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         }
 
         // Called by deletion strategy and also the insert-into for new events only
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             // Update indexes for fast deletion, if there are any
             if (rootView.IsChildBatching) {
@@ -149,7 +151,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         /// <param name="annotations">annotations</param>
         /// <param name="queryGraph">query graph</param>
         /// <returns>events</returns>
-        public ICollection<EventBean> Snapshot(QueryGraph queryGraph, Attribute[] annotations)
+        public ICollection<EventBean> Snapshot(
+            QueryGraph queryGraph,
+            Attribute[] annotations)
         {
             VirtualDWView virtualDataWindow = null;
             if (IsVirtualDataWindow) {
@@ -170,7 +174,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         /// <param name="explicitIndexName">index name</param>
         /// <throws>ExprValidationException if the index fails to be valid</throws>
         public void AddExplicitIndex(
-            string explicitIndexName, string explicitIndexModuleName, QueryPlanIndexItem explicitIndexDesc,
+            string explicitIndexName,
+            string explicitIndexModuleName,
+            QueryPlanIndexItem explicitIndexDesc,
             bool isRecoveringResilient)
         {
             lock (this) {

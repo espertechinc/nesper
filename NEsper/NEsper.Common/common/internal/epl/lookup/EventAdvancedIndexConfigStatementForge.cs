@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 {
     public interface EventAdvancedIndexConfigStatementForge
     {
-        CodegenExpression CodegenMake(CodegenMethodScope parent, CodegenClassScope classScope);
+        CodegenExpression CodegenMake(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope);
 
         EventAdvancedIndexConfigStatement ToRuntime();
     }

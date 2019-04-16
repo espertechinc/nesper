@@ -8,21 +8,25 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.path
 {
-	public class NamedWindowCollectorImpl : NamedWindowCollector {
-	    private readonly IDictionary<string, NamedWindowMetaData> moduleNamedWindows;
+    public class NamedWindowCollectorImpl : NamedWindowCollector
+    {
+        private readonly IDictionary<string, NamedWindowMetaData> moduleNamedWindows;
 
-	    public NamedWindowCollectorImpl(IDictionary<string, NamedWindowMetaData> moduleNamedWindows) {
-	        this.moduleNamedWindows = moduleNamedWindows;
-	    }
+        public NamedWindowCollectorImpl(IDictionary<string, NamedWindowMetaData> moduleNamedWindows)
+        {
+            this.moduleNamedWindows = moduleNamedWindows;
+        }
 
-	    public void RegisterNamedWindow(string namedWindowName, NamedWindowMetaData namedWindow) {
-	        moduleNamedWindows.Put(namedWindowName, namedWindow);
-	    }
-	}
+        public void RegisterNamedWindow(
+            string namedWindowName,
+            NamedWindowMetaData namedWindow)
+        {
+            moduleNamedWindows.Put(namedWindowName, namedWindow);
+        }
+    }
 } // end of namespace

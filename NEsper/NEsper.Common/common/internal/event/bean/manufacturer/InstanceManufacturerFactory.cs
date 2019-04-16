@@ -15,9 +15,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     public interface InstanceManufacturerFactory
     {
         InstanceManufacturer MakeEvaluator();
+
         CodegenExpression Codegen(
             object forge,
-            CodegenMethodScope codegenMethodScope, 
+            CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
     }

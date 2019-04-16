@@ -10,23 +10,22 @@ using System;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
-	public enum ResultSetProcessorType
-	{
-	    HANDTHROUGH,
-	    UNAGGREGATED_UNGROUPED,
-	    FULLYAGGREGATED_UNGROUPED,
-	    AGGREGATED_UNGROUPED,
-	    FULLYAGGREGATED_GROUPED,
-	    FULLYAGGREGATED_GROUPED_ROLLUP,
-	    AGGREGATED_GROUPED,
-	}
+    public enum ResultSetProcessorType
+    {
+        HANDTHROUGH,
+        UNAGGREGATED_UNGROUPED,
+        FULLYAGGREGATED_UNGROUPED,
+        AGGREGATED_UNGROUPED,
+        FULLYAGGREGATED_GROUPED,
+        FULLYAGGREGATED_GROUPED_ROLLUP,
+        AGGREGATED_GROUPED,
+    }
 
     public static class ResultSetProcessorTypeExtensions
     {
         public static bool IsAggregated(this ResultSetProcessorType @value)
         {
-            switch (@value)
-            {
+            switch (@value) {
                 case ResultSetProcessorType.HANDTHROUGH:
                 case ResultSetProcessorType.UNAGGREGATED_UNGROUPED:
                     return false;

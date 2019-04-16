@@ -23,21 +23,23 @@ namespace com.espertech.esper.common.client.soda
         public PatternAndExpr()
         {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="first">a first pattern expression in the AND relationship</param>
         /// <param name="second">a second pattern expression in the AND relationship</param>
         /// <param name="patternExprs">further optional pattern expressions in the AND relationship</param>
-        public PatternAndExpr(PatternExpr first, PatternExpr second, params PatternExpr[] patternExprs)
+        public PatternAndExpr(
+            PatternExpr first,
+            PatternExpr second,
+            params PatternExpr[] patternExprs)
         {
             AddChild(first);
             AddChild(second);
-            for (int i = 0; i < patternExprs.Length; i++)
-            {
+            for (int i = 0; i < patternExprs.Length; i++) {
                 AddChild(patternExprs[i]);
             }
         }
-    
+
         /// <summary>Adds a pattern expression to the AND relationship between patterns. </summary>
         /// <param name="expr">to add</param>
         /// <returns>pattern expression</returns>
@@ -47,16 +49,16 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
+        public override PatternExprPrecedenceEnum Precedence {
             get { return PatternExprPrecedenceEnum.AND; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer, EPStatementFormatter formatter)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             String delimiter = "";
-            foreach (PatternExpr child in Children)
-            {
+            foreach (PatternExpr child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence, formatter);
                 delimiter = " and ";

@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="index">array index</param>
         /// <param name="nestedGetter">nested getter</param>
         public ObjectArrayEventBeanArrayIndexedElementPropertyGetter(
-            int propertyIndex, int index, EventPropertyGetterSPI nestedGetter)
+            int propertyIndex,
+            int index,
+            EventPropertyGetterSPI nestedGetter)
         {
             this.propertyIndex = propertyIndex;
             this.index = index;
@@ -66,7 +68,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -74,14 +77,16 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
@@ -89,28 +94,32 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetObjectArrayCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         private CodegenMethod GetObjectArrayCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array").Block
@@ -124,7 +133,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         private CodegenMethod GetFragmentCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array").Block

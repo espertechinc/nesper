@@ -21,13 +21,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprLikeNodeForgeConst forge;
         private readonly ExprEvaluator lhsEval;
 
-        internal ExprLikeNodeForgeConstEval(ExprLikeNodeForgeConst forge, ExprEvaluator lhsEval)
+        internal ExprLikeNodeForgeConstEval(
+            ExprLikeNodeForgeConst forge,
+            ExprEvaluator lhsEval)
         {
             this.forge = forge;
             this.lhsEval = lhsEval;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var value = lhsEval.Evaluate(eventsPerStream, isNewData, context);
 
@@ -45,8 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenMethod Codegen(
-            ExprLikeNodeForgeConst forge, ExprNode lhs, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            ExprLikeNodeForgeConst forge,
+            ExprNode lhs,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             CodegenExpression mLikeUtil = codegenClassScope.AddFieldUnshared(
                 true, typeof(LikeUtil), forge.LikeUtilInit);
@@ -72,8 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return methodNode;
         }
 
-        private static CodegenExpression GetLikeCode(
-            ExprLikeNodeForge forge, CodegenExpression refLike, CodegenExpression stringExpr)
+        internal static CodegenExpression GetLikeCode(
+            ExprLikeNodeForge forge,
+            CodegenExpression refLike,
+            CodegenExpression stringExpr)
         {
             var eval = ExprDotMethod(refLike, "compare", stringExpr);
             return !forge.ForgeRenderable.IsNot ? eval : Not(eval);

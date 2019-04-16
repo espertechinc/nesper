@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <summary>Ctor. </summary>
         /// <param name="identifier">variable name</param>
         /// <param name="expression">expression</param>
-        public MatchRecognizeDefineItem(String identifier, ExprNode expression) {
+        public MatchRecognizeDefineItem(
+            String identifier,
+            ExprNode expression)
+        {
             Identifier = identifier;
             Expression = expression;
         }

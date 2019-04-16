@@ -27,13 +27,31 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
     {
         internal readonly PropertySortedEventTableFactory factory;
 
-        public abstract ISet<EventBean> LookupRange(object keyStart, bool includeStart, object keyEnd, bool includeEnd, bool allowRangeReversal);
+        public abstract ISet<EventBean> LookupRange(
+            object keyStart,
+            bool includeStart,
+            object keyEnd,
+            bool includeEnd,
+            bool allowRangeReversal);
 
-        public abstract ICollection<EventBean> LookupRangeColl(object keyStart, bool includeStart, object keyEnd, bool includeEnd, bool allowRangeReversal);
+        public abstract ICollection<EventBean> LookupRangeColl(
+            object keyStart,
+            bool includeStart,
+            object keyEnd,
+            bool includeEnd,
+            bool allowRangeReversal);
 
-        public abstract ISet<EventBean> LookupRangeInverted(object keyStart, bool includeStart, object keyEnd, bool includeEnd);
+        public abstract ISet<EventBean> LookupRangeInverted(
+            object keyStart,
+            bool includeStart,
+            object keyEnd,
+            bool includeEnd);
 
-        public abstract ICollection<EventBean> LookupRangeInvertedColl(object keyStart, bool includeStart, object keyEnd, bool includeEnd);
+        public abstract ICollection<EventBean> LookupRangeInvertedColl(
+            object keyStart,
+            bool includeStart,
+            object keyEnd,
+            bool includeEnd);
 
         public abstract ISet<EventBean> LookupLess(object keyStart);
 
@@ -68,21 +86,21 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             return factory.propertyGetter.Get(theEvent);
         }
 
-        public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
+        public void AddRemove(
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
-            if (newData != null)
-            {
-                foreach (EventBean theEvent in newData)
-                {
+            if (newData != null) {
+                foreach (EventBean theEvent in newData) {
                     Add(theEvent, exprEvaluatorContext);
                 }
             }
-            if (oldData != null)
-            {
-                foreach (EventBean theEvent in oldData)
-                {
+
+            if (oldData != null) {
+                foreach (EventBean theEvent in oldData) {
                     Remove(theEvent, exprEvaluatorContext);
                 }
             }
@@ -97,12 +115,12 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         /// <param name="events">to add</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
         /// <throws>ArgumentException if the event was already existed in the index</throws>
-        public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (events != null)
-            {
-                foreach (EventBean theEvent in events)
-                {
+            if (events != null) {
+                foreach (EventBean theEvent in events) {
                     Add(theEvent, exprEvaluatorContext);
                 }
             }
@@ -114,119 +132,116 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         /// <param name="events">to be removed, can be null instead of an empty array.</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
         /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
-        public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (events != null)
-            {
-                foreach (EventBean theEvent in events)
-                {
+            if (events != null) {
+                foreach (EventBean theEvent in events) {
                     Remove(theEvent, exprEvaluatorContext);
                 }
             }
         }
 
-        public virtual int? NumberOfEvents
-        {
+        public virtual int? NumberOfEvents {
             get => null;
         }
 
         protected internal static ISet<EventBean> Normalize(IDictionary<object, ISet<EventBean>> submap)
         {
-            if (submap.Count == 0)
-            {
+            if (submap.Count == 0) {
                 return null;
             }
-            if (submap.Count == 1)
-            {
+
+            if (submap.Count == 1) {
                 return submap.Get(submap.Keys.First());
             }
+
             ISet<EventBean> result = new LinkedHashSet<EventBean>();
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submap)
-            {
+            foreach (KeyValuePair<object, ISet<EventBean>> entry in submap) {
                 result.AddAll(entry.Value);
             }
+
             return result;
         }
 
         protected internal static ICollection<EventBean> NormalizeCollection(IDictionary<object, ISet<EventBean>> submap)
         {
-            if (submap.Count == 0)
-            {
+            if (submap.Count == 0) {
                 return null;
             }
-            if (submap.Count == 1)
-            {
+
+            if (submap.Count == 1) {
                 return submap.Get(submap.Keys.First());
             }
+
             Deque<EventBean> result = new ArrayDeque<EventBean>();
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submap)
-            {
+            foreach (KeyValuePair<object, ISet<EventBean>> entry in submap) {
                 result.AddAll(entry.Value);
             }
+
             return result;
         }
 
         protected internal static ICollection<EventBean> NormalizeCollection(
-            IDictionary<object, ISet<EventBean>> submapOne, 
+            IDictionary<object, ISet<EventBean>> submapOne,
             IDictionary<object, ISet<EventBean>> submapTwo)
         {
-            if (submapOne.Count == 0)
-            {
+            if (submapOne.Count == 0) {
                 return NormalizeCollection(submapTwo);
             }
-            if (submapTwo.Count == 0)
-            {
+
+            if (submapTwo.Count == 0) {
                 return NormalizeCollection(submapOne);
             }
+
             ArrayDeque<EventBean> result = new ArrayDeque<EventBean>();
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapOne)
-            {
+            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapOne) {
                 result.AddAll(entry.Value);
             }
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapTwo)
-            {
+
+            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapTwo) {
                 result.AddAll(entry.Value);
             }
+
             return result;
         }
 
         protected internal static ISet<EventBean> Normalize(
-            IDictionary<object, ISet<EventBean>> submapOne, 
+            IDictionary<object, ISet<EventBean>> submapOne,
             IDictionary<object, ISet<EventBean>> submapTwo)
         {
-            if (submapOne.Count == 0)
-            {
+            if (submapOne.Count == 0) {
                 return Normalize(submapTwo);
             }
-            if (submapTwo.Count == 0)
-            {
+
+            if (submapTwo.Count == 0) {
                 return Normalize(submapOne);
             }
+
             ISet<EventBean> result = new LinkedHashSet<EventBean>();
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapOne)
-            {
+            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapOne) {
                 result.AddAll(entry.Value);
             }
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapTwo)
-            {
+
+            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapTwo) {
                 result.AddAll(entry.Value);
             }
+
             return result;
         }
 
         public string ToQueryPlan()
         {
             return this.GetType().GetSimpleName() +
-                    " streamNum=" + factory.Organization.StreamNum;
+                   " streamNum=" + factory.Organization.StreamNum;
         }
 
-        public EventTableOrganization Organization
-        {
+        public EventTableOrganization Organization {
             get => factory.Organization;
         }
 
-        public Type ValueType
-        {
+        public Type ValueType {
             get => factory.valueType;
         }
 
@@ -241,9 +256,13 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public abstract int NumKeys { get; }
         public abstract object Index { get; }
 
-        public abstract void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        public abstract void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-        public abstract void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        public abstract void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         public abstract bool IsEmpty { get; }
 

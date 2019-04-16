@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public bool IsConstantResult => false;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
@@ -49,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
@@ -57,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public string ParameterName { get; }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(ParameterName);
             writer.Write(":");
@@ -71,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
-        public override bool EqualsNode(ExprNode other, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode other,
+            bool ignoreStreamPrefix)
         {
             if (!(other is ExprNamedParameterNode)) {
                 return false;

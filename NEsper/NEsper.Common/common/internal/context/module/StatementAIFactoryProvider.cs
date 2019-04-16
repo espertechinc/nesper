@@ -18,6 +18,8 @@ namespace com.espertech.esper.common.@internal.context.module
 
         void Unassign();
 
-        void SetValue(int number, object value);
+        void SetValue(
+            int number,
+            object value);
     }
 } // end of namespace

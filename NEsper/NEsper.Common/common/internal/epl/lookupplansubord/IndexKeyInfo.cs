@@ -15,8 +15,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     public class IndexKeyInfo
     {
         public IndexKeyInfo(
-            IList<SubordPropHashKeyForge> orderedKeyProperties, CoercionDesc orderedKeyCoercionTypes,
-            IList<SubordPropRangeKeyForge> orderedRangeDesc, CoercionDesc orderedRangeCoercionTypes)
+            IList<SubordPropHashKeyForge> orderedKeyProperties,
+            CoercionDesc orderedKeyCoercionTypes,
+            IList<SubordPropRangeKeyForge> orderedRangeDesc,
+            CoercionDesc orderedRangeCoercionTypes)
         {
             OrderedHashDesc = orderedKeyProperties;
             OrderedKeyCoercionTypes = orderedKeyCoercionTypes;

@@ -14,8 +14,13 @@ namespace com.espertech.esper.common.@internal.support
     [Serializable]
     public class SupportBean_N
     {
-        public SupportBean_N(int intPrimitive, int? intBoxed, double doublePrimitive, double? doubleBoxed,
-                             bool boolPrimitive, bool boolBoxed)
+        public SupportBean_N(
+            int intPrimitive,
+            int? intBoxed,
+            double doublePrimitive,
+            double? doubleBoxed,
+            bool boolPrimitive,
+            bool boolBoxed)
         {
             IntPrimitive = intPrimitive;
             IntBoxed = intBoxed;
@@ -25,7 +30,9 @@ namespace com.espertech.esper.common.@internal.support
             BoolBoxed = boolBoxed;
         }
 
-        public SupportBean_N(int intPrimitive, int? intBoxed)
+        public SupportBean_N(
+            int intPrimitive,
+            int? intBoxed)
         {
             IntPrimitive = intPrimitive;
             IntBoxed = intBoxed;

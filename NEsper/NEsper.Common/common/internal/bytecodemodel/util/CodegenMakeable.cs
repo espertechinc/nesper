@@ -13,6 +13,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
     public interface CodegenMakeable<T> where T : CodegenSymbolProvider
     {
-        CodegenExpression Make(CodegenMethodScope parent, T symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            T symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

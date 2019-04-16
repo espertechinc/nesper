@@ -39,10 +39,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             JoinSetComposer joinSetComposer,
             Viewable[] topViews,
             Viewable[] eventStreamViewables,
-            ViewableActivationResult[] viewableActivationResults) : base(
-            finalView, stopCallback, agentInstanceContext, optionalAggegationService, subselectStrategies,
-            priorStrategies, previousGetterStrategies, regexExprPreviousEvalStrategy, tableAccessStrategies,
-            preloadList)
+            ViewableActivationResult[] viewableActivationResults)
+            : base(
+                finalView, stopCallback, agentInstanceContext, optionalAggegationService, subselectStrategies,
+                priorStrategies, previousGetterStrategies, regexExprPreviousEvalStrategy, tableAccessStrategies,
+                preloadList)
         {
             TopViews = topViews;
             PatternRoots = patternRoots;

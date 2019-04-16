@@ -14,21 +14,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     public interface SubselectForgeRow
     {
         CodegenExpression EvaluateCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbol, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbol,
+            CodegenClassScope classScope);
 
         CodegenExpression EvaluateGetCollEventsCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbol, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbol,
+            CodegenClassScope classScope);
 
         CodegenExpression EvaluateGetCollScalarCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbol, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbol,
+            CodegenClassScope classScope);
 
         CodegenExpression EvaluateGetBeanCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
 
         CodegenExpression EvaluateTypableSinglerowCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
 
         CodegenExpression EvaluateTypableMultirowCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

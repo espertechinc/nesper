@@ -34,7 +34,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         private readonly ExprDotForgeEnumMethodBase forge;
 
         public ExprDotForgeEnumMethodEval(
-            ExprDotForgeEnumMethodBase forge, EnumEval enumEval, bool cache, int enumEvalNumRequiredEvents)
+            ExprDotForgeEnumMethodBase forge,
+            EnumEval enumEval,
+            bool cache,
+            int enumEvalNumRequiredEvents)
         {
             this.forge = forge;
             this.enumEval = enumEval;
@@ -45,7 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public EPType TypeInfo => forge.TypeInfo;
 
         public object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (target is EventBean) {
                 target = Collections.SingletonList((EventBean) target);
@@ -63,8 +69,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public ExprDotForge DotForge => forge;
 
         public static CodegenExpression Codegen(
-            ExprDotForgeEnumMethodBase forge, CodegenExpression inner, Type innerType,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprDotForgeEnumMethodBase forge,
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             Type returnType = EPTypeHelper.GetCodegenReturnType(forge.TypeInfo);
@@ -139,7 +148,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         /// <param name="eventsPerStream">events</param>
         /// <param name="enumEvalNumRequiredEvents">width</param>
         /// <returns>allocated</returns>
-        public static EventBean[] AllocateCopyEventLambda(EventBean[] eventsPerStream, int enumEvalNumRequiredEvents)
+        public static EventBean[] AllocateCopyEventLambda(
+            EventBean[] eventsPerStream,
+            int enumEvalNumRequiredEvents)
         {
             var eventsLambda = new EventBean[enumEvalNumRequiredEvents];
             EventBeanUtility.SafeArrayCopy(eventsPerStream, eventsLambda);

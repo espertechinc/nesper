@@ -9,9 +9,9 @@
 using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.util
@@ -33,13 +33,17 @@ namespace com.espertech.esper.common.@internal.@event.util
         }
 
         public static CodegenMethod From(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope, Type expectedUnderlyingType,
-            EventPropertyGetterSPI innerGetter, AccessType accessType, Type generator)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            Type expectedUnderlyingType,
+            EventPropertyGetterSPI innerGetter,
+            AccessType accessType,
+            Type generator)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                     accessType == AccessType.EXISTS ? typeof(bool) : typeof(object), generator, codegenClassScope)
                 .AddParam(typeof(object), "value");
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .IfNotInstanceOf("value", expectedUnderlyingType)
                 .IfInstanceOf("value", typeof(EventBean))
                 .DeclareVarWCast(typeof(EventBean), "bean", "value");
@@ -60,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.util
                 throw new UnsupportedOperationException("Invalid access type " + accessType);
             }
 
-            block = block.BlockReturn(Constant(accessType == AccessType.EXISTS ? false : null));
+            block = block.BlockReturn(Constant(accessType == AccessType.EXISTS ? (bool?) false : null));
 
             CodegenExpression expression;
             if (accessType == AccessType.GET) {

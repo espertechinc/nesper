@@ -28,8 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         ///     Ctor.
         /// </summary>
         /// <param name="isOnDemandStreams">for on-demand stream</param>
-        public StreamTypeServiceImpl(bool isOnDemandStreams) : this(
-            new EventType[0], new string[0], new bool[0], isOnDemandStreams, false)
+        public StreamTypeServiceImpl(bool isOnDemandStreams)
+            : this(
+                new EventType[0], new string[0], new bool[0], isOnDemandStreams, false)
         {
         }
 
@@ -39,7 +40,11 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <param name="eventType">a single event type for a single stream</param>
         /// <param name="streamName">the stream name of the single stream</param>
         /// <param name="isIStreamOnly">true for no datawindow for stream</param>
-        public StreamTypeServiceImpl(EventType eventType, string streamName, bool isIStreamOnly) :
+        public StreamTypeServiceImpl(
+            EventType eventType,
+            string streamName,
+            bool isIStreamOnly)
+            :
             this(new[] {eventType}, new[] {streamName}, new[] {isIStreamOnly}, false, false)
         {
         }
@@ -53,7 +58,10 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <param name="isOnDemandStreams">true to indicate that all streams are on-demand pull-based</param>
         /// <param name="optionalStreams">if there are any streams that may not provide events, applicable to outer joins</param>
         public StreamTypeServiceImpl(
-            EventType[] eventTypes, string[] streamNames, bool[] isIStreamOnly, bool isOnDemandStreams,
+            EventType[] eventTypes,
+            string[] streamNames,
+            bool[] isIStreamOnly,
+            bool isOnDemandStreams,
             bool optionalStreams)
         {
             EventTypes = eventTypes;
@@ -82,7 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         ///     subqueries)
         /// </param>
         public StreamTypeServiceImpl(
-            LinkedHashMap<string, Pair<EventType, string>> namesAndTypes, bool isStreamZeroUnambigous,
+            LinkedHashMap<string, Pair<EventType, string>> namesAndTypes,
+            bool isStreamZeroUnambigous,
             bool requireStreamNames)
         {
             IsStreamZeroUnambigous = isStreamZeroUnambigous;
@@ -164,7 +173,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             return -1;
         }
 
-        public PropertyResolutionDescriptor ResolveByPropertyName(string propertyName, bool obtainFragment)
+        public PropertyResolutionDescriptor ResolveByPropertyName(
+            string propertyName,
+            bool obtainFragment)
         {
             if (propertyName == null) {
                 throw new ArgumentException("Null property name");
@@ -181,7 +192,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             return desc;
         }
 
-        public PropertyResolutionDescriptor ResolveByPropertyNameExplicitProps(string propertyName, bool obtainFragment)
+        public PropertyResolutionDescriptor ResolveByPropertyNameExplicitProps(
+            string propertyName,
+            bool obtainFragment)
         {
             if (propertyName == null) {
                 throw new ArgumentException("Null property name");
@@ -199,7 +212,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         }
 
         public PropertyResolutionDescriptor ResolveByStreamAndPropName(
-            string streamName, string propertyName, bool obtainFragment)
+            string streamName,
+            string propertyName,
+            bool obtainFragment)
         {
             if (streamName == null) {
                 throw new ArgumentException("Null property name");
@@ -213,7 +228,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         }
 
         public PropertyResolutionDescriptor ResolveByStreamAndPropNameExplicitProps(
-            string streamName, string propertyName, bool obtainFragment)
+            string streamName,
+            string propertyName,
+            bool obtainFragment)
         {
             if (streamName == null) {
                 throw new ArgumentException("Null property name");
@@ -227,7 +244,8 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         }
 
         public PropertyResolutionDescriptor ResolveByStreamAndPropName(
-            string streamAndPropertyName, bool obtainFragment)
+            string streamAndPropertyName,
+            bool obtainFragment)
         {
             if (streamAndPropertyName == null) {
                 throw new ArgumentException("Null stream and property name");
@@ -273,7 +291,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             return desc;
         }
 
-        private PropertyResolutionDescriptor FindByPropertyName(string propertyName, bool obtainFragment)
+        private PropertyResolutionDescriptor FindByPropertyName(
+            string propertyName,
+            bool obtainFragment)
         {
             var index = 0;
             var foundIndex = 0;
@@ -334,7 +354,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 streamType.GetPropertyType(propertyName), fragmentEventType);
         }
 
-        private PropertyResolutionDescriptor FindByPropertyNameExplicitProps(string propertyName, bool obtainFragment)
+        private PropertyResolutionDescriptor FindByPropertyNameExplicitProps(
+            string propertyName,
+            bool obtainFragment)
         {
             var index = 0;
             var foundIndex = 0;
@@ -386,7 +408,10 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 streamType.GetPropertyType(propertyName), fragmentEventType);
         }
 
-        private void HandleFindExceptions(string propertyName, int foundCount, EventType streamType)
+        private void HandleFindExceptions(
+            string propertyName,
+            int foundCount,
+            EventType streamType)
         {
             if (foundCount > 1) {
                 throw new DuplicatePropertyException(
@@ -401,7 +426,10 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         }
 
         private PropertyResolutionDescriptor FindByStreamName(
-            string propertyName, string streamName, bool explicitPropertiesOnly, bool obtainFragment)
+            string propertyName,
+            string streamName,
+            bool explicitPropertiesOnly,
+            bool obtainFragment)
         {
             return FindByStreamNameOnly(propertyName, streamName, explicitPropertiesOnly, obtainFragment);
         }
@@ -419,7 +447,10 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         }
 
         private PropertyResolutionDescriptor FindByStreamNameOnly(
-            string propertyName, string streamName, bool explicitPropertiesOnly, bool obtainFragment)
+            string propertyName,
+            string streamName,
+            bool explicitPropertiesOnly,
+            bool obtainFragment)
         {
             var index = 0;
             EventType streamType = null;
@@ -500,7 +531,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         }
 
         private PropertyNotFoundException HandlePropertyNotFound(
-            string propertyName, string streamName, EventType streamType)
+            string propertyName,
+            string streamName,
+            EventType streamType)
         {
             var message = "Property named '" + propertyName + "' is not valid in stream '" + streamName + "'";
             var msgGen = new PropertyNotFoundExceptionSuggestionGenSingleTyped(streamType, propertyName);
@@ -512,7 +545,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             private readonly EventType[] eventTypes;
             private readonly string propertyName;
 
-            internal PropertyNotFoundExceptionSuggestionGenMultiTyped(EventType[] eventTypes, string propertyName)
+            internal PropertyNotFoundExceptionSuggestionGenMultiTyped(
+                EventType[] eventTypes,
+                string propertyName)
             {
                 this.eventTypes = eventTypes;
                 this.propertyName = propertyName;
@@ -526,7 +561,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             private readonly EventType eventType;
             private readonly string propertyName;
 
-            internal PropertyNotFoundExceptionSuggestionGenSingleTyped(EventType eventType, string propertyName)
+            internal PropertyNotFoundExceptionSuggestionGenSingleTyped(
+                EventType eventType,
+                string propertyName)
             {
                 this.eventType = eventType;
                 this.propertyName = propertyName;
@@ -542,7 +579,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             private readonly string[] streamNames;
 
             internal StreamNotFoundExceptionSuggestionGen(
-                EventType[] eventTypes, string[] streamNames, string streamName)
+                EventType[] eventTypes,
+                string[] streamNames,
+                string streamName)
             {
                 this.eventTypes = eventTypes;
                 this.streamNames = streamNames;

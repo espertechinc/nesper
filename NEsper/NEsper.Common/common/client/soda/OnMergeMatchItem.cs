@@ -18,25 +18,31 @@ namespace com.espertech.esper.common.client.soda
     public class OnMergeMatchItem : OnClause
     {
         /// <summary>Ctor. </summary>
-        public OnMergeMatchItem() {
+        public OnMergeMatchItem()
+        {
             Actions = new List<OnMergeMatchedAction>();
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="matched">true for matched, false for not-matched</param>
         /// <param name="optionalCondition">an optional additional filter</param>
         /// <param name="actions">one or more actions to take</param>
-        public OnMergeMatchItem(bool matched, Expression optionalCondition, IList<OnMergeMatchedAction> actions)
+        public OnMergeMatchItem(
+            bool matched,
+            Expression optionalCondition,
+            IList<OnMergeMatchedAction> actions)
         {
             IsMatched = matched;
             OptionalCondition = optionalCondition;
             Actions = actions;
         }
-    
+
         /// <summary>Renders the clause in textual representation. </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">for NewLine-whitespace formatting</param>
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             formatter.BeginMergeWhenMatched(writer);
             if (IsMatched) {
@@ -45,11 +51,12 @@ namespace com.espertech.esper.common.client.soda
             else {
                 writer.Write("when not matched");
             }
-            if (OptionalCondition != null)
-            {
+
+            if (OptionalCondition != null) {
                 writer.Write(" and ");
                 OptionalCondition.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
+
             foreach (OnMergeMatchedAction action in Actions) {
                 formatter.BeginMergeAction(writer);
                 action.ToEPL(writer);

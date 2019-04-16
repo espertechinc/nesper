@@ -43,7 +43,10 @@ namespace com.espertech.esper.common.@internal.view.previous
         /// <param name="sortedEvents">is the sorted window contents</param>
         /// <param name="currentSize">is the current size of the window</param>
         /// <param name="maxSize">is the maximum size of the window</param>
-        public void Refresh(OrderedDictionary<object, object> sortedEvents, int currentSize, int maxSize)
+        public void Refresh(
+            OrderedDictionary<object, object> sortedEvents,
+            int currentSize,
+            int maxSize)
         {
             updateObserver.Updated(this);
             this.sortedEvents = sortedEvents;

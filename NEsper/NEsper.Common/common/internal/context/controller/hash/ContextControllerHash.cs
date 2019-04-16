@@ -23,7 +23,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public ContextControllerHash(
             ContextManagerRealization realization,
-            ContextControllerHashFactory factory) : base(realization)
+            ContextControllerHashFactory factory)
+            : base(realization)
         {
             this.factory = factory;
         }
@@ -36,12 +37,18 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public override ContextManagerRealization Realization => realization;
 
-        protected abstract void VisitPartitions(IntSeqKey controllerPath, BiConsumer<int, int> hashAndCPId);
+        protected abstract void VisitPartitions(
+            IntSeqKey controllerPath,
+            BiConsumer<int, int> hashAndCPId);
 
-        protected abstract int GetSubpathOrCPId(IntSeqKey path, int hash);
+        protected abstract int GetSubpathOrCPId(
+            IntSeqKey path,
+            int hash);
 
         public override void VisitSelectedPartitions(
-            IntSeqKey path, ContextPartitionSelector selector, ContextPartitionVisitor visitor,
+            IntSeqKey path,
+            ContextPartitionSelector selector,
+            ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel)
         {
             if (selector is ContextPartitionSelectorHash) {
@@ -66,7 +73,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 var identifierHash = new ContextPartitionIdentifierHash();
 
                 VisitPartitions(
-                    path, (hash, subpathOrCPId) => {
+                    path, (
+                        hash,
+                        subpathOrCPId) => {
                         identifierHash.Hash = hash;
                         if (factory.FactoryEnv.IsLeaf) {
                             identifierHash.ContextPartitionId = subpathOrCPId;
@@ -82,7 +91,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
             if (selector is ContextPartitionSelectorAll) {
                 VisitPartitions(
-                    path, (hash, subpathOrCPId) => realization.ContextPartitionRecursiveVisit(
+                    path, (
+                        hash,
+                        subpathOrCPId) => realization.ContextPartitionRecursiveVisit(
                         path, subpathOrCPId, this, visitor, selectorPerLevel));
                 return;
             }
@@ -90,7 +101,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             if (selector is ContextPartitionSelectorById) {
                 var byId = (ContextPartitionSelectorById) selector;
                 VisitPartitions(
-                    path, (hash, subpathOrCPId) => {
+                    path, (
+                        hash,
+                        subpathOrCPId) => {
                         if (byId.ContextPartitionIds.Contains(subpathOrCPId)) {
                             realization.ContextPartitionRecursiveVisit(
                                 path, subpathOrCPId, this, visitor, selectorPerLevel);
@@ -104,7 +117,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         }
 
         protected int[] ActivateByPreallocate(
-            IntSeqKey path, object[] parentPartitionKeys, EventBean optionalTriggeringEvent)
+            IntSeqKey path,
+            object[] parentPartitionKeys,
+            EventBean optionalTriggeringEvent)
         {
             var granularity = factory.HashSpec.Granularity;
             var cpOrSubpathIds = new int[granularity];

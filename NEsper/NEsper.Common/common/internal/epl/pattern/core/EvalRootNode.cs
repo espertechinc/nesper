@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         internal readonly EvalNode childNode;
         internal readonly EvalRootFactoryNode factoryNode;
 
-        public EvalRootNode(PatternAgentInstanceContext context, EvalRootFactoryNode factoryNode, EvalNode childNode)
+        public EvalRootNode(
+            PatternAgentInstanceContext context,
+            EvalRootFactoryNode factoryNode,
+            EvalNode childNode)
         {
             this.factoryNode = factoryNode;
             this.childNode = childNode;

@@ -18,31 +18,61 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         bool AllowInitIndex(bool isRecoveringResilient);
 
         EventTableFactory CreateHashedOnly(
-            int indexedStreamNum, EventType eventType, string[] indexProps, Type[] indexTypes, bool unique,
-            string optionalIndexName, EventPropertyValueGetter getter, object optionalSerde, bool isFireAndForget,
+            int indexedStreamNum,
+            EventType eventType,
+            string[] indexProps,
+            Type[] indexTypes,
+            bool unique,
+            string optionalIndexName,
+            EventPropertyValueGetter getter,
+            object optionalSerde,
+            bool isFireAndForget,
             StatementContext statementContext);
 
         EventTableFactory CreateUnindexed(
-            int indexedStreamNum, EventType eventType, object optionalSerde, bool isFireAndForget,
+            int indexedStreamNum,
+            EventType eventType,
+            object optionalSerde,
+            bool isFireAndForget,
             StatementContext statementContext);
 
         EventTableFactory CreateSorted(
-            int indexedStreamNum, EventType eventType, string indexedProp, Type indexType,
-            EventPropertyValueGetter getter, object optionalSerde, bool isFireAndForget,
+            int indexedStreamNum,
+            EventType eventType,
+            string indexedProp,
+            Type indexType,
+            EventPropertyValueGetter getter,
+            object optionalSerde,
+            bool isFireAndForget,
             StatementContext statementContext);
 
         EventTableFactory CreateComposite(
             int indexedStreamNum,
-            EventType eventType, string[] indexProps, Type[] indexCoercionTypes, EventPropertyValueGetter indexGetter,
-            string[] rangeProps, Type[] rangeCoercionTypes, EventPropertyValueGetter[] rangeGetters,
-            object optionalSerde, bool isFireAndForget);
+            EventType eventType,
+            string[] indexProps,
+            Type[] indexCoercionTypes,
+            EventPropertyValueGetter indexGetter,
+            string[] rangeProps,
+            Type[] rangeCoercionTypes,
+            EventPropertyValueGetter[] rangeGetters,
+            object optionalSerde,
+            bool isFireAndForget);
 
         EventTableFactory CreateInArray(
-            int streamNum, EventType eventType, string[] propertyNames, Type[] indexTypes, bool unique,
-            EventPropertyValueGetter[] getters, bool isFireAndForget, StatementContext statementContext);
+            int streamNum,
+            EventType eventType,
+            string[] propertyNames,
+            Type[] indexTypes,
+            bool unique,
+            EventPropertyValueGetter[] getters,
+            bool isFireAndForget,
+            StatementContext statementContext);
 
         EventTableFactory CreateCustom(
-            string optionalIndexName, int indexedStreamNum, EventType eventType, bool unique,
+            string optionalIndexName,
+            int indexedStreamNum,
+            EventType eventType,
+            bool unique,
             EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc);
     }
 } // end of namespace

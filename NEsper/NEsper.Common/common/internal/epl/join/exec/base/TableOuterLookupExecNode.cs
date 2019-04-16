@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.strategy;
@@ -67,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         protected void ProcessResults(
             EventBean[] prefillPath,
             ICollection<EventBean[]> result,
-            ISet<EventBean> joinedEvents)
+            ICollection<EventBean> joinedEvents)
         {
             // If no events are found, since this is an outer join, create a result row leaving the
             // joined event as null.

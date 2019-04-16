@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// </summary>
     public class ExprRegexpNodeForgeNonconst : ExprRegexpNodeForge
     {
-        public ExprRegexpNodeForgeNonconst(ExprRegexpNode parent, bool isNumericValue) : base(parent, isNumericValue)
+        public ExprRegexpNodeForgeNonconst(
+            ExprRegexpNode parent,
+            bool isNumericValue)
+            : base(parent, isNumericValue)
         {
         }
 
@@ -33,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -41,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = ExprRegexpNodeForgeNonconstEval.Codegen(

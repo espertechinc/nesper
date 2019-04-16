@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.view.length
             return new RandomAccessByIndexGetter();
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

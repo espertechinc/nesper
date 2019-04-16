@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -97,14 +96,14 @@ namespace com.espertech.esper.common.@internal.@event.core
             this.endTimestampPropertyName = desc.End;
         }
 
-        public IEnumerable<EventType> DeepSuperTypes => optionalDeepSupertypes;
-
         /// <summary>
         ///     Returns the name-type map of map properties, each value in the map
         ///     can be a Class or a Map&lt;String, Object&gt; (for nested maps).
         /// </summary>
         /// <returns>is the property name and types</returns>
         public IDictionary<string, object> Types => nestableTypes;
+
+        public IEnumerable<EventType> DeepSuperTypes => optionalDeepSupertypes;
 
         public string Name => metadata.Name;
 
@@ -162,7 +161,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventType[] SuperTypes => optionalSuperTypes;
 
-        public ISet<EventType> DeepSuperTypesAsSet => optionalDeepSupertypes;
+        public ICollection<EventType> DeepSuperTypesCollection => optionalDeepSupertypes;
 
         public EventPropertyDescriptor[] PropertyDescriptors => propertyDescriptors;
 
@@ -191,7 +190,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 // parse, can be an indexed property
-                Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+                var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
                 if (property is IndexedProperty indexedProp) {
                     var type = nestableTypes.Get(indexedProp.PropertyNameAtomic);
                     if (type == null) {
@@ -250,7 +249,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             var nestedType = nestableTypes.Get(propertyMap);
             if (nestedType == null) {
                 // parse, can be an indexed property
-                Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyMap);
+                var property = PropertyParser.ParseAndWalkLaxToSimple(propertyMap);
                 if (property is IndexedProperty indexedProp) {
                     var type = nestableTypes.Get(indexedProp.PropertyNameAtomic);
                     if (type == null) {
@@ -282,7 +281,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                         return null;
                     }
 
-                    FragmentEventType fragmentParent = EventBeanUtility.CreateNativeFragmentType(
+                    var fragmentParent = EventBeanUtility.CreateNativeFragmentType(
                         (Type) type, null, beanEventTypeFactory);
 
                     return fragmentParent?.FragmentType.GetFragmentType(propertyNested);
@@ -346,9 +345,9 @@ namespace com.espertech.esper.common.@internal.@event.core
             throw new PropertyAccessException(message);
         }
 
-        internal abstract void PostUpdateNestableTypes();
-
-        public void SetMetadataId(long publicId, long protectedId)
+        public void SetMetadataId(
+            long publicId,
+            long protectedId)
         {
             metadata = metadata.WithIds(publicId, protectedId);
         }
@@ -379,6 +378,25 @@ namespace com.espertech.esper.common.@internal.@event.core
                 beanEventTypeFactory);
         }
 
+        public ExprValidationException EqualsCompareType(EventType otherEventType)
+        {
+            if (ReferenceEquals(this, otherEventType)) {
+                return null;
+            }
+
+            return CompareEquals(otherEventType);
+        }
+
+        public abstract Type UnderlyingType { get; }
+        public abstract EventPropertyDescriptor[] WriteableProperties { get; }
+        public abstract EventBeanReader Reader { get; }
+        public abstract EventPropertyWriterSPI GetWriter(string propertyName);
+        public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
+        public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);
+        public abstract EventBeanWriter GetWriter(string[] properties);
+
+        internal abstract void PostUpdateNestableTypes();
+
         /// <summary>
         ///     Compares two sets of properties and determines if they are the same, allowing for
         ///     boxed/unboxed types, and nested map types.
@@ -388,7 +406,9 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="otherName">name of the type compared to</param>
         /// <returns>null if the property set is equivalent or message if not</returns>
         public static ExprValidationException IsDeepEqualsProperties(
-            string otherName, IDictionary<string, object> setOne, IDictionary<string, object> setTwo)
+            string otherName,
+            IDictionary<string, object> setOne,
+            IDictionary<string, object> setTwo)
         {
             // Should have the same number of properties
             if (setOne.Count != setTwo.Count) {
@@ -431,22 +451,5 @@ namespace com.espertech.esper.common.@internal.@event.core
             var other = (BaseNestableEventType) otherType;
             return IsDeepEqualsProperties(otherType.Name, other.nestableTypes, nestableTypes);
         }
-
-        public ExprValidationException EqualsCompareType(EventType otherEventType)
-        {
-            if (ReferenceEquals(this, otherEventType)) {
-                return null;
-            }
-
-            return CompareEquals(otherEventType);
-        }
-
-        public abstract Type UnderlyingType { get; }
-        public abstract EventPropertyDescriptor[] WriteableProperties { get; }
-        public abstract EventBeanReader Reader { get; }
-        public abstract EventPropertyWriterSPI GetWriter(string propertyName);
-        public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
-        public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);
-        public abstract EventBeanWriter GetWriter(string[] properties);
     }
 } // end of namespace

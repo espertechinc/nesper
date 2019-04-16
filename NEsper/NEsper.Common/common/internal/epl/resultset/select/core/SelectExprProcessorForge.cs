@@ -26,8 +26,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         EventType ResultEventType { get; }
 
         CodegenMethod ProcessCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory,
-            CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope);
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
     }
 } // end of namespace

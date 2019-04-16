@@ -24,8 +24,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         private readonly string[] eventBeanToObjectProps;
 
         public SelectEvalStreamNoUndWEventBeanToObj(
-            SelectExprForgeContext selectExprForgeContext, EventType resultEventType,
-            IList<SelectClauseStreamCompiledSpec> namedStreams, bool usingWildcard, ISet<string> eventBeanToObjectProps)
+            SelectExprForgeContext selectExprForgeContext,
+            EventType resultEventType,
+            IList<SelectClauseStreamCompiledSpec> namedStreams,
+            bool usingWildcard,
+            ISet<string> eventBeanToObjectProps)
             : base(selectExprForgeContext, resultEventType, namedStreams, usingWildcard)
 
         {
@@ -33,8 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         }
 
         protected override CodegenExpression ProcessSpecificCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenExpression props,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenExpression props,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -51,8 +57,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         /// <param name="resultEventType">type</param>
         /// <returns>bean</returns>
         public static EventBean ProcessSelectExprbeanToMap(
-            IDictionary<string, object> props, string[] eventBeanToObjectProps,
-            EventBeanTypedEventFactory eventAdapterService, EventType resultEventType)
+            IDictionary<string, object> props,
+            string[] eventBeanToObjectProps,
+            EventBeanTypedEventFactory eventAdapterService,
+            EventType resultEventType)
         {
             foreach (var property in eventBeanToObjectProps) {
                 var value = props.Get(property);

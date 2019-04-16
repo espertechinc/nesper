@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.core
 {
     public class ExprDeclaredCacheKeyGlobal
     {
-        public ExprDeclaredCacheKeyGlobal(string deploymentIdExpr, string expressionName)
+        public ExprDeclaredCacheKeyGlobal(
+            string deploymentIdExpr,
+            string expressionName)
         {
             DeploymentIdExpr = deploymentIdExpr;
             ExpressionName = expressionName;

@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         private readonly OutputStrategyPostProcess postProcessor;
 
         public OutputProcessViewDirectDistinctOrAfterPostProcess(
-            AgentInstanceContext agentInstanceContext, 
+            AgentInstanceContext agentInstanceContext,
             ResultSetProcessor resultSetProcessor,
             long? afterConditionTime,
             int? afterConditionNumberOfEvents,
@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         }
 
         protected override void PostProcess(
-            bool force, UniformPair<EventBean[]> newOldEvents, UpdateDispatchView childView)
+            bool force,
+            UniformPair<EventBean[]> newOldEvents,
+            UpdateDispatchView childView)
         {
             postProcessor.Output(force, newOldEvents, childView);
         }

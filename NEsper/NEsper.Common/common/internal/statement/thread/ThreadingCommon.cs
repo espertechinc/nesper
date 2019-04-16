@@ -15,6 +15,8 @@ namespace com.espertech.esper.common.@internal.statement.thread
     {
         bool IsInboundThreading { get; }
 
-        void SubmitInbound(EventBean @event, EPRuntimeEventProcessWrapped runtimeEventSender);
+        void SubmitInbound(
+            EventBean @event,
+            EPRuntimeEventProcessWrapped runtimeEventSender);
     }
 } // end of namespace

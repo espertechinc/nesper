@@ -7,62 +7,95 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
+using com.espertech.esper.compat.datetime;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
-	public class CalendarWithMaxForge : CalendarForge, CalendarOp {
+    public class CalendarWithMaxForge : CalendarForge,
+        CalendarOp
+    {
+        private readonly DateTimeFieldEnum _field;
 
-	    private readonly CalendarFieldEnum fieldName;
+        public CalendarWithMaxForge(DateTimeFieldEnum field)
+        {
+            this._field = field;
+        }
 
-	    public CalendarWithMaxForge(CalendarFieldEnum fieldName) {
-	        this.fieldName = fieldName;
-	    }
+        public CalendarOp EvalOp => this;
 
-	    public CalendarOp EvalOp {
-	        get => this;
-	    }
+        public CodegenExpression CodegenDateTimeEx(
+            CodegenExpression dateTimeEx,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ExprDotMethod(
+                dateTimeEx, "SetFieldValue", Constant(_field),
+                ExprDotMethod(dateTimeEx, "getActualMaximum", Constant(_field)));
+        }
 
-	    public CodegenExpression CodegenDateTimeEx(CodegenExpression dateTimeEx, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ExprDotMethod(dateTimeEx, "set", Constant(fieldName.CalendarField), ExprDotMethod(dateTimeEx, "getActualMaximum", Constant(fieldName.CalendarField)));
-	    }
+        public CodegenExpression CodegenDateTimeOffset(
+            CodegenExpression dateTimeOffset,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenDateTimeOffsetDtxMinMax(dateTimeOffset, true, _field);
+        }
 
-	    public void Evaluate(DateTimeEx dateTimeEx, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        dateTimeEx.Set(fieldName.CalendarField, dateTimeEx.GetActualMaximum(fieldName.CalendarField));
-	    }
+        public CodegenExpression CodegenDateTime(
+            CodegenExpression dateTime,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenDateTimeOffsetDtxMinMax(dateTime, true, _field);
+        }
 
-	    public DateTimeOffset Evaluate(DateTimeOffset dateTimeOffset, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        ValueRange range = dateTimeOffset.Range(fieldName.ChronoField);
-	        return dateTimeOffset.With(fieldName.ChronoField, range.Maximum);
-	    }
+        public DateTimeEx Evaluate(
+            DateTimeEx dateTimeEx,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return dateTimeEx.SetFieldValue(_field, dateTimeEx.GetActualMaximum(_field));
+        }
 
-	    public CodegenExpression CodegenDateTimeOffset(CodegenExpression dateTimeOffset, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return CodegenDateTimeOffsetZDTMinMax(dateTimeOffset, true, fieldName);
-	    }
+        public DateTimeOffset Evaluate(
+            DateTimeOffset dateTimeOffset,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            ValueRange range = dateTimeOffset.Range(_field);
+            return dateTimeOffset.With(_field, range.Maximum);
+        }
 
-	    public DateTime Evaluate(DateTime dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        ValueRange range = dateTime.Range(fieldName.ChronoField);
-	        return dateTime.With(fieldName.ChronoField, range.Maximum);
-	    }
+        public DateTime Evaluate(
+            DateTime dateTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            ValueRange range = dateTime.Range(_field);
+            return dateTime.With(_field, range.Maximum);
+        }
 
-	    public CodegenExpression CodegenDateTime(CodegenExpression dateTime, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return CodegenDateTimeOffsetZDTMinMax(dateTime, true, fieldName);
-	    }
-
-	    protected internal static CodegenExpression CodegenDateTimeOffsetZDTMinMax(CodegenExpression val, bool max, CalendarFieldEnum fieldName) {
-	        CodegenExpression chronoField = EnumValue(typeof(ChronoField), fieldName.ChronoField.Name());
-	        CodegenExpression valueRange = ExprDotMethod(val, "range", chronoField);
-	        return ExprDotMethod(val, "with", chronoField, ExprDotMethod(valueRange, max ? "getMaximum" : "getMinimum"));
-	    }
-	}
+        protected internal static CodegenExpression CodegenDateTimeOffsetDtxMinMax(
+            CodegenExpression val,
+            bool max,
+            DateTimeFieldEnum field)
+        {
+            var fieldExpr = EnumValue(field); 
+            var valueRange = ExprDotMethod(val, "range", fieldExpr);
+            return ExprDotMethod(val, "with", fieldExpr, ExprDotMethod(valueRange, max ? "GetMaximum" : "GetMinimum"));
+        }
+    }
 } // end of namespace

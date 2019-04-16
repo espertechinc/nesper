@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.compat;
@@ -16,37 +15,49 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 {
-	public class NamedWindowManagementServiceImpl : NamedWindowManagementService {
-	    private readonly IDictionary<string, NamedWindowDeployment> deployments = new Dictionary<string, NamedWindowDeployment>();
+    public class NamedWindowManagementServiceImpl : NamedWindowManagementService
+    {
+        private readonly IDictionary<string, NamedWindowDeployment> deployments = new Dictionary<string, NamedWindowDeployment>();
 
-	    public void AddNamedWindow(string windowName, NamedWindowMetaData metadata, EPStatementInitServices services) {
-	        NamedWindowDeployment deployment = deployments.Get(services.DeploymentId);
-	        if (deployment == null) {
-	            deployment = new NamedWindowDeployment();
-	            deployments.Put(services.DeploymentId, deployment);
-	        }
-	        deployment.Add(windowName, metadata, services);
-	    }
+        public void AddNamedWindow(
+            string windowName,
+            NamedWindowMetaData metadata,
+            EPStatementInitServices services)
+        {
+            NamedWindowDeployment deployment = deployments.Get(services.DeploymentId);
+            if (deployment == null) {
+                deployment = new NamedWindowDeployment();
+                deployments.Put(services.DeploymentId, deployment);
+            }
 
-	    public NamedWindow GetNamedWindow(string deploymentId, string namedWindowName) {
-	        NamedWindowDeployment deployment = deployments.Get(deploymentId);
-	        return deployment == null ? null : deployment.GetProcessor(namedWindowName);
-	    }
+            deployment.Add(windowName, metadata, services);
+        }
 
-	    public int DeploymentCount
-	    {
-	        get => deployments.Count;
-	    }
+        public NamedWindow GetNamedWindow(
+            string deploymentId,
+            string namedWindowName)
+        {
+            NamedWindowDeployment deployment = deployments.Get(deploymentId);
+            return deployment == null ? null : deployment.GetProcessor(namedWindowName);
+        }
 
-	    public void DestroyNamedWindow(string deploymentId, string namedWindowName) {
-	        NamedWindowDeployment deployment = deployments.Get(deploymentId);
-	        if (deployment == null) {
-	            return;
-	        }
-	        deployment.Remove(namedWindowName);
-	        if (deployment.IsEmpty()) {
-	            deployments.Remove(deploymentId);
-	        }
-	    }
-	}
+        public int DeploymentCount {
+            get => deployments.Count;
+        }
+
+        public void DestroyNamedWindow(
+            string deploymentId,
+            string namedWindowName)
+        {
+            NamedWindowDeployment deployment = deployments.Get(deploymentId);
+            if (deployment == null) {
+                return;
+            }
+
+            deployment.Remove(namedWindowName);
+            if (deployment.IsEmpty()) {
+                deployments.Remove(deploymentId);
+            }
+        }
+    }
 } // end of namespace

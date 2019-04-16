@@ -9,7 +9,7 @@
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     /// <summary>
-    /// Marker interface for a schema (simple or complex) element or attribute.
+    ///     Marker interface for a schema (simple or complex) element or attribute.
     /// </summary>
     public interface SchemaItem
     {

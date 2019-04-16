@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -20,28 +19,36 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         private readonly int streamNum;
         private readonly ExprEvaluator filterEval;
 
-        public AggregationAgentRewriteStreamWFilter(int streamNum, ExprEvaluator filterEval)
+        public AggregationAgentRewriteStreamWFilter(
+            int streamNum,
+            ExprEvaluator filterEval)
         {
             this.streamNum = streamNum;
             this.filterEval = filterEval;
         }
 
-        public void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column)
+        public void ApplyEnter(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
         {
-            Boolean pass = (Boolean)filterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            if (pass != null && pass)
-            {
-                EventBean[] rewrite = new EventBean[] { eventsPerStream[streamNum] };
+            Boolean pass = (Boolean) filterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            if (pass != null && pass) {
+                EventBean[] rewrite = new EventBean[] {eventsPerStream[streamNum]};
                 row.EnterAccess(column, rewrite, exprEvaluatorContext);
             }
         }
 
-        public void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column)
+        public void ApplyLeave(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
         {
-            Boolean pass = (Boolean)filterEval.Evaluate(eventsPerStream, false, exprEvaluatorContext);
-            if (pass != null && pass)
-            {
-                EventBean[] rewrite = new EventBean[] { eventsPerStream[streamNum] };
+            Boolean pass = (Boolean) filterEval.Evaluate(eventsPerStream, false, exprEvaluatorContext);
+            if (pass != null && pass) {
+                EventBean[] rewrite = new EventBean[] {eventsPerStream[streamNum]};
                 row.LeaveAccess(column, rewrite, exprEvaluatorContext);
             }
         }

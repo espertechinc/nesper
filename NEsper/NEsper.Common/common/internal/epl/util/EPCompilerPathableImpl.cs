@@ -29,7 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.util
             PathRegistry<string, TableMetaData> tablePathRegistry,
             PathRegistry<string, ContextMetaData> contextPathRegistry,
             PathRegistry<NameAndParamNum, ExpressionScriptProvided> scriptPathRegistry,
-            EventTypeRepositoryImpl eventTypePreconfigured, VariableRepositoryPreconfigured variablePreconfigured)
+            EventTypeRepositoryImpl eventTypePreconfigured,
+            VariableRepositoryPreconfigured variablePreconfigured)
         {
             VariablePathRegistry = variablePathRegistry;
             EventTypePathRegistry = eventTypePathRegistry;

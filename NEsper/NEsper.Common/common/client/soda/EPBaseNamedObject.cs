@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -38,7 +37,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="namespace">is the namespace of the object, i.e. view namespace or pattern object namespace</param>
         /// <param name="name">is the name of the object, such as the view name</param>
         /// <param name="parameters">is the optional parameters to the view or pattern object, or empty list for no parameters</param>
-        protected EPBaseNamedObject(string @namespace, string name, IList<Expression> parameters)
+        protected EPBaseNamedObject(
+            string @namespace,
+            string name,
+            IList<Expression> parameters)
         {
             this.@namespace = @namespace;
             this.name = name;

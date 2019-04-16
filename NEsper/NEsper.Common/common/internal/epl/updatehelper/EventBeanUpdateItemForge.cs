@@ -15,8 +15,11 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
     public class EventBeanUpdateItemForge
     {
         public EventBeanUpdateItemForge(
-            ExprForge expression, string optinalPropertyName, EventPropertyWriterSPI optionalWriter,
-            bool notNullableField, TypeWidenerSPI optionalWidener)
+            ExprForge expression,
+            string optinalPropertyName,
+            EventPropertyWriterSPI optionalWriter,
+            bool notNullableField,
+            TypeWidenerSPI optionalWidener)
         {
             Expression = expression;
             OptionalPropertyName = optinalPropertyName;

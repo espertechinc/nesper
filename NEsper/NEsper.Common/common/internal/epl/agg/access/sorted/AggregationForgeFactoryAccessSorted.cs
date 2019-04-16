@@ -60,7 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public SortedAggregationStateDesc OptionalSortedStateDesc { get; }
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             throw new UnsupportedOperationException("Not supported");
         }
@@ -84,7 +87,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         public override AggregationAgentForge GetAggregationStateAgent(
-            ImportService importService, string statementName)
+            ImportService importService,
+            string statementName)
         {
             return optionalAgent;
         }

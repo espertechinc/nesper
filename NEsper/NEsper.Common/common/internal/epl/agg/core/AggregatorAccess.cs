@@ -16,21 +16,36 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public interface AggregatorAccess
     {
         void ApplyEnterCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods);
 
         void ApplyLeaveCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods);
 
-        void ClearCodegen(CodegenMethod method, CodegenClassScope classScope);
+        void ClearCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef @ref, CodegenExpressionRef unitKey,
-            CodegenExpressionRef output, CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef @ref,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef output,
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenMethod method,
-            CodegenExpressionRef unitKey, CodegenClassScope classScope);
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenMethod method,
+            CodegenExpressionRef unitKey,
+            CodegenClassScope classScope);
     }
 } // end of namespace

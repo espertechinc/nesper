@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
         public bool IsObserverStateNodeNonRestarting => ObserverFactory.IsNonRestarting;
 
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        public override EvalNode MakeEvalNode(
+            PatternAgentInstanceContext agentInstanceContext,
+            EvalNode parentNode)
         {
             return new EvalObserverNode(agentInstanceContext, this);
         }

@@ -91,7 +91,9 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             return Collections.GetEmptyList<IndexHintInstruction>();
         }
 
-        protected internal static bool CheckValueInParen(string type, string value)
+        protected internal static bool CheckValueInParen(
+            string type,
+            string value)
         {
             var indexOpen = value.IndexOf('(');
             if (indexOpen != -1) {
@@ -104,7 +106,9 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             return false;
         }
 
-        protected internal static bool CheckValueAssignment(string type, string value)
+        protected internal static bool CheckValueAssignment(
+            string type,
+            string value)
         {
             var indexEquals = value.IndexOf('=');
             if (indexEquals != -1) {

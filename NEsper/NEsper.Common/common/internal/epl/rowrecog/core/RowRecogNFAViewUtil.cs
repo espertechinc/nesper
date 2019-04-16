@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     public class RowRecogNFAViewUtil
     {
         protected internal static EventBean[] GetMultimatchArray(
-            int[] multimatchStreamNumToVariable, RowRecogNFAStateEntry state, int stream)
+            int[] multimatchStreamNumToVariable,
+            RowRecogNFAStateEntry state,
+            int stream)
         {
             if (state.OptionalMultiMatches == null) {
                 return null;
@@ -78,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                             else {
                                 buf.Append("{");
                                 var arrayEventDelimiter = "";
-                                var multiMatch = state.OptionalMultiMatches[index].GetBuffer();
+                                var multiMatch = state.OptionalMultiMatches[index].Buffer;
                                 var count = state.OptionalMultiMatches[index].Count;
                                 for (var i = 0; i < count; i++) {
                                     buf.Append(arrayEventDelimiter);
@@ -141,7 +143,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                    state;
         }
 
-        private static void Indent(TextWriter writer, int indent)
+        private static void Indent(
+            TextWriter writer,
+            int indent)
         {
             for (var i = 0; i < indent; i++) {
                 writer.Write(' ');

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
     public class VirtualDWEventTable : EventTable
     {
         public VirtualDWEventTable(
-            bool unique, 
+            bool unique,
             IList<VirtualDataWindowLookupFieldDesc> hashAccess,
             IList<VirtualDataWindowLookupFieldDesc> btreeAccess,
             EventTableOrganization organization)
@@ -39,26 +39,34 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public void AddRemove(
             EventBean[] newData,
-            EventBean[] oldData, 
+            EventBean[] oldData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             Add(newData, exprEvaluatorContext);
             Remove(oldData, exprEvaluatorContext);
         }
 
-        public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
-        public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
-        public void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
+        public void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
-        public void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
+        public void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 

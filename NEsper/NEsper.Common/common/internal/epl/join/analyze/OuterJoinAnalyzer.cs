@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
@@ -29,22 +28,20 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
         /// <param name="outerJoinDescList">list of outer join descriptors</param>
         /// <param name="queryGraph">model containing relationships between streams that is written into</param>
         /// <returns>filterQueryGraph object</returns>
-        public static QueryGraphForge Analyze(OuterJoinDesc[] outerJoinDescList, QueryGraphForge queryGraph)
+        public static QueryGraphForge Analyze(
+            OuterJoinDesc[] outerJoinDescList,
+            QueryGraphForge queryGraph)
         {
-            foreach (var outerJoinDesc in outerJoinDescList)
-            {
+            foreach (var outerJoinDesc in outerJoinDescList) {
                 // add optional on-expressions
-                if (outerJoinDesc.OptLeftNode != null)
-                {
+                if (outerJoinDesc.OptLeftNode != null) {
                     var identNodeLeft = outerJoinDesc.OptLeftNode;
                     var identNodeRight = outerJoinDesc.OptRightNode;
 
                     Add(queryGraph, identNodeLeft, identNodeRight);
 
-                    if (outerJoinDesc.AdditionalLeftNodes != null)
-                    {
-                        for (var i = 0; i < outerJoinDesc.AdditionalLeftNodes.Length; i++)
-                        {
+                    if (outerJoinDesc.AdditionalLeftNodes != null) {
+                        for (var i = 0; i < outerJoinDesc.AdditionalLeftNodes.Length; i++) {
                             Add(
                                 queryGraph, outerJoinDesc.AdditionalLeftNodes[i],
                                 outerJoinDesc.AdditionalRightNodes[i]);
@@ -56,7 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             return queryGraph;
         }
 
-        private static void Add(QueryGraphForge queryGraph, ExprIdentNode identNodeLeft, ExprIdentNode identNodeRight)
+        private static void Add(
+            QueryGraphForge queryGraph,
+            ExprIdentNode identNodeLeft,
+            ExprIdentNode identNodeRight)
         {
             queryGraph.AddStrictEquals(
                 identNodeLeft.StreamId, identNodeLeft.ResolvedPropertyName, identNodeLeft,
@@ -65,15 +65,12 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
 
         public static bool OptionalStreamsIfAny(IList<OuterJoinDesc> outerJoinDescList)
         {
-            if (outerJoinDescList == null || outerJoinDescList.Count == 0)
-            {
+            if (outerJoinDescList == null || outerJoinDescList.Count == 0) {
                 return false;
             }
 
-            foreach (var outerJoinDesc in outerJoinDescList)
-            {
-                if (outerJoinDesc.OuterJoinType != OuterJoinType.INNER)
-                {
+            foreach (var outerJoinDesc in outerJoinDescList) {
+                if (outerJoinDesc.OuterJoinType != OuterJoinType.INNER) {
                     return true;
                 }
             }

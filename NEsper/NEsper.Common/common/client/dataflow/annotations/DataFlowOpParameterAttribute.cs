@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.client.dataflow.annotations
         {
         }
 
-        public DataFlowOpParameterAttribute(string name, bool isAll)
+        public DataFlowOpParameterAttribute(
+            string name,
+            bool isAll)
         {
             Name = name;
             IsAll = isAll;

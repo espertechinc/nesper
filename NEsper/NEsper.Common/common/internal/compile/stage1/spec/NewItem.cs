@@ -7,30 +7,31 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-	public class NewItem {
-	    private readonly string name;
-	    private readonly ExprNode optExpression;
+    public class NewItem
+    {
+        private readonly string name;
+        private readonly ExprNode optExpression;
 
-	    public NewItem(string name, ExprNode optExpression) {
-	        this.name = name;
-	        this.optExpression = optExpression;
-	    }
+        public NewItem(
+            string name,
+            ExprNode optExpression)
+        {
+            this.name = name;
+            this.optExpression = optExpression;
+        }
 
-	    public string Name
-	    {
-	        get => name;
-	    }
+        public string Name {
+            get => name;
+        }
 
-	    public ExprNode OptExpression
-	    {
-	        get => optExpression;
-	    }
-	}
+        public ExprNode OptExpression {
+            get => optExpression;
+        }
+    }
 } // end of namespace

@@ -71,8 +71,10 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         /// </param>
         /// <returns>set of events with property value, or null if none found (never returns zero-sized set)</returns>
         public override ISet<EventBean> LookupRange(
-            object keyStart, bool includeStart,
-            object keyEnd, bool includeEnd,
+            object keyStart,
+            bool includeStart,
+            object keyEnd,
+            bool includeEnd,
             bool allowRangeReversal)
         {
             if (keyStart == null || keyEnd == null) {

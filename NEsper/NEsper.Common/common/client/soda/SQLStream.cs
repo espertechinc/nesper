@@ -8,131 +8,154 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
-	/// <summary>
-	/// An SQL stream that polls via SQL for events via join.
-	/// </summary>
-	public class SQLStream : Stream {
-	    private string databaseName;
-	    private string sqlWithSubsParams;
-	    private string optionalMetadataSQL;
+    /// <summary>
+    /// An SQL stream that polls via SQL for events via join.
+    /// </summary>
+    public class SQLStream : Stream
+    {
+        private string databaseName;
+        private string sqlWithSubsParams;
+        private string optionalMetadataSQL;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    public SQLStream() {
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        public SQLStream()
+        {
+        }
 
-	    /// <summary>
-	    /// Creates a new SQL-based stream.
-	    /// </summary>
-	    /// <param name="databaseName">is the database name to poll</param>
-	    /// <param name="sqlWithSubsParams">is the SQL to use</param>
-	    /// <returns>stream</returns>
-	    public static SQLStream Create(string databaseName, string sqlWithSubsParams) {
-	        return new SQLStream(databaseName, sqlWithSubsParams, null, null);
-	    }
+        /// <summary>
+        /// Creates a new SQL-based stream.
+        /// </summary>
+        /// <param name="databaseName">is the database name to poll</param>
+        /// <param name="sqlWithSubsParams">is the SQL to use</param>
+        /// <returns>stream</returns>
+        public static SQLStream Create(
+            string databaseName,
+            string sqlWithSubsParams)
+        {
+            return new SQLStream(databaseName, sqlWithSubsParams, null, null);
+        }
 
-	    /// <summary>
-	    /// Creates a new SQL-based stream.
-	    /// </summary>
-	    /// <param name="databaseName">is the database name to poll</param>
-	    /// <param name="sqlWithSubsParams">is the SQL to use</param>
-	    /// <param name="optStreamName">is the as-name of the stream</param>
-	    /// <returns>stream</returns>
-	    public static SQLStream Create(string databaseName, string sqlWithSubsParams, string optStreamName) {
-	        return new SQLStream(databaseName, sqlWithSubsParams, optStreamName, null);
-	    }
+        /// <summary>
+        /// Creates a new SQL-based stream.
+        /// </summary>
+        /// <param name="databaseName">is the database name to poll</param>
+        /// <param name="sqlWithSubsParams">is the SQL to use</param>
+        /// <param name="optStreamName">is the as-name of the stream</param>
+        /// <returns>stream</returns>
+        public static SQLStream Create(
+            string databaseName,
+            string sqlWithSubsParams,
+            string optStreamName)
+        {
+            return new SQLStream(databaseName, sqlWithSubsParams, optStreamName, null);
+        }
 
-	    /// <summary>
-	    /// Creates a new SQL-based stream.
-	    /// </summary>
-	    /// <param name="databaseName">is the database name to poll</param>
-	    /// <param name="sqlWithSubsParams">is the SQL to use</param>
-	    /// <param name="optStreamName">is the as-name of the stream</param>
-	    /// <param name="optionalMetadataSQL">optional SQL delivering metadata of statement</param>
-	    /// <returns>stream</returns>
-	    public static SQLStream Create(string databaseName, string sqlWithSubsParams, string optStreamName, string optionalMetadataSQL) {
-	        return new SQLStream(databaseName, sqlWithSubsParams, optStreamName, optionalMetadataSQL);
-	    }
+        /// <summary>
+        /// Creates a new SQL-based stream.
+        /// </summary>
+        /// <param name="databaseName">is the database name to poll</param>
+        /// <param name="sqlWithSubsParams">is the SQL to use</param>
+        /// <param name="optStreamName">is the as-name of the stream</param>
+        /// <param name="optionalMetadataSQL">optional SQL delivering metadata of statement</param>
+        /// <returns>stream</returns>
+        public static SQLStream Create(
+            string databaseName,
+            string sqlWithSubsParams,
+            string optStreamName,
+            string optionalMetadataSQL)
+        {
+            return new SQLStream(databaseName, sqlWithSubsParams, optStreamName, optionalMetadataSQL);
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="databaseName">is the database name to poll</param>
-	    /// <param name="sqlWithSubsParams">is the SQL to use</param>
-	    /// <param name="optStreamName">is the optional as-name of the stream, or null if unnamed</param>
-	    /// <param name="optionalMetadataSQL">optional SQL delivering metadata of statement</param>
-	    public SQLStream(string databaseName, string sqlWithSubsParams, string optStreamName, string optionalMetadataSQL) : base(optStreamName)
-	        {
-	        this.databaseName = databaseName;
-	        this.sqlWithSubsParams = sqlWithSubsParams;
-	        this.optionalMetadataSQL = optionalMetadataSQL;
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="databaseName">is the database name to poll</param>
+        /// <param name="sqlWithSubsParams">is the SQL to use</param>
+        /// <param name="optStreamName">is the optional as-name of the stream, or null if unnamed</param>
+        /// <param name="optionalMetadataSQL">optional SQL delivering metadata of statement</param>
+        public SQLStream(
+            string databaseName,
+            string sqlWithSubsParams,
+            string optStreamName,
+            string optionalMetadataSQL)
+            : base(optStreamName)
+        {
+            this.databaseName = databaseName;
+            this.sqlWithSubsParams = sqlWithSubsParams;
+            this.optionalMetadataSQL = optionalMetadataSQL;
+        }
 
-	    /// <summary>
-	    /// Returns the database name.
-	    /// </summary>
-	    /// <returns>database name</returns>
-	    public string DatabaseName
-	    {
-	        get => databaseName;
-	    }
+        /// <summary>
+        /// Returns the database name.
+        /// </summary>
+        /// <returns>database name</returns>
+        public string DatabaseName {
+            get => databaseName;
+        }
 
-	    /// <summary>
-	    /// Sets the database name.
-	    /// </summary>
-	    /// <param name="databaseName">database name</param>
-	    public void SetDatabaseName(string databaseName) {
-	        this.databaseName = databaseName;
-	    }
+        /// <summary>
+        /// Sets the database name.
+        /// </summary>
+        /// <param name="databaseName">database name</param>
+        public void SetDatabaseName(string databaseName)
+        {
+            this.databaseName = databaseName;
+        }
 
-	    /// <summary>
-	    /// Returns the SQL with optional substitution parameters in the SQL.
-	    /// </summary>
-	    /// <returns>SQL</returns>
-	    public string SqlWithSubsParams
-	    {
-	        get => sqlWithSubsParams;
-	    }
+        /// <summary>
+        /// Returns the SQL with optional substitution parameters in the SQL.
+        /// </summary>
+        /// <returns>SQL</returns>
+        public string SqlWithSubsParams {
+            get => sqlWithSubsParams;
+        }
 
-	    /// <summary>
-	    /// Sets the SQL with optional substitution parameters in the SQL.
-	    /// </summary>
-	    /// <param name="sqlWithSubsParams">SQL set set</param>
-	    public void SetSqlWithSubsParams(string sqlWithSubsParams) {
-	        this.sqlWithSubsParams = sqlWithSubsParams;
-	    }
+        /// <summary>
+        /// Sets the SQL with optional substitution parameters in the SQL.
+        /// </summary>
+        /// <param name="sqlWithSubsParams">SQL set set</param>
+        public void SetSqlWithSubsParams(string sqlWithSubsParams)
+        {
+            this.sqlWithSubsParams = sqlWithSubsParams;
+        }
 
-	    /// <summary>
-	    /// Returns the metadata SQL if any.
-	    /// </summary>
-	    /// <returns>metadata SQL</returns>
-	    public string OptionalMetadataSQL {
-	        get => optionalMetadataSQL;
-	        set { this.optionalMetadataSQL = value; }
-	    }
+        /// <summary>
+        /// Returns the metadata SQL if any.
+        /// </summary>
+        /// <returns>metadata SQL</returns>
+        public string OptionalMetadataSQL {
+            get => optionalMetadataSQL;
+            set { this.optionalMetadataSQL = value; }
+        }
 
-	    public override void ToEPLStream(TextWriter writer, EPStatementFormatter formatter) {
-	        writer.Write("sql:");
-	        writer.Write(databaseName);
-	        writer.Write("[\"");
-	        writer.Write(sqlWithSubsParams);
-	        writer.Write("\"]");
-	    }
+        public override void ToEPLStream(
+            TextWriter writer,
+            EPStatementFormatter formatter)
+        {
+            writer.Write("sql:");
+            writer.Write(databaseName);
+            writer.Write("[\"");
+            writer.Write(sqlWithSubsParams);
+            writer.Write("\"]");
+        }
 
-	    public override void ToEPLStreamType(TextWriter writer) {
-	        writer.Write("sql:");
-	        writer.Write(databaseName);
-	        writer.Write("[..]");
-	    }
+        public override void ToEPLStreamType(TextWriter writer)
+        {
+            writer.Write("sql:");
+            writer.Write(databaseName);
+            writer.Write("[..]");
+        }
 
-	    public override void ToEPLStreamOptions(TextWriter writer) {
-	    }
-	}
+        public override void ToEPLStreamOptions(TextWriter writer)
+        {
+        }
+    }
 } // end of namespace

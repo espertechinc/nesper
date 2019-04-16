@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.util
     public class EventRepresentationUtil
     {
         public static EventUnderlyingType GetRepresentation(
-            Attribute[] annotations, Configuration configs, AssignedType assignedType)
+            Attribute[] annotations,
+            Configuration configs,
+            AssignedType assignedType)
         {
             // assigned type has priority
             if (assignedType == AssignedType.OBJECTARRAY) {

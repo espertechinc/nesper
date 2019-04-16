@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// <param name="resultFinalRows">is the final result rows</param>
         /// <param name="resultRootEvent">root event</param>
         void Result(
-            EventBean[] row, 
+            EventBean[] row,
             int fromStreamNum,
             EventBean myEvent,
             Node myNode,

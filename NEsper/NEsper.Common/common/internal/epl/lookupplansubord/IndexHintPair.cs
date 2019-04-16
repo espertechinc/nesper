@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 {
     public class IndexHintPair
     {
-        public IndexHintPair(IndexHint indexHint, ExcludePlanHint excludePlanHint)
+        public IndexHintPair(
+            IndexHint indexHint,
+            ExcludePlanHint excludePlanHint)
         {
             IndexHint = indexHint;
             ExcludePlanHint = excludePlanHint;
@@ -26,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         public ExcludePlanHint ExcludePlanHint { get; }
 
         public static IndexHintPair GetIndexHintPair(
-            OnTriggerDesc onTriggerDesc, string streamZeroAsName, StatementRawInfo statementRawInfo,
+            OnTriggerDesc onTriggerDesc,
+            string streamZeroAsName,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             IndexHint indexHint = IndexHint.GetIndexHint(statementRawInfo.Annotations);

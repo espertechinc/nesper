@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class IntSeqKeyTwo : IntSeqKey
     {
-        public IntSeqKeyTwo(int one, int two)
+        public IntSeqKeyTwo(
+            int one,
+            int two)
         {
             One = one;
             Two = two;
@@ -47,10 +49,12 @@ namespace com.espertech.esper.common.@internal.collection
 
         public int[] AsIntArray()
         {
-            return new[] {One, Two };
+            return new[] {One, Two};
         }
 
-        public static void Write(IntSeqKeyTwo key, DataOutput output)
+        public static void Write(
+            IntSeqKeyTwo key,
+            DataOutput output)
         {
             output.WriteInt(key.One);
             output.WriteInt(key.Last);

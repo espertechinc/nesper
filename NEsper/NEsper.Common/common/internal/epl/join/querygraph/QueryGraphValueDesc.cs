@@ -11,7 +11,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
     public class QueryGraphValueDesc
     {
-        public QueryGraphValueDesc(string[] indexExprs, QueryGraphValueEntry entry)
+        public QueryGraphValueDesc(
+            string[] indexExprs,
+            QueryGraphValueEntry entry)
         {
             IndexExprs = indexExprs;
             Entry = entry;

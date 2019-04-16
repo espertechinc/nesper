@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
 
         public PropertySortedFactoryFactory(
             int indexedStreamNum,
-            int? subqueryNum, 
-            object optionalSerde, 
-            bool isFireAndForget, 
+            int? subqueryNum,
+            object optionalSerde,
+            bool isFireAndForget,
             string indexProp,
-            Type indexType, 
+            Type indexType,
             EventPropertyValueGetter valueGetter)
             : base(indexedStreamNum, subqueryNum, optionalSerde, isFireAndForget)
         {
@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             this.valueGetter = valueGetter;
         }
 
-        public override EventTableFactory Create(EventType eventType, StatementContext statementContext)
+        public override EventTableFactory Create(
+            EventType eventType,
+            StatementContext statementContext)
         {
             return statementContext.EventTableIndexService.CreateSorted(
                 indexedStreamNum, eventType, indexProp, indexType,

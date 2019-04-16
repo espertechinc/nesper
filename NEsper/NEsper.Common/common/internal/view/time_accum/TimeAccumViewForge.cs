@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,32 +18,36 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.view.time_accum
 {
-    public class TimeAccumViewForge 
-        : ViewFactoryForgeBase
-        , DataWindowViewForge
-        , DataWindowViewForgeWithPrevious
-        , ScheduleHandleCallbackProvider
+    public class TimeAccumViewForge
+        : ViewFactoryForgeBase,
+            DataWindowViewForge,
+            DataWindowViewForgeWithPrevious,
+            ScheduleHandleCallbackProvider
     {
         private int scheduleCallbackId = -1;
         internal TimePeriodComputeForge timePeriodCompute;
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
-            if (parameters.Count != 1)
-            {
+            if (parameters.Count != 1) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
             timePeriodCompute = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDeltaFactory(
-                    ViewName, parameters[0], ViewParamMessage, 0, viewForgeEnv, streamNumber);
+                ViewName, parameters[0], ViewParamMessage, 0, viewForgeEnv, streamNumber);
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
@@ -59,22 +62,25 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             return "timeaccum";
         }
 
-        internal override void Assign(CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        internal override void Assign(
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
-            if (scheduleCallbackId == -1)
-            {
+            if (scheduleCallbackId == -1) {
                 throw new IllegalStateException("No schedule callback id");
             }
+
             method.Block
-                    .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                    .ExprDotMethod(factory, "setTimePeriodCompute", @Ref("eval"))
-                    .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
+                .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodCompute.MakeEvaluator(method, classScope))
+                .ExprDotMethod(factory, "setTimePeriodCompute", @Ref("eval"))
+                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
         }
 
         public override string ViewName => "Time-Accumulative-Batch";
 
-        public int ScheduleCallbackId
-        {
+        public int ScheduleCallbackId {
             set => scheduleCallbackId = value;
         }
 

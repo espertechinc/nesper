@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.pattern.and;
 using com.espertech.esper.common.@internal.epl.pattern.every;
 using com.espertech.esper.common.@internal.epl.pattern.everydistinct;

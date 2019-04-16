@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.util;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -27,32 +25,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         internal readonly ExprEnumerationForge enumerationForge;
         internal readonly TableMetaData table;
 
-        public ExprEvalEnumerationAtBeanCollTable(ExprEnumerationForge enumerationForge, TableMetaData table)
+        public ExprEvalEnumerationAtBeanCollTable(
+            ExprEnumerationForge enumerationForge,
+            TableMetaData table)
         {
             this.enumerationForge = enumerationForge;
             this.table = table;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
-            get
-            {
-                return new ProxyExprEvaluator()
-                {
-                    ProcEvaluate = (eventsPerStream, isNewData, context) =>
-                    {
+        public ExprEvaluator ExprEvaluator {
+            get {
+                return new ProxyExprEvaluator() {
+                    ProcEvaluate = (
+                        eventsPerStream,
+                        isNewData,
+                        context) => {
                         throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
                     },
                 };
             }
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             CodegenExpressionField eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
             CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean[]), this.GetType(), codegenClassScope);
@@ -62,19 +64,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
             methodNode.Block
-                    .DeclareVar(typeof(object), "result", enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
-                    .IfRefNullReturnNull("result")
-                    .MethodReturn(StaticMethod(typeof(ExprEvalEnumerationAtBeanCollTable), "convertToTableType", @Ref("result"), eventToPublic, refEPS, refIsNewData, refExprEvalCtx));
+                .DeclareVar(
+                    typeof(object), "result", enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
+                .IfRefNullReturnNull("result")
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(ExprEvalEnumerationAtBeanCollTable), "convertToTableType", @Ref("result"), eventToPublic, refEPS, refIsNewData,
+                        refExprEvalCtx));
             return LocalMethod(methodNode);
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => TypeHelper.GetArrayType(table.PublicEventType.UnderlyingType);
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => enumerationForge.ForgeRenderable;
         }
 
@@ -87,24 +91,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         /// <param name="isNewData">flag</param>
         /// <param name="exprEvaluatorContext">context</param>
         /// <returns>beans</returns>
-        public static EventBean[] ConvertToTableType(object result, TableMetadataInternalEventToPublic eventToPublic, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public static EventBean[] ConvertToTableType(
+            object result,
+            TableMetadataInternalEventToPublic eventToPublic,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (result is ICollection)
-            {
-                ICollection<EventBean> events = (ICollection<EventBean>)result;
-                EventBean[] @out = new EventBean[events.Count];
+            if (result is ICollection<EventBean> eventsDowncast) {
+                EventBean[] @out = new EventBean[eventsDowncast.Count];
                 int index = 0;
-                foreach (EventBean @event in events)
-                {
+                foreach (EventBean @event in eventsDowncast) {
                     @out[index++] = eventToPublic.Convert(@event, eventsPerStream, isNewData, exprEvaluatorContext);
                 }
+
                 return @out;
             }
-            EventBean[] events = (EventBean[])result;
-            for (int i = 0; i < events.Length; i++)
-            {
+
+            EventBean[] events = (EventBean[]) result;
+            for (int i = 0; i < events.Length; i++) {
                 events[i] = eventToPublic.Convert(events[i], eventsPerStream, isNewData, exprEvaluatorContext);
             }
+
             return events;
         }
     }

@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         protected EventBean lastTerminatingEvent;
 
         public ContextControllerKeyed(
-            ContextManagerRealization realization, ContextControllerKeyedFactory factory) : base(realization)
+            ContextManagerRealization realization,
+            ContextControllerKeyedFactory factory)
+            : base(realization)
         {
             this.factory = factory;
         }
@@ -34,12 +36,18 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public override ContextManagerRealization Realization => realization;
 
-        protected abstract void VisitPartitions(IntSeqKey path, BiConsumer<object, int> keyAndSubpathOrCPId);
+        protected abstract void VisitPartitions(
+            IntSeqKey path,
+            BiConsumer<object, int> keyAndSubpathOrCPId);
 
-        protected abstract int GetSubpathOrCPId(IntSeqKey path, object keyForLookup);
+        protected abstract int GetSubpathOrCPId(
+            IntSeqKey path,
+            object keyForLookup);
 
         public override void VisitSelectedPartitions(
-            IntSeqKey path, ContextPartitionSelector selector, ContextPartitionVisitor visitor,
+            IntSeqKey path,
+            ContextPartitionSelector selector,
+            ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel)
         {
             if (selector is ContextPartitionSelectorSegmented) {
@@ -64,7 +72,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 var filtered = (ContextPartitionSelectorFiltered) selector;
                 var identifier = new ContextPartitionIdentifierPartitioned();
                 VisitPartitions(
-                    path, (key, subpathOrCPId) => {
+                    path, (
+                        key,
+                        subpathOrCPId) => {
                         if (factory.FactoryEnv.IsLeaf) {
                             identifier.ContextPartitionId = subpathOrCPId;
                         }
@@ -82,7 +92,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             if (selector is ContextPartitionSelectorAll) {
                 VisitPartitions(
                     path,
-                    (key, subpathOrCPId) => realization.ContextPartitionRecursiveVisit(
+                    (
+                        key,
+                        subpathOrCPId) => realization.ContextPartitionRecursiveVisit(
                         path, subpathOrCPId, this, visitor, selectorPerLevel));
                 return;
             }
@@ -90,7 +102,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             if (selector is ContextPartitionSelectorById) {
                 var ids = (ContextPartitionSelectorById) selector;
                 VisitPartitions(
-                    path, (key, subpathOrCPId) => {
+                    path, (
+                        key,
+                        subpathOrCPId) => {
                         if (ids.ContextPartitionIds.Contains(subpathOrCPId)) {
                             realization.ContextPartitionRecursiveVisit(
                                 path, subpathOrCPId, this, visitor, selectorPerLevel);

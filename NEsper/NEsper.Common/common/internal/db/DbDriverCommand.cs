@@ -24,7 +24,6 @@ namespace com.espertech.esper.common.@internal.db
     /// handles certain other nuances that differ between ADO.NET driver
     /// implementations, encapsulating that behavior within the driver.
     /// </summary>
-
     public interface DbDriverCommand : IDisposable
     {
         /// <summary>
@@ -66,7 +65,7 @@ namespace com.espertech.esper.common.@internal.db
         /// supplied fragments, this method will throw an exception.
         /// </summary>
         /// <value>The fragments.</value>
-        IEnumerable<PlaceholderParser.Fragment> Fragments { get;}
+        IEnumerable<PlaceholderParser.Fragment> Fragments { get; }
 
         /// <summary>
         /// Gets the actual SQL that is sent to the driver.

@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Object-array underlying type. </summary>
         OBJECTARRAY,
-        
+
         /// <summary>Avro-array underlying type.</summary>
         AVRO,
 
@@ -38,10 +38,11 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="typeDef">The type def.</param>
         /// <param name="writer">to write to</param>
-        public static void Write(this CreateSchemaClauseTypeDef typeDef, TextWriter writer)
+        public static void Write(
+            this CreateSchemaClauseTypeDef typeDef,
+            TextWriter writer)
         {
-            switch (typeDef)
-            {
+            switch (typeDef) {
                 case CreateSchemaClauseTypeDef.VARIANT:
                     writer.Write(" variant");
                     break;

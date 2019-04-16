@@ -17,40 +17,43 @@ namespace com.espertech.esper.common.client.util
     /// </summary>
     public class CountMinSketchAgentStringUTF16 : CountMinSketchAgent
     {
-        public Type[] AcceptableValueTypes
-        {
-            get
-            {
-                return new Type[]
-                {
-                    typeof (string)
+        public Type[] AcceptableValueTypes {
+            get {
+                return new Type[] {
+                    typeof(string)
                 };
             }
         }
 
-        public void Add(CountMinSketchAgentContextAdd ctx) {
+        public void Add(CountMinSketchAgentContextAdd ctx)
+        {
             string text = (string) ctx.Value;
             if (text == null) {
                 return;
             }
+
             byte[] bytes = ToBytesUTF16(text);
             ctx.State.Add(bytes, 1);
         }
-    
-        public long? Estimate(CountMinSketchAgentContextEstimate ctx) {
+
+        public long? Estimate(CountMinSketchAgentContextEstimate ctx)
+        {
             string text = (string) ctx.Value;
             if (text == null) {
                 return null;
             }
+
             byte[] bytes = ToBytesUTF16(text);
             return ctx.State.Frequency(bytes);
         }
-    
-        public object FromBytes(CountMinSketchAgentContextFromBytes ctx) {
+
+        public object FromBytes(CountMinSketchAgentContextFromBytes ctx)
+        {
             return Encoding.Unicode.GetString(ctx.Bytes);
         }
-    
-        private byte[] ToBytesUTF16(string text) {
+
+        private byte[] ToBytesUTF16(string text)
+        {
             return Encoding.Unicode.GetBytes(text);
         }
     }

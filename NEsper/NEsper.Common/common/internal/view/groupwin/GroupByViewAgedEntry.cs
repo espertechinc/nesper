@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 {
     public class GroupByViewAgedEntry
     {
-        public GroupByViewAgedEntry(View subview, long lastUpdateTime)
+        public GroupByViewAgedEntry(
+            View subview,
+            long lastUpdateTime)
         {
             Subview = subview;
             LastUpdateTime = lastUpdateTime;

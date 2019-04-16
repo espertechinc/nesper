@@ -30,12 +30,12 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <param name="viewFactoryContext">view context</param>
         /// <param name="services">services</param>
         public VirtualDataWindowFactoryContext(
-            EventType eventType, 
-            object[] parameters, 
-            ExprEvaluator[] parameterExpressions, 
+            EventType eventType,
+            object[] parameters,
+            ExprEvaluator[] parameterExpressions,
             string namedWindowName,
-            object customConfiguration, 
-            ViewFactoryContext viewFactoryContext, 
+            object customConfiguration,
+            ViewFactoryContext viewFactoryContext,
             EPStatementInitServices services)
         {
             EventType = eventType;

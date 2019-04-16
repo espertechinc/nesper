@@ -14,12 +14,13 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
     {
         ENUM,
         DATETIME
-    } ;
+    };
 
     public static class DotMethodTypeEnumExtensions
     {
-        public static String GetTypeName(this DotMethodTypeEnum value) {
-            switch(value) {
+        public static String GetTypeName(this DotMethodTypeEnum value)
+        {
+            switch (value) {
                 case DotMethodTypeEnum.ENUM:
                     return "enumeration";
                 case DotMethodTypeEnum.DATETIME:

@@ -8,7 +8,6 @@
 
 using System;
 using System.Numerics;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -21,7 +20,6 @@ using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.node
@@ -34,7 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
     {
         private ExprEvaluator[] evaluators;
 
-        public ExprTimePeriodForge(ExprTimePeriodImpl parent, bool hasVariable, TimePeriodAdder[] adders)
+        public ExprTimePeriodForge(
+            ExprTimePeriodImpl parent,
+            bool hasVariable,
+            TimePeriodAdder[] adders)
         {
             ForgeRenderable = parent;
             HasVariable = hasVariable;
@@ -82,7 +83,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         public ExprEvaluator ExprEvaluator {
             get {
                 return new ProxyExprEvaluator() {
-                    ProcEvaluate = (eventsPerStream, isNewData, context) => {
+                    ProcEvaluate = (
+                        eventsPerStream,
+                        isNewData,
+                        context) => {
                         throw new IllegalStateException(
                             "Time-Period expression must be evaluated via any of " +
                             typeof(ExprTimePeriod).GetSimpleName() +
@@ -93,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, 
+            Type requiredType,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
@@ -121,7 +125,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             }
         }
 
-        public double EvaluateAsSeconds(EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
+        public double EvaluateAsSeconds(
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext context)
         {
             if (evaluators == null) {
                 evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
@@ -135,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ForgeRenderable));
                 }
 
-                seconds += Adders[i].Compute(result);
+                seconds += Adders[i].Compute(result.Value);
             }
 
             return seconds;
@@ -179,8 +186,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         }
 
         private double? Eval(
-            ExprEvaluator expr, 
-            EventBean[] events, bool isNewData, 
+            ExprEvaluator expr,
+            EventBean[] events,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             object value = expr.Evaluate(events, isNewData, exprEvaluatorContext);
@@ -199,7 +207,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             return value.AsDouble();
         }
 
-        public TimePeriod EvaluateGetTimePeriod(EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
+        public TimePeriod EvaluateGetTimePeriod(
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext context)
         {
             if (evaluators == null) {
                 evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
@@ -304,9 +315,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         }
 
         private int EvaluateGetTimePeriodCodegenField(
-            CodegenBlock block, string variable, bool present, int counter,
+            CodegenBlock block,
+            string variable,
+            bool present,
+            int counter,
             CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, 
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (!present) {

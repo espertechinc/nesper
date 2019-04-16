@@ -6,139 +6,164 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 {
-	public class ResultSetProcessorRowPerGroupOutputAllHelperImpl : ResultSetProcessorRowPerGroupOutputAllHelper {
+    public class ResultSetProcessorRowPerGroupOutputAllHelperImpl : ResultSetProcessorRowPerGroupOutputAllHelper
+    {
+        private readonly IDictionary<object, EventBean[]> groupReps = new LinkedHashMap<object, EventBean[]>();
+        private readonly IDictionary<object, EventBean> groupRepsOutputLastUnordRStream = new LinkedHashMap<object, EventBean>();
 
-	    internal readonly ResultSetProcessorRowPerGroup processor;
+        internal readonly ResultSetProcessorRowPerGroup processor;
+        private bool first;
 
-	    private readonly IDictionary<object, EventBean[]> groupReps = new LinkedHashMap<object, EventBean[]>();
-	    private readonly IDictionary<object, EventBean> groupRepsOutputLastUnordRStream = new LinkedHashMap<object, EventBean>();
-	    private bool first;
+        public ResultSetProcessorRowPerGroupOutputAllHelperImpl(ResultSetProcessorRowPerGroup processor)
+        {
+            this.processor = processor;
+        }
 
-	    public ResultSetProcessorRowPerGroupOutputAllHelperImpl(ResultSetProcessorRowPerGroup processor) {
-	        this.processor = processor;
-	    }
+        public void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic)
+        {
+            GenerateRemoveStreamJustOnce(isGenerateSynthetic, false);
 
-	    public void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic) {
-	        GenerateRemoveStreamJustOnce(isGenerateSynthetic, false);
+            if (newData != null) {
+                foreach (var aNewData in newData) {
+                    EventBean[] eventsPerStream = {aNewData};
+                    var mk = processor.GenerateGroupKeySingle(eventsPerStream, true);
+                    groupReps.Put(mk, eventsPerStream);
 
-	        if (newData != null) {
-	            foreach (EventBean aNewData in newData) {
-	                EventBean[] eventsPerStream = new EventBean[]{aNewData};
-	                object mk = processor.GenerateGroupKeySingle(eventsPerStream, true);
-	                groupReps.Put(mk, eventsPerStream);
+                    if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
+                        var @event = processor.GenerateOutputBatchedNoSortWMap(false, mk, eventsPerStream, true, isGenerateSynthetic);
+                        if (@event != null) {
+                            groupRepsOutputLastUnordRStream.Put(mk, @event);
+                        }
+                    }
 
-	                if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
-	                    EventBean @event = processor.GenerateOutputBatchedNoSortWMap(false, mk, eventsPerStream, true, isGenerateSynthetic);
-	                    if (@event != null) {
-	                        groupRepsOutputLastUnordRStream.Put(mk, @event);
-	                    }
-	                }
-	                processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.AgentInstanceContext);
-	            }
-	        }
-	        if (oldData != null) {
-	            foreach (EventBean anOldData in oldData) {
-	                EventBean[] eventsPerStream = new EventBean[]{anOldData};
-	                object mk = processor.GenerateGroupKeySingle(eventsPerStream, true);
+                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.AgentInstanceContext);
+                }
+            }
 
-	                if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
-	                    EventBean @event = processor.GenerateOutputBatchedNoSortWMap(false, mk, eventsPerStream, false, isGenerateSynthetic);
-	                    if (@event != null) {
-	                        groupRepsOutputLastUnordRStream.Put(mk, @event);
-	                    }
-	                }
-	                processor.AggregationService.ApplyLeave(eventsPerStream, mk, processor.AgentInstanceContext);
-	            }
-	        }
-	    }
+            if (oldData != null) {
+                foreach (var anOldData in oldData) {
+                    EventBean[] eventsPerStream = {anOldData};
+                    var mk = processor.GenerateGroupKeySingle(eventsPerStream, true);
 
-	    public void ProcessJoin(ISet<MultiKey<EventBean>> newData, ISet<MultiKey<EventBean>> oldData, bool isGenerateSynthetic) {
-	        GenerateRemoveStreamJustOnce(isGenerateSynthetic, true);
+                    if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
+                        var @event = processor.GenerateOutputBatchedNoSortWMap(false, mk, eventsPerStream, false, isGenerateSynthetic);
+                        if (@event != null) {
+                            groupRepsOutputLastUnordRStream.Put(mk, @event);
+                        }
+                    }
 
-	        if (newData != null) {
-	            foreach (MultiKey<EventBean> aNewData in newData) {
-	                object mk = processor.GenerateGroupKeySingle(aNewData.Array, true);
-	                groupReps.Put(mk, aNewData.Array);
+                    processor.AggregationService.ApplyLeave(eventsPerStream, mk, processor.AgentInstanceContext);
+                }
+            }
+        }
 
-	                if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
-	                    EventBean @event = processor.GenerateOutputBatchedNoSortWMap(true, mk, aNewData.Array, true, isGenerateSynthetic);
-	                    if (@event != null) {
-	                        groupRepsOutputLastUnordRStream.Put(mk, @event);
-	                    }
-	                }
-	                processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.AgentInstanceContext);
-	            }
-	        }
-	        if (oldData != null) {
-	            foreach (MultiKey<EventBean> anOldData in oldData) {
-	                object mk = processor.GenerateGroupKeySingle(anOldData.Array, false);
-	                if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
-	                    EventBean @event = processor.GenerateOutputBatchedNoSortWMap(true, mk, anOldData.Array, false, isGenerateSynthetic);
-	                    if (@event != null) {
-	                        groupRepsOutputLastUnordRStream.Put(mk, @event);
-	                    }
-	                }
-	                processor.AggregationService.ApplyLeave(anOldData.Array, mk, processor.AgentInstanceContext);
-	            }
-	        }
-	    }
+        public void ProcessJoin(
+            ISet<MultiKey<EventBean>> newData,
+            ISet<MultiKey<EventBean>> oldData,
+            bool isGenerateSynthetic)
+        {
+            GenerateRemoveStreamJustOnce(isGenerateSynthetic, true);
 
-	    public UniformPair<EventBean[]> OutputView(bool isSynthesize) {
-	        GenerateRemoveStreamJustOnce(isSynthesize, false);
-	        return Output(isSynthesize, false);
-	    }
+            if (newData != null) {
+                foreach (var aNewData in newData) {
+                    var mk = processor.GenerateGroupKeySingle(aNewData.Array, true);
+                    groupReps.Put(mk, aNewData.Array);
 
-	    public UniformPair<EventBean[]> OutputJoin(bool isSynthesize) {
-	        GenerateRemoveStreamJustOnce(isSynthesize, true);
-	        return Output(isSynthesize, true);
-	    }
+                    if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
+                        var @event = processor.GenerateOutputBatchedNoSortWMap(true, mk, aNewData.Array, true, isGenerateSynthetic);
+                        if (@event != null) {
+                            groupRepsOutputLastUnordRStream.Put(mk, @event);
+                        }
+                    }
 
-	    public void Destroy() {
-	        // no action required
-	    }
+                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.AgentInstanceContext);
+                }
+            }
 
-	    private UniformPair<EventBean[]> Output(bool isSynthesize, bool join) {
-	        // generate latest new-events from group representatives
-	        IList<EventBean> newEvents = new List<EventBean>(4);
-	        processor.GenerateOutputBatchedArrFromIterator(join, groupReps.GetEnumerator(), true, isSynthesize, newEvents, null);
-	        EventBean[] newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
+            if (oldData != null) {
+                foreach (var anOldData in oldData) {
+                    var mk = processor.GenerateGroupKeySingle(anOldData.Array, false);
+                    if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
+                        var @event = processor.GenerateOutputBatchedNoSortWMap(true, mk, anOldData.Array, false, isGenerateSynthetic);
+                        if (@event != null) {
+                            groupRepsOutputLastUnordRStream.Put(mk, @event);
+                        }
+                    }
 
-	        // use old-events as retained, if any
-	        EventBean[] oldEventsArr = null;
-	        if (!groupRepsOutputLastUnordRStream.IsEmpty()) {
-	            ICollection<EventBean> oldEvents = groupRepsOutputLastUnordRStream.Values();
-	            oldEventsArr = oldEvents.ToArray();
-	            groupRepsOutputLastUnordRStream.Clear();
-	        }
-	        first = true;
+                    processor.AggregationService.ApplyLeave(anOldData.Array, mk, processor.AgentInstanceContext);
+                }
+            }
+        }
 
-	        if (newEventsArr == null && oldEventsArr == null) {
-	            return null;
-	        }
-	        return new UniformPair<>(newEventsArr, oldEventsArr);
-	    }
+        public UniformPair<EventBean[]> OutputView(bool isSynthesize)
+        {
+            GenerateRemoveStreamJustOnce(isSynthesize, false);
+            return Output(isSynthesize, false);
+        }
 
-	    private void GenerateRemoveStreamJustOnce(bool isSynthesize, bool join) {
-	        if (first && processor.IsSelectRStream) {
-	            foreach (KeyValuePair<object, EventBean[]> groupRep in groupReps) {
-	                object mk = processor.GenerateGroupKeySingle(groupRep.Value, false);
-	                EventBean @event = processor.GenerateOutputBatchedNoSortWMap(join, mk, groupRep.Value, false, isSynthesize);
-	                if (@event != null) {
-	                    groupRepsOutputLastUnordRStream.Put(mk, @event);
-	                }
-	            }
-	        }
-	        first = false;
-	    }
-	}
+        public UniformPair<EventBean[]> OutputJoin(bool isSynthesize)
+        {
+            GenerateRemoveStreamJustOnce(isSynthesize, true);
+            return Output(isSynthesize, true);
+        }
+
+        public void Destroy()
+        {
+            // no action required
+        }
+
+        private UniformPair<EventBean[]> Output(
+            bool isSynthesize,
+            bool join)
+        {
+            // generate latest new-events from group representatives
+            IList<EventBean> newEvents = new List<EventBean>(4);
+            processor.GenerateOutputBatchedArrFromIterator(join, groupReps.GetEnumerator(), true, isSynthesize, newEvents, null);
+            var newEventsArr = newEvents.IsEmpty() ? null : newEvents.ToArray();
+
+            // use old-events as retained, if any
+            EventBean[] oldEventsArr = null;
+            if (!groupRepsOutputLastUnordRStream.IsEmpty()) {
+                var oldEvents = groupRepsOutputLastUnordRStream.Values;
+                oldEventsArr = oldEvents.ToArray();
+                groupRepsOutputLastUnordRStream.Clear();
+            }
+
+            first = true;
+
+            if (newEventsArr == null && oldEventsArr == null) {
+                return null;
+            }
+
+            return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
+        }
+
+        private void GenerateRemoveStreamJustOnce(
+            bool isSynthesize,
+            bool join)
+        {
+            if (first && processor.IsSelectRStream) {
+                foreach (var groupRep in groupReps) {
+                    var mk = processor.GenerateGroupKeySingle(groupRep.Value, false);
+                    var @event = processor.GenerateOutputBatchedNoSortWMap(join, mk, groupRep.Value, false, isSynthesize);
+                    if (@event != null) {
+                        groupRepsOutputLastUnordRStream.Put(mk, @event);
+                    }
+                }
+            }
+
+            first = false;
+        }
+    }
 } // end of namespace

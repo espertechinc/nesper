@@ -21,7 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
         /// <param name="y">y</param>
         /// <param name="value">value to remove</param>
         /// <param name="tree">quadtree</param>
-        public static void Remove(double x, double y, object value, PointRegionQuadTree<object> tree)
+        public static void Remove(
+            double x,
+            double y,
+            object value,
+            PointRegionQuadTree<object> tree)
         {
             var root = tree.Root;
             var replacement = RemoveFromNode(x, y, value, root, tree);
@@ -29,16 +33,17 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
         }
 
         private static PointRegionQuadTreeNode RemoveFromNode(
-            double x, double y, object value, PointRegionQuadTreeNode node, PointRegionQuadTree<object> tree)
+            double x,
+            double y,
+            object value,
+            PointRegionQuadTreeNode node,
+            PointRegionQuadTree<object> tree)
         {
-            if (node is PointRegionQuadTreeNodeLeaf<object> leaf)
-            {
+            if (node is PointRegionQuadTreeNodeLeaf<object> leaf) {
                 var removed = RemoveFromPoints(x, y, value, leaf.Points);
-                if (removed)
-                {
+                if (removed) {
                     leaf.DecCount();
-                    if (leaf.Count == 0)
-                    {
+                    if (leaf.Count == 0) {
                         leaf.Points = null;
                     }
                 }
@@ -48,8 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
             var branch = (PointRegionQuadTreeNodeBranch) node;
             var quadrant = node.Bb.GetQuadrant(x, y);
-            switch (quadrant)
-            {
+            switch (quadrant) {
                 case QuadrantEnum.NW:
                     branch.Nw = RemoveFromNode(x, y, value, branch.Nw, tree);
                     break;
@@ -67,8 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             if (!(branch.Nw is PointRegionQuadTreeNodeLeaf<object>) ||
                 !(branch.Ne is PointRegionQuadTreeNodeLeaf<object>) ||
                 !(branch.Sw is PointRegionQuadTreeNodeLeaf<object>) ||
-                !(branch.Se is PointRegionQuadTreeNodeLeaf<object>))
-            {
+                !(branch.Se is PointRegionQuadTreeNodeLeaf<object>)) {
                 return branch;
             }
 
@@ -77,8 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             var swLeaf = (PointRegionQuadTreeNodeLeaf<object>) branch.Sw;
             var seLeaf = (PointRegionQuadTreeNodeLeaf<object>) branch.Se;
             var total = nwLeaf.Count + neLeaf.Count + swLeaf.Count + seLeaf.Count;
-            if (total >= tree.LeafCapacity)
-            {
+            if (total >= tree.LeafCapacity) {
                 return branch;
             }
 
@@ -90,21 +92,21 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             return new PointRegionQuadTreeNodeLeaf<object>(branch.Bb, branch.Level, collection, count);
         }
 
-        private static bool RemoveFromPoints(double x, double y, object value, object points)
+        private static bool RemoveFromPoints(
+            double x,
+            double y,
+            object value,
+            object points)
         {
-            if (points == null)
-            {
+            if (points == null) {
                 return false;
             }
 
-            if (!(points is ICollection<XYPointMultiType>))
-            {
+            if (!(points is ICollection<XYPointMultiType>)) {
                 var point = (XYPointMultiType) points;
-                if (point.X == x && point.Y == y)
-                {
+                if (point.X == x && point.Y == y) {
                     var removed = point.Remove(value);
-                    if (removed)
-                    {
+                    if (removed) {
                         return true;
                     }
                 }
@@ -114,16 +116,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
             var collection = (ICollection<XYPointMultiType>) points;
             var enumerator = collection.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
+            while (enumerator.MoveNext()) {
                 var point = enumerator.Current;
-                if (point.X == x && point.Y == y)
-                {
+                if (point.X == x && point.Y == y) {
                     var removed = point.Remove(value);
-                    if (removed)
-                    {
-                        if (point.IsEmpty())
-                        {
+                    if (removed) {
+                        if (point.IsEmpty()) {
                             collection.Remove(point);
                         }
 
@@ -135,23 +133,22 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             return false;
         }
 
-        private static int MergeChildNodes(ICollection<XYPointMultiType> target, object points)
+        private static int MergeChildNodes(
+            ICollection<XYPointMultiType> target,
+            object points)
         {
-            if (points == null)
-            {
+            if (points == null) {
                 return 0;
             }
 
-            if (points is XYPointMultiType p1)
-            {
+            if (points is XYPointMultiType p1) {
                 target.Add(p1);
                 return p1.Count();
             }
 
             var coll = (ICollection<XYPointMultiType>) points;
             var total = 0;
-            foreach (var p in coll)
-            {
+            foreach (var p in coll) {
                 target.Add(p);
                 total += p.Count();
             }

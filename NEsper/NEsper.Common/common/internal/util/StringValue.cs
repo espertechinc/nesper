@@ -170,7 +170,9 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="writer">to output to</param>
         /// <param name="constant">to render</param>
-        public static void RenderConstantAsEPL(StringWriter writer, object constant)
+        public static void RenderConstantAsEPL(
+            TextWriter writer,
+            object constant)
         {
             if (constant == null) {
                 writer.Write("null");

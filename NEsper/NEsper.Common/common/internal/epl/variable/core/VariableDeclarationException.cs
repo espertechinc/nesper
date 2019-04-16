@@ -13,13 +13,13 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     /// <summary>
     /// Exception indicating a problem in a variable declaration.
     /// </summary>
-	public class VariableDeclarationException : Exception
-	{
-	    /// <summary>Ctor.</summary>
-	    /// <param name="msg">the exception message.</param>
-	    public VariableDeclarationException(String msg)
+    public class VariableDeclarationException : Exception
+    {
+        /// <summary>Ctor.</summary>
+        /// <param name="msg">the exception message.</param>
+        public VariableDeclarationException(String msg)
             : base(msg)
-	    {
-	    }
-	}
+        {
+        }
+    }
 } // End of namespace

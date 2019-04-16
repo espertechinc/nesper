@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         protected internal readonly Type valueType;
 
         public PropertySortedEventTableFactory(
-            int streamNum, string propertyName, EventPropertyValueGetter propertyGetter, Type valueType)
+            int streamNum,
+            string propertyName,
+            EventPropertyValueGetter propertyGetter,
+            Type valueType)
         {
             this.streamNum = streamNum;
             this.propertyName = propertyName;
@@ -43,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public EventTableOrganization Organization => new EventTableOrganization(
             null, false, false, streamNum, new[] {propertyName}, EventTableOrganizationType.BTREE);
 
-        public EventTable[] MakeEventTables(AgentInstanceContext agentInstanceContext, int? subqueryNumber)
+        public EventTable[] MakeEventTables(
+            AgentInstanceContext agentInstanceContext,
+            int? subqueryNumber)
         {
             return new EventTable[] {new PropertySortedEventTableImpl(this)};
         }

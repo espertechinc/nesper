@@ -34,7 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         /// <param name="evalGuardNode">is the factory node associated to the state</param>
         public EvalGuardStateNode(
             Evaluator parentNode,
-            EvalGuardNode evalGuardNode) : base(parentNode)
+            EvalGuardNode evalGuardNode)
+            : base(parentNode)
         {
             this.evalGuardNode = evalGuardNode;
         }
@@ -48,7 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         public override bool IsObserverStateNodeNonRestarting => false;
 
         public void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent)
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             var agentInstanceContext = evalGuardNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternGuardEvaluateTrue(
@@ -78,7 +82,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             agentInstanceContext.InstrumentationProvider.APatternGuardEvaluateTrue(isQuitted);
         }
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             activeChildNode = null;
             var agentInstanceContext = evalGuardNode.Context.AgentInstanceContext;

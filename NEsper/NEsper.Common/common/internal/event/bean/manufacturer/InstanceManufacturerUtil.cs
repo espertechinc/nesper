@@ -78,7 +78,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         {
             private readonly ExprForge innerForge;
 
-            internal InstanceManufacturerForgeNonArray(Type returnType, ExprForge innerForge)
+            internal InstanceManufacturerForgeNonArray(
+                Type returnType,
+                ExprForge innerForge)
             {
                 EvaluationType = returnType;
                 this.innerForge = innerForge;
@@ -88,7 +90,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 get {
                     var inner = innerForge.ExprEvaluator;
                     return new ProxyExprEvaluator {
-                        ProcEvaluate = (eventsPerStream, isNewData, exprEvaluatorContext) => {
+                        ProcEvaluate = (
+                            eventsPerStream,
+                            isNewData,
+                            exprEvaluatorContext) => {
                             var @event = (EventBean) inner.Evaluate(
                                 eventsPerStream, isNewData, exprEvaluatorContext);
                             if (@event != null) {
@@ -104,7 +109,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
             public CodegenExpression EvaluateCodegen(
-                Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                Type requiredType,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
@@ -132,7 +139,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             private readonly Type componentReturnType;
             private readonly ExprForge innerForge;
 
-            internal InstanceManufacturerForgeArray(Type componentReturnType, ExprForge innerForge)
+            internal InstanceManufacturerForgeArray(
+                Type componentReturnType,
+                ExprForge innerForge)
             {
                 this.componentReturnType = componentReturnType;
                 this.innerForge = innerForge;
@@ -142,7 +151,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 get {
                     var inner = innerForge.ExprEvaluator;
                     return new ProxyExprEvaluator {
-                        ProcEvaluate = (eventsPerStream, isNewData, exprEvaluatorContext) => {
+                        ProcEvaluate = (
+                            eventsPerStream,
+                            isNewData,
+                            exprEvaluatorContext) => {
                             var result = inner.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                             if (!(result is EventBean[])) {
                                 return null;
@@ -163,7 +175,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
             public CodegenExpression EvaluateCodegen(
-                Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                Type requiredType,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 var arrayType = TypeHelper.GetArrayType(componentReturnType);
@@ -193,7 +207,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             public ExprNodeRenderable ForgeRenderable => this;
 
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+            public void ToEPL(
+                TextWriter writer,
+                ExprPrecedenceEnum parentPrecedence)
             {
                 writer.Write(GetType().GetSimpleName());
             }

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
@@ -31,7 +30,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         /// <param name="eventAdapterService">event factory</param>
         /// <param name="properties">written properties</param>
         public EventBeanManufacturerMap(
-            MapEventType mapEventType, EventBeanTypedEventFactory eventAdapterService,
+            MapEventType mapEventType,
+            EventBeanTypedEventFactory eventAdapterService,
             WriteablePropertyDescriptor[] properties)
         {
             this.eventAdapterService = eventAdapterService;
@@ -53,8 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         public IDictionary<string, object> MakeUnderlying(object[] properties)
         {
             IDictionary<string, object> values = new Dictionary<string, object>();
-            for (var i = 0; i < properties.Length; i++)
-            {
+            for (var i = 0; i < properties.Length; i++) {
                 values.Put(writables[i].PropertyName, properties[i]);
             }
 

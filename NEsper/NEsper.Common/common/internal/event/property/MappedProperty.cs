@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.@event.property
     public class MappedProperty : PropertyBase,
         PropertyWithKey
     {
-        public MappedProperty(string propertyName) : base(propertyName)
+        public MappedProperty(string propertyName)
+            : base(propertyName)
         {
         }
 
@@ -37,7 +38,10 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// </summary>
         /// <param name="propertyName">is the property name of the mapped property</param>
         /// <param name="key">is the key value to access the mapped property</param>
-        public MappedProperty(string propertyName, string key) : base(propertyName)
+        public MappedProperty(
+            string propertyName,
+            string key)
+            : base(propertyName)
         {
             Key = key;
         }
@@ -54,12 +58,13 @@ namespace com.espertech.esper.common.@internal.@event.property
 
         public override string[] ToPropertyArray()
         {
-            return new string[] {this.PropertyNameAtomic};
+            return new[] {PropertyNameAtomic};
         }
 
         // EventPropertyGetterAndMapped
         public override EventPropertyGetterSPI GetGetter(
-            BeanEventType eventType, EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventType eventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var propertyDesc = eventType.GetMappedProperty(PropertyNameAtomic);
@@ -104,7 +109,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             }
 
             var returnType = descriptor.ReturnType;
-            if (!TypeHelper.IsImplementsInterface(returnType, typeof(IDictionary<string, object>))) {
+            if (!returnType.IsImplementsInterface(typeof(IDictionary<string, object>))) {
                 return null;
             }
 
@@ -135,7 +140,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             }
 
             var returnType = descriptor.ReturnType;
-            if (!TypeHelper.IsImplementsInterface(returnType, typeof(IDictionary<string, object>))) {
+            if (!returnType.IsImplementsInterface(typeof(IDictionary<string, object>))) {
                 return null;
             }
 
@@ -153,10 +158,10 @@ namespace com.espertech.esper.common.@internal.@event.property
         }
 
         public override Type GetPropertyTypeMap(
-            IDictionary<string, object> optionalMapPropTypes, 
+            IDictionary<string, object> optionalMapPropTypes,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            object type = DictionaryExtensions.Get(optionalMapPropTypes, this.PropertyNameAtomic);
+            var type = optionalMapPropTypes.Get(PropertyNameAtomic);
             if (type == null) {
                 return null;
             }
@@ -182,7 +187,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             }
 
             if (type is Type asType) {
-                if (asType.IsGenericStringDictionary()) { 
+                if (asType.IsGenericStringDictionary()) {
                     return new MapMappedPropertyGetter(PropertyNameAtomic, Key);
                 }
             }
@@ -194,7 +199,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             return null;
         }
 
-        public override void ToPropertyEPL(StringWriter writer)
+        public override void ToPropertyEPL(TextWriter writer)
         {
             writer.Write(PropertyNameAtomic);
             writer.Write("('");

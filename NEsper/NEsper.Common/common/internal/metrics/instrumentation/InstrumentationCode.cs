@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
     public static class InstrumentationCode
     {
         public static Consumer<CodegenBlock> Instblock(
-            CodegenClassScope codegenClassScope, string name, params CodegenExpression[] expressions)
+            CodegenClassScope codegenClassScope,
+            string name,
+            params CodegenExpression[] expressions)
         {
             if (!codegenClassScope.IsInstrumented) {
                 return block => { };
@@ -26,7 +28,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
             return block => Generate(block, name, expressions);
         }
 
-        private static void Generate(CodegenBlock block, string name, params CodegenExpression[] expressions)
+        private static void Generate(
+            CodegenBlock block,
+            string name,
+            params CodegenExpression[] expressions)
         {
             block.IfCondition(PublicConstValue(InstrumentationConstants.RUNTIME_HELPER_CLASS, "ENABLED"))
                 .Expression(

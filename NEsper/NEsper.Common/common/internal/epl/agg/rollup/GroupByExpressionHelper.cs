@@ -236,7 +236,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
         }
 
         private static void GroupByAddRollup(
-            GroupByClauseElementRollupOrCube spec, GroupByRollupNodeBase parent, IList<ExprNode> exprNodes)
+            GroupByClauseElementRollupOrCube spec,
+            GroupByRollupNodeBase parent,
+            IList<ExprNode> exprNodes)
         {
             foreach (var rolledUp in spec.RollupExpressions) {
                 if (rolledUp is GroupByClauseElementExpr) {
@@ -252,14 +254,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             }
         }
 
-        private static ExprNode CopyVisitExpression(ExprNode expression, ExpressionCopier expressionCopier)
+        private static ExprNode CopyVisitExpression(
+            ExprNode expression,
+            ExpressionCopier expressionCopier)
         {
             return expressionCopier.Copy(expression);
         }
 
-        private class GroupByExpressionInfo
+        internal class GroupByExpressionInfo
         {
-            private GroupByExpressionInfo(IList<ExprNode> expressions, IList<GroupByRollupNodeBase> nodes)
+            internal GroupByExpressionInfo(
+                IList<ExprNode> expressions,
+                IList<GroupByRollupNodeBase> nodes)
             {
                 Expressions = expressions;
                 Nodes = nodes;

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
@@ -19,64 +18,78 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.@base
 {
-	/// <summary>
-	/// This class reacts to any new data buffered by registring with the dispatch service.
-	/// When dispatched via execute, it takes the buffered events and hands these to the join execution strategy.
-	/// </summary>
-	public class JoinExecStrategyDispatchable : BufferObserver, EPStatementDispatch {
-	    private readonly JoinExecutionStrategy joinExecutionStrategy;
-	    private readonly IDictionary<int, FlushedEventBuffer> oldStreamBuffer;
-	    private readonly IDictionary<int, FlushedEventBuffer> newStreamBuffer;
-	    private readonly int numStreams;
-	    private readonly AgentInstanceContext agentInstanceContext;
+    /// <summary>
+    /// This class reacts to any new data buffered by registring with the dispatch service.
+    /// When dispatched via execute, it takes the buffered events and hands these to the join execution strategy.
+    /// </summary>
+    public class JoinExecStrategyDispatchable : BufferObserver,
+        EPStatementDispatch
+    {
+        private readonly JoinExecutionStrategy joinExecutionStrategy;
+        private readonly IDictionary<int, FlushedEventBuffer> oldStreamBuffer;
+        private readonly IDictionary<int, FlushedEventBuffer> newStreamBuffer;
+        private readonly int numStreams;
+        private readonly AgentInstanceContext agentInstanceContext;
 
-	    private bool hasNewData;
+        private bool hasNewData;
 
-	    public JoinExecStrategyDispatchable(JoinExecutionStrategy joinExecutionStrategy, int numStreams, AgentInstanceContext agentInstanceContext) {
-	        this.joinExecutionStrategy = joinExecutionStrategy;
-	        this.numStreams = numStreams;
-	        this.agentInstanceContext = agentInstanceContext;
+        public JoinExecStrategyDispatchable(
+            JoinExecutionStrategy joinExecutionStrategy,
+            int numStreams,
+            AgentInstanceContext agentInstanceContext)
+        {
+            this.joinExecutionStrategy = joinExecutionStrategy;
+            this.numStreams = numStreams;
+            this.agentInstanceContext = agentInstanceContext;
 
-	        oldStreamBuffer = new Dictionary<int, FlushedEventBuffer>();
-	        newStreamBuffer = new Dictionary<int, FlushedEventBuffer>();
-	    }
+            oldStreamBuffer = new Dictionary<int, FlushedEventBuffer>();
+            newStreamBuffer = new Dictionary<int, FlushedEventBuffer>();
+        }
 
-	    public void Execute() {
-	        if (!hasNewData) {
-	            return;
-	        }
-	        hasNewData = false;
+        public void Execute()
+        {
+            if (!hasNewData) {
+                return;
+            }
 
-	        EventBean[][] oldDataPerStream = new EventBean[numStreams][];
-	        EventBean[][] newDataPerStream = new EventBean[numStreams][];
+            hasNewData = false;
 
-	        for (int i = 0; i < numStreams; i++) {
-	            oldDataPerStream[i] = GetBufferData(oldStreamBuffer.Get(i));
-	            newDataPerStream[i] = GetBufferData(newStreamBuffer.Get(i));
-	        }
+            EventBean[][] oldDataPerStream = new EventBean[numStreams][];
+            EventBean[][] newDataPerStream = new EventBean[numStreams][];
 
-	        InstrumentationCommon instrumentationCommon = agentInstanceContext.InstrumentationProvider;
-	        if (instrumentationCommon.Activated()) {
-	            instrumentationCommon.QJoinDispatch(newDataPerStream, oldDataPerStream);
-	            joinExecutionStrategy.Join(newDataPerStream, oldDataPerStream);
-	            instrumentationCommon.AJoinDispatch();
-	            return;
-	        }
+            for (int i = 0; i < numStreams; i++) {
+                oldDataPerStream[i] = GetBufferData(oldStreamBuffer.Get(i));
+                newDataPerStream[i] = GetBufferData(newStreamBuffer.Get(i));
+            }
 
-	        joinExecutionStrategy.Join(newDataPerStream, oldDataPerStream);
-	    }
+            InstrumentationCommon instrumentationCommon = agentInstanceContext.InstrumentationProvider;
+            if (instrumentationCommon.Activated()) {
+                instrumentationCommon.QJoinDispatch(newDataPerStream, oldDataPerStream);
+                joinExecutionStrategy.Join(newDataPerStream, oldDataPerStream);
+                instrumentationCommon.AJoinDispatch();
+                return;
+            }
 
-	    private static EventBean[] GetBufferData(FlushedEventBuffer buffer) {
-	        if (buffer == null) {
-	            return null;
-	        }
-	        return buffer.GetAndFlush();
-	    }
+            joinExecutionStrategy.Join(newDataPerStream, oldDataPerStream);
+        }
 
-	    public void NewData(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer) {
-	        hasNewData = true;
-	        newStreamBuffer.Put(streamId, newEventBuffer);
-	        oldStreamBuffer.Put(streamId, oldEventBuffer);
-	    }
-	}
+        private static EventBean[] GetBufferData(FlushedEventBuffer buffer)
+        {
+            if (buffer == null) {
+                return null;
+            }
+
+            return buffer.GetAndFlush();
+        }
+
+        public void NewData(
+            int streamId,
+            FlushedEventBuffer newEventBuffer,
+            FlushedEventBuffer oldEventBuffer)
+        {
+            hasNewData = true;
+            newStreamBuffer.Put(streamId, newEventBuffer);
+            oldStreamBuffer.Put(streamId, oldEventBuffer);
+        }
+    }
 } // end of namespace

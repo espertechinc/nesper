@@ -19,8 +19,10 @@ namespace com.espertech.esper.common.@internal.@event.map
     public class MapPropertyGetterDefaultNoFragment : MapPropertyGetterDefaultBase
     {
         public MapPropertyGetterDefaultNoFragment(
-            string propertyName, EventBeanTypedEventFactory eventBeanTypedEventFactory) : base(
-            propertyName, null, eventBeanTypedEventFactory)
+            string propertyName,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            : base(
+                propertyName, null, eventBeanTypedEventFactory)
         {
         }
 
@@ -30,7 +32,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         internal override CodegenExpression HandleCreateFragmentCodegen(
-            CodegenExpression value, CodegenClassScope codegenClassScope)
+            CodegenExpression value,
+            CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }

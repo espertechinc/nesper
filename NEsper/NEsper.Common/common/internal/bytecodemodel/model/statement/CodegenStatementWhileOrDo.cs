@@ -20,7 +20,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly CodegenExpression condition;
         private readonly bool isWhile;
 
-        public CodegenStatementWhileOrDo(CodegenBlock parent, CodegenExpression condition, bool isWhile) : base(parent)
+        public CodegenStatementWhileOrDo(
+            CodegenBlock parent,
+            CodegenExpression condition,
+            bool isWhile)
+            : base(parent)
         {
             this.condition = condition;
             this.isWhile = isWhile;
@@ -29,7 +33,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         public CodegenBlock Block { get; set; }
 
         public override void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level,
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
             CodegenIndent indent)
         {
             if (isWhile) {

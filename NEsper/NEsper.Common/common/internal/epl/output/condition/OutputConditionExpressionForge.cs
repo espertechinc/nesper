@@ -40,8 +40,11 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         private int scheduleCallbackId = -1;
 
         public OutputConditionExpressionForge(
-            ExprNode whenExpressionNode, IList<OnTriggerSetAssignment> assignments, ExprNode andWhenTerminatedExpr,
-            IList<OnTriggerSetAssignment> afterTerminateAssignments, bool isStartConditionOnCreation,
+            ExprNode whenExpressionNode,
+            IList<OnTriggerSetAssignment> assignments,
+            ExprNode andWhenTerminatedExpr,
+            IList<OnTriggerSetAssignment> afterTerminateAssignments,
+            bool isStartConditionOnCreation,
             StatementCompileTimeServices services)
         {
             whenExpressionNodeEval = whenExpressionNode;
@@ -94,7 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (scheduleCallbackId == -1) {
                 throw new IllegalStateException("Schedule callback id not provided");

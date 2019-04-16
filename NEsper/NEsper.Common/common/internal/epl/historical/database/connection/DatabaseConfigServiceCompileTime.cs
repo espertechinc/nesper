@@ -10,17 +10,18 @@ using com.espertech.esper.common.@internal.epl.historical.database.core;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.connection
 {
-	/// <summary>
-	/// Service providing database connection factory and configuration information
-	/// for use with historical data polling.
-	/// </summary>
-	public interface DatabaseConfigServiceCompileTime :  DatabaseConfigService {
-	    /// <summary>
-	    /// Returns the column metadata settings for the database.
-	    /// </summary>
-	    /// <param name="databaseName">is the database name</param>
-	    /// <returns>indicators for change case, metadata retrieval strategy and others</returns>
-	    /// <throws>DatabaseConfigException if the name was not configured</throws>
-	    ColumnSettings GetQuerySetting(string databaseName) ;
-	}
+    /// <summary>
+    /// Service providing database connection factory and configuration information
+    /// for use with historical data polling.
+    /// </summary>
+    public interface DatabaseConfigServiceCompileTime : DatabaseConfigService
+    {
+        /// <summary>
+        /// Returns the column metadata settings for the database.
+        /// </summary>
+        /// <param name="databaseName">is the database name</param>
+        /// <returns>indicators for change case, metadata retrieval strategy and others</returns>
+        /// <throws>DatabaseConfigException if the name was not configured</throws>
+        ColumnSettings GetQuerySetting(string databaseName);
+    }
 } // end of namespace

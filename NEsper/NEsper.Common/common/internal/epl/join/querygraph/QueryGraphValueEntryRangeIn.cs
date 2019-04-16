@@ -15,8 +15,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     public class QueryGraphValueEntryRangeIn : QueryGraphValueEntryRange
     {
         public QueryGraphValueEntryRangeIn(
-            QueryGraphRangeEnum rangeType, ExprEvaluator exprStart, ExprEvaluator exprEnd,
-            bool allowRangeReversal) : base(rangeType)
+            QueryGraphRangeEnum rangeType,
+            ExprEvaluator exprStart,
+            ExprEvaluator exprEnd,
+            bool allowRangeReversal)
+            : base(rangeType)
         {
             if (!rangeType.IsRange) {
                 throw new ArgumentException("Range type expected but received " + rangeType.GetName());

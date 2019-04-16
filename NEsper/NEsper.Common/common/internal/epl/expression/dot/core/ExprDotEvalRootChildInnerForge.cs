@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,23 +15,36 @@ using com.espertech.esper.common.@internal.rettype;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
-	public interface ExprDotEvalRootChildInnerForge {
-	    EventType EventTypeCollection { get; }
+    public interface ExprDotEvalRootChildInnerForge
+    {
+        EventType EventTypeCollection { get; }
 
-	    EventType EventTypeSingle { get; }
+        EventType EventTypeSingle { get; }
 
-	    Type ComponentTypeCollection { get; }
+        Type ComponentTypeCollection { get; }
 
-	    EPType TypeInfo { get; }
+        EPType TypeInfo { get; }
 
-	    ExprDotEvalRootChildInnerEval InnerEvaluator { get; }
+        ExprDotEvalRootChildInnerEval InnerEvaluator { get; }
 
-	    CodegenExpression CodegenEvaluate(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope);
+        CodegenExpression CodegenEvaluate(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
 
-	    CodegenExpression EvaluateGetROCollectionEventsCodegen(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope);
+        CodegenExpression EvaluateGetROCollectionEventsCodegen(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
 
-	    CodegenExpression EvaluateGetROCollectionScalarCodegen(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope);
+        CodegenExpression EvaluateGetROCollectionScalarCodegen(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
 
-	    CodegenExpression EvaluateGetEventBeanCodegen(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope);
-	}
+        CodegenExpression EvaluateGetEventBeanCodegen(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
+    }
 } // end of namespace

@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly string rhsName;
         private readonly string var;
 
-        public CodegenStatementDeclareVarWCast(Type clazz, string var, string rhsName)
+        public CodegenStatementDeclareVarWCast(
+            Type clazz,
+            string var,
+            string rhsName)
         {
             this.var = var;
             this.clazz = clazz;
@@ -27,7 +30,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             AppendClassName(builder, clazz, null, imports);
             builder.Append(" ").Append(var).Append("=").Append("(");

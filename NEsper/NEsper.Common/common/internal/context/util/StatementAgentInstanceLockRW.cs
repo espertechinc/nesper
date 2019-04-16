@@ -8,12 +8,10 @@
 
 using System;
 using System.Threading;
-
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
-
 using static com.espertech.esper.common.@internal.context.util.StatementAgentInstanceLockConstants;
 
 namespace com.espertech.esper.common.@internal.context.util

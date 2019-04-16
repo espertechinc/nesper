@@ -18,6 +18,7 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
     {
         protected internal static readonly MultiMatchHandlerNoSubqueryWDedup INSTANCE =
             new MultiMatchHandlerNoSubqueryWDedup();
+
         protected internal static readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> DEDUPS =
             new SystemThreadLocal<LinkedHashSet<FilterHandleCallback>>(
                 () => new LinkedHashSet<FilterHandleCallback>());
@@ -26,7 +27,9 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
         {
         }
 
-        public void Handle(ICollection<FilterHandleCallback> callbacks, EventBean theEvent)
+        public void Handle(
+            ICollection<FilterHandleCallback> callbacks,
+            EventBean theEvent)
         {
             if (callbacks.Count >= 8) {
                 var dedup = DEDUPS.GetOrCreate();
@@ -51,7 +54,10 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
             }
         }
 
-        private bool CheckDup(FilterHandleCallback callback, ICollection<FilterHandleCallback> callbacks, int count)
+        private bool CheckDup(
+            FilterHandleCallback callback,
+            ICollection<FilterHandleCallback> callbacks,
+            int count)
         {
             if (count < 1) {
                 return false;

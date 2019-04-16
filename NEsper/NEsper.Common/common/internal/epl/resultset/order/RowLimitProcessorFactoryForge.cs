@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -15,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.util;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.order
@@ -37,92 +35,87 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <param name="variableCompileTimeResolver">for retrieving variable state for use with row limiting</param>
         /// <param name="optionalContextName">context name</param>
         /// <throws>ExprValidationException exception</throws>
-        public RowLimitProcessorFactoryForge(RowLimitSpec rowLimitSpec, VariableCompileTimeResolver variableCompileTimeResolver, string optionalContextName)
+        public RowLimitProcessorFactoryForge(
+            RowLimitSpec rowLimitSpec,
+            VariableCompileTimeResolver variableCompileTimeResolver,
+            string optionalContextName)
         {
-            if (rowLimitSpec.NumRowsVariable != null)
-            {
+            if (rowLimitSpec.NumRowsVariable != null) {
                 numRowsVariableMetaData = variableCompileTimeResolver.Resolve(rowLimitSpec.NumRowsVariable);
-                if (numRowsVariableMetaData == null)
-                {
+                if (numRowsVariableMetaData == null) {
                     throw new ExprValidationException("Limit clause variable by name '" + rowLimitSpec.NumRowsVariable + "' has not been declared");
                 }
+
                 string message = VariableUtil.CheckVariableContextName(optionalContextName, numRowsVariableMetaData);
-                if (message != null)
-                {
+                if (message != null) {
                     throw new ExprValidationException(message);
                 }
-                if (!TypeHelper.IsNumeric(numRowsVariableMetaData.Type))
-                {
+
+                if (!TypeHelper.IsNumeric(numRowsVariableMetaData.Type)) {
                     throw new ExprValidationException("Limit clause requires a variable of numeric type");
                 }
             }
-            else
-            {
+            else {
                 numRowsVariableMetaData = null;
                 currentRowLimit = rowLimitSpec.NumRows.GetValueOrDefault(Int32.MaxValue);
-                if (currentRowLimit < 0)
-                {
+                if (currentRowLimit < 0) {
                     currentRowLimit = Int32.MaxValue;
                 }
             }
 
-            if (rowLimitSpec.OptionalOffsetVariable != null)
-            {
+            if (rowLimitSpec.OptionalOffsetVariable != null) {
                 offsetVariableMetaData = variableCompileTimeResolver.Resolve(rowLimitSpec.OptionalOffsetVariable);
-                if (offsetVariableMetaData == null)
-                {
-                    throw new ExprValidationException("Limit clause variable by name '" + rowLimitSpec.OptionalOffsetVariable + "' has not been declared");
+                if (offsetVariableMetaData == null) {
+                    throw new ExprValidationException(
+                        "Limit clause variable by name '" + rowLimitSpec.OptionalOffsetVariable + "' has not been declared");
                 }
+
                 string message = VariableUtil.CheckVariableContextName(optionalContextName, offsetVariableMetaData);
-                if (message != null)
-                {
+                if (message != null) {
                     throw new ExprValidationException(message);
                 }
-                if (!TypeHelper.IsNumeric(offsetVariableMetaData.Type))
-                {
+
+                if (!TypeHelper.IsNumeric(offsetVariableMetaData.Type)) {
                     throw new ExprValidationException("Limit clause requires a variable of numeric type");
                 }
             }
-            else
-            {
+            else {
                 offsetVariableMetaData = null;
                 if (rowLimitSpec.OptionalOffset != null) {
-                    if (!rowLimitSpec.OptionalOffset.HasValue || rowLimitSpec.OptionalOffset.Value <= 0)
-                    {
+                    if (!rowLimitSpec.OptionalOffset.HasValue || rowLimitSpec.OptionalOffset.Value <= 0) {
                         throw new ExprValidationException("Limit clause requires a positive offset");
                     }
 
                     currentOffset = rowLimitSpec.OptionalOffset.Value;
                 }
-                else
-                {
+                else {
                     currentOffset = 0;
                 }
             }
         }
 
-        public CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             CodegenExpression numRowsVariable = ConstantNull();
-            if (numRowsVariableMetaData != null)
-            {
+            if (numRowsVariableMetaData != null) {
                 numRowsVariable = VariableDeployTimeResolver.MakeVariableField(numRowsVariableMetaData, classScope, this.GetType());
             }
 
             CodegenExpression offsetVariable = ConstantNull();
-            if (offsetVariableMetaData != null)
-            {
+            if (offsetVariableMetaData != null) {
                 offsetVariable = VariableDeployTimeResolver.MakeVariableField(offsetVariableMetaData, classScope, this.GetType());
             }
 
             CodegenMethod method = parent.MakeChild(typeof(RowLimitProcessorFactory), this.GetType(), classScope);
             method.Block
-                    .DeclareVar(typeof(RowLimitProcessorFactory), "factory", NewInstance(typeof(RowLimitProcessorFactory)))
-                    .ExprDotMethod(@Ref("factory"), "setNumRowsVariable", numRowsVariable)
-                    .ExprDotMethod(@Ref("factory"), "setOffsetVariable", offsetVariable)
-                    .ExprDotMethod(@Ref("factory"), "setCurrentRowLimit", Constant(currentRowLimit))
-                    .ExprDotMethod(@Ref("factory"), "setCurrentOffset", Constant(currentOffset))
-                    .MethodReturn(@Ref("factory"));
+                .DeclareVar(typeof(RowLimitProcessorFactory), "factory", NewInstance(typeof(RowLimitProcessorFactory)))
+                .ExprDotMethod(@Ref("factory"), "setNumRowsVariable", numRowsVariable)
+                .ExprDotMethod(@Ref("factory"), "setOffsetVariable", offsetVariable)
+                .ExprDotMethod(@Ref("factory"), "setCurrentRowLimit", Constant(currentRowLimit))
+                .ExprDotMethod(@Ref("factory"), "setCurrentOffset", Constant(currentOffset))
+                .MethodReturn(@Ref("factory"));
             return LocalMethod(method);
         }
     }

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
@@ -75,32 +74,26 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
             forge = ValidateAll(LhsName, Lhs, RhsName, Rhs, validationContext);
 
-            if (indexNamedParameter != null)
-            {
+            if (indexNamedParameter != null) {
                 ValidateIndexNamedParameter(validationContext);
             }
 
             return null;
         }
 
-        public FilterExprAnalyzerAffector FilterExprAnalyzerAffector
-        {
-            get
-            {
+        public FilterExprAnalyzerAffector FilterExprAnalyzerAffector {
+            get {
                 var visitor = new ExprNodeIdentifierAndStreamRefVisitor(false);
-                foreach (var lhsNode in Lhs)
-                {
+                foreach (var lhsNode in Lhs) {
                     lhsNode.Accept(visitor);
                 }
 
                 ISet<int> indexedPropertyStreams = new HashSet<int>();
-                foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs)
-                {
+                foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs) {
                     indexedPropertyStreams.Add(@ref.StreamNum);
                 }
 
-                if (indexedPropertyStreams.Count == 0 || indexedPropertyStreams.Count > 1)
-                {
+                if (indexedPropertyStreams.Count == 0 || indexedPropertyStreams.Count > 1) {
                     return
                         null; // there are no properties from any streams that could be used for building an index, or the properties come from different disjoint streams
                 }
@@ -109,18 +102,15 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
                 IList<Pair<ExprNode, int[]>> keyExpressions = new List<Pair<ExprNode, int[]>>();
                 ISet<int> dependencies = new HashSet<int>();
-                foreach (var node in Rhs)
-                {
+                foreach (var node in Rhs) {
                     visitor.Reset();
                     dependencies.Clear();
                     node.Accept(visitor);
-                    foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs)
-                    {
+                    foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs) {
                         dependencies.Add(@ref.StreamNum);
                     }
 
-                    if (dependencies.Contains(streamNumIndex))
-                    {
+                    if (dependencies.Contains(streamNumIndex)) {
                         return null;
                     }
 
@@ -133,12 +123,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             }
         }
 
-        public FilterSpecCompilerAdvIndexDesc FilterSpecCompilerAdvIndexDesc
-        {
-            get
-            {
-                if (indexNamedParameter == null)
-                {
+        public FilterSpecCompilerAdvIndexDesc FilterSpecCompilerAdvIndexDesc {
+            get {
+                if (indexNamedParameter == null) {
                     return null;
                 }
 
@@ -148,7 +135,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         }
 
         protected abstract ExprForge ValidateAll(
-            string lhsName, ExprNode[] lhs, string rhsName, ExprNode[] rhs, ExprValidationContext validationContext);
+            string lhsName,
+            ExprNode[] lhs,
+            string rhsName,
+            ExprNode[] rhs,
+            ExprValidationContext validationContext);
 
         protected abstract string IndexTypeName { get; }
 
@@ -156,20 +147,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         private void ValidateIndexNamedParameter(ExprValidationContext validationContext)
         {
-            if (indexNamedParameter.Length != 1 || !(indexNamedParameter[0] is ExprDeclaredNode))
-            {
+            if (indexNamedParameter.Length != 1 || !(indexNamedParameter[0] is ExprDeclaredNode)) {
                 throw GetIndexNameMessage("requires an expression name");
             }
 
-            var node = (ExprDeclaredNode)indexNamedParameter[0];
-            if (!(node.Body is ExprDotNode))
-            {
+            var node = (ExprDeclaredNode) indexNamedParameter[0];
+            if (!(node.Body is ExprDotNode)) {
                 throw GetIndexNameMessage("requires an index expression");
             }
 
-            var dotNode = (ExprDotNode)node.Body;
-            if (dotNode.ChainSpec.Count > 1)
-            {
+            var dotNode = (ExprDotNode) node.Body;
+            if (dotNode.ChainSpec.Count > 1) {
                 throw GetIndexNameMessage("invalid chained index expression");
             }
 
@@ -178,17 +166,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             optionalIndexName = node.Prototype.Name;
 
             AdvancedIndexFactoryProvider provider = null;
-            try
-            {
+            try {
                 provider = validationContext.ImportService.ResolveAdvancedIndexProvider(indexTypeName);
             }
-            catch (ImportException e)
-            {
+            catch (ImportException e) {
                 throw new ExprValidationException(e.Message, e);
             }
 
-            if (!indexTypeName.ToLowerInvariant().Equals(IndexTypeName))
-            {
+            if (!indexTypeName.ToLowerInvariant().Equals(IndexTypeName)) {
                 throw new ExprValidationException(
                     "Invalid index type '" + indexTypeName + "', expected '" + IndexTypeName + "'");
             }

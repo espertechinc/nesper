@@ -7,20 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 {
-	public interface RowRecogNFAViewScheduler {
-	    void SetScheduleCallback(AgentInstanceContext agentInstanceContext, RowRecogNFAViewScheduleCallback scheduleCallback);
+    public interface RowRecogNFAViewScheduler
+    {
+        void SetScheduleCallback(
+            AgentInstanceContext agentInstanceContext,
+            RowRecogNFAViewScheduleCallback scheduleCallback);
 
-	    void AddSchedule(long msecAfterCurrentTime);
+        void AddSchedule(long msecAfterCurrentTime);
 
-	    void ChangeSchedule(long msecAfterCurrentTime);
+        void ChangeSchedule(long msecAfterCurrentTime);
 
-	    void RemoveSchedule();
-	}
+        void RemoveSchedule();
+    }
 } // end of namespace

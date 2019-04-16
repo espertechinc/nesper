@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -27,15 +25,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         private readonly ExprForge havingEval;
 
         public SubselectForgeNRRelOpAnyWGroupBy(
-            ExprSubselectNode subselect, ExprForge valueEval, ExprForge selectEval, bool resultWhenNoMatchingEvents,
-            RelationalOpEnum.Computer computer, ExprForge havingEval) : base(
-            subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
+            ExprSubselectNode subselect,
+            ExprForge valueEval,
+            ExprForge selectEval,
+            bool resultWhenNoMatchingEvents,
+            RelationalOpEnum.Computer computer,
+            ExprForge havingEval)
+            : base(
+                subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
         {
             this.havingEval = havingEval;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
-            CodegenMethodScope parent, SubselectForgeNRSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SubselectForgeNRSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));

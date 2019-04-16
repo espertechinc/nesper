@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -17,19 +16,25 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumGroupByKeySelectorEventsForge : EnumForgeBase {
+    public class EnumGroupByKeySelectorEventsForge : EnumForgeBase
+    {
+        public EnumGroupByKeySelectorEventsForge(
+            ExprForge innerExpression,
+            int streamCountIncoming)
+            : base(innerExpression, streamCountIncoming)
+        {
+        }
 
-	    public EnumGroupByKeySelectorEventsForge(ExprForge innerExpression, int streamCountIncoming)
-	    	 : base(innerExpression, streamCountIncoming)
-	    {
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumGroupByKeySelectorEventsForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumGroupByKeySelectorEventsForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumGroupByKeySelectorEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumGroupByKeySelectorEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

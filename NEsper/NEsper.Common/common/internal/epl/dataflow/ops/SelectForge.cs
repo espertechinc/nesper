@@ -117,8 +117,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                         CompatExtensions.RenderAny(GetInputPortNames(context.InputPorts)));
                 }
 
-                EventType eventType = inputPort.Value.TypeDesc.EventType;
-                originatingStreamToViewableStream[inputPort.Key] = streamNum;
+                var inputPortValue = inputPort.Value;
+                var eventType = inputPortValue.Value.TypeDesc.EventType;
+                originatingStreamToViewableStream[inputPortValue.Key] = streamNum;
                 var streamAlias = filter.OptionalStreamName;
                 var filterSpecCompiled = new FilterSpecCompiled(
                     eventType, streamAlias, new IList<FilterSpecParamForge>[] {
@@ -183,7 +184,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var builder = new SAIFFInitializeBuilder(
                 OP_PACKAGE_NAME + ".select.SelectFactory", GetType(), "select", parent, symbols, classScope);
@@ -192,7 +195,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 .Constant("iterate", iterate)
                 .Constant("originatingStreamToViewableStream", originatingStreamToViewableStream)
                 .Expression(
-                    "factoryProvider", NewInstance(classNameAIFactoryProvider, symbols.GetAddInitSvc(builder.Method)))
+                    "factoryProvider", NewInstance(
+                        classNameAIFactoryProvider, 
+                        symbols.GetAddInitSvc(builder.Method())))
                 .Build();
         }
 
@@ -227,7 +232,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         }
 
         private KeyValuePair<int, DataFlowOpInputPort>? FindInputPort(
-            string eventTypeName, IDictionary<int, DataFlowOpInputPort> inputPorts)
+            string eventTypeName,
+            IDictionary<int, DataFlowOpInputPort> inputPorts)
         {
             foreach (var entry in inputPorts) {
                 if (entry.Value.OptionalAlias != null && entry.Value.OptionalAlias.Equals(eventTypeName)) {

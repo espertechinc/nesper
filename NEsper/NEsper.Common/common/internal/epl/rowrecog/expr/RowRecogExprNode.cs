@@ -39,9 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
         /// <returns>list of child nodes</returns>
         public IList<RowRecogExprNode> ChildNodes { get; private set; }
 
-        public abstract void ToPrecedenceFreeEPL(StringWriter writer);
+        public abstract void ToPrecedenceFreeEPL(TextWriter writer);
 
-        public void ToEPL(StringWriter writer, RowRecogExprNodePrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            RowRecogExprNodePrecedenceEnum parentPrecedence)
         {
             if (Precedence.Level < parentPrecedence.Level) {
                 writer.Write("(");
@@ -82,7 +84,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
             AcceptChildnodes(visitor, null, 0);
         }
 
-        public void AcceptChildnodes(RowRecogExprNodeVisitor visitor, RowRecogExprNode parent, int level)
+        public void AcceptChildnodes(
+            RowRecogExprNodeVisitor visitor,
+            RowRecogExprNode parent,
+            int level)
         {
             visitor.Visit(this, parent, level);
             foreach (var childNode in ChildNodes) {
@@ -90,7 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
             }
         }
 
-        public void ReplaceChildNode(RowRecogExprNode nodeToReplace, IList<RowRecogExprNode> replacementNodes)
+        public void ReplaceChildNode(
+            RowRecogExprNode nodeToReplace,
+            IList<RowRecogExprNode> replacementNodes)
         {
             IList<RowRecogExprNode> newChildNodes =
                 new List<RowRecogExprNode>(ChildNodes.Count - 1 + replacementNodes.Count);

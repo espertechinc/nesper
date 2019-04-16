@@ -12,33 +12,33 @@ using com.espertech.esper.common.client.util;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-	public class AgentInstanceArraySafeIterator
-	{
-	    public static IEnumerator<EventBean> Create(AgentInstance[] instances)
-	    {
-	        try {
-	            foreach (AgentInstance instance in instances) {
-	                var instanceLock = instance
-	                    .AgentInstanceContext
-	                    .EpStatementAgentInstanceHandle
-	                    .StatementAgentInstanceLock;
-	                instanceLock.AcquireWriteLock();
-	            }
+    public class AgentInstanceArraySafeIterator
+    {
+        public static IEnumerator<EventBean> Create(AgentInstance[] instances)
+        {
+            try {
+                foreach (AgentInstance instance in instances) {
+                    var instanceLock = instance
+                        .AgentInstanceContext
+                        .EpStatementAgentInstanceHandle
+                        .StatementAgentInstanceLock;
+                    instanceLock.AcquireWriteLock();
+                }
 
-	            foreach (AgentInstance instance in instances) {
-	                foreach (EventBean eventBean in instance.FinalView) {
-	                    yield return eventBean;
-	                }
-	            }
-	        }
-	        finally {
-	            foreach (AgentInstance instance in instances) {
-	                var agentInstanceContext = instance.AgentInstanceContext;
-	                if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
-	                    agentInstanceContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
-	                }
-	            }
-	        }
-	    }
-	}
+                foreach (AgentInstance instance in instances) {
+                    foreach (EventBean eventBean in instance.FinalView) {
+                        yield return eventBean;
+                    }
+                }
+            }
+            finally {
+                foreach (AgentInstance instance in instances) {
+                    var agentInstanceContext = instance.AgentInstanceContext;
+                    if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
+                        agentInstanceContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                    }
+                }
+            }
+        }
+    }
 } // end of namespace

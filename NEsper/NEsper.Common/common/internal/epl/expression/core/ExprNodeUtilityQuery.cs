@@ -45,7 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public static IList<Pair<ExprNode, ExprNode>> FindExpression(
-            ExprNode selectExpression, ExprNode searchExpression)
+            ExprNode selectExpression,
+            ExprNode searchExpression)
         {
             IList<Pair<ExprNode, ExprNode>> pairs = new List<Pair<ExprNode, ExprNode>>();
             if (ExprNodeUtilityCompare.DeepEquals(selectExpression, searchExpression, false)) {
@@ -58,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         private static void FindExpressionChildRecursive(
-            ExprNode parent, ExprNode searchExpression, IList<Pair<ExprNode, ExprNode>> pairs)
+            ExprNode parent,
+            ExprNode searchExpression,
+            IList<Pair<ExprNode, ExprNode>> pairs)
         {
             foreach (var child in parent.ChildNodes) {
                 if (ExprNodeUtilityCompare.DeepEquals(child, searchExpression, false)) {
@@ -157,21 +160,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return returnTypes;
         }
 
-        public static void AcceptParams(ExprNodeVisitor visitor, IList<ExprNode> @params)
+        public static void AcceptParams(
+            ExprNodeVisitor visitor,
+            IList<ExprNode> @params)
         {
             foreach (var param in @params) {
                 param.Accept(visitor);
             }
         }
 
-        public static void AcceptParams(ExprNodeVisitorWithParent visitor, IList<ExprNode> @params)
+        public static void AcceptParams(
+            ExprNodeVisitorWithParent visitor,
+            IList<ExprNode> @params)
         {
             foreach (var param in @params) {
                 param.Accept(visitor);
             }
         }
 
-        public static void AcceptParams(ExprNodeVisitorWithParent visitor, IList<ExprNode> @params, ExprNode parent)
+        public static void AcceptParams(
+            ExprNodeVisitorWithParent visitor,
+            IList<ExprNode> @params,
+            ExprNode parent)
         {
             foreach (var param in @params) {
                 param.AcceptChildnodes(visitor, parent);
@@ -217,7 +227,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return streams;
         }
 
-        public static IList<Pair<int, string>> GetExpressionProperties(ExprNode exprNode, bool visitAggregateNodes)
+        public static IList<Pair<int, string>> GetExpressionProperties(
+            ExprNode exprNode,
+            bool visitAggregateNodes)
         {
             var visitor = new ExprNodeIdentifierVisitor(visitAggregateNodes);
             exprNode.Accept(visitor);
@@ -258,14 +270,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return result;
         }
 
-        public static void AcceptChain(ExprNodeVisitor visitor, IList<ExprChainedSpec> chainSpec)
-        {
-            foreach (var chain in chainSpec) {
-                AcceptParams(visitor, chain.Parameters);
-            }
-        }
-
-        public static void AcceptChain(ExprNodeVisitorWithParent visitor, IList<ExprChainedSpec> chainSpec)
+        public static void AcceptChain(
+            ExprNodeVisitor visitor,
+            IList<ExprChainedSpec> chainSpec)
         {
             foreach (var chain in chainSpec) {
                 AcceptParams(visitor, chain.Parameters);
@@ -273,7 +280,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public static void AcceptChain(
-            ExprNodeVisitorWithParent visitor, IList<ExprChainedSpec> chainSpec, ExprNode parent)
+            ExprNodeVisitorWithParent visitor,
+            IList<ExprChainedSpec> chainSpec)
+        {
+            foreach (var chain in chainSpec) {
+                AcceptParams(visitor, chain.Parameters);
+            }
+        }
+
+        public static void AcceptChain(
+            ExprNodeVisitorWithParent visitor,
+            IList<ExprChainedSpec> chainSpec,
+            ExprNode parent)
         {
             foreach (var chain in chainSpec) {
                 AcceptParams(visitor, chain.Parameters, parent);

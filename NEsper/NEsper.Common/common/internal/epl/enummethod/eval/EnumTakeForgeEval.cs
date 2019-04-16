@@ -31,7 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var size = sizeEval.Evaluate(eventsLambda, isNewData, context);
             if (size == null) {
@@ -42,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public static CodegenExpression Codegen(
-            EnumTakeForge forge, EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope,
+            EnumTakeForge forge,
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
@@ -70,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         /// <param name="enumcoll">collection</param>
         /// <param name="size">size</param>
         /// <returns>collection</returns>
-        public static ICollection<object> EvaluateEnumTakeMethod(ICollection<object> enumcoll, int size)
+        public static ICollection<object> EvaluateEnumTakeMethod(
+            ICollection<object> enumcoll,
+            int size)
         {
             if (CompatExtensions.IsEmpty(enumcoll)) {
                 return enumcoll;

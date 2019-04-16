@@ -13,7 +13,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
     /// <summary>Models a pipe between two operators. </summary>
     public class LogicalChannel
     {
-        public LogicalChannel(int channelId, String consumingOpName, int consumingOpNum, int consumingOpStreamNum, String consumingOpStreamName, String consumingOptStreamAliasName, String consumingOpPrettyPrint, LogicalChannelProducingPortCompiled outputPort)
+        public LogicalChannel(
+            int channelId,
+            String consumingOpName,
+            int consumingOpNum,
+            int consumingOpStreamNum,
+            String consumingOpStreamName,
+            String consumingOptStreamAliasName,
+            String consumingOpPrettyPrint,
+            LogicalChannelProducingPortCompiled outputPort)
         {
             ChannelId = channelId;
             ConsumingOpName = consumingOpName;
@@ -44,10 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         public override String ToString()
         {
             return "LogicalChannel{" +
-                    "channelId=" + ChannelId +
-                    ", produced=" + OutputPort +
-                    ", consumed='" + ConsumingOpPrettyPrint + '\'' +
-                    '}';
+                   "channelId=" + ChannelId +
+                   ", produced=" + OutputPort +
+                   ", consumed='" + ConsumingOpPrettyPrint + '\'' +
+                   '}';
         }
     }
 }

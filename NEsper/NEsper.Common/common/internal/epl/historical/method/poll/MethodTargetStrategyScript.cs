@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
     {
         public ScriptEvaluator ScriptEvaluator { get; set; }
 
-        public object Invoke(object lookupValues, AgentInstanceContext agentInstanceContext)
+        public object Invoke(
+            object lookupValues,
+            AgentInstanceContext agentInstanceContext)
         {
             return ScriptEvaluator.Evaluate(lookupValues, agentInstanceContext);
         }
@@ -32,7 +34,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             return this;
         }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             // no action
         }

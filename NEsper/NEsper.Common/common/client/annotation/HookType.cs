@@ -15,10 +15,10 @@ namespace com.espertech.esper.common.client.annotation
     {
         /// <summary>For use when installing a callback for converting SQL input parameters or column output values. </summary>
         SQLCOL,
-    
+
         /// <summary>For use when installing a callback for converting SQL row results to an object. </summary>
         SQLROW,
-    
+
         /// <summary>For internal use, query planning reporting. </summary>
         INTERNAL_QUERY_PLAN,
 

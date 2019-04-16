@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignArrayElement("props", Constant(0), Ref("next"));
             CodegenLegoBooleanExpression.CodegenReturnBoolIfNullOrBool(
                 forEach, forge.innerExpression.EvaluationType,
-                forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope), 
+                forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope),
                 false, null, false, false);
             block.MethodReturn(ConstantTrue());
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);

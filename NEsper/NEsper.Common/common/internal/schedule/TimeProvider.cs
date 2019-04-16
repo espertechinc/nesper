@@ -16,12 +16,12 @@ namespace com.espertech.esper.common.@internal.schedule
     /// Internal system time is controlled either by a timer function or by external time events.
     /// </para>
     /// </summary>
-	public interface TimeProvider
-	{
-	    /// <summary>Returns the current engine time.</summary>
-	    /// <returns>time that has last been set</returns>
+    public interface TimeProvider
+    {
+        /// <summary>Returns the current engine time.</summary>
+        /// <returns>time that has last been set</returns>
         long Time { get; set; }
-	}
+    }
 
     /// <summary>
     /// A proxy implementation of the time provider
@@ -31,8 +31,7 @@ namespace com.espertech.esper.common.@internal.schedule
         public Func<long> Get { get; set; }
         public Action<long> Set { get; set; }
 
-        public long Time
-        {
+        public long Time {
             get { return Get(); }
             set { Set(value); }
         }

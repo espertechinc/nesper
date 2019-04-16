@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.statement.resource
 {
-	public interface StatementResourceExtension
+    public interface StatementResourceExtension
     {
-	}
+    }
 } // end of namespace

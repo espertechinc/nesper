@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         private readonly EventType type;
 
-        public EventBeanFactoryBean(EventType type, EventBeanTypedEventFactory eventBeanTypedEventFactory)
+        public EventBeanFactoryBean(
+            EventType type,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.type = type;
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;

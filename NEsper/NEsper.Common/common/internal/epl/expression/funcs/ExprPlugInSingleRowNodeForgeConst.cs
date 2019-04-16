@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly ExprDotNodeForgeStaticMethod inner;
 
         public ExprPlugInSingleRowNodeForgeConst(
-            ExprPlugInSingleRowNode parent, ExprDotNodeForgeStaticMethod inner) : base(parent, true)
+            ExprPlugInSingleRowNode parent,
+            ExprDotNodeForgeStaticMethod inner)
+            : base(parent, true)
         {
             this.inner = inner;
         }
@@ -38,13 +40,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.DEPLOYCONST;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (EvaluationType == typeof(void)) {
@@ -58,7 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -68,7 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public override CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();

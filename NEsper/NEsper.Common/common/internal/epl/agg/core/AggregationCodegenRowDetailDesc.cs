@@ -11,7 +11,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class AggregationCodegenRowDetailDesc
     {
         public AggregationCodegenRowDetailDesc(
-            AggregationCodegenRowDetailStateDesc stateDesc, AggregationAccessorSlotPairForge[] accessAccessors)
+            AggregationCodegenRowDetailStateDesc stateDesc,
+            AggregationAccessorSlotPairForge[] accessAccessors)
         {
             StateDesc = stateDesc;
             AccessAccessors = accessAccessors;

@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     {
         private readonly string typeName;
 
-        public CodegenNamedParam(Type type, string name)
+        public CodegenNamedParam(
+            Type type,
+            string name)
         {
             if (type == null) {
                 throw new ArgumentException("Invalid null type");
@@ -29,7 +31,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Name = name;
         }
 
-        public CodegenNamedParam(string typeName, string name)
+        public CodegenNamedParam(
+            string typeName,
+            string name)
         {
             if (typeName == null) {
                 throw new ArgumentException("Invalid null type");
@@ -40,7 +44,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Name = name;
         }
 
-        public CodegenNamedParam(Type type, CodegenExpressionRef name)
+        public CodegenNamedParam(
+            Type type,
+            CodegenExpressionRef name)
             : this(type, name.Ref)
         {
         }
@@ -49,7 +55,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public string Name { get; }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports)
         {
             if (Type != null) {
                 AppendClassName(builder, Type, null, imports);
@@ -61,14 +69,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             builder.Append(" ").Append(Name);
         }
 
-        public static IList<CodegenNamedParam> From(Type typeOne, string nameOne)
+        public static IList<CodegenNamedParam> From(
+            Type typeOne,
+            string nameOne)
         {
             IList<CodegenNamedParam> result = new List<CodegenNamedParam>(2);
             result.Add(new CodegenNamedParam(typeOne, nameOne));
             return result;
         }
 
-        public static IList<CodegenNamedParam> From(Type typeOne, string nameOne, Type typeTwo, string nameTwo)
+        public static IList<CodegenNamedParam> From(
+            Type typeOne,
+            string nameOne,
+            Type typeTwo,
+            string nameTwo)
         {
             IList<CodegenNamedParam> result = new List<CodegenNamedParam>(2);
             result.Add(new CodegenNamedParam(typeOne, nameOne));
@@ -77,7 +91,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         public static IList<CodegenNamedParam> From(
-            Type typeOne, string nameOne, Type typeTwo, string nameTwo, Type typeThree, string nameThree)
+            Type typeOne,
+            string nameOne,
+            Type typeTwo,
+            string nameTwo,
+            Type typeThree,
+            string nameThree)
         {
             IList<CodegenNamedParam> result = new List<CodegenNamedParam>(3);
             result.Add(new CodegenNamedParam(typeOne, nameOne));
@@ -87,7 +106,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         public static IList<CodegenNamedParam> From(
-            Type typeOne, string nameOne, Type typeTwo, string nameTwo, Type typeThree, string nameThree, Type typeFour,
+            Type typeOne,
+            string nameOne,
+            Type typeTwo,
+            string nameTwo,
+            Type typeThree,
+            string nameThree,
+            Type typeFour,
             string nameFour)
         {
             IList<CodegenNamedParam> result = new List<CodegenNamedParam>(4);
@@ -99,8 +124,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         public static IList<CodegenNamedParam> From(
-            Type typeOne, string nameOne, Type typeTwo, string nameTwo, Type typeThree, string nameThree, Type typeFour,
-            string nameFour, Type typeFive, string nameFive)
+            Type typeOne,
+            string nameOne,
+            Type typeTwo,
+            string nameTwo,
+            Type typeThree,
+            string nameThree,
+            Type typeFour,
+            string nameFour,
+            Type typeFive,
+            string nameFive)
         {
             IList<CodegenNamedParam> result = new List<CodegenNamedParam>(5);
             result.Add(new CodegenNamedParam(typeOne, nameOne));
@@ -112,8 +145,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         public static IList<CodegenNamedParam> From(
-            Type typeOne, string nameOne, Type typeTwo, string nameTwo, Type typeThree, string nameThree, Type typeFour,
-            string nameFour, Type typeFive, string nameFive, Type typeSix, string nameSix)
+            Type typeOne,
+            string nameOne,
+            Type typeTwo,
+            string nameTwo,
+            Type typeThree,
+            string nameThree,
+            Type typeFour,
+            string nameFour,
+            Type typeFive,
+            string nameFive,
+            Type typeSix,
+            string nameSix)
         {
             IList<CodegenNamedParam> result = new List<CodegenNamedParam>(6);
             result.Add(new CodegenNamedParam(typeOne, nameOne));
@@ -126,8 +169,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         public static IList<CodegenNamedParam> From(
-            Type typeOne, string nameOne, Type typeTwo, string nameTwo, Type typeThree, string nameThree, Type typeFour,
-            string nameFour, Type typeFive, string nameFive, Type typeSix, string nameSix, Type typeSeven,
+            Type typeOne,
+            string nameOne,
+            Type typeTwo,
+            string nameTwo,
+            Type typeThree,
+            string nameThree,
+            Type typeFour,
+            string nameFour,
+            Type typeFive,
+            string nameFive,
+            Type typeSix,
+            string nameSix,
+            Type typeSeven,
             string nameSeven)
         {
             IList<CodegenNamedParam> result = new List<CodegenNamedParam>();
@@ -142,9 +196,22 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         public static IList<CodegenNamedParam> From(
-            Type typeOne, string nameOne, Type typeTwo, string nameTwo, Type typeThree, string nameThree, Type typeFour,
-            string nameFour, Type typeFive, string nameFive, Type typeSix, string nameSix, Type typeSeven,
-            string nameSeven, Type typeEight, string nameEight)
+            Type typeOne,
+            string nameOne,
+            Type typeTwo,
+            string nameTwo,
+            Type typeThree,
+            string nameThree,
+            Type typeFour,
+            string nameFour,
+            Type typeFive,
+            string nameFive,
+            Type typeSix,
+            string nameSix,
+            Type typeSeven,
+            string nameSeven,
+            Type typeEight,
+            string nameEight)
         {
             IList<CodegenNamedParam> result = new List<CodegenNamedParam>();
             result.Add(new CodegenNamedParam(typeOne, nameOne));
@@ -159,7 +226,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         public static void Render(
-            StringBuilder builder, IList<CodegenNamedParam> @params, IDictionary<Type, string> imports)
+            StringBuilder builder,
+            IList<CodegenNamedParam> @params,
+            IDictionary<Type, string> imports)
         {
             var delimiter = "";
             foreach (var param in @params) {
@@ -175,7 +244,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         public static void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, IList<CodegenNamedParam> @params)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            IList<CodegenNamedParam> @params)
         {
             var delimiter = "";
             foreach (var param in @params) {

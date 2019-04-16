@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <summary>Ctor. </summary>
         /// <param name="groupNum">group number, zero for default group</param>
         /// <param name="index">index slot</param>
-        public StatementMetricHandle(int groupNum, int index)
+        public StatementMetricHandle(
+            int groupNum,
+            int index)
         {
             GroupNum = groupNum;
             Index = index;

@@ -36,10 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             string variableName,
             int streamNum,
             bool multiple,
-            bool? isGreedy,
+            bool isGreedy,
             bool exprRequiresMultimatchState,
             ExprNode expression)
-            : base(nodeNum, variableName, streamNum, multiple, exprRequiresMultimatchState, isGreedy)
+            : base(nodeNum, variableName, streamNum, multiple, isGreedy, exprRequiresMultimatchState)
         {
             this.expression = expression;
             AddState(this);

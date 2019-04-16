@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphValueEntryCustomKeyForge : QueryGraphValueEntryForge
     {
-        public QueryGraphValueEntryCustomKeyForge(string operationName, ExprNode[] exprNodes)
+        public QueryGraphValueEntryCustomKeyForge(
+            string operationName,
+            ExprNode[] exprNodes)
         {
             OperationName = operationName;
             ExprNodes = exprNodes;
@@ -27,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         public ExprNode[] ExprNodes { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryCustomKey), GetType(), classScope);
             method.Block

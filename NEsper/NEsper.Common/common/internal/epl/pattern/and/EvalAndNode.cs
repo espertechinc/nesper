@@ -18,19 +18,21 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
         internal readonly EvalAndFactoryNode factoryNode;
         internal readonly EvalNode[] childNodes;
 
-        public EvalAndNode(PatternAgentInstanceContext context, EvalAndFactoryNode factoryNode, EvalNode[] childNodes) : base(context)
+        public EvalAndNode(
+            PatternAgentInstanceContext context,
+            EvalAndFactoryNode factoryNode,
+            EvalNode[] childNodes)
+            : base(context)
         {
             this.factoryNode = factoryNode;
             this.childNodes = childNodes;
         }
 
-        public EvalAndFactoryNode FactoryNode
-        {
+        public EvalAndFactoryNode FactoryNode {
             get => factoryNode;
         }
 
-        public EvalNode[] ChildNodes
-        {
+        public EvalNode[] ChildNodes {
             get => childNodes;
         }
 

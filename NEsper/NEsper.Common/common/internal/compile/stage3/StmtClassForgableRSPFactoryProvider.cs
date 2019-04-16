@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -31,7 +30,6 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -53,7 +51,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         private readonly StatementRawInfo _statementRawInfo;
 
         public StmtClassForgableRSPFactoryProvider(
-            string className, ResultSetProcessorDesc spec, CodegenPackageScope packageScope,
+            string className,
+            ResultSetProcessorDesc spec,
+            CodegenPackageScope packageScope,
             StatementRawInfo statementRawInfo)
         {
             ClassName = className;
@@ -168,8 +168,11 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public StmtClassForgableType ForgableType => StmtClassForgableType.RSPPROVIDER;
 
         private static void MakeResultSetProcessorFactory(
-            CodegenClassScope classScope, IList<CodegenInnerClass> innerClasses,
-            IList<CodegenTypedParam> providerExplicitMembers, CodegenCtor providerCtor, string providerClassName)
+            CodegenClassScope classScope,
+            IList<CodegenInnerClass> innerClasses,
+            IList<CodegenTypedParam> providerExplicitMembers,
+            CodegenCtor providerCtor,
+            string providerClassName)
         {
             var instantiateMethod = CodegenMethod.MakeParentNode(
                     typeof(ResultSetProcessor), typeof(StmtClassForgableRSPFactoryProvider),
@@ -199,8 +202,11 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         }
 
         private static void MakeResultSetProcessor(
-            CodegenClassScope classScope, IList<CodegenInnerClass> innerClasses,
-            IList<CodegenTypedParam> factoryExplicitMembers, CodegenCtor factoryCtor, string classNameParent,
+            CodegenClassScope classScope,
+            IList<CodegenInnerClass> innerClasses,
+            IList<CodegenTypedParam> factoryExplicitMembers,
+            CodegenCtor factoryCtor,
+            string classNameParent,
             ResultSetProcessorDesc spec)
         {
             IList<CodegenTypedParam> ctorParams = new List<CodegenTypedParam>();
@@ -431,7 +437,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         }
 
         private static void GenerateInstrumentedProcessJoin(
-            ResultSetProcessorFactoryForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorFactoryForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             if (!classScope.IsInstrumented) {
@@ -454,7 +462,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         }
 
         private static void GenerateInstrumentedProcessView(
-            ResultSetProcessorFactoryForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorFactoryForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             if (!classScope.IsInstrumented) {
@@ -477,8 +487,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         }
 
         private static void MakeSelectExprProcessors(
-            CodegenClassScope classScope, IList<CodegenInnerClass> innerClasses,
-            IList<CodegenTypedParam> explicitMembers, CodegenCtor outerClassCtor, string classNameParent, bool rollup,
+            CodegenClassScope classScope,
+            IList<CodegenInnerClass> innerClasses,
+            IList<CodegenTypedParam> explicitMembers,
+            CodegenCtor outerClassCtor,
+            string classNameParent,
+            bool rollup,
             SelectExprProcessorForge[] forges)
         {
             // handle single-select
@@ -511,7 +525,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         }
 
         private static CodegenInnerClass MakeSelectExprProcessor(
-            string className, string classNameParent, CodegenClassScope classScope, SelectExprProcessorForge forge)
+            string className,
+            string classNameParent,
+            CodegenClassScope classScope,
+            SelectExprProcessorForge forge)
         {
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var selectEnv = new SelectExprProcessorCodegenSymbol();

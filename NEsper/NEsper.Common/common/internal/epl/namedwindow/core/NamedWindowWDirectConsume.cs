@@ -7,14 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.namedwindow.consume;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 {
-	public interface NamedWindowWDirectConsume :  NamedWindow {
-	    NamedWindowConsumerView AddConsumer(NamedWindowConsumerDesc consumerDesc, bool isSubselect);
-	}
+    public interface NamedWindowWDirectConsume : NamedWindow
+    {
+        NamedWindowConsumerView AddConsumer(
+            NamedWindowConsumerDesc consumerDesc,
+            bool isSubselect);
+    }
 } // end of namespace

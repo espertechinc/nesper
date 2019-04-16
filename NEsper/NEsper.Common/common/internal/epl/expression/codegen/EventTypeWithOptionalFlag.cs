@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 {
     public class EventTypeWithOptionalFlag
     {
-        public EventTypeWithOptionalFlag(CodegenExpressionRef @ref, EventType eventType, bool optionalEvent)
+        public EventTypeWithOptionalFlag(
+            CodegenExpressionRef @ref,
+            EventType eventType,
+            bool optionalEvent)
         {
             Ref = @ref;
             EventType = eventType;

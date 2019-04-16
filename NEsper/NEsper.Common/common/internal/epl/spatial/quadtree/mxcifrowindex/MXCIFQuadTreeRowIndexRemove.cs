@@ -24,11 +24,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         /// <param name="value">value to remove</param>
         /// <param name="tree">quadtree</param>
         public static void Remove(
-            double x, 
-            double y, 
-            double width, 
-            double height, 
-            object value, 
+            double x,
+            double y,
+            double width,
+            double height,
+            object value,
             MXCIFQuadTree<object> tree)
         {
             var root = tree.Root;
@@ -37,23 +37,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         }
 
         private static MXCIFQuadTreeNode<object> RemoveFromNode(
-            double x, 
-            double y, 
-            double width, 
+            double x,
+            double y,
+            double width,
             double height,
-            object value, 
-            MXCIFQuadTreeNode<object> node, 
+            object value,
+            MXCIFQuadTreeNode<object> node,
             MXCIFQuadTree<object> tree)
         {
-
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf)
-            {
+            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
                 var removed = RemoveFromPoints(x, y, width, height, value, leaf.Data);
-                if (removed)
-                {
+                if (removed) {
                     leaf.DecCount();
-                    if (leaf.Count == 0)
-                    {
+                    if (leaf.Count == 0) {
                         leaf.Data = null;
                     }
                 }
@@ -63,8 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
             var branch = (MXCIFQuadTreeNodeBranch<object>) node;
             var quadrant = node.Bb.GetQuadrantApplies(x, y, width, height);
-            switch (quadrant)
-            {
+            switch (quadrant) {
                 case QuadrantAppliesEnum.NW:
                     branch.Nw = RemoveFromNode(x, y, width, height, value, branch.Nw, tree);
                     break;
@@ -79,11 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                     break;
                 case QuadrantAppliesEnum.SOME:
                     var removed = RemoveFromPoints(x, y, width, height, value, branch.Data);
-                    if (removed)
-                    {
+                    if (removed) {
                         branch.DecCount();
-                        if (branch.Count == 0)
-                        {
+                        if (branch.Count == 0) {
                             branch.Data = null;
                         }
                     }
@@ -94,8 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             if (!(branch.Nw is MXCIFQuadTreeNodeLeaf<object>) ||
                 !(branch.Ne is MXCIFQuadTreeNodeLeaf<object>) ||
                 !(branch.Sw is MXCIFQuadTreeNodeLeaf<object>) ||
-                !(branch.Se is MXCIFQuadTreeNodeLeaf<object>))
-            {
+                !(branch.Se is MXCIFQuadTreeNodeLeaf<object>)) {
                 return branch;
             }
 
@@ -104,8 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             var swLeaf = (MXCIFQuadTreeNodeLeaf<object>) branch.Sw;
             var seLeaf = (MXCIFQuadTreeNodeLeaf<object>) branch.Se;
             var total = branch.Count + nwLeaf.Count + neLeaf.Count + swLeaf.Count + seLeaf.Count;
-            if (total >= tree.LeafCapacity)
-            {
+            if (total >= tree.LeafCapacity) {
                 return branch;
             }
 
@@ -118,21 +109,23 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             return new MXCIFQuadTreeNodeLeaf<object>(branch.Bb, branch.Level, collection, count);
         }
 
-        private static bool RemoveFromPoints(double x, double y, double width, double height, object value, object data)
+        private static bool RemoveFromPoints(
+            double x,
+            double y,
+            double width,
+            double height,
+            object value,
+            object data)
         {
-            if (data == null)
-            {
+            if (data == null) {
                 return false;
             }
 
-            if (!(data is ICollection<XYWHRectangleMultiType> collection))
-            {
+            if (!(data is ICollection<XYWHRectangleMultiType> collection)) {
                 var rectangle = (XYWHRectangleMultiType) data;
-                if (rectangle.CoordinateEquals(x, y, width, height))
-                {
+                if (rectangle.CoordinateEquals(x, y, width, height)) {
                     var removed = rectangle.Remove(value);
-                    if (removed)
-                    {
+                    if (removed) {
                         return true;
                     }
                 }
@@ -141,16 +134,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             }
 
             var enumerator = collection.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
+            while (enumerator.MoveNext()) {
                 var rectangle = enumerator.Current;
-                if (rectangle.CoordinateEquals(x, y, width, height))
-                {
+                if (rectangle.CoordinateEquals(x, y, width, height)) {
                     var removed = rectangle.Remove(value);
-                    if (removed)
-                    {
-                        if (rectangle.IsEmpty())
-                        {
+                    if (removed) {
+                        if (rectangle.IsEmpty()) {
                             collection.Remove(rectangle);
                         }
 
@@ -162,23 +151,22 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             return false;
         }
 
-        private static int MergeChildNodes(ICollection<XYWHRectangleMultiType> target, object data)
+        private static int MergeChildNodes(
+            ICollection<XYWHRectangleMultiType> target,
+            object data)
         {
-            if (data == null)
-            {
+            if (data == null) {
                 return 0;
             }
 
-            if (data is XYWHRectangleMultiType dataR)
-            {
+            if (data is XYWHRectangleMultiType dataR) {
                 target.Add(dataR);
                 return dataR.Count();
             }
 
             var coll = (ICollection<XYWHRectangleMultiType>) data;
             var total = 0;
-            foreach (var r in coll)
-            {
+            foreach (var r in coll) {
                 target.Add(r);
                 total += r.Count();
             }

@@ -8,42 +8,53 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
-	public class ContextControllerInitTermDistinctSvcNested : ContextControllerInitTermDistinctSvc {
-	    private readonly IDictionary<IntSeqKey, ISet<object>> distinctContexts = new Dictionary<IntSeqKey,  ISet<object>>();
+    public class ContextControllerInitTermDistinctSvcNested : ContextControllerInitTermDistinctSvc
+    {
+        private readonly IDictionary<IntSeqKey, ISet<object>> distinctContexts = new Dictionary<IntSeqKey, ISet<object>>();
 
-	    public ContextControllerInitTermDistinctSvcNested() {
-	    }
+        public ContextControllerInitTermDistinctSvcNested()
+        {
+        }
 
-	    public bool AddUnlessExists(IntSeqKey controllerPath, object key) {
-	        ISet<object> keys = distinctContexts.Get(controllerPath);
-	        if (keys == null) {
-	            keys = new HashSet<>();
-	            distinctContexts.Put(controllerPath, keys);
-	        }
-	        return keys.Add(key);
-	    }
+        public bool AddUnlessExists(
+            IntSeqKey controllerPath,
+            object key)
+        {
+            ISet<object> keys = distinctContexts.Get(controllerPath);
+            if (keys == null) {
+                keys = new HashSet<object>();
+                distinctContexts.Put(controllerPath, keys);
+            }
 
-	    public void Remove(IntSeqKey controllerPath, object key) {
-	        ISet<object> keys = distinctContexts.Get(controllerPath);
-	        if (keys == null) {
-	            return;
-	        }
-	        keys.Remove(key);
-	    }
+            return keys.Add(key);
+        }
 
-	    public void Clear(IntSeqKey path) {
-	        distinctContexts.Remove(path);
-	    }
+        public void Remove(
+            IntSeqKey controllerPath,
+            object key)
+        {
+            ISet<object> keys = distinctContexts.Get(controllerPath);
+            if (keys == null) {
+                return;
+            }
 
-	    public void Destroy() {
-	        distinctContexts.Clear();
-	    }
-	}
+            keys.Remove(key);
+        }
+
+        public void Clear(IntSeqKey path)
+        {
+            distinctContexts.Remove(path);
+        }
+
+        public void Destroy()
+        {
+            distinctContexts.Clear();
+        }
+    }
 } // end of namespace

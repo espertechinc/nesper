@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.calop;
@@ -16,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -26,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
     {
         internal readonly TimeAbacus timeAbacus;
 
-        public DTLocalDtxOpsLongForge(IList<CalendarForge> calendarForges, TimeAbacus timeAbacus)
+        public DTLocalDtxOpsLongForge(
+            IList<CalendarForge> calendarForges,
+            TimeAbacus timeAbacus)
             : base(calendarForges)
         {
             this.timeAbacus = timeAbacus;
@@ -37,8 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return DTLocalDtxOpsLongEval.Codegen(this, inner, codegenMethodScope, exprSymbol, codegenClassScope);
         }

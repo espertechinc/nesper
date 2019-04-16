@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             this.processor = processor;
         }
 
-        public void ProcessView(EventBean[] newData, EventBean[] oldData)
+        public void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             if (!processor.HasHavingClause) {
                 if (newData != null && newData.Length > 0) {
@@ -71,7 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             }
         }
 
-        public void ProcessJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        public void ProcessJoin(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents)
         {
             if (!processor.HasHavingClause) {
                 if (newEvents != null && !newEvents.IsEmpty()) {

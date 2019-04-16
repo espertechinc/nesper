@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.support
 
         private static void Print(
             EventBean theEvent,
-            StringWriter writer,
+            TextWriter writer,
             int indent,
             Stack<string> propertyStack)
         {
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.support
 
         private static void PrintProperties(
             EventBean eventBean,
-            StringWriter writer,
+            TextWriter writer,
             int indent,
             Stack<string> propertyStack)
         {
@@ -280,13 +280,13 @@ namespace com.espertech.esper.common.@internal.support
                     }
                     else if (resultGet is XmlNodeList) {
                         ScopeTestHelper.AssertEquals(
-                            failedMessage, 
-                            ((XmlNodeList) resultGet).Count, 
+                            failedMessage,
+                            ((XmlNodeList) resultGet).Count,
                             ((XmlNodeList) resultGetter).Count);
                     }
                     else if (resultGet.GetType().IsArray) {
                         ScopeTestHelper.AssertEquals(
-                            failedMessage, 
+                            failedMessage,
                             ((Array) resultGet).Length,
                             ((Array) resultGetter).Length);
                     }
@@ -424,7 +424,7 @@ namespace com.espertech.esper.common.@internal.support
         }
 
         private static void WriteIndent(
-            StringWriter writer,
+            TextWriter writer,
             int indent)
         {
             for (var i = 0; i < indent; i++) {
@@ -433,7 +433,7 @@ namespace com.espertech.esper.common.@internal.support
         }
 
         private static void WriteValue(
-            StringWriter writer,
+            TextWriter writer,
             object result)
         {
             if (result == null) {

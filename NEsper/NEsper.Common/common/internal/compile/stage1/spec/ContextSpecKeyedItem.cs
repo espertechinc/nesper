@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         private FilterSpecCompiled filterSpecCompiled;
         private EventPropertyGetterSPI[] getters;
 
-        public ContextSpecKeyedItem(FilterSpecRaw filterSpecRaw, IList<string> propertyNames, string aliasName)
+        public ContextSpecKeyedItem(
+            FilterSpecRaw filterSpecRaw,
+            IList<string> propertyNames,
+            string aliasName)
         {
             FilterSpecRaw = filterSpecRaw;
             PropertyNames = propertyNames;
@@ -52,7 +55,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public string AliasName { get; }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailKeyedItem), GetType(), classScope);
             var types = EventTypeUtility.GetPropertyTypes(

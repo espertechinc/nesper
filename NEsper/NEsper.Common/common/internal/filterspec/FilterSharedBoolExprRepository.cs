@@ -7,16 +7,21 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.@internal.filterspec
 {
-	public interface FilterSharedBoolExprRepository {
-	    void RegisterBoolExpr(int statementId, FilterSpecParamExprNode node);
+    public interface FilterSharedBoolExprRepository
+    {
+        void RegisterBoolExpr(
+            int statementId,
+            FilterSpecParamExprNode node);
 
-	    FilterSpecParamExprNode GetFilterBoolExpr(int statementId, int filterBoolExprNum);
+        FilterSpecParamExprNode GetFilterBoolExpr(
+            int statementId,
+            int filterBoolExprNum);
 
-	    void RemoveStatement(int statementId);
-	}
+        void RemoveStatement(int statementId);
+    }
 } // end of namespace

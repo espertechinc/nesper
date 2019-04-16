@@ -9,18 +9,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 {
-	public interface NamedWindowConsumerCallback : IEnumerable<EventBean>
-	{
-	    void Stopped(NamedWindowConsumerView namedWindowConsumerView);
-	    bool IsParentBatchWindow { get; }
-	    ICollection<EventBean> Snapshot(QueryGraph queryGraph, Attribute[] annotations);
-	}
+    public interface NamedWindowConsumerCallback : IEnumerable<EventBean>
+    {
+        void Stopped(NamedWindowConsumerView namedWindowConsumerView);
+        bool IsParentBatchWindow { get; }
+
+        ICollection<EventBean> Snapshot(
+            QueryGraph queryGraph,
+            Attribute[] annotations);
+    }
 
     public class ProxyNamedWindowConsumerCallback : NamedWindowConsumerCallback
     {
@@ -31,11 +33,16 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 
         public IEnumerator<EventBean> GetEnumerator()
             => ProcGetEnumerator.Invoke();
+
         public void Stopped(NamedWindowConsumerView namedWindowConsumerView)
             => ProcStopped.Invoke(namedWindowConsumerView);
-        public bool IsParentBatchWindow 
+
+        public bool IsParentBatchWindow
             => ProcIsParentBatchWindow.Invoke();
-        public ICollection<EventBean> Snapshot(QueryGraph queryGraph, Attribute[] annotations)
+
+        public ICollection<EventBean> Snapshot(
+            QueryGraph queryGraph,
+            Attribute[] annotations)
             => ProcSnapshot(queryGraph, annotations);
 
         IEnumerator IEnumerable.GetEnumerator()

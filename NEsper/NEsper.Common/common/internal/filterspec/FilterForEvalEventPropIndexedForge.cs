@@ -28,8 +28,12 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly int _resultEventIndex;
 
         public FilterForEvalEventPropIndexedForge(
-            string resultEventAsName, int resultEventindex, string resultEventProperty, EventType eventType,
-            bool isMustCoerce, Type coercionType)
+            string resultEventAsName,
+            int resultEventindex,
+            string resultEventProperty,
+            EventType eventType,
+            bool isMustCoerce,
+            Type coercionType)
         {
             ResultEventAsName = resultEventAsName;
             ResultEventProperty = resultEventProperty;
@@ -53,7 +57,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public Type ReturnType { get; }
 
-        public CodegenExpression MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(ResultEventProperty);
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
@@ -85,7 +91,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public bool IsConstant => false;
 
-        public object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext)
+        public object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }

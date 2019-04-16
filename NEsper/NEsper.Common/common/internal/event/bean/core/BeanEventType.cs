@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -22,7 +21,6 @@ using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-
 using PropertyInfo = com.espertech.esper.common.@internal.@event.bean.introspect.PropertyInfo;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -47,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             EventTypeMetadata metadata,
             BeanEventTypeFactory beanEventTypeFactory,
             EventType[] superTypes,
-            ISet<EventType> deepSuperTypes,
+            ICollection<EventType> deepSuperTypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName)
         {
@@ -55,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Metadata = metadata;
             this.beanEventTypeFactory = beanEventTypeFactory;
             SuperTypes = superTypes;
-            DeepSuperTypesAsSet = deepSuperTypes;
+            DeepSuperTypesCollection = deepSuperTypes;
 
             var desc = EventTypeUtility.ValidatedDetermineTimestampProps(
                 this, startTimestampPropertyName, endTimestampPropertyName, superTypes);
@@ -77,7 +75,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public BeanEventTypeStem Stem { get; }
 
-        public void SetMetadataId(long publicId, long protectedId)
+        public void SetMetadataId(
+            long publicId,
+            long protectedId)
         {
             Metadata = Metadata.WithIds(publicId, protectedId);
         }
@@ -190,7 +190,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventType[] SuperTypes { get; }
 
-        public IEnumerable<EventType> DeepSuperTypes => DeepSuperTypesAsSet;
+        public IEnumerable<EventType> DeepSuperTypes => DeepSuperTypesCollection;
 
         public EventTypeMetadata Metadata { get; private set; }
 
@@ -257,7 +257,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return null;
         }
 
-        public ISet<EventType> DeepSuperTypesAsSet { get; }
+        public ICollection<EventType> DeepSuperTypesCollection { get; }
 
         public EventBeanReader Reader => new BeanEventBeanReader(this);
 
@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var copyMethodName = Stem.OptionalLegacyDef == null ? null : Stem.OptionalLegacyDef.CopyMethod;
             if (copyMethodName == null) {
-                if (TypeHelper.IsImplementsInterface(Stem.Clazz, typeof(Serializable))) {
+                if (Stem.Clazz.IsSerializable) {
                     return new BeanEventBeanSerializableCopyMethodForge(this);
                 }
 
@@ -276,14 +276,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             try {
                 method = Stem.Clazz.GetMethod(copyMethodName);
             }
-            catch (NoSuchMethodException e) {
+            catch (Exception e)
+                when (e is AmbiguousMatchException || e is ArgumentNullException) {
                 Log.Error(
                     "Configured copy-method for class '" + Stem.Clazz.Name + " not found by name '" + copyMethodName +
                     "': " + e.Message);
             }
 
             if (method == null) {
-                if (TypeHelper.IsImplementsInterface(Stem.Clazz, typeof(Serializable))) {
+                if (Stem.Clazz.IsSerializable) {
                     return new BeanEventBeanSerializableCopyMethodForge(this);
                 }
 
@@ -322,6 +323,75 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
 
             return null;
+        }
+
+        public EventPropertyWriterSPI GetWriter(string propertyName)
+        {
+            if (writeablePropertyDescriptors == null) {
+                InitializeWriters();
+            }
+
+            var pair = writerMap.Get(propertyName);
+            if (pair != null) {
+                return pair.Second;
+            }
+
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            if (property is MappedProperty) {
+                var mapProp = (MappedProperty) property;
+                var methodName = PropertyHelper.GetSetterMethodName(mapProp.PropertyNameAtomic);
+                MethodInfo setterMethod;
+                try {
+                    setterMethod = MethodResolver.ResolveMethod(
+                        Stem.Clazz, methodName, new[] {typeof(string), typeof(object)}, true, new bool[2], new bool[2]);
+                }
+                catch (MethodResolverNoSuchMethodException e) {
+                    Log.Info(
+                        "Failed to find mapped property setter method '" + methodName + "' for writing to property '" +
+                        propertyName + "' taking {String, Object} as parameters");
+                    return null;
+                }
+
+                if (setterMethod == null) {
+                    return null;
+                }
+
+                return new BeanEventPropertyWriterMapProp(Stem.Clazz, setterMethod, mapProp.Key);
+            }
+
+            if (property is IndexedProperty) {
+                var indexedProp = (IndexedProperty) property;
+                var methodName = PropertyHelper.GetSetterMethodName(indexedProp.PropertyNameAtomic);
+                MethodInfo setterMethod;
+                try {
+                    setterMethod = MethodResolver.ResolveMethod(
+                        Stem.Clazz, methodName, new[] {typeof(int), typeof(object)}, true, new bool[2], new bool[2]);
+                }
+                catch (MethodResolverNoSuchMethodException e) {
+                    Log.Info(
+                        "Failed to find indexed property setter method '" + methodName + "' for writing to property '" +
+                        propertyName + "' taking {int, Object} as parameters");
+                    return null;
+                }
+
+                if (setterMethod == null) {
+                    return null;
+                }
+
+                return new BeanEventPropertyWriterIndexedProp(Stem.Clazz, setterMethod, indexedProp.Index);
+            }
+
+            return null;
+        }
+
+        public EventPropertyDescriptor[] WriteableProperties {
+            get {
+                if (writeablePropertyDescriptors == null) {
+                    InitializeWriters();
+                }
+
+                return writeablePropertyDescriptors;
+            }
         }
 
         /// <summary>
@@ -455,75 +525,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
 
             return null;
-        }
-
-        public EventPropertyWriterSPI GetWriter(string propertyName)
-        {
-            if (writeablePropertyDescriptors == null) {
-                InitializeWriters();
-            }
-
-            var pair = writerMap.Get(propertyName);
-            if (pair != null) {
-                return pair.Second;
-            }
-
-            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty) {
-                var mapProp = (MappedProperty) property;
-                var methodName = PropertyHelper.GetSetterMethodName(mapProp.PropertyNameAtomic);
-                MethodInfo setterMethod;
-                try {
-                    setterMethod = MethodResolver.ResolveMethod(
-                        Stem.Clazz, methodName, new[] {typeof(string), typeof(object)}, true, new bool[2], new bool[2]);
-                }
-                catch (MethodResolverNoSuchMethodException e) {
-                    Log.Info(
-                        "Failed to find mapped property setter method '" + methodName + "' for writing to property '" +
-                        propertyName + "' taking {String, Object} as parameters");
-                    return null;
-                }
-
-                if (setterMethod == null) {
-                    return null;
-                }
-
-                return new BeanEventPropertyWriterMapProp(Stem.Clazz, setterMethod, mapProp.Key);
-            }
-
-            if (property is IndexedProperty) {
-                var indexedProp = (IndexedProperty) property;
-                var methodName = PropertyHelper.GetSetterMethodName(indexedProp.PropertyNameAtomic);
-                MethodInfo setterMethod;
-                try {
-                    setterMethod = MethodResolver.ResolveMethod(
-                        Stem.Clazz, methodName, new[] {typeof(int), typeof(object)}, true, new bool[2], new bool[2]);
-                }
-                catch (MethodResolverNoSuchMethodException e) {
-                    Log.Info(
-                        "Failed to find indexed property setter method '" + methodName + "' for writing to property '" +
-                        propertyName + "' taking {int, Object} as parameters");
-                    return null;
-                }
-
-                if (setterMethod == null) {
-                    return null;
-                }
-
-                return new BeanEventPropertyWriterIndexedProp(Stem.Clazz, setterMethod, indexedProp.Index);
-            }
-
-            return null;
-        }
-
-        public EventPropertyDescriptor[] WriteableProperties {
-            get {
-                if (writeablePropertyDescriptors == null) {
-                    InitializeWriters();
-                }
-
-                return writeablePropertyDescriptors;
-            }
         }
 
         private void InitializeWriters()

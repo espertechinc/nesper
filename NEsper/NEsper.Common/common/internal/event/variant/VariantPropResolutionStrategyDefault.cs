@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
             this.variantEventType = variantEventType;
         }
 
-        public VariantPropertyDesc ResolveProperty(string propertyName, EventType[] variants)
+        public VariantPropertyDesc ResolveProperty(
+            string propertyName,
+            EventType[] variants)
         {
             var existsInAll = true;
             Type commonType = null;

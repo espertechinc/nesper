@@ -58,11 +58,28 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
         public abstract Type ProviderClass { get; }
         public abstract int? NumberOfEvents { get; }
         public abstract object Index { get; }
-        public abstract void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext);
-        public abstract void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
-        public abstract void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
-        public abstract void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
-        public abstract void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+
+        public abstract void AddRemove(
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public abstract void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public abstract void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public abstract void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public abstract void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
+
         public abstract bool IsEmpty { get; }
         public abstract void Clear();
         public abstract void Destroy();

@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary> 
     /// Enum for all build-in guards.
     /// </summary>
-
     public static class GuardEnumExtensions
     {
         /// <summary>
@@ -30,8 +29,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>The namespace.</value>
         public static string GetNamespace(this GuardEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case GuardEnum.TIMER_WITHIN:
                     return "timer";
                 case GuardEnum.TIMER_WITHINMAX:
@@ -49,8 +47,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>The name.</value>
         public static string GetName(this GuardEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case GuardEnum.TIMER_WITHIN:
                     return "within";
                 case GuardEnum.TIMER_WITHINMAX:
@@ -66,14 +63,13 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="nspace">guard namespace</param>
         /// <param name="name">guard name</param>
         /// <returns>enum</returns>
-
-        public static GuardEnum? ForName(String nspace, String name)
+        public static GuardEnum? ForName(
+            String nspace,
+            String name)
         {
-            foreach (var value in EnumHelper.GetValues<GuardEnum>())
-            {
+            foreach (var value in EnumHelper.GetValues<GuardEnum>()) {
                 if ((value.GetNamespace() == nspace) &&
-                    (value.GetName() == name))
-                {
+                    (value.GetName() == name)) {
                     return value;
                 }
             }
@@ -81,9 +77,11 @@ namespace com.espertech.esper.common.client.soda
             return null;
         }
 
-        public static bool IsWhile(String nspace, String name)
+        public static bool IsWhile(
+            String nspace,
+            String name)
         {
-            return 
+            return
                 (GetNamespace(GuardEnum.WHILE_GUARD) == nspace) &&
                 (GetName(GuardEnum.WHILE_GUARD) == name);
         }
@@ -95,8 +93,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns></returns>
         public static Type GetClazz(this GuardEnum guardEnum)
         {
-            switch (guardEnum)
-            {
+            switch (guardEnum) {
                 case GuardEnum.TIMER_WITHIN:
                     return typeof(TimerWithinGuardFactory);
                 case GuardEnum.TIMER_WITHINMAX:

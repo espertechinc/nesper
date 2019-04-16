@@ -11,10 +11,9 @@ using System.IO;
 
 namespace com.espertech.esper.common.@internal.util
 {
-	/// <summary>
+    /// <summary>
     /// Writer that uses an underlying PrintWriter to indent output text for easy reading.
     /// </summary>
-
     public class IndentWriter
     {
         private readonly TextWriter _writer;
@@ -28,14 +27,16 @@ namespace com.espertech.esper.common.@internal.util
         /// </param>
         /// <param name="deltaIndent">is the number of characters to indent for every incrIndent() call
         /// </param>
-        public IndentWriter(TextWriter writer, int startIndent, int deltaIndent)
+        public IndentWriter(
+            TextWriter writer,
+            int startIndent,
+            int deltaIndent)
         {
-            if (startIndent < 0)
-            {
+            if (startIndent < 0) {
                 throw new ArgumentException("Invalid Start indent");
             }
-            if (deltaIndent < 0)
-            {
+
+            if (deltaIndent < 0) {
                 throw new ArgumentException("Invalid delta indent");
             }
 
@@ -62,8 +63,7 @@ namespace com.espertech.esper.common.@internal.util
         public virtual void WriteLine(String text)
         {
             int indent = _currentIndent;
-            if (indent < 0)
-            {
+            if (indent < 0) {
                 indent = 0;
             }
 

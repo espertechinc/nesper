@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     [Serializable]
     public class ConfigurationCompilerExpression
     {
-
         /// <summary>
         ///     Ctor.
         /// </summary>

@@ -6,15 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
-	public interface AvroBackedBean : EventBean {
-	    object GenericRecordDotData { get; }
-	}
+    public interface AvroBackedBean : EventBean
+    {
+        object GenericRecordDotData { get; }
+    }
 } // end of namespace

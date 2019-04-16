@@ -15,8 +15,8 @@ namespace com.espertech.esper.common.client.util
     public class TimePeriod
     {
         public TimePeriod(
-            int? years, 
-            int? months, 
+            int? years,
+            int? months,
             int? weeks,
             int? days,
             int? hours,
@@ -238,7 +238,10 @@ namespace com.espertech.esper.common.client.util
             return absMax;
         }
 
-        private void Append(StringBuilder buf, int? units, string unit)
+        private void Append(
+            StringBuilder buf,
+            int? units,
+            string unit)
         {
             buf.Append(units);
             buf.Append(unit);

@@ -31,7 +31,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         ///     Ctor.
         /// </summary>
         /// <param name="propertyName">is the property name</param>
-        public SimpleProperty(string propertyName) : base(propertyName)
+        public SimpleProperty(string propertyName)
+            : base(propertyName)
         {
         }
 
@@ -62,14 +63,16 @@ namespace com.espertech.esper.common.@internal.@event.property
         }
 
         public override Type GetPropertyType(
-            BeanEventType eventType, BeanEventTypeFactory beanEventTypeFactory)
+            BeanEventType eventType,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             var propertyDesc = eventType.GetSimpleProperty(PropertyNameAtomic);
             return propertyDesc?.ReturnType;
         }
 
         public override GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType, BeanEventTypeFactory beanEventTypeFactory)
+            BeanEventType eventType,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             var propertyDesc = eventType.GetSimpleProperty(PropertyNameAtomic);
             return propertyDesc?.ReturnTypeGeneric;
@@ -120,7 +123,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         }
 
         public override MapEventPropertyGetter GetGetterMap(
-            IDictionary<string, object> optionalMapPropTypes, 
+            IDictionary<string, object> optionalMapPropTypes,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
@@ -138,7 +141,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             return new MapPropertyGetterDefaultNoFragment(PropertyNameAtomic, eventBeanTypedEventFactory);
         }
 
-        public override void ToPropertyEPL(StringWriter writer)
+        public override void ToPropertyEPL(TextWriter writer)
         {
             writer.Write(PropertyNameAtomic);
         }
@@ -146,7 +149,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         public override EventPropertyGetterSPI GetGetterDOM(
             SchemaElementComplex complexProperty,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BaseXMLEventType xmlEventType, string propertyExpression)
+            BaseXMLEventType xmlEventType,
+            string propertyExpression)
         {
             foreach (var attribute in complexProperty.Attributes) {
                 if (attribute.Name.Equals(PropertyNameAtomic)) {
@@ -177,8 +181,10 @@ namespace com.espertech.esper.common.@internal.@event.property
         }
 
         public override ObjectArrayEventPropertyGetter GetGetterObjectArray(
-            IDictionary<string, int> indexPerProperty, IDictionary<string, object> nestableTypes,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory)
+            IDictionary<string, int> indexPerProperty,
+            IDictionary<string, object> nestableTypes,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             // The simple, none-dynamic property needs a definition of the map contents else no property
             if (nestableTypes == null) {

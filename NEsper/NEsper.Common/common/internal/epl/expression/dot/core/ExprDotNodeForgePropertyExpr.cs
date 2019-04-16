@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotNodeImpl parent,
             string statementName,
             string propertyName,
-            int streamNum, 
+            int streamNum,
             ExprForge exprForge,
             Type propertyType,
             EventPropertyGetterIndexedSPI indexedGetter,
@@ -80,7 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public override ExprNodeRenderable ForgeRenderable => Parent;
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (IndexedGetter != null) {
@@ -93,17 +95,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
                 GetType(), this, "ExprDot", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
         }
 
-        protected internal string GetWarningText(string expectedType, object received)
+        protected internal string GetWarningText(
+            string expectedType,
+            object received)
         {
             var receivedText = received == null ? "null" : received.GetType().GetCleanName();
-            return string.Format("Statement '{0}' property {1} parameter expression expected a value of {2} but received {3}",
+            return string.Format(
+                "Statement '{0}' property {1} parameter expression expected a value of {2} but received {3}",
                 statementName, propertyName, expectedType, receivedText);
         }
     }

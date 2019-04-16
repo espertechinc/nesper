@@ -24,15 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         private readonly int[] eventBeanToObjectIndexesArray;
 
         public SelectEvalStreamNoUndWEventBeanToObjObjArray(
-            SelectExprForgeContext selectExprForgeContext, EventType resultEventType,
-            IList<SelectClauseStreamCompiledSpec> namedStreams, bool usingWildcard, ISet<string> eventBeanToObjectProps)
+            SelectExprForgeContext selectExprForgeContext,
+            EventType resultEventType,
+            IList<SelectClauseStreamCompiledSpec> namedStreams,
+            bool usingWildcard,
+            ISet<string> eventBeanToObjectProps)
             : base(selectExprForgeContext, resultEventType, namedStreams, usingWildcard)
 
         {
             var eventBeanToObjectIndexes = new HashSet<int>();
             var type = (ObjectArrayEventType) resultEventType;
             foreach (var name in eventBeanToObjectProps) {
-                if (type.PropertiesIndexes.TryGetValue(name, out var index)) { 
+                if (type.PropertiesIndexes.TryGetValue(name, out var index)) {
                     eventBeanToObjectIndexes.Add(index);
                 }
             }
@@ -41,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         }
 
         protected override CodegenExpression ProcessSpecificCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenExpressionRef props,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenExpressionRef props,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -58,7 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         /// <param name="resultEventType">type</param>
         /// <returns>bean</returns>
         public static EventBean ProcessSelectExprbeanToObjArray(
-            object[] props, int[] eventBeanToObjectIndexes, EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            object[] props,
+            int[] eventBeanToObjectIndexes,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             EventType resultEventType)
         {
             foreach (var propertyIndex in eventBeanToObjectIndexes) {

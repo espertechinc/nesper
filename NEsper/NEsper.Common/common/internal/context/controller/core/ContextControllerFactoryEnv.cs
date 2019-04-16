@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.context.controller.core
     public class ContextControllerFactoryEnv
     {
         public ContextControllerFactoryEnv(
-            string outermostContextName, string contextName, int nestingLevel, int numNestingLevels)
+            string outermostContextName,
+            string contextName,
+            int nestingLevel,
+            int numNestingLevels)
         {
             OutermostContextName = outermostContextName;
             ContextName = contextName;

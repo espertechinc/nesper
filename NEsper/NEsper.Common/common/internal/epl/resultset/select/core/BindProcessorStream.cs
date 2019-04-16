@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,56 +15,74 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
-	public class BindProcessorStream : ExprForge, ExprEvaluator, ExprNodeRenderable {
-	    private readonly int streamNum;
-	    private readonly Type returnType;
+    public class BindProcessorStream : ExprForge,
+        ExprEvaluator,
+        ExprNodeRenderable
+    {
+        private readonly int streamNum;
+        private readonly Type returnType;
 
-	    public BindProcessorStream(int streamNum, Type returnType) {
-	        this.streamNum = streamNum;
-	        this.returnType = returnType;
-	    }
+        public BindProcessorStream(
+            int streamNum,
+            Type returnType)
+        {
+            this.streamNum = streamNum;
+            this.returnType = returnType;
+        }
 
-	    public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        EventBean theEvent = eventsPerStream[streamNum];
-	        if (theEvent != null) {
-	            return theEvent.Underlying;
-	        }
-	        return null;
-	    }
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            EventBean theEvent = eventsPerStream[streamNum];
+            if (theEvent != null) {
+                return theEvent.Underlying;
+            }
 
-	    public ExprNodeRenderable ForgeRenderable {
-	        get => this;
-	    }
+            return null;
+        }
 
-	    public ExprEvaluator ExprEvaluator {
-	        get => this;
-	    }
+        public ExprNodeRenderable ForgeRenderable {
+            get => this;
+        }
 
-	    public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(returnType, this.GetType(), codegenClassScope);
-	        CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-	        methodNode.Block
-	                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamNum)))
-	                .IfRefNullReturnNull("event")
-	                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotMethod(@Ref("event"), "getUnderlying")));
-	        return LocalMethod(methodNode);
-	    }
+        public ExprEvaluator ExprEvaluator {
+            get => this;
+        }
 
-	    public ExprForgeConstantType ForgeConstantType {
-	        get => ExprForgeConstantType.NONCONST;
-	    }
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(returnType, this.GetType(), codegenClassScope);
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            methodNode.Block
+                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .IfRefNullReturnNull("event")
+                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotMethod(@Ref("event"), "getUnderlying")));
+            return LocalMethod(methodNode);
+        }
 
-	    public Type EvaluationType {
-	        get => returnType;
-	    }
+        public ExprForgeConstantType ForgeConstantType {
+            get => ExprForgeConstantType.NONCONST;
+        }
 
-	    public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence) {
-	        writer.Write(this.GetType().Name + " stream " + streamNum);
-	    }
-	}
+        public Type EvaluationType {
+            get => returnType;
+        }
+
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
+        {
+            writer.Write(this.GetType().Name + " stream " + streamNum);
+        }
+    }
 } // end of namespace

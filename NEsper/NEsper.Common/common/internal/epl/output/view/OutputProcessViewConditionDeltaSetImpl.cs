@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
@@ -16,50 +15,54 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
-	public class OutputProcessViewConditionDeltaSetImpl : OutputProcessViewConditionDeltaSet {
-	    private readonly IList<UniformPair<EventBean[]>> viewEventsList;
-	    private readonly IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet;
+    public class OutputProcessViewConditionDeltaSetImpl : OutputProcessViewConditionDeltaSet
+    {
+        private readonly IList<UniformPair<EventBean[]>> viewEventsList;
+        private readonly IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet;
 
-	    public OutputProcessViewConditionDeltaSetImpl(bool isJoin) {
-	        if (isJoin) {
-	            joinEventsSet = new List<UniformPair<ISet<MultiKey<EventBean>>>>();
-	            viewEventsList = Collections.GetEmptyList<object>();
-	        } else {
-	            viewEventsList = new List<UniformPair<EventBean[]>>();
-	            joinEventsSet = Collections.GetEmptyList<object>();
-	        }
-	    }
+        public OutputProcessViewConditionDeltaSetImpl(bool isJoin)
+        {
+            if (isJoin) {
+                joinEventsSet = new List<UniformPair<ISet<MultiKey<EventBean>>>>();
+                viewEventsList = new EmptyList<UniformPair<EventBean[]>>();
+            }
+            else {
+                viewEventsList = new List<UniformPair<EventBean[]>>();
+                joinEventsSet = new EmptyList<UniformPair<ISet<MultiKey<EventBean>>>>();
+            }
+        }
 
-	    public int NumChangesetRows
-	    {
-	        get => Math.Max(viewEventsList.Count, joinEventsSet.Count);
-	    }
+        public int NumChangesetRows {
+            get => Math.Max(viewEventsList.Count, joinEventsSet.Count);
+        }
 
-	    public void AddView(UniformPair<EventBean[]> uniformPair) {
-	        viewEventsList.Add(uniformPair);
-	    }
+        public void AddView(UniformPair<EventBean[]> uniformPair)
+        {
+            viewEventsList.Add(uniformPair);
+        }
 
-	    public void AddJoin(UniformPair<ISet<MultiKey<EventBean>>> setUniformPair) {
-	        joinEventsSet.Add(setUniformPair);
-	    }
+        public void AddJoin(UniformPair<ISet<MultiKey<EventBean>>> setUniformPair)
+        {
+            joinEventsSet.Add(setUniformPair);
+        }
 
-	    public void Clear() {
-	        viewEventsList.Clear();
-	        joinEventsSet.Clear();
-	    }
+        public void Clear()
+        {
+            viewEventsList.Clear();
+            joinEventsSet.Clear();
+        }
 
-	    public void Destroy() {
-	        Clear();
-	    }
+        public void Destroy()
+        {
+            Clear();
+        }
 
-	    public IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet
-	    {
-	        get => joinEventsSet;
-	    }
+        public IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet {
+            get => joinEventsSet;
+        }
 
-	    public IList<UniformPair<EventBean[]>> ViewEventsSet
-	    {
-	        get => viewEventsList;
-	    }
-	}
+        public IList<UniformPair<EventBean[]>> ViewEventsSet {
+            get => viewEventsList;
+        }
+    }
 } // end of namespace

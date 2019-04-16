@@ -54,12 +54,16 @@ namespace com.espertech.esper.common.client.soda
             WriteDelimiter(writer);
         }
 
-        public void BeginInsertInto(TextWriter writer, bool topLevel)
+        public void BeginInsertInto(
+            TextWriter writer,
+            bool topLevel)
         {
             WriteDelimiter(writer, topLevel);
         }
 
-        public void BeginFromStream(TextWriter writer, bool first)
+        public void BeginFromStream(
+            TextWriter writer,
+            bool first)
         {
             WriteDelimiter(writer, !first);
         }
@@ -104,12 +108,14 @@ namespace com.espertech.esper.common.client.soda
             WriteDelimiter(writer);
         }
 
-        public void BeginSelect(TextWriter writer, bool topLevel)
+        public void BeginSelect(
+            TextWriter writer,
+            bool topLevel)
         {
-            if (topLevel)
-            {
+            if (topLevel) {
                 WriteDelimiter(writer, topLevel);
             }
+
             SetDelimiter();
         }
 
@@ -155,38 +161,36 @@ namespace com.espertech.esper.common.client.soda
 
         private void SetDelimiter()
         {
-            if (_isNewline)
-            {
+            if (_isNewline) {
                 _delimiter = _newlineString;
             }
-            else
-            {
+            else {
                 _delimiter = SPACE;
             }
         }
 
         private void WriteDelimiter(TextWriter writer)
         {
-            if (_delimiter != null)
-            {
+            if (_delimiter != null) {
                 writer.Write(_delimiter);
             }
+
             SetDelimiter();
         }
 
-        private void WriteDelimiter(TextWriter writer, bool topLevel)
+        private void WriteDelimiter(
+            TextWriter writer,
+            bool topLevel)
         {
-            if (_delimiter != null)
-            {
-                if (!topLevel)
-                {
+            if (_delimiter != null) {
+                if (!topLevel) {
                     writer.Write(SPACE);
                 }
-                else
-                {
+                else {
                     writer.Write(_delimiter);
                 }
             }
+
             SetDelimiter();
         }
 

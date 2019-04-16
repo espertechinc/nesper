@@ -25,114 +25,134 @@ using System.IO;
 
 namespace com.espertech.esper.common.@internal.util.apachecommonstext
 {
-	/// <summary>
-	/// Translates codepoints to their Unicode escaped value.
-	/// </summary>
-	/// <unknown>@since 1.0</unknown>
-	public class UnicodeEscaper : CodePointTranslator {
+    /// <summary>
+    /// Translates codepoints to their Unicode escaped value.
+    /// </summary>
+    /// <unknown>@since 1.0</unknown>
+    public class UnicodeEscaper : CodePointTranslator
+    {
+        /// <summary>
+        /// int value representing the lowest codepoint boundary.
+        /// </summary>
+        private readonly int below;
 
-	    /// <summary>
-	    /// int value representing the lowest codepoint boundary.
-	    /// </summary>
-	    private readonly int below;
-	    /// <summary>
-	    /// int value representing the highest codepoint boundary.
-	    /// </summary>
-	    private readonly int above;
-	    /// <summary>
-	    /// whether to escape between the boundaries or outside them.
-	    /// </summary>
-	    private readonly bool between;
+        /// <summary>
+        /// int value representing the highest codepoint boundary.
+        /// </summary>
+        private readonly int above;
 
-	    /// <summary>
-	    /// <para />Constructs a <code>UnicodeEscaper</code> for all characters.
-	    /// </summary>
-	    public UnicodeEscaper()
-	        : this(0, Int32.MaxValue, true)
-	    {
-	    }
+        /// <summary>
+        /// whether to escape between the boundaries or outside them.
+        /// </summary>
+        private readonly bool between;
 
-	    /// <summary>
-	    /// <para />Constructs a <code>UnicodeEscaper</code> for the specified range. This is
-	    /// the underlying method for the other constructors/builders. The <code>below</code>and <code>above</code> boundaries are inclusive when <code>between</code> is
-	    /// </summary>
-	    /// <param name="below">int value representing the lowest codepoint boundary</param>
-	    /// <param name="above">int value representing the highest codepoint boundary</param>
-	    /// <param name="between">whether to escape between the boundaries or outside them</param>
-	    protected UnicodeEscaper(int below, int above, bool between) {
-	        this.below = below;
-	        this.above = above;
-	        this.between = between;
-	    }
+        /// <summary>
+        /// <para />Constructs a <code>UnicodeEscaper</code> for all characters.
+        /// </summary>
+        public UnicodeEscaper()
+            : this(0, Int32.MaxValue, true)
+        {
+        }
 
-	    /// <summary>
-	    /// <p>Constructs a <code>UnicodeEscaper</code> below the specified value (exclusive). </p></summary>
-	    /// <param name="codepoint">below which to escape</param>
-	    /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
-	    public static UnicodeEscaper Below(int codepoint)
-	    {
-	        return OutsideOf(codepoint, Int32.MaxValue);
-	    }
+        /// <summary>
+        /// <para />Constructs a <code>UnicodeEscaper</code> for the specified range. This is
+        /// the underlying method for the other constructors/builders. The <code>below</code>and <code>above</code> boundaries are inclusive when <code>between</code> is
+        /// </summary>
+        /// <param name="below">int value representing the lowest codepoint boundary</param>
+        /// <param name="above">int value representing the highest codepoint boundary</param>
+        /// <param name="between">whether to escape between the boundaries or outside them</param>
+        protected UnicodeEscaper(
+            int below,
+            int above,
+            bool between)
+        {
+            this.below = below;
+            this.above = above;
+            this.between = between;
+        }
 
-	    /// <summary>
-	    /// <p>Constructs a <code>UnicodeEscaper</code> above the specified value (exclusive). </p></summary>
-	    /// <param name="codepoint">above which to escape</param>
-	    /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
-	    public static UnicodeEscaper Above(int codepoint) {
-	        return OutsideOf(0, codepoint);
-	    }
+        /// <summary>
+        /// <p>Constructs a <code>UnicodeEscaper</code> below the specified value (exclusive). </p></summary>
+        /// <param name="codepoint">below which to escape</param>
+        /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
+        public static UnicodeEscaper Below(int codepoint)
+        {
+            return OutsideOf(codepoint, Int32.MaxValue);
+        }
 
-	    /// <summary>
-	    /// <p>Constructs a <code>UnicodeEscaper</code> outside of the specified values (exclusive). </p></summary>
-	    /// <param name="codepointLow">below which to escape</param>
-	    /// <param name="codepointHigh">above which to escape</param>
-	    /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
-	    public static UnicodeEscaper OutsideOf(int codepointLow, int codepointHigh) {
-	        return new UnicodeEscaper(codepointLow, codepointHigh, false);
-	    }
+        /// <summary>
+        /// <p>Constructs a <code>UnicodeEscaper</code> above the specified value (exclusive). </p></summary>
+        /// <param name="codepoint">above which to escape</param>
+        /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
+        public static UnicodeEscaper Above(int codepoint)
+        {
+            return OutsideOf(0, codepoint);
+        }
 
-	    /// <summary>
-	    /// <p>Constructs a <code>UnicodeEscaper</code> between the specified values (inclusive). </p></summary>
-	    /// <param name="codepointLow">above which to escape</param>
-	    /// <param name="codepointHigh">below which to escape</param>
-	    /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
-	    public static UnicodeEscaper Between(int codepointLow, int codepointHigh) {
-	        return new UnicodeEscaper(codepointLow, codepointHigh, true);
-	    }
+        /// <summary>
+        /// <p>Constructs a <code>UnicodeEscaper</code> outside of the specified values (exclusive). </p></summary>
+        /// <param name="codepointLow">below which to escape</param>
+        /// <param name="codepointHigh">above which to escape</param>
+        /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
+        public static UnicodeEscaper OutsideOf(
+            int codepointLow,
+            int codepointHigh)
+        {
+            return new UnicodeEscaper(codepointLow, codepointHigh, false);
+        }
 
-	    /// <summary>
-	    /// {@inheritDoc}
-	    /// </summary>
-	    public override bool Translate(int codepoint, TextWriter @out) {
-	        if (between) {
-	            if (codepoint < below || codepoint > above) {
-	                return false;
-	            }
-	        } else {
-	            if (codepoint >= below && codepoint <= above) {
-	                return false;
-	            }
-	        }
+        /// <summary>
+        /// <p>Constructs a <code>UnicodeEscaper</code> between the specified values (inclusive). </p></summary>
+        /// <param name="codepointLow">above which to escape</param>
+        /// <param name="codepointHigh">below which to escape</param>
+        /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
+        public static UnicodeEscaper Between(
+            int codepointLow,
+            int codepointHigh)
+        {
+            return new UnicodeEscaper(codepointLow, codepointHigh, true);
+        }
 
-	        if (codepoint > 0xffff) {
-	            @out.Write(ToUtf16Escape(codepoint));
-	        } else {
-	            @out.Write("\\u");
-	            @out.Write(HEX_DIGITS[(codepoint >> 12) & 15]);
-	            @out.Write(HEX_DIGITS[(codepoint >> 8) & 15]);
-	            @out.Write(HEX_DIGITS[(codepoint >> 4) & 15]);
-	            @out.Write(HEX_DIGITS[codepoint & 15]);
-	        }
-	        return true;
-	    }
+        /// <summary>
+        /// {@inheritDoc}
+        /// </summary>
+        public override bool Translate(
+            int codepoint,
+            TextWriter @out)
+        {
+            if (between) {
+                if (codepoint < below || codepoint > above) {
+                    return false;
+                }
+            }
+            else {
+                if (codepoint >= below && codepoint <= above) {
+                    return false;
+                }
+            }
 
-	    /// <summary>
-	    /// Converts the given codepoint to a hex string of the form {@code "\\uXXXX"}.
-	    /// </summary>
-	    /// <param name="codepoint">a Unicode code point</param>
-	    /// <returns>the hex string for the given codepoint</returns>
-	    protected string ToUtf16Escape(int codepoint) {
-	        return "\\u" + Hex(codepoint);
-	    }
-	}
+            if (codepoint > 0xffff) {
+                @out.Write(ToUtf16Escape(codepoint));
+            }
+            else {
+                @out.Write("\\u");
+                @out.Write(HEX_DIGITS[(codepoint >> 12) & 15]);
+                @out.Write(HEX_DIGITS[(codepoint >> 8) & 15]);
+                @out.Write(HEX_DIGITS[(codepoint >> 4) & 15]);
+                @out.Write(HEX_DIGITS[codepoint & 15]);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Converts the given codepoint to a hex string of the form {@code "\\uXXXX"}.
+        /// </summary>
+        /// <param name="codepoint">a Unicode code point</param>
+        /// <returns>the hex string for the given codepoint</returns>
+        protected string ToUtf16Escape(int codepoint)
+        {
+            return "\\u" + Hex(codepoint);
+        }
+    }
 } // end of namespace

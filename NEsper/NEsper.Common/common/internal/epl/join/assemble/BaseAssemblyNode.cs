@@ -48,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// </summary>
         /// <param name="streamNum">stream number of the event stream that this node assembles results for.</param>
         /// <param name="numStreams">number of streams</param>
-        internal BaseAssemblyNode(int streamNum, int numStreams)
+        internal BaseAssemblyNode(
+            int streamNum,
+            int numStreams)
         {
             this.streamNum = streamNum;
             this.numStreams = numStreams;
@@ -80,10 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         ///     Returns an array of stream numbers that lists all child node's stream numbers.
         /// </summary>
         /// <value>child node stream numbers</value>
-        internal int[] Substreams
-        {
-            get
-            {
+        internal int[] Substreams {
+            get {
                 IList<int> substreams = new List<int>();
                 RecusiveAddSubstreams(substreams);
 
@@ -111,8 +111,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// <param name="resultFinalRows">final row collection</param>
         /// <param name="resultRootEvent">root event</param>
         public abstract void Process(
-            IList<Node>[] result, 
-            ICollection<EventBean[]> resultFinalRows, 
+            IList<Node>[] result,
+            ICollection<EventBean[]> resultFinalRows,
             EventBean resultRootEvent);
 
         /// <summary>
@@ -140,7 +140,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public abstract void Result(
-            EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode,
+            EventBean[] row,
+            int fromStreamNum,
+            EventBean myEvent,
+            Node myNode,
             ICollection<EventBean[]> resultFinalRows,
             EventBean resultRootEvent);
     }

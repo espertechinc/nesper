@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
         /// <param name="fragmentType">type of the entry returned</param>
         public MapNestedEntryPropertyGetterBase(
-            string propertyMap, EventType fragmentType, EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            string propertyMap,
+            EventType fragmentType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.propertyMap = propertyMap;
             this.fragmentType = fragmentType;
@@ -64,7 +66,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public object GetFragment(EventBean obj)
         {
-            IDictionary<string, object> map = BaseNestableEventUtil.CheckedCastUnderlyingMap(obj);
+            var map = BaseNestableEventUtil.CheckedCastUnderlyingMap(obj);
             var value = map.Get(propertyMap);
             if (value == null) {
                 return null;
@@ -74,7 +76,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -83,14 +86,16 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public virtual CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
@@ -99,21 +104,24 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetMapCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public virtual CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
@@ -124,12 +132,18 @@ namespace com.espertech.esper.common.@internal.@event.map
         public abstract object HandleNestedValueFragment(object value);
 
         public abstract CodegenExpression HandleNestedValueCodegen(
-            CodegenExpression name, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
 
         public abstract CodegenExpression HandleNestedValueFragmentCodegen(
-            CodegenExpression name, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
 
-        private CodegenMethod GetMapCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+        private CodegenMethod GetMapCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map").Block
@@ -139,7 +153,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         private CodegenMethod GetFragmentCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map").Block

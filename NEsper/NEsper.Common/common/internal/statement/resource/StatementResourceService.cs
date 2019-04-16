@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.statement.resource
             return ResourcesPartitioned.Get(agentInstanceId);
         }
 
-        public void SetPartitioned(int agentInstanceId, StatementResourceHolder statementResourceHolder)
+        public void SetPartitioned(
+            int agentInstanceId,
+            StatementResourceHolder statementResourceHolder)
         {
             ResourcesPartitioned.Put(agentInstanceId, statementResourceHolder);
         }

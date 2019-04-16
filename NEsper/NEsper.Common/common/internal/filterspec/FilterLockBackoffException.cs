@@ -18,15 +18,22 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
         }
 
-        public FilterLockBackoffException(string message) : base(message)
+        public FilterLockBackoffException(string message)
+            : base(message)
         {
         }
 
-        public FilterLockBackoffException(string message, Exception innerException) : base(message, innerException)
+        public FilterLockBackoffException(
+            string message,
+            Exception innerException)
+            : base(message, innerException)
         {
         }
 
-        protected FilterLockBackoffException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected FilterLockBackoffException(
+            SerializationInfo info,
+            StreamingContext context)
+            : base(info, context)
         {
         }
     }

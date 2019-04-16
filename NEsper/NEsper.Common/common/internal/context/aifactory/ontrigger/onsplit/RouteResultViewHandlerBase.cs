@@ -27,8 +27,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         private readonly TableInstance[] tableStateInstances;
 
         public RouteResultViewHandlerBase(
-            EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter,
-            TableInstance[] tableStateInstances, OnSplitItemEval[] items, ResultSetProcessor[] processors,
+            EPStatementHandle epStatementHandle,
+            InternalEventRouter internalEventRouter,
+            TableInstance[] tableStateInstances,
+            OnSplitItemEval[] items,
+            ResultSetProcessor[] processors,
             AgentInstanceContext agentInstanceContext)
         {
             this.internalEventRouter = internalEventRouter;
@@ -40,9 +43,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             audit = AuditEnum.INSERT.GetAudit(agentInstanceContext.Annotations) != null;
         }
 
-        public abstract bool Handle(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext);
+        public abstract bool Handle(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-        internal bool CheckWhereClauseCurrentEvent(int index, ExprEvaluatorContext exprEvaluatorContext)
+        internal bool CheckWhereClauseCurrentEvent(
+            int index,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var pass = true;
 
@@ -60,7 +67,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             return pass;
         }
 
-        internal bool MayRouteCurrentEvent(int index, ExprEvaluatorContext exprEvaluatorContext)
+        internal bool MayRouteCurrentEvent(
+            int index,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             agentInstanceContext.InstrumentationProvider.QSplitStreamRoute(index);
             var result = processors[index].ProcessViewResult(eventsPerStream, null, false);
@@ -74,7 +83,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             return routed;
         }
 
-        internal void Route(EventBean routed, int index, ExprEvaluatorContext exprEvaluatorContext)
+        internal void Route(
+            EventBean routed,
+            int index,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (audit) {
                 exprEvaluatorContext.AuditProvider.Insert(routed, exprEvaluatorContext);

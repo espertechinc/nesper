@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -17,22 +16,29 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumMostLeastFrequentEventForge : EnumForgeBase {
+    public class EnumMostLeastFrequentEventForge : EnumForgeBase
+    {
+        internal readonly bool isMostFrequent;
 
-	    internal readonly bool isMostFrequent;
+        public EnumMostLeastFrequentEventForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            bool mostFrequent)
+            : base(innerExpression, streamCountIncoming)
+        {
+            isMostFrequent = mostFrequent;
+        }
 
-	    public EnumMostLeastFrequentEventForge(ExprForge innerExpression, int streamCountIncoming, bool mostFrequent)
-	    	 : base(innerExpression, streamCountIncoming)
-	    {
-	        isMostFrequent = mostFrequent;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumMostLeastFrequentEventForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumMostLeastFrequentEventForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumMostLeastFrequentEventForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumMostLeastFrequentEventForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

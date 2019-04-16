@@ -86,7 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprNewStructNode)) {
                 return false;
@@ -96,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return CompatExtensions.DeepEquals(other.ColumnNames, ColumnNames);
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("new{");
             var delimiter = "";

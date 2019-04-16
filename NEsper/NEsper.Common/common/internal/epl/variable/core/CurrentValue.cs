@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         /// <summary>Ctor.</summary>
         /// <param name="currentVersion">current version and value</param>
         /// <param name="priorVersion">prior version and value</param>
-        public CurrentValue(VersionedValue<T> currentVersion, VersionedValue<T> priorVersion)
+        public CurrentValue(
+            VersionedValue<T> currentVersion,
+            VersionedValue<T> priorVersion)
         {
             this.currentVersion = currentVersion;
             this.priorVersion = priorVersion;
@@ -27,15 +29,13 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
         /// <summary>Returns the current version.</summary>
         /// <returns>current version</returns>
-        public VersionedValue<T> CurrentVersion
-        {
+        public VersionedValue<T> CurrentVersion {
             get { return currentVersion; }
         }
 
         /// <summary>Returns the prior version.</summary>
         /// <returns>prior version</returns>
-        public VersionedValue<T> PriorVersion
-        {
+        public VersionedValue<T> PriorVersion {
             get { return priorVersion; }
         }
     }

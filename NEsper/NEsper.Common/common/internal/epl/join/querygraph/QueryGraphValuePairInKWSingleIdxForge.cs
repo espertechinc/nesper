@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     public class QueryGraphValuePairInKWSingleIdxForge
     {
         public QueryGraphValuePairInKWSingleIdxForge(
-            string[] indexed, IList<QueryGraphValueEntryInKeywordSingleIdxForge> key)
+            string[] indexed,
+            IList<QueryGraphValueEntryInKeywordSingleIdxForge> key)
         {
             Indexed = indexed;
             Key = key;

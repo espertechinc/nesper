@@ -10,7 +10,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.core
@@ -20,24 +19,29 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         private readonly int streamNum;
         private readonly ExprForge filterEval;
 
-        public AggregationAgentRewriteStreamWFilterForge(int streamNum, ExprForge filterEval)
+        public AggregationAgentRewriteStreamWFilterForge(
+            int streamNum,
+            ExprForge filterEval)
         {
             this.streamNum = streamNum;
             this.filterEval = filterEval;
         }
 
-        public CodegenExpression Make(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
-            return NewInstance(typeof(AggregationAgentRewriteStreamWFilter), Constant(streamNum), ExprNodeUtilityCodegen.CodegenEvaluator(filterEval, method, this.GetType(), classScope));
+            return NewInstance(
+                typeof(AggregationAgentRewriteStreamWFilter), Constant(streamNum),
+                ExprNodeUtilityCodegen.CodegenEvaluator(filterEval, method, this.GetType(), classScope));
         }
 
-        public ExprForge FilterEval
-        {
+        public ExprForge FilterEval {
             get => filterEval;
         }
 
-        public ExprForge OptionalFilter
-        {
+        public ExprForge OptionalFilter {
             get => filterEval;
         }
     }

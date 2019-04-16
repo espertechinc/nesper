@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         /// </summary>
         /// <param name="aggregationNode">expression</param>
         /// <param name="factory">method factory</param>
-        public AggregationServiceAggExpressionDesc(ExprAggregateNode aggregationNode, AggregationForgeFactory factory)
+        public AggregationServiceAggExpressionDesc(
+            ExprAggregateNode aggregationNode,
+            AggregationForgeFactory factory)
         {
             AggregationNode = aggregationNode;
             Factory = factory;

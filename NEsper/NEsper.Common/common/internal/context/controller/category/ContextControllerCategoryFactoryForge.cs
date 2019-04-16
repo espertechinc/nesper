@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         private readonly ContextSpecCategory detail;
 
         public ContextControllerCategoryFactoryForge(
-            ContextControllerFactoryEnv ctx, ContextSpecCategory detail) : base(ctx)
+            ContextControllerFactoryEnv ctx,
+            ContextSpecCategory detail)
+            : base(ctx)
         {
             this.detail = detail;
         }
@@ -34,7 +36,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             new ContextControllerCategoryValidation(detail.FilterSpecCompiled.FilterForEventType);
 
         public override void ValidateGetContextProps(
-            LinkedHashMap<string, object> props, string contextName, StatementRawInfo statementRawInfo,
+            LinkedHashMap<string, object> props,
+            string contextName,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             if (detail.Items.IsEmpty()) {
@@ -45,7 +49,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         }
 
         public override CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols)
         {
             var method = parent.MakeChild(
                 typeof(ContextControllerCategoryFactory), typeof(ContextControllerCategoryFactoryForge), classScope);

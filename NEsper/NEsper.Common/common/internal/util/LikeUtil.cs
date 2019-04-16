@@ -13,33 +13,25 @@ namespace com.espertech.esper.common.@internal.util
     /// <summary>
     ///  Utility for performing a SQL Like comparsion.
     /// </summary>
-
     [Serializable]
     public class LikeUtil
     {
-        internal bool EquivalentToFalsePredicate
-        {
+        internal bool EquivalentToFalsePredicate {
             get { return _isNull; }
         }
 
-        internal bool EquivalentToEqualsPredicate
-        {
+        internal bool EquivalentToEqualsPredicate {
             get { return _iFirstWildCard == -1; }
         }
 
-        internal bool EquivalentToNotNullPredicate
-        {
-            get
-            {
-                if (_isNull || !HasWildcards)
-                {
+        internal bool EquivalentToNotNullPredicate {
+            get {
+                if (_isNull || !HasWildcards) {
                     return false;
                 }
 
-                for (int i = 0; i < _wildCardType.Length; i++)
-                {
-                    if (_wildCardType[i] != LikeUtil.PERCENT_CHAR)
-                    {
+                for (int i = 0; i < _wildCardType.Length; i++) {
+                    if (_wildCardType[i] != LikeUtil.PERCENT_CHAR) {
                         return false;
                     }
                 }
@@ -48,13 +40,11 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        internal bool EquivalentToBetweenPredicate
-        {
+        internal bool EquivalentToBetweenPredicate {
             get { return _iFirstWildCard > 0 && _iFirstWildCard == _wildCardType.Length - 1 && _cLike[_iFirstWildCard] == '%'; }
         }
 
-        internal bool EquivalentToBetweenPredicateAugmentedWithLike
-        {
+        internal bool EquivalentToBetweenPredicateAugmentedWithLike {
             get { return _iFirstWildCard > 0 && _cLike[_iFirstWildCard] == '%'; }
         }
 
@@ -73,8 +63,10 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="pattern">is the SQL-like pattern to</param>
         /// <param name="escape">is the escape character</param>
         /// <param name="ignorecase">is true to ignore the case, or false if not</param>
-
-        public LikeUtil(String pattern, char? escape, bool ignorecase)
+        public LikeUtil(
+            String pattern,
+            char? escape,
+            bool ignorecase)
         {
             _escapeChar = escape;
             _isIgnoreCase = ignorecase;
@@ -86,11 +78,9 @@ namespace com.espertech.esper.common.@internal.util
         /// </param>
         /// <returns> true if pattern matches, or false if not
         /// </returns>
-
         public virtual bool Compare(String compareString)
         {
-            if (_isIgnoreCase)
-            {
+            if (_isIgnoreCase) {
                 compareString = compareString.ToUpper();
             }
 
@@ -100,44 +90,42 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary> Resets the search pattern.</summary>
         /// <param name="pattern">is the new pattern to match against
         /// </param>
-
         public virtual void ResetPattern(String pattern)
         {
             Normalize(pattern);
         }
 
-        private bool CompareAt(String s, int i, int j, int jLen)
+        private bool CompareAt(
+            String s,
+            int i,
+            int j,
+            int jLen)
         {
-            for (; i < _iLen; i++)
-            {
-                switch (_wildCardType[i])
-                {
-                    case 0:  // general character
-                        if ((j >= jLen) || (_cLike[i] != s[j++]))
-                        {
+            for (; i < _iLen; i++) {
+                switch (_wildCardType[i]) {
+                    case 0: // general character
+                        if ((j >= jLen) || (_cLike[i] != s[j++])) {
                             return false;
                         }
+
                         break;
 
 
-                    case UNDERSCORE_CHAR:  // underscore: do not test this character
-                        if (j++ >= jLen)
-                        {
+                    case UNDERSCORE_CHAR: // underscore: do not test this character
+                        if (j++ >= jLen) {
                             return false;
                         }
+
                         break;
 
 
-                    case PERCENT_CHAR:  // percent: none or any character(s)
-                        if (++i >= _iLen)
-                        {
+                    case PERCENT_CHAR: // percent: none or any character(s)
+                        if (++i >= _iLen) {
                             return true;
                         }
 
-                        while (j < jLen)
-                        {
-                            if ((_cLike[i] == s[j]) && CompareAt(s, i, j, jLen))
-                            {
+                        while (j < jLen) {
+                            if ((_cLike[i] == s[j]) && CompareAt(s, i, j, jLen)) {
                                 return true;
                             }
 
@@ -148,8 +136,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
             }
 
-            if (j != jLen)
-            {
+            if (j != jLen) {
                 return false;
             }
 
@@ -158,11 +145,9 @@ namespace com.espertech.esper.common.@internal.util
 
         private void Normalize(String pattern)
         {
-
             _isNull = pattern == null;
 
-            if (!_isNull && _isIgnoreCase)
-            {
+            if (!_isNull && _isIgnoreCase) {
                 pattern = pattern.ToUpper();
             }
 
@@ -176,49 +161,39 @@ namespace com.espertech.esper.common.@internal.util
 
             bool bEscaping = false, bPercent = false;
 
-            for (int i = 0; i < l; i++)
-            {
+            for (int i = 0; i < l; i++) {
                 char c = pattern[i];
 
-                if (!bEscaping)
-                {
-                    if (_escapeChar != null && _escapeChar.Value == c)
-                    {
+                if (!bEscaping) {
+                    if (_escapeChar != null && _escapeChar.Value == c) {
                         bEscaping = true;
 
                         continue;
                     }
-                    else if (c == '_')
-                    {
+                    else if (c == '_') {
                         _wildCardType[_iLen] = LikeUtil.UNDERSCORE_CHAR;
 
-                        if (_iFirstWildCard == -1)
-                        {
+                        if (_iFirstWildCard == -1) {
                             _iFirstWildCard = _iLen;
                         }
                     }
-                    else if (c == '%')
-                    {
-                        if (bPercent)
-                        {
+                    else if (c == '%') {
+                        if (bPercent) {
                             continue;
                         }
 
                         bPercent = true;
                         _wildCardType[_iLen] = PERCENT_CHAR;
 
-                        if (_iFirstWildCard == -1)
-                        {
+                        if (_iFirstWildCard == -1) {
                             _iFirstWildCard = _iLen;
                         }
                     }
-                    else
-                    {
+                    else {
                         bPercent = false;
                     }
                 }
-                else
-                {
+                else {
                     bPercent = false;
                     bEscaping = false;
                 }
@@ -226,19 +201,16 @@ namespace com.espertech.esper.common.@internal.util
                 _cLike[_iLen++] = c;
             }
 
-            for (int i = 0; i < _iLen - 1; i++)
-            {
+            for (int i = 0; i < _iLen - 1; i++) {
                 if ((_wildCardType[i] == PERCENT_CHAR) &&
-                    (_wildCardType[i + 1] == UNDERSCORE_CHAR))
-                {
+                    (_wildCardType[i + 1] == UNDERSCORE_CHAR)) {
                     _wildCardType[i] = UNDERSCORE_CHAR;
                     _wildCardType[i + 1] = PERCENT_CHAR;
                 }
             }
         }
 
-        internal bool HasWildcards
-        {
+        internal bool HasWildcards {
             get { return _iFirstWildCard != -1; }
         }
     }

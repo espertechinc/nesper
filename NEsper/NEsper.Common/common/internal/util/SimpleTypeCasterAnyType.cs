@@ -43,7 +43,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="pairs">cache</param>
         /// <returns>null or object</returns>
         public static object SimpleTypeCasterCast(
-            object @object, Type typeToCastTo, CopyOnWriteArraySet<Pair<Type, bool>> pairs)
+            object @object,
+            Type typeToCastTo,
+            CopyOnWriteArraySet<Pair<Type, bool>> pairs)
         {
             if (@object.GetType() == typeToCastTo) {
                 return @object;
@@ -93,7 +95,9 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         public CodegenExpression Codegen(
-            CodegenExpression input, Type inputType, CodegenMethodScope codegenMethodScope,
+            CodegenExpression input,
+            Type inputType,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             if (TypeHelper.IsSubclassOrImplementsInterface(inputType, typeToCastTo)) {

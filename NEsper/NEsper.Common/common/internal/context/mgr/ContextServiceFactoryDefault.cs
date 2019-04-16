@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ContextStatementEventEvaluatorDefault.INSTANCE;
 
         public ContextPartitionIdService GetContextPartitionIdService(
-            StatementContext statementContextCreateContext, 
+            StatementContext statementContextCreateContext,
             DataInputOutputSerdeWCollation<object>[] bindings)
         {
             return new ContextPartitionIdServiceImpl();

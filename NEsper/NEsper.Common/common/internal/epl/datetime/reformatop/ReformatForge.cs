@@ -26,23 +26,33 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         Type ReturnType { get; }
 
         FilterExprAnalyzerAffector GetFilterDesc(
-            EventType[] typesPerStream, DatetimeMethodEnum currentMethod, IList<ExprNode> currentParameters,
+            EventType[] typesPerStream,
+            DateTimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc);
 
         CodegenExpression CodegenLong(
-            CodegenExpression inner, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         CodegenExpression CodegenDateTime(
-            CodegenExpression inner, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         CodegenExpression CodegenDateTimeOffset(
-            CodegenExpression inner, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         CodegenExpression CodegenDateTimeEx(
-            CodegenExpression inner, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
     }
 } // end of namespace

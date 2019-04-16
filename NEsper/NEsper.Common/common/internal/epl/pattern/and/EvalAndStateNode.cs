@@ -31,7 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
         /// <param name="evalAndNode">is the factory node associated to the state</param>
         public EvalAndStateNode(
             Evaluator parentNode,
-            EvalAndNode evalAndNode) : base(parentNode)
+            EvalAndNode evalAndNode)
+            : base(parentNode)
         {
             this.evalAndNode = evalAndNode;
             activeChildNodes = new EvalStateNode[evalAndNode.ChildNodes.Length];
@@ -137,7 +138,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             agentInstanceContext.InstrumentationProvider.APatternAndEvaluateTrue(quitted);
         }
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             var agentInstanceContext = evalAndNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternAndEvaluateFalse(evalAndNode.factoryNode);
@@ -314,7 +317,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             return "EvalAndStateNode";
         }
 
-        public static void AddMatchEvent(object[] eventsPerChild, int indexFrom, MatchedEventMap matchEvent)
+        public static void AddMatchEvent(
+            object[] eventsPerChild,
+            int indexFrom,
+            MatchedEventMap matchEvent)
         {
             var matchEventHolder = eventsPerChild[indexFrom];
             if (matchEventHolder == null) {

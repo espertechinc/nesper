@@ -52,7 +52,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">for newline-whitespace formatting</param>
-        public abstract void ToEPLStream(TextWriter writer, EPStatementFormatter formatter);
+        public abstract void ToEPLStream(
+            TextWriter writer,
+            EPStatementFormatter formatter);
 
         /// <summary>
         ///     Renders the stream in textual representation any stream options, if present.
@@ -71,7 +73,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">for newline-whitespace formatting</param>
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             ToEPLStream(writer, formatter);
 

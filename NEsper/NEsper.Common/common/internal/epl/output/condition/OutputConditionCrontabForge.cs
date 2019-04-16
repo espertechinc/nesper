@@ -42,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (scheduleCallbackId == -1) {
                 throw new IllegalStateException("Unassigned schedule");

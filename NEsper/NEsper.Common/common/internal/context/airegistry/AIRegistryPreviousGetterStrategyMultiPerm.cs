@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             services = new ArrayWrap<PreviousGetterStrategy>(2);
         }
 
-        public void AssignService(int serviceId, PreviousGetterStrategy previousGetterStrategy)
+        public void AssignService(
+            int serviceId,
+            PreviousGetterStrategy previousGetterStrategy)
         {
             AIRegistryUtil.CheckExpand(serviceId, services);
             services.Array[serviceId] = previousGetterStrategy;

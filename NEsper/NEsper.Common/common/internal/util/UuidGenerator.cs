@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.util
     {
         public static String Generate()
         {
-        	return Guid.NewGuid().ToString() ;
+            return Guid.NewGuid().ToString();
         }
 
         public static String GenerateNoDash()

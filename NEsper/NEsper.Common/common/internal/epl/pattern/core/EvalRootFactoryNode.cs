@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
         public override bool IsStateful => _childNode.IsStateful;
 
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        public override EvalNode MakeEvalNode(
+            PatternAgentInstanceContext agentInstanceContext,
+            EvalNode parentNode)
         {
             var child = _childNode.MakeEvalNode(agentInstanceContext, parentNode);
             return new EvalRootNode(agentInstanceContext, this, child);

@@ -27,8 +27,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="items">categories</param>
         /// <param name="filter">event type and predicate</param>
-        public ContextDescriptorCategory(IList<ContextDescriptorCategoryItem> items,
-                                         Filter filter)
+        public ContextDescriptorCategory(
+            IList<ContextDescriptorCategoryItem> items,
+            Filter filter)
         {
             Items = items;
             Filter = filter;
@@ -44,16 +45,17 @@ namespace com.espertech.esper.common.client.soda
 
         #region ContextDescriptor Members
 
-        public void ToEPL(TextWriter writer,
-                          EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             String delimiter = "";
-            foreach (ContextDescriptorCategoryItem item in Items)
-            {
+            foreach (ContextDescriptorCategoryItem item in Items) {
                 writer.Write(delimiter);
                 item.ToEPL(writer, formatter);
                 delimiter = ", ";
             }
+
             writer.Write(" from ");
             Filter.ToEPL(writer, formatter);
         }

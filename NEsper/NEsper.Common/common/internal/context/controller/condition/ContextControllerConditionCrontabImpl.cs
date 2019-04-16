@@ -28,8 +28,11 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         private EPStatementHandleCallbackSchedule scheduleHandle;
 
         public ContextControllerConditionCrontabImpl(
-            IntSeqKey conditionPath, long scheduleSlot, ScheduleSpec scheduleSpec,
-            ContextConditionDescriptorCrontab crontab, ContextControllerConditionCallback callback,
+            IntSeqKey conditionPath,
+            long scheduleSlot,
+            ScheduleSpec scheduleSpec,
+            ContextConditionDescriptorCrontab crontab,
+            ContextControllerConditionCallback callback,
             ContextController controller)
         {
             this.conditionPath = conditionPath;

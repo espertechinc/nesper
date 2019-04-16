@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -25,20 +24,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprEqualsAllAnyNodeForge forge;
 
-        public ExprEqualsAllAnyNodeForgeEvalAllWColl(ExprEqualsAllAnyNodeForge forge, ExprEvaluator[] evaluators)
+        public ExprEqualsAllAnyNodeForgeEvalAllWColl(
+            ExprEqualsAllAnyNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             this.forge = forge;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
             return result;
         }
 
         private object EvaluateInternal(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var leftResult = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
@@ -52,7 +58,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         private object CompareAll(
-            bool isNot, object leftResult, EventBean[] eventsPerStream, bool isNewData,
+            bool isNot,
+            object leftResult,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var len = forge.ForgeRenderable.ChildNodes.Length - 1;
@@ -66,39 +75,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
                 else if (rightResult is Array array) {
                     var arrayLength = array.Length;
-                    for (var index = 0; index < arrayLength; index++)
-                    {
+                    for (var index = 0; index < arrayLength; index++) {
                         object item = array.GetValue(index);
-                        if (item == null)
-                        {
+                        if (item == null) {
                             hasNullRow = true;
                             continue;
                         }
 
-                        if (leftResult == null)
-                        {
+                        if (leftResult == null) {
                             return null;
                         }
 
                         hasNonNullRow = true;
-                        if (!forge.IsMustCoerce)
-                        {
-                            if (!isNot && !leftResult.Equals(item) || isNot && leftResult.Equals(item))
-                            {
+                        if (!forge.IsMustCoerce) {
+                            if (!isNot && !leftResult.Equals(item) || isNot && leftResult.Equals(item)) {
                                 return false;
                             }
                         }
-                        else
-                        {
-                            if (!(item.IsNumber()))
-                            {
+                        else {
+                            if (!(item.IsNumber())) {
                                 continue;
                             }
 
                             var left = forge.Coercer.CoerceBoxed(leftResult);
                             var right = forge.Coercer.CoerceBoxed(item);
-                            if (!isNot && !left.Equals(right) || isNot && left.Equals(right))
-                            {
+                            if (!isNot && !left.Equals(right) || isNot && left.Equals(right)) {
                                 return false;
                             }
                         }
@@ -115,17 +116,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         return false;
                     }
                 }
-                else if (rightResult.GetType().IsGenericCollection())
-                {
-                    if (leftResult == null)
-                    {
+                else if (rightResult.GetType().IsGenericCollection()) {
+                    if (leftResult == null) {
                         return null;
                     }
 
                     hasNonNullRow = true;
                     var coll = rightResult.Unwrap<object>();
-                    if (!isNot && !coll.Contains(leftResult) || isNot && coll.Contains(leftResult))
-                    {
+                    if (!isNot && !coll.Contains(leftResult) || isNot && coll.Contains(leftResult)) {
                         return false;
                     }
                 }
@@ -157,7 +155,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprEqualsAllAnyNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprEqualsAllAnyNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var forges = ExprNodeUtilityQuery.GetForges(forge.ForgeRenderable.ChildNodes);
@@ -185,8 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var refname = "r" + i;
                 var reftype = forges[i].EvaluationType;
 
-                if (reftype.IsArray)
-                {
+                if (reftype.IsArray) {
                     var arrayBlock = block.IfRefNullReturnNull("left")
                         .DeclareVar(
                             reftype, refname,

@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private readonly DuckType type;
 
         public ExprDotMethodForgeNoDuck(
-            string optionalStatementName, MethodInfo method, ExprForge[] parameters, DuckType type)
+            string optionalStatementName,
+            MethodInfo method,
+            ExprForge[] parameters,
+            DuckType type)
         {
             OptionalStatementName = optionalStatementName;
             Method = method;
@@ -73,8 +76,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, 
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (type == DuckType.WRAPARRAY) {

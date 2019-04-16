@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -41,8 +40,13 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         internal readonly int StreamNum;
 
         public PropertyCompositeEventTableFactory(
-            int streamNum, string[] optionalKeyedProps, Type[] optKeyCoercedTypes, EventPropertyValueGetter hashGetter,
-            string[] rangeProps, Type[] optRangeCoercedTypes, EventPropertyValueGetter[] rangeGetters)
+            int streamNum,
+            string[] optionalKeyedProps,
+            Type[] optKeyCoercedTypes,
+            EventPropertyValueGetter hashGetter,
+            string[] rangeProps,
+            Type[] optRangeCoercedTypes,
+            EventPropertyValueGetter[] rangeGetters)
         {
             this.StreamNum = streamNum;
             this.OptionalKeyedProps = optionalKeyedProps;
@@ -81,7 +85,9 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             null, false, OptKeyCoercedTypes != null || OptRangeCoercedTypes != null, StreamNum,
             CombinedPropertyLists(OptionalKeyedProps, RangeProps), EventTableOrganizationType.COMPOSITE);
 
-        public EventTable[] MakeEventTables(AgentInstanceContext agentInstanceContext, int? subqueryNumber)
+        public EventTable[] MakeEventTables(
+            AgentInstanceContext agentInstanceContext,
+            int? subqueryNumber)
         {
             return new EventTable[] {new PropertyCompositeEventTableImpl(this)};
         }
@@ -96,7 +102,9 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
                    " ranges=" + CompatExtensions.RenderAny(RangeProps);
         }
 
-        private string[] CombinedPropertyLists(string[] optionalKeyedProps, string[] rangeProps)
+        private string[] CombinedPropertyLists(
+            string[] optionalKeyedProps,
+            string[] rangeProps)
         {
             if (optionalKeyedProps == null) {
                 return rangeProps;

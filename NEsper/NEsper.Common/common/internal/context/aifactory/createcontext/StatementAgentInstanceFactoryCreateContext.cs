@@ -37,7 +37,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             StatementEventType = statementEventType;
         }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             ContextManager contextManager =
                 statementContext.ContextManagementService.GetContextManager(statementContext.DeploymentId, contextName);
@@ -45,7 +48,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         }
 
         public StatementAgentInstanceFactoryResult NewContext(
-            AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
         {
             ContextManager manager = agentInstanceContext.ContextManagementService.GetContextManager(
                 agentInstanceContext.DeploymentId, contextName);
@@ -65,7 +69,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 listeners,
                 () => new ContextStateEventContextCreated(
                     statementContext.RuntimeURI, statementContext.DeploymentId, contextName),
-                (listener, @event) => listener.OnContextCreated(@event));
+                (
+                    listener,
+                    @event) => listener.OnContextCreated(@event));
         }
 
         public void StatementDestroyPreconditions(StatementContext statementContext)
@@ -87,7 +93,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         }
 
         public StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
         }

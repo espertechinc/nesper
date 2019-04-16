@@ -24,7 +24,12 @@ namespace com.espertech.esper.common.client.module
         /// <param name="lineNumber">line number</param>
         /// <param name="charPosStart">character position of start of segment</param>
         /// <param name="charPosEnd">character position of end of segment</param>
-        public ModuleItem(String expression, bool commentOnly, int lineNumber, int charPosStart, int charPosEnd)
+        public ModuleItem(
+            String expression,
+            bool commentOnly,
+            int lineNumber,
+            int charPosStart,
+            int charPosEnd)
         {
             Expression = expression;
             IsCommentOnly = commentOnly;

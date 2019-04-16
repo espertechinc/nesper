@@ -17,10 +17,16 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     public interface SubSelectStrategyFactory
     {
         LookupStrategyDesc LookupStrategyDesc { get; }
-        void Ready(StatementContext statementContext, EventType eventType);
+
+        void Ready(
+            StatementContext statementContext,
+            EventType eventType);
 
         SubSelectStrategyRealization Instantiate(
-            Viewable viewableRoot, AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbackList, int subqueryNumber, bool isRecoveringResilient);
+            Viewable viewableRoot,
+            AgentInstanceContext agentInstanceContext,
+            IList<AgentInstanceStopCallback> stopCallbackList,
+            int subqueryNumber,
+            bool isRecoveringResilient);
     }
 } // end of namespace

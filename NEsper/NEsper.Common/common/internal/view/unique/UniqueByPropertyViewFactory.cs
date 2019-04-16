@@ -42,7 +42,9 @@ namespace com.espertech.esper.common.@internal.view.unique
 
         public string ViewName => ViewEnum.UNIQUE_BY_PROPERTY.Name;
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

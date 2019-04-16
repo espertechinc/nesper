@@ -23,9 +23,12 @@ namespace com.espertech.esper.common.@internal.context.module
         private readonly IDictionary<int, ExprTableEvalStrategy> tableAccesses;
 
         public StatementAIFactoryAssignmentsImpl(
-            AggregationService aggregationResultFuture, PriorEvalStrategy[] priorStrategies,
-            PreviousGetterStrategy[] previousStrategies, IDictionary<int, SubSelectFactoryResult> subselects,
-            IDictionary<int, ExprTableEvalStrategy> tableAccesses, RowRecogPreviousStrategy rowRecogPreviousStrategy)
+            AggregationService aggregationResultFuture,
+            PriorEvalStrategy[] priorStrategies,
+            PreviousGetterStrategy[] previousStrategies,
+            IDictionary<int, SubSelectFactoryResult> subselects,
+            IDictionary<int, ExprTableEvalStrategy> tableAccesses,
+            RowRecogPreviousStrategy rowRecogPreviousStrategy)
         {
             AggregationResultFuture = aggregationResultFuture;
             PriorStrategies = priorStrategies;

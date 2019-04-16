@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -17,34 +16,51 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 {
     public class ExprTableEvalStrategyGroupedKeys : ExprTableEvalStrategyGroupedBase
     {
-        public ExprTableEvalStrategyGroupedKeys(TableAndLockProviderGrouped provider, ExprTableEvalStrategyFactory factory)
-             : base(provider, factory)
+        public ExprTableEvalStrategyGroupedKeys(
+            TableAndLockProviderGrouped provider,
+            ExprTableEvalStrategyFactory factory)
+            : base(provider, factory)
         {
         }
 
-        public override object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
-            TableInstanceGrouped grouped = LockTableRead(context);
-            ISet<object> keys = grouped.GroupKeys;
+            var grouped = LockTableRead(context);
+            var keys = grouped.GroupKeys;
             return keys.ToArray();
         }
 
-        public override ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public override EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public override ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public override object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override object[] EvaluateTypableSingle(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }

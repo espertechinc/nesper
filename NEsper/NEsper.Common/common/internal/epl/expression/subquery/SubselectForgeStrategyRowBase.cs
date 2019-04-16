@@ -29,19 +29,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public abstract CodegenExpression EvaluateCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbol, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbol,
+            CodegenClassScope classScope);
 
         public abstract CodegenExpression EvaluateGetCollEventsCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbol, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbol,
+            CodegenClassScope classScope);
 
         public abstract CodegenExpression EvaluateGetCollScalarCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbol, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbol,
+            CodegenClassScope classScope);
 
         public abstract CodegenExpression EvaluateGetBeanCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope);
 
         public CodegenExpression EvaluateTypableSinglerowCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (subselect.SelectClause == null) {
                 return ConstantNull(); // no select-clause
@@ -88,7 +98,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public CodegenExpression EvaluateTypableMultirowCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (subselect.SelectClause == null) {
                 return ConstantNull();

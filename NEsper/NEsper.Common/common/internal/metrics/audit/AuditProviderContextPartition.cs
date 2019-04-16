@@ -12,6 +12,8 @@ namespace com.espertech.esper.common.@internal.metrics.audit
 {
     public interface AuditProviderContextPartition
     {
-        void ContextPartition(bool allocate, AgentInstanceContext agentInstanceContext);
+        void ContextPartition(
+            bool allocate,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

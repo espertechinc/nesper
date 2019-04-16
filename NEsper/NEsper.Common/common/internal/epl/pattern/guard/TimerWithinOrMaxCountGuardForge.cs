@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         private ExprNode timeExpr;
 
         public void SetGuardParameters(
-            IList<ExprNode> parameters, MatchedEventConvertorForge convertor, StatementCompileTimeServices services)
+            IList<ExprNode> parameters,
+            MatchedEventConvertorForge convertor,
+            StatementCompileTimeServices services)
         {
             var message = "Timer-within-or-max-count guard requires two parameters: "
                           + "numeric or time period parameter and an integer-value expression parameter";
@@ -68,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (scheduleCallbackId == -1) {
                 throw new IllegalStateException("Unassigned schedule callback id");

@@ -15,6 +15,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
     {
         BeanInstantiator BeanInstantiator { get; }
 
-        CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope codegenClassScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope codegenClassScope);
     }
 } // end of namespace

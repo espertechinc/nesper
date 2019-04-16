@@ -23,14 +23,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <param name="context">context for expression evaluation</param>
         /// <returns>evaluation result, a boolean value for OR/AND-type evalution nodes.</returns>
-        object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
     }
 
     public class ProxyExprEvaluator : ExprEvaluator
     {
         public Func<EventBean[], bool, ExprEvaluatorContext, object> ProcEvaluate;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return ProcEvaluate(eventsPerStream, isNewData, context);
         }

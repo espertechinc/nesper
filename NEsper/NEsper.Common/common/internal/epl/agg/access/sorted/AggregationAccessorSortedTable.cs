@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         private readonly bool max;
         private readonly TableMetaData table;
 
-        public AggregationAccessorSortedTable(bool max, Type componentType, TableMetaData table)
+        public AggregationAccessorSortedTable(
+            bool max,
+            Type componentType,
+            TableMetaData table)
         {
             this.max = max;
             this.componentType = componentType;

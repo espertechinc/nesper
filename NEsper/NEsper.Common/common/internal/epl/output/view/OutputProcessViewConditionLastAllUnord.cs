@@ -30,11 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         private readonly OutputProcessViewConditionFactory parent;
 
         public OutputProcessViewConditionLastAllUnord(
-            ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents,
-            bool afterConditionSatisfied, OutputProcessViewConditionFactory parent,
-            AgentInstanceContext agentInstanceContext) : base(
-            agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
-            afterConditionSatisfied)
+            ResultSetProcessor resultSetProcessor,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
+            OutputProcessViewConditionFactory parent,
+            AgentInstanceContext agentInstanceContext)
+            : base(
+                agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
+                afterConditionSatisfied)
         {
             this.parent = parent;
 
@@ -51,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public override OutputProcessViewAfterState OptionalAfterConditionState => null;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
@@ -127,7 +133,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         ///     just be processed
         /// </param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
-        protected void ContinueOutputProcessingView(bool doOutput, bool forceUpdate)
+        protected void ContinueOutputProcessingView(
+            bool doOutput,
+            bool forceUpdate)
         {
             if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
                 Log.Debug(".continueOutputProcessingView");
@@ -139,7 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ContinueOutputProcessingViewAndJoin(doOutput, forceUpdate, newOldEvents);
         }
 
-        protected virtual void Output(bool forceUpdate, UniformPair<EventBean[]> results)
+        protected virtual void Output(
+            bool forceUpdate,
+            UniformPair<EventBean[]> results)
         {
             // Child view can be null in replay from named window
             if (child != null) {
@@ -157,7 +167,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         ///     just be processed
         /// </param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
-        protected void ContinueOutputProcessingJoin(bool doOutput, bool forceUpdate)
+        protected void ContinueOutputProcessingJoin(
+            bool doOutput,
+            bool forceUpdate)
         {
             if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
                 Log.Debug(".continueOutputProcessingJoin");
@@ -200,7 +212,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         }
 
         private void ContinueOutputProcessingViewAndJoin(
-            bool doOutput, bool forceUpdate, UniformPair<EventBean[]> newOldEvents)
+            bool doOutput,
+            bool forceUpdate,
+            UniformPair<EventBean[]> newOldEvents)
         {
             if (parent.IsDistinct && newOldEvents != null) {
                 newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, parent.EventBeanReader);

@@ -9,14 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
-
 using static com.espertech.esper.common.@internal.util.DOMExtensions;
 using static com.espertech.esper.common.@internal.util.DOMUtil;
 
@@ -32,7 +30,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <param name="compiler">compiler section</param>
         /// <param name="compilerElement">element</param>
-        public static void DoConfigure(ConfigurationCompiler compiler, XmlElement compilerElement)
+        public static void DoConfigure(
+            ConfigurationCompiler compiler,
+            XmlElement compilerElement)
         {
             var eventTypeNodeEnumerator = DOMElementEnumerator.Create(compilerElement.ChildNodes);
             while (eventTypeNodeEnumerator.MoveNext()) {
@@ -88,7 +88,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             }
         }
 
-        private static void HandleViewResources(ConfigurationCompiler compiler, XmlElement element)
+        private static void HandleViewResources(
+            ConfigurationCompiler compiler,
+            XmlElement element)
         {
             var nodeEnumerator = DOMElementEnumerator.Create(element.ChildNodes);
             while (nodeEnumerator.MoveNext()) {
@@ -105,7 +107,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             }
         }
 
-        private static void HandleExecution(ConfigurationCompiler compiler, XmlElement element)
+        private static void HandleExecution(
+            ConfigurationCompiler compiler,
+            XmlElement element)
         {
             var filterServiceMaxFilterWidthStr = DOMExtensions.GetOptionalAttribute(element, "filter-service-max-filter-width");
             if (filterServiceMaxFilterWidthStr != null) {
@@ -116,7 +120,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 element, "enable-declared-expr-value-cache", b => compiler.Execution.EnabledDeclaredExprValueCache = b);
         }
 
-        private static void HandleExpression(ConfigurationCompiler compiler, XmlElement element)
+        private static void HandleExpression(
+            ConfigurationCompiler compiler,
+            XmlElement element)
         {
             var integerDivision = DOMExtensions.GetOptionalAttribute(element, "integer-division");
             if (integerDivision != null) {
@@ -160,7 +166,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             }
         }
 
-        private static void HandleScripts(ConfigurationCompiler compiler, XmlElement element)
+        private static void HandleScripts(
+            ConfigurationCompiler compiler,
+            XmlElement element)
         {
             var defaultDialect = DOMExtensions.GetOptionalAttribute(element, "default-dialect");
             if (defaultDialect != null) {
@@ -168,12 +176,16 @@ namespace com.espertech.esper.common.client.configuration.compiler
             }
         }
 
-        private static void HandleLanguage(ConfigurationCompiler compiler, XmlElement element)
+        private static void HandleLanguage(
+            ConfigurationCompiler compiler,
+            XmlElement element)
         {
             ParseOptionalBoolean(element, "sort-using-collator", b => compiler.Language.SortUsingCollator = b);
         }
 
-        private static void HandleStreamSelection(ConfigurationCompiler compiler, XmlElement element)
+        private static void HandleStreamSelection(
+            ConfigurationCompiler compiler,
+            XmlElement element)
         {
             var nodeEnumerator = DOMElementEnumerator.Create(element.ChildNodes);
             while (nodeEnumerator.MoveNext()) {
@@ -205,7 +217,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             }
         }
 
-        private static void HandleLogging(ConfigurationCompiler compiler, XmlElement element)
+        private static void HandleLogging(
+            ConfigurationCompiler compiler,
+            XmlElement element)
         {
             var nodeEnumerator = DOMElementEnumerator.Create(element.ChildNodes);
             while (nodeEnumerator.MoveNext()) {
@@ -216,7 +230,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             }
         }
 
-        private static void HandleByteCode(ConfigurationCompiler compiler, XmlElement element)
+        private static void HandleByteCode(
+            ConfigurationCompiler compiler,
+            XmlElement element)
         {
             var codegen = compiler.ByteCode;
             ParseOptionalBoolean(element, "include-debugsymbols", v => codegen.IncludeDebugSymbols = v);
@@ -246,7 +262,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         }
 
         private static void ParseOptionalAccessMod(
-            XmlElement element, string name, Consumer<NameAccessModifier> accessModifier)
+            XmlElement element,
+            string name,
+            Consumer<NameAccessModifier> accessModifier)
         {
             var value = DOMExtensions.GetOptionalAttribute(element, name);
             if (value != null) {
@@ -259,7 +277,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             }
         }
 
-        private static void HandlePlugInView(ConfigurationCompiler configuration, XmlElement element)
+        private static void HandlePlugInView(
+            ConfigurationCompiler configuration,
+            XmlElement element)
         {
             var @namespace = DOMExtensions.GetRequiredAttribute(element, "namespace");
             var name = DOMExtensions.GetRequiredAttribute(element, "name");
@@ -267,7 +287,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             configuration.AddPlugInView(@namespace, name, forgeClassName);
         }
 
-        private static void HandlePlugInVirtualDW(ConfigurationCompiler configuration, XmlElement element)
+        private static void HandlePlugInVirtualDW(
+            ConfigurationCompiler configuration,
+            XmlElement element)
         {
             var @namespace = DOMExtensions.GetRequiredAttribute(element, "namespace");
             var name = DOMExtensions.GetRequiredAttribute(element, "name");
@@ -276,7 +298,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             configuration.AddPlugInVirtualDataWindow(@namespace, name, forgeClassName, config);
         }
 
-        private static void HandlePlugInAggregation(ConfigurationCompiler configuration, XmlElement element)
+        private static void HandlePlugInAggregation(
+            ConfigurationCompiler configuration,
+            XmlElement element)
         {
             var name = DOMExtensions.GetRequiredAttribute(element, "name");
             var forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
@@ -284,7 +308,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
         }
 
         private static void HandlePlugInMultiFunctionAggregation(
-            ConfigurationCompiler configuration, XmlElement element)
+            ConfigurationCompiler configuration,
+            XmlElement element)
         {
             var functionNames = DOMExtensions.GetRequiredAttribute(element, "function-names");
             var forgeClassName = DOMExtensions.GetOptionalAttribute(element, "forge-class");
@@ -310,7 +335,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             configuration.AddPlugInAggregationMultiFunction(config);
         }
 
-        private static void HandlePlugInSingleRow(ConfigurationCompiler configuration, XmlElement element)
+        private static void HandlePlugInSingleRow(
+            ConfigurationCompiler configuration,
+            XmlElement element)
         {
             var name = element.Attributes.GetNamedItem("name").InnerText;
             var functionClassName = element.Attributes.GetNamedItem("function-class").InnerText;
@@ -325,7 +352,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
             var filterOptimizableStr = DOMExtensions.GetOptionalAttribute(element, "filter-optimizable");
             if (filterOptimizableStr != null) {
                 filterOptimizable = EnumHelper.Parse<ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum>(
-                        filterOptimizableStr);
+                    filterOptimizableStr);
             }
 
             var rethrowExceptionsStr = DOMExtensions.GetOptionalAttribute(element, "rethrow-exceptions");
@@ -341,7 +368,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
                     eventTypeName));
         }
 
-        private static void HandlePlugInPatternGuard(ConfigurationCompiler configuration, XmlElement element)
+        private static void HandlePlugInPatternGuard(
+            ConfigurationCompiler configuration,
+            XmlElement element)
         {
             var @namespace = DOMExtensions.GetRequiredAttribute(element, "namespace");
             var name = DOMExtensions.GetRequiredAttribute(element, "name");
@@ -349,7 +378,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             configuration.AddPlugInPatternGuard(@namespace, name, forgeClassName);
         }
 
-        private static void HandlePlugInPatternObserver(ConfigurationCompiler configuration, XmlElement element)
+        private static void HandlePlugInPatternObserver(
+            ConfigurationCompiler configuration,
+            XmlElement element)
         {
             var @namespace = DOMExtensions.GetRequiredAttribute(element, "namespace");
             var name = DOMExtensions.GetRequiredAttribute(element, "name");

@@ -17,13 +17,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenExpression _lhs;
         private readonly CodegenExpression _rhs;
 
-        public CodegenExpressionAssign(CodegenExpression lhs, CodegenExpression rhs)
+        public CodegenExpressionAssign(
+            CodegenExpression lhs,
+            CodegenExpression rhs)
         {
             this._lhs = lhs;
             this._rhs = rhs;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             _lhs.Render(builder, imports, isInnerClass);
             builder.Append("=");

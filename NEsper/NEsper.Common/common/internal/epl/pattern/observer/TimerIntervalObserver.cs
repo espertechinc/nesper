@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         /// <param name="beginState">start state</param>
         /// <param name="observerEventEvaluator">receiver for events</param>
         public TimerIntervalObserver(
-            long deltaTime, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
+            long deltaTime,
+            MatchedEventMap beginState,
+            ObserverEventEvaluator observerEventEvaluator)
         {
             this.deltaTime = deltaTime;
             BeginState = beginState;

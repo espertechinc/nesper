@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
     /// </summary>
     public class ExpressionResultCacheEntryLongArrayAndObj
     {
-        public ExpressionResultCacheEntryLongArrayAndObj(long[] reference, object result)
+        public ExpressionResultCacheEntryLongArrayAndObj(
+            long[] reference,
+            object result)
         {
             Reference = reference;
             Result = result;

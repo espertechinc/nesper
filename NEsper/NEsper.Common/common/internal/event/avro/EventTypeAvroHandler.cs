@@ -20,11 +20,11 @@ namespace com.espertech.esper.common.@internal.@event.avro
 {
     public interface EventTypeAvroHandler
     {
+        SelectExprProcessorRepresentationFactory OutputFactory { get; }
+
         void Init(
             ConfigurationCommonEventTypeMeta.AvroSettingsConfig avroSettingsConfig,
             ImportService importService);
-
-        SelectExprProcessorRepresentationFactory OutputFactory { get; }
 
         AvroSchemaEventType NewEventTypeFromSchema(
             EventTypeMetadata metadata,
@@ -41,26 +41,37 @@ namespace com.espertech.esper.common.@internal.@event.avro
             Attribute[] annotations,
             ConfigurationCommonEventTypeAvro optionalConfig,
             EventType[] superTypes,
-            ISet<EventType> deepSuperTypes, string statementName);
+            ISet<EventType> deepSuperTypes,
+            string statementName);
 
         AvroSchemaEventType NewEventTypeFromJson(
             EventTypeMetadata metadata,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, 
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             string schemaJson);
 
-        EventBean AdapterForTypeAvro(object avroGenericDataDotRecord, EventType existingType);
+        EventBean AdapterForTypeAvro(
+            object avroGenericDataDotRecord,
+            EventType existingType);
 
         EventBeanManufacturerForge GetEventBeanManufacturer(
             AvroSchemaEventType avroSchemaEventType,
             WriteablePropertyDescriptor[] properties);
 
-        EventBeanFactory GetEventBeanFactory(EventType type, EventBeanTypedEventFactory eventBeanTypedEventFactory);
+        EventBeanFactory GetEventBeanFactory(
+            EventType type,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory);
 
-        void ValidateExistingType(EventType existingType, AvroSchemaEventType proposedType);
+        void ValidateExistingType(
+            EventType existingType,
+            AvroSchemaEventType proposedType);
 
-        void AvroCompat(EventType existingType, IDictionary<string, object> selPropertyTypes);
+        void AvroCompat(
+            EventType existingType,
+            IDictionary<string, object> selPropertyTypes);
 
-        object ConvertEvent(EventBean theEvent, AvroSchemaEventType targetType);
+        object ConvertEvent(
+            EventBean theEvent,
+            AvroSchemaEventType targetType);
 
         TypeWidenerCustomizer GetTypeWidenerCustomizer(EventType eventType);
     }

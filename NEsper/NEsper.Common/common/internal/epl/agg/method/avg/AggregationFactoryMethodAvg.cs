@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         internal readonly Type resultType;
         private AggregatorMethod aggregator;
 
-        public AggregationFactoryMethodAvg(ExprAvgNode parent, Type childType, MathContext optionalMathContext)
+        public AggregationFactoryMethodAvg(
+            ExprAvgNode parent,
+            Type childType,
+            MathContext optionalMathContext)
         {
             this.parent = parent;
             this.childType = childType;
@@ -47,7 +50,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         public override AggregatorMethod Aggregator => aggregator;
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             var distinctValueType = !parent.IsDistinct ? null : childType;
             if (resultType == typeof(BigInteger) || resultType == typeof(decimal?)) {
@@ -67,7 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             }
         }
 
-        public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream)
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
         {
             return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
         }

@@ -29,7 +29,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public bool HasAsName { get; private set; }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             FilterSpecActivatables = new List<FilterSpecActivatable>();
             foreach (var item in Items) {

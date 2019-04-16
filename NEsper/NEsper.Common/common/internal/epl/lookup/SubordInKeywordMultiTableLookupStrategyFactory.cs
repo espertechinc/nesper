@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         internal readonly int streamCountOuter;
 
         public SubordInKeywordMultiTableLookupStrategyFactory(
-            bool isNWOnTrigger, int streamCountOuter, ExprEvaluator evaluator, string expression)
+            bool isNWOnTrigger,
+            int streamCountOuter,
+            ExprEvaluator evaluator,
+            string expression)
         {
             this.isNWOnTrigger = isNWOnTrigger;
             this.streamCountOuter = streamCountOuter;
@@ -34,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public SubordTableLookupStrategy MakeStrategy(
-            EventTable[] eventTable, AgentInstanceContext agentInstanceContext, VirtualDWView vdw)
+            EventTable[] eventTable,
+            AgentInstanceContext agentInstanceContext,
+            VirtualDWView vdw)
         {
             var indexes = new PropertyHashedEventTable[eventTable.Length];
             for (var i = 0; i < eventTable.Length; i++) {

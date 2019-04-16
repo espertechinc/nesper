@@ -77,7 +77,9 @@ namespace com.espertech.esper.common.@internal.collection
             return CompatExtensions.Hash(Array);
         }
 
-        public static void Write(IntSeqKeyMany key, DataOutput output)
+        public static void Write(
+            IntSeqKeyMany key,
+            DataOutput output)
         {
             var array = key.Array;
             output.WriteInt(array.Length);

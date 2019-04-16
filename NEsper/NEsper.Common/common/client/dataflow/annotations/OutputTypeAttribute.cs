@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -29,7 +28,9 @@ namespace com.espertech.esper.common.client.dataflow.annotations
             Name = name;
         }
 
-        public OutputTypeAttribute(string name, Type type)
+        public OutputTypeAttribute(
+            string name,
+            Type type)
         {
             Name = name;
             Type = type;
@@ -42,12 +43,8 @@ namespace com.espertech.esper.common.client.dataflow.annotations
             Type = typeof(OutputTypeAttribute);
         }
 
-        public override object TypeId
-        {
-            get
-            {
-                return this;
-            }
+        public override object TypeId {
+            get { return this; }
         }
 
         public bool Equals(OutputTypeAttribute other)
@@ -84,8 +81,7 @@ namespace com.espertech.esper.common.client.dataflow.annotations
         /// <filterpriority>2</filterpriority>
         public override int GetHashCode()
         {
-            unchecked
-            {
+            unchecked {
                 int result = base.GetHashCode();
                 result = (result * 397) ^ (Name != null ? Name.GetHashCode() : 0);
                 result = (result * 397) ^ (Type != null ? Type.GetHashCode() : 0);

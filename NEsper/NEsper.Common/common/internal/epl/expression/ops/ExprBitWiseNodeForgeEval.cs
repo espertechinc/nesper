@@ -23,14 +23,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator lhs;
         private readonly ExprEvaluator rhs;
 
-        internal ExprBitWiseNodeForgeEval(ExprBitWiseNodeForge forge, ExprEvaluator lhs, ExprEvaluator rhs)
+        internal ExprBitWiseNodeForgeEval(
+            ExprBitWiseNodeForge forge,
+            ExprEvaluator lhs,
+            ExprEvaluator rhs)
         {
             this.forge = forge;
             this.lhs = lhs;
             this.rhs = rhs;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var left = lhs.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             var right = rhs.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
@@ -45,8 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprBitWiseNodeForge forge, Type requiredType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope, ExprNode lhs, ExprNode rhs)
+            ExprBitWiseNodeForge forge,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope,
+            ExprNode lhs,
+            ExprNode rhs)
         {
             var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType, typeof(ExprBitWiseNodeForgeEval), codegenClassScope);

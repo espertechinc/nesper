@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.client
         ///     Returns the set of deep supertypes
         /// </summary>
         /// <value>deep super types</value>
-        ISet<EventType> DeepSuperTypesAsSet { get; }
+        ICollection<EventType> DeepSuperTypesCollection { get; }
 
         /// <summary>
         ///     Returns the type name or null if no type name is assigned.

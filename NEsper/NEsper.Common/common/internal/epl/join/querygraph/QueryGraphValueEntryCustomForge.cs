@@ -18,11 +18,13 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphValueEntryCustomForge : QueryGraphValueEntryForge
     {
-        private readonly IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> operations = 
+        private readonly IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> operations =
             new LinkedHashMap<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>();
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryCustom), GetType(), classScope);
 
@@ -33,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             else {
                 method.Block.DeclareVar(
                     typeof(IDictionary<string, object>), "map",
-                    NewInstance(typeof(LinkedHashMap<string,object>), Constant(CollectionUtil.CapacityHashMap(operations.Count))));
+                    NewInstance(typeof(LinkedHashMap<string, object>), Constant(CollectionUtil.CapacityHashMap(operations.Count))));
                 foreach (var entry in operations) {
                     method.Block.ExprDotMethod(
                         Ref("map"), "put", entry.Key.Make(parent, symbols, classScope),

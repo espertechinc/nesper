@@ -12,12 +12,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodeGenerationIDGenerator
     {
-        public static string GenerateClassNameSimple(Type interfaceClass, string postfix)
+        public static string GenerateClassNameSimple(
+            Type interfaceClass,
+            string postfix)
         {
             return interfaceClass.Name + "_" + postfix;
         }
 
-        public static string GenerateClassNameWithNamespace(string @namespace, Type interfaceClass, string postfix)
+        public static string GenerateClassNameWithNamespace(
+            string @namespace,
+            Type interfaceClass,
+            string postfix)
         {
             var simple = GenerateClassNameSimple(interfaceClass, postfix);
             if (string.IsNullOrEmpty(@namespace)) {

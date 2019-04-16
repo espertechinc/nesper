@@ -26,14 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         internal readonly IDictionary<string, object> mapResultType;
 
         internal ExprCaseNodeForge(
-            ExprCaseNode parent, 
-            Type resultType, 
-            IDictionary<string, object> mapResultType, 
+            ExprCaseNode parent,
+            Type resultType,
+            IDictionary<string, object> mapResultType,
             bool isNumericResult,
-            bool mustCoerce, 
-            SimpleNumberCoercer coercer, 
+            bool mustCoerce,
+            SimpleNumberCoercer coercer,
             IList<UniformPair<ExprNode>> whenThenNodeList,
-            ExprNode optionalCompareExprNode, 
+            ExprNode optionalCompareExprNode,
             ExprNode optionalElseExprNode)
         {
             ForgeRenderable = parent;
@@ -64,7 +64,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public ExprTypableReturnEval TypableReturnEvaluator => new ExprCaseNodeForgeEvalTypable(this);
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (!ForgeRenderable.IsCase2) {
@@ -97,7 +99,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -106,7 +110,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public CodegenExpression EvaluateTypableSingleCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprCaseNodeForgeEvalTypable.CodegenTypeableSingle(
@@ -114,7 +119,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public CodegenExpression EvaluateTypableMultiCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();

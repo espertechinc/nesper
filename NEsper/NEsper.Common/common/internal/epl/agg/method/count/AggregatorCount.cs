@@ -27,17 +27,27 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         private readonly bool isEver;
 
         public AggregatorCount(
-            AggregationForgeFactory factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter,
-            bool isEver) : base(
-            factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter, optionalFilter)
+            AggregationForgeFactory factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter,
+            bool isEver)
+            : base(
+                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter, optionalFilter)
         {
             this.isEver = isEver;
             cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
         }
 
         protected override void ApplyEvalEnterFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             Consumer<CodegenBlock> increment = block => block.Increment(cnt);
 
@@ -62,7 +72,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         }
 
         protected override void ApplyTableEnterFiltered(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (distinct != null) {
                 method.Block.IfCondition(Not(ExprDotMethod(distinct, "add", Ref("value")))).BlockReturnNoValue();
@@ -72,7 +85,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         }
 
         public override void ApplyEvalLeaveCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             if (!isEver) {
                 base.ApplyEvalLeaveCodegen(method, symbols, forges, classScope);
@@ -80,7 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         }
 
         protected override void ApplyEvalLeaveFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             Consumer<CodegenBlock> decrement = block =>
                 block.IfCondition(Relational(cnt, GT, Constant(0))).Decrement(cnt);
@@ -106,7 +125,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         }
 
         protected override void ApplyTableLeaveFiltered(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (distinct != null) {
                 method.Block.IfCondition(Not(ExprDotMethod(distinct, "remove", Ref("value")))).BlockReturnNoValue();
@@ -115,26 +137,39 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             method.Block.Decrement(cnt);
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(cnt, Constant(0));
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(cnt);
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(WriteLong(output, row, cnt));
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(ReadLong(row, cnt, input));
         }

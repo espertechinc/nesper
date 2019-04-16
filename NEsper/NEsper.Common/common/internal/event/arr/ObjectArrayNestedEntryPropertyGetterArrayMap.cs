@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
         private readonly int index;
 
         public ObjectArrayNestedEntryPropertyGetterArrayMap(
-            int propertyIndex, EventType fragmentType, EventBeanTypedEventFactory eventBeanTypedEventFactory, int index,
+            int propertyIndex,
+            EventType fragmentType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            int index,
             MapEventPropertyGetter getter)
             : base(propertyIndex, fragmentType, eventBeanTypedEventFactory)
         {
@@ -49,14 +52,18 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression HandleNestedValueCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMapCode(
                 index, getter, refName, codegenMethodScope, codegenClassScope, GetType());
         }
 
         public override CodegenExpression HandleNestedValueExistsCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMapExistsCode(
                 index, getter, refName, codegenMethodScope, codegenClassScope, eventBeanTypedEventFactory, fragmentType,
@@ -64,7 +71,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression HandleNestedValueFragmentCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragmentCode(
                 index, getter, refName, codegenMethodScope, codegenClassScope, eventBeanTypedEventFactory, fragmentType,

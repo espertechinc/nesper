@@ -39,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return writer.ToString();
         }
 
-        public static void ToExpressionStringMinPrecedenceAsList(ExprNode[] nodes, StringWriter writer)
+        public static void ToExpressionStringMinPrecedenceAsList(
+            ExprNode[] nodes,
+            TextWriter writer)
         {
             var delimiter = "";
             foreach (var node in nodes) {
@@ -98,18 +100,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 node.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
                 return writer.ToString();
             }
-            catch (EPException)
-            {
+            catch (EPException) {
                 throw;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 Log.Debug("Failed to render expression text: " + ex.Message, ex);
                 return "";
             }
         }
 
-        public static void ToExpressionStringParameterList(ExprNode[] childNodes, StringWriter buffer)
+        public static void ToExpressionStringParameterList(
+            ExprNode[] childNodes,
+            TextWriter buffer)
         {
             var delimiter = "";
             foreach (var childNode in childNodes) {
@@ -120,7 +122,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public static void ToExpressionStringWFunctionName(
-            string functionName, ExprNode[] childNodes, StringWriter writer)
+            string functionName,
+            ExprNode[] childNodes,
+            TextWriter writer)
         {
             writer.Write(functionName);
             writer.Write("(");
@@ -128,7 +132,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             writer.Write(')');
         }
 
-        public static void ToExpressionStringParams(StringWriter writer, ExprNode[] @params)
+        public static void ToExpressionStringParams(
+            TextWriter writer,
+            ExprNode[] @params)
         {
             writer.Write('(');
             var delimiter = "";
@@ -141,7 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             writer.Write(')');
         }
 
-        public static void ToExpressionStringParameterList(IList<ExprNode> parameters, StringWriter buffer)
+        public static void ToExpressionStringParameterList(
+            IList<ExprNode> parameters,
+            TextWriter buffer)
         {
             var delimiter = "";
             foreach (var param in parameters) {
@@ -151,12 +159,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
-        public static void ToExpressionString(ExprNode node, StringWriter buffer)
+        public static void ToExpressionString(
+            ExprNode node,
+            TextWriter buffer)
         {
             node.ToEPL(buffer, ExprPrecedenceEnum.MINIMUM);
         }
 
-        public static void ToExpressionStringIncludeParen(IList<ExprNode> parameters, StringWriter buffer)
+        public static void ToExpressionStringIncludeParen(
+            IList<ExprNode> parameters,
+            TextWriter buffer)
         {
             buffer.Write("(");
             ToExpressionStringParameterList(parameters, buffer);
@@ -164,7 +176,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public static void ToExpressionString(
-            IList<ExprChainedSpec> chainSpec, StringWriter buffer, bool prefixDot, string functionName)
+            IList<ExprChainedSpec> chainSpec,
+            TextWriter buffer,
+            bool prefixDot,
+            string functionName)
         {
             var delimiterOuter = "";
             if (prefixDot) {

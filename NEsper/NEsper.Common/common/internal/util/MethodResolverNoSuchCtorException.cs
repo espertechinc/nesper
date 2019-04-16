@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="message">message</param>
         /// <param name="nearestMissCtor">best-match method</param>
-        public MethodResolverNoSuchCtorException(string message, ConstructorInfo nearestMissCtor)
+        public MethodResolverNoSuchCtorException(
+            string message,
+            ConstructorInfo nearestMissCtor)
             : base(message)
         {
             this.nearestMissCtor = nearestMissCtor;

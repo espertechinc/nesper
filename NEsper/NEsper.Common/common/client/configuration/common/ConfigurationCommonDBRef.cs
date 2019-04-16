@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -85,8 +84,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     is true to set auto-commit to true, or false to set auto-commit to false, or null to accepts the
         ///     default
         /// </value>
-        public bool ConnectionAutoCommit
-        {
+        public bool ConnectionAutoCommit {
             set => ConnectionSettings.AutoCommit = value;
         }
 
@@ -94,8 +92,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the transaction isolation level on new connections created for this database.
         /// </summary>
         /// <value>is the transaction isolation level</value>
-        public int ConnectionTransactionIsolation
-        {
+        public int ConnectionTransactionIsolation {
             set => ConnectionSettings.TransactionIsolation = value;
         }
 
@@ -103,8 +100,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the read-only flag on new connections created for this database.
         /// </summary>
         /// <value>is the read-only flag</value>
-        public bool ConnectionReadOnly
-        {
+        public bool ConnectionReadOnly {
             set => ConnectionSettings.ReadOnly = value;
         }
 
@@ -112,8 +108,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the catalog name for new connections created for this database.
         /// </summary>
         /// <value>is the catalog name</value>
-        public string ConnectionCatalog
-        {
+        public string ConnectionCatalog {
             set => ConnectionSettings.Catalog = value;
         }
 
@@ -139,7 +134,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="dataSourceFactoryClassName">the classname of the data source factory</param>
         /// <param name="properties">passed to the createDataSource method of the data source factory class</param>
-        public void SetDataSourceFactory(Properties properties, string dataSourceFactoryClassName)
+        public void SetDataSourceFactory(
+            Properties properties,
+            string dataSourceFactoryClassName)
         {
             ConnectionFactoryDesc = new DataSourceFactory(properties, dataSourceFactoryClassName);
         }
@@ -150,7 +147,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="contextLookupName">is the object name to look up via &lt;seealso cref="javax.naming.InitialContext" /&gt;</param>
         /// <param name="environmentProps">are the optional properties to pass to the context</param>
-        public void SetDataSourceConnection(string contextLookupName, Properties environmentProps)
+        public void SetDataSourceConnection(
+            string contextLookupName,
+            Properties environmentProps)
         {
             ConnectionFactoryDesc = new DataSourceConnection(contextLookupName, environmentProps);
         }
@@ -162,7 +161,10 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="className">is the driver class name</param>
         /// <param name="url">is the URL</param>
         /// <param name="connectionArgs">are optional connection arguments</param>
-        public void SetDriverManagerConnection(string className, string url, Properties connectionArgs)
+        public void SetDriverManagerConnection(
+            string className,
+            string url,
+            Properties connectionArgs)
         {
             ConnectionFactoryDesc = new DriverManagerConnection(className, url, connectionArgs);
         }
@@ -175,7 +177,11 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="url">is the URL</param>
         /// <param name="username">is the username to obtain a connection</param>
         /// <param name="password">is the password to obtain a connection</param>
-        public void SetDriverManagerConnection(string className, string url, string username, string password)
+        public void SetDriverManagerConnection(
+            string className,
+            string url,
+            string username,
+            string password)
         {
             ConnectionFactoryDesc = new DriverManagerConnection(className, url, username, password);
         }
@@ -190,7 +196,11 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="password">is the password to obtain a connection</param>
         /// <param name="connectionArgs">are optional connection arguments</param>
         public void SetDriverManagerConnection(
-            string className, string url, string username, string password, Properties connectionArgs)
+            string className,
+            string url,
+            string username,
+            string password,
+            Properties connectionArgs)
         {
             ConnectionFactoryDesc = new DriverManagerConnection(className, url, username, password, connectionArgs);
         }
@@ -215,7 +225,9 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     time-to-live)
         /// </param>
         /// <param name="purgeIntervalSeconds">is the interval at which the runtime purges stale data from the cache</param>
-        public void SetExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds)
+        public void SetExpiryTimeCache(
+            double maxAgeSeconds,
+            double purgeIntervalSeconds)
         {
             DataCacheDesc = new ConfigurationCommonCacheExpiryTime(
                 maxAgeSeconds, purgeIntervalSeconds, CacheReferenceType.DEFAULT);
@@ -232,7 +244,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="purgeIntervalSeconds">is the interval at which the runtime purges stale data from the cache</param>
         /// <param name="cacheReferenceType">specifies the reference type to use</param>
         public void SetExpiryTimeCache(
-            double maxAgeSeconds, double purgeIntervalSeconds, CacheReferenceType cacheReferenceType)
+            double maxAgeSeconds,
+            double purgeIntervalSeconds,
+            CacheReferenceType cacheReferenceType)
         {
             DataCacheDesc = new ConfigurationCommonCacheExpiryTime(
                 maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
@@ -272,11 +286,12 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="sqlType">is a sqlType constant, for which output columns are converted to type</param>
         /// <param name="typeName">is a type name</param>
-        public void AddSqlTypesBinding(int sqlType, string typeName)
+        public void AddSqlTypesBinding(
+            int sqlType,
+            string typeName)
         {
             var typeEnum = DatabaseTypeEnum.GetEnum(typeName);
-            if (typeEnum == null)
-            {
+            if (typeEnum == null) {
                 string supported = CompatExtensions.RenderAny(DatabaseTypeEnum.Values);
                 throw new ConfigurationException(
                     "Unsupported type '" + typeName + "' when expecting any of: " + supported);
@@ -295,7 +310,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="sqlType">is a java.sql.Types constant, for which output columns are converted to java type</param>
         /// <param name="typeName">is a type</param>
-        public void AddSqlTypesBinding(int sqlType, Type typeName)
+        public void AddSqlTypesBinding(
+            int sqlType,
+            Type typeName)
         {
             AddSqlTypesBinding(sqlType, typeName.Name);
         }

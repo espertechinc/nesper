@@ -8,10 +8,9 @@
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public interface ExprNodePropOrStreamDesc
+    public interface ExprNodePropOrStreamDesc
     {
-	    int StreamNum { get; }
-	    string Textual { get; }
+        int StreamNum { get; }
+        string Textual { get; }
     }
-
 } // end of namespace

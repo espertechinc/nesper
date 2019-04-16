@@ -10,20 +10,23 @@ using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.core
 {
     public class AggregationAgentUtil
     {
-        public static CodegenExpression MakeArray(AggregationAgentForge[] accessAgents, CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public static CodegenExpression MakeArray(
+            AggregationAgentForge[] accessAgents,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenExpression[] inits = new CodegenExpression[accessAgents.Length];
-            for (int i = 0; i < inits.Length; i++)
-            {
+            for (int i = 0; i < inits.Length; i++) {
                 inits[i] = accessAgents[i].Make(method, symbols, classScope);
             }
+
             return NewArrayWithInit(typeof(AggregationMultiFunctionAgent), inits);
         }
     }

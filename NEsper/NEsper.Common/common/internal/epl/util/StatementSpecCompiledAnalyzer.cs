@@ -29,7 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.util
         }
 
         private static void AddFilters(
-            StreamSpecCompiled[] streams, IList<FilterSpecCompiled> filters,
+            StreamSpecCompiled[] streams,
+            IList<FilterSpecCompiled> filters,
             IList<NamedWindowConsumerStreamSpec> namedWindows)
         {
             foreach (var compiled in streams) {

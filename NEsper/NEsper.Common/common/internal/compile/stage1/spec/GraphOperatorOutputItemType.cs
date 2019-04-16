@@ -14,9 +14,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class GraphOperatorOutputItemType
     {
-        public GraphOperatorOutputItemType(bool wildcard,
-                                           String typeOrClassname,
-                                           IList<GraphOperatorOutputItemType> typeParameters)
+        public GraphOperatorOutputItemType(
+            bool wildcard,
+            String typeOrClassname,
+            IList<GraphOperatorOutputItemType> typeParameters)
         {
             IsWildcard = wildcard;
             TypeOrClassname = typeOrClassname;

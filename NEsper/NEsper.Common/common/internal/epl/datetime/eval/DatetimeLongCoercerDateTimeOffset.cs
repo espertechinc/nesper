@@ -30,7 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             return DateTimeOffsetHelper.InMillis(dateTime);
         }
 
-        public CodegenExpression Codegen(CodegenExpression value, Type valueType, CodegenClassScope codegenClassScope)
+        public CodegenExpression Codegen(
+            CodegenExpression value,
+            Type valueType,
+            CodegenClassScope codegenClassScope)
         {
             if (valueType != typeof(DateTimeOffset)) {
                 throw new IllegalStateException("Expected a DateTimeOffset type");

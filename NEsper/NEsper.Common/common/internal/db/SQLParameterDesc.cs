@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.db
         /// <summary>Ctor.</summary>
         /// <param name="parameters">is the name of parameters</param>
         /// <param name="builtinIdentifiers">is the names of built-in predefined values</param>
-        public SQLParameterDesc(IList<string> parameters, IList<string> builtinIdentifiers)
+        public SQLParameterDesc(
+            IList<string> parameters,
+            IList<string> builtinIdentifiers)
         {
             Parameters = parameters;
             BuiltinIdentifiers = builtinIdentifiers;

@@ -7,14 +7,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
 {
     public class PathDeploymentEntry<TE>
     {
-        public PathDeploymentEntry(string deploymentId, TE entity)
+        public PathDeploymentEntry(
+            string deploymentId,
+            TE entity)
         {
             DeploymentId = deploymentId;
             Entity = entity;

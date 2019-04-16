@@ -20,26 +20,33 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <summary>Ctor. </summary>
         /// <param name="message">error message</param>
         /// <param name="dataFlowName">data flow name</param>
-        public EPDataFlowExecutionException(String message, String dataFlowName)
+        public EPDataFlowExecutionException(
+            String message,
+            String dataFlowName)
             : base(message)
         {
             DataFlowName = dataFlowName;
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="message">error message</param>
         /// <param name="cause">cuase</param>
         /// <param name="dataFlowName">data flow name</param>
-        public EPDataFlowExecutionException(String message, Exception cause, String dataFlowName)
+        public EPDataFlowExecutionException(
+            String message,
+            Exception cause,
+            String dataFlowName)
             : base(message, cause)
         {
             DataFlowName = dataFlowName;
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="cause">cuase</param>
         /// <param name="dataFlowName">data flow name</param>
-        public EPDataFlowExecutionException(Exception cause, String dataFlowName)
+        public EPDataFlowExecutionException(
+            Exception cause,
+            String dataFlowName)
             : base(cause)
         {
             DataFlowName = dataFlowName;

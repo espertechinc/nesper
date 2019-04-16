@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     [Serializable]
     public class ConfigurationCompilerPlugInVirtualDataWindow
     {
-
         /// <summary>
         ///     Returns the namespace
         /// </summary>

@@ -20,14 +20,18 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
     public class OnExprViewTableDelete : OnExprViewTableBase
     {
         public OnExprViewTableDelete(
-            SubordWMatchExprLookupStrategy lookupStrategy, TableInstance rootView,
-            AgentInstanceContext agentInstanceContext) : base(lookupStrategy, rootView, agentInstanceContext, true)
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableInstance rootView,
+            AgentInstanceContext agentInstanceContext)
+            : base(lookupStrategy, rootView, agentInstanceContext, true)
         {
         }
 
         public override EventType EventType => tableInstance.Table.MetaData.PublicEventType;
 
-        public override void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
+        public override void HandleMatching(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
                 OnTriggerType.ON_DELETE, triggerEvents, matchingEvents);

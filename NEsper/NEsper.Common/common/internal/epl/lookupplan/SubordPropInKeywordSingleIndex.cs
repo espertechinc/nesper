@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
     [Serializable]
     public class SubordPropInKeywordSingleIndex
     {
-        public SubordPropInKeywordSingleIndex(string indexedProp, Type coercionType, IList<ExprNode> expressions)
+        public SubordPropInKeywordSingleIndex(
+            string indexedProp,
+            Type coercionType,
+            IList<ExprNode> expressions)
         {
             IndexedProp = indexedProp;
             CoercionType = coercionType;

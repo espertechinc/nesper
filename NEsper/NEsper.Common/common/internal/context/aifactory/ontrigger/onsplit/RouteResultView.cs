@@ -49,7 +49,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
 
         public override EventType EventType { get; }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             if (newData == null) {
                 return;

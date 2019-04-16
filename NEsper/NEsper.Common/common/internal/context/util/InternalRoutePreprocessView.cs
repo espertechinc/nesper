@@ -29,24 +29,27 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <summary>Ctor. </summary>
         /// <param name="eventType">the type of event to indicator</param>
         /// <param name="statementResultService">determines whether listeners or subscribers are attached.</param>
-        public InternalRoutePreprocessView(EventType eventType, StatementResultService statementResultService)
+        public InternalRoutePreprocessView(
+            EventType eventType,
+            StatementResultService statementResultService)
         {
             _eventType = eventType;
             _statementResultService = statementResultService;
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
-            {
-                Log.Debug(".Update Received Update, " +
-                        "  newData.Length==" + ((newData == null) ? 0 : newData.Length) +
-                        "  oldData.Length==" + ((oldData == null) ? 0 : oldData.Length));
+            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
+                Log.Debug(
+                    ".Update Received Update, " +
+                    "  newData.Length==" + ((newData == null) ? 0 : newData.Length) +
+                    "  oldData.Length==" + ((oldData == null) ? 0 : oldData.Length));
             }
         }
 
-        public override EventType EventType
-        {
+        public override EventType EventType {
             get { return _eventType; }
         }
 
@@ -57,37 +60,33 @@ namespace com.espertech.esper.common.@internal.context.util
 
         /// <summary>Returns true if a subscriber or listener is attached. </summary>
         /// <value>indicator</value>
-        public bool IsIndicate
-        {
+        public bool IsIndicate {
             get { return (_statementResultService.IsMakeNatural || _statementResultService.IsMakeSynthetic); }
         }
 
         /// <summary>Indicate an modifed event and its previous version. </summary>
         /// <param name="newEvent">modified event</param>
         /// <param name="oldEvent">previous version event</param>
-        public void Indicate(EventBean newEvent, EventBean oldEvent)
+        public void Indicate(
+            EventBean newEvent,
+            EventBean oldEvent)
         {
-            try
-            {
-                if (_statementResultService.IsMakeNatural)
-                {
-                    var natural = new NaturalEventBean(_eventType, new Object[] { newEvent.Underlying }, newEvent);
-                    var naturalOld = new NaturalEventBean(_eventType, new Object[] { oldEvent.Underlying }, oldEvent);
-                    UpdateChildren(new NaturalEventBean[] { natural }, new NaturalEventBean[] { naturalOld });
+            try {
+                if (_statementResultService.IsMakeNatural) {
+                    var natural = new NaturalEventBean(_eventType, new Object[] {newEvent.Underlying}, newEvent);
+                    var naturalOld = new NaturalEventBean(_eventType, new Object[] {oldEvent.Underlying}, oldEvent);
+                    UpdateChildren(new NaturalEventBean[] {natural}, new NaturalEventBean[] {naturalOld});
                 }
-                else
-                {
-                    UpdateChildren(new EventBean[] { newEvent }, new EventBean[] { oldEvent });
+                else {
+                    UpdateChildren(new EventBean[] {newEvent}, new EventBean[] {oldEvent});
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 Log.Error("Unexpected error updating child view: " + ex.Message);
             }
         }
 
-        public StatementResultService StatementResultService
-        {
+        public StatementResultService StatementResultService {
             get { return _statementResultService; }
         }
     }

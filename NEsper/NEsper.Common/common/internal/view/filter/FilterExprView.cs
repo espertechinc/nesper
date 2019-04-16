@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
@@ -18,97 +17,112 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.filter
 {
-	/// <summary>
-	/// Simple filter view filtering events using a filter expression tree.
-	/// </summary>
-	public class FilterExprView : ViewSupport {
-	    private readonly ExprEvaluator exprEvaluator;
-	    private readonly ExprEvaluatorContext exprEvaluatorContext;
-	    private readonly string whereClauseEvaluatorTextForAudit;
+    /// <summary>
+    /// Simple filter view filtering events using a filter expression tree.
+    /// </summary>
+    public class FilterExprView : ViewSupport
+    {
+        private readonly ExprEvaluator exprEvaluator;
+        private readonly ExprEvaluatorContext exprEvaluatorContext;
+        private readonly string whereClauseEvaluatorTextForAudit;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="exprEvaluator">Filter expression evaluation impl</param>
-	    /// <param name="exprEvaluatorContext">context for expression evalauation</param>
-	    /// <param name="whereClauseEvaluatorTextForAudit">text or null if no-audit</param>
-	    public FilterExprView(ExprEvaluator exprEvaluator, ExprEvaluatorContext exprEvaluatorContext, string whereClauseEvaluatorTextForAudit) {
-	        this.exprEvaluator = exprEvaluator;
-	        this.exprEvaluatorContext = exprEvaluatorContext;
-	        this.whereClauseEvaluatorTextForAudit = whereClauseEvaluatorTextForAudit;
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="exprEvaluator">Filter expression evaluation impl</param>
+        /// <param name="exprEvaluatorContext">context for expression evalauation</param>
+        /// <param name="whereClauseEvaluatorTextForAudit">text or null if no-audit</param>
+        public FilterExprView(
+            ExprEvaluator exprEvaluator,
+            ExprEvaluatorContext exprEvaluatorContext,
+            string whereClauseEvaluatorTextForAudit)
+        {
+            this.exprEvaluator = exprEvaluator;
+            this.exprEvaluatorContext = exprEvaluatorContext;
+            this.whereClauseEvaluatorTextForAudit = whereClauseEvaluatorTextForAudit;
+        }
 
-	    public override EventType EventType
-	    {
-	        get => parent.EventType;
-	    }
+        public override EventType EventType {
+            get => parent.EventType;
+        }
 
-	    public override IEnumerator<EventBean> GetEnumerator() {
-	        return FilterExprViewIterator.For(parent.GetEnumerator(), exprEvaluator, exprEvaluatorContext);
-	    }
+        public override IEnumerator<EventBean> GetEnumerator()
+        {
+            return FilterExprViewIterator.For(parent.GetEnumerator(), exprEvaluator, exprEvaluatorContext);
+        }
 
-	    public override void Update(EventBean[] newData, EventBean[] oldData) {
-	        InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-	        instrumentationCommon.QWhereClauseFilter(whereClauseEvaluatorTextForAudit, newData, oldData);
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
+        {
+            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            instrumentationCommon.QWhereClauseFilter(whereClauseEvaluatorTextForAudit, newData, oldData);
 
-	        EventBean[] filteredNewData = FilterEvents(exprEvaluator, newData, true, exprEvaluatorContext);
-	        EventBean[] filteredOldData = FilterEvents(exprEvaluator, oldData, false, exprEvaluatorContext);
+            EventBean[] filteredNewData = FilterEvents(exprEvaluator, newData, true, exprEvaluatorContext);
+            EventBean[] filteredOldData = FilterEvents(exprEvaluator, oldData, false, exprEvaluatorContext);
 
-	        instrumentationCommon.AWhereClauseFilter(filteredNewData, filteredOldData);
+            instrumentationCommon.AWhereClauseFilter(filteredNewData, filteredOldData);
 
-	        if ((filteredNewData != null) || (filteredOldData != null)) {
-	            instrumentationCommon.QWhereClauseIR(filteredNewData, filteredOldData);
-	            child.Update(filteredNewData, filteredOldData);
-	            instrumentationCommon.AWhereClauseIR();
-	        }
-	    }
+            if ((filteredNewData != null) || (filteredOldData != null)) {
+                instrumentationCommon.QWhereClauseIR(filteredNewData, filteredOldData);
+                child.Update(filteredNewData, filteredOldData);
+                instrumentationCommon.AWhereClauseIR();
+            }
+        }
 
-	    /// <summary>
-	    /// Filters events using the supplied evaluator.
-	    /// </summary>
-	    /// <param name="exprEvaluator">evaluator to use</param>
-	    /// <param name="events">events to filter</param>
-	    /// <param name="isNewData">true to indicate filter new data (istream) and not old data (rstream)</param>
-	    /// <param name="exprEvaluatorContext">context for expression evalauation</param>
-	    /// <returns>filtered events, or null if no events got through the filter</returns>
-	    private EventBean[] FilterEvents(ExprEvaluator exprEvaluator, EventBean[] events, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        if (events == null) {
-	            return null;
-	        }
+        /// <summary>
+        /// Filters events using the supplied evaluator.
+        /// </summary>
+        /// <param name="exprEvaluator">evaluator to use</param>
+        /// <param name="events">events to filter</param>
+        /// <param name="isNewData">true to indicate filter new data (istream) and not old data (rstream)</param>
+        /// <param name="exprEvaluatorContext">context for expression evalauation</param>
+        /// <returns>filtered events, or null if no events got through the filter</returns>
+        private EventBean[] FilterEvents(
+            ExprEvaluator exprEvaluator,
+            EventBean[] events,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            if (events == null) {
+                return null;
+            }
 
-	        InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
 
-	        EventBean[] evalEventArr = new EventBean[1];
-	        bool[] passResult = new bool[events.Length];
-	        int passCount = 0;
+            EventBean[] evalEventArr = new EventBean[1];
+            bool[] passResult = new bool[events.Length];
+            int passCount = 0;
 
-	        for (int i = 0; i < events.Length; i++) {
-	            evalEventArr[0] = events[i];
-	            instrumentationCommon.QWhereClauseFilterEval(i, events[i], isNewData);
-	            var pass = exprEvaluator.Evaluate(evalEventArr, isNewData, exprEvaluatorContext).AsBoxedBoolean();
-	            instrumentationCommon.AWhereClauseFilterEval(pass);
-	            if ((pass != null) && true.Equals(pass)) {
-	                passResult[i] = true;
-	                passCount++;
-	            }
-	        }
+            for (int i = 0; i < events.Length; i++) {
+                evalEventArr[0] = events[i];
+                instrumentationCommon.QWhereClauseFilterEval(i, events[i], isNewData);
+                var pass = exprEvaluator.Evaluate(evalEventArr, isNewData, exprEvaluatorContext).AsBoxedBoolean();
+                instrumentationCommon.AWhereClauseFilterEval(pass);
+                if ((pass != null) && true.Equals(pass)) {
+                    passResult[i] = true;
+                    passCount++;
+                }
+            }
 
-	        if (passCount == 0) {
-	            return null;
-	        }
-	        if (passCount == events.Length) {
-	            return events;
-	        }
+            if (passCount == 0) {
+                return null;
+            }
 
-	        EventBean[] resultArray = new EventBean[passCount];
-	        int count = 0;
-	        for (int i = 0; i < passResult.Length; i++) {
-	            if (passResult[i]) {
-	                resultArray[count] = events[i];
-	                count++;
-	            }
-	        }
-	        return resultArray;
-	    }
-	}
+            if (passCount == events.Length) {
+                return events;
+            }
+
+            EventBean[] resultArray = new EventBean[passCount];
+            int count = 0;
+            for (int i = 0; i < passResult.Length; i++) {
+                if (passResult[i]) {
+                    resultArray[count] = events[i];
+                    count++;
+                }
+            }
+
+            return resultArray;
+        }
+    }
 } // end of namespace

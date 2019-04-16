@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.util
     /// Binding from database output column type to object.
     /// </summary>
     public interface DatabaseTypeBinding
-	{
+    {
         /// <summary>
         /// Returns the object for the given column.
         /// </summary>
@@ -22,23 +22,26 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="columnName">is the column name</param>
         /// <returns>object</returns>
         /// <throws>SQLException if the mapping cannot be performed</throws>
-        Object GetValue(Object rawObject, String columnName);
+        Object GetValue(
+            Object rawObject,
+            String columnName);
 
-	    /// <summary>Returns the target data type.</summary>
-	    /// <returns>Data type</returns>
-	    Type DataType { get; }
-	}
+        /// <summary>Returns the target data type.</summary>
+        /// <returns>Data type</returns>
+        Type DataType { get; }
+    }
 
     /// <summary>
     /// Returns the object for the given column.
     /// </summary>
-    public delegate Object DataRetriever(Object rawObject, String columnName);
+    public delegate Object DataRetriever(
+        Object rawObject,
+        String columnName);
 
     /// <summary>
     /// Implementation of the DataTypeBinding that uses delegates
     /// </summary>
     /// <typeparam name="T"></typeparam>
-
     [Serializable]
     public class ProxyDatabaseTypeBinding<T> : DatabaseTypeBinding
     {
@@ -48,7 +51,7 @@ namespace com.espertech.esper.common.@internal.util
         /// Initializes a new instance of the <see cref="ProxyDatabaseTypeBinding&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="retriever">The retriever.</param>
-        public ProxyDatabaseTypeBinding( DataRetriever retriever )
+        public ProxyDatabaseTypeBinding(DataRetriever retriever)
         {
             this.dataRetriever = retriever;
         }
@@ -60,17 +63,17 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="columnName">is the column name</param>
         /// <returns>object</returns>
         /// <throws>SQLException if the mapping cannot be performed</throws>
-        public Object GetValue(Object rawObject, String columnName)
+        public Object GetValue(
+            Object rawObject,
+            String columnName)
         {
             return dataRetriever.Invoke(rawObject, columnName);
         }
 
         /// <summary>Returns the target data type.</summary>
         /// <returns>Data type</returns>
-        public Type DataType
-        {
+        public Type DataType {
             get { return typeof(T); }
         }
     }
-
 } // End of namespace

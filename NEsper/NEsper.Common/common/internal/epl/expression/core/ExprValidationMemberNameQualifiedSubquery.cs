@@ -7,34 +7,39 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public class ExprValidationMemberNameQualifiedSubquery : ExprValidationMemberName {
-	    private readonly int subqueryNum;
+    public class ExprValidationMemberNameQualifiedSubquery : ExprValidationMemberName
+    {
+        private readonly int subqueryNum;
 
-	    public ExprValidationMemberNameQualifiedSubquery(int subqueryNum) {
-	        this.subqueryNum = subqueryNum;
-	    }
+        public ExprValidationMemberNameQualifiedSubquery(int subqueryNum)
+        {
+            this.subqueryNum = subqueryNum;
+        }
 
-	    public CodegenFieldName AggregationResultFutureRef() {
-	        return new CodegenFieldNameSubqueryAgg(subqueryNum);
-	    }
+        public CodegenFieldName AggregationResultFutureRef()
+        {
+            return new CodegenFieldNameSubqueryAgg(subqueryNum);
+        }
 
-	    public CodegenFieldName PriorStrategy(int streamNum) {
-	        return new CodegenFieldNameSubqueryPrior(subqueryNum);
-	    }
+        public CodegenFieldName PriorStrategy(int streamNum)
+        {
+            return new CodegenFieldNameSubqueryPrior(subqueryNum);
+        }
 
-	    public CodegenFieldName PreviousStrategy(int streamNum) {
-	        return new CodegenFieldNameSubqueryPrevious(subqueryNum);
-	    }
+        public CodegenFieldName PreviousStrategy(int streamNum)
+        {
+            return new CodegenFieldNameSubqueryPrevious(subqueryNum);
+        }
 
-	    public CodegenFieldName PreviousMatchrecognizeStrategy() {
-	        throw new IllegalStateException("Match-recognize not supported in subquery");
-	    }
-	}
+        public CodegenFieldName PreviousMatchrecognizeStrategy()
+        {
+            throw new IllegalStateException("Match-recognize not supported in subquery");
+        }
+    }
 } // end of namespace

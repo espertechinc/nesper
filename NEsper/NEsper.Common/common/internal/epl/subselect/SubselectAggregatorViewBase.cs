@@ -27,8 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         internal readonly ExprEvaluator optionalFilterExpr;
 
         public SubselectAggregatorViewBase(
-            AggregationService aggregationService, ExprEvaluator optionalFilterExpr,
-            ExprEvaluatorContext exprEvaluatorContext, ExprEvaluator groupKeys)
+            AggregationService aggregationService,
+            ExprEvaluator optionalFilterExpr,
+            ExprEvaluatorContext exprEvaluatorContext,
+            ExprEvaluator groupKeys)
         {
             this.aggregationService = aggregationService;
             this.optionalFilterExpr = optionalFilterExpr;

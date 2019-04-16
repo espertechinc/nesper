@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
     public class InfraOnMergeHelper
     {
         public InfraOnMergeHelper(
-            InfraOnMergeActionIns insertUnmatched, IList<InfraOnMergeMatch> matched, IList<InfraOnMergeMatch> unmatched,
+            InfraOnMergeActionIns insertUnmatched,
+            IList<InfraOnMergeMatch> matched,
+            IList<InfraOnMergeMatch> unmatched,
             bool requiresTableWriteLock)
         {
             InsertUnmatched = insertUnmatched;

@@ -28,14 +28,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         private readonly int streamId;
 
         public ExprEvaluatorStreamDTPropFragment(
-            int streamId, EventPropertyGetterSPI getterFragment, EventPropertyGetterSPI getterTimestamp)
+            int streamId,
+            EventPropertyGetterSPI getterFragment,
+            EventPropertyGetterSPI getterTimestamp)
         {
             this.streamId = streamId;
             this.getterFragment = getterFragment;
             this.getterTimestamp = getterTimestamp;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var theEvent = eventsPerStream[streamId];
             if (theEvent == null) {
@@ -55,7 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
@@ -82,7 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
         public ExprNodeRenderable ForgeRenderable => this;
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(GetType().Name);
         }

@@ -23,8 +23,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
         private readonly ObjectArrayEventPropertyGetter arrayGetter;
 
         public ObjectArrayNestedEntryPropertyGetterObjectArray(
-            int propertyIndex, EventType fragmentType, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            ObjectArrayEventPropertyGetter arrayGetter) : base(propertyIndex, fragmentType, eventBeanTypedEventFactory)
+            int propertyIndex,
+            EventType fragmentType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            ObjectArrayEventPropertyGetter arrayGetter)
+            : base(propertyIndex, fragmentType, eventBeanTypedEventFactory)
         {
             this.arrayGetter = arrayGetter;
         }
@@ -71,7 +74,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression HandleNestedValueCodegen(
-            CodegenExpression name, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
                 GenerateMethod(codegenMethodScope, codegenClassScope, CodegenLegoPropertyBeanOrUnd.AccessType.GET),
@@ -79,7 +84,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression HandleNestedValueExistsCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
                 GenerateMethod(codegenMethodScope, codegenClassScope, CodegenLegoPropertyBeanOrUnd.AccessType.EXISTS),
@@ -87,7 +94,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression HandleNestedValueFragmentCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
                 GenerateMethod(codegenMethodScope, codegenClassScope, CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT),
@@ -95,7 +104,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         private CodegenMethod GenerateMethod(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
             CodegenLegoPropertyBeanOrUnd.AccessType accessType)
         {
             return CodegenLegoPropertyBeanOrUnd.From(

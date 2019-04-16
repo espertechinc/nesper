@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
         /// </summary>
         /// <param name="eventTypes">types of events for variant stream, or empty list</param>
         /// <param name="typeVariance">enum specifying type variance</param>
-        public VariantSpec(EventType[] eventTypes, TypeVariance typeVariance)
+        public VariantSpec(
+            EventType[] eventTypes,
+            TypeVariance typeVariance)
         {
             EventTypes = eventTypes;
             TypeVariance = typeVariance;

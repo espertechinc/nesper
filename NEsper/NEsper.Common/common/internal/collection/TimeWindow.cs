@@ -40,8 +40,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
             _window = new ArrayDeque<TimeWindowPair>();
 
-            if (isSupportRemoveStream)
-            {
+            if (isSupportRemoveStream) {
                 _reverseIndex = new Dictionary<EventBean, TimeWindowPair>();
             }
         }
@@ -50,8 +49,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="delta">delta to adjust for</param>
         public void Adjust(long delta)
         {
-            foreach (var data in _window)
-            {
+            foreach (var data in _window) {
                 data.Timestamp = data.Timestamp + delta;
             }
         }
@@ -59,18 +57,19 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>Adds event to the time window for the specified timestamp. </summary>
         /// <param name="timestamp">the time slot for the event</param>
         /// <param name="bean">event to add</param>
-        public void Add(long timestamp, EventBean bean)
+        public void Add(
+            long timestamp,
+            EventBean bean)
         {
             // EmptyFalse window
-            if (_window.IsEmpty())
-            {
+            if (_window.IsEmpty()) {
                 var pairX = new TimeWindowPair(timestamp, bean);
                 _window.Add(pairX);
 
-                if (_reverseIndex != null)
-                {
+                if (_reverseIndex != null) {
                     _reverseIndex[bean] = pairX;
                 }
+
                 _size = 1;
                 return;
             }
@@ -78,39 +77,36 @@ namespace com.espertech.esper.common.@internal.collection
             TimeWindowPair lastPair = _window.Last;
 
             // Windows last timestamp matches the one supplied
-            if (lastPair.Timestamp == timestamp)
-            {
-                if (lastPair.EventHolder is IList<EventBean>)
-                {
+            if (lastPair.Timestamp == timestamp) {
+                if (lastPair.EventHolder is IList<EventBean>) {
                     var list = (IList<EventBean>) lastPair.EventHolder;
                     list.Add(bean);
                 }
-                else if (lastPair.EventHolder == null)
-                {
+                else if (lastPair.EventHolder == null) {
                     lastPair.EventHolder = bean;
                 }
-                else
-                {
+                else {
                     var existing = (EventBean) lastPair.EventHolder;
                     IList<EventBean> list = new List<EventBean>(4);
                     list.Add(existing);
                     list.Add(bean);
                     lastPair.EventHolder = list;
                 }
-                if (_reverseIndex != null)
-                {
+
+                if (_reverseIndex != null) {
                     _reverseIndex[bean] = lastPair;
                 }
+
                 _size++;
                 return;
             }
 
             // Append to window
             var pair = new TimeWindowPair(timestamp, bean);
-            if (_reverseIndex != null)
-            {
+            if (_reverseIndex != null) {
                 _reverseIndex[bean] = pair;
             }
+
             _window.Add(pair);
             _size++;
         }
@@ -119,27 +115,24 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="theEvent">to remove</param>
         public void Remove(EventBean theEvent)
         {
-            if (_reverseIndex == null)
-            {
+            if (_reverseIndex == null) {
                 throw new UnsupportedOperationException("TimeInMillis window does not accept event removal");
             }
+
             var pair = _reverseIndex.Get(theEvent);
-            if (pair != null)
-            {
-                if (pair.EventHolder != null && pair.EventHolder.Equals(theEvent))
-                {
+            if (pair != null) {
+                if (pair.EventHolder != null && pair.EventHolder.Equals(theEvent)) {
                     pair.EventHolder = null;
                     _size--;
                 }
-                else if (pair.EventHolder != null)
-                {
+                else if (pair.EventHolder != null) {
                     var list = (IList<EventBean>) pair.EventHolder;
                     var removed = list.Remove(theEvent);
-                    if (removed)
-                    {
+                    if (removed) {
                         _size--;
                     }
                 }
+
                 _reverseIndex.Remove(theEvent);
             }
         }
@@ -153,50 +146,41 @@ namespace com.espertech.esper.common.@internal.collection
         /// </returns>
         public ArrayDeque<EventBean> ExpireEvents(long expireBefore)
         {
-            if (_window.IsEmpty())
-            {
+            if (_window.IsEmpty()) {
                 return null;
             }
 
             var pair = _window.First;
 
             // If the first entry's timestamp is after the expiry date, nothing to expire
-            if (pair.Timestamp >= expireBefore)
-            {
+            if (pair.Timestamp >= expireBefore) {
                 return null;
             }
 
             var resultBeans = new ArrayDeque<EventBean>();
 
             // Repeat until the window is empty or the timestamp is above the expiry time
-            do
-            {
-                if (pair.EventHolder != null)
-                {
-                    if (pair.EventHolder is EventBean)
-                    {
+            do {
+                if (pair.EventHolder != null) {
+                    if (pair.EventHolder is EventBean) {
                         resultBeans.Add((EventBean) pair.EventHolder);
                     }
-                    else
-                    {
+                    else {
                         resultBeans.AddAll((IList<EventBean>) pair.EventHolder);
                     }
                 }
 
                 _window.RemoveFirst();
 
-                if (_window.IsEmpty())
-                {
+                if (_window.IsEmpty()) {
                     break;
                 }
 
                 pair = _window.First;
             } while (pair.Timestamp < expireBefore);
 
-            if (_reverseIndex != null)
-            {
-                foreach (var expired in resultBeans)
-                {
+            if (_reverseIndex != null) {
+                foreach (var expired in resultBeans) {
                     _reverseIndex.Remove(expired);
                 }
             }
@@ -230,25 +214,22 @@ namespace com.espertech.esper.common.@internal.collection
         /// least one entry, else it returns null if the window is empty.
         /// </summary>
         /// <value>null if empty, oldest timestamp if not empty</value>
-        public long? OldestTimestamp
-        {
-            get
-            {
-                if (_window.IsEmpty())
-                {
+        public long? OldestTimestamp {
+            get {
+                if (_window.IsEmpty()) {
                     return null;
                 }
-                if (_window.First.EventHolder != null)
-                {
+
+                if (_window.First.EventHolder != null) {
                     return _window.First.Timestamp;
                 }
-                foreach (var pair in _window)
-                {
-                    if (pair.EventHolder != null)
-                    {
+
+                foreach (var pair in _window) {
+                    if (pair.EventHolder != null) {
                         return pair.Timestamp;
                     }
                 }
+
                 return null;
             }
         }
@@ -262,24 +243,26 @@ namespace com.espertech.esper.common.@internal.collection
 
         /// <summary>Returns the reverse index, for testing purposes. </summary>
         /// <value>reverse index</value>
-        public IDictionary<EventBean, TimeWindowPair> ReverseIndex
-        {
+        public IDictionary<EventBean, TimeWindowPair> ReverseIndex {
             get { return _reverseIndex; }
             set { _reverseIndex = value; }
         }
 
-        public ArrayDeque<TimeWindowPair> Window
-        {
+        public ArrayDeque<TimeWindowPair> Window {
             get { return _window; }
         }
 
-        public void SetWindow(ArrayDeque<TimeWindowPair> window, int size)
+        public void SetWindow(
+            ArrayDeque<TimeWindowPair> window,
+            int size)
         {
             _window = window;
             _size = size;
         }
 
-        public void VisitView(ViewDataVisitor viewDataVisitor, DataWindowViewFactory viewFactory)
+        public void VisitView(
+            ViewDataVisitor viewDataVisitor,
+            DataWindowViewFactory viewFactory)
         {
             viewDataVisitor.VisitPrimary(_window, false, viewFactory.ViewName, _size);
         }

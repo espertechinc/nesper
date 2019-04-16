@@ -16,7 +16,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphValueEntryHashKeyedForgeExpr : QueryGraphValueEntryHashKeyedForge
     {
-        public QueryGraphValueEntryHashKeyedForgeExpr(ExprNode keyExpr, bool requiresKey) : base(keyExpr)
+        public QueryGraphValueEntryHashKeyedForgeExpr(
+            ExprNode keyExpr,
+            bool requiresKey)
+            : base(keyExpr)
         {
             IsRequiresKey = requiresKey;
         }
@@ -31,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public override CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbol, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbol,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryHashKeyedExpr), GetType(), classScope);
             method.Block

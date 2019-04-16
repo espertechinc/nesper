@@ -21,8 +21,13 @@ namespace com.espertech.esper.common.@internal.view.core
         private readonly int _subselectNumber;
 
         public ZeroDepthStreamNoIterateWAudit(
-            EventType eventType, AgentInstanceContext agentInstanceContext, FilterSpecActivatable filterSpec,
-            int streamNumber, bool subselect, int subselectNumber) : base(eventType)
+            EventType eventType,
+            AgentInstanceContext agentInstanceContext,
+            FilterSpecActivatable filterSpec,
+            int streamNumber,
+            bool subselect,
+            int subselectNumber)
+            : base(eventType)
         {
             this._agentInstanceContext = agentInstanceContext;
             _filterSpecText = filterSpec.GetFilterText();

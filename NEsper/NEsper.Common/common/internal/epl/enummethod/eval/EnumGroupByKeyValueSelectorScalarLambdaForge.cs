@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -18,26 +17,33 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumGroupByKeyValueSelectorScalarLambdaForge : EnumForgeBase
-	{
-	    internal readonly ExprForge secondExpression;
-	    internal readonly ObjectArrayEventType resultEventType;
+    public class EnumGroupByKeyValueSelectorScalarLambdaForge : EnumForgeBase
+    {
+        internal readonly ExprForge secondExpression;
+        internal readonly ObjectArrayEventType resultEventType;
 
-	    public EnumGroupByKeyValueSelectorScalarLambdaForge(ExprForge innerExpression, int streamCountIncoming, ExprForge secondExpression, ObjectArrayEventType resultEventType)
+        public EnumGroupByKeyValueSelectorScalarLambdaForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ExprForge secondExpression,
+            ObjectArrayEventType resultEventType)
+            : base(innerExpression, streamCountIncoming)
 
-	    	 : base(innerExpression, streamCountIncoming)
+        {
+            this.secondExpression = secondExpression;
+            this.resultEventType = resultEventType;
+        }
 
-	    {
-	        this.secondExpression = secondExpression;
-	        this.resultEventType = resultEventType;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumGroupByKeyValueSelectorScalarLambdaForgeEval(this, innerExpression.ExprEvaluator, secondExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumGroupByKeyValueSelectorScalarLambdaForgeEval(this, innerExpression.ExprEvaluator, secondExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumGroupByKeyValueSelectorScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumGroupByKeyValueSelectorScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

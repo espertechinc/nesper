@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             services = new ArrayWrap<RowRecogPreviousStrategy>(2);
         }
 
-        public void AssignService(int serviceId, RowRecogPreviousStrategy service)
+        public void AssignService(
+            int serviceId,
+            RowRecogPreviousStrategy service)
         {
             AIRegistryUtil.CheckExpand(serviceId, services);
             services.Array[serviceId] = service;

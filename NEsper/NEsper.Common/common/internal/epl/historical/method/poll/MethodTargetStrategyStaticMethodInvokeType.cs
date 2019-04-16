@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 

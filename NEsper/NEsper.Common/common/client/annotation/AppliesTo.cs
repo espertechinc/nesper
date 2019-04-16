@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -15,7 +14,8 @@ using com.espertech.esper.compat.logging;
 namespace com.espertech.esper.common.client.annotation
 {
     /// <summary>Annotation to target certain constructs.</summary>
-    public enum AppliesTo {
+    public enum AppliesTo
+    {
         UNDEFINED,
         UNIQUE,
         GROUPBY,

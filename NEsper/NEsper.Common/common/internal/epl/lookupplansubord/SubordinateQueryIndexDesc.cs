@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     public class SubordinateQueryIndexDesc
     {
         public SubordinateQueryIndexDesc(
-            IndexKeyInfo optionalIndexKeyInfo, string indexName, IndexMultiKey indexMultiKey,
+            IndexKeyInfo optionalIndexKeyInfo,
+            string indexName,
+            IndexMultiKey indexMultiKey,
             QueryPlanIndexItem queryPlanIndexItem)
         {
             OptionalIndexKeyInfo = optionalIndexKeyInfo;

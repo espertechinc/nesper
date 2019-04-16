@@ -40,12 +40,18 @@ namespace com.espertech.esper.common.@internal.@event.xml
         object GetValueAsFragment(XmlNode node);
 
         CodegenExpression GetValueAsNodeCodegen(
-            CodegenExpression value, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
+            CodegenExpression value,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
 
         CodegenExpression GetValueAsNodeArrayCodegen(
-            CodegenExpression value, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
+            CodegenExpression value,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
 
         CodegenExpression GetValueAsFragmentCodegen(
-            CodegenExpression value, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
+            CodegenExpression value,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
     }
 } // end of namespace

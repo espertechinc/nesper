@@ -33,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// <param name="theEvent">to look up</param>
         /// <param name="isCollect">true if a collection of unused state can occur</param>
         /// <returns>state</returns>
-        RowRecogPartitionState GetState(EventBean theEvent, bool isCollect);
+        RowRecogPartitionState GetState(
+            EventBean theEvent,
+            bool isCollect);
 
         /// <summary>
         ///     Remove old events from the state, applicable for "prev" function and partial NFA state.
@@ -42,7 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// <param name="isEmpty">indicator if there are not matches</param>
         /// <param name="found">indicator if any partial matches exist to be deleted</param>
         /// <returns>number removed</returns>
-        int RemoveOld(EventBean[] events, bool isEmpty, bool[] found);
+        int RemoveOld(
+            EventBean[] events,
+            bool isEmpty,
+            bool[] found);
 
         /// <summary>
         ///     Copy state for iteration.

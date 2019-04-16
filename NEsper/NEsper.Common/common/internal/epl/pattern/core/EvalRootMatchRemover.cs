@@ -8,17 +8,17 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
-	/// <summary>
-	/// Interface for a root pattern node for removing matches.
-	/// </summary>
-	public interface EvalRootMatchRemover {
-	    void RemoveMatch(ISet<EventBean> matchEvent);
-	}
+    /// <summary>
+    /// Interface for a root pattern node for removing matches.
+    /// </summary>
+    public interface EvalRootMatchRemover
+    {
+        void RemoveMatch(ISet<EventBean> matchEvent);
+    }
 } // end of namespace

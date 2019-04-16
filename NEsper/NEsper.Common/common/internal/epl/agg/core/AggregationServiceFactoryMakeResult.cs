@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public class AggregationServiceFactoryMakeResult
     {
-        public AggregationServiceFactoryMakeResult(CodegenMethod initMethod, IList<CodegenInnerClass> innerClasses)
+        public AggregationServiceFactoryMakeResult(
+            CodegenMethod initMethod,
+            IList<CodegenInnerClass> innerClasses)
         {
             InitMethod = initMethod;
             InnerClasses = innerClasses;

@@ -30,13 +30,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         private readonly EventBeanUpdateHelperForge updateHelperForge;
 
         public StatementAgentInstanceFactoryOnTriggerInfraUpdateForge(
-            ViewableActivatorForge activator, EventType resultEventType,
+            ViewableActivatorForge activator,
+            EventType resultEventType,
             IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects,
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccesses,
             string nonSelectRSPProviderClassName,
-            NamedWindowMetaData namedWindow, 
+            NamedWindowMetaData namedWindow,
             TableMetaData table,
-            SubordinateWMatchExprQueryPlanForge queryPlanForge, 
+            SubordinateWMatchExprQueryPlanForge queryPlanForge,
             EventBeanUpdateHelperForge updateHelperForge)
             : base(
                 activator, resultEventType, subselects, tableAccesses,
@@ -52,7 +53,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         protected override void InlineInitializeOnTriggerSpecific(
-            CodegenExpressionRef saiff, CodegenMethod method, SAIFFInitializeSymbol symbols,
+            CodegenExpressionRef saiff,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             if (namedWindow != null) {

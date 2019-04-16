@@ -17,8 +17,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     public class AggregationLocalGroupByLevel
     {
         public AggregationLocalGroupByLevel(
-            AggregationRowFactory rowFactory, DataInputOutputSerdeWCollation<EventBean> rowSerde, Type[] groupKeyTypes,
-            ExprEvaluator groupKeyEval, bool isDefaultLevel)
+            AggregationRowFactory rowFactory,
+            DataInputOutputSerdeWCollation<EventBean> rowSerde,
+            Type[] groupKeyTypes,
+            ExprEvaluator groupKeyEval,
+            bool isDefaultLevel)
         {
             RowFactory = rowFactory;
             RowSerde = rowSerde;

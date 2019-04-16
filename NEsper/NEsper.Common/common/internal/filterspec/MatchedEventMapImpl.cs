@@ -33,7 +33,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             MatchingEvents = new object[meta.TagsPerIndex.Length];
         }
 
-        public MatchedEventMapImpl(MatchedEventMapMeta meta, object[] matches)
+        public MatchedEventMapImpl(
+            MatchedEventMapMeta meta,
+            object[] matches)
         {
             Meta = meta;
             MatchingEvents = matches;
@@ -44,7 +46,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// </summary>
         /// <param name="tag">is an identifier to retrieve the event from</param>
         /// <param name="theEvent">is the event object or array of event object to be added</param>
-        public void Add(int tag, object theEvent)
+        public void Add(
+            int tag,
+            object theEvent)
         {
             MatchingEvents[tag] = theEvent;
         }

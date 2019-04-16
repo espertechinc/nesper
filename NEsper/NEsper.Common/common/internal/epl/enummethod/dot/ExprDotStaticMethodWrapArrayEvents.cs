@@ -10,7 +10,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,94 +19,107 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
-	public class ExprDotStaticMethodWrapArrayEvents : ExprDotStaticMethodWrap {
-	    private EventBeanTypedEventFactory eventBeanTypedEventFactory;
-	    private BeanEventType type;
+    public class ExprDotStaticMethodWrapArrayEvents : ExprDotStaticMethodWrap
+    {
+        private EventBeanTypedEventFactory eventBeanTypedEventFactory;
+        private BeanEventType type;
 
-	    public ExprDotStaticMethodWrapArrayEvents(EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventType type) {
-	        this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-	        this.type = type;
-	    }
+        public ExprDotStaticMethodWrapArrayEvents(
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventType type)
+        {
+            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this.type = type;
+        }
 
-	    public EPType TypeInfo => EPTypeHelper.CollectionOfEvents(type);
+        public EPType TypeInfo => EPTypeHelper.CollectionOfEvents(type);
 
-	    public ICollection<EventBean> ConvertNonNull(object result) {
-	        if (!result.GetType().IsArray) {
-	            return null;
-	        }
-	        return new WrappingCollection(eventBeanTypedEventFactory, type, result);
-	    }
+        public ICollection<EventBean> ConvertNonNull(object result)
+        {
+            if (!result.GetType().IsArray) {
+                return null;
+            }
 
-	    public CodegenExpression CodegenConvertNonNull(
-	        CodegenExpression result, 
-	        CodegenMethodScope codegenMethodScope, 
-	        CodegenClassScope classScope)
-	    {
-	        CodegenExpressionField eventSvcMember = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-	        CodegenExpressionField typeMember = classScope.AddFieldUnshared(true, typeof(BeanEventType), Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
-	        return NewInstance(typeof(ExprDotStaticMethodWrapArrayEvents.WrappingCollection), eventSvcMember, typeMember, result);
-	    }
+            return new WrappingCollection(eventBeanTypedEventFactory, type, result);
+        }
 
-	    public class WrappingCollection : ICollection<EventBean>
-	    {
-	        private EventBeanTypedEventFactory eventBeanTypedEventFactory;
-	        private BeanEventType type;
-	        private Array array;
+        public CodegenExpression CodegenConvertNonNull(
+            CodegenExpression result,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope classScope)
+        {
+            CodegenExpressionField eventSvcMember = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            CodegenExpressionField typeMember = classScope.AddFieldUnshared(
+                true, typeof(BeanEventType),
+                Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
+            return NewInstance(typeof(ExprDotStaticMethodWrapArrayEvents.WrappingCollection), eventSvcMember, typeMember, result);
+        }
 
-	        public WrappingCollection(EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventType type, object array) {
-	            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-	            this.type = type;
-	            this.array = (Array) array;
-	        }
+        public class WrappingCollection : ICollection<EventBean>
+        {
+            private EventBeanTypedEventFactory eventBeanTypedEventFactory;
+            private BeanEventType type;
+            private Array array;
 
-	        public int Count => array.Length;
+            public WrappingCollection(
+                EventBeanTypedEventFactory eventBeanTypedEventFactory,
+                BeanEventType type,
+                object array)
+            {
+                this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+                this.type = type;
+                this.array = (Array) array;
+            }
 
-	        public bool IsEmpty => array.Length == 0;
+            public int Count => array.Length;
 
-	        public bool IsReadOnly => true;
+            public bool IsEmpty => array.Length == 0;
 
-	        IEnumerator IEnumerable.GetEnumerator()
-	        {
-	            return GetEnumerator();
-	        }
+            public bool IsReadOnly => true;
 
-	        public IEnumerator<EventBean> GetEnumerator()
-	        {
-	            for (int ii = 0; ii < array.Length; ii++) {
-	                yield return eventBeanTypedEventFactory.AdapterForTypedBean(
-	                    array.GetValue(ii), type);
-	            }
-	        }
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
 
-	        public void Add(EventBean item)
-	        {
-	            throw new UnsupportedOperationException("Partial implementation");
-	        }
+            public IEnumerator<EventBean> GetEnumerator()
+            {
+                for (int ii = 0; ii < array.Length; ii++) {
+                    yield return eventBeanTypedEventFactory.AdapterForTypedBean(
+                        array.GetValue(ii), type);
+                }
+            }
+
+            public void Add(EventBean item)
+            {
+                throw new UnsupportedOperationException("Partial implementation");
+            }
 
             public void Clear()
-	        {
-	            throw new UnsupportedOperationException("Partial implementation");
-	        }
+            {
+                throw new UnsupportedOperationException("Partial implementation");
+            }
 
             public bool Contains(EventBean item)
-	        {
-	            throw new UnsupportedOperationException("Partial implementation");
-	        }
+            {
+                throw new UnsupportedOperationException("Partial implementation");
+            }
 
-            public void CopyTo(EventBean[] array, int arrayIndex)
-	        {
-	            throw new UnsupportedOperationException("Partial implementation");
-	        }
+            public void CopyTo(
+                EventBean[] array,
+                int arrayIndex)
+            {
+                throw new UnsupportedOperationException("Partial implementation");
+            }
 
             public bool Remove(EventBean item)
-	        {
-	            throw new UnsupportedOperationException("Partial implementation");
-	        }
+            {
+                throw new UnsupportedOperationException("Partial implementation");
+            }
         }
-	}
+    }
 } // end of namespace

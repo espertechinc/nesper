@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="propertyName">name of property</param>
         /// <param name="type">type</param>
         /// <param name="writeMethod">optional write methods</param>
-        public WriteablePropertyDescriptor(string propertyName, Type type, MethodInfo writeMethod)
+        public WriteablePropertyDescriptor(
+            string propertyName,
+            Type type,
+            MethodInfo writeMethod)
         {
             PropertyName = propertyName;
             PropertyType = type;

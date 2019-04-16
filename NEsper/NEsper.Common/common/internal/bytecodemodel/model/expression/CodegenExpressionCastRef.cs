@@ -18,13 +18,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly Type _clazz;
         private readonly string _ref;
 
-        public CodegenExpressionCastRef(Type clazz, string @ref)
+        public CodegenExpressionCastRef(
+            Type clazz,
+            string @ref)
         {
             this._clazz = clazz;
             this._ref = @ref;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("((");
             AppendClassName(builder, _clazz, null, imports);

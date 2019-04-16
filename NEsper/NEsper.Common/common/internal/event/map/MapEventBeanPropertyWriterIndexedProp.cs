@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -17,13 +16,17 @@ namespace com.espertech.esper.common.@internal.@event.map
     {
         private readonly int _index;
 
-        public MapEventBeanPropertyWriterIndexedProp(String propertyName, int index)
+        public MapEventBeanPropertyWriterIndexedProp(
+            string propertyName,
+            int index)
             : base(propertyName)
         {
             _index = index;
         }
 
-        public override void Write(Object value, IDictionary<String, Object> map)
+        public override void Write(
+            object value,
+            IDictionary<string, object> map)
         {
             var arrayEntry = map.Get(PropertyName) as Array;
             if (arrayEntry != null && arrayEntry.Length > _index) {

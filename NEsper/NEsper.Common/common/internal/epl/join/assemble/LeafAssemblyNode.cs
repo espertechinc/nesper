@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// </summary>
         /// <param name="streamNum">is the stream number</param>
         /// <param name="numStreams">is the number of streams</param>
-        public LeafAssemblyNode(int streamNum, int numStreams) : base(streamNum, numStreams)
+        public LeafAssemblyNode(
+            int streamNum,
+            int numStreams)
+            : base(streamNum, numStreams)
         {
         }
 
@@ -33,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override void Process(
-            IList<Node>[] result, ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+            IList<Node>[] result,
+            ICollection<EventBean[]> resultFinalRows,
+            EventBean resultRootEvent)
         {
             var nodes = result[streamNum];
             if (nodes == null) {
@@ -49,7 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         private void ProcessEvent(
-            EventBean theEvent, Node currentNode, ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+            EventBean theEvent,
+            Node currentNode,
+            ICollection<EventBean[]> resultFinalRows,
+            EventBean resultRootEvent)
         {
             var row = new EventBean[numStreams];
             row[streamNum] = theEvent;
@@ -58,7 +66,11 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override void Result(
-            EventBean[] row, int streamNum, EventBean myEvent, Node myNode, ICollection<EventBean[]> resultFinalRows,
+            EventBean[] row,
+            int streamNum,
+            EventBean myEvent,
+            Node myNode,
+            ICollection<EventBean[]> resultFinalRows,
             EventBean resultRootEvent)
         {
             throw new UnsupportedOperationException("Leaf node cannot process child results");

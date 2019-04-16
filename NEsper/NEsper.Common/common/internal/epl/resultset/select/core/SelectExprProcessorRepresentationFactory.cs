@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
@@ -17,11 +16,25 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
-	public interface SelectExprProcessorRepresentationFactory {
-	    SelectExprProcessorForge MakeSelectNoWildcard(SelectExprForgeContext selectExprForgeContext, ExprForge[] exprForges, EventType resultEventType, TableCompileTimeResolver tableService, string statementName) ;
+    public interface SelectExprProcessorRepresentationFactory
+    {
+        SelectExprProcessorForge MakeSelectNoWildcard(
+            SelectExprForgeContext selectExprForgeContext,
+            ExprForge[] exprForges,
+            EventType resultEventType,
+            TableCompileTimeResolver tableService,
+            string statementName);
 
-	    SelectExprProcessorForge MakeRecast(EventType[] eventTypes, SelectExprForgeContext selectExprForgeContext, int streamNumber, AvroSchemaEventType insertIntoTargetType, ExprNode[] exprNodes, string statementName) ;
+        SelectExprProcessorForge MakeRecast(
+            EventType[] eventTypes,
+            SelectExprForgeContext selectExprForgeContext,
+            int streamNumber,
+            AvroSchemaEventType insertIntoTargetType,
+            ExprNode[] exprNodes,
+            string statementName);
 
-	    SelectExprProcessorForge MakeJoinWildcard(string[] streamNames, EventType resultEventType);
-	}
+        SelectExprProcessorForge MakeJoinWildcard(
+            string[] streamNames,
+            EventType resultEventType);
+    }
 } // end of namespace

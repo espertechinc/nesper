@@ -13,6 +13,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
 {
     public interface AuditProviderPatternInstances
     {
-        void PatternInstance(bool increase, EvalFactoryNode factoryNode, AgentInstanceContext agentInstanceContext);
+        void PatternInstance(
+            bool increase,
+            EvalFactoryNode factoryNode,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

@@ -50,9 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var method = codegenMethodScope.MakeChild(typeof(int), typeof(ReformatEvalForge), codegenClassScope)
                 .AddParam(typeof(long), "ts");
             method.Block
-                .DeclareVar(typeof(DateTimeEx), "cal", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
-                .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("cal"), method, codegenClassScope))
-                .MethodReturn(_dateTimeExEval.Codegen(Ref("cal")));
+                .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dtx"), method, codegenClassScope))
+                .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethodBuild(method).Pass(inner).Call();
         }
 
@@ -68,9 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(DateTime), "d");
 
             methodNode.Block
-                .DeclareVar(typeof(DateTimeEx), "cal", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
-                .Expression(ExprDotMethod(Ref("cal"), "setTimeInMillis", ExprDotMethod(Ref("d"), "getTime")))
-                .MethodReturn(_dateTimeExEval.Codegen(Ref("cal")));
+                .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .Expression(ExprDotMethod(Ref("dtx"), "setTimeInMillis", ExprDotMethod(Ref("d"), "getTime")))
+                .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethod(methodNode, inner);
         }
 
@@ -86,9 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(DateTimeOffset), "d");
 
             methodNode.Block
-                .DeclareVar(typeof(DateTimeEx), "cal", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
-                .Expression(ExprDotMethod(Ref("cal"), "setTimeInMillis", ExprDotMethod(Ref("d"), "getTime")))
-                .MethodReturn(_dateTimeExEval.Codegen(Ref("cal")));
+                .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .Expression(ExprDotMethod(Ref("dtx"), "setTimeInMillis", ExprDotMethod(Ref("d"), "getTime")))
+                .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethod(methodNode, inner);
         }
 
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public FilterExprAnalyzerAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DatetimeMethodEnum currentMethod,
+            DateTimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {

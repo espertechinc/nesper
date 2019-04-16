@@ -14,8 +14,11 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterSpecCompilerAdvIndexDesc
     {
         public FilterSpecCompilerAdvIndexDesc(
-            ExprNode[] indexExpressions, ExprNode[] keyExpressions, AdvancedIndexConfigContextPartition indexSpec,
-            string indexType, string indexName)
+            ExprNode[] indexExpressions,
+            ExprNode[] keyExpressions,
+            AdvancedIndexConfigContextPartition indexSpec,
+            string indexType,
+            string indexName)
         {
             IndexExpressions = indexExpressions;
             KeyExpressions = keyExpressions;

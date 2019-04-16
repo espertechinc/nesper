@@ -19,20 +19,21 @@ namespace com.espertech.esper.common.client.soda
         public PatternNotExpr()
         {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="inner">is the pattern expression to negate</param>
         public PatternNotExpr(PatternExpr inner)
         {
-            this.Children.Add(inner);    
+            this.Children.Add(inner);
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
+        public override PatternExprPrecedenceEnum Precedence {
             get { return PatternExprPrecedenceEnum.EVERY_NOT; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer, EPStatementFormatter formatter)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             writer.Write("not ");
             this.Children[0].ToEPL(writer, Precedence, formatter);

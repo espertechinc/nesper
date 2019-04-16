@@ -32,8 +32,7 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns indicator whether to use the values keyword. </summary>
         /// <value>indicator</value>
-        public bool IsUseValuesKeyword
-        {
+        public bool IsUseValuesKeyword {
             get { return _useValuesKeyword; }
             set { this._useValuesKeyword = value; }
         }

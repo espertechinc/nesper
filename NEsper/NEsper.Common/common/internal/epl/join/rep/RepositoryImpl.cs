@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
         /// <param name="rootStream">is the stream supplying the root event</param>
         /// <param name="rootEvent">is the root event</param>
         /// <param name="numStreams">is the number of streams</param>
-        public RepositoryImpl(int rootStream, EventBean rootEvent, int numStreams)
+        public RepositoryImpl(
+            int rootStream,
+            EventBean rootEvent,
+            int numStreams)
         {
             this.rootStream = rootStream;
             this.rootEvent = rootEvent;
@@ -56,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             return GetCursorEnumerator(lookupFromStream, nodeList);
         }
 
-        private IEnumerator<Cursor> GetCursorEnumerator(int lookupFromStream, IList<Node> nodeList)
+        private IEnumerator<Cursor> GetCursorEnumerator(
+            int lookupFromStream,
+            IList<Node> nodeList)
         {
             foreach (var currentNode in nodeList) {
                 if (currentNode.Events != null) {
@@ -67,7 +72,10 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             }
         }
 
-        public void AddResult(Cursor cursor, ISet<EventBean> lookupResults, int resultStream)
+        public void AddResult(
+            Cursor cursor,
+            ICollection<EventBean> lookupResults,
+            int resultStream)
         {
             if (lookupResults.IsEmpty()) {
                 throw new ArgumentException("Attempting to add zero results");

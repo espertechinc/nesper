@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -17,30 +16,36 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumIntersectForge : EnumForge {
+    public class EnumIntersectForge : EnumForge
+    {
+        internal readonly int numStreams;
+        internal readonly ExprEnumerationForge evaluatorForge;
+        internal readonly bool scalar;
 
-	    internal readonly int numStreams;
-	    internal readonly ExprEnumerationForge evaluatorForge;
-	    internal readonly bool scalar;
+        public EnumIntersectForge(
+            int numStreams,
+            ExprEnumerationForge evaluatorForge,
+            bool scalar)
+        {
+            this.numStreams = numStreams;
+            this.evaluatorForge = evaluatorForge;
+            this.scalar = scalar;
+        }
 
-	    public EnumIntersectForge(int numStreams, ExprEnumerationForge evaluatorForge, bool scalar) {
-	        this.numStreams = numStreams;
-	        this.evaluatorForge = evaluatorForge;
-	        this.scalar = scalar;
-	    }
+        public int StreamNumSize {
+            get => numStreams;
+        }
 
-	    public int StreamNumSize
-	    {
-	        get => numStreams;
-	    }
+        public virtual EnumEval EnumEvaluator {
+            get => new EnumIntersectForgeEval(this, evaluatorForge.ExprEvaluatorEnumeration);
+        }
 
-	    public virtual EnumEval EnumEvaluator
-	    {
-	        get => new EnumIntersectForgeEval(this, evaluatorForge.ExprEvaluatorEnumeration);
-	    }
-
-	    public virtual CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumIntersectForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public virtual CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumIntersectForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

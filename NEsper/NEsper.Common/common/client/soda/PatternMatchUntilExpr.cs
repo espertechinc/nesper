@@ -26,18 +26,21 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="low">low number of matches, or null if no lower boundary</param>
         /// <param name="high">high number of matches, or null if no high boundary</param>
         /// <param name="single">if a single bound is provided, this carries the single bound (all others should be null)</param>
-        public PatternMatchUntilExpr(Expression low, Expression high, Expression single)
+        public PatternMatchUntilExpr(
+            Expression low,
+            Expression high,
+            Expression single)
         {
             Low = low;
             High = high;
-            System.Single = single;
+            Single = single;
         }
 
         /// <summary>Ctor. </summary>
         /// <param name="single">the single bound expression</param>
         public PatternMatchUntilExpr(Expression single)
         {
-            System.Single = single;
+            Single = single;
         }
 
         /// <summary>Ctor. </summary>
@@ -45,7 +48,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="high">high number of matches, or null if no high boundary</param>
         /// <param name="match">the pattern expression that is sought to match repeatedly</param>
         /// <param name="until">the pattern expression that ends matching (optional, can be null)</param>
-        public PatternMatchUntilExpr(Expression low, Expression high, PatternExpr match, PatternExpr until)
+        public PatternMatchUntilExpr(
+            Expression low,
+            Expression high,
+            PatternExpr match,
+            PatternExpr until)
         {
             Low = low;
             High = high;
@@ -65,53 +72,48 @@ namespace com.espertech.esper.common.client.soda
         /// <value>single-bound expression</value>
         public Expression Single { get; set; }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
+        public override PatternExprPrecedenceEnum Precedence {
             get { return PatternExprPrecedenceEnum.MATCH_UNTIL; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer, EPStatementFormatter formatter)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
-            if (System.Single != null)
-            {
+            if (Single != null) {
                 writer.Write("[");
-                System.Single.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Single.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write("]");
             }
-            else
-            {
-                if (Low != null || High != null)
-                {
+            else {
+                if (Low != null || High != null) {
                     writer.Write("[");
-                    if ((Low != null) && (High != null))
-                    {
+                    if ((Low != null) && (High != null)) {
                         Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                         writer.Write(":");
                         High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     }
-                    else if (Low != null)
-                    {
+                    else if (Low != null) {
                         Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                         writer.Write(":");
                     }
-                    else
-                    {
+                    else {
                         writer.Write(":");
                         High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     }
+
                     writer.Write("] ");
                 }
             }
 
             PatternExprPrecedenceEnum precedence = Precedence;
-            if (Children[0] is PatternMatchUntilExpr)
-            {
+            if (Children[0] is PatternMatchUntilExpr) {
                 precedence = PatternExprPrecedenceEnum.MAXIMIM;
             }
+
             Children[0].ToEPL(writer, precedence, formatter);
 
-            if (Children.Count > 1)
-            {
+            if (Children.Count > 1) {
                 writer.Write(" until ");
                 Children[1].ToEPL(writer, Precedence, formatter);
             }

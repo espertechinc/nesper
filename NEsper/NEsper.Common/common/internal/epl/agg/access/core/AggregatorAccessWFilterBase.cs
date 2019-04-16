@@ -21,12 +21,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         internal readonly ExprNode optionalFilter;
 
         internal abstract void ApplyEnterFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods);
 
         internal abstract void ApplyLeaveFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods);
 
@@ -35,33 +37,51 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             this.optionalFilter = optionalFilter;
         }
 
-        public void ApplyEnterCodegen(CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+        public void ApplyEnterCodegen(
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
-            if (optionalFilter != null)
-            {
+            if (optionalFilter != null) {
                 AggregatorCodegenUtil.PrefixWithFilterCheck(optionalFilter.Forge, method, symbols, classScope);
             }
+
             ApplyEnterFiltered(method, symbols, classScope, namedMethods);
         }
 
-        public void ApplyLeaveCodegen(CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+        public void ApplyLeaveCodegen(
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
-            if (optionalFilter != null)
-            {
+            if (optionalFilter != null) {
                 AggregatorCodegenUtil.PrefixWithFilterCheck(optionalFilter.Forge, method, symbols, classScope);
             }
+
             ApplyLeaveFiltered(method, symbols, classScope, namedMethods);
         }
 
         public abstract void ClearCodegen(
-            CodegenMethod method, CodegenClassScope classScope);
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         public abstract void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef @ref, CodegenExpressionRef unitKey,
-            CodegenExpressionRef output, CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef @ref,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef output,
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         public abstract void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenMethod method, CodegenExpressionRef unitKey,
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenMethod method,
+            CodegenExpressionRef unitKey,
             CodegenClassScope classScope);
     }
 } // end of namespace

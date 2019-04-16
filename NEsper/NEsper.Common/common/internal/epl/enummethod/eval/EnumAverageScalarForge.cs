@@ -20,14 +20,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class EnumAverageScalarForge : EnumForgeBase,
         EnumEval
     {
-        public EnumAverageScalarForge(int streamCountIncoming) : base(streamCountIncoming)
+        public EnumAverageScalarForge(int streamCountIncoming)
+            : base(streamCountIncoming)
         {
         }
 
         public override EnumEval EnumEvaluator => this;
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var sum = 0d;
             var count = 0;
@@ -50,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override CodegenExpression Codegen(
-            EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(double?), typeof(EnumAverageScalarForge), codegenClassScope)

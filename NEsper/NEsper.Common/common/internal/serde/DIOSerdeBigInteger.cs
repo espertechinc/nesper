@@ -12,35 +12,8 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde
 {
-    public class DIOSerdeBigDecimalBigInteger
+    public class DIOSerdeBigInteger
     {
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="input">input</param>
-        /// <returns>big dec</returns>
-        /// <throws>IOException io error</throws>
-        public static decimal ReadBigDec(DataInput input)
-        {
-            var scale = input.ReadInt();
-            var bigInt = ReadBigInt(input);
-            return new decimal(bigInt, scale);
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="bigDecimal">value</param>
-        /// <param name="output">output</param>
-        /// <throws>IOException io error</throws>
-        public static void WriteBigDec(
-            decimal bigDecimal,
-            DataOutput output)
-        {
-            output.WriteInt(bigDecimal.Scale());
-            WriteBigInt(bigDecimal.UnscaledValue(), output);
-        }
-
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -56,8 +29,8 @@ namespace com.espertech.esper.common.@internal.serde
                 throw new ArgumentException("BigInteger byte array is larger than 0x7fff bytes");
             }
 
-            int firstByte = a[0];
-            stream.WriteShort(firstByte < 0 ? -a.Length : a.Length);
+            byte firstByte = a[0];
+            stream.WriteShort((short) (firstByte < 0 ? -a.Length : a.Length));
             stream.WriteByte(firstByte);
             stream.Write(a, 1, a.Length - 1);
         }

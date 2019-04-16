@@ -19,6 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
         ExprEvaluatorContext AgentInstanceContext { get; }
 
         bool EvaluateHavingClause(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

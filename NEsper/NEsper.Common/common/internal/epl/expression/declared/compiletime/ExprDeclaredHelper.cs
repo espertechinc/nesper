@@ -59,8 +59,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         }
 
         private static Pair<ExprNode, StatementSpecMapContext> GetExprDeclaredNode(
-            Expression expression, ICollection<ExpressionDeclItem> stmtLocalExpressions,
-            ContextCompileTimeDescriptor contextCompileTimeDescriptor, StatementSpecMapEnv mapEnv)
+            Expression expression,
+            ICollection<ExpressionDeclItem> stmtLocalExpressions,
+            ContextCompileTimeDescriptor contextCompileTimeDescriptor,
+            StatementSpecMapEnv mapEnv)
         {
             var mapContext = new StatementSpecMapContext(contextCompileTimeDescriptor, mapEnv);
             foreach (var item in stmtLocalExpressions) {
@@ -72,8 +74,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         }
 
         public static ExprNodeScript GetExistsScript(
-            string defaultDialect, string expressionName, IList<ExprNode> parameters,
-            ICollection<ExpressionScriptProvided> scriptExpressions, StatementSpecMapEnv mapEnv)
+            string defaultDialect,
+            string expressionName,
+            IList<ExprNode> parameters,
+            ICollection<ExpressionScriptProvided> scriptExpressions,
+            StatementSpecMapEnv mapEnv)
         {
             ExpressionScriptProvided script;
 
@@ -93,7 +98,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         }
 
         private static ExpressionScriptProvided FindScript(
-            string name, int parameterCount, ICollection<ExpressionScriptProvided> scriptsByName)
+            string name,
+            int parameterCount,
+            ICollection<ExpressionScriptProvided> scriptsByName)
         {
             if (scriptsByName == null || scriptsByName.IsEmpty()) {
                 return null;

@@ -56,7 +56,9 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
 
         public override EventType EventType => Parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
@@ -85,7 +87,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
                     }
                     else {
                         var delta = timePeriodProvide.DeltaAddWReference(
-                            oldestTimestamp, referenceTimestamp, null, true, agentInstanceContext);
+                            oldestTimestamp.Value, referenceTimestamp.Value, null, true, agentInstanceContext);
                         referenceTimestamp = delta.LastReference;
                         if (timestamp - oldestTimestamp >= delta.Delta) {
                             if (batchNewData == null) {
@@ -157,7 +159,9 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
             }
         }
 
-        protected void HandleInternalPostBatch(ISet<EventBean> window, EventBean[] batchNewData)
+        protected void HandleInternalPostBatch(
+            ISet<EventBean> window,
+            EventBean[] batchNewData)
         {
             // no action require
         }
@@ -167,7 +171,9 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
             // no action require
         }
 
-        protected void HandleInternalAddEvent(EventBean anNewData, bool isNextBatch)
+        protected void HandleInternalAddEvent(
+            EventBean anNewData,
+            bool isNextBatch)
         {
             // no action require
         }

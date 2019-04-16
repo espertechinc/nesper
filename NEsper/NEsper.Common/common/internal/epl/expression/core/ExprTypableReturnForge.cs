@@ -44,11 +44,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         bool? IsMultirow { get; }
 
         CodegenExpression EvaluateTypableSingleCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         CodegenExpression EvaluateTypableMultiCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
     }
 } // end of namespace

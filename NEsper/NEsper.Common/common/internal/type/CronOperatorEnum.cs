@@ -25,13 +25,13 @@ namespace com.espertech.esper.common.@internal.type
         LASTWEEKDAY
     }
 
-    public static class CronOperatorEnumExtensions {
+    public static class CronOperatorEnumExtensions
+    {
         /// <summary>Returns the syntax string for the operator. </summary>
         /// <returns>syntax string</returns>
         public static string GetSyntax(this CronOperatorEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case CronOperatorEnum.LASTDAY:
                     return ("last");
                 case CronOperatorEnum.WEEKDAY:

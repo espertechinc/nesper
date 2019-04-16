@@ -48,16 +48,24 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         void TableReady();
 
-        TableAndLockProvider GetStateProvider(int agentInstanceId, bool writesToTables);
+        TableAndLockProvider GetStateProvider(
+            int agentInstanceId,
+            bool writesToTables);
 
         TableInstance GetTableInstance(int agentInstanceId);
 
         void ValidateAddIndex(
-            string deploymentId, string statementName, string indexName, string indexModuleName,
-            QueryPlanIndexItem explicitIndexDesc, IndexMultiKey indexMultiKey);
+            string deploymentId,
+            string statementName,
+            string indexName,
+            string indexModuleName,
+            QueryPlanIndexItem explicitIndexDesc,
+            IndexMultiKey indexMultiKey);
 
         void RemoveIndexReferencesStmtMayRemoveIndex(
-            IndexMultiKey indexMultiKey, string deploymentId, string statementName);
+            IndexMultiKey indexMultiKey,
+            string deploymentId,
+            string statementName);
 
         void RemoveAllInstanceIndexes(IndexMultiKey indexMultiKey);
 

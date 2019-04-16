@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         private readonly TableInstance tableInstance;
 
-        public TableStateViewableInternal(TableInstance tableInstance, ExprEvaluator optionalTableFilter)
+        public TableStateViewableInternal(
+            TableInstance tableInstance,
+            ExprEvaluator optionalTableFilter)
         {
             this.tableInstance = tableInstance;
             this.optionalTableFilter = optionalTableFilter;
@@ -28,7 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         public override EventType EventType => tableInstance.Table.MetaData.InternalEventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             // no action required
         }

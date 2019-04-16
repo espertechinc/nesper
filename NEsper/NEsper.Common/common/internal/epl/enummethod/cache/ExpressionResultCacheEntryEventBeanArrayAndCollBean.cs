@@ -8,39 +8,46 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
-	/// <summary>
-	/// Cache entry bean-to-collection-of-bean.
-	/// </summary>
-	public class ExpressionResultCacheEntryEventBeanArrayAndCollBean {
-	    private EventBean[] reference;
-	    private ICollection<EventBean> result;
+    /// <summary>
+    /// Cache entry bean-to-collection-of-bean.
+    /// </summary>
+    public class ExpressionResultCacheEntryEventBeanArrayAndCollBean
+    {
+        private EventBean[] reference;
+        private ICollection<EventBean> result;
 
-	    public ExpressionResultCacheEntryEventBeanArrayAndCollBean(EventBean[] reference, ICollection<EventBean> result) {
-	        this.reference = reference;
-	        this.result = result;
-	    }
+        public ExpressionResultCacheEntryEventBeanArrayAndCollBean(
+            EventBean[] reference,
+            ICollection<EventBean> result)
+        {
+            this.reference = reference;
+            this.result = result;
+        }
 
-	    public EventBean[] GetReference() {
-	        return reference;
-	    }
+        public EventBean[] GetReference()
+        {
+            return reference;
+        }
 
-	    public void SetReference(EventBean[] reference) {
-	        this.reference = reference;
-	    }
+        public void SetReference(EventBean[] reference)
+        {
+            this.reference = reference;
+        }
 
-	    public ICollection<EventBean> GetResult() {
-	        return result;
-	    }
+        public ICollection<EventBean> GetResult()
+        {
+            return result;
+        }
 
-	    public void SetResult(ICollection<EventBean> result) {
-	        this.result = result;
-	    }
-	}
+        public void SetResult(ICollection<EventBean> result)
+        {
+            this.result = result;
+        }
+    }
 } // end of namespace

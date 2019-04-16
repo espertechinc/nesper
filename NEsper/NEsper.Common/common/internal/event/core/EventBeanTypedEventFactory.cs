@@ -14,18 +14,30 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public interface EventBeanTypedEventFactory
     {
-        MappedEventBean AdapterForTypedMap(IDictionary<string, object> value, EventType eventType);
+        MappedEventBean AdapterForTypedMap(
+            IDictionary<string, object> value,
+            EventType eventType);
 
-        ObjectArrayBackedEventBean AdapterForTypedObjectArray(object[] value, EventType eventType);
+        ObjectArrayBackedEventBean AdapterForTypedObjectArray(
+            object[] value,
+            EventType eventType);
 
-        EventBean AdapterForTypedBean(object value, EventType eventType);
+        EventBean AdapterForTypedBean(
+            object value,
+            EventType eventType);
 
-        EventBean AdapterForTypedDOM(XmlNode value, EventType eventType);
+        EventBean AdapterForTypedDOM(
+            XmlNode value,
+            EventType eventType);
 
-        EventBean AdapterForTypedAvro(object avroGenericDataDotRecord, EventType eventType);
+        EventBean AdapterForTypedAvro(
+            object avroGenericDataDotRecord,
+            EventType eventType);
 
         EventBean AdapterForTypedWrapper(
-            EventBean decoratedUnderlying, IDictionary<string, object> map, EventType wrapperEventType);
+            EventBean decoratedUnderlying,
+            IDictionary<string, object> map,
+            EventType wrapperEventType);
     }
 
     public class EventBeanTypedEventFactoryConstants

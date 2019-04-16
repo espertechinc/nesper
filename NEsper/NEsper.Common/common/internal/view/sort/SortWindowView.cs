@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -62,7 +61,9 @@ namespace com.espertech.esper.common.@internal.view.sort
 
         public override EventType EventType => parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
@@ -164,12 +165,16 @@ namespace com.espertech.esper.common.@internal.view.sort
             viewDataVisitor.VisitPrimary(sortedEvents, false, factory.ViewName, eventCount, null);
         }
 
-        public void InternalHandleAdd(object sortValues, EventBean newDataItem)
+        public void InternalHandleAdd(
+            object sortValues,
+            EventBean newDataItem)
         {
             // no action required
         }
 
-        public void InternalHandleRemoved(object sortValues, EventBean oldDataItem)
+        public void InternalHandleRemoved(
+            object sortValues,
+            EventBean oldDataItem)
         {
             // no action required
         }

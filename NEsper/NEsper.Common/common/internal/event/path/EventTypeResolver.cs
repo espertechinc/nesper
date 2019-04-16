@@ -7,19 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.core;
 
 namespace com.espertech.esper.common.@internal.@event.path
 {
-	public interface EventTypeResolver
-	{
-	    EventType Resolve(EventTypeMetadata metadata);
+    public interface EventTypeResolver
+    {
+        EventType Resolve(EventTypeMetadata metadata);
 
-	    BeanEventType ResolvePrivateBean(Type clazz);
-	}
+        BeanEventType ResolvePrivateBean(Type clazz);
+    }
 
     public class EventTypeResolverConstants
     {

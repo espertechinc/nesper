@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
@@ -47,11 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             return exprNode != _declaration && !(exprNode is ExprDeclaredNode);
         }
 
-        public void Visit(ExprNode exprNode, ExprNode parentExprNode)
+        public void Visit(
+            ExprNode exprNode,
+            ExprNode parentExprNode)
         {
             var subselectNode = exprNode as ExprSubselectNode;
-            if (subselectNode != null)
-            {
+            if (subselectNode != null) {
                 _subselects.Add(subselectNode);
             }
         }

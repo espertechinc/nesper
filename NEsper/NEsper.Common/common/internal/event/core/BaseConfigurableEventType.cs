@@ -40,8 +40,11 @@ namespace com.espertech.esper.common.@internal.@event.core
         internal IDictionary<string, EventPropertyGetterSPI> propertyGetters;
 
         protected BaseConfigurableEventType(
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, EventTypeMetadata metadata, Type underlyingType,
-            EventTypeNameResolver eventTypeResolver, XMLFragmentEventTypeFactory xmlEventTypeFactory)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventTypeMetadata metadata,
+            Type underlyingType,
+            EventTypeNameResolver eventTypeResolver,
+            XMLFragmentEventTypeFactory xmlEventTypeFactory)
         {
             EventBeanTypedEventFactory = eventBeanTypedEventFactory;
             Metadata = metadata;
@@ -62,7 +65,9 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public string Name => Metadata.Name;
 
-        public void SetMetadataId(long publicId, long protectedId)
+        public void SetMetadataId(
+            long publicId,
+            long protectedId)
         {
             Metadata = Metadata.WithIds(publicId, protectedId);
         }
@@ -162,6 +167,24 @@ namespace com.espertech.esper.common.@internal.@event.core
             return propertyDescriptorMap.Get(propertyName);
         }
 
+        EventPropertyGetterIndexed EventType.GetGetterIndexed(string indexedPropertyName)
+        {
+            return GetGetterIndexed(indexedPropertyName);
+        }
+
+        public abstract EventType[] SuperTypes { get; }
+        public abstract IEnumerable<EventType> DeepSuperTypes { get; }
+        public abstract ICollection<EventType> DeepSuperTypesCollection { get; }
+        public abstract string StartTimestampPropertyName { get; }
+        public abstract string EndTimestampPropertyName { get; }
+        public abstract EventPropertyDescriptor[] WriteableProperties { get; }
+        public abstract EventBeanReader Reader { get; }
+        public abstract EventPropertyWriterSPI GetWriter(string propertyName);
+        public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
+        public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);
+        public abstract EventBeanWriter GetWriter(string[] properties);
+        public abstract ExprValidationException EqualsCompareType(EventType eventType);
+
         /// <summary>
         ///     Subclasses must implement this and supply a getter to a given property.
         /// </summary>
@@ -221,23 +244,5 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             return null;
         }
-
-        EventPropertyGetterIndexed EventType.GetGetterIndexed(string indexedPropertyName)
-        {
-            return GetGetterIndexed(indexedPropertyName);
-        }
-
-        public abstract EventType[] SuperTypes { get; }
-        public abstract IEnumerable<EventType> DeepSuperTypes { get; }
-        public abstract ISet<EventType> DeepSuperTypesAsSet { get; }
-        public abstract string StartTimestampPropertyName { get; }
-        public abstract string EndTimestampPropertyName { get; }
-        public abstract EventPropertyDescriptor[] WriteableProperties { get; }
-        public abstract EventBeanReader Reader { get; }
-        public abstract EventPropertyWriterSPI GetWriter(string propertyName);
-        public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
-        public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);
-        public abstract EventBeanWriter GetWriter(string[] properties);
-        public abstract ExprValidationException EqualsCompareType(EventType eventType);
     }
 } // end of namespace

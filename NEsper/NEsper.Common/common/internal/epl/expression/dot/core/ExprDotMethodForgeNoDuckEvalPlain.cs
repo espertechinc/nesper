@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -33,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         internal readonly ExprDotMethodForgeNoDuck forge;
         private readonly ExprEvaluator[] parameters;
 
-        internal ExprDotMethodForgeNoDuckEvalPlain(ExprDotMethodForgeNoDuck forge, ExprEvaluator[] parameters)
+        internal ExprDotMethodForgeNoDuckEvalPlain(
+            ExprDotMethodForgeNoDuck forge,
+            ExprEvaluator[] parameters)
         {
             this.forge = forge;
             this.parameters = parameters;
@@ -42,7 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public virtual EPType TypeInfo => forge.TypeInfo;
 
         public virtual object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (target == null) {
                 return null;
@@ -58,8 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
             catch (Exception e) when (e is TargetException || e is MemberAccessException) {
                 HandleTargetException(
-                    forge.OptionalStatementName, 
-                    forge.Method.Name, 
+                    forge.OptionalStatementName,
+                    forge.Method.Name,
                     forge.Method.GetParameterTypes(),
                     target.GetType().FullName,
                     args, e);
@@ -71,8 +74,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public ExprDotForge DotForge => forge;
 
         public static CodegenExpression CodegenPlain(
-            ExprDotMethodForgeNoDuck forge, CodegenExpression inner, Type innerType,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprDotMethodForgeNoDuck forge,
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var returnType = Boxing.GetBoxedType(forge.Method.ReturnType);
@@ -138,7 +144,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         /// <param name="args">args</param>
         /// <param name="t">throwable</param>
         public static void HandleTargetException(
-            string optionalStatementName, string methodName, Type[] methodParams, string targetClassName, object[] args,
+            string optionalStatementName,
+            string methodName,
+            Type[] methodParams,
+            string targetClassName,
+            object[] args,
             Exception t)
         {
             if (t is TargetException) {

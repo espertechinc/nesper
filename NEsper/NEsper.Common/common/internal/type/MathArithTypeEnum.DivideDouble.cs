@@ -58,9 +58,12 @@ namespace com.espertech.esper.common.@internal.type
                 var method = codegenMethodScope.MakeChild(typeof(double?), typeof(DivideDouble), codegenClassScope)
                     .AddParam(ltype, "d1").AddParam(rtype, "d2").Block
                     .DeclareVar(typeof(double), "d2Double", CodegenAsDouble(CodegenExpressionBuilder.Ref("d2"), rtype))
-                    .IfCondition(CodegenExpressionBuilder.EqualsIdentity(CodegenExpressionBuilder.Ref("d2Double"), CodegenExpressionBuilder.Constant(0)))
+                    .IfCondition(
+                        CodegenExpressionBuilder.EqualsIdentity(CodegenExpressionBuilder.Ref("d2Double"), CodegenExpressionBuilder.Constant(0)))
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull())
-                    .MethodReturn(CodegenExpressionBuilder.Op(CodegenAsDouble(CodegenExpressionBuilder.Ref("d1"), ltype), "/", CodegenExpressionBuilder.Ref("d2Double")));
+                    .MethodReturn(
+                        CodegenExpressionBuilder.Op(
+                            CodegenAsDouble(CodegenExpressionBuilder.Ref("d1"), ltype), "/", CodegenExpressionBuilder.Ref("d2Double")));
                 return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
         }

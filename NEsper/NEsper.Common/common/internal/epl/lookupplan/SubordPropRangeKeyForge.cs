@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
     [Serializable]
     public class SubordPropRangeKeyForge
     {
-        public SubordPropRangeKeyForge(QueryGraphValueEntryRangeForge rangeInfo, Type coercionType)
+        public SubordPropRangeKeyForge(
+            QueryGraphValueEntryRangeForge rangeInfo,
+            Type coercionType)
         {
             RangeInfo = rangeInfo;
             CoercionType = coercionType;

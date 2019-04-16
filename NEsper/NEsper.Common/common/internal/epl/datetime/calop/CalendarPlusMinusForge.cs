@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
         internal readonly ExprForge param;
 
-        public CalendarPlusMinusForge(ExprForge param, int factor)
+        public CalendarPlusMinusForge(
+            ExprForge param,
+            int factor)
         {
             this.param = param;
             this.factor = factor;
@@ -28,7 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         public CalendarOp EvalOp => new CalendarPlusMinusForgeOp(param.ExprEvaluator, factor);
 
         public CodegenExpression CodegenDateTimeEx(
-            CodegenExpression dateTimeEx, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTimeEx,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarPlusMinusForgeOp.CodegenCalendar(
@@ -36,14 +40,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         }
 
         public CodegenExpression CodegenDateTimeOffset(
-            CodegenExpression dateTimeOffset, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTimeOffset,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarPlusMinusForgeOp.CodegenDateTimeOffset(this, dateTimeOffset, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTime(
-            CodegenExpression dateTime, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTime,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarPlusMinusForgeOp.CodegenDateTime(this, dateTime, codegenMethodScope, exprSymbol, codegenClassScope);

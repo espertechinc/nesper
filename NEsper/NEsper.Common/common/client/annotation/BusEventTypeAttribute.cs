@@ -10,9 +10,10 @@ using System;
 
 namespace com.espertech.esper.common.client.annotation
 {
-	/// <summary>
-	/// Annotation that is the modifier for event-bus-visible event types
-	/// </summary>
-	public class BusEventTypeAttribute : Attribute {
-	}
+    /// <summary>
+    /// Annotation that is the modifier for event-bus-visible event types
+    /// </summary>
+    public class BusEventTypeAttribute : Attribute
+    {
+    }
 } // end of namespace

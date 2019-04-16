@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// </summary>
         /// <param name="timePeriodExpr">time period</param>
         /// <param name="orTerminated">or-terminated indicator</param>
-        public MatchRecognizeInterval(ExprTimePeriod timePeriodExpr, bool orTerminated)
+        public MatchRecognizeInterval(
+            ExprTimePeriod timePeriodExpr,
+            bool orTerminated)
         {
             TimePeriodExpr = timePeriodExpr;
             IsOrTerminated = orTerminated;

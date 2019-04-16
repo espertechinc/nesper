@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.core
@@ -29,19 +28,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
 
         public ExprForge OptionalFilter => null;
 
-        public CodegenExpression Make(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return PublicConstValue(typeof(AggregationAgentDefault), "INSTANCE");
         }
 
         public void ApplyEnter(
-            EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column)
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
         {
             row.EnterAccess(column, eventsPerStream, exprEvaluatorContext);
         }
 
         public void ApplyLeave(
-            EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column)
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
         {
             row.LeaveAccess(column, eventsPerStream, exprEvaluatorContext);
         }

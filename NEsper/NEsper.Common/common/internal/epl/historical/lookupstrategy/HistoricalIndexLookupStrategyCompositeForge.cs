@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         private readonly QueryGraphValueEntryRangeForge[] ranges;
 
         public HistoricalIndexLookupStrategyCompositeForge(
-            int lookupStream, ExprForge[] evaluators, QueryGraphValueEntryRangeForge[] ranges)
+            int lookupStream,
+            ExprForge[] evaluators,
+            QueryGraphValueEntryRangeForge[] ranges)
         {
             this.lookupStream = lookupStream;
             this.evaluators = evaluators;
@@ -36,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyComposite), GetType(), classScope);
 

@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>URL or null if resolution was unsuccessful</returns>
         /// <throws>FileNotFoundException resource not found</throws>
         public static Uri ResolveClassPathOrURLResource(
-            string resourceName, string urlOrClasspathResource, ClassLoader classLoader)
+            string resourceName,
+            string urlOrClasspathResource,
+            ClassLoader classLoader)
         {
             Uri url;
             try {
@@ -64,7 +66,10 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="classLoader">class loader</param>
         /// <returns>URL for resource</returns>
         /// <throws>FileNotFoundException resource not found</throws>
-        public static Uri GetClasspathResourceAsURL(string resourceName, string resource, ClassLoader classLoader)
+        public static Uri GetClasspathResourceAsURL(
+            string resourceName,
+            string resource,
+            ClassLoader classLoader)
         {
             var stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
 

@@ -36,8 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// <param name="allSubStreamsOptional">true if all substreams are optional and none are required</param>
         /// <param name="childStreamIndex">indexes for child streams</param>
         public RootCartProdAssemblyNode(
-            int streamNum, int numStreams, bool allSubStreamsOptional, int[] childStreamIndex) : base(
-            streamNum, numStreams)
+            int streamNum,
+            int numStreams,
+            bool allSubStreamsOptional,
+            int[] childStreamIndex)
+            : base(
+                streamNum, numStreams)
         {
             this.allSubStreamsOptional = allSubStreamsOptional;
             this.childStreamIndex = childStreamIndex;
@@ -66,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override void Process(
-            IList<Node>[] result, ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+            IList<Node>[] result,
+            ICollection<EventBean[]> resultFinalRows,
+            EventBean resultRootEvent)
         {
             // If no child has posted any rows, generate row and done
             if (!haveChildResults && allSubStreamsOptional) {
@@ -81,8 +87,12 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override void Result(
-            EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode,
-            ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+            EventBean[] row,
+            int fromStreamNum,
+            EventBean myEvent,
+            Node myNode,
+            ICollection<EventBean[]> resultFinalRows,
+            EventBean resultRootEvent)
         {
             haveChildResults = true;
 
@@ -106,7 +116,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         private void PostCartesian(
-            IList<EventBean[]>[] rowsPerStream, ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+            IList<EventBean[]>[] rowsPerStream,
+            ICollection<EventBean[]> resultFinalRows,
+            EventBean resultRootEvent)
         {
             IList<EventBean[]> result = new List<EventBean[]>();
             CartesianUtil.ComputeCartesian(
@@ -159,7 +171,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             return result;
         }
 
-        private static int[] AddSubstreams(int[] arrayOne, int[] arrayTwo)
+        private static int[] AddSubstreams(
+            int[] arrayOne,
+            int[] arrayTwo)
         {
             var result = new int[arrayOne.Length + arrayTwo.Length];
 

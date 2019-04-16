@@ -14,8 +14,7 @@ using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.@event.arr
 {
@@ -29,8 +28,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
         private readonly int propertyIndex;
 
         public ObjectArrayArrayPONOEntryIndexedPropertyGetter(
-            int propertyIndex, int index, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BeanEventTypeFactory beanEventTypeFactory, Type returnType)
+            int propertyIndex,
+            int index,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
+            Type returnType)
             : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
         {
             this.propertyIndex = propertyIndex;
@@ -51,7 +53,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return array.Length > index;
         }
 
-        public object Get(EventBean eventBean, int index)
+        public object Get(
+            EventBean eventBean,
+            int index)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
             return GetArrayValue(array, propertyIndex, index);
@@ -70,7 +74,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -78,7 +83,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -86,7 +92,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -94,22 +101,28 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return Relational(ArrayLength(underlyingExpression), GT, Constant(index));
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope,
-            CodegenExpression beanExpression, CodegenExpression key)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            CodegenExpression beanExpression,
+            CodegenExpression key)
         {
             return StaticMethod(
                 GetType(), "getArrayValue", CastUnderlying(typeof(object[]), beanExpression), Constant(propertyIndex),
                 key);
         }
 
-        public static object GetArrayValue(object[] array, int propertyIndex, int index)
+        public static object GetArrayValue(
+            object[] array,
+            int propertyIndex,
+            int index)
         {
             // If the oa does not contain the key, this is allowed and represented as null
             var value = array[propertyIndex];

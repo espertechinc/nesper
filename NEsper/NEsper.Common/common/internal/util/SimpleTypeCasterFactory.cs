@@ -81,32 +81,28 @@ namespace com.espertech.esper.common.@internal.util
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastDecimal", input)
         };
 
-        public static readonly SimpleTypeCaster CharTypeCaster = new ProxyTypeCaster
-        {
+        public static readonly SimpleTypeCaster CharTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
             ProcCast = CastHelper.PrimitiveCastChar,
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastChar", input)
         };
 
-        public static readonly SimpleTypeCaster ByteTypeCaster = new ProxyTypeCaster
-        {
+        public static readonly SimpleTypeCaster ByteTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
             ProcCast = CastHelper.PrimitiveCastByte,
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastByte", input)
         };
 
-        public static readonly SimpleTypeCaster SByteTypeCaster = new ProxyTypeCaster
-        {
+        public static readonly SimpleTypeCaster SByteTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
             ProcCast = CastHelper.PrimitiveCastSByte,
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastSByte", input)
         };
 
-        public static readonly SimpleTypeCaster BigIntegerTypeCaster = new ProxyTypeCaster
-        {
+        public static readonly SimpleTypeCaster BigIntegerTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
             ProcCast = CastHelper.PrimitiveCastBigInteger,
             ProcCodegenInput = input => CodegenExpressionBuilder
@@ -120,8 +116,7 @@ namespace com.espertech.esper.common.@internal.util
                 .StaticMethod(typeof(Convert), "ToBoolean", input)
         };
 
-        public static readonly SimpleTypeCaster IdentityTypeCaster = new ProxyTypeCaster
-        {
+        public static readonly SimpleTypeCaster IdentityTypeCaster = new ProxyTypeCaster {
             IsNumericCast = false,
             ProcCast = value => value,
             ProcCodegenInput = input => input

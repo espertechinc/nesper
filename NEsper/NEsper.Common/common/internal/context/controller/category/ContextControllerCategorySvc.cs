@@ -12,7 +12,10 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 {
     public interface ContextControllerCategorySvc
     {
-        void MgmtCreate(IntSeqKey controllerPath, object[] parentPartitionKeys, int[] subpathOrCPId);
+        void MgmtCreate(
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys,
+            int[] subpathOrCPId);
 
         int[] MgmtDelete(IntSeqKey controllerPath);
 

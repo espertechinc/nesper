@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
@@ -17,11 +16,15 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 {
-	public interface ResultSetProcessorRowPerEvent :  ResultSetProcessor {
-	    SelectExprProcessor SelectExprProcessor { get; }
+    public interface ResultSetProcessorRowPerEvent : ResultSetProcessor
+    {
+        SelectExprProcessor SelectExprProcessor { get; }
 
-	    bool HasHavingClause();
+        bool HasHavingClause();
 
-	    bool EvaluateHavingClause(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
-	}
+        bool EvaluateHavingClause(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
+    }
 } // end of namespace

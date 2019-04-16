@@ -16,13 +16,16 @@ namespace com.espertech.esper.common.@internal.context.mgr
     public class ContextControllerSelectorUtil
     {
         public static InvalidContextPartitionSelector GetInvalidSelector(
-            Type[] choice, ContextPartitionSelector selector)
+            Type[] choice,
+            ContextPartitionSelector selector)
         {
             return GetInvalidSelector(choice, selector, false);
         }
 
         public static InvalidContextPartitionSelector GetInvalidSelector(
-            Type[] choice, ContextPartitionSelector selector, bool isNested)
+            Type[] choice,
+            ContextPartitionSelector selector,
+            bool isNested)
         {
             var expected = new LinkedHashSet<string>();
             expected.Add(typeof(ContextPartitionSelectorAll).Name);

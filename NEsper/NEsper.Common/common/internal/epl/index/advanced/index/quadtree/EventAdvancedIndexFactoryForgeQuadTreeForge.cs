@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -42,8 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             ExprForge width = positionalExpressions.Get(2).Forge;
             ExprForge height = positionalExpressions.Get(3).Forge;
             string[] expressions = new string[positionalExpressions.Count];
-            foreach (KeyValuePair<int, ExprNode> entry in positionalExpressions)
-            {
+            foreach (KeyValuePair<int, ExprNode> entry in positionalExpressions) {
                 expressions[entry.Key] = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(entry.Value);
             }
 
@@ -56,6 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         public abstract bool ProvidesIndexForOperation(string operationName);
 
-        public abstract CodegenExpression CodegenMake(CodegenMethodScope parent, CodegenClassScope classScope);
+        public abstract CodegenExpression CodegenMake(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope);
     }
 } // end of namespace

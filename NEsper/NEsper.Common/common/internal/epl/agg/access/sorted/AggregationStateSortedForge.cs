@@ -27,7 +27,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public SortedAggregationStateDesc Spec => factory.OptionalSortedStateDesc;
 
         public void InitAccessForge(
-            int col, bool join, CodegenCtor ctor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            bool join,
+            CodegenCtor ctor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             aggregatorAccess = new AggregatorAccessSortedImpl(
                 join, this, col, ctor, membersColumnized, classScope, factory.Parent.OptionalFilter);
@@ -36,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public AggregatorAccess Aggregator => aggregatorAccess;
 
         public CodegenExpression CodegenGetAccessTableState(
-            int column, CodegenMethodScope parent, CodegenClassScope classScope)
+            int column,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             return AggregatorAccessSortedImpl.CodegenGetAccessTableState(column, parent, classScope);
         }

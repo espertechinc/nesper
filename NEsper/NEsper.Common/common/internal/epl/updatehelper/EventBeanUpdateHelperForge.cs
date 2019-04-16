@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
         private readonly EventType eventType;
 
         public EventBeanUpdateHelperForge(
-            EventType eventType, EventBeanCopyMethodForge copyMethod, EventBeanUpdateItemForge[] updateItems)
+            EventType eventType,
+            EventBeanCopyMethodForge copyMethod,
+            EventBeanUpdateItemForge[] updateItems)
         {
             this.eventType = eventType;
             this.copyMethod = copyMethod;
@@ -54,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
 
         public EventBeanUpdateItemForge[] UpdateItems { get; }
 
-        public CodegenExpression MakeWCopy(CodegenMethodScope scope, CodegenClassScope classScope)
+        public CodegenExpression MakeWCopy(
+            CodegenMethodScope scope,
+            CodegenClassScope classScope)
         {
             var copyMethodField = classScope.AddFieldUnshared(
                 true, typeof(EventBeanCopyMethod), copyMethod.MakeCopyMethodClassScoped(classScope));
@@ -86,7 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             return LocalMethod(method);
         }
 
-        public CodegenExpression MakeNoCopy(CodegenMethodScope scope, CodegenClassScope classScope)
+        public CodegenExpression MakeNoCopy(
+            CodegenMethodScope scope,
+            CodegenClassScope classScope)
         {
             var method = scope.MakeChild(typeof(EventBeanUpdateHelperNoCopy), GetType(), classScope);
             var updateInternal = MakeUpdateInternal(method, classScope);
@@ -119,7 +125,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             return LocalMethod(method);
         }
 
-        private CodegenMethod MakeUpdateInternal(CodegenMethodScope scope, CodegenClassScope classScope)
+        private CodegenMethod MakeUpdateInternal(
+            CodegenMethodScope scope,
+            CodegenClassScope classScope)
         {
             var method = scope.MakeChildWithScope(
                     typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)

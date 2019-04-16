@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
 {
     public class GroupByRollupPlanDesc
     {
-        public GroupByRollupPlanDesc(ExprNode[] expressions, AggregationGroupByRollupDesc rollupDesc)
+        public GroupByRollupPlanDesc(
+            ExprNode[] expressions,
+            AggregationGroupByRollupDesc rollupDesc)
         {
             Expressions = expressions;
             RollupDesc = rollupDesc;

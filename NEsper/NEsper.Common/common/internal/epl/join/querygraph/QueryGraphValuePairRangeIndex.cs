@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphValuePairRangeIndex
     {
-        public QueryGraphValuePairRangeIndex(string[] indexed, IList<QueryGraphValueEntryRange> key)
+        public QueryGraphValuePairRangeIndex(
+            string[] indexed,
+            IList<QueryGraphValueEntryRange> key)
         {
             Indexed = indexed;
             Keys = key;

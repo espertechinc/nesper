@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         ///     is the number of old or new events thatmust arrive in order for the condition to be satisfied
         /// </param>
         /// <param name="variable">varianle</param>
-        public OutputConditionCountFactory(int eventRate, Variable variable)
+        public OutputConditionCountFactory(
+            int eventRate,
+            Variable variable)
         {
             if (eventRate < 1 && variable == null) {
                 throw new ArgumentException(
@@ -40,7 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         public object Variable => variable;
 
         public OutputCondition InstantiateOutputCondition(
-            AgentInstanceContext agentInstanceContext, OutputCallback outputCallback)
+            AgentInstanceContext agentInstanceContext,
+            OutputCallback outputCallback)
         {
             VariableReader variableReader = null;
             if (variable != null) {

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -77,7 +76,9 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
 
         public override EventType EventType => parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, lengthBatchViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(lengthBatchViewFactory, newData, oldData);

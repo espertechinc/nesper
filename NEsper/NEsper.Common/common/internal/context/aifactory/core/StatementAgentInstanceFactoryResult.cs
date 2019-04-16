@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             AgentInstanceContext agentInstanceContext,
             AggregationService optionalAggegationService,
             IDictionary<int, SubSelectFactoryResult> subselectStrategies,
-            PriorEvalStrategy[] priorStrategies, PreviousGetterStrategy[] previousGetterStrategies,
+            PriorEvalStrategy[] priorStrategies,
+            PreviousGetterStrategy[] previousGetterStrategies,
             RowRecogPreviousStrategy rowRecogPreviousStrategy,
             IDictionary<int, ExprTableEvalStrategy> tableAccessStrategies,
             IList<StatementAgentInstancePreload> preloadList)

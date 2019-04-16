@@ -67,8 +67,13 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="rethrowExceptions">rethrow setting</param>
         /// <param name="eventTypeName">optional event type name</param>
         public ConfigurationCompilerPlugInSingleRowFunction(
-            string name, string functionClassName, string functionMethodName, ValueCacheEnum valueCache,
-            FilterOptimizableEnum filterOptimizable, bool rethrowExceptions, string eventTypeName)
+            string name,
+            string functionClassName,
+            string functionMethodName,
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable,
+            bool rethrowExceptions,
+            string eventTypeName)
         {
             Name = name;
             FunctionClassName = functionClassName;

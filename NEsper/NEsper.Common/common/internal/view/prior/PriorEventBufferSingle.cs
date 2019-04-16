@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.view.access;
@@ -27,7 +26,8 @@ namespace com.espertech.esper.common.@internal.view.prior
     /// <para />When the buffer receives old data (rstream) events it removes the prior events to the rstream events
     /// from the buffer the next time it receives a post (not immediatly) to allow queries to the buffer.
     /// </summary>
-    public class PriorEventBufferSingle : ViewUpdatedCollection, RelativeAccessByEventNIndex
+    public class PriorEventBufferSingle : ViewUpdatedCollection,
+        RelativeAccessByEventNIndex
     {
         private readonly int priorEventIndex;
         private readonly IDictionary<EventBean, EventBean> priorEventMap;
@@ -46,22 +46,20 @@ namespace com.espertech.esper.common.@internal.view.prior
             priorEventMap = new Dictionary<EventBean, EventBean>();
         }
 
-        public void Update(EventBean[] newData, EventBean[] oldData)
+        public void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             // Remove last old data posted in previous post
-            if (lastOldData != null)
-            {
-                for (int i = 0; i < lastOldData.Length; i++)
-                {
+            if (lastOldData != null) {
+                for (int i = 0; i < lastOldData.Length; i++) {
                     priorEventMap.Remove(lastOldData[i]);
                 }
             }
 
             // Post new data to rolling buffer starting with the oldest
-            if (newData != null)
-            {
-                for (int i = 0; i < newData.Length; i++)
-                {
+            if (newData != null) {
+                for (int i = 0; i < newData.Length; i++) {
                     EventBean newEvent = newData[i];
 
                     // Add new event
@@ -76,13 +74,14 @@ namespace com.espertech.esper.common.@internal.view.prior
             lastOldData = oldData;
         }
 
-        public void Update(EventBean[] newData, EventBean[] oldData, PriorEventBufferChangeCaptureSingle captureSingle)
+        public void Update(
+            EventBean[] newData,
+            EventBean[] oldData,
+            PriorEventBufferChangeCaptureSingle captureSingle)
         {
             // Remove last old data posted in previous post
-            if (lastOldData != null)
-            {
-                for (int i = 0; i < lastOldData.Length; i++)
-                {
+            if (lastOldData != null) {
+                for (int i = 0; i < lastOldData.Length; i++) {
                     EventBean oldDataItem = lastOldData[i];
                     priorEventMap.Remove(oldDataItem);
                     captureSingle.Removed(oldDataItem);
@@ -90,10 +89,8 @@ namespace com.espertech.esper.common.@internal.view.prior
             }
 
             // Post new data to rolling buffer starting with the oldest
-            if (newData != null)
-            {
-                for (int i = 0; i < newData.Length; i++)
-                {
+            if (newData != null) {
+                for (int i = 0; i < newData.Length; i++) {
                     EventBean newEvent = newData[i];
 
                     // Add new event
@@ -110,7 +107,9 @@ namespace com.espertech.esper.common.@internal.view.prior
         }
 
         // Users are assigned an index
-        public EventBean GetRelativeToEvent(EventBean theEvent, int priorToIndex)
+        public EventBean GetRelativeToEvent(
+            EventBean theEvent,
+            int priorToIndex)
         {
             return priorEventMap.Get(theEvent);
         }
@@ -135,8 +134,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             }
         }
 
-        public ICollection<EventBean> WindowToEventCollReadOnly
-        {
+        public ICollection<EventBean> WindowToEventCollReadOnly {
             get => null;
         }
 
@@ -144,8 +142,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             get { return priorEventMap; }
         }
 
-        public RollingEventBuffer NewEvents
-        {
+        public RollingEventBuffer NewEvents {
             get => newEvents;
         }
 
@@ -154,8 +151,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             // No action required
         }
 
-        public int NumEventsInsertBuf
-        {
+        public int NumEventsInsertBuf {
             get => newEvents.Count;
         }
     }

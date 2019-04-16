@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
 {
     public abstract class PointRegionQuadTreeNode
     {
-        protected PointRegionQuadTreeNode(BoundingBox bb, int level)
+        protected PointRegionQuadTreeNode(
+            BoundingBox bb,
+            int level)
         {
             Bb = bb;
             Level = level;

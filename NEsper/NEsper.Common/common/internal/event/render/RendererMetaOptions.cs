@@ -11,12 +11,12 @@ using com.espertech.esper.common.client.render;
 namespace com.espertech.esper.common.@internal.@event.render
 {
     /// <summary>
-    /// Options for use by <seealso cref="RendererMeta"/> with rendering metadata.
+    ///     Options for use by <seealso cref="RendererMeta" /> with rendering metadata.
     /// </summary>
     public class RendererMetaOptions
     {
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="preventLooping">true to prevent looping</param>
         /// <param name="isXmlOutput">true for XML output</param>
@@ -35,31 +35,31 @@ namespace com.espertech.esper.common.@internal.@event.render
         }
 
         /// <summary>
-        /// Returns true to prevent looping.
+        ///     Returns true to prevent looping.
         /// </summary>
         /// <returns>
-        /// prevent looping indicator
+        ///     prevent looping indicator
         /// </returns>
-        public bool PreventLooping { get; private set; }
+        public bool PreventLooping { get; }
 
         /// <summary>
-        /// Returns true for XML output.
+        ///     Returns true for XML output.
         /// </summary>
         /// <returns>
-        /// XML output flag
+        ///     XML output flag
         /// </returns>
-        public bool IsXmlOutput { get; private set; }
+        public bool IsXmlOutput { get; }
 
         /// <summary>
-        /// Gets or sets the renderer.
+        ///     Gets or sets the renderer.
         /// </summary>
         /// <value>The renderer.</value>
-        public EventPropertyRenderer Renderer { get; private set; }
+        public EventPropertyRenderer Renderer { get; }
 
         /// <summary>
-        /// Gets or sets the renderer context.
+        ///     Gets or sets the renderer context.
         /// </summary>
         /// <value>The renderer context.</value>
-        public EventPropertyRendererContext RendererContext { get; private set; }
+        public EventPropertyRendererContext RendererContext { get; }
     }
 }

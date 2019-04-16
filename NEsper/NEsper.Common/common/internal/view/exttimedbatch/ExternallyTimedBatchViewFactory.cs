@@ -24,24 +24,23 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
         protected internal TimePeriodCompute timePeriodCompute;
         protected internal ExprEvaluator timestampEval;
 
-        public long? OptionalReferencePoint
-        {
+        public long? OptionalReferencePoint {
             get => optionalReferencePoint;
             set => optionalReferencePoint = value;
         }
 
-        public ExprEvaluator TimestampEval
-        {
+        public ExprEvaluator TimestampEval {
             get => timestampEval;
             set => timestampEval = value;
         }
 
-        public TimePeriodCompute TimePeriodCompute
-        {
+        public TimePeriodCompute TimePeriodCompute {
             set => timePeriodCompute = value;
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 
@@ -56,8 +55,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
                 this, viewUpdatedCollection, agentInstanceViewFactoryContext, timePeriodProvide);
         }
 
-        public EventType EventType
-        {
+        public EventType EventType {
             get => eventType;
             set => eventType = value;
         }

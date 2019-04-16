@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             services = new Dictionary<int, PriorEvalStrategy>();
         }
 
-        public void AssignService(int serviceId, PriorEvalStrategy priorEvalStrategy)
+        public void AssignService(
+            int serviceId,
+            PriorEvalStrategy priorEvalStrategy)
         {
             services.Put(serviceId, priorEvalStrategy);
         }
@@ -36,8 +38,12 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         public int InstanceCount => services.Count;
 
         public EventBean GetSubstituteEvent(
-            EventBean originalEvent, bool isNewData, int constantIndexNumber, int relativeIndex,
-            ExprEvaluatorContext exprEvaluatorContext, int streamNum)
+            EventBean originalEvent,
+            bool isNewData,
+            int constantIndexNumber,
+            int relativeIndex,
+            ExprEvaluatorContext exprEvaluatorContext,
+            int streamNum)
         {
             return services.Get(exprEvaluatorContext.AgentInstanceId).GetSubstituteEvent(
                 originalEvent, isNewData, constantIndexNumber, relativeIndex, exprEvaluatorContext, streamNum);

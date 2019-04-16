@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
                 eventTypeName, @base.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP,
                 NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             var eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                eventTypeMetadata, 
+                eventTypeMetadata,
                 variableReadWritePackageForge.VariableTypes, null, null, null, null,
                 services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(eventType);

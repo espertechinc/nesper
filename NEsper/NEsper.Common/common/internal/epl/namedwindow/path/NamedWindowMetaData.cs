@@ -21,8 +21,14 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
     public class NamedWindowMetaData
     {
         public NamedWindowMetaData(
-            EventType eventType, string namedWindowModuleName, string contextName, string[] uniqueness,
-            bool isChildBatching, bool isEnableIndexShare, EventType optionalEventTypeAs, bool virtualDataWindow)
+            EventType eventType,
+            string namedWindowModuleName,
+            string contextName,
+            string[] uniqueness,
+            bool isChildBatching,
+            bool isEnableIndexShare,
+            EventType optionalEventTypeAs,
+            bool virtualDataWindow)
         {
             EventType = eventType;
             NamedWindowModuleName = namedWindowModuleName;
@@ -36,8 +42,14 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
         }
 
         public NamedWindowMetaData(
-            EventType eventType, string namedWindowModuleName, string contextName, string[] uniqueness,
-            bool isChildBatching, bool isEnableIndexShare, EventType optionalEventTypeAs, bool virtualDataWindow,
+            EventType eventType,
+            string namedWindowModuleName,
+            string contextName,
+            string[] uniqueness,
+            bool isChildBatching,
+            bool isEnableIndexShare,
+            EventType optionalEventTypeAs,
+            bool virtualDataWindow,
             EventTableIndexMetadata indexMetadata)
         {
             EventType = eventType;
@@ -92,7 +104,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
         }
 
         public void AddIndex(
-            string indexName, string indexModuleName, IndexMultiKey imk, QueryPlanIndexItem optionalQueryPlanIndexItem)
+            string indexName,
+            string indexModuleName,
+            IndexMultiKey imk,
+            QueryPlanIndexItem optionalQueryPlanIndexItem)
         {
             IndexMetadata.AddIndexExplicit(false, imk, indexName, indexModuleName, optionalQueryPlanIndexItem, "");
         }

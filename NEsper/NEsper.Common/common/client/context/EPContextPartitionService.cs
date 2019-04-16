@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.client.context
         ///     statement names, or null if the context does not exist, or empty list if no statements areassociated to the context
         ///     (counting started and stopped statements, not destroyed ones).
         /// </returns>
-        string[] GetContextStatementNames(string deploymentId, string contextName);
+        string[] GetContextStatementNames(
+            string deploymentId,
+            string contextName);
 
         /// <summary>
         ///     Returns the nesting level for the context declaration, i.e. 1 for unnested and &gt;1 for nested contexts.
@@ -35,7 +37,9 @@ namespace com.espertech.esper.common.client.context
         /// <param name="contextName">context name</param>
         /// <returns>nesting level</returns>
         /// <throws>ArgumentException if a context by that name was not declared</throws>
-        int GetContextNestingLevel(string deploymentId, string contextName);
+        int GetContextNestingLevel(
+            string deploymentId,
+            string contextName);
 
         /// <summary>
         ///     Returns information about selected context partitions including state.
@@ -47,7 +51,9 @@ namespace com.espertech.esper.common.client.context
         /// <throws>ArgumentException        if a context by that name was not declared</throws>
         /// <throws>InvalidContextPartitionSelector if the selector type and context declaration mismatch</throws>
         ContextPartitionCollection GetContextPartitions(
-            string deploymentId, string contextName, ContextPartitionSelector selector);
+            string deploymentId,
+            string contextName,
+            ContextPartitionSelector selector);
 
         /// <summary>
         ///     Returns the context partition ids.
@@ -58,7 +64,10 @@ namespace com.espertech.esper.common.client.context
         /// <returns>set of the context partition ids</returns>
         /// <throws>ArgumentException        if a context by that name was not declared</throws>
         /// <throws>InvalidContextPartitionSelector if the selector type and context declaration mismatch</throws>
-        ISet<int> GetContextPartitionIds(string deploymentId, string contextName, ContextPartitionSelector selector);
+        ISet<int> GetContextPartitionIds(
+            string deploymentId,
+            string contextName,
+            ContextPartitionSelector selector);
 
         /// <summary>
         ///     Returning the descriptor of a given context partition.
@@ -68,7 +77,10 @@ namespace com.espertech.esper.common.client.context
         /// <param name="agentInstanceId">the context partition id number</param>
         /// <returns>identifier or null if the context partition is not found</returns>
         /// <throws>ArgumentException if a context by that name was not declared</throws>
-        ContextPartitionIdentifier GetIdentifier(string deploymentId, string contextName, int agentInstanceId);
+        ContextPartitionIdentifier GetIdentifier(
+            string deploymentId,
+            string contextName,
+            int agentInstanceId);
 
         /// <summary>
         ///     Add a context state listener
@@ -100,7 +112,9 @@ namespace com.espertech.esper.common.client.context
         /// <param name="contextName">context name</param>
         /// <param name="listener">to add</param>
         void AddContextPartitionStateListener(
-            string deploymentId, string contextName, ContextPartitionStateListener listener);
+            string deploymentId,
+            string contextName,
+            ContextPartitionStateListener listener);
 
         /// <summary>
         ///     Remove a context partition state listener for the given context
@@ -109,7 +123,9 @@ namespace com.espertech.esper.common.client.context
         /// <param name="contextName">context name</param>
         /// <param name="listener">to remove</param>
         void RemoveContextPartitionStateListener(
-            string deploymentId, string contextName, ContextPartitionStateListener listener);
+            string deploymentId,
+            string contextName,
+            ContextPartitionStateListener listener);
 
         /// <summary>
         ///     Returns an iterator of context partition state listeners (read-only) for the given context
@@ -118,14 +134,17 @@ namespace com.espertech.esper.common.client.context
         /// <param name="contextName">context name</param>
         /// <returns>listeners</returns>
         IEnumerator<ContextPartitionStateListener> GetContextPartitionStateListeners(
-            string deploymentId, string contextName);
+            string deploymentId,
+            string contextName);
 
         /// <summary>
         ///     Removes all context partition state listener for the given context
         /// </summary>
         /// <param name="deploymentId">deployment id of context (deployment id of create-context statement)</param>
         /// <param name="contextName">context name</param>
-        void RemoveContextPartitionStateListeners(string deploymentId, string contextName);
+        void RemoveContextPartitionStateListeners(
+            string deploymentId,
+            string contextName);
 
         /// <summary>
         ///     Returns the context properties for a given deployment id, context name and context partition id.
@@ -135,6 +154,8 @@ namespace com.espertech.esper.common.client.context
         /// <param name="contextPartitionId">context partition id</param>
         /// <returns>map of built-in properties wherein values representing event are EventBean instances</returns>
         IDictionary<string, object> GetContextProperties(
-            string deploymentId, string contextName, int contextPartitionId);
+            string deploymentId,
+            string contextName,
+            int contextPartitionId);
     }
 } // end of namespace

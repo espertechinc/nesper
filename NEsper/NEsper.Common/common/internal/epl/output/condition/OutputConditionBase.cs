@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             outputCallback.Invoke(true, true);
         }
 
-        public abstract void UpdateOutputCondition(int newEventsCount, int oldEventsCount);
+        public abstract void UpdateOutputCondition(
+            int newEventsCount,
+            int oldEventsCount);
+
         public abstract void StopOutputCondition();
     }
 } // end of namespace

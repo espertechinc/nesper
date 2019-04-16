@@ -24,30 +24,35 @@ namespace com.espertech.esper.common.@internal.support
         public static Extractor GetExtractor(
             this SupportEventTypeAssertionEnum enumValue)
         {
-            switch (enumValue)
-            {
+            switch (enumValue) {
                 case SupportEventTypeAssertionEnum.NAME:
-                    return (desc, eventType) => desc.PropertyName;
+                    return (
+                        desc,
+                        eventType) => desc.PropertyName;
                 case SupportEventTypeAssertionEnum.TYPE:
-                    return (desc, eventType) => desc.PropertyType;
+                    return (
+                        desc,
+                        eventType) => desc.PropertyType;
                 case SupportEventTypeAssertionEnum.FRAGEMENT_TYPE_NAME:
-                    return (desc, eventType) =>
-                    {
+                    return (
+                        desc,
+                        eventType) => {
                         var fragType = eventType.GetFragmentType(desc.PropertyName);
-                        if (fragType == null)
-                        {
+                        if (fragType == null) {
                             return null;
                         }
+
                         return fragType.FragmentType.Name;
                     };
                 case SupportEventTypeAssertionEnum.FRAGMENT_IS_INDEXED:
-                    return (desc, eventType) =>
-                    {
+                    return (
+                        desc,
+                        eventType) => {
                         var fragType = eventType.GetFragmentType(desc.PropertyName);
-                        if (fragType == null)
-                        {
+                        if (fragType == null) {
                             return null;
                         }
+
                         return fragType.IsIndexed;
                     };
             }
@@ -57,8 +62,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public static SupportEventTypeAssertionEnum[] GetSetWithFragment()
         {
-            return new SupportEventTypeAssertionEnum[]
-            {
+            return new SupportEventTypeAssertionEnum[] {
                 SupportEventTypeAssertionEnum.NAME,
                 SupportEventTypeAssertionEnum.TYPE,
                 SupportEventTypeAssertionEnum.FRAGEMENT_TYPE_NAME,
@@ -67,5 +71,7 @@ namespace com.espertech.esper.common.@internal.support
         }
     }
 
-    public delegate object Extractor(EventPropertyDescriptor desc, EventType eventType);
+    public delegate object Extractor(
+        EventPropertyDescriptor desc,
+        EventType eventType);
 } // end of namespace

@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,34 +15,47 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalStreamNumEventTable : ExprForge, ExprEvaluator, ExprNodeRenderable
+    public class ExprEvalStreamNumEventTable : ExprForge,
+        ExprEvaluator,
+        ExprNodeRenderable
     {
         private readonly int streamNum;
         private readonly TableMetaData tableMetadata;
 
-        public ExprEvalStreamNumEventTable(int streamNum, TableMetaData table)
+        public ExprEvalStreamNumEventTable(
+            int streamNum,
+            TableMetaData table)
         {
             this.streamNum = streamNum;
             this.tableMetadata = table;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
+            CodegenExpressionField eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
-            return StaticMethod(typeof(ExprEvalStreamNumEventTable), "evaluateConvertTableEvent", Constant(streamNum), eventToPublic, refEPS, refIsNewData, refExprEvalCtx);
+            return StaticMethod(
+                typeof(ExprEvalStreamNumEventTable), "evaluateConvertTableEvent", Constant(streamNum), eventToPublic, refEPS, refIsNewData,
+                refExprEvalCtx);
         }
 
         /// <summary>
@@ -55,38 +67,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         /// <param name="isNewData">flag</param>
         /// <param name="context">context</param>
         /// <returns>event</returns>
-        public static EventBean EvaluateConvertTableEvent(int streamNum, TableMetadataInternalEventToPublic eventToPublic, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public static EventBean EvaluateConvertTableEvent(
+            int streamNum,
+            TableMetadataInternalEventToPublic eventToPublic,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             EventBean @event = eventsPerStream[streamNum];
-            if (@event == null)
-            {
+            if (@event == null) {
                 return null;
             }
+
             return eventToPublic.Convert(@event, eventsPerStream, isNewData, context);
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get => this;
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => typeof(EventBean);
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => this;
         }
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(this.GetType().Name);
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
     }

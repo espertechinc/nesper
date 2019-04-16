@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     public class CodegenMethodFootprint
     {
         public CodegenMethodFootprint(
-            Type returnType, string returnTypeName, IList<CodegenNamedParam> @params, string optionalComment)
+            Type returnType,
+            string returnTypeName,
+            IList<CodegenNamedParam> @params,
+            string optionalComment)
         {
             if (returnType == null && returnTypeName == null) {
                 throw new ArgumentException("Invalid null return type");

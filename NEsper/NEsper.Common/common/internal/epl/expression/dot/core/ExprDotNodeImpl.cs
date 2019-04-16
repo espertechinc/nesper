@@ -43,7 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         [NonSerialized] private ExprDotNodeForge forge;
 
-        public ExprDotNodeImpl(IList<ExprChainedSpec> chainSpec, bool isDuckTyping, bool isUDFCache)
+        public ExprDotNodeImpl(
+            IList<ExprChainedSpec> chainSpec,
+            bool isDuckTyping,
+            bool isUDFCache)
         {
             ChainSpec = new List<ExprChainedSpec>(chainSpec); // for safety, copy the list
             this.isDuckTyping = isDuckTyping;
@@ -544,13 +547,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprNodeUtilityQuery.AcceptChain(visitor, ChainSpec);
         }
 
-        public override void AcceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
+        public override void AcceptChildnodes(
+            ExprNodeVisitorWithParent visitor,
+            ExprNode parent)
         {
             base.AcceptChildnodes(visitor, parent);
             ExprNodeUtilityQuery.AcceptChain(visitor, ChainSpec, this);
         }
 
-        public override void ReplaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode)
+        public override void ReplaceUnlistedChildNode(
+            ExprNode nodeToReplace,
+            ExprNode newNode)
         {
             ExprNodeUtilityModify.ReplaceChainChildNode(nodeToReplace, newNode, ChainSpec);
         }
@@ -573,7 +580,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.MINIMUM;
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprDotNodeImpl)) {
                 return false;
@@ -612,7 +621,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         private ExprDotNodeForge GetPropertyPairEvaluator(
-            ExprForge parameterForge, Pair<PropertyResolutionDescriptor, string> propertyInfoPair,
+            ExprForge parameterForge,
+            Pair<PropertyResolutionDescriptor, string> propertyInfoPair,
             ExprValidationContext validationContext)
         {
             var propertyName = propertyInfoPair.First.PropertyName;
@@ -671,7 +681,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 propertyType, indexedGetter, mappedGetter);
         }
 
-        private int PrefixedStreamName(IList<ExprChainedSpec> chainSpec, StreamTypeService streamTypeService)
+        private int PrefixedStreamName(
+            IList<ExprChainedSpec> chainSpec,
+            StreamTypeService streamTypeService)
         {
             if (chainSpec.Count < 1) {
                 return -1;
@@ -685,7 +697,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return streamTypeService.GetStreamNumForStreamName(spec.Name);
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             if (ChildNodes.Length != 0) {
                 writer.Write(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ChildNodes[0]));
@@ -786,7 +798,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             SettingsApplicationDotMethod predefined;
             if (pointInsideRectangle) {
-                predefined = new SettingsApplicationDotMethodPointInsideRectange(
+                predefined = new SettingsApplicationDotMethodPointInsideRectangle(
                     this, lhsName, lhs, operationName, rhsName, rhs, indexNamedParameter);
             }
             else {
@@ -797,7 +809,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return new ExprAppDotMethodImpl(predefined);
         }
 
-        private ExprValidationException GetAppDocMethodException(string lhsName, string operationName)
+        private ExprValidationException GetAppDocMethodException(
+            string lhsName,
+            string operationName)
         {
             return new ExprValidationException(
                 lhsName + "." + operationName + " requires a single rectangle as parameter");

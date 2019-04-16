@@ -16,8 +16,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     public class AggregationLocalGroupByLevelForge
     {
         public AggregationLocalGroupByLevelForge(
-            ExprForge[][] methodForges, AggregationForgeFactory[] methodFactories,
-            AggregationStateFactoryForge[] accessStateForges, ExprForge[] partitionForges, bool defaultLevel)
+            ExprForge[][] methodForges,
+            AggregationForgeFactory[] methodFactories,
+            AggregationStateFactoryForge[] accessStateForges,
+            ExprForge[] partitionForges,
+            bool defaultLevel)
         {
             MethodForges = methodForges;
             MethodFactories = methodFactories;
@@ -36,7 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
         public bool IsDefaultLevel { get; }
 
-        public CodegenExpression ToExpression(string rowFactory, string rowSerde, CodegenExpression groupKeyEval)
+        public CodegenExpression ToExpression(
+            string rowFactory,
+            string rowSerde,
+            CodegenExpression groupKeyEval)
         {
             return NewInstance(
                 typeof(AggregationLocalGroupByLevel),

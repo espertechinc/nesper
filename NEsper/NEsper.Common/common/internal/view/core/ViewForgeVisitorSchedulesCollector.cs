@@ -8,24 +8,26 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
-	public class ViewForgeVisitorSchedulesCollector : ViewForgeVisitor {
-	    private readonly IList<ScheduleHandleCallbackProvider> providers;
+    public class ViewForgeVisitorSchedulesCollector : ViewForgeVisitor
+    {
+        private readonly IList<ScheduleHandleCallbackProvider> providers;
 
-	    public ViewForgeVisitorSchedulesCollector(IList<ScheduleHandleCallbackProvider> providers) {
-	        this.providers = providers;
-	    }
+        public ViewForgeVisitorSchedulesCollector(IList<ScheduleHandleCallbackProvider> providers)
+        {
+            this.providers = providers;
+        }
 
-	    public void Visit(ViewFactoryForge forge) {
-	        if (forge is ScheduleHandleCallbackProvider) {
-	            providers.Add((ScheduleHandleCallbackProvider) forge);
-	        }
-	    }
-	}
+        public void Visit(ViewFactoryForge forge)
+        {
+            if (forge is ScheduleHandleCallbackProvider) {
+                providers.Add((ScheduleHandleCallbackProvider) forge);
+            }
+        }
+    }
 } // end of namespace

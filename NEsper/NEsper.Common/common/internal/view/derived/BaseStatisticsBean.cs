@@ -290,7 +290,9 @@ namespace com.espertech.esper.common.@internal.view.derived
         /// </summary>
         /// <param name="x">is the X data point to add.</param>
         /// <param name="y">is the Y data point to add.</param>
-        public void AddPoint(double x, double y)
+        public void AddPoint(
+            double x,
+            double y)
         {
             N++;
             XSum += x;
@@ -321,7 +323,9 @@ namespace com.espertech.esper.common.@internal.view.derived
         /// </summary>
         /// <param name="x">is the X data point to remove.</param>
         /// <param name="y">is the Y data point to remove.</param>
-        public void RemovePoint(double x, double y)
+        public void RemovePoint(
+            double x,
+            double y)
         {
             N--;
             if (N <= 0) {

@@ -24,7 +24,8 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="initializeContext">context</param>
         /// <param name="parameterName">parameter name</param>
         public EPDataFlowOperatorParameterProviderContext(
-            DataFlowOpInitializeContext initializeContext, string parameterName)
+            DataFlowOpInitializeContext initializeContext,
+            string parameterName)
         {
             OperatorName = initializeContext.OperatorName;
             ParameterName = parameterName;

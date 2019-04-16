@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,19 +16,24 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 {
-    public class ExprAggregateNodeGroupKey : ExprNodeBase, ExprForge, ExprEvaluator
+    public class ExprAggregateNodeGroupKey : ExprNodeBase,
+        ExprForge,
+        ExprEvaluator
     {
         private readonly int numGroupKeys;
         private readonly int groupKeyIndex;
         private readonly Type returnType;
         private readonly CodegenFieldName aggregationResultFutureMemberName;
 
-        public ExprAggregateNodeGroupKey(int numGroupKeys, int groupKeyIndex, Type returnType, CodegenFieldName aggregationResultFutureMemberName)
+        public ExprAggregateNodeGroupKey(
+            int numGroupKeys,
+            int groupKeyIndex,
+            Type returnType,
+            CodegenFieldName aggregationResultFutureMemberName)
         {
             this.numGroupKeys = numGroupKeys;
             this.groupKeyIndex = groupKeyIndex;
@@ -37,62 +41,66 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             this.aggregationResultFutureMemberName = aggregationResultFutureMemberName;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbol, CodegenClassScope classScope)
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbol,
+            CodegenClassScope classScope)
         {
-            CodegenExpression future = classScope.PackageScope.AddOrGetFieldWellKnown(aggregationResultFutureMemberName, typeof(AggregationResultFuture));
+            CodegenExpression future = classScope.PackageScope.AddOrGetFieldWellKnown(
+                aggregationResultFutureMemberName, typeof(AggregationResultFuture));
             CodegenMethod method = parent.MakeChild(returnType, this.GetType(), classScope);
-            CodegenExpression getGroupKey = ExprDotMethod(future, "getGroupKey", ExprDotMethod(symbol.GetAddExprEvalCtx(method), "getAgentInstanceId"));
-            if (numGroupKeys == 1)
-            {
+            CodegenExpression getGroupKey = ExprDotMethod(
+                future, "getGroupKey", ExprDotMethod(symbol.GetAddExprEvalCtx(method), "getAgentInstanceId"));
+            if (numGroupKeys == 1) {
                 method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, getGroupKey));
             }
-            else
-            {
+            else {
                 method.Block
-                        .DeclareVar(typeof(HashableMultiKey), "mk", Cast(typeof(HashableMultiKey), getGroupKey))
-                        .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, ArrayAtIndex(ExprDotMethod(@Ref("mk"), "getKeys"), Constant(groupKeyIndex))));
+                    .DeclareVar(typeof(HashableMultiKey), "mk", Cast(typeof(HashableMultiKey), getGroupKey))
+                    .MethodReturn(
+                        CodegenLegoCast.CastSafeFromObjectType(
+                            returnType, ArrayAtIndex(ExprDotMethod(@Ref("mk"), "getKeys"), Constant(groupKeyIndex))));
             }
+
             return LocalMethod(method);
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => returnType;
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public override ExprForge Forge
-        {
+        public override ExprForge Forge {
             get => this;
         }
 
         ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
 
-        public ExprNode ForgeRenderable
-        {
+        public ExprNode ForgeRenderable {
             get => this;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get => this;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
         }
 
-        public override ExprPrecedenceEnum Precedence
-        {
+        public override ExprPrecedenceEnum Precedence {
             get => ExprPrecedenceEnum.UNARY;
         }
 
@@ -101,12 +109,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             return null;
         }
 
-        public bool IsConstantResult
-        {
+        public bool IsConstantResult {
             get => false;
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             return false;
         }

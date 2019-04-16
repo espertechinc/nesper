@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     public class AIRegistryRequirementSubquery
     {
         public AIRegistryRequirementSubquery(
-            bool hasAggregation, bool hasPrior, bool hasPrev, LookupStrategyDesc lookupStrategyDesc)
+            bool hasAggregation,
+            bool hasPrior,
+            bool hasPrev,
+            LookupStrategyDesc lookupStrategyDesc)
         {
             HasAggregation = hasAggregation;
             HasPrior = hasPrior;

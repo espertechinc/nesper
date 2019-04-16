@@ -20,8 +20,7 @@ namespace com.espertech.esper.common.@internal.collection
             _keys = keys;
         }
 
-        public int[] Keys
-        {
+        public int[] Keys {
             get { return _keys; }
         }
 
@@ -41,7 +40,9 @@ namespace com.espertech.esper.common.@internal.collection
             if (_keys.Length == 0)
                 return 0;
             return System.Linq.Enumerable.Aggregate(
-                _keys, 0, (a, b) => a ^ b.GetHashCode());
+                _keys, 0, (
+                        a,
+                        b) => a ^ b.GetHashCode());
         }
     }
 }

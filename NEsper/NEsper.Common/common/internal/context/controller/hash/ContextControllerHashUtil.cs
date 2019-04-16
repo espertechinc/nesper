@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
                 // determine type of hash to use
                 var hashFuncName = item.Function.Name;
-                HashFunctionEnum hashFunction = HashFunctionEnum.Determine(contextName, hashFuncName);
+                var hashFunction = HashFunctionEnumExtensions.Determine(contextName, hashFuncName);
                 Pair<Type, ImportSingleRowDesc> hashSingleRowFunction = null;
                 if (hashFunction == null) {
                     try {

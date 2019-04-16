@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         public CodegenBlock Parent { get; }
 
         public abstract void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level,
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
             CodegenIndent indent);
 
         public abstract void MergeClasses(ISet<Type> classes);

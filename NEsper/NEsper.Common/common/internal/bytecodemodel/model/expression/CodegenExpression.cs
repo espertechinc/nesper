@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public interface CodegenExpression
     {
-        void Render(StringBuilder builder, IDictionary<Type, String> imports, bool isInnerClass);
+        void Render(
+            StringBuilder builder,
+            IDictionary<Type, String> imports,
+            bool isInnerClass);
 
         void MergeClasses(ISet<Type> classes);
     }

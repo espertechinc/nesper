@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -25,7 +24,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprRegexpNode : ExprNodeBase
     {
-
         private readonly bool isNot;
 
         [NonSerialized] private ExprRegexpNodeForge forge;
@@ -104,7 +102,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             get => false;
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprRegexpNode)) {
                 return false;
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return true;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             this.ChildNodes[0].ToEPL(writer, Precedence);
             if (isNot) {

@@ -12,17 +12,21 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.util
 {
-    public class OperatorDependencyEntry {
-        public OperatorDependencyEntry() {
+    public class OperatorDependencyEntry
+    {
+        public OperatorDependencyEntry()
+        {
             Incoming = new LinkedHashSet<int>();
             Outgoing = new LinkedHashSet<int>();
         }
 
-        public void AddIncoming(int num) {
+        public void AddIncoming(int num)
+        {
             Incoming.Add(num);
         }
 
-        public void AddOutgoing(int num) {
+        public void AddOutgoing(int num)
+        {
             Outgoing.Add(num);
         }
 
@@ -30,11 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public ICollection<int> Outgoing { get; private set; }
 
-        public override String ToString() {
+        public override String ToString()
+        {
             return "OperatorDependencyEntry{" +
-                    "incoming=" + Incoming.Render() +
-                    ", outgoing=" + Outgoing.Render() +
-                    '}';
+                   "incoming=" + Incoming.Render() +
+                   ", outgoing=" + Outgoing.Render() +
+                   '}';
         }
     }
 }

@@ -30,9 +30,15 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="agentInstanceLock">agent instance lock</param>
         /// <param name="hasSubselect">indicator whether there are subselects</param>
         public InternalEventRouterEntry(
-            int priority, bool drop, ExprEvaluator optionalWhereClause, ExprEvaluator[] assignments,
-            EventBeanWriter writer, TypeWidener[] wideners, InternalRoutePreprocessView outputView,
-            StatementAgentInstanceLock agentInstanceLock, bool hasSubselect)
+            int priority,
+            bool drop,
+            ExprEvaluator optionalWhereClause,
+            ExprEvaluator[] assignments,
+            EventBeanWriter writer,
+            TypeWidener[] wideners,
+            InternalRoutePreprocessView outputView,
+            StatementAgentInstanceLock agentInstanceLock,
+            bool hasSubselect)
         {
             Priority = priority;
             IsDrop = drop;

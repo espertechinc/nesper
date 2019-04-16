@@ -34,8 +34,7 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns the expression. </summary>
         /// <value>expressions</value>
-        public Expression Expression
-        {
+        public Expression Expression {
             get { return _expression; }
             set { _expression = value; }
         }

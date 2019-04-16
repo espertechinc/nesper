@@ -13,13 +13,17 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Pattern specification in unvalidated, unoptimized form.
     /// </summary>
-    public class PatternStreamSpecRaw 
-        : StreamSpecBase
-        , StreamSpecRaw
+    public class PatternStreamSpecRaw
+        : StreamSpecBase,
+            StreamSpecRaw
     {
         public PatternStreamSpecRaw(
-            EvalForgeNode evalForgeNode, ViewSpec[] viewSpecs, string optionalStreamName,
-            StreamSpecOptions streamSpecOptions, bool suppressSameEventMatches, bool discardPartialsOnMatch)
+            EvalForgeNode evalForgeNode,
+            ViewSpec[] viewSpecs,
+            string optionalStreamName,
+            StreamSpecOptions streamSpecOptions,
+            bool suppressSameEventMatches,
+            bool discardPartialsOnMatch)
             : base(optionalStreamName, viewSpecs, streamSpecOptions)
         {
             EvalForgeNode = evalForgeNode;

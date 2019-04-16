@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <param name="filterOperator">operator to apply</param>
         /// <param name="filterValue">value to look for</param>
         public FilterValueSetParamImpl(
-            ExprFilterSpecLookupable lookupable, FilterOperator filterOperator, object filterValue)
+            ExprFilterSpecLookupable lookupable,
+            FilterOperator filterOperator,
+            object filterValue)
         {
             Lookupable = lookupable;
             FilterOperator = filterOperator;
@@ -38,7 +40,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public object FilterForValue { get; }
 
-        public void AppendTo(StringWriter writer)
+        public void AppendTo(TextWriter writer)
         {
             Lookupable.AppendTo(writer);
             writer.Write(FilterOperator.GetTextualOp());

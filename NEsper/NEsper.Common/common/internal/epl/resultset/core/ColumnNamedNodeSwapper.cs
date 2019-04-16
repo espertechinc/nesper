@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         /// <returns>
         ///     exprTree with the appropriate swaps performed, or fullExpr,if all of exprTree needed to be swapped
         /// </returns>
-        public static ExprNode Swap(ExprNode exprTree, string columnName, ExprNode fullExpr)
+        public static ExprNode Swap(
+            ExprNode exprTree,
+            string columnName,
+            ExprNode fullExpr)
         {
             if (fullExpr == null) {
                 throw new ArgumentNullException();
@@ -51,7 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         /// <param name="node">the node whose children are to be examined for names</param>
         /// <param name="name">the name to replace</param>
         /// <param name="fullExpr">the full expression corresponding to the name</param>
-        private static void VisitChildren(ExprNode node, string name, ExprNode fullExpr)
+        private static void VisitChildren(
+            ExprNode node,
+            string name,
+            ExprNode fullExpr)
         {
             var childNodes = node.ChildNodes;
 
@@ -66,7 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             }
         }
 
-        private static bool IsColumnNameNode(ExprNode node, string name)
+        private static bool IsColumnNameNode(
+            ExprNode node,
+            string name)
         {
             if (node is ExprIdentNode) {
                 if (node.ChildNodes.Length > 0) {

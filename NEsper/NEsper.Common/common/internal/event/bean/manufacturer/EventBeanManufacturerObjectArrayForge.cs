@@ -6,9 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,81 +13,95 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
-	/// <summary>
-	/// Factory for ObjectArray-underlying events.
-	/// </summary>
-	public class EventBeanManufacturerObjectArrayForge : EventBeanManufacturerForge {
-	    private readonly ObjectArrayEventType eventType;
-	    private readonly int[] indexPerWritable;
-	    private readonly bool oneToOne;
+    /// <summary>
+    ///     Factory for ObjectArray-underlying events.
+    /// </summary>
+    public class EventBeanManufacturerObjectArrayForge : EventBeanManufacturerForge
+    {
+        private readonly ObjectArrayEventType eventType;
+        private readonly int[] indexPerWritable;
+        private readonly bool oneToOne;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="eventType">type to create</param>
-	    /// <param name="properties">written properties</param>
-	    public EventBeanManufacturerObjectArrayForge(ObjectArrayEventType eventType, WriteablePropertyDescriptor[] properties) {
-	        this.eventType = eventType;
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="eventType">type to create</param>
+        /// <param name="properties">written properties</param>
+        public EventBeanManufacturerObjectArrayForge(
+            ObjectArrayEventType eventType,
+            WriteablePropertyDescriptor[] properties)
+        {
+            this.eventType = eventType;
 
-	        IDictionary<string, int> indexes = eventType.PropertiesIndexes;
-	        indexPerWritable = new int[properties.Length];
-	        bool oneToOneMapping = true;
-	        for (int i = 0; i < properties.Length; i++) {
-	            string propertyName = properties[i].PropertyName;
-	            int? index = indexes.Get(propertyName);
-	            if (index == null) {
-	                throw new IllegalStateException("Failed to find property '" + propertyName + "' among the array indexes");
-	            }
-	            indexPerWritable[i] = index;
-	            if (index != i) {
-	                oneToOneMapping = false;
-	            }
-	        }
-	        oneToOne = oneToOneMapping && properties.Length == eventType.PropertyNames.Length;
-	    }
+            var indexes = eventType.PropertiesIndexes;
+            indexPerWritable = new int[properties.Length];
+            var oneToOneMapping = true;
+            for (var i = 0; i < properties.Length; i++) {
+                var propertyName = properties[i].PropertyName;
+                if (!indexes.TryGetValue(propertyName, out var index)) {
+                    throw new IllegalStateException("Failed to find property '" + propertyName + "' among the array indexes");
+                }
 
-	    public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory) {
-	        return new EventBeanManufacturerObjectArray(eventType, eventBeanTypedEventFactory, indexPerWritable, oneToOne);
-	    }
+                indexPerWritable[i] = index;
+                if (index != i) {
+                    oneToOneMapping = false;
+                }
+            }
 
-	    public CodegenExpression Make(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        CodegenMethod init = codegenClassScope.PackageScope.InitMethod;
+            oneToOne = oneToOneMapping && properties.Length == eventType.PropertyNames.Length;
+        }
 
-	        CodegenExpressionField factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-	        CodegenExpressionField eventType = codegenClassScope.AddFieldUnshared(true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(this.eventType, EPStatementInitServicesConstants.REF));
+        public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
+        {
+            return new EventBeanManufacturerObjectArray(eventType, eventBeanTypedEventFactory, indexPerWritable, oneToOne);
+        }
 
-	        CodegenExpressionNewAnonymousClass manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
+        public CodegenExpression Make(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var init = codegenClassScope.PackageScope.InitMethod;
 
-	        CodegenMethod makeUndMethod = CodegenMethod.MakeParentNode(typeof(object[]), this.GetType(), codegenClassScope).AddParam(typeof(object[]), "properties");
-	        manufacturer.AddMethod("makeUnderlying", makeUndMethod);
-	        MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
+            var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var eventType = codegenClassScope.AddFieldUnshared(
+                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(this.eventType, EPStatementInitServicesConstants.REF));
 
-	        CodegenMethod makeMethod = CodegenMethod.MakeParentNode(typeof(EventBean), this.GetType(), codegenClassScope).AddParam(typeof(object[]), "properties");
-	        manufacturer.AddMethod("make", makeMethod);
-	        makeMethod.Block
-	                .DeclareVar(typeof(object[]), "und", LocalMethod(makeUndMethod, @Ref("properties")))
-	                .MethodReturn(ExprDotMethod(factory, "adapterForTypedObjectArray", @Ref("und"), eventType));
+            var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
-	        return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
-	    }
+            var makeUndMethod = CodegenMethod.MakeParentNode(typeof(object[]), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "properties");
+            manufacturer.AddMethod("makeUnderlying", makeUndMethod);
+            MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
-	    private void MakeUnderlyingCodegen(CodegenMethod method, CodegenClassScope codegenClassScope) {
-	        if (oneToOne) {
-	            method.Block.MethodReturn(@Ref("properties"));
-	            return;
-	        }
+            var makeMethod = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "properties");
+            manufacturer.AddMethod("make", makeMethod);
+            makeMethod.Block
+                .DeclareVar(typeof(object[]), "und", LocalMethod(makeUndMethod, Ref("properties")))
+                .MethodReturn(ExprDotMethod(factory, "adapterForTypedObjectArray", Ref("und"), eventType));
 
-	        method.Block.DeclareVar(typeof(object[]), "cols", NewArrayByLength(typeof(object), Constant(eventType.PropertyNames.Length)));
-	        for (int i = 0; i < indexPerWritable.Length; i++) {
-	            method.Block.AssignArrayElement(@Ref("cols"), Constant(indexPerWritable[i]), ArrayAtIndex(@Ref("properties"), Constant(i)));
-	        }
-	        method.Block.MethodReturn(@Ref("cols"));
-	    }
-	}
+            return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
+        }
+
+        private void MakeUnderlyingCodegen(
+            CodegenMethod method,
+            CodegenClassScope codegenClassScope)
+        {
+            if (oneToOne) {
+                method.Block.MethodReturn(Ref("properties"));
+                return;
+            }
+
+            method.Block.DeclareVar(typeof(object[]), "cols", NewArrayByLength(typeof(object), Constant(eventType.PropertyNames.Length)));
+            for (var i = 0; i < indexPerWritable.Length; i++) {
+                method.Block.AssignArrayElement(Ref("cols"), Constant(indexPerWritable[i]), ArrayAtIndex(Ref("properties"), Constant(i)));
+            }
+
+            method.Block.MethodReturn(Ref("cols"));
+        }
+    }
 } // end of namespace

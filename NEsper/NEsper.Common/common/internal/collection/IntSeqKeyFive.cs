@@ -12,7 +12,12 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class IntSeqKeyFive : IntSeqKey
     {
-        public IntSeqKeyFive(int one, int two, int three, int four, int five)
+        public IntSeqKeyFive(
+            int one,
+            int two,
+            int three,
+            int four,
+            int five)
         {
             One = one;
             Two = two;
@@ -64,7 +69,9 @@ namespace com.espertech.esper.common.@internal.collection
             return new[] {One, Two, Three, Four, Five};
         }
 
-        public static void Write(IntSeqKeyFive key, DataOutput output)
+        public static void Write(
+            IntSeqKeyFive key,
+            DataOutput output)
         {
             output.WriteInt(key.One);
             output.WriteInt(key.Two);

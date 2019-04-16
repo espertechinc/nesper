@@ -327,6 +327,21 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+        public CodegenBlock GetProperty(
+            CodegenExpression expression,
+            string property)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CodegenBlock SetProperty(
+            CodegenExpression expression,
+            string property,
+            CodegenExpression value)
+        {
+            throw new NotImplementedException();
+        }
+
         public CodegenBlock StaticMethod(
             Type clazz,
             string method,

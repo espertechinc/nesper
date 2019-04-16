@@ -27,9 +27,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         private readonly ExprAggMultiFunctionLinearAccessNode parent;
 
         public AggregationForgeFactoryAccessLinear(
-            ExprAggMultiFunctionLinearAccessNode parent, AggregationAccessorForge accessor, Type accessorResultType,
-            AggregationMultiFunctionStateKey optionalStateKey, AggregationStateFactoryForge optionalStateFactory,
-            AggregationAgentForge optionalAgent, EventType containedEventType)
+            ExprAggMultiFunctionLinearAccessNode parent,
+            AggregationAccessorForge accessor,
+            Type accessorResultType,
+            AggregationMultiFunctionStateKey optionalStateKey,
+            AggregationStateFactoryForge optionalStateFactory,
+            AggregationAgentForge optionalAgent,
+            EventType containedEventType)
         {
             this.parent = parent;
             AccessorForge = accessor;
@@ -60,7 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         public override AggregationAgentForge GetAggregationStateAgent(
-            ImportService importService, string statementName)
+            ImportService importService,
+            string statementName)
         {
             return optionalAgent;
         }

@@ -35,7 +35,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         private readonly IDictionary<EventBean, EventBean> newToOldEventMap;
 
         public AddPropertyValueOptionalView(
-            GroupByViewFactory groupByViewFactory, AgentInstanceViewFactoryChainContext agentInstanceContext,
+            GroupByViewFactory groupByViewFactory,
+            AgentInstanceViewFactoryChainContext agentInstanceContext,
             object mergeValues)
         {
             this.groupByViewFactory = groupByViewFactory;
@@ -62,7 +63,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             EventBean[] newEvents = null;
             EventBean[] oldEvents = null;

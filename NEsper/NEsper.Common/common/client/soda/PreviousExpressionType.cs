@@ -18,18 +18,18 @@ namespace com.espertech.esper.common.client.soda
         /// towards the first event.
         /// </summary>
         PREV,
-    
+
         /// <summary>
         /// Returns the count of previous events.
         /// </summary>
         PREVCOUNT,
-    
+
         /// <summary>
         /// Returns a previous event with the index counting from the first event
         /// towards the last event.
         /// </summary>
         PREVTAIL,
-    
+
         /// <summary>
         /// Returns all previous events.
         /// </summary>

@@ -10,10 +10,12 @@ using System;
 using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -44,9 +46,16 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <param name="eventType">event type</param>
         /// <throws>ArgumentException if an operator was supplied that does not take a single constant value</throws>
         public FilterSpecParamEventPropIndexedForge(
-            ExprFilterSpecLookupableForge lookupable, FilterOperator filterOperator, string resultEventAsName,
-            int resultEventIndex, string resultEventProperty, EventType eventType, bool isMustCoerce,
-            SimpleNumberCoercer numberCoercer, Type coercionType, string statementName)
+            ExprFilterSpecLookupableForge lookupable,
+            FilterOperator filterOperator,
+            string resultEventAsName,
+            int resultEventIndex,
+            string resultEventProperty,
+            EventType eventType,
+            bool isMustCoerce,
+            SimpleNumberCoercer numberCoercer,
+            Type coercionType,
+            string statementName)
             : base(lookupable, filterOperator)
         {
             ResultEventAsName = resultEventAsName;
@@ -98,7 +107,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         public int ResultEventIndex { get; }
 
         public override CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbolWEventType symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols)
         {
             var getterSPI = ((EventTypeSPI) EventType).GetGetterSPI(ResultEventProperty);
             var method = parent.MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
@@ -107,10 +118,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar(
                     typeof(ExprFilterSpecLookupable), "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()));
+                .DeclareVar(typeof(FilterOperator), "op", EnumValue(filterOperator));
 
             var param = NewAnonymousClass(
-                method.Block, typeof(FilterSpecParam), CompatExtensions.AsList(Ref("lookupable"), Ref("op")));
+                method.Block, typeof(FilterSpecParam), CompatExtensions.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             param.AddMethod("getFilterValue", getFilterValue);

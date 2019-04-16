@@ -16,7 +16,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -29,7 +28,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.util
@@ -1284,12 +1282,17 @@ namespace com.espertech.esper.common.@internal.util
         ///     class
         /// </returns>
         /// <throws>EventAdapterException is throw if the class cannot be identified</throws>
+
         public static Type GetTypeForSimpleName(
             string typeName,
+            ClassForNameProvider classForNameProvider,
             bool boxed = false,
             bool throwOnError = false)
         {
-            switch (typeName.ToLower().Trim()) {
+            typeName = typeName.Trim();
+
+            switch (typeName.ToLower())
+            {
                 case "string":
                 case "varchar":
                 case "varchar2":
@@ -1396,12 +1399,44 @@ namespace com.espertech.esper.common.@internal.util
                     return typeof(IDictionary<string, object>);
             }
 
-            var type = ResolveType(typeName.Trim(), throwOnError);
-            if (type == null) {
+
+            if (classForNameProvider != null) {
+                var clazz = classForNameProvider.ClassForName(typeName);
+                if (clazz != null) {
+                    return clazz;
+                }
+            }
+
+            var type = ResolveType(typeName, throwOnError);
+            if (type == null)
+            {
                 return null;
             }
 
             return boxed ? type.GetBoxedType() : type;
+        }
+
+
+        /// <summary>
+        ///     Returns the boxed class for the given type name, recognizing all primitive and abbreviations,
+        ///     uppercase and lowercase.
+        ///     <para />
+        ///     Recognizes "int" as System.Int32 and "strIng" as System.String, and "Integer" as System.Int32,
+        ///     and so on.
+        /// </summary>
+        /// <param name="typeName">is the name to recognize</param>
+        /// <param name="boxed">if set to <c>true</c> [boxed].</param>
+        /// <param name="throwOnError">if set to <c>true</c> [throw on error].</param>
+        /// <returns>
+        ///     class
+        /// </returns>
+        /// <throws>EventAdapterException is throw if the class cannot be identified</throws>
+        public static Type GetTypeForSimpleName(
+            string typeName,
+            bool boxed = false,
+            bool throwOnError = false)
+        {
+            return GetTypeForSimpleName(typeName, null, boxed, throwOnError);
         }
 
         public static string GetSimpleNameForType(Type clazz)

@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class ForClauseItemSpec
     {
-        public ForClauseItemSpec(String keyword, IList<ExprNode> expressions)
+        public ForClauseItemSpec(
+            String keyword,
+            IList<ExprNode> expressions)
         {
             Keyword = keyword;
             Expressions = expressions;

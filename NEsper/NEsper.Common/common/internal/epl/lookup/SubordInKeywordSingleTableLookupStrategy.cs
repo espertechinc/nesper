@@ -24,14 +24,17 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly PropertyHashedEventTable _index;
 
         public SubordInKeywordSingleTableLookupStrategy(
-            SubordInKeywordSingleTableLookupStrategyFactory factory, PropertyHashedEventTable index)
+            SubordInKeywordSingleTableLookupStrategyFactory factory,
+            PropertyHashedEventTable index)
         {
             this._factory = factory;
             this._index = index;
             _events = new EventBean[factory.streamCountOuter + 1];
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);

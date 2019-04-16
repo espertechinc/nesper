@@ -18,27 +18,38 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
 {
     public class AggregatorCodegenUtil
     {
-        public static CodegenExpression RowDotRef(CodegenExpressionRef row, CodegenExpressionRef @ref)
+        public static CodegenExpression RowDotRef(
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref)
         {
             return Ref(row.Ref + "." + @ref.Ref);
         }
 
         public static CodegenExpression WriteNullable(
-            CodegenExpression value, CodegenExpressionField serde, CodegenExpressionRef output,
-            CodegenExpressionRef unitKey, CodegenExpressionRef writer, CodegenClassScope classScope)
+            CodegenExpression value,
+            CodegenExpressionField serde,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenClassScope classScope)
         {
             return ExprDotMethod(serde, "write", value, output, unitKey, writer);
         }
 
         public static CodegenExpression ReadNullable(
-            CodegenExpressionField serde, CodegenExpressionRef input, CodegenExpressionRef unitKey,
+            CodegenExpressionField serde,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
             CodegenClassScope classScope)
         {
             return ExprDotMethod(serde, "read", input, unitKey);
         }
 
         public static void PrefixWithFilterCheck(
-            ExprForge filterForge, CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+            ExprForge filterForge,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             var filterType = filterForge.EvaluationType;
             method.Block.DeclareVar(
@@ -51,61 +62,81 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         }
 
         public static Consumer<CodegenBlock> WriteBoolean(
-            CodegenExpressionRef output, CodegenExpressionRef row, CodegenExpressionRef @ref)
+            CodegenExpressionRef output,
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref)
         {
             return block => block.ExprDotMethod(output, "writeBoolean", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadBoolean(
-            CodegenExpressionRef row, CodegenExpressionRef @ref, CodegenExpression input)
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref,
+            CodegenExpression input)
         {
             return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readBoolean"));
         }
 
         public static Consumer<CodegenBlock> WriteLong(
-            CodegenExpressionRef output, CodegenExpressionRef row, CodegenExpressionRef @ref)
+            CodegenExpressionRef output,
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref)
         {
             return block => block.ExprDotMethod(output, "writeLong", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadLong(
-            CodegenExpressionRef row, CodegenExpressionRef @ref, CodegenExpression input)
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref,
+            CodegenExpression input)
         {
             return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readLong"));
         }
 
         public static Consumer<CodegenBlock> WriteDouble(
-            CodegenExpressionRef output, CodegenExpressionRef row, CodegenExpressionRef @ref)
+            CodegenExpressionRef output,
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref)
         {
             return block => block.ExprDotMethod(output, "writeDouble", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadDouble(
-            CodegenExpressionRef row, CodegenExpressionRef @ref, CodegenExpression input)
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref,
+            CodegenExpression input)
         {
             return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readDouble"));
         }
 
         public static Consumer<CodegenBlock> WriteInt(
-            CodegenExpressionRef output, CodegenExpressionRef row, CodegenExpressionRef @ref)
+            CodegenExpressionRef output,
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref)
         {
             return block => block.ExprDotMethod(output, "writeInt", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadInt(
-            CodegenExpressionRef row, CodegenExpressionRef @ref, CodegenExpression input)
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref,
+            CodegenExpression input)
         {
             return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readInt"));
         }
 
         public static Consumer<CodegenBlock> WriteFloat(
-            CodegenExpressionRef output, CodegenExpressionRef row, CodegenExpressionRef @ref)
+            CodegenExpressionRef output,
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref)
         {
             return block => block.ExprDotMethod(output, "writeFloat", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadFloat(
-            CodegenExpressionRef row, CodegenExpressionRef @ref, CodegenExpression input)
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref,
+            CodegenExpression input)
         {
             return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readFloat"));
         }

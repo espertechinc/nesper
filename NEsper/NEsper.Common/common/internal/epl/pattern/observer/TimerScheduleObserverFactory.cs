@@ -41,9 +41,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         }
 
         public EventObserver MakeObserver(
-            PatternAgentInstanceContext context, MatchedEventMap beginState,
+            PatternAgentInstanceContext context,
+            MatchedEventMap beginState,
             ObserverEventEvaluator observerEventEvaluator,
-            object observerState, bool isFilterChildNonQuitting)
+            object observerState,
+            bool isFilterChildNonQuitting)
         {
             if (isAllConstant) {
                 try {
@@ -63,7 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
         public bool IsNonRestarting => true;
 
-        public TimerScheduleSpec ComputeSpecDynamic(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public TimerScheduleSpec ComputeSpecDynamic(
+            MatchedEventMap beginState,
+            PatternAgentInstanceContext context)
         {
             if (spec != null) {
                 return spec;

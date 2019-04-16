@@ -31,7 +31,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="namespace">if the namespace the object is in</param>
         /// <param name="objectName">is the name of the object</param>
         /// <param name="objectParameters">is a list of values representing the object parameters</param>
-        public ObjectSpec(string @namespace, string objectName, IList<ExprNode> objectParameters)
+        public ObjectSpec(
+            string @namespace,
+            string objectName,
+            IList<ExprNode> objectParameters)
         {
             ObjectNamespace = @namespace;
             ObjectName = objectName;

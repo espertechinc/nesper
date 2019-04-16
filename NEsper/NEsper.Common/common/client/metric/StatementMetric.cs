@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.client.metric
         /// <summary>Ctor. </summary>
         /// <param name="engineURI">engine URI</param>
         /// <param name="statementName">statement name</param>
-        public StatementMetric(String engineURI, String statementName)
+        public StatementMetric(
+            String engineURI,
+            String statementName)
             : base(engineURI)
         {
             StatementName = statementName;
@@ -81,7 +83,9 @@ namespace com.espertech.esper.common.client.metric
 #endif
         }
 
-        public void IncrementTime(long pCpuTime, long pWallTime)
+        public void IncrementTime(
+            long pCpuTime,
+            long pWallTime)
         {
             Interlocked.Add(ref _cpuTime, pCpuTime);
             Interlocked.Add(ref _wallTime, pWallTime);

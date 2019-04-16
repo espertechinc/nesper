@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.SubselectForgeCodegenUtil;
 
@@ -22,14 +21,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     {
         private readonly TableMetaData table;
 
-        public SubselectForgeStrategyRowFilteredUnselectedTable(ExprSubselectRowNode subselect, TableMetaData table) :
+        public SubselectForgeStrategyRowFilteredUnselectedTable(
+            ExprSubselectRowNode subselect,
+            TableMetaData table)
+            :
             base(subselect)
         {
             this.table = table;
         }
 
         public override CodegenExpression EvaluateCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenExpressionField eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, this.GetType());

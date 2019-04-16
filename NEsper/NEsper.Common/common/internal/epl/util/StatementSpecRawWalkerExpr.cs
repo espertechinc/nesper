@@ -321,7 +321,9 @@ namespace com.espertech.esper.common.@internal.epl.util
             return expressions;
         }
 
-        private static void AnalyzeRollup(GroupByClauseElementRollupOrCube rollup, IList<ExprNode> expressions)
+        private static void AnalyzeRollup(
+            GroupByClauseElementRollupOrCube rollup,
+            IList<ExprNode> expressions)
         {
             foreach (var ex in rollup.RollupExpressions) {
                 if (ex is GroupByClauseElementExpr) {
@@ -334,7 +336,9 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
         }
 
-        private static void AddSelectClause(IList<ExprNode> expressions, IList<SelectClauseElementRaw> selectClause)
+        private static void AddSelectClause(
+            IList<ExprNode> expressions,
+            IList<SelectClauseElementRaw> selectClause)
         {
             if (selectClause == null) {
                 return;
@@ -350,7 +354,9 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
         }
 
-        private static void CollectPatternExpressions(IList<ExprNode> expressions, EvalForgeNode patternExpression)
+        private static void CollectPatternExpressions(
+            IList<ExprNode> expressions,
+            EvalForgeNode patternExpression)
         {
             if (patternExpression is EvalFilterForgeNode) {
                 var filter = (EvalFilterForgeNode) patternExpression;
@@ -364,7 +370,9 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
         }
 
-        private static void CollectExpressions(IList<ExprNode> expressions, ContextSpecCondition endpoint)
+        private static void CollectExpressions(
+            IList<ExprNode> expressions,
+            ContextSpecCondition endpoint)
         {
             if (endpoint is ContextSpecConditionCrontab) {
                 var crontab = (ContextSpecConditionCrontab) endpoint;

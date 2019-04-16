@@ -29,21 +29,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 
         public ExpressionResultCacheForDeclaredExprLastValue GetAllocateDeclaredExprLastValue()
         {
-            if (_declaredExprLastValue == null)
-            {
-                if (_declareExprCacheSize < 1)
-                {
+            if (_declaredExprLastValue == null) {
+                if (_declareExprCacheSize < 1) {
                     _declaredExprLastValue = new ExpressionResultCacheForDeclaredExprLastValueNone();
                 }
-                else if (_declareExprCacheSize < 2)
-                {
+                else if (_declareExprCacheSize < 2) {
                     _declaredExprLastValue = new ExpressionResultCacheForDeclaredExprLastValueSingle();
                 }
-                else
-                {
+                else {
                     _declaredExprLastValue = new ExpressionResultCacheForDeclaredExprLastValueMulti(_declareExprCacheSize);
                 }
             }
+
             return _declaredExprLastValue;
         }
 

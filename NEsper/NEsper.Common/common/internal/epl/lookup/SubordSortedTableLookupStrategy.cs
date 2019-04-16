@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly PropertySortedEventTable _index;
 
         public SubordSortedTableLookupStrategy(
-            SubordSortedTableLookupStrategyFactory factory, PropertySortedEventTable index)
+            SubordSortedTableLookupStrategyFactory factory,
+            PropertySortedEventTable index)
         {
             this._factory = factory;
             this._index = index;
@@ -30,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public LookupStrategyDesc StrategyDesc => _factory.LookupStrategyDesc;
 
-        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);

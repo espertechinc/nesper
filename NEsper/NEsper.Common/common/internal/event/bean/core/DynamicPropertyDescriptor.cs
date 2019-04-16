@@ -7,24 +7,26 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using XLR8.CGLib;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     /// <summary>
-    /// Provides method information for dynamic (unchecked) properties of each class for
-    /// use in obtaining property values.
+    ///     Provides method information for dynamic (unchecked) properties of each class for
+    ///     use in obtaining property values.
     /// </summary>
     public class DynamicPropertyDescriptor
     {
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="clazz">the class to match when looking for a method</param>
         /// <param name="method">the fast method to call</param>
         /// <param name="hasParameters">true if the method takes parameters</param>
-        public DynamicPropertyDescriptor(Type clazz, FastMethod method, bool hasParameters)
+        public DynamicPropertyDescriptor(
+            Type clazz,
+            FastMethod method,
+            bool hasParameters)
         {
             Clazz = clazz;
             Method = method;
@@ -32,27 +34,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         }
 
         /// <summary>
-        /// Returns the class for the method.
+        ///     Returns the class for the method.
         /// </summary>
         /// <returns>
-        /// class to match on
+        ///     class to match on
         /// </returns>
-        public Type Clazz { get; private set; }
+        public Type Clazz { get; }
 
         /// <summary>
-        /// Returns the method to invoke.
+        ///     Returns the method to invoke.
         /// </summary>
         /// <returns>
-        /// method to invoke
+        ///     method to invoke
         /// </returns>
-        public FastMethod Method { get; private set; }
+        public FastMethod Method { get; }
 
         /// <summary>
-        /// Returns true if the method takes parameters.
+        ///     Returns true if the method takes parameters.
         /// </summary>
         /// <returns>
-        /// indicator if parameters are required
+        ///     indicator if parameters are required
         /// </returns>
-        public bool HasParameters { get; private set; }
+        public bool HasParameters { get; }
     }
 }

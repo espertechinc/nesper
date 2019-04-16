@@ -9,7 +9,7 @@
 namespace com.espertech.esper.common.@internal.@event.property
 {
     /// <summary>Marker interface for dynamic properties.</summary>
-	public interface DynamicProperty
-	{
-	}
+    public interface DynamicProperty
+    {
+    }
 } // End of namespace

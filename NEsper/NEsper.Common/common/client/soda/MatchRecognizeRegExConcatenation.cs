@@ -17,14 +17,13 @@ namespace com.espertech.esper.common.client.soda
     /// Event row regular expressions are organized into a tree-like structure with
     /// nodes representing sub-expressions. 
     /// </summary>
-    
     [Serializable]
     public class MatchRecognizeRegExConcatenation : MatchRecognizeRegEx
     {
-        public override void WriteEPL(TextWriter writer) {
+        public override void WriteEPL(TextWriter writer)
+        {
             String delimiter = "";
-            foreach (MatchRecognizeRegEx node in Children)
-            {
+            foreach (MatchRecognizeRegEx node in Children) {
                 writer.Write(delimiter);
                 node.WriteEPL(writer);
                 delimiter = " ";

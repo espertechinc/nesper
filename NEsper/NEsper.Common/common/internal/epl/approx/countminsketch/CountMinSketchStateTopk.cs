@@ -6,11 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
@@ -18,17 +15,15 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 {
     public class CountMinSketchStateTopk
     {
-        private readonly int _topkMax;
+        private readonly IDictionary<ByteBuffer, long> _lastFreqForItem;
 
         // Wherein: Object either is ByteBuffer or Deque<ByteBuffer>
-        private readonly OrderedDictionary<long, object> _topk;
-        private readonly IDictionary<ByteBuffer, long> _lastFreqForItem;
 
         public CountMinSketchStateTopk(int topkMax)
         {
-            _topkMax = topkMax;
+            TopkMax = topkMax;
             _lastFreqForItem = new Dictionary<ByteBuffer, long>();
-            _topk = new OrderedDictionary<long, object>(SimpleComparer<long>.Reverse);
+            Topk = new OrderedDictionary<long, object>(SimpleComparer<long>.Reverse);
         }
 
         public CountMinSketchStateTopk(
@@ -36,29 +31,45 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             OrderedDictionary<long, object> topk,
             IDictionary<ByteBuffer, long> lastFreqForItem)
         {
-            _topkMax = topkMax;
-            _topk = topk;
+            TopkMax = topkMax;
+            Topk = topk;
             _lastFreqForItem = lastFreqForItem;
         }
 
-        public OrderedDictionary<long, object> Topk
-        {
-            get { return _topk; }
+        public OrderedDictionary<long, object> Topk { get; }
+
+        public IList<ByteBuffer> TopKValues {
+            get {
+                IList<ByteBuffer> values = new List<ByteBuffer>();
+                foreach (var entry in Topk) {
+                    if (entry.Value is Deque<ByteBuffer> dequeBuffer) {
+                        foreach (var o in dequeBuffer) {
+                            values.Add(o);
+                        }
+                    }
+                    else {
+                        values.Add((ByteBuffer) entry.Value);
+                    }
+                }
+
+                return values;
+            }
         }
 
-        public void UpdateExpectIncreasing(byte[] value, long frequency)
+        public int TopkMax { get; }
+
+        public void UpdateExpectIncreasing(
+            byte[] value,
+            long frequency)
         {
-            var filled = _lastFreqForItem.Count == _topkMax;
-            if (!filled)
-            {
+            var filled = _lastFreqForItem.Count == TopkMax;
+            if (!filled) {
                 var valueBuffer = new ByteBuffer(value);
                 UpdateInternal(valueBuffer, frequency);
             }
-            else
-            {
-                var lastKey = _topk.Last().Key;
-                if (frequency > lastKey)
-                {
+            else {
+                var lastKey = Topk.Last().Key;
+                if (frequency > lastKey) {
                     var valueBuffer = new ByteBuffer(value);
                     UpdateInternal(valueBuffer, frequency);
                 }
@@ -67,108 +78,72 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             TrimItems();
         }
 
-        private void UpdateInternal(ByteBuffer valueBuffer, long frequency)
+        private void UpdateInternal(
+            ByteBuffer valueBuffer,
+            long frequency)
         {
-            var beforeUpdateFrequency = _lastFreqForItem.Push(valueBuffer, frequency);
-            if (beforeUpdateFrequency != null)
-            {
-                RemoveItemFromSorted(beforeUpdateFrequency.Value, valueBuffer);
+            if (_lastFreqForItem.Remove(valueBuffer, out var previousUpdateFrequency)) {
+                RemoveItemFromSorted(previousUpdateFrequency, valueBuffer);
             }
+
             AddItemToSorted(frequency, valueBuffer);
         }
 
-        private void RemoveItemFromSorted(long frequency, ByteBuffer value)
+        private void RemoveItemFromSorted(
+            long frequency,
+            ByteBuffer value)
         {
-            var existing = _topk.Get(frequency);
-            if (existing is Deque<ByteBuffer> deque)
-            {
+            var existing = Topk.Get(frequency);
+            if (existing is Deque<ByteBuffer> deque) {
                 deque.Remove(value);
-                if (deque.IsEmpty())
-                {
-                    _topk.Remove(frequency);
+                if (deque.IsEmpty()) {
+                    Topk.Remove(frequency);
                 }
             }
-            else if (existing != null)
-            {
-                _topk.Remove(frequency);
+            else if (existing != null) {
+                Topk.Remove(frequency);
             }
         }
 
-        private void AddItemToSorted(long frequency, ByteBuffer value)
+        private void AddItemToSorted(
+            long frequency,
+            ByteBuffer value)
         {
-            var existing = _topk.Get(frequency);
-            if (existing == null)
-            {
-                _topk.Put(frequency, value);
+            var existing = Topk.Get(frequency);
+            if (existing == null) {
+                Topk.Put(frequency, value);
             }
-            else if (existing is Deque<ByteBuffer>)
-            {
-                var deque = (Deque<ByteBuffer>)existing;
-                deque.Add(value);
+            else if (existing is Deque<ByteBuffer> existingDeque) {
+                existingDeque.Add(value);
             }
-            else
-            {
+            else {
                 Deque<ByteBuffer> deque = new ArrayDeque<ByteBuffer>(2);
-                deque.Add((ByteBuffer)existing);
+                deque.Add((ByteBuffer) existing);
                 deque.Add(value);
-                _topk.Put(frequency, deque);
+                Topk.Put(frequency, deque);
             }
         }
 
         private void TrimItems()
         {
-            while (_lastFreqForItem.Count > _topkMax)
-            {
-                if (_topk.Count == 0)
-                {
+            while (_lastFreqForItem.Count > TopkMax) {
+                if (Topk.Count == 0) {
                     break;
                 }
 
-                var last = _topk.LastOrDefault();
-                if (last.Value is Deque<ByteBuffer>)
-                {
-                    var deque = (Deque<ByteBuffer>)last.Value;
+                var last = Topk.LastOrDefault();
+                if (last.Value is Deque<ByteBuffer> deque) {
                     var valueRemoved = deque.RemoveLast();
                     _lastFreqForItem.Remove(valueRemoved);
-                    if (deque.IsEmpty())
-                    {
-                        _topk.Remove(last.Key);
+                    if (deque.IsEmpty()) {
+                        Topk.Remove(last.Key);
                     }
                 }
-                else
-                {
-                    _topk.Remove(last.Key);
-                    _lastFreqForItem.Remove((ByteBuffer)last.Value);
+                else {
+                    Topk.Remove(last.Key);
+                    _lastFreqForItem.Remove((ByteBuffer) last.Value);
                 }
             }
-        }
-
-        public IList<ByteBuffer> TopKValues
-        {
-            get
-            {
-                IList<ByteBuffer> values = new List<ByteBuffer>();
-                foreach (var entry in _topk)
-                {
-                    if (entry.Value is Deque<ByteBuffer>)
-                    {
-                        var set = (Deque<ByteBuffer>)entry.Value;
-                        foreach (var o in set)
-                        {
-                            values.Add(o);
-                        }
-                    }
-                    else {
-                        values.Add((ByteBuffer) entry.Value);
-                    }
-                }
-                return values;
-            }
-        }
-
-        public int TopkMax
-        {
-            get { return _topkMax; }
         }
     }
 }

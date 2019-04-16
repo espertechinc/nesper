@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
     public class CreateContextValidationEnv
     {
         public CreateContextValidationEnv(
-            string contextName, StatementRawInfo statementRawInfo, StatementCompileTimeServices services,
+            string contextName,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services,
             IList<FilterSpecCompiled> filterSpecCompileds,
             IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders,
             IList<FilterSpecParamExprNodeForge> filterBooleanExpressions)

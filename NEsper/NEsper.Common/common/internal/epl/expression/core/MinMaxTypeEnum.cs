@@ -8,7 +8,6 @@
 
 using System;
 using System.Numerics;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -48,13 +46,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public string ExpressionText { get; }
 
         private static CodegenExpression CodegenMinMax(
-            bool min, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope, ExprNode[] nodes, Type returnType)
+            bool min,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope,
+            ExprNode[] nodes,
+            Type returnType)
         {
             var r0Type = nodes[0].Forge.EvaluationType;
             var r1Type = nodes[1].Forge.EvaluationType;
-            if (r0Type == null || r1Type == null)
-            {
+            if (r0Type == null || r1Type == null) {
                 return ConstantNull();
             }
 
@@ -64,15 +65,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             block.DeclareVar(
                 r0Type, "r0", nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
-            if (!r0Type.IsPrimitive)
-            {
+            if (!r0Type.IsPrimitive) {
                 block.IfRefNullReturnNull("r0");
             }
 
             block.DeclareVar(
                 r1Type, "r1", nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
-            if (!r1Type.IsPrimitive)
-            {
+            if (!r1Type.IsPrimitive) {
                 block.IfRefNullReturnNull("r1");
             }
 
@@ -86,15 +85,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref("r1"), r1Type, returnType))
                 .BlockEnd();
 
-            for (var i = 2; i < nodes.Length; i++)
-            {
+            for (var i = 2; i < nodes.Length; i++) {
                 var nodeType = nodes[i].Forge.EvaluationType;
                 var refname = "r" + i;
                 block.DeclareVar(
                     nodeType, refname,
                     nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
-                if (!nodeType.IsPrimitive)
-                {
+                if (!nodeType.IsPrimitive) {
                     block.IfRefNullReturnNull(refname);
                 }
 
@@ -112,13 +109,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         private static CodegenExpression CodegenCompareRelop(
-            Type resultType, RelationalOpEnum op, CodegenExpressionRef lhs, Type lhsType, CodegenExpression rhs,
+            Type resultType,
+            RelationalOpEnum op,
+            CodegenExpressionRef lhs,
+            Type lhsType,
+            CodegenExpression rhs,
             Type rhsType)
         {
             return Op(lhs, op.ExpressionText, rhs);
         }
 
-        private static CodegenExpression CodegenCompareCompareTo(CodegenExpression lhs, CodegenExpression rhs, bool max)
+        private static CodegenExpression CodegenCompareCompareTo(
+            CodegenExpression lhs,
+            CodegenExpression rhs,
+            bool max)
         {
             return Relational(
                 ExprDotMethod(lhs, "compareTo", rhs),
@@ -139,7 +143,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             /// <param name="isNewData">true if new data</param>
             /// <param name="exprEvaluatorContext">expression evaluation context</param>
             /// <returns>result</returns>
-            object Execute(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+            object Execute(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext exprEvaluatorContext);
         }
 
         /// <summary>
@@ -159,36 +166,32 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             public object Execute(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
-                if (valueChildOne == null || valueChildTwo == null)
-                {
+                if (valueChildOne == null || valueChildTwo == null) {
                     return null;
                 }
 
                 object result;
-                if (valueChildOne.AsDouble() > valueChildTwo.AsDouble())
-                {
+                if (valueChildOne.AsDouble() > valueChildTwo.AsDouble()) {
                     result = valueChildTwo;
                 }
-                else
-                {
+                else {
                     result = valueChildOne;
                 }
 
-                for (var i = 2; i < childNodes.Length; i++)
-                {
+                for (var i = 2; i < childNodes.Length; i++) {
                     var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                    if (valueChild == null)
-                    {
+                    if (valueChild == null) {
                         return null;
                     }
 
-                    if (valueChild.AsDouble() < result.AsDouble())
-                    {
+                    if (valueChild.AsDouble() < result.AsDouble()) {
                         result = valueChild;
                     }
                 }
@@ -197,8 +200,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             public static CodegenExpression Codegen(
-                CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope, ExprNode[] nodes, Type returnType)
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope,
+                ExprNode[] nodes,
+                Type returnType)
             {
                 return CodegenMinMax(true, codegenMethodScope, exprSymbol, codegenClassScope, nodes, returnType);
             }
@@ -221,36 +227,32 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             public object Execute(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
-                if (valueChildOne == null || valueChildTwo == null)
-                {
+                if (valueChildOne == null || valueChildTwo == null) {
                     return null;
                 }
 
                 object result;
-                if (valueChildOne.AsDouble() > valueChildTwo.AsDouble())
-                {
+                if (valueChildOne.AsDouble() > valueChildTwo.AsDouble()) {
                     result = valueChildOne;
                 }
-                else
-                {
+                else {
                     result = valueChildTwo;
                 }
 
-                for (var i = 2; i < childNodes.Length; i++)
-                {
+                for (var i = 2; i < childNodes.Length; i++) {
                     var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                    if (valueChild == null)
-                    {
+                    if (valueChild == null) {
                         return null;
                     }
 
-                    if (valueChild.AsDouble() > result.AsDouble())
-                    {
+                    if (valueChild.AsDouble() > result.AsDouble()) {
                         result = valueChild;
                     }
                 }
@@ -259,8 +261,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             public static CodegenExpression Codegen(
-                CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope, ExprNode[] nodes, Type returnType)
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope,
+                ExprNode[] nodes,
+                Type returnType)
             {
                 return CodegenMinMax(false, codegenMethodScope, exprSymbol, codegenClassScope, nodes, returnType);
             }
@@ -282,7 +287,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             /// <param name="convertors">convertors to BigInteger</param>
             /// <param name="isMax">true if max, false if min</param>
             public ComputerBigIntCoerce(
-                ExprEvaluator[] childNodes, BigIntegerCoercer[] convertors, bool isMax)
+                ExprEvaluator[] childNodes,
+                BigIntegerCoercer[] convertors,
+                bool isMax)
             {
                 this.childNodes = childNodes;
                 this.convertors = convertors;
@@ -290,13 +297,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             public object Execute(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
-                if (valueChildOne == null || valueChildTwo == null)
-                {
+                if (valueChildOne == null || valueChildTwo == null) {
                     return null;
                 }
 
@@ -305,27 +313,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 BigInteger result;
                 if (isMax && bigIntOne.CompareTo(bigIntTwo) > 0 ||
-                    !isMax && bigIntOne.CompareTo(bigIntTwo) < 0)
-                {
+                    !isMax && bigIntOne.CompareTo(bigIntTwo) < 0) {
                     result = bigIntOne;
                 }
-                else
-                {
+                else {
                     result = bigIntTwo;
                 }
 
-                for (var i = 2; i < childNodes.Length; i++)
-                {
+                for (var i = 2; i < childNodes.Length; i++) {
                     var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                    if (valueChild == null)
-                    {
+                    if (valueChild == null) {
                         return null;
                     }
 
                     var bigInt = convertors[i].CoerceBoxedBigInt(valueChild);
                     if (isMax && result.CompareTo(bigInt) < 0 ||
-                        !isMax && result.CompareTo(bigInt) > 0)
-                    {
+                        !isMax && result.CompareTo(bigInt) > 0) {
                         result = bigInt;
                     }
                 }
@@ -334,13 +337,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             public static CodegenExpression Codegen(
-                bool max, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope, ExprNode[] nodes, BigIntegerCoercer[] convertors)
+                bool max,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope,
+                ExprNode[] nodes,
+                BigIntegerCoercer[] convertors)
             {
                 var r0Type = nodes[0].Forge.EvaluationType;
                 var r1Type = nodes[1].Forge.EvaluationType;
-                if (r0Type == null || r1Type == null)
-                {
+                if (r0Type == null || r1Type == null) {
                     return ConstantNull();
                 }
 
@@ -350,15 +356,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 block.DeclareVar(
                     r0Type, "r0", nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
-                if (!r0Type.IsPrimitive)
-                {
+                if (!r0Type.IsPrimitive) {
                     block.IfRefNullReturnNull("r0");
                 }
 
                 block.DeclareVar(
                     r1Type, "r1", nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
-                if (!r1Type.IsPrimitive)
-                {
+                if (!r1Type.IsPrimitive) {
                     block.IfRefNullReturnNull("r1");
                 }
 
@@ -372,15 +376,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     .AssignRef("result", Ref("bi1"))
                     .BlockEnd();
 
-                for (var i = 2; i < nodes.Length; i++)
-                {
+                for (var i = 2; i < nodes.Length; i++) {
                     var nodeType = nodes[i].Forge.EvaluationType;
                     var refnameNumber = "r" + i;
                     block.DeclareVar(
                         nodeType, refnameNumber,
                         nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
-                    if (!nodeType.IsPrimitive)
-                    {
+                    if (!nodeType.IsPrimitive) {
                         block.IfRefNullReturnNull(refnameNumber);
                     }
 
@@ -414,7 +416,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             /// <param name="convertors">convertors to decimal</param>
             /// <param name="isMax">true if max, false if min</param>
             public ComputerBigDecCoerce(
-                ExprEvaluator[] childNodes, SimpleNumberDecimalCoercer[] convertors, bool isMax)
+                ExprEvaluator[] childNodes,
+                SimpleNumberDecimalCoercer[] convertors,
+                bool isMax)
             {
                 this.childNodes = childNodes;
                 this.convertors = convertors;
@@ -422,13 +426,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             public object Execute(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
-                if (valueChildOne == null || valueChildTwo == null)
-                {
+                if (valueChildOne == null || valueChildTwo == null) {
                     return null;
                 }
 
@@ -437,27 +442,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 decimal result;
                 if (isMax && decimalOne.CompareTo(decimalTwo) > 0 ||
-                    !isMax && decimalOne.CompareTo(decimalTwo) < 0)
-                {
+                    !isMax && decimalOne.CompareTo(decimalTwo) < 0) {
                     result = decimalOne;
                 }
-                else
-                {
+                else {
                     result = decimalTwo;
                 }
 
-                for (var i = 2; i < childNodes.Length; i++)
-                {
+                for (var i = 2; i < childNodes.Length; i++) {
                     var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                    if (valueChild == null)
-                    {
+                    if (valueChild == null) {
                         return null;
                     }
 
                     var decimalResult = valueChild.AsDecimal();
                     if (isMax && result.CompareTo(decimalResult) < 0 ||
-                        !isMax && result.CompareTo(decimalResult) > 0)
-                    {
+                        !isMax && result.CompareTo(decimalResult) > 0) {
                         result = decimalResult;
                     }
                 }
@@ -466,13 +466,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             public static CodegenExpression Codegen(
-                bool max, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope, ExprNode[] nodes, SimpleNumberDecimalCoercer[] convertors)
+                bool max,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope,
+                ExprNode[] nodes,
+                SimpleNumberDecimalCoercer[] convertors)
             {
                 var r0Type = nodes[0].Forge.EvaluationType;
                 var r1Type = nodes[1].Forge.EvaluationType;
-                if (r0Type == null || r1Type == null)
-                {
+                if (r0Type == null || r1Type == null) {
                     return ConstantNull();
                 }
 
@@ -482,15 +485,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 block.DeclareVar(
                     r0Type, "r0", nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
-                if (!r0Type.IsPrimitive)
-                {
+                if (!r0Type.IsPrimitive) {
                     block.IfRefNullReturnNull("r0");
                 }
 
                 block.DeclareVar(
                     r1Type, "r1", nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
-                if (!r1Type.IsPrimitive)
-                {
+                if (!r1Type.IsPrimitive) {
                     block.IfRefNullReturnNull("r1");
                 }
 
@@ -504,15 +505,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     .AssignRef("result", Ref("bi1"))
                     .BlockEnd();
 
-                for (var i = 2; i < nodes.Length; i++)
-                {
+                for (var i = 2; i < nodes.Length; i++) {
                     var nodeType = nodes[i].Forge.EvaluationType;
                     var refnameNumber = "r" + i;
                     block.DeclareVar(
                         nodeType, refnameNumber,
                         nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
-                    if (!nodeType.IsPrimitive)
-                    {
+                    if (!nodeType.IsPrimitive) {
                         block.IfRefNullReturnNull(refnameNumber);
                     }
 

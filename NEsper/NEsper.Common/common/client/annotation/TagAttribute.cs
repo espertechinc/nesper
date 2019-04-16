@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.client.annotation
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
-        public TagAttribute(string name, string value)
+        public TagAttribute(
+            string name,
+            string value)
         {
             Name = name;
             Value = value;

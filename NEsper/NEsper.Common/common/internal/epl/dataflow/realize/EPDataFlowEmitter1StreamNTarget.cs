@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         private readonly SubmitHandler[] targets;
 
         public EPDataFlowEmitter1StreamNTarget(
-            int operatorNum, DataFlowSignalManager signalManager, SubmitHandler[] targets)
+            int operatorNum,
+            DataFlowSignalManager signalManager,
+            SubmitHandler[] targets)
         {
             this.operatorNum = operatorNum;
             this.signalManager = signalManager;
@@ -41,7 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
         }
 
-        public void SubmitPort(int portNumber, object @object)
+        public void SubmitPort(
+            int portNumber,
+            object @object)
         {
         }
     }

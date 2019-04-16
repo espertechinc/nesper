@@ -19,14 +19,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly CodegenExpression condition;
         private readonly object constant;
 
-        public CodegenStatementIfConditionReturnConst(CodegenExpression condition, object constant)
+        public CodegenStatementIfConditionReturnConst(
+            CodegenExpression condition,
+            object constant)
         {
             this.condition = condition;
             this.constant = constant;
         }
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("if (");
             condition.Render(builder, imports, isInnerClass);

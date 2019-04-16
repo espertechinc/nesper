@@ -12,7 +12,6 @@ namespace com.espertech.esper.common.@internal.util
     /// Utility class that control debug-level logging in the execution path
     /// beyond which is controlled by logging infrastructure.
     /// </summary>
-
     public class ExecutionPathDebugLog
     {
         /// <summary>

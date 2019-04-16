@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -48,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             return rollup;
         }
 
-        private static void ValidateCompare(int[] one, int[] other)
+        private static void ValidateCompare(
+            int[] one,
+            int[] other)
         {
             if (CompatExtensions.AreEqual(one, other)) {
                 throw new GroupByRollupDuplicateException(one);
@@ -66,7 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
 
             Collections.SortInPlace(
                 enumerationSorted, new ProxyComparer<int[]> {
-                    ProcCompare = (o1, o2) => {
+                    ProcCompare = (
+                        o1,
+                        o2) => {
                         int shared = Math.Min(o1.Length, o2.Length);
                         for (var i = 0; i < shared; i++) {
                             if (o1[i] < o2[i]) {

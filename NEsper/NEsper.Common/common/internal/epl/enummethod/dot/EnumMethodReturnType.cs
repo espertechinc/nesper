@@ -8,8 +8,8 @@
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
-    public enum EnumMethodReturnType {
-
+    public enum EnumMethodReturnType
+    {
         ITERATOR_BEAN,
         BEAN,
         ITERATOR_VALUE,

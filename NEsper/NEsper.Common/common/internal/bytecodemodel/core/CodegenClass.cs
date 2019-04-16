@@ -76,7 +76,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         private static void AddReferencedClasses(
-            Type interfaceImplemented, CodegenClassMethods methods, ISet<Type> classes)
+            Type interfaceImplemented,
+            CodegenClassMethods methods,
+            ISet<Type> classes)
         {
             if (interfaceImplemented != null) {
                 classes.Add(interfaceImplemented);
@@ -91,7 +93,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             }
         }
 
-        private static void AddReferencedClasses(IList<CodegenTypedParam> names, ISet<Type> classes)
+        private static void AddReferencedClasses(
+            IList<CodegenTypedParam> names,
+            ISet<Type> classes)
         {
             foreach (var param in names) {
                 param.MergeClasses(classes);

@@ -17,12 +17,13 @@ namespace com.espertech.esper.common.client.render
         /// <param name="title">the JSON root title</param>
         /// <param name="theEvent">the event to render</param>
         /// <returns>JSON formatted text</returns>
-        String Render(String title, EventBean theEvent);
-    
+        String Render(
+            String title,
+            EventBean theEvent);
+
         /// <summary>RenderAny a given event in the JSON format. </summary>
         /// <param name="theEvent">the event to render</param>
         /// <returns>JSON formatted text</returns>
         String Render(EventBean theEvent);
-    
     }
 }

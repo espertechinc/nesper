@@ -20,44 +20,83 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         string InstrumentedQName { get; }
 
         void InstanceCodegen(
-            CodegenInstanceAux instance, CodegenClassScope classScope, CodegenCtor factoryCtor,
+            CodegenInstanceAux instance,
+            CodegenClassScope classScope,
+            CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers);
 
-        void ProcessViewResultCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+        void ProcessViewResultCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
-        void ProcessJoinResultCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+        void ProcessJoinResultCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
-        void GetIteratorViewCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+        void GetIteratorViewCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
-        void GetIteratorJoinCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+        void GetIteratorJoinCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
         void ProcessOutputLimitedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
         void ProcessOutputLimitedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
-        void ApplyViewResultCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+        void ApplyViewResultCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
-        void ApplyJoinResultCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+        void ApplyJoinResultCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
         void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
         void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
         void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
         void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
         void AcceptHelperVisitorCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
-        void StopMethodCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance);
+        void StopMethodCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance);
 
-        void ClearMethodCodegen(CodegenClassScope classScope, CodegenMethod method);
+        void ClearMethodCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method);
     }
 } // end of namespace

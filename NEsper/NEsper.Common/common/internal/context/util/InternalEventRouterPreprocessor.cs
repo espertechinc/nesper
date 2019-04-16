@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         private static readonly IComparer<InternalEventRouterEntry> COMPARATOR =
             new ProxyComparer<InternalEventRouterEntry> {
-                ProcCompare = (o1, o2) => {
+                ProcCompare = (
+                    o1,
+                    o2) => {
                     if (o1.Priority > o2.Priority) {
                         return 1;
                     }
@@ -57,7 +59,9 @@ namespace com.espertech.esper.common.@internal.context.util
         /// </summary>
         /// <param name="copyMethod">for copying the events to preprocess</param>
         /// <param name="entries">descriptors for pre-processing to apply</param>
-        public InternalEventRouterPreprocessor(EventBeanCopyMethod copyMethod, IList<InternalEventRouterEntry> entries)
+        public InternalEventRouterPreprocessor(
+            EventBeanCopyMethod copyMethod,
+            IList<InternalEventRouterEntry> entries)
         {
             this.copyMethod = copyMethod;
             entries.SortInPlace(COMPARATOR);
@@ -158,7 +162,7 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         private void Apply(
-            EventBean theEvent, 
+            EventBean theEvent,
             EventBean[] eventsPerStream,
             InternalEventRouterEntry entry,
             ExprEvaluatorContext exprEvaluatorContext,
@@ -184,8 +188,8 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         private object[] ObtainValues(
-            EventBean[] eventsPerStream, 
-            InternalEventRouterEntry entry, 
+            EventBean[] eventsPerStream,
+            InternalEventRouterEntry entry,
             ExprEvaluatorContext exprEvaluatorContext,
             InstrumentationCommon instrumentation)
         {

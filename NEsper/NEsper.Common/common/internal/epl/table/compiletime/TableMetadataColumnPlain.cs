@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         {
         }
 
-        public TableMetadataColumnPlain(string columnName, bool key, int indexPlain)
+        public TableMetadataColumnPlain(
+            string columnName,
+            bool key,
+            int indexPlain)
             : base(columnName, key)
         {
             IndexPlain = indexPlain;
@@ -28,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public int IndexPlain { get; set; }
 
         protected override CodegenExpression Make(
-            CodegenMethodScope parent, ModuleTableInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ModuleTableInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(TableMetadataColumnPlain), GetType(), classScope);
             method.Block.DeclareVar(

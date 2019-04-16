@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         private ExprNode[] _validatedParameterExpressions;
         private ViewForgeEnv _viewForgeEnv;
 
-        public VirtualDWViewFactoryForge(Type clazz, string namedWindowName, object customConfigs)
+        public VirtualDWViewFactoryForge(
+            Type clazz,
+            string namedWindowName,
+            object customConfigs)
         {
             if (!clazz.IsImplementsInterface(typeof(VirtualDataWindowForge))) {
                 throw new ViewProcessingException(
@@ -50,7 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public ISet<string> UniqueKeys => _forge.UniqueKeyPropertyNames;
 
-        public void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             EventType = parentEventType;
 
@@ -89,7 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         public string ViewName => "virtual-data-window";
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var mode = _forge.FactoryMode;
             if (!(mode is VirtualDataWindowFactoryModeManaged)) {
@@ -123,7 +131,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             return builder.Build();
         }
 
-        public void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             _parameters = parameters;
             _viewForgeEnv = viewForgeEnv;

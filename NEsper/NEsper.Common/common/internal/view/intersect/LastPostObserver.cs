@@ -21,6 +21,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
         /// <param name="streamId">the stream number sending the events</param>
         /// <param name="newEvents">new events</param>
         /// <param name="oldEvents">old events</param>
-        void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents);
+        void NewData(
+            int streamId,
+            EventBean[] newEvents,
+            EventBean[] oldEvents);
     }
 } // end of namespace

@@ -9,9 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenClassUtil;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -21,23 +19,28 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly Type component;
         private readonly CodegenExpression[] expressions;
 
-        public CodegenExpressionNewArrayWithInit(Type component, CodegenExpression[] expressions)
+        public CodegenExpressionNewArrayWithInit(
+            Type component,
+            CodegenExpression[] expressions)
         {
             this.component = component;
             this.expressions = expressions;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             int numDimensions = GetNumberOfDimensions(component);
             Type outermostType = GetComponentTypeOutermost(component);
             builder.Append("new ");
             CodeGenerationHelper.AppendClassName(builder, outermostType, null, imports);
             builder.Append("[]");
-            for (int i = 0; i < numDimensions; i++)
-            {
+            for (int i = 0; i < numDimensions; i++) {
                 builder.Append("[]");
             }
+
             builder.Append("{");
             CodegenExpressionBuilder.RenderExpressions(builder, expressions, imports, isInnerClass);
             builder.Append("}");
@@ -46,8 +49,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public void MergeClasses(ISet<Type> classes)
         {
             classes.Add(component);
-            foreach (CodegenExpression expression in expressions)
-            {
+            foreach (CodegenExpression expression in expressions) {
                 expression.MergeClasses(classes);
             }
         }

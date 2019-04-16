@@ -22,16 +22,23 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         private readonly OutputStrategyPostProcess postProcessor;
 
         public OutputProcessViewConditionSnapshotPostProcess(
-            ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents,
-            bool afterConditionSatisfied, OutputProcessViewConditionFactory parent,
-            AgentInstanceContext agentInstanceContext, OutputStrategyPostProcess postProcessor) : base(
-            resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent,
-            agentInstanceContext)
+            ResultSetProcessor resultSetProcessor,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
+            OutputProcessViewConditionFactory parent,
+            AgentInstanceContext agentInstanceContext,
+            OutputStrategyPostProcess postProcessor)
+            : base(
+                resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent,
+                agentInstanceContext)
         {
             this.postProcessor = postProcessor;
         }
 
-        public override void Output(bool forceUpdate, UniformPair<EventBean[]> results)
+        public override void Output(
+            bool forceUpdate,
+            UniformPair<EventBean[]> results)
         {
             if (child != null) {
                 postProcessor.Output(forceUpdate, results, child);

@@ -10,18 +10,18 @@ using System;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-	/// <summary>
-	/// Thrown to indicate a precondition violation for undeploy.
-	/// </summary>
-	public class UndeployPreconditionException : Exception
-	{
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="message">validation error message</param>
-	    public UndeployPreconditionException(string message)
-	    	 : base(message)
-	    {
-	    }
-	}
+    /// <summary>
+    /// Thrown to indicate a precondition violation for undeploy.
+    /// </summary>
+    public class UndeployPreconditionException : Exception
+    {
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="message">validation error message</param>
+        public UndeployPreconditionException(string message)
+            : base(message)
+        {
+        }
+    }
 } // end of namespace

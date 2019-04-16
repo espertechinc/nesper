@@ -15,9 +15,15 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
-	public interface CodegenStatement {
-	    void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level, CodegenIndent indent);
+    public interface CodegenStatement
+    {
+        void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent);
 
-	    void MergeClasses(ISet<Type> classes);
-	}
+        void MergeClasses(ISet<Type> classes);
+    }
 } // end of namespace

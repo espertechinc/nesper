@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Reflection;
 using System.Xml;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
@@ -18,7 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// </summary>
     public class FragmentFactoryXPathPredefinedGetter : FragmentFactory
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
         private readonly string eventTypeName;
@@ -28,8 +29,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
         private volatile EventType eventType;
 
         public FragmentFactoryXPathPredefinedGetter(
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, EventTypeNameResolver eventTypeResolver,
-            string eventTypeName, string propertyName)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventTypeNameResolver eventTypeResolver,
+            string eventTypeName,
+            string propertyName)
         {
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             this.eventTypeResolver = eventTypeResolver;

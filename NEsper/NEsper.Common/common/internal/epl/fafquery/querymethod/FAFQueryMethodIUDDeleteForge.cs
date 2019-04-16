@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1;
@@ -17,29 +16,48 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
-	/// <summary>
-	/// Starts and provides the stop method for EPL statements.
-	/// </summary>
-	public class FAFQueryMethodIUDDeleteForge : FAFQueryMethodIUDBaseForge {
-	    public FAFQueryMethodIUDDeleteForge(StatementSpecCompiled spec, Compilable compilable, StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
-	    	 : base(spec, compilable, statementRawInfo, services)
-	    {
-	    }
+    /// <summary>
+    /// Starts and provides the stop method for EPL statements.
+    /// </summary>
+    public class FAFQueryMethodIUDDeleteForge : FAFQueryMethodIUDBaseForge
+    {
+        public FAFQueryMethodIUDDeleteForge(
+            StatementSpecCompiled spec,
+            Compilable compilable,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+            : base(spec, compilable, statementRawInfo, services)
+        {
+        }
 
-	    protected override void InitExec(string aliasName, StatementSpecCompiled spec, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
-	    }
+        protected override void InitExec(
+            string aliasName,
+            StatementSpecCompiled spec,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+        }
 
-	    protected override Type TypeOfMethod() {
-	        return typeof(FAFQueryMethodIUDDelete);
-	    }
+        protected override Type TypeOfMethod()
+        {
+            return typeof(FAFQueryMethodIUDDelete);
+        }
 
-	    protected override void MakeInlineSpecificSetter(CodegenExpressionRef queryMethod, CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        method.Block.ExprDotMethod(queryMethod, "setOptionalWhereClause", whereClause == null ? ConstantNull() : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, this.GetType(), classScope));
-	    }
-	}
+        protected override void MakeInlineSpecificSetter(
+            CodegenExpressionRef queryMethod,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            method.Block.ExprDotMethod(
+                queryMethod, "setOptionalWhereClause",
+                whereClause == null
+                    ? ConstantNull()
+                    : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, this.GetType(), classScope));
+        }
+    }
 } // end of namespace

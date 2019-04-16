@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         internal ExprEvaluator key;
 
         internal CompositeAccessStrategyRelOpBase(
-            bool isNWOnTrigger, int lookupStream, int numStreams, ExprEvaluator key)
+            bool isNWOnTrigger,
+            int lookupStream,
+            int numStreams,
+            ExprEvaluator key)
         {
             this.key = key;
 
@@ -37,13 +40,17 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             this.isNWOnTrigger = isNWOnTrigger;
         }
 
-        public object EvaluateLookup(EventBean theEvent, ExprEvaluatorContext context)
+        public object EvaluateLookup(
+            EventBean theEvent,
+            ExprEvaluatorContext context)
         {
             events[lookupStream] = theEvent;
             return key.Evaluate(events, true, context);
         }
 
-        public object EvaluatePerStream(EventBean[] eventPerStream, ExprEvaluatorContext context)
+        public object EvaluatePerStream(
+            EventBean[] eventPerStream,
+            ExprEvaluatorContext context)
         {
             if (isNWOnTrigger) {
                 return key.Evaluate(eventPerStream, true, context);

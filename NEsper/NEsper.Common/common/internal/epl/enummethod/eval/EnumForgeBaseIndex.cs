@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         internal ExprForge innerExpression;
         internal int streamNumLambda;
 
-        public EnumForgeBaseIndex(ExprForge innerExpression, int streamNumLambda, ObjectArrayEventType indexEventType)
+        public EnumForgeBaseIndex(
+            ExprForge innerExpression,
+            int streamNumLambda,
+            ObjectArrayEventType indexEventType)
         {
             this.innerExpression = innerExpression;
             this.streamNumLambda = streamNumLambda;
@@ -32,6 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public abstract EnumEval EnumEvaluator { get; }
 
         public abstract CodegenExpression Codegen(
-            EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
     }
 } // end of namespace

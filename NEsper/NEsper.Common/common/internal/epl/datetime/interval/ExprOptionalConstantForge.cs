@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         public static readonly IntervalDeltaExprMaxForge MAXFORGE = new IntervalDeltaExprMaxForge();
         public static readonly IntervalDeltaExprMaxEval MAXEVAL = new IntervalDeltaExprMaxEval();
 
-        public ExprOptionalConstantForge(IntervalDeltaExprForge forge, long? optionalConstant)
+        public ExprOptionalConstantForge(
+            IntervalDeltaExprForge forge,
+            long? optionalConstant)
         {
             Forge = forge;
             OptionalConstant = optionalConstant;
@@ -49,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression reference, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression reference,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return Constant(Int64.MaxValue);
@@ -59,7 +63,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         public class IntervalDeltaExprMaxEval : IntervalDeltaExprEvaluator
         {
             public long Evaluate(
-                long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+                long reference,
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext context)
             {
                 return Int64.MaxValue;
             }

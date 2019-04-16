@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.declared.core;
 using com.espertech.esper.compat;
@@ -16,18 +15,24 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
 {
-	public class ExprDeclaredCollectorRuntime : ExprDeclaredCollector {
-	    private readonly IDictionary<string, ExpressionDeclItem> expressions;
+    public class ExprDeclaredCollectorRuntime : ExprDeclaredCollector
+    {
+        private readonly IDictionary<string, ExpressionDeclItem> expressions;
 
-	    public ExprDeclaredCollectorRuntime(IDictionary<string, ExpressionDeclItem> expressions) {
-	        this.expressions = expressions;
-	    }
+        public ExprDeclaredCollectorRuntime(IDictionary<string, ExpressionDeclItem> expressions)
+        {
+            this.expressions = expressions;
+        }
 
-	    public void RegisterExprDeclared(string expressionName, ExpressionDeclItem meta) {
-	        if (expressions.ContainsKey(expressionName)) {
-	            throw new IllegalStateException("Expression name already found '" + expressionName + "'");
-	        }
-	        expressions.Put(expressionName, meta);
-	    }
-	}
+        public void RegisterExprDeclared(
+            string expressionName,
+            ExpressionDeclItem meta)
+        {
+            if (expressions.ContainsKey(expressionName)) {
+                throw new IllegalStateException("Expression name already found '" + expressionName + "'");
+            }
+
+            expressions.Put(expressionName, meta);
+        }
+    }
 } // end of namespace

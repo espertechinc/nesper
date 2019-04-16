@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         internal readonly EvalGuardFactoryNode factoryNode;
 
         public EvalGuardNode(
-            PatternAgentInstanceContext context, EvalGuardFactoryNode factoryNode, EvalNode childNode) : base(context)
+            PatternAgentInstanceContext context,
+            EvalGuardFactoryNode factoryNode,
+            EvalNode childNode)
+            : base(context)
         {
             this.factoryNode = factoryNode;
             ChildNode = childNode;

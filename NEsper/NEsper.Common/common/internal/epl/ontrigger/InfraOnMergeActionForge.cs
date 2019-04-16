@@ -25,9 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         protected abstract CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
-        protected CodegenExpression MakeFilter(CodegenMethod method, CodegenClassScope classScope)
+        protected CodegenExpression MakeFilter(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             return optionalFilter == null
                 ? ConstantNull()
@@ -35,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         public static CodegenExpression MakeActions(
-            IList<InfraOnMergeActionForge> actions, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            IList<InfraOnMergeActionForge> actions,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(IList<object>), typeof(InfraOnMergeActionForge), classScope);

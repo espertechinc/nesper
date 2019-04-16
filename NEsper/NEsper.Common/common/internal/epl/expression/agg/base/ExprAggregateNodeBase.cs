@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
@@ -87,14 +85,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         {
             ValidatePositionals(validationContext);
             aggregationMethodFactory = ValidateAggregationChild(validationContext);
-            if (!validationContext.IsAggregationFutureNameAlreadySet)
-            {
+            if (!validationContext.IsAggregationFutureNameAlreadySet) {
                 aggregationResultFutureMemberName = validationContext.MemberNames.AggregationResultFutureRef();
             }
-            else
-            {
-                if (aggregationResultFutureMemberName == null)
-                {
+            else {
+                if (aggregationResultFutureMemberName == null) {
                     throw new ExprValidationException("Aggregation future not set");
                 }
             }
@@ -106,42 +101,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         {
             ExprAggregateNodeParamDesc paramDesc = ExprAggregateNodeUtil.GetValidatePositionalParams(ChildNodes, true);
             if (validationContext.StatementRawInfo.StatementType == StatementType.CREATE_TABLE &&
-                (paramDesc.OptLocalGroupBy != null || paramDesc.OptionalFilter != null))
-            {
+                (paramDesc.OptLocalGroupBy != null || paramDesc.OptionalFilter != null)) {
                 throw new ExprValidationException(
                     "The 'group_by' and 'filter' parameter is not allowed in create-table statements");
             }
 
             optionalAggregateLocalGroupByDesc = paramDesc.OptLocalGroupBy;
             optionalFilter = paramDesc.OptionalFilter;
-            if (optionalAggregateLocalGroupByDesc != null)
-            {
+            if (optionalAggregateLocalGroupByDesc != null) {
                 ExprNodeUtilityValidate.ValidateNoSpecialsGroupByExpressions(
                     optionalAggregateLocalGroupByDesc.PartitionExpressions);
             }
 
-            if (optionalFilter != null)
-            {
-                ExprNodeUtilityValidate.ValidateNoSpecialsGroupByExpressions(new[] { optionalFilter });
+            if (optionalFilter != null) {
+                ExprNodeUtilityValidate.ValidateNoSpecialsGroupByExpressions(new[] {optionalFilter});
             }
 
-            if (optionalFilter != null && IsFilterExpressionAsLastParameter)
-            {
-                if (paramDesc.PositionalParams.Length > 1)
-                {
+            if (optionalFilter != null && IsFilterExpressionAsLastParameter) {
+                if (paramDesc.PositionalParams.Length > 1) {
                     throw new ExprValidationException("Only a single filter expression can be provided");
                 }
 
                 positionalParams = ExprNodeUtilityMake.AddExpression(paramDesc.PositionalParams, optionalFilter);
             }
-            else
-            {
+            else {
                 positionalParams = paramDesc.PositionalParams;
             }
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -157,25 +148,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         /// <returns>true if 'distinct' keyword was given, false if not</returns>
         public bool IsDistinct => isDistinct;
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
-            if (!(node is ExprAggregateNode))
-            {
+            if (!(node is ExprAggregateNode)) {
                 return false;
             }
 
-            var other = (ExprAggregateNode)node;
+            var other = (ExprAggregateNode) node;
 
-            if (other.IsDistinct != isDistinct)
-            {
+            if (other.IsDistinct != isDistinct) {
                 return false;
             }
 
             return EqualsNodeAggregateMethodOnly(other);
         }
 
-        public virtual int Column
-        {
+        public virtual int Column {
             get => column;
             set => column = value;
         }
@@ -186,13 +176,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         public ExprNode OptionalFilter => optionalFilter;
 
-        public object Evaluate(EventBean[] events, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] events,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var future = GetAggFuture(codegenClassScope);
@@ -200,8 +195,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 future, "getValue", Constant(column),
                 ExprDotMethod(exprSymbol.GetAddExprEvalCtx(parent), "getAgentInstanceId"), exprSymbol.GetAddEPS(parent),
                 exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
-            if (requiredType == typeof(object))
-            {
+            if (requiredType == typeof(object)) {
                 return eval;
             }
 
@@ -231,12 +225,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         ///     Returns the aggregation state factory for use in grouping aggregation states per group-by keys.
         /// </summary>
         /// <value>prototype aggregation state as a factory for aggregation states per group-by key value</value>
-        public AggregationForgeFactory Factory
-        {
-            get
-            {
-                if (aggregationMethodFactory == null)
-                {
+        public AggregationForgeFactory Factory {
+            get {
+                if (aggregationMethodFactory == null) {
                     throw new IllegalStateException("Aggregation method has not been set");
                 }
 
@@ -244,12 +235,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
         }
 
-        public Type EvaluationType
-        {
-            get
-            {
-                if (aggregationMethodFactory == null)
-                {
+        public Type EvaluationType {
+            get {
+                if (aggregationMethodFactory == null) {
                     throw new IllegalStateException("Aggregation method has not been set");
                 }
 
@@ -259,21 +247,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         internal Type ValidateNumericChildAllowFilter(bool hasFilter)
         {
-            if (positionalParams.Length == 0 || positionalParams.Length > 2)
-            {
+            if (positionalParams.Length == 0 || positionalParams.Length > 2) {
                 throw MakeExceptionExpectedParamNum(1, 2);
             }
 
             // validate child expression (filter expression is actually always the first expression)
             var child = positionalParams[0];
-            if (hasFilter)
-            {
+            if (hasFilter) {
                 ValidateFilter(positionalParams[1]);
             }
 
             var childType = child.Forge.EvaluationType;
-            if (!childType.IsNumeric())
-            {
+            if (!childType.IsNumeric()) {
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
                     (childType == null ? "null" : childType.GetSimpleName()) +
@@ -283,51 +268,45 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             return childType;
         }
 
-        internal ExprValidationException MakeExceptionExpectedParamNum(int lower, int upper)
+        internal ExprValidationException MakeExceptionExpectedParamNum(
+            int lower,
+            int upper)
         {
             var message = "The '" + AggregationFunctionName + "' function expects ";
-            if (lower == 0 && upper == 0)
-            {
+            if (lower == 0 && upper == 0) {
                 message += "no parameters";
             }
-            else if (lower == upper)
-            {
+            else if (lower == upper) {
                 message += lower + " parameters";
             }
-            else
-            {
+            else {
                 message += "at least " + lower + " and up to " + upper + " parameters";
             }
 
             return new ExprValidationException(message);
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(AggregationFunctionName);
             writer.Write('(');
 
-            if (isDistinct)
-            {
+            if (isDistinct) {
                 writer.Write("distinct ");
             }
 
-            if (ChildNodes.Length > 0)
-            {
+            if (ChildNodes.Length > 0) {
                 ChildNodes[0].ToEPL(writer, Precedence);
 
                 var delimiter = ",";
-                for (var i = 1; i < ChildNodes.Length; i++)
-                {
+                for (var i = 1; i < ChildNodes.Length; i++) {
                     writer.Write(delimiter);
                     delimiter = ",";
                     ChildNodes[i].ToEPL(writer, Precedence);
                 }
             }
-            else
-            {
-                if (IsExprTextWildcardWhenNoParams)
-                {
+            else {
+                if (IsExprTextWildcardWhenNoParams) {
                     writer.Write('*');
                 }
             }
@@ -337,8 +316,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         public void ValidateFilter(ExprNode filterEvaluator)
         {
-            if (filterEvaluator.Forge.EvaluationType.GetBoxedType() != typeof(bool?))
-            {
+            if (filterEvaluator.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
                 throw new ExprValidationException(
                     "Invalid filter expression parameter to the aggregation function '" +
                     AggregationFunctionName +

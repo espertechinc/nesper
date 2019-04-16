@@ -19,14 +19,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         private readonly int numStreams;
         private readonly int streamNum;
 
-        public ExecNodeAllUnidirectionalOuter(int streamNum, int numStreams)
+        public ExecNodeAllUnidirectionalOuter(
+            int streamNum,
+            int numStreams)
         {
             this.streamNum = streamNum;
             this.numStreams = numStreams;
         }
 
         public override void Process(
-            EventBean lookupEvent, EventBean[] prefillPath, ICollection<EventBean[]> result,
+            EventBean lookupEvent,
+            EventBean[] prefillPath,
+            ICollection<EventBean[]> result,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var events = new EventBean[numStreams];

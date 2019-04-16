@@ -25,16 +25,23 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         internal readonly ExprEvaluator exprEvaluator;
 
         public IndexedTableLookupPlanHashedOnlyFactory(
-            int lookupStream, int indexedStream, TableLookupIndexReqKey[] indexNum, ExprEvaluator exprEvaluator) : base(
-            lookupStream, indexedStream, indexNum)
+            int lookupStream,
+            int indexedStream,
+            TableLookupIndexReqKey[] indexNum,
+            ExprEvaluator exprEvaluator)
+            : base(
+                lookupStream, indexedStream, indexNum)
         {
             this.exprEvaluator = exprEvaluator;
             eventPropertyValueGetter = null;
         }
 
         public IndexedTableLookupPlanHashedOnlyFactory(
-            int lookupStream, int indexedStream, TableLookupIndexReqKey[] indexNum,
-            EventPropertyValueGetter eventPropertyValueGetter) : base(lookupStream, indexedStream, indexNum)
+            int lookupStream,
+            int indexedStream,
+            TableLookupIndexReqKey[] indexNum,
+            EventPropertyValueGetter eventPropertyValueGetter)
+            : base(lookupStream, indexedStream, indexNum)
         {
             exprEvaluator = null;
             this.eventPropertyValueGetter = eventPropertyValueGetter;
@@ -45,7 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         public EventPropertyValueGetter EventPropertyValueGetter => eventPropertyValueGetter;
 
         protected override JoinExecTableLookupStrategy MakeStrategyInternal(
-            EventTable[] eventTables, EventType[] eventTypes)
+            EventTable[] eventTables,
+            EventType[] eventTypes)
         {
             var index = (PropertyHashedEventTable) eventTables[0];
             if (eventPropertyValueGetter != null) {

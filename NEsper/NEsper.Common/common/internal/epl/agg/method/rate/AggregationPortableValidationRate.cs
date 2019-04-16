@@ -20,7 +20,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
     {
         private long intervalTime;
 
-        public AggregationPortableValidationRate(bool distinct, bool hasFilter, Type inputValueType, long intervalTime)
+        public AggregationPortableValidationRate(
+            bool distinct,
+            bool hasFilter,
+            Type inputValueType,
+            long intervalTime)
             : base(distinct, hasFilter, inputValueType)
         {
             this.intervalTime = intervalTime;
@@ -36,14 +40,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         }
 
         protected override void CodegenInlineSetWFilterWInputType(
-            CodegenExpressionRef @ref, CodegenMethod method, ModuleTableInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(@ref, "setIntervalTime", Constant(intervalTime));
         }
 
         protected override void ValidateIntoTableWFilterWInputType(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory)
         {
             var that = (AggregationPortableValidationRate) intoTableAgg;

@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="eventBeanType">the event type of the synthetic event</param>
         /// <param name="natural">the properties of the event</param>
         /// <param name="optionalSynthetic">the event bean that is the synthetic event, or null if no synthetic is packed in</param>
-        public NaturalEventBean(EventType eventBeanType, object[] natural, EventBean optionalSynthetic)
+        public NaturalEventBean(
+            EventType eventBeanType,
+            object[] natural,
+            EventBean optionalSynthetic)
         {
             EventType = eventBeanType;
             Natural = natural;

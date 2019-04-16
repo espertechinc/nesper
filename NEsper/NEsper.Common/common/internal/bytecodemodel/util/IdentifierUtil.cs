@@ -17,16 +17,29 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             var sb = new StringBuilder();
             for (int i = 0; i < str.Length; i++) {
                 var charAt = str[i];
-                if (Character.IsJavaIdentifierPart(charAt))
-                {
+                if (IsIdentifierPart(charAt)) {
                     sb.Append(charAt);
                 }
-                else
-                {
+                else {
                     sb.Append((int) charAt);
                 }
             }
+
             return sb.ToString();
+        }
+
+        private static bool IsIdentifierPart(char cc)
+        {
+            if (char.IsLetterOrDigit(cc)) {
+                return true;
+            }
+
+            switch (cc) {
+                case '_':
+                    return true;
+            }
+
+            return false;
         }
     }
 } // end of namespace

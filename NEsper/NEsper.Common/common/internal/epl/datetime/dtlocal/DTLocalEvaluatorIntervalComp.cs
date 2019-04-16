@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -15,7 +14,13 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-	public interface DTLocalEvaluatorIntervalComp {
-	    object Evaluate(object startTimestamp, object endTimestamp, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
-	}
+    public interface DTLocalEvaluatorIntervalComp
+    {
+        object Evaluate(
+            object startTimestamp,
+            object endTimestamp,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
+    }
 } // end of namespace

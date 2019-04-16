@@ -8,8 +8,8 @@
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
-	public interface ResultSetProcessorOutputHelperVisitor
-	{
-	    void Visit(ResultSetProcessorOutputHelper helper);
-	}
+    public interface ResultSetProcessorOutputHelperVisitor
+    {
+        void Visit(ResultSetProcessorOutputHelper helper);
+    }
 } // end of namespace

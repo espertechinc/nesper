@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -24,7 +23,6 @@ using com.espertech.esper.common.@internal.epl.resultset.rowforall;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 
@@ -113,7 +111,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         public Type InterfaceClass => typeof(ResultSetProcessorRowPerGroup);
 
         public void InstanceCodegen(
-            CodegenInstanceAux instance, CodegenClassScope classScope, CodegenCtor factoryCtor,
+            CodegenInstanceAux instance,
+            CodegenClassScope classScope,
+            CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
             instance.Methods.AddMethod(
@@ -155,7 +155,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         public void ProcessViewResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (unboundedProcessor) {
                 ResultSetProcessorRowPerGroupUnbound.ProcessViewResultUnboundCodegen(
@@ -167,13 +169,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         public void ProcessJoinResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.ProcessJoinResultCodegen(this, classScope, method, instance);
         }
 
         public void GetIteratorViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (unboundedProcessor) {
                 ResultSetProcessorRowPerGroupUnbound.GetIteratorViewUnboundedCodegen(
@@ -185,25 +191,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         public void GetIteratorJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.GetIteratorJoinCodegen(this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.ProcessOutputLimitedViewCodegen(this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.ProcessOutputLimitedJoinCodegen(this, classScope, method, instance);
         }
 
         public void ApplyViewResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (unboundedProcessor) {
                 ResultSetProcessorRowPerGroupUnbound.ApplyViewResultCodegen(this, classScope, method, instance);
@@ -214,44 +228,59 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         public void ApplyJoinResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.ApplyJoinResultCodegen(this, classScope, method, instance);
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.ContinueOutputLimitedLastAllNonBufferedViewCodegen(this, method);
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.ContinueOutputLimitedLastAllNonBufferedJoinCodegen(this, method);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.ProcessOutputLimitedLastAllNonBufferedViewCodegen(
                 this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
                 this, classScope, method, instance);
         }
 
         public void AcceptHelperVisitorCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.AcceptHelperVisitorCodegen(method, instance);
         }
 
-        public void StopMethodCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+        public void StopMethodCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (unboundedProcessor) {
                 ResultSetProcessorRowPerGroupUnbound.StopMethodCodegenUnbound(this, classScope, method, instance);
@@ -261,7 +290,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             }
         }
 
-        public void ClearMethodCodegen(CodegenClassScope classScope, CodegenMethod method)
+        public void ClearMethodCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method)
         {
             ResultSetProcessorRowPerGroupImpl.ClearMethodCodegen(method);
         }

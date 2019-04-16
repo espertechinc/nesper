@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,29 +16,50 @@ using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalInsertNoWildcardSingleColCoercionMapWrap : SelectEvalBaseFirstPropFromWrap {
+    public class SelectEvalInsertNoWildcardSingleColCoercionMapWrap : SelectEvalBaseFirstPropFromWrap
+    {
+        public SelectEvalInsertNoWildcardSingleColCoercionMapWrap(
+            SelectExprForgeContext selectExprForgeContext,
+            WrapperEventType wrapper)
+            : base(selectExprForgeContext, wrapper)
 
-	    public SelectEvalInsertNoWildcardSingleColCoercionMapWrap(SelectExprForgeContext selectExprForgeContext, WrapperEventType wrapper)
+        {
+        }
 
-	    	 : base(selectExprForgeContext, wrapper)
+        protected override CodegenExpression ProcessFirstColCodegen(
+            Type evaluationType,
+            CodegenExpression expression,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ProcessFirstColCodegen(
+                expression, eventBeanFactory, codegenClassScope, wrapper, "adapterForTypedMap", typeof(IDictionary<object, object>));
+        }
 
-	    {
-	    }
-
-	    protected override CodegenExpression ProcessFirstColCodegen(Type evaluationType, CodegenExpression expression, CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ProcessFirstColCodegen(expression, eventBeanFactory, codegenClassScope, wrapper, "adapterForTypedMap", typeof(IDictionary<object, object>));
-	    }
-
-	    public static CodegenExpression ProcessFirstColCodegen(CodegenExpression expression, CodegenExpression eventBeanFactory, CodegenClassScope codegenClassScope, WrapperEventType wrapperEventType, string adapterMethod, Type castType) {
-	        CodegenExpressionField memberUndType = codegenClassScope.AddFieldUnshared(true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(wrapperEventType.UnderlyingEventType, EPStatementInitServicesConstants.REF));
-	        CodegenExpressionField memberWrapperType = codegenClassScope.AddFieldUnshared(true, typeof(WrapperEventType), Cast(typeof(WrapperEventType), EventTypeUtility.ResolveTypeCodegen(wrapperEventType, EPStatementInitServicesConstants.REF)));
-	        CodegenExpression wrapped = ExprDotMethod(eventBeanFactory, adapterMethod, castType == typeof(object) ? expression : Cast(castType, expression), memberUndType);
-	        return ExprDotMethod(eventBeanFactory, "adapterForTypedWrapper", wrapped, StaticMethod(typeof(Collections), "emptyMap"), memberWrapperType);
-	    }
-	}
+        public static CodegenExpression ProcessFirstColCodegen(
+            CodegenExpression expression,
+            CodegenExpression eventBeanFactory,
+            CodegenClassScope codegenClassScope,
+            WrapperEventType wrapperEventType,
+            string adapterMethod,
+            Type castType)
+        {
+            CodegenExpressionField memberUndType = codegenClassScope.AddFieldUnshared(
+                true, typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(wrapperEventType.UnderlyingEventType, EPStatementInitServicesConstants.REF));
+            CodegenExpressionField memberWrapperType = codegenClassScope.AddFieldUnshared(
+                true, typeof(WrapperEventType),
+                Cast(typeof(WrapperEventType), EventTypeUtility.ResolveTypeCodegen(wrapperEventType, EPStatementInitServicesConstants.REF)));
+            CodegenExpression wrapped = ExprDotMethod(
+                eventBeanFactory, adapterMethod, castType == typeof(object) ? expression : Cast(castType, expression), memberUndType);
+            return ExprDotMethod(
+                eventBeanFactory, "adapterForTypedWrapper", wrapped, StaticMethod(typeof(Collections), "emptyMap"), memberWrapperType);
+        }
+    }
 } // end of namespace

@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return PublicConstValue(typeof(HistoricalIndexLookupStrategyNoIndex), "INSTANCE");
         }

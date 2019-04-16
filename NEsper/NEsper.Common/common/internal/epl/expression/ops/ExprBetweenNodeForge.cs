@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprBetweenNodeForge : ExprForgeInstrumentable
     {
         public ExprBetweenNodeForge(
-            ExprBetweenNodeImpl parent, ExprBetweenNodeImpl.ExprBetweenComp computer, bool isAlwaysFalse)
+            ExprBetweenNodeImpl parent,
+            ExprBetweenNodeImpl.ExprBetweenComp computer,
+            bool isAlwaysFalse)
         {
             ForgeRenderable = parent;
             Computer = computer;
@@ -35,7 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprEvaluator ExprEvaluator {
             get {
                 if (IsAlwaysFalse) {
-                    return new ProxyExprEvaluator((eventsPerStream, isNewData, context) => false);
+                    return new ProxyExprEvaluator(
+                        (
+                            eventsPerStream,
+                            isNewData,
+                            context) => false);
                 }
 
                 var nodes = ForgeRenderable.ChildNodes;
@@ -47,7 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (IsAlwaysFalse) {
@@ -58,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(

@@ -16,7 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 {
     public class ExprTableAccessNodeKeys : ExprTableAccessNode
     {
-        public ExprTableAccessNodeKeys(string tableName) : base(tableName)
+        public ExprTableAccessNodeKeys(string tableName)
+            : base(tableName)
         {
         }
 
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         protected override CodegenExpression[] InstrumentationQParams => new CodegenExpression[0];
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ToPrecedenceFreeEPLInternal(writer);
             writer.Write(".keys()");

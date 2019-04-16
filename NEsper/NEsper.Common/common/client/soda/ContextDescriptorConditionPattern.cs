@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="pattern">pattern expression</param>
         /// <param name="inclusive">if the events of the pattern should be included in the contextual statements</param>
         /// <param name="now">indicator whether "now"</param>
-        public ContextDescriptorConditionPattern(PatternExpr pattern, bool inclusive, bool now)
+        public ContextDescriptorConditionPattern(
+            PatternExpr pattern,
+            bool inclusive,
+            bool now)
         {
             Pattern = pattern;
             IsInclusive = inclusive;
@@ -46,20 +49,21 @@ namespace com.espertech.esper.common.client.soda
         /// <value>&quot;now&quot; indicator</value>
         public bool IsNow { get; set; }
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
-            if (IsNow)
-            {
+            if (IsNow) {
                 writer.Write("@now and");
             }
+
             writer.Write("pattern [");
-            if (Pattern != null)
-            {
+            if (Pattern != null) {
                 Pattern.ToEPL(writer, PatternExprPrecedenceEnum.MINIMUM, formatter);
             }
+
             writer.Write("]");
-            if (IsInclusive)
-            {
+            if (IsInclusive) {
                 writer.Write("@Inclusive");
             }
         }

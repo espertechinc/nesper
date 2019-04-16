@@ -17,7 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     public class SubordinateQueryPlanDescForge
     {
         public SubordinateQueryPlanDescForge(
-            SubordTableLookupStrategyFactoryForge lookupStrategyFactory, SubordinateQueryIndexDescForge[] indexDescs)
+            SubordTableLookupStrategyFactoryForge lookupStrategyFactory,
+            SubordinateQueryIndexDescForge[] indexDescs)
         {
             LookupStrategyFactory = lookupStrategyFactory;
             IndexDescs = indexDescs;
@@ -28,18 +29,20 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         public SubordinateQueryIndexDescForge[] IndexDescs { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var builder = new SAIFFInitializeBuilder(
                 typeof(SubordinateQueryPlanDesc), GetType(), "strategy", parent, symbols, classScope);
             var numIndex = IndexDescs == null ? 0 : IndexDescs.Length;
             var indexDescArray = new CodegenExpression[numIndex];
             for (var i = 0; i < numIndex; i++) {
-                indexDescArray[i] = IndexDescs[i].Make(builder.Method, symbols, classScope);
+                indexDescArray[i] = IndexDescs[i].Make(builder.Method(), symbols, classScope);
             }
 
             return builder.Expression(
-                    "lookupStrategyFactory", LookupStrategyFactory.Make(builder.Method, symbols, classScope))
+                    "lookupStrategyFactory", LookupStrategyFactory.Make(builder.Method(), symbols, classScope))
                 .Expression("indexDescs", NewArrayWithInit(typeof(SubordinateQueryIndexDesc), indexDescArray))
                 .Build();
         }

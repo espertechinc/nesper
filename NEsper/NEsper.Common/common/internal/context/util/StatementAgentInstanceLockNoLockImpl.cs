@@ -10,57 +10,66 @@ using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-	/// <summary>
-	/// A Statement-lock implementation that doesn't lock.
-	/// </summary>
-	public class StatementAgentInstanceLockNoLockImpl : StatementAgentInstanceLock {
-	    private readonly string name;
+    /// <summary>
+    /// A Statement-lock implementation that doesn't lock.
+    /// </summary>
+    public class StatementAgentInstanceLockNoLockImpl : StatementAgentInstanceLock
+    {
+        private readonly string name;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="name">of lock</param>
-	    public StatementAgentInstanceLockNoLockImpl(string name) {
-	        this.name = name;
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="name">of lock</param>
+        public StatementAgentInstanceLockNoLockImpl(string name)
+        {
+            this.name = name;
+        }
 
-	    /// <summary>
-	    /// Lock write lock.
-	    /// </summary>
-	    public void AcquireWriteLock() {
-	    }
+        /// <summary>
+        /// Lock write lock.
+        /// </summary>
+        public void AcquireWriteLock()
+        {
+        }
 
-	    /// <summary>
-	    /// Lock write lock.
-	    /// </summary>
-	    public bool AcquireWriteLock(long msecTimeout) {
-	        return true;
-	    }
+        /// <summary>
+        /// Lock write lock.
+        /// </summary>
+        public bool AcquireWriteLock(long msecTimeout)
+        {
+            return true;
+        }
 
-	    /// <summary>
-	    /// Unlock write lock.
-	    /// </summary>
-	    public void ReleaseWriteLock() {
-	    }
+        /// <summary>
+        /// Unlock write lock.
+        /// </summary>
+        public void ReleaseWriteLock()
+        {
+        }
 
-	    /// <summary>
-	    /// Lock read lock.
-	    /// </summary>
-	    public void AcquireReadLock() {
-	    }
+        /// <summary>
+        /// Lock read lock.
+        /// </summary>
+        public void AcquireReadLock()
+        {
+        }
 
-	    /// <summary>
-	    /// Unlock read lock.
-	    /// </summary>
-	    public void ReleaseReadLock() {
-	    }
+        /// <summary>
+        /// Unlock read lock.
+        /// </summary>
+        public void ReleaseReadLock()
+        {
+        }
 
-	    public override string ToString() {
-	        return this.GetType().Name + " name=" + name;
-	    }
+        public override string ToString()
+        {
+            return this.GetType().Name + " name=" + name;
+        }
 
-	    public bool AddAcquiredLock(ILockable @lock) {
-	        return false;
-	    }
-	}
+        public bool AddAcquiredLock(ILockable @lock)
+        {
+            return false;
+        }
+    }
 } // end of namespace

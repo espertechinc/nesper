@@ -28,14 +28,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly IList<Pair<string, CodegenMethod>> methods = new List<Pair<string, CodegenMethod>>();
 
         public CodegenExpressionNewAnonymousClass(
-            CodegenBlock parentBlock, Type interfaceOrSuperClass, IList<CodegenExpression> ctorParams) : base(
-            parentBlock)
+            CodegenBlock parentBlock,
+            Type interfaceOrSuperClass,
+            IList<CodegenExpression> ctorParams)
+            : base(
+                parentBlock)
         {
             this.interfaceOrSuperClass = interfaceOrSuperClass;
             this.ctorParams = ctorParams;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             Render(builder, imports, isInnerClass, 4, new CodegenIndent(true));
         }
@@ -53,7 +59,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         }
 
         public override void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level,
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
             CodegenIndent indent)
         {
             builder.Append("new ");
@@ -86,7 +95,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             builder.Append("}");
         }
 
-        public void AddMethod(string name, CodegenMethod methodNode)
+        public void AddMethod(
+            string name,
+            CodegenMethod methodNode)
         {
             methods.Add(new Pair<string, CodegenMethod>(name, methodNode));
         }

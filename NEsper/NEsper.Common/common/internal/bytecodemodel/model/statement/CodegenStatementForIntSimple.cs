@@ -20,8 +20,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly string @ref;
         private readonly CodegenExpression upperLimit;
 
-        public CodegenStatementForIntSimple(CodegenBlock parent, string @ref, CodegenExpression upperLimit) : base(
-            parent)
+        public CodegenStatementForIntSimple(
+            CodegenBlock parent,
+            string @ref,
+            CodegenExpression upperLimit)
+            : base(
+                parent)
         {
             this.@ref = @ref;
             this.upperLimit = upperLimit;
@@ -30,7 +34,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         public CodegenBlock Block { get; set; }
 
         public override void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level,
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
             CodegenIndent indent)
         {
             builder.Append("for (int ").Append(@ref).Append("=0; ").Append(@ref).Append("<");

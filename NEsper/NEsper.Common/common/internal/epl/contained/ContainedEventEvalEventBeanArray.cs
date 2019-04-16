@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
         }
 
         public object GetFragment(
-            EventBean eventBean, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean eventBean,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
         }

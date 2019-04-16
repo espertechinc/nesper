@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
         internal readonly EvalOrFactoryNode factoryNode;
 
         public EvalOrNode(
-            PatternAgentInstanceContext context, EvalOrFactoryNode factoryNode, EvalNode[] childNodes) : base(context)
+            PatternAgentInstanceContext context,
+            EvalOrFactoryNode factoryNode,
+            EvalNode[] childNodes)
+            : base(context)
         {
             this.factoryNode = factoryNode;
             ChildNodes = childNodes;

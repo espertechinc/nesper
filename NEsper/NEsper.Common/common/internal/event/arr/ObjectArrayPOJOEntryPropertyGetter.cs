@@ -28,10 +28,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
         private readonly int propertyIndex;
 
         public ObjectArrayPOJOEntryPropertyGetter(
-            int propertyIndex, BeanEventPropertyGetter entryGetter,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory,
-            Type returnType, Type nestedComponentType) : base(
-            eventBeanTypedEventFactory, beanEventTypeFactory, returnType, nestedComponentType)
+            int propertyIndex,
+            BeanEventPropertyGetter entryGetter,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
+            Type returnType,
+            Type nestedComponentType)
+            : base(
+                eventBeanTypedEventFactory, beanEventTypeFactory, returnType, nestedComponentType)
         {
             this.propertyIndex = propertyIndex;
             this.entryGetter = entryGetter;
@@ -76,7 +80,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -84,7 +89,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -92,21 +98,24 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetObjectArrayCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(IsExistsPropertyCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         private CodegenMethod GetObjectArrayCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array").Block
@@ -138,7 +147,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         private CodegenMethod IsExistsPropertyCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array").Block

@@ -10,7 +10,6 @@ using System;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-
     /// <summary> General-purpose pair of values of any type. The pair equals another pair if
     /// the objects that form the pair equal in any order, ie. first pair first object equals (.equals)
     /// the second pair first object or second object, and the first pair second object equals the second pair first object
@@ -31,8 +30,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary> Construct pair of values.</summary>
         /// <param name="first">is the first value</param>
         /// <param name="second">is the second value</param>
-
-        public InterchangeablePair(FirstT first, SecondT second)
+        public InterchangeablePair(
+            FirstT first,
+            SecondT second)
         {
             First = first;
             Second = second;
@@ -47,14 +47,12 @@ namespace com.espertech.esper.common.@internal.collection
         /// </returns>
         public override bool Equals(Object obj)
         {
-            if (this == obj)
-            {
+            if (this == obj) {
                 return true;
             }
 
             var other = obj as InterchangeablePair<FirstT, SecondT>;
-            if (other == null)
-            {
+            if (other == null) {
                 return false;
             }
 

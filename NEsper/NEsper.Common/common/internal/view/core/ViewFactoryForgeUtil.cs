@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -39,7 +38,8 @@ namespace com.espertech.esper.common.@internal.view.core
         }
 
         public static void DetermineViewSchedules(
-            IList<ViewFactoryForge> forges, IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
+            IList<ViewFactoryForge> forges,
+            IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
         {
             var collector = new ViewForgeVisitorSchedulesCollector(scheduleHandleCallbackProviders);
             foreach (var forge in forges) {
@@ -48,7 +48,9 @@ namespace com.espertech.esper.common.@internal.view.core
         }
 
         public static IList<ViewFactoryForge> CreateForges(
-            ViewSpec[] viewSpecDefinitions, ViewFactoryForgeArgs args, EventType parentEventType)
+            ViewSpec[] viewSpecDefinitions,
+            ViewFactoryForgeArgs args,
+            EventType parentEventType)
         {
             try {
                 // Clone the view spec list to prevent parameter modification
@@ -95,7 +97,9 @@ namespace com.espertech.esper.common.@internal.view.core
         }
 
         private static IList<ViewFactoryForge> BuildGrouped(
-            IList<ViewFactoryForge> forgesChain, ViewFactoryForgeArgs args, ViewForgeEnv viewForgeEnv,
+            IList<ViewFactoryForge> forgesChain,
+            ViewFactoryForgeArgs args,
+            ViewForgeEnv viewForgeEnv,
             EventType parentEventType)
         {
             if (forgesChain.IsEmpty()) {
@@ -152,7 +156,9 @@ namespace com.espertech.esper.common.@internal.view.core
 
         // Identify a sequence of data windows and replace with an intersection or union
         private static IList<ViewFactoryForge> BuildIntersectionsUnions(
-            IList<ViewFactoryForge> forges, ViewFactoryForgeArgs args, ViewForgeEnv viewForgeEnv,
+            IList<ViewFactoryForge> forges,
+            ViewFactoryForgeArgs args,
+            ViewForgeEnv viewForgeEnv,
             EventType parentEventType)
         {
             IList<ViewFactoryForge> result = new List<ViewFactoryForge>(forges.Count);
@@ -193,7 +199,9 @@ namespace com.espertech.esper.common.@internal.view.core
         }
 
         private static ViewFactoryForge MakeIntersectOrUnion(
-            IList<ViewFactoryForge> dataWindows, ViewFactoryForgeArgs args, ViewForgeEnv viewForgeEnv,
+            IList<ViewFactoryForge> dataWindows,
+            ViewFactoryForgeArgs args,
+            ViewForgeEnv viewForgeEnv,
             EventType parentEventType)
         {
             foreach (var forge in dataWindows) {
@@ -261,7 +269,9 @@ namespace com.espertech.esper.common.@internal.view.core
         }
 
         private static IList<ViewFactoryForge> InstantiateFactories(
-            IList<ViewSpec> viewSpecList, ViewFactoryForgeArgs args, ViewForgeEnv viewForgeEnv)
+            IList<ViewSpec> viewSpecList,
+            ViewFactoryForgeArgs args,
+            ViewForgeEnv viewForgeEnv)
         {
             IList<ViewFactoryForge> forges = new List<ViewFactoryForge>();
 
@@ -338,7 +348,10 @@ namespace com.espertech.esper.common.@internal.view.core
         }
 
         public static CodegenMethod MakeViewFactories(
-            IList<ViewFactoryForge> forges, Type generator, CodegenMethodScope parent, CodegenClassScope classScope,
+            IList<ViewFactoryForge> forges,
+            Type generator,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope,
             SAIFFInitializeSymbol symbols)
         {
             var method = parent.MakeChild(typeof(ViewFactory[]), generator, classScope);
@@ -354,11 +367,11 @@ namespace com.espertech.esper.common.@internal.view.core
         }
 
         public static CodegenExpression CodegenForgesWInit(
-            IList<ViewFactoryForge> forges, 
-            int streamNum, 
+            IList<ViewFactoryForge> forges,
+            int streamNum,
             int? subqueryNum,
-            CodegenMethodScope parent, 
-            SAIFFInitializeSymbol symbols, 
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ViewFactory[]), typeof(ViewFactoryForgeUtil), classScope);

@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             this.optionalFilter = optionalFilter;
         }
 
-        public bool IsApplies(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        public bool IsApplies(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             if (optionalFilter == null) {
                 return true;

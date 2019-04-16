@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly ExprTypeofNode parent;
         private readonly int streamNum;
 
-        public ExprTypeofNodeForgeStreamEvent(ExprTypeofNode parent, int streamNum)
+        public ExprTypeofNodeForgeStreamEvent(
+            ExprTypeofNode parent,
+            int streamNum)
         {
             this.parent = parent;
             this.streamNum = streamNum;
@@ -39,7 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprNodeRenderable ForgeRenderable => parent;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var @event = eventsPerStream[streamNum];
             if (@event == null) {
@@ -54,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
@@ -73,7 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(

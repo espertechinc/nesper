@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
         /// <value>result event type</value>
         EventType FragmentEventType { get; }
 
-        CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
         bool CompareTo(PropertyEvaluatorForge other);
     }

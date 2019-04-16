@@ -55,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         /// <param name="classScope">class scope</param>
         /// <param name="parent">parent</param>
         /// <returns>method</returns>
-        public CodegenMethod PostProcessCodegenMayNullMayForce(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenMethod PostProcessCodegenMayNullMayForce(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(void), typeof(OutputStrategyPostProcessForge), classScope)
                 .AddParam(typeof(bool), "forceUpdate")
@@ -118,7 +120,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             return method;
         }
 
-        private CodegenMethod RouteCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        private CodegenMethod RouteCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(void), typeof(OutputStrategyPostProcessForge), classScope)
                 .AddParam(typeof(EventBean[]), "events");
@@ -139,7 +143,10 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             return method;
         }
 
-        public CodegenExpression Make(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var resolveTable = table == null
                 ? ConstantNull()

@@ -20,8 +20,13 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         bool ProvidesIndexForOperation(string operationName);
 
         SubordTableLookupStrategyFactoryQuadTreeForge GetSubordinateLookupStrategy(
-            string operationName, IDictionary<int, ExprNode> expressions, bool isNWOnTrigger, int numOuterstreams);
+            string operationName,
+            IDictionary<int, ExprNode> expressions,
+            bool isNWOnTrigger,
+            int numOuterstreams);
 
-        CodegenExpression CodegenMake(CodegenMethodScope parent, CodegenClassScope classScope);
+        CodegenExpression CodegenMake(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope);
     }
 } // end of namespace

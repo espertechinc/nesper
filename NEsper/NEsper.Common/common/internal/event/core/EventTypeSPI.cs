@@ -65,6 +65,8 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         EventPropertyGetterIndexedSPI GetGetterIndexedSPI(string propertyName);
 
-        void SetMetadataId(long publicId, long protectedId);
+        void SetMetadataId(
+            long publicId,
+            long protectedId);
     }
 } // end of namespace

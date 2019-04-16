@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         private readonly DTLocalEvaluatorIntervalComp inner;
 
         public DTLocalBeanIntervalWithEndEval(
-            EventPropertyGetter getterStartTimestamp, EventPropertyGetter getterEndTimestamp,
+            EventPropertyGetter getterStartTimestamp,
+            EventPropertyGetter getterEndTimestamp,
             DTLocalEvaluatorIntervalComp inner)
         {
             this.getterStartTimestamp = getterStartTimestamp;
@@ -31,7 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var start = getterStartTimestamp.Get((EventBean) target);
             if (start == null) {
@@ -47,8 +51,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalBeanIntervalWithEndForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            DTLocalBeanIntervalWithEndForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalBeanIntervalWithEndEval), codegenClassScope)

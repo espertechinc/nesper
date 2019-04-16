@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             set => view = value;
         }
 
-        public void Update(EventBean[] newData, EventBean[] oldData)
+        public void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             view.Child.Update(newData, oldData);
         }

@@ -10,32 +10,36 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.name
 {
-	public class CodegenFieldNameTableAccess : CodegenFieldName {
-	    private readonly int _tableAccessNumber;
+    public class CodegenFieldNameTableAccess : CodegenFieldName
+    {
+        private readonly int _tableAccessNumber;
 
-	    public CodegenFieldNameTableAccess(int tableAccessNumber) {
-	        this._tableAccessNumber = tableAccessNumber;
-	    }
+        public CodegenFieldNameTableAccess(int tableAccessNumber)
+        {
+            this._tableAccessNumber = tableAccessNumber;
+        }
 
-	    public string Name {
-	        get => CodegenPackageScopeNames.TableAccessResultFuture(_tableAccessNumber);
-	    }
+        public string Name {
+            get => CodegenPackageScopeNames.TableAccessResultFuture(_tableAccessNumber);
+        }
 
-	    public int TableAccessNumber {
-	        get => _tableAccessNumber;
-	    }
+        public int TableAccessNumber {
+            get => _tableAccessNumber;
+        }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+        public override bool Equals(object o)
+        {
+            if (this == o) return true;
+            if (o == null || GetType() != o.GetType()) return false;
 
-	        CodegenFieldNameTableAccess that = (CodegenFieldNameTableAccess) o;
+            CodegenFieldNameTableAccess that = (CodegenFieldNameTableAccess) o;
 
-	        return _tableAccessNumber == that._tableAccessNumber;
-	    }
+            return _tableAccessNumber == that._tableAccessNumber;
+        }
 
-	    public override int GetHashCode() {
-	        return _tableAccessNumber;
-	    }
-	}
+        public override int GetHashCode()
+        {
+            return _tableAccessNumber;
+        }
+    }
 } // end of namespace

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -28,7 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     {
         private readonly Array constantResult;
 
-        public ExprArrayNodeForge(ExprArrayNode parent, Type arrayReturnType, object[] constantResult)
+        public ExprArrayNodeForge(
+            ExprArrayNode parent,
+            Type arrayReturnType,
+            object[] constantResult)
         {
             Parent = parent;
             ArrayReturnType = arrayReturnType;
@@ -38,7 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public ExprArrayNodeForge(
-            ExprArrayNode parent, Type arrayReturnType, bool mustCoerce, SimpleNumberCoercer coercer,
+            ExprArrayNode parent,
+            Type arrayReturnType,
+            bool mustCoerce,
+            SimpleNumberCoercer coercer,
             object constantResult)
         {
             Parent = parent;
@@ -63,7 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public object ConstantResult => constantResult;
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprArrayNodeForgeEval.CodegenEvaluateGetROCollectionScalar(
@@ -71,7 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
@@ -81,13 +87,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope, 
+            CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
@@ -95,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope, 
+            CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
@@ -115,7 +122,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprEvaluator ExprEvaluator {
             get {
                 if (constantResult != null) {
-                    return new ProxyExprEvaluator((eventsPerStream, isNewData, context) => constantResult);
+                    return new ProxyExprEvaluator(
+                        (
+                            eventsPerStream,
+                            isNewData,
+                            context) => constantResult);
                 }
 
                 return new ExprArrayNodeForgeEval(
@@ -124,8 +135,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, 
-            CodegenMethodScope codegenMethodScope, 
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
@@ -137,7 +148,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -155,9 +168,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
 
                     return new ProxyExprEnumerationEval {
-                        ProcEvaluateGetROCollectionEvents = (_, __, ___) => null,
-                        ProcEvaluateGetROCollectionScalar = (_, __, ___) => constantResultList,
-                        ProcEvaluateGetEventBean = (_, __, ___) => null
+                        ProcEvaluateGetROCollectionEvents = (
+                            _,
+                            __,
+                            ___) => null,
+                        ProcEvaluateGetROCollectionScalar = (
+                            _,
+                            __,
+                            ___) => constantResultList,
+                        ProcEvaluateGetEventBean = (
+                            _,
+                            __,
+                            ___) => null
                     };
                 }
 

@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         internal readonly ExprForge valueEval;
 
         public SubselectForgeNRBase(
-            ExprSubselectNode subselect, ExprForge valueEval, ExprForge selectEval, bool resultWhenNoMatchingEvents)
+            ExprSubselectNode subselect,
+            ExprForge valueEval,
+            ExprForge selectEval,
+            bool resultWhenNoMatchingEvents)
         {
             this.subselect = subselect;
             this.valueEval = valueEval;
@@ -37,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             method.Block
@@ -66,6 +71,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         protected abstract CodegenExpression CodegenEvaluateInternal(
-            CodegenMethodScope parent, SubselectForgeNRSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            SubselectForgeNRSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

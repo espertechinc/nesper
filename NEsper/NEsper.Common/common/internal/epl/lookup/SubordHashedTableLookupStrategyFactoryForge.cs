@@ -36,12 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly IList<EventType> _outerStreamTypesZeroIndexed;
 
         public SubordHashedTableLookupStrategyFactoryForge(
-            bool isNWOnTrigger, 
-            int numStreamsOuter, 
+            bool isNWOnTrigger,
+            int numStreamsOuter,
             IList<SubordPropHashKeyForge> hashKeys,
-            CoercionDesc hashKeyCoercionTypes, 
+            CoercionDesc hashKeyCoercionTypes,
             bool isStrictKeys,
-            string[] hashStrictKeys, 
+            string[] hashStrictKeys,
             int[] keyStreamNumbers,
             IList<EventType> outerStreamTypesZeroIndexed)
         {
@@ -73,7 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var methodNode = parent.MakeChild(typeof(SubordTableLookupStrategyFactory), GetType(), classScope);
             if (_isStrictKeys) {

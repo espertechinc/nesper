@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.type
                     return null;
                 }
 
-                return s1.Divide(s2);
+                return s1 / s2;
             }
 
             public CodegenExpression Codegen(
@@ -64,9 +64,13 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(ltype, "d1").AddParam(rtype, "d2").Block
                     .DeclareVar(typeof(BigInteger), "s1", convOne.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
                     .DeclareVar(typeof(BigInteger), "s2", convTwo.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
-                    .IfCondition(CodegenExpressionBuilder.EqualsIdentity(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s2"), "doubleValue"), CodegenExpressionBuilder.Constant(0)))
+                    .IfCondition(
+                        CodegenExpressionBuilder.EqualsIdentity(
+                            CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s2"), "doubleValue"),
+                            CodegenExpressionBuilder.Constant(0)))
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull())
-                    .MethodReturn(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s1"), "divide", CodegenExpressionBuilder.Ref("s2")));
+                    .MethodReturn(
+                        CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s1"), "divide", CodegenExpressionBuilder.Ref("s2")));
                 return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
         }

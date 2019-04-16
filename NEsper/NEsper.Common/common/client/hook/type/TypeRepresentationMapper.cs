@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.client.hook.type
     /// <summary>
     /// For Avro schemas for mapping a given type to a given Avro schema.
     /// </summary>
-    public interface TypeRepresentationMapper {
+    public interface TypeRepresentationMapper
+    {
         /// <summary>
         /// Return Avro schema for type information provided.
         /// </summary>

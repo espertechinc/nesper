@@ -6,31 +6,28 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.mgr
 {
-	public class ContextPartitionVisitorAgentInstanceId : ContextPartitionVisitor {
-	    private readonly int numLevels;
-	    private readonly ISet<int> ids = new HashSet<>();
+    public class ContextPartitionVisitorAgentInstanceId : ContextPartitionVisitor
+    {
+        private readonly int numLevels;
 
-	    public ContextPartitionVisitorAgentInstanceId(int numLevels) {
-	        this.numLevels = numLevels;
-	    }
+        public ContextPartitionVisitorAgentInstanceId(int numLevels)
+        {
+            this.numLevels = numLevels;
+        }
 
-	    public void Add(int id, int nestingLevel) {
-	        if (nestingLevel == numLevels) {
-	            ids.Add(id);
-	        }
-	    }
+        public ISet<int> Ids { get; } = new HashSet<int>();
 
-	    public ISet<int> Ids
-	    {
-	        get => ids;
-	    }
-	}
+        public void Add(
+            int id,
+            int nestingLevel)
+        {
+            if (nestingLevel == numLevels) {
+                Ids.Add(id);
+            }
+        }
+    }
 } // end of namespace

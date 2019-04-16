@@ -25,13 +25,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         private readonly ExprDotNodeForgePropertyExpr forge;
 
-        public ExprDotNodeForgePropertyExprEvalMapped(ExprDotNodeForgePropertyExpr forge, ExprEvaluator exprEvaluator)
+        public ExprDotNodeForgePropertyExprEvalMapped(
+            ExprDotNodeForgePropertyExpr forge,
+            ExprEvaluator exprEvaluator)
         {
             this.forge = forge;
             this.exprEvaluator = exprEvaluator;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var @event = eventsPerStream[forge.StreamNum];
             if (@event == null) {
@@ -48,8 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public static CodegenExpression Codegen(
-            ExprDotNodeForgePropertyExpr forge, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            ExprDotNodeForgePropertyExpr forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType, typeof(ExprDotNodeForgePropertyExprEvalMapped), codegenClassScope);

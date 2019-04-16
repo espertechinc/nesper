@@ -24,12 +24,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         Type EvaluationType { get; }
 
         bool OptionalEvent { set; }
-        bool EvaluatePropertyExists(EventBean[] eventsPerStream, bool isNewData);
+
+        bool EvaluatePropertyExists(
+            EventBean[] eventsPerStream,
+            bool isNewData);
 
         bool IsContextEvaluated { get; }
 
         CodegenExpression Codegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
     }
 } // end of namespace

@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class EnumWhereIndexEventsForge : EnumForgeBaseIndex
     {
         public EnumWhereIndexEventsForge(
-            ExprForge innerExpression, int streamNumLambda, ObjectArrayEventType indexEventType)
+            ExprForge innerExpression,
+            int streamNumLambda,
+            ObjectArrayEventType indexEventType)
             : base(innerExpression, streamNumLambda, indexEventType)
         {
         }
@@ -26,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             new EnumWhereIndexEventsForgeEval(this, innerExpression.ExprEvaluator);
 
         public override CodegenExpression Codegen(
-            EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return EnumWhereIndexEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
         }

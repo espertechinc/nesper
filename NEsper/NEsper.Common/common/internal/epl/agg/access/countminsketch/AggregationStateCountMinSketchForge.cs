@@ -23,14 +23,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         internal AggregatorAccessCountMinSketch aggregator;
 
         public AggregationStateCountMinSketchForge(
-            ExprAggMultiFunctionCountMinSketchNode parent, CountMinSketchSpecForge specification)
+            ExprAggMultiFunctionCountMinSketchNode parent,
+            CountMinSketchSpecForge specification)
         {
             this.parent = parent;
             this.specification = specification;
         }
 
         public void InitAccessForge(
-            int col, bool join, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            bool join,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             aggregator = new AggregatorAccessCountMinSketch(this, col, rowCtor, membersColumnized, classScope);
         }
@@ -38,7 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         public AggregatorAccess Aggregator => aggregator;
 
         public CodegenExpression CodegenGetAccessTableState(
-            int column, CodegenMethodScope parent, CodegenClassScope classScope)
+            int column,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             return AggregatorAccessCountMinSketch.CodegenGetAccessTableState(column, parent, classScope);
         }

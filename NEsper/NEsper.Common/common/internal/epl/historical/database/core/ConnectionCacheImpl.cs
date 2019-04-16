@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
@@ -35,11 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         {
         }
 
-        public override Pair<DbDriver, DbDriverCommand> Connection
-        {
+        public override Pair<DbDriver, DbDriverCommand> Connection {
             get {
-                if (cache == null)
-                {
+                if (cache == null) {
                     cache = MakeNew();
                 }
 
@@ -54,8 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
         public override void Dispose()
         {
-            if (cache != null)
-            {
+            if (cache != null) {
                 Close(cache);
             }
 

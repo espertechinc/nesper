@@ -44,7 +44,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
         }
 
         public StmtForgeMethodResult Make(
-            string packageName, string classPostfix, StatementCompileTimeServices services)
+            string packageName,
+            string classPostfix,
+            StatementCompileTimeServices services)
         {
             CreateIndexDesc spec = @base.StatementSpec.Raw.CreateIndexDesc;
 
@@ -118,7 +120,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
-                @base, 
+                @base,
                 new EmptyList<FilterSpecCompiled>(),
                 new EmptyList<ScheduleHandleCallbackProvider>(),
                 new EmptyList<NamedWindowConsumerStreamSpec>(),

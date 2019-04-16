@@ -39,140 +39,157 @@ namespace com.espertech.esper.common.@internal.support
         {
         }
 
-        public SupportBean(String theString, int intPrimitive)
+        public SupportBean(
+            String theString,
+            int intPrimitive)
         {
             _theString = theString;
             _intPrimitive = intPrimitive;
         }
 
-        public string TheString
-        {
+        public string TheString {
             get { return _theString; }
             set { _theString = value; }
         }
 
-        public bool BoolPrimitive
-        {
+        public bool BoolPrimitive {
             get { return _boolPrimitive; }
             set { _boolPrimitive = value; }
         }
 
-        public int IntPrimitive
-        {
+        public int IntPrimitive {
             get { return _intPrimitive; }
             set { _intPrimitive = value; }
         }
 
-        public long LongPrimitive
-        {
+        public long LongPrimitive {
             get { return _longPrimitive; }
             set { _longPrimitive = value; }
         }
 
-        public char CharPrimitive
-        {
+        public char CharPrimitive {
             get { return _charPrimitive; }
             set { _charPrimitive = value; }
         }
 
-        public short ShortPrimitive
-        {
+        public short ShortPrimitive {
             get { return _shortPrimitive; }
             set { _shortPrimitive = value; }
         }
 
-        public byte BytePrimitive
-        {
+        public byte BytePrimitive {
             get { return _bytePrimitive; }
             set { _bytePrimitive = value; }
         }
 
-        public float FloatPrimitive
-        {
+        public float FloatPrimitive {
             get { return _floatPrimitive; }
             set { _floatPrimitive = value; }
         }
 
-        public double DoublePrimitive
-        {
+        public double DoublePrimitive {
             get { return _doublePrimitive; }
             set { _doublePrimitive = value; }
         }
 
-        public bool? BoolBoxed
-        {
+        public bool? BoolBoxed {
             get { return _boolBoxed; }
             set { _boolBoxed = value; }
         }
 
-        public int? IntBoxed
-        {
+        public int? IntBoxed {
             get { return _intBoxed; }
             set { _intBoxed = value; }
         }
 
-        public long? LongBoxed
-        {
+        public long? LongBoxed {
             get { return _longBoxed; }
             set { _longBoxed = value; }
         }
 
-        public char? CharBoxed
-        {
+        public char? CharBoxed {
             get { return _charBoxed; }
             set { _charBoxed = value; }
         }
 
-        public short? ShortBoxed
-        {
+        public short? ShortBoxed {
             get { return _shortBoxed; }
             set { _shortBoxed = value; }
         }
 
-        public byte? ByteBoxed
-        {
+        public byte? ByteBoxed {
             get { return _byteBoxed; }
             set { _byteBoxed = value; }
         }
 
-        public float? FloatBoxed
-        {
+        public float? FloatBoxed {
             get { return _floatBoxed; }
             set { _floatBoxed = value; }
         }
 
-        public double? DoubleBoxed
-        {
+        public double? DoubleBoxed {
             get { return _doubleBoxed; }
             set { _doubleBoxed = value; }
         }
 
-        public SupportEnum EnumValue
-        {
+        public SupportEnum EnumValue {
             get { return _enumValue; }
             set { _enumValue = value; }
         }
 
-        public SupportBean This
-        {
+        public SupportBean This {
             get { return this; }
         }
 
-        public decimal? DecimalBoxed
-        {
+        public decimal? DecimalBoxed {
             get { return _decimalBoxed; }
             set { _decimalBoxed = value; }
         }
 
-        public int? GetIntBoxed() { return _intBoxed; }
-        public int GetIntPrimitive() { return _intPrimitive; }
-        public long? GetLongBoxed() { return _longBoxed; }
-        public long GetLongPrimitive() { return _longPrimitive; }
-        public double? GetDoubleBoxed() { return _doubleBoxed; }
-        public double GetDoublePrimitive() { return _doublePrimitive; }
-        public float? GetFloatBoxed() { return _floatBoxed; }
-        public float GetFloatPrimitive() { return _floatPrimitive; }
-        public string GetTheString() { return _theString; }
+        public int? GetIntBoxed()
+        {
+            return _intBoxed;
+        }
+
+        public int GetIntPrimitive()
+        {
+            return _intPrimitive;
+        }
+
+        public long? GetLongBoxed()
+        {
+            return _longBoxed;
+        }
+
+        public long GetLongPrimitive()
+        {
+            return _longPrimitive;
+        }
+
+        public double? GetDoubleBoxed()
+        {
+            return _doubleBoxed;
+        }
+
+        public double GetDoublePrimitive()
+        {
+            return _doublePrimitive;
+        }
+
+        public float? GetFloatBoxed()
+        {
+            return _floatBoxed;
+        }
+
+        public float GetFloatPrimitive()
+        {
+            return _floatPrimitive;
+        }
+
+        public string GetTheString()
+        {
+            return _theString;
+        }
 
 #if false
         public void SetIntBoxed(int? value) { _intBoxed = value; }
@@ -188,14 +205,16 @@ namespace com.espertech.esper.common.@internal.support
 
         public override String ToString()
         {
-            return string.Format("{0}({1}, {2})",
+            return string.Format(
+                "{0}({1}, {2})",
                 GetType().Name, _theString, _intPrimitive);
         }
 
-        public static SupportBean[] GetBeansPerIndex(SupportBean[] beans, int[] indexes)
+        public static SupportBean[] GetBeansPerIndex(
+            SupportBean[] beans,
+            int[] indexes)
         {
-            if (indexes == null)
-            {
+            if (indexes == null) {
                 return null;
             }
 
@@ -204,7 +223,9 @@ namespace com.espertech.esper.common.@internal.support
                 .ToArray();
         }
 
-        public static Object[] GetOAStringAndIntPerIndex(SupportBean[] beans, int[] indexes)
+        public static Object[] GetOAStringAndIntPerIndex(
+            SupportBean[] beans,
+            int[] indexes)
         {
             SupportBean[] arr = GetBeansPerIndex(beans, indexes);
             return arr == null ? null : ToOAStringAndInt(arr);
@@ -213,7 +234,7 @@ namespace com.espertech.esper.common.@internal.support
         private static Object[] ToOAStringAndInt(SupportBean[] arr)
         {
             return arr
-                .Select(v => new object[] { v.TheString, v.IntPrimitive })
+                .Select(v => new object[] {v.TheString, v.IntPrimitive})
                 .ToArray();
         }
     }

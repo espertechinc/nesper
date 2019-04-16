@@ -7,17 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.support
 {
-	public class QueryPlanIndexDescFAF : QueryPlanIndexDescBase {
-
-	    public QueryPlanIndexDescFAF(IndexNameAndDescPair[] tables) : base(tables)
-	        {
-	    }
-	}
+    public class QueryPlanIndexDescFAF : QueryPlanIndexDescBase
+    {
+        public QueryPlanIndexDescFAF(IndexNameAndDescPair[] tables)
+            : base(tables)
+        {
+        }
+    }
 } // end of namespace

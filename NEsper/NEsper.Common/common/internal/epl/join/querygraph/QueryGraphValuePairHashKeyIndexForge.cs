@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     public class QueryGraphValuePairHashKeyIndexForge
     {
         public QueryGraphValuePairHashKeyIndexForge(
-            string[] indexed, IList<QueryGraphValueEntryHashKeyedForge> key, string[] strictKeys)
+            string[] indexed,
+            IList<QueryGraphValueEntryHashKeyedForge> key,
+            string[] strictKeys)
         {
             Indexed = indexed;
             Keys = key;

@@ -9,7 +9,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -18,13 +17,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
     public class AggregationStateSortedWrappingCollection : ICollection<EventBean>
     {
-        private readonly OrderedDictionary<Object, Object> _sorted;
-        private readonly int _count;
+        private readonly OrderedDictionary<object, object> _sorted;
 
-        public AggregationStateSortedWrappingCollection(OrderedDictionary<Object, Object> sorted, int count)
+        public AggregationStateSortedWrappingCollection(
+            OrderedDictionary<object, object> sorted,
+            int count)
         {
             _sorted = sorted;
-            _count = count;
+            Count = count;
         }
 
         public bool Remove(EventBean item)
@@ -32,48 +32,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             throw new NotImplementedException();
         }
 
-        public int Count
-        {
-            get { return _count; }
-        }
+        public int Count { get; }
 
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
-
-        public bool IsEmpty() {
-            return Count == 0;
-        }
+        public bool IsReadOnly => true;
 
         public IEnumerator<EventBean> GetEnumerator()
         {
             return new AggregationStateSortedEnumerator(_sorted, false);
-        }
-
-        public Object[] ToArray()
-        {
-            throw new UnsupportedOperationException("Partial implementation");
-        }
-
-        public Object[] ToArray(Object[] a)
-        {
-            throw new UnsupportedOperationException("Partial implementation");
-        }
-
-        public bool Contains(Object o)
-        {
-            throw new UnsupportedOperationException("Partial implementation");
-        }
-
-        public void Add(Object o)
-        {
-            throw new UnsupportedOperationException("Read-only implementation");
-        }
-
-        public bool Remove(Object o)
-        {
-            throw new UnsupportedOperationException("Read-only implementation");
         }
 
         public void Add(EventBean item)
@@ -81,7 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             throw new NotImplementedException();
         }
 
-        public void Clear() {
+        public void Clear()
+        {
             throw new UnsupportedOperationException("Read-only implementation");
         }
 
@@ -90,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             throw new NotImplementedException();
         }
 
-        public void CopyTo(EventBean[] array, int arrayIndex)
+        public void CopyTo(
+            EventBean[] array,
+            int arrayIndex)
         {
             throw new NotImplementedException();
         }
@@ -98,6 +66,36 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public bool IsEmpty()
+        {
+            return Count == 0;
+        }
+
+        public object[] ToArray()
+        {
+            throw new UnsupportedOperationException("Partial implementation");
+        }
+
+        public object[] ToArray(object[] a)
+        {
+            throw new UnsupportedOperationException("Partial implementation");
+        }
+
+        public bool Contains(object o)
+        {
+            throw new UnsupportedOperationException("Partial implementation");
+        }
+
+        public void Add(object o)
+        {
+            throw new UnsupportedOperationException("Read-only implementation");
+        }
+
+        public bool Remove(object o)
+        {
+            throw new UnsupportedOperationException("Read-only implementation");
         }
     }
 }

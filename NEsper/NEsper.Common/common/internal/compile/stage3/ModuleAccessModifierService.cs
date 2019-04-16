@@ -13,20 +13,37 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public interface ModuleAccessModifierService
     {
-        NameAccessModifier GetAccessModifierEventType(StatementRawInfo raw, string eventTypeName);
+        NameAccessModifier GetAccessModifierEventType(
+            StatementRawInfo raw,
+            string eventTypeName);
 
-        NameAccessModifier GetAccessModifierContext(StatementBaseInfo @base, string contextName);
+        NameAccessModifier GetAccessModifierContext(
+            StatementBaseInfo @base,
+            string contextName);
 
-        NameAccessModifier GetAccessModifierVariable(StatementBaseInfo @base, string variableName);
+        NameAccessModifier GetAccessModifierVariable(
+            StatementBaseInfo @base,
+            string variableName);
 
-        NameAccessModifier GetAccessModifierExpression(StatementBaseInfo @base, string expressionName);
+        NameAccessModifier GetAccessModifierExpression(
+            StatementBaseInfo @base,
+            string expressionName);
 
-        NameAccessModifier GetAccessModifierTable(StatementBaseInfo @base, string tableName);
+        NameAccessModifier GetAccessModifierTable(
+            StatementBaseInfo @base,
+            string tableName);
 
-        NameAccessModifier GetAccessModifierNamedWindow(StatementBaseInfo @base, string namedWindowName);
+        NameAccessModifier GetAccessModifierNamedWindow(
+            StatementBaseInfo @base,
+            string namedWindowName);
 
-        NameAccessModifier GetAccessModifierScript(StatementBaseInfo @base, string scriptName, int numParameters);
+        NameAccessModifier GetAccessModifierScript(
+            StatementBaseInfo @base,
+            string scriptName,
+            int numParameters);
 
-        EventTypeBusModifier GetBusModifierEventType(StatementRawInfo raw, string eventTypeName);
+        EventTypeBusModifier GetBusModifierEventType(
+            StatementRawInfo raw,
+            string eventTypeName);
     }
 } // end of namespace

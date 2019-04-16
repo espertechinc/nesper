@@ -16,6 +16,8 @@ namespace com.espertech.esper.common.@internal.context.activator
         EventType EventType { get; }
 
         ViewableActivationResult Activate(
-            AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient);
+            AgentInstanceContext agentInstanceContext,
+            bool isSubselect,
+            bool isRecoveringResilient);
     }
 } // end of namespace

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -30,33 +31,42 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
     /// </summary>
     public class ResultSetProcessorSimpleImpl
     {
-        private const string NAME_OUTPUTALLHELPER = "outputAllHelper";
-        private const string NAME_OUTPUTLASTHELPER = "outputLastHelper";
+        private const string NAME_OUTPUTALLHELPER = "OutputAllHelper";
+        private const string NAME_OUTPUTLASTHELPER = "OutputLastHelper";
 
         public static void ProcessJoinResultCodegen(
-            ResultSetProcessorSimpleForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorSimpleForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar(typeof(EventBean[]), "selectOldEvents", ConstantNull())
-                .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents");
+            method.Block.DeclareVar(typeof(EventBean[]), "SelectOldEvents", ConstantNull())
+                .DeclareVarNoInit(typeof(EventBean[]), "SelectNewEvents");
             ResultSetProcessorUtil.ProcessJoinResultCodegen(
-                method, classScope, instance, forge.OptionalHavingNode != null, forge.IsSelectRStream, forge.IsSorting,
+                method, classScope, instance,
+                forge.OptionalHavingNode != null, forge.IsSelectRStream,
+                forge.IsSorting,
                 false);
         }
 
         public static void ProcessViewResultCodegen(
-            ResultSetProcessorSimpleForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorSimpleForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar(typeof(EventBean[]), "selectOldEvents", ConstantNull())
-                .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents");
+            method.Block
+                .DeclareVar(typeof(EventBean[]), "SelectOldEvents", ConstantNull())
+                .DeclareVarNoInit(typeof(EventBean[]), "SelectNewEvents");
             ResultSetProcessorUtil.ProcessViewResultCodegen(
                 method, classScope, instance, forge.OptionalHavingNode != null, forge.IsSelectRStream, forge.IsSorting,
                 false);
         }
 
         public static void GetIteratorViewCodegen(
-            ResultSetProcessorSimpleForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorSimpleForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             if (!forge.IsSorting) {
@@ -64,16 +74,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 method.Block.MethodReturn(
                     NewInstance(
                         typeof(TransformEventIterator), ExprDotMethod(REF_VIEWABLE, "iterator"),
-                        NewInstance(typeof(ResultSetProcessorHandtruTransform), Ref("this"))));
+                        NewInstance(typeof(ResultSetProcessorHandtruTransform), Ref("this"))
+                        ));
                 return;
             }
 
             // Pull all events, generate order keys
-            method.Block.DeclareVar(
-                    typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
+            method.Block
+                .DeclareVar(typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .DeclareVar(typeof(IList<object>), "events", NewInstance(typeof(List<object>)))
                 .DeclareVar(typeof(IList<object>), "orderKeys", NewInstance(typeof(List<object>)))
-                .DeclareVar(typeof(IEnumerator), "parentIterator", ExprDotMethod(REF_VIEWABLE, "iterator"))
+                .DeclareVar(typeof(IEnumerator<object>), "parentIterator", ExprDotMethod(REF_VIEWABLE, "iterator"))
                 .IfCondition(EqualsNull(Ref("parentIterator")))
                 .BlockReturn(PublicConstValue(typeof(CollectionUtil), "NULL_EVENT_ITERATOR"));
 
@@ -90,11 +101,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                     loop.DeclareVar(
                         typeof(EventBean[]), "result",
                         StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_GETSELECTEVENTSNOHAVING, REF_SELECTEXPRPROCESSOR,
-                            Ref("eventsPerStream"), ConstantTrue(), ConstantTrue(), REF_AGENTINSTANCECONTEXT));
+                            typeof(ResultSetProcessorUtil),
+                            ResultSetProcessorUtil.METHOD_GETSELECTEVENTSNOHAVING, 
+                            REF_SELECTEXPRPROCESSOR,
+                            Ref("eventsPerStream"),
+                            ConstantTrue(),
+                            ConstantTrue(), 
+                            REF_AGENTINSTANCECONTEXT));
                 }
                 else {
-                    CodegenMethod select = ResultSetProcessorUtil.GetSelectEventsHavingCodegen(classScope, instance);
+                    var select = ResultSetProcessorUtil.GetSelectEventsHavingCodegen(classScope, instance);
                     loop.DeclareVar(
                         typeof(EventBean[]), "result",
                         LocalMethod(
@@ -110,44 +126,56 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 
             method.Block.DeclareVar(
                     typeof(EventBean[]), "outgoingEvents",
-                    StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYEVENTS, Ref("events")))
+                    StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYEVENTS, Ref("events")))
                 .DeclareVar(
                     typeof(object[]), "orderKeysArr",
-                    StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYOBJECTS, Ref("orderKeys")))
+                    StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYOBJECTS, Ref("orderKeys")))
                 .DeclareVar(
                     typeof(EventBean[]), "orderedEvents",
                     ExprDotMethod(
-                        REF_ORDERBYPROCESSOR, "sortWOrderKeys", Ref("outgoingEvents"), Ref("orderKeysArr"),
+                        REF_ORDERBYPROCESSOR, "SortWOrderKeys", Ref("outgoingEvents"), Ref("orderKeysArr"),
                         REF_AGENTINSTANCECONTEXT))
-                .MethodReturn(NewInstance(typeof(ArrayEventIterator), Ref("orderedEvents")));
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(ArrayHelper), "Iterate", 
+                        Ref("orderedEvents")));
         }
 
         public static void GetIteratorJoinCodegen(
-            ResultSetProcessorSimpleForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorSimpleForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             method.Block.DeclareVar(
-                    typeof(UniformPair), "result",
+                    typeof(UniformPair<EventBean>), "result",
                     ExprDotMethod(
-                        Ref("this"), "processJoinResult", REF_JOINSET, StaticMethod(typeof(Collections), "emptySet"),
+                        Ref("this"), "ProcessJoinResult", 
+                        REF_JOINSET, 
+                        StaticMethod(typeof(Collections), "emptySet"),
                         ConstantTrue()))
                 .IfRefNull("result")
                 .BlockReturn(StaticMethod(typeof(Collections), "emptyIterator"))
                 .MethodReturn(
-                    NewInstance(
-                        typeof(ArrayEventIterator),
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("result"), "getFirst"))));
+                    StaticMethod(
+                        typeof(ArrayHelper), "Iterate",
+                        Cast(typeof(EventBean[]), GetProperty(Ref("result"), "First"))));
         }
 
         public static void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
-            ResultSetProcessorSimpleForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorSimpleForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "processView", classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessView", classScope, method, instance);
         }
 
         private static void ProcessOutputLimitedLastAllNonBufferedCodegen(
-            ResultSetProcessorSimpleForge forge, string methodName, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorSimpleForge forge,
+            string methodName,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             var factory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
@@ -158,7 +186,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 instance.AddMember(NAME_OUTPUTALLHELPER, typeof(ResultSetProcessorSimpleOutputAllHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTALLHELPER,
-                    ExprDotMethod(factory, "makeRSSimpleOutputAll", Ref("this"), REF_AGENTINSTANCECONTEXT, eventTypes));
+                    ExprDotMethod(factory, "MakeRSSimpleOutputAll", Ref("this"), REF_AGENTINSTANCECONTEXT, eventTypes));
                 method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), methodName, REF_NEWDATA, REF_OLDDATA);
             }
             else if (forge.IsOutputLast) {
@@ -166,27 +194,31 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTLASTHELPER,
                     ExprDotMethod(
-                        factory, "makeRSSimpleOutputLast", Ref("this"), REF_AGENTINSTANCECONTEXT, eventTypes));
+                        factory, "MakeRSSimpleOutputLast", Ref("this"), REF_AGENTINSTANCECONTEXT, eventTypes));
                 method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), methodName, REF_NEWDATA, REF_OLDDATA);
             }
         }
 
         public static void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
-            ResultSetProcessorSimpleForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorSimpleForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "processJoin", classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessJoin", classScope, method, instance);
         }
 
         public static void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
-            ResultSetProcessorSimpleForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorSimpleForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             if (forge.IsOutputAll) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else if (forge.IsOutputLast) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -194,70 +226,82 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
         }
 
         public static void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
-            ResultSetProcessorSimpleForge forge, CodegenClassScope classScope, CodegenMethod method,
+            ResultSetProcessorSimpleForge forge,
+            CodegenClassScope classScope,
+            CodegenMethod method,
             CodegenInstanceAux instance)
         {
             if (forge.IsOutputAll) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else if (forge.IsOutputLast) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
             }
         }
 
-        public static void StopMethodCodegen(CodegenMethod method, CodegenInstanceAux instance)
+        public static void StopMethodCodegen(
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (instance.HasMember(NAME_OUTPUTLASTHELPER)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "destroy");
+                method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "Destroy");
             }
 
             if (instance.HasMember(NAME_OUTPUTALLHELPER)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "destroy");
+                method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "Destroy");
             }
         }
 
-        public static void AcceptHelperVisitorCodegen(CodegenMethod method, CodegenInstanceAux instance)
+        public static void AcceptHelperVisitorCodegen(
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (instance.HasMember(NAME_OUTPUTLASTHELPER)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "visit", Ref(NAME_OUTPUTLASTHELPER));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTLASTHELPER));
             }
 
             if (instance.HasMember(NAME_OUTPUTALLHELPER)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "visit", Ref(NAME_OUTPUTALLHELPER));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTALLHELPER));
             }
         }
 
-        public static void ProcessOutputLimitedJoinCodegen(ResultSetProcessorSimpleForge forge, CodegenMethod method)
+        public static void ProcessOutputLimitedJoinCodegen(
+            ResultSetProcessorSimpleForge forge,
+            CodegenMethod method)
         {
             if (!forge.IsOutputLast) {
                 method.Block.DeclareVar(
-                        typeof(UniformPair), "pair",
-                        StaticMethod(typeof(EventBeanUtility), METHOD_FLATTENBATCHJOIN, REF_JOINEVENTSSET))
+                        typeof(UniformPair<EventBean>), "pair",
+                        StaticMethod(typeof(EventBeanUtility), EventBeanUtility.METHOD_FLATTENBATCHJOIN, REF_JOINEVENTSSET))
                     .MethodReturn(
                         ExprDotMethod(
-                            Ref("this"), "processJoinResult",
-                            Cast(typeof(ISet), ExprDotMethod(Ref("pair"), "getFirst")),
-                            Cast(typeof(ISet), ExprDotMethod(Ref("pair"), "getSecond")), REF_ISSYNTHESIZE));
+                            Ref("this"), "ProcessJoinResult",
+                            Cast(typeof(ISet<EventBean>), GetProperty(Ref("pair"), "First")),
+                            Cast(typeof(ISet<EventBean>), GetProperty(Ref("pair"), "Second")), 
+                            REF_ISSYNTHESIZE));
                 return;
             }
 
             method.Block.MethodThrowUnsupported();
         }
 
-        public static void ProcessOutputLimitedViewCodegen(ResultSetProcessorSimpleForge forge, CodegenMethod method)
+        public static void ProcessOutputLimitedViewCodegen(
+            ResultSetProcessorSimpleForge forge,
+            CodegenMethod method)
         {
             if (!forge.IsOutputLast) {
                 method.Block.DeclareVar(
-                        typeof(UniformPair), "pair",
-                        StaticMethod(typeof(EventBeanUtility), METHOD_FLATTENBATCHSTREAM, REF_VIEWEVENTSLIST))
+                        typeof(UniformPair<EventBean>), "pair",
+                        StaticMethod(typeof(EventBeanUtility), EventBeanUtility.METHOD_FLATTENBATCHSTREAM, REF_VIEWEVENTSLIST))
                     .MethodReturn(
                         ExprDotMethod(
-                            Ref("this"), "processViewResult",
-                            Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")),
-                            Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")), REF_ISSYNTHESIZE));
+                            Ref("this"), "ProcessViewResult",
+                            Cast(typeof(EventBean[]), GetProperty(Ref("pair"), "First")),
+                            Cast(typeof(EventBean[]), GetProperty(Ref("pair"), "Second")),
+                            REF_ISSYNTHESIZE));
                 return;
             }
 

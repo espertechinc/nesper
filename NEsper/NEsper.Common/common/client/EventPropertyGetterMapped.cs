@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.client
         /// <param name="mapKey">the map key value</param>
         /// <returns>value of property in event</returns>
         /// <throws>com.espertech.esper.client.PropertyAccessException to indicate that property access failed</throws>
-        Object Get(EventBean eventBean, String mapKey);
+        Object Get(
+            EventBean eventBean,
+            String mapKey);
     }
 
     public class ProxyEventPropertyGetterMapped : EventPropertyGetterMapped
@@ -60,7 +62,9 @@ namespace com.espertech.esper.common.client
         /// <param name="mapKey">the map key value</param>
         /// <returns>value of property in event</returns>
         /// <throws>com.espertech.esper.client.PropertyAccessException to indicate that property access failed</throws>
-        public Object Get(EventBean eventBean, String mapKey)
+        public Object Get(
+            EventBean eventBean,
+            String mapKey)
         {
             return ProcGet.Invoke(eventBean, mapKey);
         }

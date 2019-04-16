@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.@select;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
@@ -68,7 +69,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             // view must be non-empty list
             var createWindowDesc = @base.StatementSpec.Raw.CreateWindowDesc;
             if (createWindowDesc.ViewSpecs.IsEmpty()) {
-                throw new ExprValidationException(ERROR_MSG_DATAWINDOWS);
+                throw new ExprValidationException(NamedWindowManagementServiceConstants.ERROR_MSG_DATAWINDOWS);
             }
 
             if (services.NamedWindowCompileTimeResolver.Resolve(createWindowDesc.WindowName) != null) {
@@ -191,7 +192,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             }
 
             if (!hasDataWindow.Get()) {
-                throw new ExprValidationException(ERROR_MSG_DATAWINDOWS);
+                throw new ExprValidationException(NamedWindowManagementServiceConstants.ERROR_MSG_DATAWINDOWS);
             }
         }
     }

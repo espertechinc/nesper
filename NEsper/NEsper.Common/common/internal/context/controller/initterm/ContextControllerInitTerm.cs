@@ -21,80 +21,111 @@ using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
-	public abstract class ContextControllerInitTerm : ContextController {
-	    internal readonly ContextControllerInitTermFactory factory;
-	    internal readonly ContextManagerRealization realization;
+    public abstract class ContextControllerInitTerm : ContextController
+    {
+        internal readonly ContextControllerInitTermFactory factory;
+        internal readonly ContextManagerRealization realization;
 
-	    public ContextControllerInitTerm(ContextControllerInitTermFactory factory, ContextManagerRealization realization) {
-	        this.factory = factory;
-	        this.realization = realization;
-	    }
+        public ContextControllerInitTerm(
+            ContextControllerInitTermFactory factory,
+            ContextManagerRealization realization)
+        {
+            this.factory = factory;
+            this.realization = realization;
+        }
 
-	    protected abstract void VisitPartitions(
-	        IntSeqKey controllerPath, 
-	        BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId);
+        protected abstract void VisitPartitions(
+            IntSeqKey controllerPath,
+            BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId);
 
-	    public abstract void Activate(
-	        IntSeqKey path, object[] parentPartitionKeys, EventBean optionalTriggeringEvent,
-	        IDictionary<string, object> optionalTriggeringPattern);
+        public abstract void Activate(
+            IntSeqKey path,
+            object[] parentPartitionKeys,
+            EventBean optionalTriggeringEvent,
+            IDictionary<string, object> optionalTriggeringPattern);
 
-	    public abstract void Deactivate(IntSeqKey path, bool terminateChildContexts);
-	    public abstract void Destroy();
+        public abstract void Deactivate(
+            IntSeqKey path,
+            bool terminateChildContexts);
 
-	    public ContextControllerFactory Factory
-	    {
-	        get => factory;
-	    }
+        public abstract void Destroy();
 
-	    public ContextManagerRealization Realization
-	    {
-	        get => realization;
-	    }
+        public ContextControllerFactory Factory {
+            get => factory;
+        }
 
-	    public void VisitSelectedPartitions(IntSeqKey path, ContextPartitionSelector selector, ContextPartitionVisitor visitor, ContextPartitionSelector[] selectorPerLevel) {
-	        if (selector is ContextPartitionSelectorFiltered) {
-	            ContextPartitionSelectorFiltered filter = (ContextPartitionSelectorFiltered) selector;
-	            VisitPartitions(path, (partitionKey, subpathOrCPIds) => {
-	                ContextPartitionIdentifierInitiatedTerminated identifier = ContextControllerInitTermUtil.KeyToIdentifier(subpathOrCPIds, partitionKey, this);
-	                if (filter.Filter(identifier)) {
-	                    realization.ContextPartitionRecursiveVisit(path, subpathOrCPIds, this, visitor, selectorPerLevel);
-	                }
-	            });
-	            return;
-	        }
-	        if (selector is ContextPartitionSelectorAll) {
-	            VisitPartitions(path, (partitionKey, subpathOrCPIds) => {
-	                realization.ContextPartitionRecursiveVisit(path, subpathOrCPIds, this, visitor, selectorPerLevel);
-	            });
-	            return;
-	        }
-	        if (selector is ContextPartitionSelectorById) {
-	            ContextPartitionSelectorById byId = (ContextPartitionSelectorById) selector;
-	            VisitPartitions(path, (hash, subpathOrCPId) => {
-	                if (byId.ContextPartitionIds.Contains(subpathOrCPId)) {
-	                    realization.ContextPartitionRecursiveVisit(path, subpathOrCPId, this, visitor, selectorPerLevel);
-	                }
-	            });
-	            return;
-	        }
-	        throw ContextControllerSelectorUtil.GetInvalidSelector(new Type[0], selector);
-	    }
+        public ContextManagerRealization Realization {
+            get => realization;
+        }
 
-	    public void PopulateEndConditionFromTrigger(MatchedEventMap map, EventBean triggeringEvent) {
-	        // compute correlated termination
-	        ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
-	        if (!(start is ContextConditionDescriptorFilter)) {
-	            return;
-	        }
-	        ContextConditionDescriptorFilter filter = (ContextConditionDescriptorFilter) start;
-	        if (filter.OptionalFilterAsName == null) {
-	            return;
-	        }
-	        int tag = map.Meta.GetTagFor(filter.OptionalFilterAsName);
-	        if (tag == -1) {
-	            return;
-	        }
-	        map.Add(tag, triggeringEvent);
-	    }
-	}
+        public void VisitSelectedPartitions(
+            IntSeqKey path,
+            ContextPartitionSelector selector,
+            ContextPartitionVisitor visitor,
+            ContextPartitionSelector[] selectorPerLevel)
+        {
+            if (selector is ContextPartitionSelectorFiltered) {
+                ContextPartitionSelectorFiltered filter = (ContextPartitionSelectorFiltered) selector;
+                VisitPartitions(
+                    path, (
+                        partitionKey,
+                        subpathOrCPIds) => {
+                        ContextPartitionIdentifierInitiatedTerminated identifier =
+                            ContextControllerInitTermUtil.KeyToIdentifier(subpathOrCPIds, partitionKey, this);
+                        if (filter.Filter(identifier)) {
+                            realization.ContextPartitionRecursiveVisit(path, subpathOrCPIds, this, visitor, selectorPerLevel);
+                        }
+                    });
+                return;
+            }
+
+            if (selector is ContextPartitionSelectorAll) {
+                VisitPartitions(
+                    path, (
+                        partitionKey,
+                        subpathOrCPIds) => {
+                        realization.ContextPartitionRecursiveVisit(path, subpathOrCPIds, this, visitor, selectorPerLevel);
+                    });
+                return;
+            }
+
+            if (selector is ContextPartitionSelectorById) {
+                ContextPartitionSelectorById byId = (ContextPartitionSelectorById) selector;
+                VisitPartitions(
+                    path, (
+                        hash,
+                        subpathOrCPId) => {
+                        if (byId.ContextPartitionIds.Contains(subpathOrCPId)) {
+                            realization.ContextPartitionRecursiveVisit(path, subpathOrCPId, this, visitor, selectorPerLevel);
+                        }
+                    });
+                return;
+            }
+
+            throw ContextControllerSelectorUtil.GetInvalidSelector(new Type[0], selector);
+        }
+
+        public void PopulateEndConditionFromTrigger(
+            MatchedEventMap map,
+            EventBean triggeringEvent)
+        {
+            // compute correlated termination
+            ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
+            if (!(start is ContextConditionDescriptorFilter)) {
+                return;
+            }
+
+            ContextConditionDescriptorFilter filter = (ContextConditionDescriptorFilter) start;
+            if (filter.OptionalFilterAsName == null) {
+                return;
+            }
+
+            int tag = map.Meta.GetTagFor(filter.OptionalFilterAsName);
+            if (tag == -1) {
+                return;
+            }
+
+            map.Add(tag, triggeringEvent);
+        }
+    }
 } // end of namespace

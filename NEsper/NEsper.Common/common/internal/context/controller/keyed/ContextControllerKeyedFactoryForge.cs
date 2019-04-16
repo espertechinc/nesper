@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
     {
         private readonly ContextSpecKeyed detail;
 
-        public ContextControllerKeyedFactoryForge(ContextControllerFactoryEnv ctx, ContextSpecKeyed detail) : base(ctx)
+        public ContextControllerKeyedFactoryForge(
+            ContextControllerFactoryEnv ctx,
+            ContextSpecKeyed detail)
+            : base(ctx)
         {
             this.detail = detail;
         }
@@ -43,7 +46,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         public override void ValidateGetContextProps(
-            LinkedHashMap<string, object> props, string contextName, StatementRawInfo statementRawInfo,
+            LinkedHashMap<string, object> props,
+            string contextName,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             var propertyTypes = ContextControllerKeyedUtil.ValidateContextDesc(contextName, detail);
@@ -68,7 +73,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         public override CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols)
         {
             var method = parent.MakeChild(typeof(ContextControllerKeyedFactory), GetType(), classScope);
             method.Block

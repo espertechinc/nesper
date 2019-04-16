@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.@event.render
         /// <param name="eventType">to render</param>
         /// <param name="stack">the stack of properties to avoid looping</param>
         /// <param name="options">rendering options</param>
-        public RendererMeta(EventType eventType, Stack<EventTypePropertyPair> stack, RendererMetaOptions options)
+        public RendererMeta(
+            EventType eventType,
+            Stack<EventTypePropertyPair> stack,
+            RendererMetaOptions options)
         {
             var gettersSimple = new List<GetterPair>();
             var gettersIndexed = new List<GetterPair>();

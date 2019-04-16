@@ -9,13 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -24,7 +22,9 @@ namespace com.espertech.esper.common.@internal.view.derived
     public class StatViewAdditionalPropsForge
     {
         private StatViewAdditionalPropsForge(
-            string[] additionalProps, ExprNode[] additionalEvals, Type[] additionalTypes)
+            string[] additionalProps,
+            ExprNode[] additionalEvals,
+            Type[] additionalTypes)
         {
             AdditionalProps = additionalProps;
             AdditionalEvals = additionalEvals;
@@ -38,7 +38,10 @@ namespace com.espertech.esper.common.@internal.view.derived
         public Type[] AdditionalTypes { get; }
 
         public static StatViewAdditionalPropsForge Make(
-            ExprNode[] validated, int startIndex, EventType parentEventType, int streamNumber)
+            ExprNode[] validated,
+            int startIndex,
+            EventType parentEventType,
+            int streamNumber)
         {
             if (validated.Length <= startIndex) {
                 return null;
@@ -81,7 +84,9 @@ namespace com.espertech.esper.common.@internal.view.derived
         }
 
         public static void AddCheckDupProperties(
-            IDictionary<string, object> target, StatViewAdditionalPropsForge addProps, params ViewFieldEnum[] builtin)
+            IDictionary<string, object> target,
+            StatViewAdditionalPropsForge addProps,
+            params ViewFieldEnum[] builtin)
         {
             if (addProps == null) {
                 return;
@@ -100,7 +105,9 @@ namespace com.espertech.esper.common.@internal.view.derived
             }
         }
 
-        public CodegenExpression Codegen(CodegenMethod method, CodegenClassScope classScope)
+        public CodegenExpression Codegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             return NewInstance(
                 typeof(StatViewAdditionalPropsEval), Constant(AdditionalProps),

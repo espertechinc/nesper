@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
+using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.dot.core.ExprDotNodeForgeStaticMethodEval;
 
@@ -20,8 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
     public class StaticMethodCallHelper
     {
         public static StaticMethodCodegenArgDesc[] AllArgumentExpressions(
-            ExprForge[] forges, MethodInfo method, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            ExprForge[] forges,
+            MethodInfo method,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var parameterTypes = method.GetParameterTypes();
             var args = new StaticMethodCodegenArgDesc[forges.Length];
@@ -42,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             return args;
         }
 
-        public static void AppendArgExpressions(StaticMethodCodegenArgDesc[] args, CodegenBlock block)
+        public static void AppendArgExpressions(
+            StaticMethodCodegenArgDesc[] args,
+            CodegenBlock block)
         {
             for (var i = 0; i < args.Length; i++) {
                 block.DeclareVar(args[i].DeclareType, args[i].BlockRefName, args[i].ArgExpression);
@@ -50,24 +56,37 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         }
 
         public static void AppendCatch(
-            CodegenBlock tryBlock, MethodInfo reflectionMethod, string statementName, string classOrPropertyName,
-            bool rethrow, StaticMethodCodegenArgDesc[] args)
+            CodegenBlock tryBlock,
+            MethodInfo reflectionMethod,
+            string statementName,
+            string classOrPropertyName,
+            bool rethrow,
+            StaticMethodCodegenArgDesc[] args)
         {
-            var catchBlock = tryBlock.TryEnd().AddCatch(typeof(Throwable), "t")
+            var catchBlock = tryBlock.TryEnd()
+                .AddCatch(typeof(Exception), "ex")
                 .DeclareVar(typeof(object[]), "argArray", NewArrayByLength(typeof(object), Constant(args.Length)));
             for (var i = 0; i < args.Length; i++) {
                 catchBlock.AssignArrayElement("argArray", Constant(i), Ref(args[i].BlockRefName));
             }
 
-            Type[] paramTypes = reflectionMethod.ParameterTypes;
+            Type[] paramTypes = reflectionMethod.GetParameterTypes();
             catchBlock.StaticMethod(
-                typeof(ExprDotNodeForgeStaticMethodEval), METHOD_STATICMETHODEVALHANDLEINVOCATIONEXCEPTION,
-                Constant(statementName), Constant(reflectionMethod.Name), Constant(paramTypes),
-                Constant(classOrPropertyName), Ref("argArray"), Ref("t"), Constant(rethrow));
+                typeof(ExprDotNodeForgeStaticMethodEval),
+                METHOD_STATICMETHODEVALHANDLEINVOCATIONEXCEPTION,
+                Constant(statementName), 
+                Constant(reflectionMethod.Name), 
+                Constant(paramTypes),
+                Constant(classOrPropertyName),
+                Ref("argArray"), 
+                Ref("ex"),
+                Constant(rethrow));
         }
 
         public static CodegenExpression CodegenInvokeExpression(
-            object optionalTargetObject, MethodInfo reflectionMethod, StaticMethodCodegenArgDesc[] args,
+            object optionalTargetObject,
+            MethodInfo reflectionMethod,
+            StaticMethodCodegenArgDesc[] args,
             CodegenClassScope codegenClassScope)
         {
             var expressions = new CodegenExpression[args.Length];

@@ -30,7 +30,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
         private readonly IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccesses;
 
         public StatementAgentInstanceFactoryOnTriggerBaseForge(
-            ViewableActivatorForge activator, EventType resultEventType,
+            ViewableActivatorForge activator,
+            EventType resultEventType,
             IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects,
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccesses)
         {
@@ -43,11 +44,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
         public abstract Type TypeOfSubclass();
 
         public abstract void InlineInitializeOnTriggerBase(
-            CodegenExpressionRef saiff, CodegenMethod method, SAIFFInitializeSymbol symbols,
+            CodegenExpressionRef saiff,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
 
         public CodegenMethod InitializeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(TypeOfSubclass(), GetType(), classScope);
             method.Block

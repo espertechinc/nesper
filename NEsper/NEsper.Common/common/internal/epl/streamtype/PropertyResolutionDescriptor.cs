@@ -27,10 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <param name="propertyType">is the type of the property</param>
         /// <param name="fragmentEventType">fragment type</param>
         public PropertyResolutionDescriptor(
-            string streamName, 
-            EventType streamEventType, 
-            string propertyName, 
-            int streamNum, 
+            string streamName,
+            EventType streamEventType,
+            string propertyName,
+            int streamNum,
             Type propertyType,
             FragmentEventType fragmentEventType)
         {

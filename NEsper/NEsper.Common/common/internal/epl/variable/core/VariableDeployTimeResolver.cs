@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     public class VariableDeployTimeResolver
     {
         public static CodegenExpressionField MakeVariableField(
-            VariableMetaData variableMetaData, CodegenClassScope classScope, Type generator)
+            VariableMetaData variableMetaData,
+            CodegenClassScope classScope,
+            Type generator)
         {
             var symbols = new SAIFFInitializeSymbol();
             var variableInit = classScope.PackageScope.InitMethod
@@ -34,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 true, typeof(Variable), LocalMethod(variableInit, EPStatementInitServicesConstants.REF));
         }
 
-        public static CodegenExpression MakeResolveVariable(VariableMetaData variable, CodegenExpression initSvc)
+        public static CodegenExpression MakeResolveVariable(
+            VariableMetaData variable,
+            CodegenExpression initSvc)
         {
             return StaticMethod(
                 typeof(VariableDeployTimeResolver), "resolveVariable",
@@ -45,7 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         }
 
         public static CodegenExpression MakeResolveVariables(
-            ICollection<VariableMetaData> variables, CodegenExpression initSvc)
+            ICollection<VariableMetaData> variables,
+            CodegenExpression initSvc)
         {
             var expressions = new CodegenExpression[variables.Count];
             var count = 0;

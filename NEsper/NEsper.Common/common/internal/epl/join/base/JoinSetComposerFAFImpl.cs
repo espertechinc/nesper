@@ -25,14 +25,20 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly bool isOuterJoins;
 
         public JoinSetComposerFAFImpl(
-            IDictionary<TableLookupIndexReqKey, EventTable>[] repositories, QueryStrategy[] queryStrategies,
-            bool isPureSelfJoin, ExprEvaluatorContext exprEvaluatorContext, bool joinRemoveStream, bool outerJoins)
+            IDictionary<TableLookupIndexReqKey, EventTable>[] repositories,
+            QueryStrategy[] queryStrategies,
+            bool isPureSelfJoin,
+            ExprEvaluatorContext exprEvaluatorContext,
+            bool joinRemoveStream,
+            bool outerJoins)
             : base(false, repositories, queryStrategies, isPureSelfJoin, exprEvaluatorContext, joinRemoveStream)
         {
             isOuterJoins = outerJoins;
         }
 
-        public override void Init(EventBean[][] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public override void Init(
+            EventBean[][] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             // no action
         }
@@ -43,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         public override UniformPair<ISet<MultiKey<EventBean>>> Join(
-            EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             newResults.Clear();
 

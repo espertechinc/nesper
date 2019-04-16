@@ -8,70 +8,73 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
-	/// <summary>
-	/// Named parameter expression of the form "name:expression" or "name:(expression, expression...)"
-	/// </summary>
-	public class NamedParameterExpression : ExpressionBase {
-	    private string name;
+    /// <summary>
+    /// Named parameter expression of the form "name:expression" or "name:(expression, expression...)"
+    /// </summary>
+    public class NamedParameterExpression : ExpressionBase
+    {
+        private string name;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    public NamedParameterExpression() {
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        public NamedParameterExpression()
+        {
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="name">substitution parameter name</param>
-	    public NamedParameterExpression(string name) {
-	        this.name = name;
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="name">substitution parameter name</param>
+        public NamedParameterExpression(string name)
+        {
+            this.name = name;
+        }
 
-	    /// <summary>
-	    /// Returns the parameter name.
-	    /// </summary>
-	    /// <returns>name</returns>
-	    public string Name
-	    {
-	        get => name;
-	    }
+        /// <summary>
+        /// Returns the parameter name.
+        /// </summary>
+        /// <returns>name</returns>
+        public string Name {
+            get => name;
+        }
 
-	    /// <summary>
-	    /// Sets the parameter name.
-	    /// </summary>
-	    /// <param name="name">name to set</param>
-	    public void SetName(string name) {
-	        this.name = name;
-	    }
+        /// <summary>
+        /// Sets the parameter name.
+        /// </summary>
+        /// <param name="name">name to set</param>
+        public void SetName(string name)
+        {
+            this.name = name;
+        }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
 
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        writer.Write(name);
-	        writer.Write(':');
-	        if (this.Children.Count > 1 || this.Children.IsEmpty()) {
-	            writer.Write('(');
-	        }
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            writer.Write(name);
+            writer.Write(':');
+            if (this.Children.Count > 1 || this.Children.IsEmpty()) {
+                writer.Write('(');
+            }
 
-	        string delimiter = "";
-	        foreach (Expression expr in this.Children) {
-	            writer.Write(delimiter);
-	            expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-	            delimiter = ",";
-	        }
-	        if (this.Children.Count > 1 || this.Children.IsEmpty()) {
-	            writer.Write(')');
-	        }
-	    }
-	}
+            string delimiter = "";
+            foreach (Expression expr in this.Children) {
+                writer.Write(delimiter);
+                expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                delimiter = ",";
+            }
+
+            if (this.Children.Count > 1 || this.Children.IsEmpty()) {
+                writer.Write(')');
+            }
+        }
+    }
 } // end of namespace

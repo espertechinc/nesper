@@ -12,13 +12,13 @@ using System.Xml.Schema;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     /// <summary>
-    /// Represents a simple value in a schema.
+    ///     Represents a simple value in a schema.
     /// </summary>
     [Serializable]
     public class SchemaElementSimple : SchemaElement
     {
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="name">name</param>
         /// <param name="namespace">namespace</param>
@@ -27,10 +27,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="isArray">if unbound</param>
         /// <param name="fractionDigits">The fraction digits.</param>
         public SchemaElementSimple(
-            String name,
-            String @namespace,
+            string name,
+            string @namespace,
             XmlSchemaSimpleType type,
-            String typeName,
+            string typeName,
             bool isArray,
             int? fractionDigits)
         {
@@ -42,42 +42,42 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         /// <summary>
-        /// Returns type.
+        ///     Returns type.
         /// </summary>
         /// <returns>
-        /// type
+        ///     type
         /// </returns>
-        public XmlSchemaSimpleType SimpleType { get; private set; }
+        public XmlSchemaSimpleType SimpleType { get; }
 
         /// <summary>
-        /// Returns the type name.
+        ///     Returns the type name.
         /// </summary>
         /// <returns>
-        /// type name
+        ///     type name
         /// </returns>
-        public string TypeName { get; private set; }
+        public string TypeName { get; }
+
+        public override string ToString()
+        {
+            return "Simple " + Namespace + " " + Name;
+        }
 
         #region SchemaElement Members
 
         /// <summary>
-        /// Returns element name.
+        ///     Returns element name.
         /// </summary>
         /// <returns>
-        /// element name
+        ///     element name
         /// </returns>
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public string Namespace { get; private set; }
+        public string Namespace { get; }
 
-        public bool IsArray { get; private set; }
+        public bool IsArray { get; }
 
         public int? FractionDigits { get; private set; }
 
         #endregion
-
-        public override String ToString()
-        {
-            return "Simple " + Namespace + " " + Name;
-        }
     }
 }

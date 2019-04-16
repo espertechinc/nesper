@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <summary>Ctor. </summary>
         /// <param name="streamName">is the stream name of the stream to select</param>
         /// <param name="optionalAsName">is the column name</param>
-        public SelectClauseStreamRawSpec(string streamName, string optionalAsName)
+        public SelectClauseStreamRawSpec(
+            string streamName,
+            string optionalAsName)
         {
             this.streamName = streamName;
             this.optionalAsName = optionalAsName;
@@ -30,8 +32,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// Returns the stream name (e.g. select streamName from MyEvent as streamName).
         /// </summary>
         /// <value>The name of the stream.</value>
-        public string StreamName
-        {
+        public string StreamName {
             get { return streamName; }
         }
 
@@ -39,8 +40,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// Returns the column alias (e.g. select streamName as mycol from MyEvent as streamName).
         /// </summary>
         /// <value>The name of the optional as.</value>
-        public string OptionalAsName
-        {
+        public string OptionalAsName {
             get { return optionalAsName; }
         }
     }

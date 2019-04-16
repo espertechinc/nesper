@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             this.factor = factor;
         }
 
-        public void Evaluate(
+        public DateTimeEx Evaluate(
             DateTimeEx dateTimeEx,
             EventBean[] eventsPerStream,
             bool isNewData,

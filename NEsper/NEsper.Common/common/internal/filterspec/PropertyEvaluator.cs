@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <param name="theEvent">to inspect</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         /// <returns>events representing property(s)</returns>
-        EventBean[] GetProperty(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext);
+        EventBean[] GetProperty(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     Compare to another property evaluator.

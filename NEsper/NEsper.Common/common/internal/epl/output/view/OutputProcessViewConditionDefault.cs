@@ -32,11 +32,17 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         private readonly OutputProcessViewConditionFactory parent;
 
         public OutputProcessViewConditionDefault(
-            ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents,
-            bool afterConditionSatisfied, OutputProcessViewConditionFactory parent,
-            AgentInstanceContext agentInstanceContext, bool isJoin, EventType[] eventTypes) : base(
-            agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
-            afterConditionSatisfied)
+            ResultSetProcessor resultSetProcessor,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
+            OutputProcessViewConditionFactory parent,
+            AgentInstanceContext agentInstanceContext,
+            bool isJoin,
+            EventType[] eventTypes)
+            : base(
+                agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
+                afterConditionSatisfied)
         {
             this.parent = parent;
 
@@ -61,7 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// </summary>
         /// <param name="newData">new events</param>
         /// <param name="oldData">old events</param>
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
             instrumentationCommon.QOutputProcessWCondition(newData, oldData);
@@ -107,7 +115,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="newEvents">new events</param>
         /// <param name="oldEvents">old events</param>
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
@@ -158,7 +167,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         ///     just be processed
         /// </param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
-        protected void ContinueOutputProcessingView(bool doOutput, bool forceUpdate)
+        protected void ContinueOutputProcessingView(
+            bool doOutput,
+            bool forceUpdate)
         {
             agentInstanceContext.InstrumentationProvider.QOutputRateConditionOutputNow();
 
@@ -190,7 +201,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             agentInstanceContext.InstrumentationProvider.AOutputRateConditionOutputNow(true);
         }
 
-        protected virtual void Output(bool forceUpdate, UniformPair<EventBean[]> results)
+        protected virtual void Output(
+            bool forceUpdate,
+            UniformPair<EventBean[]> results)
         {
             // Child view can be null in replay from named window
             if (child != null) {
@@ -220,7 +233,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         ///     just be processed
         /// </param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
-        protected void ContinueOutputProcessingJoin(bool doOutput, bool forceUpdate)
+        protected void ContinueOutputProcessingJoin(
+            bool doOutput,
+            bool forceUpdate)
         {
             agentInstanceContext.InstrumentationProvider.QOutputRateConditionOutputNow();
 
@@ -261,10 +276,14 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             // single stream means no join
             // multiple streams means a join
             if (streamCount == 1) {
-                return (doOutput, forceUpdate) => ContinueOutputProcessingView(doOutput, forceUpdate);
+                return (
+                    doOutput,
+                    forceUpdate) => ContinueOutputProcessingView(doOutput, forceUpdate);
             }
 
-            return (doOutput, forceUpdate) => ContinueOutputProcessingJoin(doOutput, forceUpdate);
+            return (
+                doOutput,
+                forceUpdate) => ContinueOutputProcessingJoin(doOutput, forceUpdate);
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
@@ -281,7 +300,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         }
 
         private static void AddToChangeset(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
             OutputProcessViewConditionDeltaSet joinEventsSet)
         {
             // add the incoming events to the event batches

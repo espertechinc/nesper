@@ -48,10 +48,13 @@ namespace com.espertech.esper.common.@internal.context.util
         private object terminationCallbacks;
 
         public AgentInstanceContext(
-            StatementContext statementContext, int agentInstanceId,
+            StatementContext statementContext,
+            int agentInstanceId,
             EPStatementAgentInstanceHandle epStatementAgentInstanceHandle,
-            AgentInstanceFilterProxy agentInstanceFilterProxy, MappedEventBean contextProperties,
-            AuditProvider auditProvider, InstrumentationCommon instrumentationProvider)
+            AgentInstanceFilterProxy agentInstanceFilterProxy,
+            MappedEventBean contextProperties,
+            AuditProvider auditProvider,
+            InstrumentationCommon instrumentationProvider)
         {
             StatementContext = statementContext;
             FilterVersionAfterAllocation = statementContext.FilterService.FiltersVersion;

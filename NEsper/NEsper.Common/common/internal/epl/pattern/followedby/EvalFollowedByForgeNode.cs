@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             return "EvalFollowedByNode children=" + ChildNodes.Count;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             if (OptionalMaxExpressions == null || OptionalMaxExpressions.IsEmpty()) {
                 PatternExpressionUtil.ToPrecedenceFreeEPL(writer, "->", ChildNodes, Precedence);
@@ -77,7 +77,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         }
 
         protected override void InlineCodegen(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block.DeclareVar(
                 typeof(EvalFactoryNode[]), "children",
@@ -117,7 +119,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, IList<ScheduleHandleCallbackProvider> schedules)
+            IList<FilterSpecCompiled> filters,
+            IList<ScheduleHandleCallbackProvider> schedules)
         {
         }
     }

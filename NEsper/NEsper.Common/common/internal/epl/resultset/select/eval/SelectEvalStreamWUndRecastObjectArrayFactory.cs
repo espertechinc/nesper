@@ -26,8 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
     public class SelectEvalStreamWUndRecastObjectArrayFactory
     {
         public static SelectExprProcessorForge Make(
-            EventType[] eventTypes, SelectExprForgeContext selectExprForgeContext, int streamNumber,
-            EventType targetType, ExprNode[] exprNodes, ImportServiceCompileTime importService,
+            EventType[] eventTypes,
+            SelectExprForgeContext selectExprForgeContext,
+            int streamNumber,
+            EventType targetType,
+            ExprNode[] exprNodes,
+            ImportServiceCompileTime importService,
             string statementName)
         {
             var oaResultType = (ObjectArrayEventType) targetType;
@@ -109,7 +113,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         }
 
         private static WriteablePropertyDescriptor FindWritable(
-            string columnName, ISet<WriteablePropertyDescriptor> writables)
+            string columnName,
+            ISet<WriteablePropertyDescriptor> writables)
         {
             foreach (var writable in writables) {
                 if (writable.PropertyName.Equals(columnName)) {
@@ -126,7 +131,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             private readonly int underlyingStreamNumber;
 
             internal OAInsertProcessorSimpleRepackage(
-                SelectExprForgeContext selectExprForgeContext, int underlyingStreamNumber, EventType resultType)
+                SelectExprForgeContext selectExprForgeContext,
+                int underlyingStreamNumber,
+                EventType resultType)
             {
                 this.selectExprForgeContext = selectExprForgeContext;
                 this.underlyingStreamNumber = underlyingStreamNumber;
@@ -136,9 +143,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             public EventType ResultEventType { get; }
 
             public CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType, CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                CodegenExpression resultEventType,
+                CodegenExpression eventBeanFactory,
+                CodegenMethodScope codegenMethodScope,
+                SelectExprProcessorCodegenSymbol selectSymbol,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
@@ -158,7 +168,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             private readonly int underlyingStreamNumber;
 
             internal OAInsertProcessorAllocate(
-                int underlyingStreamNumber, Item[] items, EventBeanManufacturerForge manufacturer, EventType resultType)
+                int underlyingStreamNumber,
+                Item[] items,
+                EventBeanManufacturerForge manufacturer,
+                EventType resultType)
             {
                 this.underlyingStreamNumber = underlyingStreamNumber;
                 this.items = items;
@@ -169,9 +182,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             public EventType ResultEventType { get; }
 
             public CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType, CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                CodegenExpression resultEventType,
+                CodegenExpression eventBeanFactory,
+                CodegenMethodScope codegenMethodScope,
+                SelectExprProcessorCodegenSymbol selectSymbol,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var manufacturerField = codegenClassScope.AddFieldUnshared(
                     true, typeof(EventBeanManufacturer), manufacturer.Make(codegenMethodScope, codegenClassScope));
@@ -213,7 +229,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
         internal class Item
         {
-            internal Item(int toIndex, int optionalFromIndex, ExprForge forge, TypeWidenerSPI optionalWidener)
+            internal Item(
+                int toIndex,
+                int optionalFromIndex,
+                ExprForge forge,
+                TypeWidenerSPI optionalWidener)
             {
                 ToIndex = toIndex;
                 OptionalFromIndex = optionalFromIndex;

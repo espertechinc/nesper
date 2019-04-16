@@ -33,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public override CodegenExpression EvaluateCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
@@ -92,7 +94,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public override CodegenExpression EvaluateGetCollEventsCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
@@ -145,13 +149,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public override CodegenExpression EvaluateGetCollScalarCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbol, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbol,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         public override CodegenExpression EvaluateGetBeanCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }

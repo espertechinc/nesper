@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly IThreadLocal<StringBuilder> localBuffer;
         private readonly ExprConcatNode parent;
 
-        public ExprConcatNodeEvalThreadLocal(ExprConcatNode parent, ExprEvaluator[] evaluators)
+        public ExprConcatNodeEvalThreadLocal(
+            ExprConcatNode parent,
+            ExprEvaluator[] evaluators)
         {
             this.localBuffer = new SystemThreadLocal<StringBuilder>(() => new StringBuilder());
             this.buffer = localBuffer.GetOrCreate();
@@ -29,7 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             buffer = localBuffer.GetOrCreate();
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             buffer.Length = 0;
             return ExprConcatNodeEvalWNew.Evaluate(eventsPerStream, isNewData, context, buffer, evaluators, parent);

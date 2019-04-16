@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -16,27 +15,32 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
-	public class CreateWindowCompileResult {
-	    private readonly FilterSpecCompiled filterSpecCompiled;
-	    private readonly SelectClauseSpecRaw selectClauseSpecRaw;
-	    private readonly EventType asEventType;
+    public class CreateWindowCompileResult
+    {
+        private readonly FilterSpecCompiled filterSpecCompiled;
+        private readonly SelectClauseSpecRaw selectClauseSpecRaw;
+        private readonly EventType asEventType;
 
-	    public CreateWindowCompileResult(FilterSpecCompiled filterSpecCompiled, SelectClauseSpecRaw selectClauseSpecRaw, EventType asEventType) {
-	        this.filterSpecCompiled = filterSpecCompiled;
-	        this.selectClauseSpecRaw = selectClauseSpecRaw;
-	        this.asEventType = asEventType;
-	    }
+        public CreateWindowCompileResult(
+            FilterSpecCompiled filterSpecCompiled,
+            SelectClauseSpecRaw selectClauseSpecRaw,
+            EventType asEventType)
+        {
+            this.filterSpecCompiled = filterSpecCompiled;
+            this.selectClauseSpecRaw = selectClauseSpecRaw;
+            this.asEventType = asEventType;
+        }
 
-	    public FilterSpecCompiled FilterSpecCompiled {
-	        get => filterSpecCompiled;
-	    }
+        public FilterSpecCompiled FilterSpecCompiled {
+            get => filterSpecCompiled;
+        }
 
-	    public SelectClauseSpecRaw SelectClauseSpecRaw {
-	        get => selectClauseSpecRaw;
-	    }
+        public SelectClauseSpecRaw SelectClauseSpecRaw {
+            get => selectClauseSpecRaw;
+        }
 
-	    public EventType AsEventType {
-	        get => asEventType;
-	    }
-	}
+        public EventType AsEventType {
+            get => asEventType;
+        }
+    }
 } // end of namespace

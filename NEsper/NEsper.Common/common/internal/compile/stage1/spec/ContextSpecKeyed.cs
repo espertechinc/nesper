@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class ContextSpecKeyed : ContextSpec
     {
         public ContextSpecKeyed(
-            IList<ContextSpecKeyedItem> items, IList<ContextSpecConditionFilter> optionalInit,
+            IList<ContextSpecKeyedItem> items,
+            IList<ContextSpecConditionFilter> optionalInit,
             ContextSpecCondition optionalTermination)
         {
             Items = items;
@@ -35,7 +36,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public IList<ContextSpecConditionFilter> OptionalInit { get; }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailKeyed), GetType(), classScope);
 

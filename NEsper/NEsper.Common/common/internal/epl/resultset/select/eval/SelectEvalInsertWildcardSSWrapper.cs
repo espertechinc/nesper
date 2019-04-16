@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,38 +16,54 @@ using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalInsertWildcardSSWrapper : SelectEvalBaseMap {
+    public class SelectEvalInsertWildcardSSWrapper : SelectEvalBaseMap
+    {
+        public SelectEvalInsertWildcardSSWrapper(
+            SelectExprForgeContext selectExprForgeContext,
+            EventType resultEventType)
+            : base(selectExprForgeContext, resultEventType)
 
-	    public SelectEvalInsertWildcardSSWrapper(SelectExprForgeContext selectExprForgeContext, EventType resultEventType)
+        {
+        }
 
-	    	 : base(selectExprForgeContext, resultEventType)
+        protected override CodegenExpression ProcessSpecificCodegen(
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenExpression props,
+            CodegenMethod methodNode,
+            SelectExprProcessorCodegenSymbol selectEnv,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            return StaticMethod(
+                typeof(SelectEvalInsertWildcardSSWrapper), "processSelectExprSSWrapper", props, refEPS, Constant(context.ExprForges.Length == 0),
+                eventBeanFactory, resultEventType);
+        }
 
-	    {
-	    }
-
-	    protected override CodegenExpression ProcessSpecificCodegen(CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenExpression props, CodegenMethod methodNode, SelectExprProcessorCodegenSymbol selectEnv, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-	        return StaticMethod(typeof(SelectEvalInsertWildcardSSWrapper), "processSelectExprSSWrapper", props, refEPS, Constant(context.ExprForges.Length == 0), eventBeanFactory, resultEventType);
-	    }
-
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="props">props</param>
-	    /// <param name="eventsPerStream">events</param>
-	    /// <param name="emptyExpressions">flag</param>
-	    /// <param name="eventBeanTypedEventFactory">svc</param>
-	    /// <param name="resultEventType">type</param>
-	    /// <returns>bean</returns>
-	    public static EventBean ProcessSelectExprSSWrapper(IDictionary<string, object> props, EventBean[] eventsPerStream, bool emptyExpressions, EventBeanTypedEventFactory eventBeanTypedEventFactory, EventType resultEventType) {
-	        EventBean theEvent = eventsPerStream[0];
-	        return eventBeanTypedEventFactory.AdapterForTypedWrapper(theEvent, props, resultEventType);
-	    }
-	}
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="props">props</param>
+        /// <param name="eventsPerStream">events</param>
+        /// <param name="emptyExpressions">flag</param>
+        /// <param name="eventBeanTypedEventFactory">svc</param>
+        /// <param name="resultEventType">type</param>
+        /// <returns>bean</returns>
+        public static EventBean ProcessSelectExprSSWrapper(
+            IDictionary<string, object> props,
+            EventBean[] eventsPerStream,
+            bool emptyExpressions,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventType resultEventType)
+        {
+            EventBean theEvent = eventsPerStream[0];
+            return eventBeanTypedEventFactory.AdapterForTypedWrapper(theEvent, props, resultEventType);
+        }
+    }
 } // end of namespace

@@ -53,7 +53,9 @@ namespace com.espertech.esper.common.@internal.view.timetolive
 
         public string ViewName => isTimeToLive ? ViewEnum.TIMETOLIVE.Name : ViewEnum.TIME_ORDER.Name;
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

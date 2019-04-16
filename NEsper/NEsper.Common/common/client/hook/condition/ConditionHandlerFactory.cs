@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.hook.condition
     /// </summary>
     public interface ConditionHandlerFactory
     {
-
         /// <summary>
         /// Returns an exception handler instances, or null if the factory decided not 
         /// to contribute an exception handler.

@@ -40,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         internal EPStatementHandleCallbackSchedule scheduleHandle;
 
         public TimerScheduleObserver(
-            TimerScheduleSpec spec, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator,
+            TimerScheduleSpec spec,
+            MatchedEventMap beginState,
+            ObserverEventEvaluator observerEventEvaluator,
             bool isFilterChildNonQuitting)
         {
             this.beginState = beginState;
@@ -145,7 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             agentInstanceContext.InstrumentationProvider.APatternObserverScheduledEval();
         }
 
-        private long ComputeNextSetLastScheduled(long currentTime, TimeAbacus timeAbacus)
+        private long ComputeNextSetLastScheduled(
+            long currentTime,
+            TimeAbacus timeAbacus)
         {
             // handle already-stopped
             if (cachedCountRepeated == long.MaxValue) {

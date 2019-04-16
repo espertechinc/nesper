@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -26,8 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
         /// <param name="variableName">variable</param>
         /// <param name="streamNum">stream num</param>
         /// <param name="multiple">indicator</param>
-        public RowRecogNFAStateAnyOneForge(string nodeNum, string variableName, int streamNum, bool multiple) : base(
-            nodeNum, variableName, streamNum, multiple, null, false)
+        public RowRecogNFAStateAnyOneForge(
+            string nodeNum,
+            string variableName,
+            int streamNum,
+            bool multiple)
+            : base(
+                nodeNum, variableName, streamNum, multiple, null, false)
         {
         }
 
@@ -39,7 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
         }
 
         internal override void AssignInline(
-            CodegenExpression eval, CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenExpression eval,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
         }
     }

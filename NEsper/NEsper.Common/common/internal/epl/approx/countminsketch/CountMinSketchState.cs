@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 {
     public class CountMinSketchState
     {
-        public CountMinSketchState(CountMinSketchStateHashes hashes, CountMinSketchStateTopk topk)
+        public CountMinSketchState(
+            CountMinSketchStateHashes hashes,
+            CountMinSketchStateTopk topk)
         {
             Hashes = hashes;
             Topk = topk;
@@ -39,13 +41,15 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             var hashes = CountMinSketchStateHashes.MakeState(spec.HashesSpec);
             CountMinSketchStateTopk topk = null;
             if (spec.TopkSpec != null && spec.TopkSpec > 0) {
-                topk = new CountMinSketchStateTopk(spec.TopkSpec);
+                topk = new CountMinSketchStateTopk(spec.TopkSpec.Value);
             }
 
             return new CountMinSketchState(hashes, topk);
         }
 
-        public void Add(byte[] bytes, int count)
+        public void Add(
+            byte[] bytes,
+            int count)
         {
             Hashes.Add(bytes, count);
             if (Topk != null) {

@@ -14,12 +14,9 @@ namespace com.espertech.esper.common.@internal.util
     {
         private IDictionary<K, V> _inner;
 
-        public IDictionary<K, V> Map
-        {
-            get
-            {
-                lock (this)
-                {
+        public IDictionary<K, V> Map {
+            get {
+                lock (this) {
                     return _inner ?? (_inner = new Dictionary<K, V>());
                 }
             }

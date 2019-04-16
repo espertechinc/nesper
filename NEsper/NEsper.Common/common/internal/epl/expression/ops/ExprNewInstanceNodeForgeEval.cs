@@ -20,13 +20,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprNewInstanceNodeForge forge;
         private readonly InstanceManufacturer manufacturer;
 
-        public ExprNewInstanceNodeForgeEval(ExprNewInstanceNodeForge forge, InstanceManufacturer manufacturer)
+        public ExprNewInstanceNodeForgeEval(
+            ExprNewInstanceNodeForge forge,
+            InstanceManufacturer manufacturer)
         {
             this.forge = forge;
             this.manufacturer = manufacturer;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return manufacturer.Make(eventsPerStream, isNewData, exprEvaluatorContext);
         }

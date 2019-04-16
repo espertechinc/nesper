@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             services = new Dictionary<int, SubordTableLookupStrategy>();
         }
 
-        public void AssignService(int num, SubordTableLookupStrategy subselectStrategy)
+        public void AssignService(
+            int num,
+            SubordTableLookupStrategy subselectStrategy)
         {
             services.Put(num, subselectStrategy);
         }
@@ -35,7 +37,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             services.Remove(num);
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             return services.Get(context.AgentInstanceId).Lookup(events, context);
         }

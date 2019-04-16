@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            var allStreamsZeroIndexed = new EventType[]{ eventTypeIndexed, filterEventType };
-            var outerStreams = new EventType[]{ filterEventType };
+            var allStreamsZeroIndexed = new EventType[] {eventTypeIndexed, filterEventType};
+            var outerStreams = new EventType[] {filterEventType};
             SubordPropPlan joinedPropPlan = QueryPlanIndexBuilder.GetJoinProps(
                 joinExpr, 1, allStreamsZeroIndexed, excludePlanHint);
 
@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                     single.CoercionType);
                 var indexDesc = FindOrSuggestIndex(
                     Collections.SingletonMap(single.IndexedProp, keyInfo),
-                    new EmptyDictionary<string, SubordPropRangeKeyForge>(), 
+                    new EmptyDictionary<string, SubordPropRangeKeyForge>(),
                     optionalIndexHint, indexShare, subqueryNumber,
                     indexMetadata, optionalUniqueKeyProps, onlyUseExistingIndexes, eventTypeIndexed);
                 if (indexDesc == null) {
@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                         new QueryGraphValueEntryHashKeyedForgeExpr(multi.Expression, false), null, multi.CoercionType);
                     var indexDesc = FindOrSuggestIndex(
                         Collections.SingletonMap(multi.IndexedProp[i], keyInfo),
-                        new EmptyDictionary<string, SubordPropRangeKeyForge>(), 
+                        new EmptyDictionary<string, SubordPropRangeKeyForge>(),
                         optionalIndexHint, indexShare, subqueryNumber,
                         indexMetadata, optionalUniqueKeyProps, onlyUseExistingIndexes, eventTypeIndexed);
                     if (indexDesc == null) {
@@ -209,9 +209,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             SubordTableLookupStrategyFactoryForge lookupStrategyFactory = SubordinateTableLookupStrategyUtil.GetLookupStrategy(
-                    outerStreams,
-                    hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, inKeywordSingleIdxKeys,
-                    inKeywordMultiIdxKey, isNWOnTrigger);
+                outerStreams,
+                hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, inKeywordSingleIdxKeys,
+                inKeywordMultiIdxKey, isNWOnTrigger);
             return new SubordinateQueryPlanDescForge(lookupStrategyFactory, indexDescs);
         }
 

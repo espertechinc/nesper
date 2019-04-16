@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.view.prior
             set => isUnbound = value;
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 
@@ -52,7 +54,8 @@ namespace com.espertech.esper.common.@internal.view.prior
         public string ViewName => "prior";
 
         public ViewUpdatedCollection MakeViewUpdatedCollection(
-            SortedSet<int> priorRequests, AgentInstanceContext agentInstanceContext)
+            SortedSet<int> priorRequests,
+            AgentInstanceContext agentInstanceContext)
         {
             if (priorRequests.IsEmpty()) {
                 throw new IllegalStateException("No resources requested");

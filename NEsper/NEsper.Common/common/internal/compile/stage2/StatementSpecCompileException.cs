@@ -12,13 +12,18 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class StatementSpecCompileException : Exception
     {
-        public StatementSpecCompileException(string message, string expression)
+        public StatementSpecCompileException(
+            string message,
+            string expression)
             : base(message)
         {
             Expression = expression;
         }
 
-        public StatementSpecCompileException(string message, Exception cause, string expression)
+        public StatementSpecCompileException(
+            string message,
+            Exception cause,
+            string expression)
             : base(message, cause)
         {
             Expression = expression;

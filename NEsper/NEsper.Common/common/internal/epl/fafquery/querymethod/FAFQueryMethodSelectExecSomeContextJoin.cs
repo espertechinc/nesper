@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.compat;
@@ -15,14 +14,21 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
-	public class FAFQueryMethodSelectExecSomeContextJoin : FAFQueryMethodSelectExec {
-	    public static readonly FAFQueryMethodSelectExec INSTANCE = new FAFQueryMethodSelectExecSomeContextJoin();
+    public class FAFQueryMethodSelectExecSomeContextJoin : FAFQueryMethodSelectExec
+    {
+        public static readonly FAFQueryMethodSelectExec INSTANCE = new FAFQueryMethodSelectExecSomeContextJoin();
 
-	    private FAFQueryMethodSelectExecSomeContextJoin() {
-	    }
+        private FAFQueryMethodSelectExecSomeContextJoin()
+        {
+        }
 
-	    public EPPreparedQueryResult Execute(FAFQueryMethodSelect select, ContextPartitionSelector[] contextPartitionSelectors, FAFQueryMethodAssignerSetter assignerSetter, ContextManagementService contextManagementService) {
-	        throw new UnsupportedOperationException("Context with join is not supported");
-	    }
-	}
+        public EPPreparedQueryResult Execute(
+            FAFQueryMethodSelect select,
+            ContextPartitionSelector[] contextPartitionSelectors,
+            FAFQueryMethodAssignerSetter assignerSetter,
+            ContextManagementService contextManagementService)
+        {
+            throw new UnsupportedOperationException("Context with join is not supported");
+        }
+    }
 } // end of namespace

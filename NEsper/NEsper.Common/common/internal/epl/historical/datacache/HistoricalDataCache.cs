@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         /// </summary>
         /// <param name="methodParams">is the keys to the cache entry</param>
         /// <param name="rows">is a number of rows</param>
-        void Put(object methodParams, EventTable[] rows);
+        void Put(
+            object methodParams,
+            EventTable[] rows);
 
         /// <summary>
         ///     Returns true if the cache is active and currently caching, or false if the cache is inactive and not currently

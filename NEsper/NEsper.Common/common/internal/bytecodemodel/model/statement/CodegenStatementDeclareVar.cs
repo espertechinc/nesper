@@ -23,7 +23,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly string var;
 
         public CodegenStatementDeclareVar(
-            Type clazz, Type optionalTypeVariable, string var, CodegenExpression optionalInitializer)
+            Type clazz,
+            Type optionalTypeVariable,
+            string var,
+            CodegenExpression optionalInitializer)
         {
             if (clazz == null) {
                 throw new ArgumentException("Class cannot be null");
@@ -37,7 +40,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public CodegenStatementDeclareVar(
-            string typeName, Type optionalTypeVariable, string var, CodegenExpression optionalInitializer)
+            string typeName,
+            Type optionalTypeVariable,
+            string var,
+            CodegenExpression optionalInitializer)
         {
             if (typeName == null) {
                 throw new ArgumentException("Class cannot be null");
@@ -51,7 +57,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             if (clazz != null) {
                 AppendClassName(builder, clazz, optionalTypeVariable, imports);

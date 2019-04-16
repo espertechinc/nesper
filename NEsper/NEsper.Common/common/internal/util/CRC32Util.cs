@@ -6,18 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
-	public class CRC32Util {
-	    public static long ComputeCRC32(string name) {
-	        CRC32 crc32 = new CRC32();
-	        crc32.Update(name.GetBytes(Charset.ForName("UTF-8")));
-	        return crc32.Value;
-	    }
-	}
+    public class CRC32Util
+    {
+        public static long ComputeCRC32(string name)
+        {
+            return name.GetCrc32();
+        }
+    }
 } // end of namespace

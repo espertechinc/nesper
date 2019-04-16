@@ -7,28 +7,27 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
-	/// <summary>
-	/// Interface for a type widener.
-	/// </summary>
-	public interface TypeWidener {
-	    /// <summary>
-	    /// Widen input value.
-	    /// </summary>
-	    /// <param name="input">the object to widen.</param>
-	    /// <returns>widened object.</returns>
-	    object Widen(object input);
-	}
+    /// <summary>
+    /// Interface for a type widener.
+    /// </summary>
+    public interface TypeWidener
+    {
+        /// <summary>
+        /// Widen input value.
+        /// </summary>
+        /// <param name="input">the object to widen.</param>
+        /// <returns>widened object.</returns>
+        object Widen(object input);
+    }
 
     public class ProxyTypeWidener : TypeWidener
     {
         public Func<object, object> ProcWiden;
         public object Widen(object input) => ProcWiden(input);
     }
-
 } // end of namespace

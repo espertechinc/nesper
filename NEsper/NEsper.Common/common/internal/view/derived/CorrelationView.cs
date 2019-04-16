@@ -25,13 +25,14 @@ namespace com.espertech.esper.common.@internal.view.derived
     public class CorrelationView : BaseBivariateStatisticsView
     {
         public CorrelationView(
-            ViewFactory viewFactory, 
+            ViewFactory viewFactory,
             AgentInstanceContext agentInstanceContext,
             ExprEvaluator xExpressionEval,
-            ExprEvaluator yExpressionEval, 
-            EventType eventType, 
-            StatViewAdditionalPropsEval additionalProps) : base(
-            viewFactory, agentInstanceContext, xExpressionEval, yExpressionEval, eventType, additionalProps)
+            ExprEvaluator yExpressionEval,
+            EventType eventType,
+            StatViewAdditionalPropsEval additionalProps)
+            : base(
+                viewFactory, agentInstanceContext, xExpressionEval, yExpressionEval, eventType, additionalProps)
         {
         }
 
@@ -73,7 +74,9 @@ namespace com.espertech.esper.common.@internal.view.derived
         }
 
         protected internal static EventType CreateEventType(
-            StatViewAdditionalPropsForge additionalProps, ViewForgeEnv viewForgeEnv, int streamNum)
+            StatViewAdditionalPropsForge additionalProps,
+            ViewForgeEnv viewForgeEnv,
+            int streamNum)
         {
             var eventTypeMap = new LinkedHashMap<string, object>();
             eventTypeMap.Put(ViewFieldEnum.CORRELATION__CORRELATION.GetName(), typeof(double?));

@@ -14,15 +14,15 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Match-recognize pattern descriptor for repetition
     /// </summary>
-	[Serializable]
+    [Serializable]
     public class MatchRecognizeRegExRepeat
-	{
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchRecognizeRegExRepeat"/> class.
         /// </summary>
-	    public MatchRecognizeRegExRepeat()
+        public MatchRecognizeRegExRepeat()
         {
-	    }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchRecognizeRegExRepeat"/> class.
@@ -30,12 +30,15 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="low">The low.</param>
         /// <param name="high">The high.</param>
         /// <param name="single">The single.</param>
-	    public MatchRecognizeRegExRepeat(Expression low, Expression high, Expression single)
+        public MatchRecognizeRegExRepeat(
+            Expression low,
+            Expression high,
+            Expression single)
         {
-	        this.Low = low;
-	        this.High = high;
-	        this.Single = single;
-	    }
+            this.Low = low;
+            this.High = high;
+            this.Single = single;
+        }
 
         /// <summary>
         /// Gets or sets the low endpoint or null.
@@ -43,7 +46,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The low.
         /// </value>
-	    public Expression Low { get; set; }
+        public Expression Low { get; set; }
 
         /// <summary>
         /// Gets or sets the high endpoint or null.
@@ -51,7 +54,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The high.
         /// </value>
-	    public Expression High { get; set; }
+        public Expression High { get; set; }
 
         /// <summary>
         /// Gets or sets the single exact-match repetition, should be null if low or high is provided.
@@ -59,28 +62,30 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The single.
         /// </value>
-	    public Expression Single { get; set; }
+        public Expression Single { get; set; }
 
         /// <summary>
         /// RenderAny as epl.
         /// </summary>
         /// <param name="writer">The writer.</param>
-	    public void WriteEPL(TextWriter writer)
+        public void WriteEPL(TextWriter writer)
         {
-	        writer.Write("{");
-	        if (System.Single != null) {
-	            System.Single.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-	        }
-	        else {
-	            if (Low != null) {
-	                Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-	            }
-	            writer.Write(",");
-	            if (High != null) {
-	                High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-	            }
-	        }
-	        writer.Write("}");
-	    }
-	}
+            writer.Write("{");
+            if (Single != null) {
+                Single.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            }
+            else {
+                if (Low != null) {
+                    Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                }
+
+                writer.Write(",");
+                if (High != null) {
+                    High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                }
+            }
+
+            writer.Write("}");
+        }
+    }
 } // end of namespace

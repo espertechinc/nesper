@@ -113,7 +113,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public static CodegenExpressionNewAnonymousClass CodegenEvaluatorMayMultiKeyWCoerce(
             IList<ExprForge> forges,
             IList<Type> optCoercionTypes,
-            CodegenMethod method, Type generator,
+            CodegenMethod method,
+            Type generator,
             CodegenClassScope classScope)
         {
             if (forges.Count == 1) {

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -19,26 +18,35 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumMinMaxByScalarLambdaForge : EnumForgeBase {
+    public class EnumMinMaxByScalarLambdaForge : EnumForgeBase
+    {
+        internal readonly bool max;
+        internal readonly ObjectArrayEventType resultEventType;
+        internal readonly EPType resultType;
 
-	    internal readonly bool max;
-	    internal readonly ObjectArrayEventType resultEventType;
-	    internal readonly EPType resultType;
+        public EnumMinMaxByScalarLambdaForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            bool max,
+            ObjectArrayEventType resultEventType,
+            EPType resultType)
+            : base(innerExpression, streamCountIncoming)
+        {
+            this.max = max;
+            this.resultEventType = resultEventType;
+            this.resultType = resultType;
+        }
 
-	    public EnumMinMaxByScalarLambdaForge(ExprForge innerExpression, int streamCountIncoming, bool max, ObjectArrayEventType resultEventType, EPType resultType)
-	    	 : base(innerExpression, streamCountIncoming)
-	    {
-	        this.max = max;
-	        this.resultEventType = resultEventType;
-	        this.resultType = resultType;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumMinMaxByScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumMinMaxByScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumMinMaxByScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumMinMaxByScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

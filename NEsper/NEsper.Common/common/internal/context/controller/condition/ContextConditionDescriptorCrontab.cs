@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             // none here
         }
 
-        public long? GetExpectedEndTime(ContextManagerRealization realization, ScheduleSpec scheduleSpec)
+        public long? GetExpectedEndTime(
+            ContextManagerRealization realization,
+            ScheduleSpec scheduleSpec)
         {
             var classpathImportService = realization.AgentInstanceContextCreate.ImportServiceRuntime;
             return ScheduleComputeHelper.ComputeNextOccurance(

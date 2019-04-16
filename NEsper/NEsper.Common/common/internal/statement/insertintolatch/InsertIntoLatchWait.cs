@@ -8,7 +8,6 @@
 
 using System.Reflection;
 using System.Threading;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.logging;
 
@@ -30,7 +29,7 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         // The later latch is the latch generated after this latch
         private InsertIntoLatchWait _later;
         private volatile bool _isCompleted;
-        
+
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -75,7 +74,7 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         /// <param name="later">is the later latch</param>
         public InsertIntoLatchWait WithLater(InsertIntoLatchWait later)
         {
-            _later= later;
+            _later = later;
             return this;
         }
 
@@ -85,26 +84,20 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         /// <returns>payload of the latch</returns>
         public EventBean Await()
         {
-            if (!_earlier._isCompleted)
-            {
-                lock (this)
-                {
-                    if (!_earlier._isCompleted)
-                    {
-                        try
-                        {
+            if (!_earlier._isCompleted) {
+                lock (this) {
+                    if (!_earlier._isCompleted) {
+                        try {
                             Monitor.Wait(this, _msecTimeout);
                         }
-                        catch (ThreadInterruptedException e)
-                        {
+                        catch (ThreadInterruptedException e) {
                             Log.Error("Interrupted: " + e.Message, e);
                         }
                     }
                 }
             }
 
-            if (!_earlier._isCompleted)
-            {
+            if (!_earlier._isCompleted) {
                 Log.Info("Wait timeout exceeded for insert-into dispatch with notify");
             }
 
@@ -117,10 +110,8 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         public void Done()
         {
             _isCompleted = true;
-            if (Later != null)
-            {
-                lock (Later)
-                {
+            if (Later != null) {
+                lock (Later) {
                     Monitor.Pulse(Later);
                 }
             }

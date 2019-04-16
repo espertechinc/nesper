@@ -27,8 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
         protected CodegenExpressionRef vector;
 
         public AggregatorMedian(
-            AggregationForgeFactory factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter) :
+            AggregationForgeFactory factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter)
+            :
             base(
                 factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
                 optionalFilter)
@@ -38,54 +45,81 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
         }
 
         protected override void ApplyEvalEnterNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(
                 vector, "add", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyEvalLeaveNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(
                 vector, "remove", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyTableEnterNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(vector, "add", ExprDotMethod(Cast(typeof(object), value), "doubleValue"));
         }
 
         protected override void ApplyTableLeaveNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(vector, "remove", ExprDotMethod(Cast(typeof(object), value), "doubleValue"));
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(vector, "clear");
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(StaticMethod(typeof(AggregatorMedian), "medianCompute", vector));
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .StaticMethod(GetType(), "writePoints", output, RowDotRef(row, vector));
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .AssignRef(RowDotRef(row, vector), StaticMethod(GetType(), "readPoints", input));
@@ -97,7 +131,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
         /// <param name="output">out</param>
         /// <param name="vector">points</param>
         /// <throws>IOException io error</throws>
-        public static void WritePoints(DataOutput output, SortedDoubleVector vector)
+        public static void WritePoints(
+            DataOutput output,
+            SortedDoubleVector vector)
         {
             output.WriteInt(vector.Values.Count);
             foreach (var num in vector.Values) {

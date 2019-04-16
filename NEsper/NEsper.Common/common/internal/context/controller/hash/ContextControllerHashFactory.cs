@@ -35,8 +35,12 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         }
 
         public override FilterValueSetParam[][] PopulateFilterAddendum(
-            FilterSpecActivatable filterSpec, bool forStatement, int nestingLevel, object partitionKey,
-            ContextControllerStatementDesc optionalStatementDesc, AgentInstanceContext agentInstanceContextStatement)
+            FilterSpecActivatable filterSpec,
+            bool forStatement,
+            int nestingLevel,
+            object partitionKey,
+            ContextControllerStatementDesc optionalStatementDesc,
+            AgentInstanceContext agentInstanceContextStatement)
         {
             // determine whether create-named-window
             var isCreateWindow = optionalStatementDesc != null &&
@@ -79,7 +83,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             return addendum;
         }
 
-        public override void PopulateContextProperties(IDictionary<string, object> props, object allPartitionKey)
+        public override void PopulateContextProperties(
+            IDictionary<string, object> props,
+            object allPartitionKey)
         {
             // nothing to populate
         }
@@ -100,7 +106,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         }
 
         private static ContextControllerDetailHashItem FindHashItemSpec(
-            ContextControllerDetailHash hashSpec, FilterSpecActivatable filterSpec)
+            ContextControllerDetailHash hashSpec,
+            FilterSpecActivatable filterSpec)
         {
             ContextControllerDetailHashItem foundPartition = null;
             foreach (var partitionItem in hashSpec.Items) {

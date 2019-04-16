@@ -32,7 +32,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="first">an expression to add to the OR-test</param>
         /// <param name="second">an expression to add to the OR-test</param>
         /// <param name="expressions">is the expression to put in the OR-relationship.</param>
-        public Disjunction(Expression first, Expression second, params Expression[] expressions)
+        public Disjunction(
+            Expression first,
+            Expression second,
+            params Expression[] expressions)
         {
             AddChild(first);
             AddChild(second);

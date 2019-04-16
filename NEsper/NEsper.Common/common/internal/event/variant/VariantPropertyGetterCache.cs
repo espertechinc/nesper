@@ -21,10 +21,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
     /// </summary>
     public class VariantPropertyGetterCache
     {
+        private readonly IList<string> properties;
         private IDictionary<EventType, VariantPropertyGetterRow> allGetters;
         private volatile EventType[] knownTypes;
         private volatile VariantPropertyGetterRow lastUsedGetters;
-        private readonly IList<string> properties;
 
         /// <summary>
         ///     Ctor.
@@ -67,7 +67,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
         /// <param name="propertyName">property name</param>
         /// <param name="eventType">type of underlying event</param>
         /// <returns>getter</returns>
-        public EventPropertyGetter GetGetter(string propertyName, EventType eventType)
+        public EventPropertyGetter GetGetter(
+            string propertyName,
+            EventType eventType)
         {
             var lastGetters = lastUsedGetters;
             if (lastGetters != null && lastGetters.EventType == eventType) {
@@ -131,7 +133,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
             return row;
         }
 
-        private static Array ResizeArray(Array oldArray, int newSize)
+        private static Array ResizeArray(
+            Array oldArray,
+            int newSize)
         {
             var oldSize = oldArray.Length;
             var elementType = oldArray.GetType().GetElementType();
@@ -147,7 +151,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
         internal class VariantPropertyGetterRow
         {
             internal VariantPropertyGetterRow(
-                EventType eventType, 
+                EventType eventType,
                 IDictionary<string, EventPropertyGetter> getterPerProp)
             {
                 EventType = eventType;
@@ -158,7 +162,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
             public IDictionary<string, EventPropertyGetter> GetterPerProp { get; }
 
-            public void AddGetter(string propertyName, EventPropertyGetter getter)
+            public void AddGetter(
+                string propertyName,
+                EventPropertyGetter getter)
             {
                 GetterPerProp.Put(propertyName, getter);
             }

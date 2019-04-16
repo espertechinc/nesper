@@ -58,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return NewInstance(
                 typeof(QueryPlanIndex),
@@ -84,7 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <param name="indexProps">property names to search for</param>
         /// <param name="rangeProps">range props</param>
         /// <returns>-1 if not found, or offset within indexes if found</returns>
-        public Pair<TableLookupIndexReqKey, int[]> GetIndexNum(string[] indexProps, string[] rangeProps)
+        public Pair<TableLookupIndexReqKey, int[]> GetIndexNum(
+            string[] indexProps,
+            string[] rangeProps)
         {
             // find an exact match first
             var proposed = new QueryPlanIndexItemForge(
@@ -109,7 +113,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             return null;
         }
 
-        public string AddIndex(string[] indexProperties, Type[] coercionTypes, EventType eventType)
+        public string AddIndex(
+            string[] indexProperties,
+            Type[] coercionTypes,
+            EventType eventType)
         {
             var uuid = UuidGenerator.Generate();
             Items.Put(
@@ -127,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public Type[] GetCoercionTypes(string[] indexProperties)
         {
             foreach (var entry in Items) {
-                if (Arrays.DeepEquals(entry.Value.HashProps, indexProperties)) {
+                if (CompatExtensions.DeepEquals(entry.Value.HashProps, indexProperties)) {
                     return entry.Value.HashTypes;
                 }
             }
@@ -140,11 +147,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// </summary>
         /// <param name="indexProperties">is the index property names</param>
         /// <param name="coercionTypes">is the coercion types</param>
-        public void SetCoercionTypes(string[] indexProperties, Type[] coercionTypes)
+        public void SetCoercionTypes(
+            string[] indexProperties,
+            Type[] coercionTypes)
         {
             var found = false;
             foreach (var entry in Items) {
-                if (Arrays.DeepEquals(entry.Value.HashProps, indexProperties)) {
+                if (CompatExtensions.DeepEquals(entry.Value.HashProps, indexProperties)) {
                     entry.Value.HashTypes = coercionTypes;
                     found = true;
                 }

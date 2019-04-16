@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.collection
     /// decrements the reference count for the key, and removes the key if the reference count reached zero.
     /// Null values are not allowed as keys.
     /// </summary>
-
     public class RefCountedMap<K, V>
     {
         private readonly IDictionary<K, Pair<V, Int32>> _refMap;
@@ -29,7 +28,6 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>
         /// Constructor.
         /// </summary>
-
         public RefCountedMap()
         {
             _refMap = new Dictionary<K, Pair<V, Int32>>();
@@ -40,26 +38,22 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets or sets the item with the specified key.
         /// </summary>
         /// <value></value>
-        public virtual V this[K key]
-        {
-            get
-            {
+        public virtual V this[K key] {
+            get {
                 Pair<V, Int32> refValue = null;
-                if (!_refMap.TryGetValue(key, out refValue))
-                {
+                if (!_refMap.TryGetValue(key, out refValue)) {
                     return default(V);
                 }
+
                 return refValue.First;
             }
 
-            set
-            {
-                if (key == null)
-                {
+            set {
+                if (key == null) {
                     throw new ArgumentException("Collection does not allow null key values");
                 }
-                if (_refMap.ContainsKey(key))
-                {
+
+                if (_refMap.ContainsKey(key)) {
                     throw new IllegalStateException("Value value already in collection");
                 }
 
@@ -75,14 +69,13 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="key">is the key to increase the ref count for
         /// </param>
-
         public void Reference(K key)
         {
-            Pair<V, Int32> refValue ;
-            if (!_refMap.TryGetValue(key, out refValue))
-            {
+            Pair<V, Int32> refValue;
+            if (!_refMap.TryGetValue(key, out refValue)) {
                 throw new IllegalStateException("Value value not found in collection");
             }
+
             refValue.Second = refValue.Second + 1;
         }
 
@@ -94,24 +87,20 @@ namespace com.espertech.esper.common.@internal.collection
         /// </param>
         /// <returns> true to indicate the reference count reached zero, false to indicate more references to the key exist.
         /// </returns>
-
         public virtual bool Dereference(K key)
         {
-            Pair<V, Int32> refValue ;
-            if (!_refMap.TryGetValue(key, out refValue))
-            {
+            Pair<V, Int32> refValue;
+            if (!_refMap.TryGetValue(key, out refValue)) {
                 throw new IllegalStateException("Value value not found in collection");
             }
 
             int refCounter = refValue.Second;
-            if (refCounter < 1)
-            {
+            if (refCounter < 1) {
                 throw new IllegalStateException("Unexpected reference counter value " + refValue.Second + " encountered for key " + key);
             }
 
             // Remove key on dereference of last reference
-            if (refCounter == 1)
-            {
+            if (refCounter == 1) {
                 _refMap.Remove(key);
                 return true;
             }

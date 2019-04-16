@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <param name="row">aggregation row</param>
         /// <param name="column">column assigned to the aggregation state</param>
         void ApplyEnter(
-            EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column);
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column);
 
         /// <summary>
         ///     Leave-from (remove from) an aggregation
@@ -34,6 +37,9 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <param name="row">aggregation row</param>
         /// <param name="column">column assigned to the aggregation state</param>
         void ApplyLeave(
-            EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column);
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column);
     }
 } // end of namespace

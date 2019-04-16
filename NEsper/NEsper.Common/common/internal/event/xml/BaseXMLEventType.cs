@@ -6,12 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -35,14 +33,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         private readonly IXPathFunctionResolver _functionResolver;
         private readonly IXPathVariableResolver _variableResolver;
-
-        private string _startTimestampPropertyName;
         private string _endTimestampPropertyName;
 
         /// <summary>
         ///     XPath namespace context.
         /// </summary>
         private XPathNamespaceContext _namespaceContext;
+
+        private string _startTimestampPropertyName;
 
         /// <summary>
         ///     Ctor.
@@ -107,7 +105,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public override IEnumerable<EventType> DeepSuperTypes => null;
 
-        public override ISet<EventType> DeepSuperTypesAsSet => Collections.GetEmptySet<EventType>();
+        public override ICollection<EventType> DeepSuperTypesCollection => Collections.GetEmptySet<EventType>();
 
         /// <summary>
         ///     Returns the configuration XML for the XML type.
@@ -176,7 +174,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         property.Type,
                         property.OptionalCastToType,
                         fragmentFactory);
-                    Type returnType = SchemaUtil.ToReturnType(property.Type, property.OptionalCastToType);
+                    var returnType = SchemaUtil.ToReturnType(property.Type, property.OptionalCastToType);
 
                     var desc = new EventPropertyDescriptor(
                         property.Name, returnType, null, false, false, isArray, false, isFragment);

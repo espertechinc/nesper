@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenMethod _methodNode;
         private readonly IList<CodegenExpression> _parameters;
 
-        public CodegenExpressionLocalMethod(CodegenMethod methodNode, IList<CodegenExpression> parameters)
+        public CodegenExpressionLocalMethod(
+            CodegenMethod methodNode,
+            IList<CodegenExpression> parameters)
         {
             this._methodNode = methodNode;
             if (methodNode == null) {
@@ -29,7 +31,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this._parameters = parameters;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             if (_methodNode.AssignedMethod == null) {
                 throw new IllegalStateException("Method has no assignment for " + _methodNode.AdditionalDebugInfo);

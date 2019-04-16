@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 {
     public class TableAndLockGrouped
     {
-        public TableAndLockGrouped(ILockable @lock, TableInstanceGrouped grouped)
+        public TableAndLockGrouped(
+            ILockable @lock,
+            TableInstanceGrouped grouped)
         {
             Lock = @lock;
             Grouped = grouped;

@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         public int ScheduleCallbackId { get; }
 
         public OutputCondition InstantiateOutputCondition(
-            AgentInstanceContext agentInstanceContext, OutputCallback outputCallback)
+            AgentInstanceContext agentInstanceContext,
+            OutputCallback outputCallback)
         {
             var scheduleSpec = ScheduleExpressionUtil.CrontabScheduleBuild(
                 scheduleSpecEvaluators, agentInstanceContext);

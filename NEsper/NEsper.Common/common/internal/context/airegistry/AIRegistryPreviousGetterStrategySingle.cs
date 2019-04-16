@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     {
         private PreviousGetterStrategy service;
 
-        public void AssignService(int serviceId, PreviousGetterStrategy previousGetterStrategy)
+        public void AssignService(
+            int serviceId,
+            PreviousGetterStrategy previousGetterStrategy)
         {
             service = previousGetterStrategy;
         }

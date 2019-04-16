@@ -27,8 +27,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         private readonly EventType[] typesPerStream;
 
         public FilterExprAnalyzerDTBetweenAffector(
-            EventType[] typesPerStream, int targetStreamNum, string targetPropertyName, ExprNode start, ExprNode end,
-            bool includeLow, bool includeHigh)
+            EventType[] typesPerStream,
+            int targetStreamNum,
+            string targetPropertyName,
+            ExprNode start,
+            ExprNode end,
+            bool includeLow,
+            bool includeHigh)
         {
             this.typesPerStream = typesPerStream;
             this.targetStreamNum = targetStreamNum;

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -25,7 +24,6 @@ using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
@@ -72,18 +70,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         public ExprNode ForgeRenderable => this;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
@@ -91,17 +96,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             if (PreviousType == ExprPreviousNodePreviousType.PREV ||
                 PreviousType == ExprPreviousNodePreviousType.PREVTAIL ||
-                PreviousType == ExprPreviousNodePreviousType.PREVCOUNT)
-            {
+                PreviousType == ExprPreviousNodePreviousType.PREVCOUNT) {
                 return ConstantNull();
             }
 
-            if (PreviousType != ExprPreviousNodePreviousType.PREVWINDOW)
-            {
+            if (PreviousType != ExprPreviousNodePreviousType.PREVWINDOW) {
                 throw new IllegalStateException("Unrecognized previous type " + PreviousType);
             }
 
@@ -140,11 +145,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             if (PreviousType == ExprPreviousNodePreviousType.PREVWINDOW ||
-                PreviousType == ExprPreviousNodePreviousType.PREVCOUNT)
-            {
+                PreviousType == ExprPreviousNodePreviousType.PREVCOUNT) {
                 return ConstantNull();
             }
 
@@ -159,15 +165,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            if (PreviousType == ExprPreviousNodePreviousType.PREVCOUNT)
-            {
+            if (PreviousType == ExprPreviousNodePreviousType.PREVCOUNT) {
                 return ConstantNull();
             }
 
-            if (PreviousType == ExprPreviousNodePreviousType.PREVWINDOW)
-            {
+            if (PreviousType == ExprPreviousNodePreviousType.PREVWINDOW) {
                 var methodX = parent.MakeChild(typeof(ICollection<object>), GetType(), codegenClassScope);
 
                 methodX.Block
@@ -204,11 +210,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         }
 
         public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             if (PreviousType == ExprPreviousNodePreviousType.PREV ||
-                PreviousType == ExprPreviousNodePreviousType.PREVTAIL)
-            {
+                PreviousType == ExprPreviousNodePreviousType.PREVTAIL) {
                 return null;
             }
 
@@ -216,18 +222,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         }
 
         public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             if (PreviousType == ExprPreviousNodePreviousType.PREV ||
-                PreviousType == ExprPreviousNodePreviousType.PREVTAIL)
-            {
+                PreviousType == ExprPreviousNodePreviousType.PREVTAIL) {
                 return enumerationMethodType;
             }
 
             return null;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw new UnsupportedOperationException();
         }
@@ -239,22 +248,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         public Type EvaluationType => ResultType;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (PreviousType == ExprPreviousNodePreviousType.PREV ||
-                PreviousType == ExprPreviousNodePreviousType.PREVTAIL)
-            {
+                PreviousType == ExprPreviousNodePreviousType.PREVTAIL) {
                 return EvaluateCodegenPrevAndTail(codegenMethodScope, exprSymbol, codegenClassScope);
             }
 
-            if (PreviousType == ExprPreviousNodePreviousType.PREVWINDOW)
-            {
+            if (PreviousType == ExprPreviousNodePreviousType.PREVWINDOW) {
                 return EvaluateCodegenPrevWindow(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
             }
 
-            if (PreviousType == ExprPreviousNodePreviousType.PREVCOUNT)
-            {
+            if (PreviousType == ExprPreviousNodePreviousType.PREVCOUNT) {
                 return EvaluateCodegenPrevCount(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
             }
 
@@ -262,7 +270,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -272,46 +282,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length > 2 || ChildNodes.Length == 0)
-            {
+            if (ChildNodes.Length > 2 || ChildNodes.Length == 0) {
                 throw new ExprValidationException("Previous node must have 1 or 2 parameters");
             }
 
             // add constant of 1 for previous index
-            if (ChildNodes.Length == 1)
-            {
-                if (PreviousType == ExprPreviousNodePreviousType.PREV)
-                {
+            if (ChildNodes.Length == 1) {
+                if (PreviousType == ExprPreviousNodePreviousType.PREV) {
                     AddChildNodeToFront(new ExprConstantNodeImpl(1));
                 }
-                else
-                {
+                else {
                     AddChildNodeToFront(new ExprConstantNodeImpl(0));
                 }
             }
 
             // the row recognition patterns allows "prev(prop, index)", we switch index the first position
-            if (ExprNodeUtilityQuery.IsConstant(ChildNodes[1]))
-            {
+            if (ExprNodeUtilityQuery.IsConstant(ChildNodes[1])) {
                 var first = ChildNodes[0];
                 var second = ChildNodes[1];
                 this.ChildNodes = new[] {second, first};
             }
 
             // Determine if the index is a constant value or an expression to evaluate
-            if (ChildNodes[0].Forge.ForgeConstantType.IsCompileTimeConstant)
-            {
+            if (ChildNodes[0].Forge.ForgeConstantType.IsCompileTimeConstant) {
                 var constantNode = ChildNodes[0];
                 var value = constantNode.Forge.ExprEvaluator.Evaluate(null, false, null);
-                if (!value.IsNumber())
-                {
+                if (!value.IsNumber()) {
                     throw new ExprValidationException(
                         "Previous function requires an integer index parameter or expression");
                 }
 
                 var valueNumber = value;
-                if (valueNumber.IsFloatingPointNumber())
-                {
+                if (valueNumber.IsFloatingPointNumber()) {
                     throw new ExprValidationException(
                         "Previous function requires an integer index parameter or expression");
                 }
@@ -321,36 +323,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             }
 
             // Determine stream number
-            if (ChildNodes[1] is ExprIdentNode)
-            {
-                var identNode = (ExprIdentNode)ChildNodes[1];
+            if (ChildNodes[1] is ExprIdentNode) {
+                var identNode = (ExprIdentNode) ChildNodes[1];
                 StreamNumber = identNode.StreamId;
                 ResultType = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
             }
-            else if (ChildNodes[1] is ExprStreamUnderlyingNode)
-            {
-                var streamNode = (ExprStreamUnderlyingNode)ChildNodes[1];
+            else if (ChildNodes[1] is ExprStreamUnderlyingNode) {
+                var streamNode = (ExprStreamUnderlyingNode) ChildNodes[1];
                 StreamNumber = streamNode.StreamId;
                 ResultType = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
                 enumerationMethodType = validationContext.StreamTypeService.EventTypes[streamNode.StreamId];
             }
-            else
-            {
+            else {
                 throw new ExprValidationException("Previous function requires an event property as parameter");
             }
 
-            if (PreviousType == ExprPreviousNodePreviousType.PREVCOUNT)
-            {
+            if (PreviousType == ExprPreviousNodePreviousType.PREVCOUNT) {
                 ResultType = typeof(long?);
             }
 
-            if (PreviousType == ExprPreviousNodePreviousType.PREVWINDOW)
-            {
+            if (PreviousType == ExprPreviousNodePreviousType.PREVWINDOW) {
                 ResultType = TypeHelper.GetArrayType(ResultType);
             }
 
-            if (validationContext.ViewResourceDelegate == null)
-            {
+            if (validationContext.ViewResourceDelegate == null) {
                 throw new ExprValidationException("Previous function cannot be used in this context");
             }
 
@@ -370,7 +366,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         }
 
         private CodegenExpression EvaluateCodegenPrevCount(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var method = parent.MakeChild(ResultType, GetType(), codegenClassScope);
@@ -413,7 +411,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         }
 
         private CodegenExpression EvaluateCodegenPrevWindow(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var method = parent.MakeChild(ResultType, GetType(), codegenClassScope);
@@ -443,7 +443,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         }
 
         private CodegenExpression EvaluateCodegenPrevAndTail(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var method = parent.MakeChild(ResultType, GetType(), codegenClassScope);
 
@@ -472,7 +474,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         }
 
         private CodegenMethod GetSubstituteCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var method = parent.MakeChildWithScope(
                     typeof(EventBean), GetType(), CodegenSymbolProviderEmpty.INSTANCE, codegenClassScope)
@@ -482,12 +486,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             method.Block.DeclareVar(
                 typeof(PreviousGetterStrategy), "strategy",
                 ExprDotMethod(GetterField(codegenClassScope), "getStrategy", exprSymbol.GetAddExprEvalCtx(method)));
-            if (IsConstantIndex)
-            {
+            if (IsConstantIndex) {
                 method.Block.DeclareVar(typeof(int), "index", Constant(ConstantIndexNumber));
             }
-            else
-            {
+            else {
                 var index = ChildNodes[0].Forge;
                 var indexMethod = CodegenLegoMethodExpression.CodegenExpression(index, method, codegenClassScope);
                 CodegenExpression indexCall = LocalMethod(indexMethod, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT);
@@ -506,16 +508,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         Cast(typeof(RandomAccessByIndexGetter), Ref("strategy")))
                     .DeclareVar(
                         typeof(RandomAccessByIndex), "randomAccess", ExprDotMethod(Ref("getter"), "getAccessor"));
-                if (PreviousType == ExprPreviousNodePreviousType.PREV)
-                {
+                if (PreviousType == ExprPreviousNodePreviousType.PREV) {
                     randomAccess.BlockReturn(ExprDotMethod(Ref("randomAccess"), "getNewData", Ref("index")));
                 }
-                else if (PreviousType == ExprPreviousNodePreviousType.PREVTAIL)
-                {
+                else if (PreviousType == ExprPreviousNodePreviousType.PREVTAIL) {
                     randomAccess.BlockReturn(ExprDotMethod(Ref("randomAccess"), "getNewDataTail", Ref("index")));
                 }
-                else
-                {
+                else {
                     throw new IllegalStateException("Previous type not recognized: " + PreviousType);
                 }
             }
@@ -532,37 +531,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         typeof(RelativeAccessByEventNIndex), "relativeAccess",
                         ExprDotMethod(Ref("getter"), "getAccessor", Ref("evalEvent")))
                     .IfRefNullReturnNull("relativeAccess");
-                if (PreviousType == ExprPreviousNodePreviousType.PREV)
-                {
+                if (PreviousType == ExprPreviousNodePreviousType.PREV) {
                     relativeAccess.BlockReturn(
                         ExprDotMethod(Ref("relativeAccess"), "getRelativeToEvent", Ref("evalEvent"), Ref("index")));
                 }
-                else if (PreviousType == ExprPreviousNodePreviousType.PREVTAIL)
-                {
+                else if (PreviousType == ExprPreviousNodePreviousType.PREVTAIL) {
                     relativeAccess.BlockReturn(ExprDotMethod(Ref("relativeAccess"), "getRelativeToEnd", Ref("index")));
                 }
-                else
-                {
+                else {
                     throw new IllegalStateException("Previous type not recognized: " + PreviousType);
                 }
             }
             return method;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(PreviousType.ToString().ToLowerInvariant());
             writer.Write("(");
             if (PreviousType == ExprPreviousNodePreviousType.PREVCOUNT ||
-                PreviousType == ExprPreviousNodePreviousType.PREVWINDOW)
-            {
+                PreviousType == ExprPreviousNodePreviousType.PREVWINDOW) {
                 ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
             }
-            else
-            {
+            else {
                 ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
-                if (ChildNodes.Length > 1)
-                {
+                if (ChildNodes.Length > 1) {
                     writer.Write(",");
                     ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
                 }
@@ -571,17 +564,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             writer.Write(')');
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
-            if (node == null || GetType() != node.GetType())
-            {
+            if (node == null || GetType() != node.GetType()) {
                 return false;
             }
 
-            var that = (ExprPreviousNode)node;
+            var that = (ExprPreviousNode) node;
 
-            if (PreviousType != that.PreviousType)
-            {
+            if (PreviousType != that.PreviousType) {
                 return false;
             }
 
@@ -602,7 +595,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             private readonly int streamNumber;
 
             public PreviousBlockGetSizeAndIterator(
-                CodegenMethod method, ExprForgeCodegenSymbol exprSymbol, int streamNumber, CodegenExpression getter)
+                CodegenMethod method,
+                ExprForgeCodegenSymbol exprSymbol,
+                int streamNumber,
+                CodegenExpression getter)
             {
                 this.method = method;
                 this.exprSymbol = exprSymbol;

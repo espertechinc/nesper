@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             this.streamJoinMap = streamJoinMap;
         }
 
-        public QueryGraphValue GetGraphValue(int streamLookup, int streamIndexed)
+        public QueryGraphValue GetGraphValue(
+            int streamLookup,
+            int streamIndexed)
         {
             var key = new UniformPair<int>(streamLookup, streamIndexed);
             var value = streamJoinMap.Get(key);

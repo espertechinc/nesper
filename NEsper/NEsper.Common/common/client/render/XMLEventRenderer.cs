@@ -29,6 +29,8 @@ namespace com.espertech.esper.common.client.render
         /// <returns>
         /// XML formatted text
         /// </returns>
-        String Render(String rootElementName, EventBean theEvent);
+        String Render(
+            String rootElementName,
+            EventBean theEvent);
     }
 }

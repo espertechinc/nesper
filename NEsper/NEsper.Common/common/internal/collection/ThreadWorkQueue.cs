@@ -11,11 +11,10 @@ using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-	/// <summary>
+    /// <summary>
     /// Simple queue implementation based on a Linked List per thread.
-	/// Objects can be added to the queue tail or queue head.
-	/// </summary>
-
+    /// Objects can be added to the queue tail or queue head.
+    /// </summary>
     public class ThreadWorkQueue
     {
         private readonly IThreadLocal<DualWorkQueue<Object>> _threadQueue;
@@ -24,8 +23,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets the thread queue.
         /// </summary>
         /// <value>The thread queue.</value>
-        public DualWorkQueue<Object> ThreadQueue
-        {
+        public DualWorkQueue<Object> ThreadQueue {
             get { return _threadQueue.GetOrCreate(); }
         }
 
@@ -38,7 +36,7 @@ namespace com.espertech.esper.common.@internal.collection
                 () => new DualWorkQueue<object>());
         }
 
-	    /// <summary>Adds event to the end of the event queue.</summary>
+        /// <summary>Adds event to the end of the event queue.</summary>
         /// <param name="ev">event to add</param>
         public void AddBack(Object ev)
         {

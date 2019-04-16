@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -16,39 +15,70 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
-	public interface AggregationRow {
-	    void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext);
+    public interface AggregationRow
+    {
+        void ApplyEnter(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-	    void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext);
+        void ApplyLeave(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-	    void EnterAgg(int column, object value);
+        void EnterAgg(
+            int column,
+            object value);
 
-	    void LeaveAgg(int column, object value);
+        void LeaveAgg(
+            int column,
+            object value);
 
-	    void EnterAccess(int column, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext);
+        void EnterAccess(
+            int column,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-	    void LeaveAccess(int column, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext);
+        void LeaveAccess(
+            int column,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-	    object GetAccessState(int column);
+        object GetAccessState(int column);
 
-	    void Clear();
+        void Clear();
 
-	    object GetValue(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        object GetValue(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-	    ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        ICollection<EventBean> GetCollectionOfEvents(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
-	    EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        EventBean GetEventBean(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
-	    ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        ICollection<object> GetCollectionScalar(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
-	    void IncreaseRefcount();
+        void IncreaseRefcount();
 
-	    void DecreaseRefcount();
+        void DecreaseRefcount();
 
-	    long GetRefcount();
+        long GetRefcount();
 
-	    long GetLastUpdateTime();
+        long GetLastUpdateTime();
 
-	    void SetLastUpdateTime(long currentTime);
-	}
+        void SetLastUpdateTime(long currentTime);
+    }
 } // end of namespace

@@ -23,7 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         void Visit(ExprDotEvalVisitor visitor);
 
         CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope);
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
     }
 } // end of namespace

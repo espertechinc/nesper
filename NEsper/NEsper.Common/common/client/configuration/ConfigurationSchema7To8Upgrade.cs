@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -34,16 +33,14 @@ namespace com.espertech.esper.common.client.configuration
         {
             var document = ConfigurationParser.GetDocument(inputStream, name);
 
-            try
-            {
+            try {
                 UpgradeInternal(document);
 
                 var result = PrettyPrint(document);
                 result = result.RegexReplaceAll("esper-configuration-\\d-\\d.xsd", "esper-configuration-8.0.xsd");
                 return result;
             }
-            catch (Exception t)
-            {
+            catch (Exception t) {
                 throw new ConfigurationException("Failed to transform document " + name + ": " + t.Message, t);
             }
         }
@@ -51,8 +48,7 @@ namespace com.espertech.esper.common.client.configuration
         private static void UpgradeInternal(XmlDocument document)
         {
             var top = document.DocumentElement;
-            if (top.Name != "esper-configuration")
-            {
+            if (top.Name != "esper-configuration") {
                 throw new ConfigurationException("Expected root node 'esper-configuration'");
             }
 
@@ -96,14 +92,11 @@ namespace com.espertech.esper.common.client.configuration
             string newName,
             params IList<XmlNode>[] nodes)
         {
-            foreach (var list in nodes)
-            {
-                foreach (var node in list)
-                {
-                    var element = (XmlElement)node;
+            foreach (var list in nodes) {
+                foreach (var node in list) {
+                    var element = (XmlElement) node;
                     var value = element.GetAttribute(oldName);
-                    if (value == null)
-                    {
+                    if (value == null) {
                         continue;
                     }
 
@@ -120,8 +113,7 @@ namespace com.espertech.esper.common.client.configuration
             XmlElement runtime)
         {
             var settings = FindNode("engine-settings", top);
-            if (settings == null)
-            {
+            if (settings == null) {
                 return;
             }
 
@@ -130,12 +122,10 @@ namespace com.espertech.esper.common.client.configuration
             defaults.ParentNode.RemoveChild(defaults);
 
             var enumerator = DOMElementEnumerator.Create(defaults.ChildNodes);
-            while (enumerator.MoveNext())
-            {
+            while (enumerator.MoveNext()) {
                 var element = enumerator.Current;
                 var nodeName = element.Name;
-                switch (nodeName)
-                {
+                switch (nodeName) {
                     case "event-meta":
                         MoveChild(element, common);
                         break;
@@ -191,13 +181,11 @@ namespace com.espertech.esper.common.client.configuration
                     case "variables":
                     case "threading":
                     case "conditionHandling":
-                        if (nodeName == "threading")
-                        {
+                        if (nodeName == "threading") {
                             RenameAttribute(element, "engine-fairlock", "runtime-fairlock");
                         }
 
-                        if (nodeName == "metrics-reporting")
-                        {
+                        if (nodeName == "metrics-reporting") {
                             RenameAttribute(element, "engine-interval", "runtime-interval");
                             RenameAttribute(element, "jmx-engine-metrics", "jmx-runtime-metrics");
                         }
@@ -214,8 +202,7 @@ namespace com.espertech.esper.common.client.configuration
             string newName)
         {
             var value = element.GetAttribute(oldName);
-            if (string.IsNullOrEmpty(value))
-            {
+            if (string.IsNullOrEmpty(value)) {
                 return;
             }
 
@@ -230,17 +217,14 @@ namespace com.espertech.esper.common.client.configuration
             var names = ToSet(allButCSV);
             var attributes = element.Attributes;
             IList<string> removed = new List<string>();
-            for (var i = 0; i < attributes.Count; i++)
-            {
+            for (var i = 0; i < attributes.Count; i++) {
                 var node = attributes.Item(i);
-                if (!names.Contains(node.Name))
-                {
+                if (!names.Contains(node.Name)) {
                     removed.Add(node.Name);
                 }
             }
 
-            foreach (var remove in removed)
-            {
+            foreach (var remove in removed) {
                 attributes.RemoveNamedItem(remove);
             }
         }
@@ -250,8 +234,8 @@ namespace com.espertech.esper.common.client.configuration
             string allowedCSV,
             XmlElement target)
         {
-            var clone = (XmlElement)cloned.CloneNode(true);
-            var appended = (XmlElement)target.AppendChild(clone);
+            var clone = (XmlElement) cloned.CloneNode(true);
+            var appended = (XmlElement) target.AppendChild(clone);
             RemoveNodesBut(allowedCSV, appended);
             return clone;
         }
@@ -269,11 +253,9 @@ namespace com.espertech.esper.common.client.configuration
             string namesCSV)
         {
             var names = ToSet(namesCSV);
-            foreach (var name in names)
-            {
+            foreach (var name in names) {
                 var value = element.GetAttribute(name);
-                if (value != null)
-                {
+                if (value != null) {
                     element.RemoveAttribute(name);
                 }
             }
@@ -287,11 +269,9 @@ namespace com.espertech.esper.common.client.configuration
             var nodes = from.ChildNodes;
 
             IList<XmlNode> moved = new List<XmlNode>();
-            for (var i = 0; i < nodes.Count; i++)
-            {
+            for (var i = 0; i < nodes.Count; i++) {
                 var node = nodes.Item(i);
-                if (node.Name.Equals(name))
-                {
+                if (node.Name.Equals(name)) {
                     from.RemoveChild(node);
                     to.AppendChild(node);
                     moved.Add(node);
@@ -307,11 +287,9 @@ namespace com.espertech.esper.common.client.configuration
         {
             var nodes = parent.ChildNodes;
 
-            for (var i = 0; i < nodes.Count; i++)
-            {
+            for (var i = 0; i < nodes.Count; i++) {
                 var node = nodes.Item(i);
-                if (node.Name.Equals(name))
-                {
+                if (node.Name.Equals(name)) {
                     parent.RemoveChild(node);
                 }
             }
@@ -325,18 +303,15 @@ namespace com.espertech.esper.common.client.configuration
             var nodes = parent.ChildNodes;
 
             IList<XmlNode> toRemove = new List<XmlNode>();
-            for (var i = 0; i < nodes.Count; i++)
-            {
+            for (var i = 0; i < nodes.Count; i++) {
                 var node = nodes.Item(i);
                 var name = node.Name;
-                if (!allowed.Contains(name))
-                {
+                if (!allowed.Contains(name)) {
                     toRemove.Add(node);
                 }
             }
 
-            foreach (var node in toRemove)
-            {
+            foreach (var node in toRemove) {
                 parent.RemoveChild(node);
             }
         }
@@ -347,8 +322,7 @@ namespace com.espertech.esper.common.client.configuration
             XmlDocument document)
         {
             var found = FindNode(name, parent);
-            if (found != null)
-            {
+            if (found != null) {
                 return found;
             }
 
@@ -362,17 +336,14 @@ namespace com.espertech.esper.common.client.configuration
             XmlElement parent)
         {
             var nodes = parent.ChildNodes;
-            for (var i = 0; i < nodes.Count; i++)
-            {
+            for (var i = 0; i < nodes.Count; i++) {
                 var node = nodes.Item(i);
-                if (node.Name.Equals(name))
-                {
-                    if (!(node is XmlElement))
-                    {
+                if (node.Name.Equals(name)) {
+                    if (!(node is XmlElement)) {
                         throw new ConfigurationException("Unexpected non-element for name '" + name + "'");
                     }
 
-                    return (XmlElement)node;
+                    return (XmlElement) node;
                 }
             }
 
@@ -381,8 +352,7 @@ namespace com.espertech.esper.common.client.configuration
 
         private static string PrettyPrint(XmlDocument document)
         {
-            try
-            {
+            try {
                 var stringWriter = new StringWriter();
                 var xmlTextWriter = new XmlTextWriter(stringWriter);
                 xmlTextWriter.Formatting = Formatting.Indented;
@@ -394,8 +364,7 @@ namespace com.espertech.esper.common.client.configuration
 
                 return stringWriter.ToString();
             }
-            catch (Exception t)
-            {
+            catch (Exception t) {
                 throw new ConfigurationException("Failed to pretty-print document: " + t.Message, t);
             }
         }
@@ -403,11 +372,9 @@ namespace com.espertech.esper.common.client.configuration
         private static void TrimWhitespace(XmlNode node)
         {
             var children = node.ChildNodes;
-            for (var i = 0; i < children.Count; ++i)
-            {
+            for (var i = 0; i < children.Count; ++i) {
                 var child = children.Item(i);
-                if (child is XmlText xmlTextNode)
-                {
+                if (child is XmlText xmlTextNode) {
                     xmlTextNode.Value = xmlTextNode.Value.Trim();
                 }
 

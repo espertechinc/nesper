@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         public static ExprDotDTMethodDesc ValidateMake(
             StreamTypeService streamTypeService,
             Deque<ExprChainedSpec> chainSpecStack,
-            DatetimeMethodEnum dtMethod,
+            DateTimeMethodEnum dtMethod,
             string dtMethodName,
             EPType inputType,
             IList<ExprNode> parameters,
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
                 if (inputType is ClassEPType) {
                     var classEPType = (ClassEPType) inputType;
-                    if (!TypeHelper.IsDatetimeClass(classEPType.Clazz)) {
+                    if (!TypeHelper.IsDateTime(classEPType.Clazz)) {
                         throw new ExprValidationException(
                             message + " but received " + TypeHelper.GetCleanName(classEPType.Clazz));
                     }
@@ -123,13 +123,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 }
 
                 // see if there is more
-                if (chainSpecStack.IsEmpty() || !DatetimeMethodEnum.IsDateTimeMethod(chainSpecStack.First.Name)) {
+                if (chainSpecStack.IsEmpty() || !DateTimeMethodEnum.IsDateTimeMethod(chainSpecStack.First.Name)) {
                     break;
                 }
 
                 // pull next
                 var next = chainSpecStack.RemoveFirst();
-                currentMethod = DatetimeMethodEnum.FromName(next.Name);
+                currentMethod = DateTimeMethodEnum.FromName(next.Name);
                 currentParameters = next.Parameters;
                 currentMethodName = next.Name;
 
@@ -162,12 +162,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                     inputExpr[i] = new ProxyExprForge {
                         ProcExprEvaluator = () => {
                             return new ProxyExprEvaluator {
-                                ProcEvaluate = (eventsPerStream, isNewData, context) =>
+                                ProcEvaluate = (
+                                        eventsPerStream,
+                                        isNewData,
+                                        context) =>
                                     timePeriod.EvaluateGetTimePeriod(eventsPerStream, isNewData, context)
                             };
                         },
                         ProcForgeConstantType = () => ExprForgeConstantType.NONCONST,
-                        ProcEvaluateCodegen = (_, codegenMethodScope, exprSymbol, codegenClassScope) =>
+                        ProcEvaluateCodegen = (
+                                _,
+                                codegenMethodScope,
+                                exprSymbol,
+                                codegenClassScope) =>
                             timePeriod.EvaluateGetTimePeriodCodegen(codegenMethodScope, exprSymbol, codegenClassScope),
                         ProcEvaluationType = () => typeof(TimePeriod),
                         ProcForgeRenderable = () => timePeriod

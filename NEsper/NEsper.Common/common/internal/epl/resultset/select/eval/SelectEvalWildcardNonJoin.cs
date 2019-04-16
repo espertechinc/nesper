@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,31 +14,39 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	/// <summary>
-	/// Processor for select-clause expressions that handles wildcards for single streams with no insert-into.
-	/// </summary>
-	public class SelectEvalWildcardNonJoin : SelectExprProcessorForge {
-	    private readonly EventType eventType;
+    /// <summary>
+    /// Processor for select-clause expressions that handles wildcards for single streams with no insert-into.
+    /// </summary>
+    public class SelectEvalWildcardNonJoin : SelectExprProcessorForge
+    {
+        private readonly EventType eventType;
 
-	    public SelectEvalWildcardNonJoin(EventType eventType) {
-	        this.eventType = eventType;
-	    }
+        public SelectEvalWildcardNonJoin(EventType eventType)
+        {
+            this.eventType = eventType;
+        }
 
-	    public EventType ResultEventType {
-	        get => eventType;
-	    }
+        public EventType ResultEventType {
+            get => eventType;
+        }
 
-	    public CodegenMethod ProcessCodegen(CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
-	        CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-	        methodNode.Block.MethodReturn(ArrayAtIndex(refEPS, Constant(0)));
-	        return methodNode;
-	    }
-	}
+        public CodegenMethod ProcessCodegen(
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            methodNode.Block.MethodReturn(ArrayAtIndex(refEPS, Constant(0)));
+            return methodNode;
+        }
+    }
 } // end of namespace

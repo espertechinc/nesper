@@ -18,10 +18,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         private readonly int streamNum;
 
         public EPDataFlowEmitter1Stream1TargetPassAlongWStream(
-            int operatorNum, DataFlowSignalManager signalManager, SignalHandler signalHandler,
-            EPDataFlowEmitterExceptionHandler exceptionHandler, ObjectBindingPair target, int streamNum,
-            ImportService importService) : base(
-            operatorNum, signalManager, signalHandler, exceptionHandler, target, importService)
+            int operatorNum,
+            DataFlowSignalManager signalManager,
+            SignalHandler signalHandler,
+            EPDataFlowEmitterExceptionHandler exceptionHandler,
+            ObjectBindingPair target,
+            int streamNum,
+            ImportService importService)
+            : base(
+                operatorNum, signalManager, signalHandler, exceptionHandler, target, importService)
         {
             this.streamNum = streamNum;
         }

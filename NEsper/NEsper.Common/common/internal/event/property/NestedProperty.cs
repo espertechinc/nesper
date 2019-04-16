@@ -63,16 +63,15 @@ namespace com.espertech.esper.common.@internal.@event.property
         }
 
         public EventPropertyGetterSPI GetGetter(
-            BeanEventType eventType, 
+            BeanEventType eventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
             IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
 
             Property lastProperty = null;
-            for (int ii = 0; ii < Properties.Count; ii++)
-            {
-                Property property = Properties[ii];
+            for (var ii = 0; ii < Properties.Count; ii++) {
+                var property = Properties[ii];
                 lastProperty = property;
                 EventPropertyGetter getter = property.GetGetter(
                     eventType, eventBeanTypedEventFactory, beanEventTypeFactory);
@@ -115,9 +114,8 @@ namespace com.espertech.esper.common.@internal.@event.property
             Type result = null;
             var boxed = false;
 
-            for (int ii = 0; ii < Properties.Count; ii++)
-            {
-                Property property = Properties[ii];
+            for (var ii = 0; ii < Properties.Count; ii++) {
+                var property = Properties[ii];
                 boxed |= !(property is SimpleProperty);
                 result = property.GetPropertyType(eventType, beanEventTypeFactory);
 
@@ -132,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                         return null;
                     }
 
-                    if (result.IsArray || result.IsPrimitive || TypeHelper.IsJavaBuiltinDataType(result)) {
+                    if (result.IsArray || result.IsPrimitive || result.IsBuiltinDataType()) {
                         return null;
                     }
 
@@ -149,9 +147,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         {
             GenericPropertyDesc result = null;
 
-            for (int ii = 0; ii < Properties.Count; ii++)
-            {
-                Property property = Properties[ii];
+            for (var ii = 0; ii < Properties.Count; ii++) {
+                var property = Properties[ii];
                 result = property.GetPropertyTypeGeneric(eventType, beanEventTypeFactory);
 
                 if (result == null) {
@@ -161,7 +158,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
                 if (it.MoveNext()) {
                     // Map cannot be used to further nest as the type cannot be determined
-                    if (result.Type == typeof(IDictionary<object, object>)) {
+                    if (result.Type == typeof(IDictionary<string, object>)) {
                         return null;
                     }
 
@@ -176,7 +173,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             return result;
         }
 
-        public void ToPropertyEPL(StringWriter writer)
+        public void ToPropertyEPL(TextWriter writer)
         {
             var delimiter = "";
             foreach (var property in Properties) {
@@ -200,16 +197,15 @@ namespace com.espertech.esper.common.@internal.@event.property
         public EventPropertyGetterSPI GetGetterDOM(
             SchemaElementComplex parentComplexProperty,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BaseXMLEventType eventType, 
+            BaseXMLEventType eventType,
             string propertyExpression)
         {
             IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
 
             var complexElement = parentComplexProperty;
 
-            for (int ii = 0; ii < Properties.Count; ii++)
-            {
-                Property property = Properties[ii];
+            for (var ii = 0; ii < Properties.Count; ii++) {
+                var property = Properties[ii];
                 EventPropertyGetter getter = property.GetGetterDOM(
                     complexElement, eventBeanTypedEventFactory, eventType, propertyExpression);
                 if (getter == null) {
@@ -248,9 +244,8 @@ namespace com.espertech.esper.common.@internal.@event.property
             Property lastProperty = null;
             var complexElement = parentComplexProperty;
 
-            for (int ii = 0; ii < Properties.Count; ii++)
-            {
-                Property property = Properties[ii];
+            for (var ii = 0; ii < Properties.Count; ii++) {
+                var property = Properties[ii];
                 lastProperty = property;
 
                 if (it.MoveNext()) {
@@ -274,7 +269,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         public ObjectArrayEventPropertyGetter GetGetterObjectArray(
             IDictionary<string, int> indexPerProperty,
             IDictionary<string, object> nestableTypes,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, 
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
             throw new UnsupportedOperationException(
@@ -285,15 +280,15 @@ namespace com.espertech.esper.common.@internal.@event.property
             throw new UnsupportedOperationException("Nested properties do not provide an atomic property name");
 
         public virtual Type GetPropertyTypeMap(
-            IDictionary<string, object> optionalMapPropTypes, 
+            IDictionary<string, object> optionalMapPropTypes,
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var currentDictionary = optionalMapPropTypes;
 
             var count = 0;
-            for (int ii = 0 ; ii < Properties.Count ; ii++) { 
+            for (var ii = 0; ii < Properties.Count; ii++) {
                 count++;
-                Property property = Properties[ii];
+                var property = Properties[ii];
                 var theBase = (PropertyBase) property;
                 var propertyName = theBase.PropertyNameAtomic;
 
@@ -389,10 +384,9 @@ namespace com.espertech.esper.common.@internal.@event.property
             var currentDictionary = optionalMapPropTypes;
 
             var count = 0;
-            for (int ii = 0; ii < Properties.Count; ii++)
-            {
+            for (var ii = 0; ii < Properties.Count; ii++) {
                 count++;
-                Property property = Properties[ii];
+                var property = Properties[ii];
 
                 // manufacture a getter for getting the item out of the map
                 EventPropertyGetterSPI getter = property.GetGetterMap(
@@ -420,10 +414,10 @@ namespace com.espertech.esper.common.@internal.@event.property
                     }
 
                     if (propertyReturnType != null) {
-                        if (propertyReturnType is IDictionary<object, object>) {
-                            currentDictionary = (IDictionary<object, object>) propertyReturnType;
+                        if (propertyReturnType is IDictionary<string, object>) {
+                            currentDictionary = (IDictionary<string, object>) propertyReturnType;
                         }
-                        else if (propertyReturnType.Equals(typeof(IDictionary<object, object>))) {
+                        else if (propertyReturnType.Equals(typeof(IDictionary<string, object>))) {
                             currentDictionary = null;
                         }
                         else if (propertyReturnType is TypeBeanOrUnderlying) {
@@ -529,7 +523,9 @@ namespace com.espertech.esper.common.@internal.@event.property
             }
         }
 
-        private static string ToPropertyEPL(IList<Property> property, int startFromIndex)
+        private static string ToPropertyEPL(
+            IList<Property> property,
+            int startFromIndex)
         {
             var delimiter = "";
             var writer = new StringWriter();

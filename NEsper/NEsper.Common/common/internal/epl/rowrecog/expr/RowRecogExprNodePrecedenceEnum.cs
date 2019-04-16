@@ -7,22 +7,21 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 {
-	/// <summary>
-	/// Precendence levels for expressions.
-	/// </summary>
-	public class RowRecogExprNodePrecedenceEnum
-	{
-	    /// <summary>
-	    /// Precedence.
-	    /// </summary>
-	    public static readonly RowRecogExprNodePrecedenceEnum UNARY =
-	        new RowRecogExprNodePrecedenceEnum(4);
+    /// <summary>
+    /// Precendence levels for expressions.
+    /// </summary>
+    public class RowRecogExprNodePrecedenceEnum
+    {
+        /// <summary>
+        /// Precedence.
+        /// </summary>
+        public static readonly RowRecogExprNodePrecedenceEnum UNARY =
+            new RowRecogExprNodePrecedenceEnum(4);
 
         /// <summary>
         /// Precedence.
@@ -30,32 +29,33 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
         public static readonly RowRecogExprNodePrecedenceEnum GROUPING =
             new RowRecogExprNodePrecedenceEnum(3);
 
-	    /// <summary>
-	    /// Precedence.
-	    /// </summary>
-	    public static readonly RowRecogExprNodePrecedenceEnum CONCATENATION =
-	        new RowRecogExprNodePrecedenceEnum(2);
+        /// <summary>
+        /// Precedence.
+        /// </summary>
+        public static readonly RowRecogExprNodePrecedenceEnum CONCATENATION =
+            new RowRecogExprNodePrecedenceEnum(2);
 
-	    /// <summary>
-	    /// Precedence.
-	    /// </summary>
-	    public static readonly RowRecogExprNodePrecedenceEnum ALTERNATION =
-	        new RowRecogExprNodePrecedenceEnum(1);
+        /// <summary>
+        /// Precedence.
+        /// </summary>
+        public static readonly RowRecogExprNodePrecedenceEnum ALTERNATION =
+            new RowRecogExprNodePrecedenceEnum(1);
 
-	    /// <summary>
-	    /// Precedence.
-	    /// </summary>
-	    public static readonly RowRecogExprNodePrecedenceEnum MINIMUM =
-	        new RowRecogExprNodePrecedenceEnum(Int32.MinValue);
+        /// <summary>
+        /// Precedence.
+        /// </summary>
+        public static readonly RowRecogExprNodePrecedenceEnum MINIMUM =
+            new RowRecogExprNodePrecedenceEnum(Int32.MinValue);
 
-	    private RowRecogExprNodePrecedenceEnum(int level) {
-	        this.Level = level;
-	    }
+        private RowRecogExprNodePrecedenceEnum(int level)
+        {
+            this.Level = level;
+        }
 
-	    /// <summary>
-	    /// Level.
-	    /// </summary>
-	    /// <value>level</value>
-	    public int Level { get; }
-	}
+        /// <summary>
+        /// Level.
+        /// </summary>
+        /// <value>level</value>
+        public int Level { get; }
+    }
 } // end of namespace

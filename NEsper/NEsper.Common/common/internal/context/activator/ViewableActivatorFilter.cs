@@ -50,7 +50,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         public EventType EventType => filterSpec.ResultEventType;
 
         public ViewableActivationResult Activate(
-            AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isSubselect,
+            bool isRecoveringResilient)
         {
             FilterValueSetParam[][] addendum = null;
             if (agentInstanceContext.AgentInstanceFilterProxy != null) {
@@ -85,7 +87,9 @@ namespace com.espertech.esper.common.@internal.context.activator
                 filterCallback = new ProxyFilterHandleCallback {
                     ProcStatementId = () => statementId,
 
-                    ProcMatchFound = (theEvent, allStmtMatches) => theStream.Insert(theEvent),
+                    ProcMatchFound = (
+                        theEvent,
+                        allStmtMatches) => theStream.Insert(theEvent),
 
                     ProcIsSubselect = () => isSubSelect
                 };
@@ -94,7 +98,9 @@ namespace com.espertech.esper.common.@internal.context.activator
                 filterCallback = new ProxyFilterHandleCallback {
                     ProcStatementId = () => statementId,
 
-                    ProcMatchFound = (theEvent, allStmtMatches) => {
+                    ProcMatchFound = (
+                        theEvent,
+                        allStmtMatches) => {
                         var result = filterSpec.OptionalPropertyEvaluator.GetProperty(theEvent, agentInstanceContext);
                         if (result == null) {
                             return;

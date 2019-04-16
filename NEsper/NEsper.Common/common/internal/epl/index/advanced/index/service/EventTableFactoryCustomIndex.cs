@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -21,30 +20,38 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
         internal readonly EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc;
         internal readonly EventTableOrganization organization;
 
-        public EventTableFactoryCustomIndex(string indexName, int indexedStreamNum, EventType eventType, bool unique, EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc)
+        public EventTableFactoryCustomIndex(
+            string indexName,
+            int indexedStreamNum,
+            EventType eventType,
+            bool unique,
+            EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc)
         {
             this.eventType = eventType;
             this.advancedIndexProvisionDesc = advancedIndexProvisionDesc;
-            this.organization = new EventTableOrganization(indexName, unique, false, indexedStreamNum, advancedIndexProvisionDesc.IndexExpressionTexts, EventTableOrganizationType.APPLICATION);
+            this.organization = new EventTableOrganization(
+                indexName, unique, false, indexedStreamNum, advancedIndexProvisionDesc.IndexExpressionTexts, EventTableOrganizationType.APPLICATION);
         }
 
-        public Type EventTableClass
-        {
+        public Type EventTableClass {
             get => typeof(EventTable);
         }
 
-        public EventTable[] MakeEventTables(AgentInstanceContext agentInstanceContext, int? subqueryNumber)
+        public EventTable[] MakeEventTables(
+            AgentInstanceContext agentInstanceContext,
+            int? subqueryNumber)
         {
-            AdvancedIndexConfigContextPartition configCP = advancedIndexProvisionDesc.Factory.ConfigureContextPartition(agentInstanceContext, eventType, advancedIndexProvisionDesc, organization);
+            AdvancedIndexConfigContextPartition configCP = advancedIndexProvisionDesc.Factory.ConfigureContextPartition(
+                agentInstanceContext, eventType, advancedIndexProvisionDesc, organization);
             EventTable eventTable = advancedIndexProvisionDesc.Factory.Make(advancedIndexProvisionDesc.ConfigStatement, configCP, organization);
-            return new EventTable[] { eventTable };
+            return new EventTable[] {eventTable};
         }
 
         public string ToQueryPlan()
         {
             return this.GetType().GetSimpleName() +
-                    " streamNum=" + organization.StreamNum +
-                    " indexName=" + organization.IndexName;
+                   " streamNum=" + organization.StreamNum +
+                   " indexName=" + organization.IndexName;
         }
     }
 } // end of namespace

@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.@event.core
         private readonly EventType wrapperEventType;
 
         public EventBeanFactoryBeanWrapped(
-            EventType beanEventType, EventType wrapperEventType, EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            EventType beanEventType,
+            EventType wrapperEventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.beanEventType = beanEventType;
             this.wrapperEventType = wrapperEventType;

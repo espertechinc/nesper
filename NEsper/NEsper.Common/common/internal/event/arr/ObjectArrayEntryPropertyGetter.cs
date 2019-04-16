@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="eventType">type of the entry returned</param>
         /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
         public ObjectArrayEntryPropertyGetter(
-            int propertyIndex, BeanEventType eventType, EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            int propertyIndex,
+            BeanEventType eventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.propertyIndex = propertyIndex;
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
@@ -71,7 +73,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -79,14 +82,16 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             if (eventType == null) {
@@ -98,21 +103,24 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ArrayAtIndex(underlyingExpression, Constant(propertyIndex));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             if (eventType == null) {

@@ -14,7 +14,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 {
     public class TableImpl : TableBase
     {
-        public TableImpl(TableMetaData metaData) : base(metaData)
+        public TableImpl(TableMetaData metaData)
+            : base(metaData)
         {
         }
 
@@ -31,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             return GetTableInstanceNoRemake(agentInstanceId);
         }
 
-        public override TableAndLockProvider GetStateProvider(int agentInstanceId, bool writesToTables)
+        public override TableAndLockProvider GetStateProvider(
+            int agentInstanceId,
+            bool writesToTables)
         {
             var instance = GetTableInstance(agentInstanceId);
             var @lock = writesToTables ? instance.TableLevelRWLock.WriteLock : instance.TableLevelRWLock.ReadLock;

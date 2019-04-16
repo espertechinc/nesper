@@ -12,13 +12,12 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.common.@internal.type
 {
-	/// <summary>
+    /// <summary>
     /// Represents a wildcard as a parameter.
     /// </summary>
-
     [Serializable]
     public class WildcardParameter : NumberSetParameter
-	{
+    {
         /// <summary>
         /// Returns true if all values between and including min and max are supplied by the parameter.
         /// </summary>
@@ -27,7 +26,9 @@ namespace com.espertech.esper.common.@internal.type
         /// <returns>
         /// true if parameter specifies all int values between min and max, false if not
         /// </returns>
-        public bool IsWildcard(int min, int max)
+        public bool IsWildcard(
+            int min,
+            int max)
         {
             return true;
         }
@@ -38,13 +39,15 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="min">lower end of range</param>
         /// <param name="max">upper end of range</param>
         /// <returns>set of integer</returns>
-        public ICollection<int> GetValuesInRange(int min, int max)
+        public ICollection<int> GetValuesInRange(
+            int min,
+            int max)
         {
             ICollection<int> result = new HashSet<Int32>();
-            for (int i = min; i <= max; i++)
-            {
+            for (int i = min; i <= max; i++) {
                 result.Add(i);
             }
+
             return result;
         }
 

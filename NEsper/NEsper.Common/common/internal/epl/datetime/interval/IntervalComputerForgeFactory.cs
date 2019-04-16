@@ -29,11 +29,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     public class IntervalComputerForgeFactory
     {
         public static IntervalComputerForge Make(
-            DatetimeMethodEnum method, IList<ExprNode> expressions, TimeAbacus timeAbacus)
+            DateTimeMethodEnum method,
+            IList<ExprNode> expressions,
+            TimeAbacus timeAbacus)
         {
             var parameters = GetParameters(expressions, timeAbacus);
 
-            if (method == DatetimeMethodEnum.BEFORE) {
+            if (method == DateTimeMethodEnum.BEFORE) {
                 if (parameters.Length == 0) {
                     return new IntervalComputerBeforeNoParamForge();
                 }
@@ -47,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return new IntervalComputerBeforeWithDeltaExprForge(pair);
             }
 
-            if (method == DatetimeMethodEnum.AFTER) {
+            if (method == DateTimeMethodEnum.AFTER) {
                 if (parameters.Length == 0) {
                     return new IntervalComputerAfterNoParam();
                 }
@@ -61,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return new IntervalComputerAfterWithDeltaExprForge(pair);
             }
 
-            if (method == DatetimeMethodEnum.COINCIDES) {
+            if (method == DateTimeMethodEnum.COINCIDES) {
                 if (parameters.Length == 0) {
                     return new IntervalComputerCoincidesNoParam();
                 }
@@ -75,9 +77,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return new IntervalComputerCoincidesWithDeltaExprForge(pair);
             }
 
-            if (method == DatetimeMethodEnum.DURING || method == DatetimeMethodEnum.INCLUDES) {
+            if (method == DateTimeMethodEnum.DURING || method == DateTimeMethodEnum.INCLUDES) {
                 if (parameters.Length == 0) {
-                    if (method == DatetimeMethodEnum.DURING) {
+                    if (method == DateTimeMethodEnum.DURING) {
                         return new IntervalComputerDuringNoParam();
                     }
 
@@ -88,19 +90,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     IntervalStartEndParameterPairForge.FromParamsWithSameEnd(parameters);
                 if (parameters.Length == 1) {
                     return new IntervalComputerDuringAndIncludesThresholdForge(
-                        method == DatetimeMethodEnum.DURING, pair.Start.Forge);
+                        method == DateTimeMethodEnum.DURING, pair.Start.Forge);
                 }
 
                 if (parameters.Length == 2) {
                     return new IntervalComputerDuringAndIncludesMinMax(
-                        method == DatetimeMethodEnum.DURING, pair.Start.Forge, pair.End.Forge);
+                        method == DateTimeMethodEnum.DURING, pair.Start.Forge, pair.End.Forge);
                 }
 
                 return new IntervalComputerDuringMinMaxStartEndForge(
-                    method == DatetimeMethodEnum.DURING, GetEvaluators(expressions, timeAbacus));
+                    method == DateTimeMethodEnum.DURING, GetEvaluators(expressions, timeAbacus));
             }
 
-            if (method == DatetimeMethodEnum.FINISHES) {
+            if (method == DateTimeMethodEnum.FINISHES) {
                 if (parameters.Length == 0) {
                     return new IntervalComputerFinishesNoParam();
                 }
@@ -109,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return new IntervalComputerFinishesThresholdForge(parameters[0].Forge);
             }
 
-            if (method == DatetimeMethodEnum.FINISHEDBY) {
+            if (method == DateTimeMethodEnum.FINISHEDBY) {
                 if (parameters.Length == 0) {
                     return new IntervalComputerFinishedByNoParam();
                 }
@@ -118,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return new IntervalComputerFinishedByThresholdForge(parameters[0].Forge);
             }
 
-            if (method == DatetimeMethodEnum.MEETS) {
+            if (method == DateTimeMethodEnum.MEETS) {
                 if (parameters.Length == 0) {
                     return new IntervalComputerMeetsNoParam();
                 }
@@ -127,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return new IntervalComputerMeetsThresholdForge(parameters[0].Forge);
             }
 
-            if (method == DatetimeMethodEnum.METBY) {
+            if (method == DateTimeMethodEnum.METBY) {
                 if (parameters.Length == 0) {
                     return new IntervalComputerMetByNoParam();
                 }
@@ -136,9 +138,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return new IntervalComputerMetByThresholdForge(parameters[0].Forge);
             }
 
-            if (method == DatetimeMethodEnum.OVERLAPS || method == DatetimeMethodEnum.OVERLAPPEDBY) {
+            if (method == DateTimeMethodEnum.OVERLAPS || method == DateTimeMethodEnum.OVERLAPPEDBY) {
                 if (parameters.Length == 0) {
-                    if (method == DatetimeMethodEnum.OVERLAPS) {
+                    if (method == DateTimeMethodEnum.OVERLAPS) {
                         return new IntervalComputerOverlapsNoParam();
                     }
 
@@ -147,14 +149,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
                 if (parameters.Length == 1) {
                     return new IntervalComputerOverlapsAndByThreshold(
-                        method == DatetimeMethodEnum.OVERLAPS, parameters[0].Forge);
+                        method == DateTimeMethodEnum.OVERLAPS, parameters[0].Forge);
                 }
 
                 return new IntervalComputerOverlapsAndByMinMaxForge(
-                    method == DatetimeMethodEnum.OVERLAPS, parameters[0].Forge, parameters[1].Forge);
+                    method == DateTimeMethodEnum.OVERLAPS, parameters[0].Forge, parameters[1].Forge);
             }
 
-            if (method == DatetimeMethodEnum.STARTS) {
+            if (method == DateTimeMethodEnum.STARTS) {
                 if (parameters.Length == 0) {
                     return new IntervalComputerStartsNoParam();
                 }
@@ -163,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return new IntervalComputerStartsThresholdForge(parameters[0].Forge);
             }
 
-            if (method == DatetimeMethodEnum.STARTEDBY) {
+            if (method == DateTimeMethodEnum.STARTEDBY) {
                 if (parameters.Length == 0) {
                     return new IntervalComputerStartedByNoParam();
                 }
@@ -175,7 +177,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             throw new ArgumentException("Unknown datetime method '" + method + "'");
         }
 
-        private static void ValidateConstantThreshold(string method, ExprOptionalConstantForge param)
+        private static void ValidateConstantThreshold(
+            string method,
+            ExprOptionalConstantForge param)
         {
             if (param.OptionalConstant != null && param.OptionalConstant.AsLong() < 0) {
                 throw new ExprValidationException(
@@ -183,7 +187,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
         }
 
-        private static ExprOptionalConstantForge[] GetParameters(IList<ExprNode> expressions, TimeAbacus timeAbacus)
+        private static ExprOptionalConstantForge[] GetParameters(
+            IList<ExprNode> expressions,
+            TimeAbacus timeAbacus)
         {
             var parameters = new ExprOptionalConstantForge[expressions.Count - 1];
             for (var i = 1; i < expressions.Count; i++) {
@@ -193,7 +199,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             return parameters;
         }
 
-        private static IntervalDeltaExprForge[] GetEvaluators(IList<ExprNode> expressions, TimeAbacus timeAbacus)
+        private static IntervalDeltaExprForge[] GetEvaluators(
+            IList<ExprNode> expressions,
+            TimeAbacus timeAbacus)
         {
             var parameters = new IntervalDeltaExprForge[expressions.Count - 1];
             for (var i = 1; i < expressions.Count; i++) {
@@ -203,7 +211,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             return parameters;
         }
 
-        private static ExprOptionalConstantForge GetExprOrConstant(ExprNode exprNode, TimeAbacus timeAbacus)
+        private static ExprOptionalConstantForge GetExprOrConstant(
+            ExprNode exprNode,
+            TimeAbacus timeAbacus)
         {
             if (exprNode is ExprTimePeriod) {
                 var timePeriod = (ExprTimePeriod) exprNode;
@@ -224,13 +234,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 IntervalDeltaExprForge forge = new ProxyIntervalDeltaExprForge {
                     ProcMakeEvaluator = () => {
                         return new ProxyIntervalDeltaExprEvaluator {
-                            ProcEvaluate = (reference, eventsPerStream, isNewData, context) =>
+                            ProcEvaluate = (
+                                    reference,
+                                    eventsPerStream,
+                                    isNewData,
+                                    context) =>
                                 timePeriodCompute.DeltaAdd(
                                     reference, eventsPerStream, isNewData, context)
                         };
                     },
 
-                    ProcCodegen = (reference, parent, exprSymbol, codegenClassScope) => {
+                    ProcCodegen = (
+                        reference,
+                        parent,
+                        exprSymbol,
+                        codegenClassScope) => {
                         CodegenExpressionField field = codegenClassScope.AddFieldUnshared(
                             true, typeof(TimePeriodCompute),
                             timePeriod.TimePeriodComputeForge.MakeEvaluator(
@@ -255,13 +273,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     ProcMakeEvaluator = () => {
                         var evaluator = forge.ExprEvaluator;
                         return new ProxyIntervalDeltaExprEvaluator {
-                            ProcEvaluate = (reference, eventsPerStream, isNewData, context) => 
+                            ProcEvaluate = (
+                                    reference,
+                                    eventsPerStream,
+                                    isNewData,
+                                    context) =>
                                 evaluator.Evaluate(
                                     eventsPerStream, isNewData, context).AsLong()
                         };
                     },
 
-                    ProcCodegen = (reference, codegenMethodScope, exprSymbol, codegenClassScope) => {
+                    ProcCodegen = (
+                        reference,
+                        codegenMethodScope,
+                        exprSymbol,
+                        codegenClassScope) => {
                         return SimpleNumberCoercerFactory.SimpleNumberCoercerLong.CodegenLong(
                             forge.EvaluateCodegen(
                                 forge.EvaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
@@ -290,8 +316,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return StaticMethod(
@@ -301,13 +331,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return ComputeIntervalAfter(leftStart, rightEnd, Start, End);
             }
 
-            public static bool ComputeIntervalAfter(long leftStart, long rightEnd, long start, long end)
+            public static bool ComputeIntervalAfter(
+                long leftStart,
+                long rightEnd,
+                long start,
+                long end)
             {
                 var delta = leftStart - rightEnd;
                 return start <= delta && delta <= end;
@@ -331,8 +370,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerAfterWithDeltaExprEval.Codegen(
@@ -346,14 +389,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             private readonly IntervalDeltaExprEvaluator start;
 
             public IntervalComputerAfterWithDeltaExprEval(
-                IntervalDeltaExprEvaluator start, IntervalDeltaExprEvaluator finish)
+                IntervalDeltaExprEvaluator start,
+                IntervalDeltaExprEvaluator finish)
             {
                 this.start = start;
                 this.finish = finish;
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long rangeStartDelta = start.Evaluate(rightStart, eventsPerStream, newData, context);
@@ -368,9 +417,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerAfterWithDeltaExprForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerAfterWithDeltaExprForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope
                     .MakeChild(typeof(bool), typeof(IntervalComputerAfterWithDeltaExprEval), codegenClassScope)
@@ -404,7 +458,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return leftStart > rightEnd;
@@ -416,8 +475,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return Relational(leftStart, GT, rightEnd);
@@ -442,8 +505,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return StaticMethod(
@@ -452,7 +519,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return ComputeIntervalBefore(leftEnd, rightStart, start, end);
@@ -466,7 +538,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             /// <param name="start">start</param>
             /// <param name="end">end</param>
             /// <returns>flag</returns>
-            public static bool ComputeIntervalBefore(long leftEnd, long right, long start, long end)
+            public static bool ComputeIntervalBefore(
+                long leftEnd,
+                long right,
+                long start,
+                long end)
             {
                 var delta = right - leftEnd;
                 return start <= delta && delta <= end;
@@ -490,8 +566,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerBeforeWithDeltaExprEval.Codegen(
@@ -506,14 +586,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             private readonly IntervalDeltaExprEvaluator start;
 
             public IntervalComputerBeforeWithDeltaExprEval(
-                IntervalDeltaExprEvaluator start, IntervalDeltaExprEvaluator finish)
+                IntervalDeltaExprEvaluator start,
+                IntervalDeltaExprEvaluator finish)
             {
                 this.start = start;
                 this.finish = finish;
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long rangeStartDelta = start.Evaluate(leftEnd, eventsPerStream, newData, context);
@@ -528,9 +614,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerBeforeWithDeltaExprForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerBeforeWithDeltaExprForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
                         typeof(bool), typeof(IntervalComputerBeforeWithDeltaExprEval), codegenClassScope)
@@ -569,15 +660,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return Relational(leftEnd, LT, rightStart);
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return leftEnd < rightStart;
@@ -609,8 +709,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return StaticMethod(
@@ -619,7 +723,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return ComputeIntervalCoincides(leftStart, leftEnd, rightStart, rightEnd, start, end);
@@ -636,7 +745,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             /// <param name="endThreshold">end th</param>
             /// <returns>flag</returns>
             public static bool ComputeIntervalCoincides(
-                long left, long leftEnd, long right, long rightEnd, long startThreshold, long endThreshold)
+                long left,
+                long leftEnd,
+                long right,
+                long rightEnd,
+                long startThreshold,
+                long endThreshold)
             {
                 return Math.Abs(left - right) <= startThreshold &&
                        Math.Abs(leftEnd - rightEnd) <= endThreshold;
@@ -660,8 +774,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerCoincidesWithDeltaExprEval.Codegen(
@@ -680,14 +798,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             private readonly IntervalDeltaExprEvaluator start;
 
             public IntervalComputerCoincidesWithDeltaExprEval(
-                IntervalDeltaExprEvaluator start, IntervalDeltaExprEvaluator finish)
+                IntervalDeltaExprEvaluator start,
+                IntervalDeltaExprEvaluator finish)
             {
                 this.start = start;
                 this.finish = finish;
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long startValue = start.Evaluate(Math.Min(leftStart, rightStart), eventsPerStream, newData, context);
@@ -703,9 +827,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerCoincidesWithDeltaExprForge forge, CodegenExpression leftStart,
-                CodegenExpression leftEnd, CodegenExpression rightStart, CodegenExpression rightEnd,
-                CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                IntervalComputerCoincidesWithDeltaExprForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
@@ -759,15 +887,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return And(EqualsIdentity(leftStart, rightStart), EqualsIdentity(leftEnd, rightEnd));
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return leftStart == rightStart && leftEnd == rightEnd;
@@ -781,7 +918,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return rightStart < leftStart && leftEnd < rightEnd;
@@ -793,8 +935,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return And(Relational(rightStart, LT, leftStart), Relational(leftEnd, LT, rightEnd));
@@ -810,15 +956,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return leftStart < rightStart && rightEnd < leftEnd;
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return And(Relational(leftStart, LT, rightStart), Relational(rightEnd, LT, leftEnd));
@@ -830,7 +985,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly bool during;
             internal readonly IntervalDeltaExprForge threshold;
 
-            public IntervalComputerDuringAndIncludesThresholdForge(bool during, IntervalDeltaExprForge threshold)
+            public IntervalComputerDuringAndIncludesThresholdForge(
+                bool during,
+                IntervalDeltaExprForge threshold)
             {
                 this.during = during;
                 this.threshold = threshold;
@@ -842,8 +999,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerDuringAndIncludesThresholdEval.Codegen(
@@ -856,14 +1017,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly bool during;
             internal readonly IntervalDeltaExprEvaluator threshold;
 
-            public IntervalComputerDuringAndIncludesThresholdEval(bool during, IntervalDeltaExprEvaluator threshold)
+            public IntervalComputerDuringAndIncludesThresholdEval(
+                bool during,
+                IntervalDeltaExprEvaluator threshold)
             {
                 this.during = during;
                 this.threshold = threshold;
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long thresholdValue = threshold.Evaluate(leftStart, eventsPerStream, newData, context);
@@ -889,9 +1057,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerDuringAndIncludesThresholdForge forge, CodegenExpression leftStart,
-                CodegenExpression leftEnd, CodegenExpression rightStart, CodegenExpression rightEnd,
-                CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                IntervalComputerDuringAndIncludesThresholdForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
@@ -950,7 +1122,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly IntervalDeltaExprForge minEval;
 
             public IntervalComputerDuringAndIncludesMinMax(
-                bool during, IntervalDeltaExprForge minEval, IntervalDeltaExprForge maxEval)
+                bool during,
+                IntervalDeltaExprForge minEval,
+                IntervalDeltaExprForge maxEval)
             {
                 this.during = during;
                 this.minEval = minEval;
@@ -964,8 +1138,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerDuringAndIncludesMinMaxEval.Codegen(
@@ -980,7 +1158,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly IntervalDeltaExprEvaluator minEval;
 
             public IntervalComputerDuringAndIncludesMinMaxEval(
-                bool during, IntervalDeltaExprEvaluator minEval, IntervalDeltaExprEvaluator maxEval)
+                bool during,
+                IntervalDeltaExprEvaluator minEval,
+                IntervalDeltaExprEvaluator maxEval)
             {
                 this.during = during;
                 this.minEval = minEval;
@@ -988,7 +1168,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long min = minEval.Evaluate(leftStart, eventsPerStream, newData, context);
@@ -1001,9 +1186,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerDuringAndIncludesMinMax forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerDuringAndIncludesMinMax forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
                         typeof(bool), typeof(IntervalComputerDuringAndIncludesMinMaxEval), codegenClassScope)
@@ -1029,8 +1219,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static bool ComputeIntervalDuring(
-                long left, long leftEnd, long right, long rightEnd,
-                long startMin, long startMax, long endMin, long endMax)
+                long left,
+                long leftEnd,
+                long right,
+                long rightEnd,
+                long startMin,
+                long startMax,
+                long endMin,
+                long endMax)
             {
                 if (startMin <= 0) {
                     startMin = 1;
@@ -1046,8 +1242,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static bool ComputeIntervalIncludes(
-                long left, long leftEnd, long right, long rightEnd,
-                long startMin, long startMax, long endMin, long endMax)
+                long left,
+                long leftEnd,
+                long right,
+                long rightEnd,
+                long startMin,
+                long startMax,
+                long endMin,
+                long endMax)
             {
                 if (startMin <= 0) {
                     startMin = 1;
@@ -1071,7 +1273,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly IntervalDeltaExprForge minEndEval;
             internal readonly IntervalDeltaExprForge minStartEval;
 
-            public IntervalComputerDuringMinMaxStartEndForge(bool during, IntervalDeltaExprForge[] parameters)
+            public IntervalComputerDuringMinMaxStartEndForge(
+                bool during,
+                IntervalDeltaExprForge[] parameters)
             {
                 this.during = during;
                 minStartEval = parameters[0];
@@ -1088,8 +1292,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerDuringMinMaxStartEndEval.Codegen(
@@ -1106,8 +1314,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly IntervalDeltaExprEvaluator minStartEval;
 
             public IntervalComputerDuringMinMaxStartEndEval(
-                bool during, IntervalDeltaExprEvaluator minStartEval, IntervalDeltaExprEvaluator maxStartEval,
-                IntervalDeltaExprEvaluator minEndEval, IntervalDeltaExprEvaluator maxEndEval)
+                bool during,
+                IntervalDeltaExprEvaluator minStartEval,
+                IntervalDeltaExprEvaluator maxStartEval,
+                IntervalDeltaExprEvaluator minEndEval,
+                IntervalDeltaExprEvaluator maxEndEval)
             {
                 this.during = during;
                 this.minStartEval = minStartEval;
@@ -1117,7 +1328,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long minStart = minStartEval.Evaluate(rightStart, eventsPerStream, newData, context);
@@ -1135,9 +1351,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerDuringMinMaxStartEndForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerDuringMinMaxStartEndForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
                         typeof(bool), typeof(IntervalComputerDuringMinMaxStartEndEval), codegenClassScope)
@@ -1178,7 +1399,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return rightStart < leftStart && leftEnd == rightEnd;
@@ -1190,8 +1416,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return And(Relational(rightStart, LT, leftStart), EqualsIdentity(leftEnd, rightEnd));
@@ -1215,8 +1445,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerFinishesThresholdEval.Codegen(
@@ -1238,7 +1472,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long threshold = thresholdExpr.Evaluate(Math.Min(leftEnd, rightEnd), eventsPerStream, newData, context);
@@ -1265,9 +1504,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerFinishesThresholdForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerFinishesThresholdForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope
                     .MakeChild(typeof(bool?), typeof(IntervalComputerFinishesThresholdEval), codegenClassScope)
@@ -1305,7 +1549,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return leftStart < rightStart && leftEnd == rightEnd;
@@ -1317,8 +1566,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return And(Relational(leftStart, LT, rightStart), EqualsIdentity(leftEnd, rightEnd));
@@ -1340,8 +1593,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerFinishedByThresholdEval.Codegen(
@@ -1363,7 +1620,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long threshold = thresholdExpr.Evaluate(Math.Min(rightEnd, leftEnd), eventsPerStream, newData, context);
@@ -1386,9 +1648,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerFinishedByThresholdForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerFinishedByThresholdForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
                         typeof(bool?), typeof(IntervalComputerFinishedByThresholdEval), codegenClassScope)
@@ -1426,7 +1693,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return leftEnd == rightStart;
@@ -1438,8 +1710,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return EqualsIdentity(leftEnd, rightStart);
@@ -1461,8 +1737,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerMeetsThresholdEval.Codegen(
@@ -1484,7 +1764,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long threshold = thresholdExpr.Evaluate(
@@ -1507,9 +1792,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerMeetsThresholdForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerMeetsThresholdForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope
                     .MakeChild(typeof(bool?), typeof(IntervalComputerMeetsThresholdEval), codegenClassScope)
@@ -1542,7 +1832,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return rightEnd == leftStart;
@@ -1554,8 +1849,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return EqualsIdentity(rightEnd, leftStart);
@@ -1577,8 +1876,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerMetByThresholdEval.Codegen(
@@ -1600,7 +1903,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long threshold = thresholdExpr.Evaluate(
@@ -1624,9 +1932,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerMetByThresholdForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerMetByThresholdForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope
                     .MakeChild(typeof(bool?), typeof(IntervalComputerMetByThresholdEval), codegenClassScope)
@@ -1659,7 +1972,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return leftStart < rightStart &&
@@ -1673,8 +1991,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return And(
@@ -1689,7 +2011,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly bool overlaps;
             internal readonly IntervalDeltaExprForge thresholdExpr;
 
-            public IntervalComputerOverlapsAndByThreshold(bool overlaps, IntervalDeltaExprForge thresholdExpr)
+            public IntervalComputerOverlapsAndByThreshold(
+                bool overlaps,
+                IntervalDeltaExprForge thresholdExpr)
             {
                 this.overlaps = overlaps;
                 this.thresholdExpr = thresholdExpr;
@@ -1701,8 +2025,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerOverlapsAndByThresholdEval.Codegen(
@@ -1715,14 +2043,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly bool overlaps;
             internal readonly IntervalDeltaExprEvaluator thresholdExpr;
 
-            public IntervalComputerOverlapsAndByThresholdEval(bool overlaps, IntervalDeltaExprEvaluator thresholdExpr)
+            public IntervalComputerOverlapsAndByThresholdEval(
+                bool overlaps,
+                IntervalDeltaExprEvaluator thresholdExpr)
             {
                 this.overlaps = overlaps;
                 this.thresholdExpr = thresholdExpr;
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 if (overlaps) {
@@ -1736,9 +2071,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerOverlapsAndByThreshold forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerOverlapsAndByThreshold forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
                         typeof(bool), typeof(IntervalComputerOverlapsAndByThresholdEval), codegenClassScope)
@@ -1783,7 +2123,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             /// <param name="max">max</param>
             /// <returns>flag</returns>
             public static bool ComputeIntervalOverlaps(
-                long left, long leftEnd, long right, long rightEnd, long min, long max)
+                long left,
+                long leftEnd,
+                long right,
+                long rightEnd,
+                long min,
+                long max)
             {
                 var match = left < right &&
                             right < leftEnd &&
@@ -1805,7 +2150,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly bool overlaps;
 
             public IntervalComputerOverlapsAndByMinMaxForge(
-                bool overlaps, IntervalDeltaExprForge minEval, IntervalDeltaExprForge maxEval)
+                bool overlaps,
+                IntervalDeltaExprForge minEval,
+                IntervalDeltaExprForge maxEval)
             {
                 this.overlaps = overlaps;
                 this.minEval = minEval;
@@ -1819,8 +2166,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerOverlapsAndByMinMaxEval.Codegen(
@@ -1836,7 +2187,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             internal readonly bool overlaps;
 
             public IntervalComputerOverlapsAndByMinMaxEval(
-                bool overlaps, IntervalDeltaExprEvaluator minEval, IntervalDeltaExprEvaluator maxEval)
+                bool overlaps,
+                IntervalDeltaExprEvaluator minEval,
+                IntervalDeltaExprEvaluator maxEval)
             {
                 this.overlaps = overlaps;
                 this.minEval = minEval;
@@ -1844,7 +2197,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 if (overlaps) {
@@ -1862,9 +2220,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerOverlapsAndByMinMaxForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerOverlapsAndByMinMaxForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
                         typeof(bool), typeof(IntervalComputerOverlapsAndByMinMaxEval), codegenClassScope)
@@ -1911,7 +2274,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return rightStart < leftStart &&
@@ -1925,8 +2293,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return And(
@@ -1943,7 +2315,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return leftStart == rightStart && leftEnd < rightEnd;
@@ -1955,8 +2332,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return And(EqualsIdentity(leftStart, rightStart), Relational(leftEnd, LT, rightEnd));
@@ -1978,8 +2359,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerStartsThresholdEval.Codegen(
@@ -2001,7 +2386,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long threshold = thresholdExpr.Evaluate(
@@ -2024,9 +2414,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerStartsThresholdForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerStartsThresholdForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope
                     .MakeChild(typeof(bool?), typeof(IntervalComputerStartsThresholdEval), codegenClassScope)
@@ -2063,7 +2458,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalComputerEval
         {
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 return leftStart == rightStart && leftEnd > rightEnd;
@@ -2075,8 +2475,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return And(EqualsIdentity(leftStart, rightStart), Relational(leftEnd, GT, rightEnd));
@@ -2098,8 +2502,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public CodegenExpression Codegen(
-                CodegenExpression leftStart, CodegenExpression leftEnd, CodegenExpression rightStart,
-                CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerStartedByThresholdEval.Codegen(
@@ -2121,7 +2529,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public bool? Compute(
-                long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, bool newData,
+                long leftStart,
+                long leftEnd,
+                long rightStart,
+                long rightEnd,
+                EventBean[] eventsPerStream,
+                bool newData,
                 ExprEvaluatorContext context)
             {
                 long threshold = thresholdExpr.Evaluate(
@@ -2144,9 +2557,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             public static CodegenExpression Codegen(
-                IntervalComputerStartedByThresholdForge forge, CodegenExpression leftStart, CodegenExpression leftEnd,
-                CodegenExpression rightStart, CodegenExpression rightEnd, CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+                IntervalComputerStartedByThresholdForge forge,
+                CodegenExpression leftStart,
+                CodegenExpression leftEnd,
+                CodegenExpression rightStart,
+                CodegenExpression rightEnd,
+                CodegenMethodScope codegenMethodScope,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
                         typeof(bool?), typeof(IntervalComputerStartedByThresholdEval), codegenClassScope)

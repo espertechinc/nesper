@@ -23,13 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public class DTLocalDateTimeOpsIntervalEval : DTLocalEvaluatorCalOpsIntervalBase
     {
-        public DTLocalDateTimeOpsIntervalEval(IList<CalendarOp> calendarOps, IntervalOp intervalOp)
+        public DTLocalDateTimeOpsIntervalEval(
+            IList<CalendarOp> calendarOps,
+            IntervalOp intervalOp)
             : base(calendarOps, intervalOp)
         {
         }
 
         public override object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var dateTime = (DateTime) target;
             dateTime = EvaluateCalOpsZDT(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -38,8 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDateTimeOpsIntervalForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            DTLocalDateTimeOpsIntervalForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDateTimeOpsIntervalEval), codegenClassScope)
@@ -56,7 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public override object Evaluate(
-            object startTimestamp, object endTimestamp, EventBean[] eventsPerStream, bool isNewData,
+            object startTimestamp,
+            object endTimestamp,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var start = (DateTime) startTimestamp;
@@ -70,8 +81,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDateTimeOpsIntervalForge forge, CodegenExpressionRef start, CodegenExpressionRef end,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            DTLocalDateTimeOpsIntervalForge forge,
+            CodegenExpressionRef start,
+            CodegenExpressionRef end,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope

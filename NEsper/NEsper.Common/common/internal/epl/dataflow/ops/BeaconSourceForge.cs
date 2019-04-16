@@ -132,9 +132,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     widener = TypeWidenerFactory.GetCheckPropertyAssignType(
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated),
                         validated.Forge.EvaluationType,
-                        writable.PropertyType, 
-                        writable.PropertyName, false, 
-                        typeWidenerCustomizer, 
+                        writable.PropertyType,
+                        writable.PropertyName, false,
+                        typeWidenerCustomizer,
                         context.Base.StatementName);
                 }
                 catch (TypeWidenerException e) {

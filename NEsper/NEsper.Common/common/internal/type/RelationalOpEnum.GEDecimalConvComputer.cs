@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                var s1 = convOne.CoerceBoxedDecimal(objOne).Value;
-                var s2 = convTwo.CoerceBoxedDecimal(objTwo).Value;
+                var s1 = convOne.CoerceBoxedDecimal(objOne);
+                var s2 = convTwo.CoerceBoxedDecimal(objTwo);
                 return s1.CompareTo(s2) >= 0;
             }
 

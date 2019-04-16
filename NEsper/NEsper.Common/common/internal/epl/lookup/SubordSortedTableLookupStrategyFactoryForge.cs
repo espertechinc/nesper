@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly SubordPropRangeKeyForge _rangeKey;
 
         public SubordSortedTableLookupStrategyFactoryForge(
-            bool isNWOnTrigger, int numStreamsOuter, SubordPropRangeKeyForge rangeKey, CoercionDesc coercionDesc)
+            bool isNWOnTrigger,
+            int numStreamsOuter,
+            SubordPropRangeKeyForge rangeKey,
+            CoercionDesc coercionDesc)
         {
             this._isNwOnTrigger = isNWOnTrigger;
             this._numStreamsOuter = numStreamsOuter;
@@ -41,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var expressions = ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(_rangeKey.RangeInfo.Expressions);
             return NewInstance(

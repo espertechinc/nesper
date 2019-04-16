@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             services = new Dictionary<int, PreviousGetterStrategy>();
         }
 
-        public void AssignService(int serviceId, PreviousGetterStrategy previousGetterStrategy)
+        public void AssignService(
+            int serviceId,
+            PreviousGetterStrategy previousGetterStrategy)
         {
             services.Put(serviceId, previousGetterStrategy);
         }

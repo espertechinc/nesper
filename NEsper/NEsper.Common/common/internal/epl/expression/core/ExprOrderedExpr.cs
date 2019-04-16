@@ -45,7 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <returns>indicator for ascending or descending sort</returns>
         public bool IsDescending { get; }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         }
@@ -59,13 +62,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ChildNodes[0].Forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
             if (IsDescending) {
@@ -73,7 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprOrderedExpr)) {
                 return false;

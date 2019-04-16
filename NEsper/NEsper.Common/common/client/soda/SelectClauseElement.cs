@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Item in a select-clause to describe individual select-clause expressions or Wildcard(s).
     /// </summary>
-    public interface SelectClauseElement 
+    public interface SelectClauseElement
     {
         /// <summary>Output the string rendering of the select clause element. </summary>
         /// <param name="writer">to output to</param>
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns></returns>
         public static string ToEPL(this SelectClauseElement selectClauseElement)
         {
-            using(var textWriter = new StringWriter()) {
+            using (var textWriter = new StringWriter()) {
                 selectClauseElement.ToEPLElement(textWriter);
                 return textWriter.ToString();
             }

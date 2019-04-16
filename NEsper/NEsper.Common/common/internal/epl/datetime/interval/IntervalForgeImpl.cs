@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -23,7 +22,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval
@@ -36,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         private readonly int parameterStreamNum;
 
         public IntervalForgeImpl(
-            DatetimeMethodEnum method,
+            DateTimeMethodEnum method,
             string methodNameUse,
             StreamTypeService streamTypeService,
             IList<ExprNode> expressions,
@@ -86,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     unresolvedPropertyName = identNode.UnresolvedPropertyName;
                 }
 
-                if (!TypeHelper.IsDatetimeClass(ForgeTimestamp.EvaluationType)) {
+                if (!TypeHelper.IsDateTime(ForgeTimestamp.EvaluationType)) {
                     // ident node may represent a fragment
                     if (unresolvedPropertyName != null) {
                         var propertyDesc = ExprIdentNodeUtil.GetTypeFromStream(
@@ -197,7 +195,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         /// <param name="inputDesc">descriptor of what the input to this interval method is</param>
         public FilterExprAnalyzerDTIntervalAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DatetimeMethodEnum currentMethod,
+            DateTimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {

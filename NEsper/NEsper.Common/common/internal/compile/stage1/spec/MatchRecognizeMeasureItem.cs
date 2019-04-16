@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <summary>Ctor. </summary>
         /// <param name="expr">expression</param>
         /// <param name="name">as name</param>
-        public MatchRecognizeMeasureItem(ExprNode expr, String name) {
+        public MatchRecognizeMeasureItem(
+            ExprNode expr,
+            String name)
+        {
             Expr = expr;
             Name = name;
         }

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public FilterSpecLookupableAdvancedIndexForge(
             string expression,
-            EventPropertyGetterSPI getter, 
+            EventPropertyGetterSPI getter,
             Type returnType,
             AdvancedIndexConfigContextPartitionQuadTree quadTreeConfig,
             EventPropertyGetterSPI x,
@@ -59,7 +59,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         public string IndexType { get; }
 
         public override CodegenMethod MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbolWEventType symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
                 typeof(FilterSpecLookupableAdvancedIndex), typeof(FilterSpecLookupableAdvancedIndexForge), classScope);

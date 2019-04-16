@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
             return cache.Get(key);
         }
 
-        public void Put(object methodParams, EventTable[] rows)
+        public void Put(
+            object methodParams,
+            EventTable[] rows)
         {
             var key = methodParams;
             cache.Put(key, rows);

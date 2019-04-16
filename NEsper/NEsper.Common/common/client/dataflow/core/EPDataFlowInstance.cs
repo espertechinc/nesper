@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <summary>Non-Blocking execution of the data flow instance. </summary>
         /// <throws>IllegalStateException thrown to indicate that the state is not instantiated.</throws>
         void Start();
-    
+
         /// <summary>Captive execution of the data flow instance. </summary>
         /// <returns>runnables and emitters</returns>
         EPDataFlowInstanceCaptive StartCaptive();
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <throws>IllegalStateException thrown if it cannot be joined</throws>
         /// <throws>InterruptedException thrown if interrupted</throws>
         void Join();
-    
+
         /// <summary>Cancel execution. </summary>
         void Cancel();
 

@@ -23,8 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     public class PatternDeltaComputeUtil
     {
         public static CodegenExpression MakePatternDeltaAnonymous(
-            ExprNode parameter, MatchedEventConvertorForge convertor, TimeAbacus timeAbacus,
-            CodegenMethod method, CodegenClassScope classScope)
+            ExprNode parameter,
+            MatchedEventConvertorForge convertor,
+            TimeAbacus timeAbacus,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             var compute = NewAnonymousClass(method.Block, typeof(PatternDeltaCompute));
             var computeDelta = CodegenMethod.MakeParentNode(typeof(long), typeof(PatternDeltaComputeUtil), classScope)

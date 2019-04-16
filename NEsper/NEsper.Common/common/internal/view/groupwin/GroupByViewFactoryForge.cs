@@ -62,7 +62,10 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             set => eventType = value;
         }
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             viewParameters = parameters;
 
@@ -120,7 +123,10 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             criteriaExpressions = ViewForgeSupport.Validate(
                 ViewName, parentEventType, viewParameters, false, viewForgeEnv, streamNumber);
@@ -154,7 +160,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             if (groupeds == null) {
@@ -188,7 +196,10 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         }
 
         private static EventType DetermineEventType(
-            EventType groupedEventType, ExprNode[] criteriaExpressions, int streamNum, ViewForgeEnv viewForgeEnv)
+            EventType groupedEventType,
+            ExprNode[] criteriaExpressions,
+            int streamNum,
+            ViewForgeEnv viewForgeEnv)
         {
             // determine types of fields
             var fieldTypes = new Type[criteriaExpressions.Length];

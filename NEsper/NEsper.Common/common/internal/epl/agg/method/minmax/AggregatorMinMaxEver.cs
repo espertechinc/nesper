@@ -35,8 +35,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         private readonly CodegenExpressionField serde;
 
         public AggregatorMinMaxEver(
-            AggregationFactoryMethodMinMax factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter)
+            AggregationFactoryMethodMinMax factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter)
             : base(
                 factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
                 optionalFilter)
@@ -47,64 +53,97 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         }
 
         protected override void ApplyEvalEnterNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(EnterConsumer(value));
         }
 
         protected override void ApplyTableEnterNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(EnterConsumer(Cast(typeof(IComparable), value)));
         }
 
         public override void ApplyEvalLeaveCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             // no-op, this is designed to handle min-max ever
         }
 
         public override void ApplyTableLeaveCodegen(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             // no-op
         }
 
         protected override void ApplyEvalLeaveNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             // no-op, this is designed to handle min-max ever
         }
 
         protected override void ApplyTableLeaveNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             // no-op
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(currentMinMax, ConstantNull());
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(currentMinMax);
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Expression(
                 WriteNullable(RowDotRef(row, currentMinMax), serde, output, unitKey, writer, classScope));
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(
                 RowDotRef(row, currentMinMax),

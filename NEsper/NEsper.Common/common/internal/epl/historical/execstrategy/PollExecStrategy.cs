@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.execstrategy
         /// <param name="lookupValues">is keys for exeuting a query or such</param>
         /// <param name="agentInstanceContext">context</param>
         /// <returns>a list of events for the keys</returns>
-        IList<EventBean> Poll(object lookupValues, AgentInstanceContext agentInstanceContext);
+        IList<EventBean> Poll(
+            object lookupValues,
+            AgentInstanceContext agentInstanceContext);
 
         /// <summary>
         ///     Indicate we are done polling and can release resources.

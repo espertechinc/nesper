@@ -11,9 +11,9 @@ using System.Collections.Generic;
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Specification for the on-set statement.</summary>
-	public class OnTriggerSetDesc : OnTriggerDesc
-	{
-	    private readonly IList<OnTriggerSetAssignment> assignments;
+    public class OnTriggerSetDesc : OnTriggerDesc
+    {
+        private readonly IList<OnTriggerSetAssignment> assignments;
 
         /// <summary> Ctor.</summary>
         /// <param name="assignments">is a list of assignments</param>
@@ -23,11 +23,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             this.assignments = assignments;
         }
 
-	    /// <summary>Returns a list of all variables assignment by the on-set</summary>
-	    /// <returns>list of assignments</returns>
-	    public IList<OnTriggerSetAssignment> Assignments
-	    {
-	        get { return assignments; }
-	    }
-	}
+        /// <summary>Returns a list of all variables assignment by the on-set</summary>
+        /// <returns>list of assignments</returns>
+        public IList<OnTriggerSetAssignment> Assignments {
+            get { return assignments; }
+        }
+    }
 } // End of namespace

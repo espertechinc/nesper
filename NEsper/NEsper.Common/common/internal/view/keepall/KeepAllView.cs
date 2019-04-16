@@ -56,7 +56,9 @@ namespace com.espertech.esper.common.@internal.view.keepall
 
         public override EventType EventType => parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, keepAllViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(keepAllViewFactory, newData, oldData);

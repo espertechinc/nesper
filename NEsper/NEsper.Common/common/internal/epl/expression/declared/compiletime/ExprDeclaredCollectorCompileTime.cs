@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.declared.core;
 using com.espertech.esper.compat;
@@ -16,15 +15,20 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
 {
-	public class ExprDeclaredCollectorCompileTime : ExprDeclaredCollector {
-	    private readonly IDictionary<string, ExpressionDeclItem> moduleExpressions;
+    public class ExprDeclaredCollectorCompileTime : ExprDeclaredCollector
+    {
+        private readonly IDictionary<string, ExpressionDeclItem> moduleExpressions;
 
-	    public ExprDeclaredCollectorCompileTime(IDictionary<string, ExpressionDeclItem> moduleExpressions) {
-	        this.moduleExpressions = moduleExpressions;
-	    }
+        public ExprDeclaredCollectorCompileTime(IDictionary<string, ExpressionDeclItem> moduleExpressions)
+        {
+            this.moduleExpressions = moduleExpressions;
+        }
 
-	    public void RegisterExprDeclared(string expressionName, ExpressionDeclItem meta) {
-	        moduleExpressions.Put(expressionName, meta);
-	    }
-	}
+        public void RegisterExprDeclared(
+            string expressionName,
+            ExpressionDeclItem meta)
+        {
+            moduleExpressions.Put(expressionName, meta);
+        }
+    }
 } // end of namespace

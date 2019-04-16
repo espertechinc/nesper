@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -22,7 +21,6 @@ using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.subselect
@@ -69,7 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         public IList<ViewFactoryForge> ViewForges { get; }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(SubSelectStrategyFactoryLocalViewPreloaded), GetType(), classScope);
 
@@ -132,8 +132,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         public bool HasPrevious => viewResourceDelegateDesc.HasPrevious;
 
         protected internal static CodegenExpression MakeAggregationService(
-            int subqueryNumber, AggregationServiceForgeDesc aggregationServiceForgeDesc, CodegenClassScope classScope,
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols)
+            int subqueryNumber,
+            AggregationServiceForgeDesc aggregationServiceForgeDesc,
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols)
         {
             if (aggregationServiceForgeDesc == null) {
                 return ConstantNull();

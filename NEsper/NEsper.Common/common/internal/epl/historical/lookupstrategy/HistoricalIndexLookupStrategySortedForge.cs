@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
@@ -25,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         private readonly QueryGraphValueEntryRangeForge range;
 
         public HistoricalIndexLookupStrategySortedForge(
-            int lookupStream, QueryGraphValueEntryRangeForge range, Type coercionType)
+            int lookupStream,
+            QueryGraphValueEntryRangeForge range,
+            Type coercionType)
         {
             this.lookupStream = lookupStream;
             this.range = range;
@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategySorted), GetType(), classScope);
 

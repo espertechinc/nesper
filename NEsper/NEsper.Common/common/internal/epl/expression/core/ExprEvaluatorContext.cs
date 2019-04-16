@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.context.util;
@@ -22,38 +21,39 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	/// <summary>
-	/// Returns the context for expression evaluation.
-	/// </summary>
-	public interface ExprEvaluatorContext {
-	    string StatementName { get; }
+    /// <summary>
+    /// Returns the context for expression evaluation.
+    /// </summary>
+    public interface ExprEvaluatorContext
+    {
+        string StatementName { get; }
 
-	    object UserObjectCompileTime { get; }
+        object UserObjectCompileTime { get; }
 
-	    string RuntimeURI { get; }
+        string RuntimeURI { get; }
 
-	    int StatementId { get; }
+        int StatementId { get; }
 
-	    EventBean ContextProperties { get; }
+        EventBean ContextProperties { get; }
 
-	    int AgentInstanceId { get; }
+        int AgentInstanceId { get; }
 
-	    EventBeanService EventBeanService { get; }
+        EventBeanService EventBeanService { get; }
 
-	    TimeProvider TimeProvider { get; }
+        TimeProvider TimeProvider { get; }
 
-	    StatementAgentInstanceLock AgentInstanceLock { get; }
+        StatementAgentInstanceLock AgentInstanceLock { get; }
 
-	    ExpressionResultCacheService ExpressionResultCacheService { get; }
+        ExpressionResultCacheService ExpressionResultCacheService { get; }
 
-	    TableExprEvaluatorContext TableExprEvaluatorContext { get; }
+        TableExprEvaluatorContext TableExprEvaluatorContext { get; }
 
-	    AgentInstanceScriptContext AllocateAgentInstanceScriptContext { get; }
+        AgentInstanceScriptContext AllocateAgentInstanceScriptContext { get; }
 
-	    string DeploymentId { get; }
+        string DeploymentId { get; }
 
-	    AuditProvider AuditProvider { get; }
+        AuditProvider AuditProvider { get; }
 
-	    InstrumentationCommon InstrumentationProvider { get; }
-	}
+        InstrumentationCommon InstrumentationProvider { get; }
+    }
 } // end of namespace

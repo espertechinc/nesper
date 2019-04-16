@@ -72,7 +72,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         public bool IsCanIterate => isCanIterate;
 
         public ViewableActivationResult Activate(
-            AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isSubselect,
+            bool isRecoveringResilient)
         {
             var patternAgentInstanceContext = new PatternAgentInstanceContext(
                 patternContext, agentInstanceContext, hasConsumingFilter, null);
@@ -80,13 +82,15 @@ namespace com.espertech.esper.common.@internal.context.activator
 
             EventStream sourceEventStream = isCanIterate
                 ? (EventStream) new ZeroDepthStreamIterable(eventType)
-                : (EventStream)new ZeroDepthStreamNoIterate(eventType);
+                : (EventStream) new ZeroDepthStreamNoIterate(eventType);
 
             // we set a child now in case the start itself indicates results
             sourceEventStream.Child = ViewNoop.INSTANCE;
 
             PatternMatchCallback callback = new ProxyPatternMatchCallback() {
-                ProcMatchFound = (matchEvent, optionalTriggeringEvent) => {
+                ProcMatchFound = (
+                    matchEvent,
+                    optionalTriggeringEvent) => {
                     EventBean compositeEvent = eventBeanTypedEventFactory.AdapterForTypedMap(matchEvent, eventType);
                     sourceEventStream.Insert(compositeEvent);
                 }

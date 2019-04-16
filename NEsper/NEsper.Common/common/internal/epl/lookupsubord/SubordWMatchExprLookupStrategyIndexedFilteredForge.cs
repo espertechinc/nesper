@@ -21,7 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
         private readonly ExprForge exprForge;
 
         public SubordWMatchExprLookupStrategyIndexedFilteredForge(
-            ExprForge exprForge, SubordTableLookupStrategyFactoryForge lookupStrategyFactory)
+            ExprForge exprForge,
+            SubordTableLookupStrategyFactoryForge lookupStrategyFactory)
         {
             this.exprForge = exprForge;
             OptionalInnerStrategy = lookupStrategyFactory;
@@ -30,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
         public SubordTableLookupStrategyFactoryForge OptionalInnerStrategy { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(SubordWMatchExprLookupStrategyFactory), GetType(), classScope);
             method.Block

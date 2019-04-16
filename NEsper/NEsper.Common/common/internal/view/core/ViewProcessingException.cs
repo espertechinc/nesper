@@ -26,7 +26,8 @@ namespace com.espertech.esper.common.@internal.view.core
         /// Initializes a new instance of the <see cref="ViewProcessingException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public ViewProcessingException(string message) : base(message)
+        public ViewProcessingException(string message)
+            : base(message)
         {
         }
 
@@ -35,8 +36,10 @@ namespace com.espertech.esper.common.@internal.view.core
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="innerException">The inner exception.</param>
-        public ViewProcessingException(string message,
-                 Exception innerException) : base(message, innerException)
+        public ViewProcessingException(
+            string message,
+            Exception innerException)
+            : base(message, innerException)
         {
         }
     }

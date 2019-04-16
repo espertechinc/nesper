@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filterspec;
 
@@ -16,7 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
     public class PatternConsumptionUtil
     {
-        public static bool ContainsEvent(ISet<EventBean> matchEvent, MatchedEventMap beginState)
+        public static bool ContainsEvent(
+            ISet<EventBean> matchEvent,
+            MatchedEventMap beginState)
         {
             if (beginState == null) {
                 return false;
@@ -53,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             return quit;
         }
 
-        public static void ChildNodeRemoveMatches<T>(ISet<EventBean> matchEvent, ICollection<T> evalStateNodes)
+        public static void ChildNodeRemoveMatches<T>(
+            ISet<EventBean> matchEvent,
+            ICollection<T> evalStateNodes)
             where T : EvalStateNode
         {
             EvalStateNode[] nodesArray = evalStateNodes.ToArray();

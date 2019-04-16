@@ -33,7 +33,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
         /// <param name="fragmentType">type of the entry returned</param>
         public ObjectArrayArrayPropertyGetter(
-            int propertyIndex, int index, EventBeanTypedEventFactory eventBeanTypedEventFactory, EventType fragmentType)
+            int propertyIndex,
+            int index,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventType fragmentType)
         {
             this.propertyIndex = propertyIndex;
             this.index = index;
@@ -51,7 +54,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return GetObjectArrayInternal(array, index);
         }
 
-        public object Get(EventBean eventBean, int index)
+        public object Get(
+            EventBean eventBean,
+            int index)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
             return GetObjectArrayInternal(array, index);
@@ -76,7 +81,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -84,14 +90,16 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
@@ -99,7 +107,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -108,14 +117,16 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             var mSvc = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
@@ -128,15 +139,19 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope,
-            CodegenExpression beanExpression, CodegenExpression key)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            CodegenExpression beanExpression,
+            CodegenExpression key)
         {
             return StaticMethod(
                 typeof(BaseNestableEventUtil), "getBNArrayValueAtIndexWithNullCheck",
                 ArrayAtIndex(CastUnderlying(typeof(object[]), beanExpression), Constant(propertyIndex)), key);
         }
 
-        private object GetObjectArrayInternal(object[] array, int index)
+        private object GetObjectArrayInternal(
+            object[] array,
+            int index)
         {
             var value = array[propertyIndex];
             return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);

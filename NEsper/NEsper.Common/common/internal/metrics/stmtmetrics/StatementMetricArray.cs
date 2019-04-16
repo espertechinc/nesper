@@ -61,7 +61,11 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="name">name of statement group</param>
         /// <param name="initialSize">initial size of array</param>
         /// <param name="isReportInactive">true to indicate to report on inactive statements</param>
-        public StatementMetricArray(string runtimeURI, string name, int initialSize, bool isReportInactive)
+        public StatementMetricArray(
+            string runtimeURI,
+            string name,
+            int initialSize,
+            bool isReportInactive)
         {
             this.runtimeURI = runtimeURI;
             this.isReportInactive = isReportInactive;
@@ -111,8 +115,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>index added to</returns>
         public int AddStatementGetIndex(DeploymentIdNamePair statement)
         {
-            using (RwLock.AcquireWriteLock())
-            {
+            using (RwLock.AcquireWriteLock()) {
                 // see if there is room
                 if (currentLastElement + 1 < metrics.Length) {
                     currentLastElement++;

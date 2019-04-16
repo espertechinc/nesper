@@ -29,8 +29,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         private readonly CodegenExpressionRef valueSet;
 
         public AggregatorAvedev(
-            AggregationForgeFactory factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter)
+            AggregationForgeFactory factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter)
             : base(
                 factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
                 optionalFilter)
@@ -41,45 +47,68 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         }
 
         protected override void ApplyEvalEnterNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             ApplyCodegen(true, value, valueType, method);
         }
 
         protected override void ApplyEvalLeaveNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             ApplyCodegen(false, value, valueType, method);
         }
 
         protected override void ApplyTableEnterNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             ApplyTableCodegen(true, value, method);
         }
 
         protected override void ApplyTableLeaveNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             ApplyTableCodegen(false, value, method);
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(sum, Constant(0))
                 .ExprDotMethod(valueSet, "clear");
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(StaticMethod(typeof(AggregatorAvedev), "computeAvedev", valueSet, sum));
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(WriteDouble(output, row, sum))
@@ -87,8 +116,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(ReadDouble(row, sum, input))
@@ -101,7 +134,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         /// <param name="output">output</param>
         /// <param name="valueSet">values</param>
         /// <throws>IOException io error</throws>
-        public static void WritePoints(DataOutput output, RefCountedSet<double> valueSet)
+        public static void WritePoints(
+            DataOutput output,
+            RefCountedSet<double> valueSet)
         {
             var refSet = valueSet.RefSet;
             output.WriteInt(refSet.Count);
@@ -139,7 +174,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         /// <param name="valueSet">values</param>
         /// <param name="sum">sum</param>
         /// <returns>value</returns>
-        public static object ComputeAvedev(RefCountedSet<double> valueSet, double sum)
+        public static object ComputeAvedev(
+            RefCountedSet<double> valueSet,
+            double sum)
         {
             var datapoints = valueSet.Count;
 
@@ -157,7 +194,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             return total / datapoints;
         }
 
-        private void ApplyCodegen(bool enter, CodegenExpression value, Type valueType, CodegenMethod method)
+        private void ApplyCodegen(
+            bool enter,
+            CodegenExpression value,
+            Type valueType,
+            CodegenMethod method)
         {
             method.Block
                 .DeclareVar(
@@ -167,7 +208,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
                 .AssignCompound(sum, enter ? "+" : "-", Ref("d"));
         }
 
-        private void ApplyTableCodegen(bool enter, CodegenExpression value, CodegenMethod method)
+        private void ApplyTableCodegen(
+            bool enter,
+            CodegenExpression value,
+            CodegenMethod method)
         {
             method.Block
                 .DeclareVar(typeof(double), "d", ExprDotMethod(Cast(typeof(double), value), "doubleValue"))

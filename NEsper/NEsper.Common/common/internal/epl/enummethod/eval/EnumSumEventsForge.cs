@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -17,22 +16,29 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumSumEventsForge : EnumForgeBase {
+    public class EnumSumEventsForge : EnumForgeBase
+    {
+        internal readonly ExprDotEvalSumMethodFactory sumMethodFactory;
 
-	    internal readonly ExprDotEvalSumMethodFactory sumMethodFactory;
+        public EnumSumEventsForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ExprDotEvalSumMethodFactory sumMethodFactory)
+            : base(innerExpression, streamCountIncoming)
+        {
+            this.sumMethodFactory = sumMethodFactory;
+        }
 
-	    public EnumSumEventsForge(ExprForge innerExpression, int streamCountIncoming, ExprDotEvalSumMethodFactory sumMethodFactory)
-	    	 : base(innerExpression, streamCountIncoming)
-	    {
-	        this.sumMethodFactory = sumMethodFactory;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumSumEventsForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumSumEventsForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumSumEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumSumEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

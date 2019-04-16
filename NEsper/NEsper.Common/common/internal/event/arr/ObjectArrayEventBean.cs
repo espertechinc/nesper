@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
     public class ObjectArrayEventBean : EventBeanSPI,
         ObjectArrayBackedEventBean
     {
-        public ObjectArrayEventBean(object[] propertyValues, EventType eventType)
+        public ObjectArrayEventBean(
+            object[] propertyValues,
+            EventType eventType)
         {
             Properties = propertyValues;
             EventType = eventType;
@@ -50,16 +52,16 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return getter.GetFragment(this);
         }
 
+        public object UnderlyingSpi {
+            get => Underlying;
+            set => Underlying = value;
+        }
+
         public object[] Properties { get; set; }
 
         public object[] PropertyValues {
             get => Properties;
             set => Properties = value;
-        }
-
-        public object UnderlyingSpi {
-            get => Underlying;
-            set => Underlying = value;
         }
     }
 } // end of namespace

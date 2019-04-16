@@ -15,12 +15,16 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 {
     public class PointRegionQuadTreeFilterIndexTraverse
     {
-        public static void Traverse(PointRegionQuadTree<object> quadtree, Consumer<object> consumer)
+        public static void Traverse(
+            PointRegionQuadTree<object> quadtree,
+            Consumer<object> consumer)
         {
             Traverse(quadtree.Root, consumer);
         }
 
-        public static void Traverse(PointRegionQuadTreeNode node, Consumer<object> consumer)
+        public static void Traverse(
+            PointRegionQuadTreeNode node,
+            Consumer<object> consumer)
         {
             if (node is PointRegionQuadTreeNodeLeaf<object>) {
                 var leaf = (PointRegionQuadTreeNodeLeaf<object>) node;
@@ -35,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             Traverse(branch.Se, consumer);
         }
 
-        private static void TraverseData(object data, Consumer<object> consumer)
+        private static void TraverseData(
+            object data,
+            Consumer<object> consumer)
         {
             if (data == null) {
                 return;
@@ -52,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             }
         }
 
-        private static void Visit(object data, Consumer<object> consumer)
+        private static void Visit(
+            object data,
+            Consumer<object> consumer)
         {
             if (data is XYPointWValue<object>) {
                 consumer.Invoke(((XYPointWValue<object>) data).Value);

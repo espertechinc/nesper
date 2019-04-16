@@ -18,8 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         IntervalDeltaExprEvaluator MakeEvaluator();
 
         CodegenExpression Codegen(
-            CodegenExpression reference, 
-            CodegenMethodScope codegenMethodScope, 
+            CodegenExpression reference,
+            CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
     }

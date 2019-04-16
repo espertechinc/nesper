@@ -26,7 +26,15 @@ namespace com.espertech.esper.common.client
         /// <param name="indexed">true if the property is an indexed property, i.e. type is an array or the property value access requires an integer index value</param>
         /// <param name="mapped">true if the property is a mapped property, i.e. type is an Map or the property value access requires an string map key</param>
         /// <param name="fragment">true if the property value can be represented as an EventBean and property type can be represented as an EventType</param>
-        public EventPropertyDescriptor(String propertyName, Type propertyType, Type propertyComponentType, bool isRequiresIndex, bool isRequiresMapKey, bool indexed, bool mapped, bool fragment)
+        public EventPropertyDescriptor(
+            String propertyName,
+            Type propertyType,
+            Type propertyComponentType,
+            bool isRequiresIndex,
+            bool isRequiresMapKey,
+            bool indexed,
+            bool mapped,
+            bool fragment)
         {
             PropertyName = propertyName;
             PropertyType = propertyType; // GetBoxedType
@@ -140,13 +148,13 @@ namespace com.espertech.esper.common.client
         {
             unchecked {
                 int result = (PropertyName != null ? PropertyName.GetHashCode() : 0);
-                result = (result*397) ^ (PropertyType != null ? PropertyType.GetHashCode() : 0);
+                result = (result * 397) ^ (PropertyType != null ? PropertyType.GetHashCode() : 0);
                 result = (result * 397) ^ (PropertyComponentType != null ? PropertyComponentType.GetHashCode() : 0);
                 result = (result * 397) ^ IsRequiresIndex.GetHashCode();
-                result = (result*397) ^ IsRequiresMapKey.GetHashCode();
-                result = (result*397) ^ IsIndexed.GetHashCode();
-                result = (result*397) ^ IsMapped.GetHashCode();
-                result = (result*397) ^ IsFragment.GetHashCode();
+                result = (result * 397) ^ IsRequiresMapKey.GetHashCode();
+                result = (result * 397) ^ IsIndexed.GetHashCode();
+                result = (result * 397) ^ IsMapped.GetHashCode();
+                result = (result * 397) ^ IsFragment.GetHashCode();
                 return result;
             }
         }
@@ -166,19 +174,21 @@ namespace com.espertech.esper.common.client
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != typeof(EventPropertyDescriptor)) return false;
-    
+
             EventPropertyDescriptor that = (EventPropertyDescriptor) obj;
-    
+
             if (IsFragment != that.IsFragment) return false;
             if (IsIndexed != that.IsIndexed) return false;
             if (IsMapped != that.IsMapped) return false;
             if (IsRequiresIndex != that.IsRequiresIndex) return false;
             if (IsRequiresMapKey != that.IsRequiresMapKey) return false;
-            if (PropertyComponentType != null ? !Equals(PropertyComponentType, that.PropertyComponentType) : that.PropertyComponentType != null) return false;
+            if (PropertyComponentType != null
+                ? !Equals(PropertyComponentType, that.PropertyComponentType)
+                : that.PropertyComponentType != null) return false;
             if (!Equals(PropertyComponentType, that.PropertyComponentType)) return false;
             if (!Equals(PropertyName, that.PropertyName)) return false;
             if (PropertyType != null ? !Equals(PropertyType, that.PropertyType) : that.PropertyType != null) return false;
-    
+
             return true;
         }
 

@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
         public SubordTableLookupStrategyFactoryForge OptionalInnerStrategy => null;
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
                 typeof(SubordWMatchExprLookupStrategyAllFilteredFactory), GetType(), classScope);

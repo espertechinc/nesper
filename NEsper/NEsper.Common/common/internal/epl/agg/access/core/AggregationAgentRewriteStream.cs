@@ -23,16 +23,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         }
 
         public void ApplyEnter(
-            EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column)
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
         {
-            EventBean[] rewrite = { eventsPerStream[streamNum] };
+            EventBean[] rewrite = {eventsPerStream[streamNum]};
             row.EnterAccess(column, rewrite, exprEvaluatorContext);
         }
 
         public void ApplyLeave(
-            EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column)
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
         {
-            EventBean[] rewrite = { eventsPerStream[streamNum] };
+            EventBean[] rewrite = {eventsPerStream[streamNum]};
             row.LeaveAccess(column, rewrite, exprEvaluatorContext);
         }
     }

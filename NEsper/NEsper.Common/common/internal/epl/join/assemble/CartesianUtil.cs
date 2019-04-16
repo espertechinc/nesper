@@ -27,8 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// <param name="subStreamNumsTwo">is the list of substream numbers to stream two to include in the product</param>
         /// <param name="resultList">is where the result of the cartesian product is added to</param>
         public static void ComputeCartesian(
-            IList<EventBean[]> streamOne, int[] subStreamNumsOne,
-            IList<EventBean[]> streamTwo, int[] subStreamNumsTwo,
+            IList<EventBean[]> streamOne,
+            int[] subStreamNumsOne,
+            IList<EventBean[]> streamTwo,
+            int[] subStreamNumsTwo,
             IList<EventBean[]> resultList)
         {
             if (streamTwo == null || streamTwo.IsEmpty()) {
@@ -116,14 +118,20 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             resultList.AddAll(results);
         }
 
-        private static void CopyToEach(int[] subStreamNums, EventBean[] sourceRow, IList<EventBean[]> destRows)
+        private static void CopyToEach(
+            int[] subStreamNums,
+            EventBean[] sourceRow,
+            IList<EventBean[]> destRows)
         {
             foreach (var destRow in destRows) {
                 Copy(subStreamNums, sourceRow, destRow);
             }
         }
 
-        private static void Copy(int[] subStreamsFrom, EventBean[] from, EventBean[] to)
+        private static void Copy(
+            int[] subStreamsFrom,
+            EventBean[] from,
+            EventBean[] to)
         {
             foreach (var index in subStreamsFrom) {
                 to[index] = from[index];

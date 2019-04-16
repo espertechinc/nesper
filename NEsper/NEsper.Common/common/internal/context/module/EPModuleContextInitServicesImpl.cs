@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public class EPModuleContextInitServicesImpl : EPModuleContextInitServices
     {
-        public EPModuleContextInitServicesImpl(ContextCollector contextCollector, EventTypeResolver eventTypeResolver)
+        public EPModuleContextInitServicesImpl(
+            ContextCollector contextCollector,
+            EventTypeResolver eventTypeResolver)
         {
             ContextCollector = contextCollector;
             EventTypeResolver = eventTypeResolver;

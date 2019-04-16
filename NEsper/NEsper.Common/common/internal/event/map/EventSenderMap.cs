@@ -35,8 +35,10 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// <param name="threadingService">for inbound threading</param>
         /// <param name="eventBeanTypedEventFactory">for event bean creation</param>
         public EventSenderMap(
-            EPRuntimeEventProcessWrapped runtimeEventSender, MapEventType mapEventType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, ThreadingCommon threadingService)
+            EPRuntimeEventProcessWrapped runtimeEventSender,
+            MapEventType mapEventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            ThreadingCommon threadingService)
         {
             this.runtimeEventSender = runtimeEventSender;
             this.mapEventType = mapEventType;

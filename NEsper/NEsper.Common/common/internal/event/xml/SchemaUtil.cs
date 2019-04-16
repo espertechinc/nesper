@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -19,16 +20,25 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     /// <summary> Utility class for querying schema information.</summary>
-    /// <author>  pablo
+    /// <author>
+    ///     pablo
     /// </author>
     public class SchemaUtil
     {
-        private static readonly IDictionary<String, Type> TypeMap;
+        private static readonly IDictionary<string, Type> TypeMap;
+
+
+        private static readonly XmlSchemaSimpleType _SchemaTypeString = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.String);
+        private static readonly XmlSchemaSimpleType _SchemaTypeBoolean = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Boolean);
+        private static readonly XmlSchemaSimpleType _SchemaTypeInteger = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Int);
+        private static readonly XmlSchemaSimpleType _SchemaTypeDecimal = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Decimal);
+        private static readonly XmlSchemaSimpleType _SchemaTypeId = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Id);
+        private static readonly XmlSchemaSimpleType _SchemaTypeToken = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Token);
 
         static SchemaUtil()
         {
-            TypeMap = new Dictionary<String, Type>();
-            TypeMap["nonPositiveInteger"] = typeof (int?);
+            TypeMap = new Dictionary<string, Type>();
+            TypeMap["nonPositiveInteger"] = typeof(int?);
             TypeMap["nonNegativeInteger"] = typeof(int?);
             TypeMap["negativeInteger"] = typeof(int?);
             TypeMap["positiveInteger"] = typeof(int?);
@@ -40,48 +50,50 @@ namespace com.espertech.esper.common.@internal.@event.xml
             TypeMap["integer"] = typeof(int?);
             TypeMap["float"] = typeof(float?);
             TypeMap["double"] = typeof(double?);
-            TypeMap["string"] = typeof (string);
+            TypeMap["string"] = typeof(string);
             TypeMap["short"] = typeof(short?);
             TypeMap["unsignedShort"] = typeof(ushort?);
             TypeMap["byte"] = typeof(byte?);
             TypeMap["unsignedByte"] = typeof(byte?);
             TypeMap["bool"] = typeof(bool?);
             TypeMap["boolean"] = typeof(bool?);
-            TypeMap["dateTime"] = typeof (string);
-            TypeMap["date"] = typeof (string);
-            TypeMap["time"] = typeof (string);
+            TypeMap["dateTime"] = typeof(string);
+            TypeMap["date"] = typeof(string);
+            TypeMap["time"] = typeof(string);
         }
-
-
-        private static XmlSchemaSimpleType _SchemaTypeString = XmlSchemaSimpleType.GetBuiltInSimpleType(XmlTypeCode.String);
-        private static XmlSchemaSimpleType _SchemaTypeBoolean = XmlSchemaSimpleType.GetBuiltInSimpleType(XmlTypeCode.Boolean);
-        private static XmlSchemaSimpleType _SchemaTypeInteger = XmlSchemaSimpleType.GetBuiltInSimpleType(XmlTypeCode.Int);
-        private static XmlSchemaSimpleType _SchemaTypeDecimal = XmlSchemaSimpleType.GetBuiltInSimpleType(XmlTypeCode.Decimal);
-        private static XmlSchemaSimpleType _SchemaTypeId = XmlSchemaSimpleType.GetBuiltInSimpleType(XmlTypeCode.Id);
-        private static XmlSchemaSimpleType _SchemaTypeToken = XmlSchemaSimpleType.GetBuiltInSimpleType(XmlTypeCode.Token);
 
         public static XPathResultType ToXPathResultType(XmlSchemaSimpleType simpleType)
         {
-            if (Equals(simpleType, _SchemaTypeString))
+            if (Equals(simpleType, _SchemaTypeString)) {
                 return XPathResultType.String;
-            if (Equals(simpleType, _SchemaTypeBoolean))
+            }
+
+            if (Equals(simpleType, _SchemaTypeBoolean)) {
                 return XPathResultType.Boolean;
+            }
+
             if (Equals(simpleType, _SchemaTypeInteger) ||
-                Equals(simpleType, _SchemaTypeDecimal))
+                Equals(simpleType, _SchemaTypeDecimal)) {
                 return XPathResultType.Number;
-            if (Equals(simpleType, _SchemaTypeId))
+            }
+
+            if (Equals(simpleType, _SchemaTypeId)) {
                 return XPathResultType.String;
-            if (Equals(simpleType, _SchemaTypeToken))
+            }
+
+            if (Equals(simpleType, _SchemaTypeToken)) {
                 return XPathResultType.String;
+            }
+
             return XPathResultType.Any;
         }
 
         /// <summary>
-        /// Returns the Type-type of the schema item.
+        ///     Returns the Type-type of the schema item.
         /// </summary>
         /// <param name="item">to to determine type for</param>
         /// <returns>
-        /// type
+        ///     type
         /// </returns>
         public static Type ToReturnType(SchemaItem item)
         {
@@ -96,19 +108,23 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 if (simple.IsArray) {
                     returnType = Array.CreateInstance(returnType, 0).GetType();
                 }
+
                 return returnType;
             }
 
             if (item is SchemaElementComplex) {
                 var complex = (SchemaElementComplex) item;
                 if (complex.OptionalSimpleType != null) {
-                    return ToReturnType(ToXPathResultType(complex.OptionalSimpleType),
-                                        complex.OptionalSimpleTypeName.Name);
+                    return ToReturnType(
+                        ToXPathResultType(complex.OptionalSimpleType),
+                        complex.OptionalSimpleTypeName.Name);
                 }
+
                 if (complex.IsArray) {
-                    return typeof (XmlNodeList);
+                    return typeof(XmlNodeList);
                 }
-                return typeof (XmlNode);
+
+                return typeof(XmlNode);
             }
 
             throw new PropertyAccessException("Invalid schema return type:" + item);
@@ -116,10 +132,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public static Type ToReturnType(XmlQualifiedName qname)
         {
-            if (qname.Namespace == XMLConstants.W3C_XML_SCHEMA_NS_URI)
-            {
-                switch (qname.Name)
-                {
+            if (qname.Namespace == XMLConstants.W3C_XML_SCHEMA_NS_URI) {
+                switch (qname.Name) {
                     case "ID":
                     case "string":
                         return typeof(string);
@@ -159,37 +173,35 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     case "anyURI":
                         return typeof(XmlNode);
                     case "anySimpleType":
-                        return typeof (object);
+                        return typeof(object);
                 }
             }
 
             return null;
         }
 
-        public static Type ToReturnType(XmlSchemaSimpleType simpleType, string typeName)
+        public static Type ToReturnType(
+            XmlSchemaSimpleType simpleType,
+            string typeName)
         {
             if (typeName != null) {
                 var type = TypeMap.Get(typeName);
-                if ( type != null ) {
+                if (type != null) {
                     return type;
                 }
             }
 
             var qualified = simpleType.QualifiedName;
             var returnType = ToReturnType(qualified);
-            if (returnType != null)
-            {
+            if (returnType != null) {
                 return returnType;
             }
 
             var asRestrictedType = simpleType.Content as XmlSchemaSimpleTypeRestriction;
-            if (asRestrictedType != null)
-            {
-                if (asRestrictedType.BaseTypeName != null)
-                {
+            if (asRestrictedType != null) {
+                if (asRestrictedType.BaseTypeName != null) {
                     var baseReturnType = ToReturnType(qualified = asRestrictedType.BaseTypeName);
-                    if (baseReturnType != null)
-                    {
+                    if (baseReturnType != null) {
                         return baseReturnType;
                     }
                 }
@@ -199,13 +211,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         /// <summary>
-        /// Returns the native type based on XPathConstants qname and an optional cast-to
-        /// type, if provided.
+        ///     Returns the native type based on XPathConstants qname and an optional cast-to
+        ///     type, if provided.
         /// </summary>
         /// <param name="resultType">qname</param>
         /// <param name="optionalCastToTypeName">Name of the optional cast to type.</param>
         /// <returns>return type</returns>
-        public static Type ToReturnType(XPathResultType resultType, String optionalCastToTypeName)
+        public static Type ToReturnType(
+            XPathResultType resultType,
+            string optionalCastToTypeName)
         {
             Type optionalCastToType = null;
             if (optionalCastToTypeName != null) {
@@ -219,39 +233,50 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         /// <summary>
-        /// Returns the native type based on XPathConstants qname and an optional cast-to
-        /// type, if provided.
+        ///     Returns the native type based on XPathConstants qname and an optional cast-to
+        ///     type, if provided.
         /// </summary>
         /// <param name="resultType">qname</param>
         /// <param name="optionalCastToType">null or cast-to type</param>
         /// <returns>
-        /// return type
+        ///     return type
         /// </returns>
-        public static Type ToReturnType(XPathResultType resultType, Type optionalCastToType)
+        public static Type ToReturnType(
+            XPathResultType resultType,
+            Type optionalCastToType)
         {
             if (optionalCastToType != null) {
                 return optionalCastToType;
             }
 
-            if (resultType == XPathResultType.NodeSet)
-                return typeof (XmlNodeList);
-            if (resultType == XPathResultType.Any)
-                return typeof (XmlNode);
-            if (resultType == XPathResultType.Boolean)
-                return typeof (bool?);
-            if (resultType == XPathResultType.Number)
-                return typeof (double?);
-            if (resultType == XPathResultType.String)
-                return typeof (string);
+            if (resultType == XPathResultType.NodeSet) {
+                return typeof(XmlNodeList);
+            }
 
-            return typeof (string);
+            if (resultType == XPathResultType.Any) {
+                return typeof(XmlNode);
+            }
+
+            if (resultType == XPathResultType.Boolean) {
+                return typeof(bool?);
+            }
+
+            if (resultType == XPathResultType.Number) {
+                return typeof(double?);
+            }
+
+            if (resultType == XPathResultType.String) {
+                return typeof(string);
+            }
+
+            return typeof(string);
         }
 
         public static XPathResultType SimpleTypeToResultType(XmlSchemaSimpleType definition)
         {
             var qname = definition.QualifiedName;
-            if ( qname.Namespace == XMLConstants.W3C_XML_SCHEMA_NS_URI ) {
-                switch( qname.Name ) {
+            if (qname.Namespace == XMLConstants.W3C_XML_SCHEMA_NS_URI) {
+                switch (qname.Name) {
                     case "ID":
                     case "string":
                         return XPathResultType.String;
@@ -285,7 +310,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         /// <summary>
-        /// Returns the XPathConstants type for a given Xerces type definition.
+        ///     Returns the XPathConstants type for a given Xerces type definition.
         /// </summary>
         /// <param name="definition">the schema element definition.</param>
         /// <returns>XPathConstants type</returns>
@@ -294,17 +319,20 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return definition.QualifiedName;
         }
 
-        public static SchemaElementComplex FindRootElement(SchemaModel schema, String @namespace, String elementName)
+        public static SchemaElementComplex FindRootElement(
+            SchemaModel schema,
+            string @namespace,
+            string elementName)
         {
             if (!string.IsNullOrEmpty(@namespace)) {
-                foreach (SchemaElementComplex complexElement in schema.Components) {
-                    if ((complexElement.Namespace.Equals(@namespace)) && (complexElement.Name.Equals(elementName))) {
+                foreach (var complexElement in schema.Components) {
+                    if (complexElement.Namespace.Equals(@namespace) && complexElement.Name.Equals(elementName)) {
                         return complexElement;
                     }
                 }
             }
             else {
-                foreach (SchemaElementComplex complexElement in schema.Components) {
+                foreach (var complexElement in schema.Components) {
                     if (complexElement.Name.Equals(elementName)) {
                         return complexElement;
                     }
@@ -313,41 +341,44 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             if (elementName.StartsWith("//")) {
                 elementName = elementName.Substring(2);
-                foreach (SchemaElementComplex complexElement in schema.Components) {
-                    SchemaElementComplex match = RecursiveDeepMatch(complexElement, @namespace, elementName);
+                foreach (var complexElement in schema.Components) {
+                    var match = RecursiveDeepMatch(complexElement, @namespace, elementName);
                     if (match != null) {
                         return match;
                     }
                 }
             }
 
-            String text = "Could not find root element declaration in schema for element name '" + elementName + '\'';
+            var text = "Could not find root element declaration in schema for element name '" + elementName + '\'';
             if (@namespace != null) {
                 text = text + " in namespace '" + @namespace + '\'';
             }
+
             throw new EPException(text);
         }
 
-        private static SchemaElementComplex RecursiveDeepMatch(SchemaElementComplex parent, String @namespace,
-                                                               String elementName)
+        private static SchemaElementComplex RecursiveDeepMatch(
+            SchemaElementComplex parent,
+            string @namespace,
+            string elementName)
         {
             if (!string.IsNullOrEmpty(@namespace)) {
-                foreach (SchemaElementComplex complexElement in parent.ComplexElements) {
-                    if ((complexElement.Namespace.Equals(@namespace)) && (complexElement.Name.Equals(elementName))) {
+                foreach (var complexElement in parent.ComplexElements) {
+                    if (complexElement.Namespace.Equals(@namespace) && complexElement.Name.Equals(elementName)) {
                         return complexElement;
                     }
                 }
             }
             else {
-                foreach (SchemaElementComplex complexElement in parent.ComplexElements) {
+                foreach (var complexElement in parent.ComplexElements) {
                     if (complexElement.Name.Equals(elementName)) {
                         return complexElement;
                     }
                 }
             }
 
-            foreach (SchemaElementComplex complexElement in parent.ComplexElements) {
-                SchemaElementComplex found = RecursiveDeepMatch(complexElement, @namespace, elementName);
+            foreach (var complexElement in parent.ComplexElements) {
+                var found = RecursiveDeepMatch(complexElement, @namespace, elementName);
                 if (found != null) {
                     return found;
                 }
@@ -358,30 +389,32 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
 
         /// <summary>
-        /// Finds an apropiate definition for the given property, starting at the * given
-        /// definition. First look if the property es an attribute. If not, look at simple and
-        /// then child element definitions.
+        ///     Finds an apropiate definition for the given property, starting at the * given
+        ///     definition. First look if the property es an attribute. If not, look at simple and
+        ///     then child element definitions.
         /// </summary>
         /// <param name="def">the definition to start looking</param>
         /// <param name="property">the property to look for</param>
         /// <returns>
-        /// schema element or null if not found
+        ///     schema element or null if not found
         /// </returns>
-        public static SchemaItem FindPropertyMapping(SchemaElementComplex def, String property)
+        public static SchemaItem FindPropertyMapping(
+            SchemaElementComplex def,
+            string property)
         {
-            foreach (SchemaItemAttribute attribute in def.Attributes) {
+            foreach (var attribute in def.Attributes) {
                 if (attribute.Name == property) {
                     return attribute;
                 }
             }
 
-            foreach (SchemaElementSimple simple in def.SimpleElements) {
+            foreach (var simple in def.SimpleElements) {
                 if (simple.Name == property) {
                     return simple;
                 }
             }
 
-            foreach (SchemaElementComplex complex in def.ComplexElements) {
+            foreach (var complex in def.ComplexElements) {
                 if (complex.Name == property) {
                     return complex;
                 }
@@ -392,13 +425,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         /// <summary>
-        /// Serialize the given node.
+        ///     Serialize the given node.
         /// </summary>
         /// <param name="doc">node to serialize</param>
         /// <returns>
-        /// serialized node string
+        ///     serialized node string
         /// </returns>
-        public static String Serialize(XmlNode doc)
+        public static string Serialize(XmlNode doc)
         {
             return doc.OuterXml;
         }

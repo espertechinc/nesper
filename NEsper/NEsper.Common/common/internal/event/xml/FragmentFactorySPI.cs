@@ -11,10 +11,13 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.@event.xml
 {
-	/// <summary>
-	/// Factory for event fragments for use with DOM getters.
-	/// </summary>
-	public interface FragmentFactorySPI :  FragmentFactory {
-	    CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope classScope);
-	}
+    /// <summary>
+    ///     Factory for event fragments for use with DOM getters.
+    /// </summary>
+    public interface FragmentFactorySPI : FragmentFactory
+    {
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope);
+    }
 } // end of namespace

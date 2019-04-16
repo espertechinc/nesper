@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
@@ -15,9 +14,10 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
-	public interface TableCompileTimeResolver : CompileTimeResolver {
-	    TableMetaData Resolve(string tableName);
+    public interface TableCompileTimeResolver : CompileTimeResolver
+    {
+        TableMetaData Resolve(string tableName);
 
-	    TableMetaData ResolveTableFromEventType(EventType containedType);
-	}
+        TableMetaData ResolveTableFromEventType(EventType containedType);
+    }
 } // end of namespace

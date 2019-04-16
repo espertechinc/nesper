@@ -7,17 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
-	public interface CodegenFieldSharable {
-	    Type Type();
-	    CodegenExpression InitCtorScoped();
-	}
+    public interface CodegenFieldSharable
+    {
+        Type Type();
+        CodegenExpression InitCtorScoped();
+    }
 
     public class ProxyCodegenFieldSharable : CodegenFieldSharable
     {
@@ -25,6 +25,5 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public Func<CodegenExpression> ProcInitCtorScoped;
         public Type Type() => ProcType();
         public CodegenExpression InitCtorScoped() => ProcInitCtorScoped();
-
     }
 } // end of namespace

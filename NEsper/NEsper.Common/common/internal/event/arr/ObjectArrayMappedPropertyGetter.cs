@@ -27,38 +27,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// </summary>
         /// <param name="propertyIndex">property index</param>
         /// <param name="key">get the element at</param>
-        public ObjectArrayMappedPropertyGetter(int propertyIndex, string key)
+        public ObjectArrayMappedPropertyGetter(
+            int propertyIndex,
+            string key)
         {
             this.propertyIndex = propertyIndex;
             this.key = key;
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="objectArray">data</param>
-        /// <param name="propertyIndex">prop index</param>
-        /// <param name="providedKey">key</param>
-        /// <returns>value</returns>
-        /// <throws>PropertyAccessException exception</throws>
-        public static object GetOAMapValue(object[] objectArray, int propertyIndex, string providedKey)
-        {
-            var value = objectArray[propertyIndex];
-            return BaseNestableEventUtil.GetMappedPropertyValue(value, providedKey);
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="objectArray">data</param>
-        /// <param name="propertyIndex">prop index</param>
-        /// <param name="providedKey">key</param>
-        /// <returns>value</returns>
-        /// <throws>PropertyAccessException exception</throws>
-        public static bool GetOAMapExists(object[] objectArray, int propertyIndex, string providedKey)
-        {
-            var value = objectArray[propertyIndex];
-            return BaseNestableEventUtil.GetMappedPropertyExists(value, providedKey);
         }
 
         public object GetObjectArray(object[] array)
@@ -71,7 +45,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return GetOAMapExists(array, propertyIndex, key);
         }
 
-        public object Get(EventBean eventBean, string mapKey)
+        public object Get(
+            EventBean eventBean,
+            string mapKey)
         {
             var data = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
             return GetOAMapValue(data, propertyIndex, mapKey);
@@ -95,7 +71,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -103,7 +80,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -111,14 +89,16 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -126,7 +106,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -134,19 +115,56 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression EventBeanGetMappedCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope,
-            CodegenExpression beanExpression, CodegenExpression key)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            CodegenExpression beanExpression,
+            CodegenExpression key)
         {
             return StaticMethod(
                 GetType(), "getOAMapValue", CastUnderlying(typeof(object[]), beanExpression), Constant(propertyIndex),
                 key);
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="objectArray">data</param>
+        /// <param name="propertyIndex">prop index</param>
+        /// <param name="providedKey">key</param>
+        /// <returns>value</returns>
+        /// <throws>PropertyAccessException exception</throws>
+        public static object GetOAMapValue(
+            object[] objectArray,
+            int propertyIndex,
+            string providedKey)
+        {
+            var value = objectArray[propertyIndex];
+            return BaseNestableEventUtil.GetMappedPropertyValue(value, providedKey);
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="objectArray">data</param>
+        /// <param name="propertyIndex">prop index</param>
+        /// <param name="providedKey">key</param>
+        /// <returns>value</returns>
+        /// <throws>PropertyAccessException exception</throws>
+        public static bool GetOAMapExists(
+            object[] objectArray,
+            int propertyIndex,
+            string providedKey)
+        {
+            var value = objectArray[propertyIndex];
+            return BaseNestableEventUtil.GetMappedPropertyExists(value, providedKey);
         }
     }
 } // end of namespace

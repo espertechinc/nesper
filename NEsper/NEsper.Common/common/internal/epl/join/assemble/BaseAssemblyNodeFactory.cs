@@ -50,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// </summary>
         /// <param name="streamNum">stream number of the event stream that this node assembles results for.</param>
         /// <param name="numStreams">number of streams</param>
-        protected BaseAssemblyNodeFactory(int streamNum, int numStreams)
+        protected BaseAssemblyNodeFactory(
+            int streamNum,
+            int numStreams)
         {
             this.streamNum = streamNum;
             this.numStreams = numStreams;
@@ -84,7 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         public IList<BaseAssemblyNodeFactory> ChildNodes => childNodes;
 
         public abstract CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
 
         public abstract BaseAssemblyNode MakeAssemblerUnassociated();

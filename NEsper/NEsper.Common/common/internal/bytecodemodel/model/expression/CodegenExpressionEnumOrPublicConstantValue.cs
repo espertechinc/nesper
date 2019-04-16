@@ -19,21 +19,28 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly string enumTypeString;
         private readonly string enumValue;
 
-        public CodegenExpressionEnumOrPublicConstantValue(Type enumType, string enumValue)
+        public CodegenExpressionEnumOrPublicConstantValue(
+            Type enumType,
+            string enumValue)
         {
             this.enumType = enumType;
             enumTypeString = null;
             this.enumValue = enumValue;
         }
 
-        public CodegenExpressionEnumOrPublicConstantValue(string enumTypeString, string enumValue)
+        public CodegenExpressionEnumOrPublicConstantValue(
+            string enumTypeString,
+            string enumValue)
         {
             this.enumTypeString = enumTypeString;
             this.enumValue = enumValue;
             enumType = null;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             if (enumType != null) {
                 AppendClassName(builder, enumType, null, imports);

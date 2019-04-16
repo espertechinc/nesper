@@ -20,13 +20,18 @@ namespace com.espertech.esper.common.@internal.collection
         private readonly IDictionary<string, PathDeploymentEntry<TE>> modules =
             new Dictionary<string, PathDeploymentEntry<TE>>(4);
 
-        public void Add(string moduleName, TE entity, string deploymentId)
+        public void Add(
+            string moduleName,
+            TE entity,
+            string deploymentId)
         {
             modules.Put(moduleName, new PathDeploymentEntry<TE>(deploymentId, entity));
         }
 
         public Pair<TE, string> GetAnyModuleExpectSingle(
-            string entityName, PathRegistryObjectType objectType, ISet<string> moduleNames)
+            string entityName,
+            PathRegistryObjectType objectType,
+            ISet<string> moduleNames)
         {
             if (modules.IsEmpty()) {
                 return null;
@@ -43,7 +48,7 @@ namespace com.espertech.esper.common.@internal.collection
                     return null;
                 }
 
-                return new Pair<TE,string>(entry.Entity, moduleName);
+                return new Pair<TE, string>(entry.Entity, moduleName);
             }
 
             PathDeploymentEntry<TE> found = null;
@@ -88,7 +93,10 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         public void AddDependency(
-            string entityName, string moduleName, string deploymentIdDep, PathRegistryObjectType objectType)
+            string entityName,
+            string moduleName,
+            string deploymentIdDep,
+            PathRegistryObjectType objectType)
         {
             var existing = modules.Get(moduleName);
             if (existing == null) {
@@ -99,7 +107,10 @@ namespace com.espertech.esper.common.@internal.collection
             existing.AddDependency(deploymentIdDep);
         }
 
-        public ISet<string> GetDependencies(string entityName, string moduleName, PathRegistryObjectType objectType)
+        public ISet<string> GetDependencies(
+            string entityName,
+            string moduleName,
+            PathRegistryObjectType objectType)
         {
             var existing = modules.Get(moduleName);
             if (existing == null) {
@@ -110,7 +121,9 @@ namespace com.espertech.esper.common.@internal.collection
             return existing.Dependencies;
         }
 
-        public void RemoveDependency(string moduleName, string deploymentId)
+        public void RemoveDependency(
+            string moduleName,
+            string deploymentId)
         {
             var existing = modules.Get(moduleName);
             existing?.RemoveDependency(deploymentId);

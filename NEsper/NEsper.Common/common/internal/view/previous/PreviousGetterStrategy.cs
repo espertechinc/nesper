@@ -7,14 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.previous
 {
-	public interface PreviousGetterStrategy {
-	    PreviousGetterStrategy GetStrategy(ExprEvaluatorContext ctx);
-	}
+    public interface PreviousGetterStrategy
+    {
+        PreviousGetterStrategy GetStrategy(ExprEvaluatorContext ctx);
+    }
 } // end of namespace

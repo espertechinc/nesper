@@ -34,11 +34,13 @@ namespace com.espertech.esper.common.client.module
         /// <param name="imports">the type imports</param>
         /// <param name="items">EPL statements</param>
         /// <param name="moduleText">text of module</param>
-        public Module(String name, String uri,
-                      ICollection<String> uses,
-                      ICollection<String> imports,
-                      IList<ModuleItem> items,
-                      String moduleText)
+        public Module(
+            String name,
+            String uri,
+            ICollection<String> uses,
+            ICollection<String> imports,
+            IList<ModuleItem> items,
+            String moduleText)
         {
             Name = name;
             Uri = uri;
@@ -89,6 +91,7 @@ namespace com.espertech.esper.common.client.module
             else {
                 buf.Append("'" + Name + "'");
             }
+
             if (Uri != null) {
                 buf.Append(" uri '" + Uri + "'");
             }

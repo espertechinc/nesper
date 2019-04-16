@@ -36,8 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly ISet<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
 
         public JoinSetComposerStreamToWinImpl(
-            bool allowInitIndex, IDictionary<TableLookupIndexReqKey, EventTable>[] repositories, bool isPureSelfJoin,
-            int streamNumber, QueryStrategy queryStrategy, bool[] selfJoinRepositoryResets)
+            bool allowInitIndex,
+            IDictionary<TableLookupIndexReqKey, EventTable>[] repositories,
+            bool isPureSelfJoin,
+            int streamNumber,
+            QueryStrategy queryStrategy,
+            bool[] selfJoinRepositoryResets)
         {
             this.allowInitIndex = allowInitIndex;
             this.repositories = JoinSetComposerUtil.ToArray();
@@ -64,7 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             return allowInitIndex;
         }
 
-        public void Init(EventBean[][] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public void Init(
+            EventBean[][] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!allowInitIndex) {
                 throw new IllegalStateException("Initialization by events not supported");
@@ -91,7 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         public UniformPair<ISet<MultiKey<EventBean>>> Join(
-            EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QJoinCompositionStreamToWin();

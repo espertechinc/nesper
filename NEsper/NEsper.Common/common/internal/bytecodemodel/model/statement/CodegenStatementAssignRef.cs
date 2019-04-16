@@ -18,14 +18,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly CodegenExpression assignment;
         private readonly CodegenExpression @ref;
 
-        public CodegenStatementAssignRef(CodegenExpression @ref, CodegenExpression assignment)
+        public CodegenStatementAssignRef(
+            CodegenExpression @ref,
+            CodegenExpression assignment)
         {
             this.@ref = @ref;
             this.assignment = assignment;
         }
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             @ref.Render(builder, imports, isInnerClass);
             builder.Append("=");

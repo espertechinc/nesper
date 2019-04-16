@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         private readonly string propertyName;
         private readonly Type underlyingType;
 
-        public MapEventBeanPropertyGetter(string propertyName, Type underlyingType)
+        public MapEventBeanPropertyGetter(
+            string propertyName,
+            Type underlyingType)
         {
             this.propertyName = propertyName;
             this.underlyingType = underlyingType;
@@ -60,12 +62,13 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public object GetFragment(EventBean obj)
         {
-            IDictionary<string, object> map = BaseNestableEventUtil.CheckedCastUnderlyingMap(obj);
+            var map = BaseNestableEventUtil.CheckedCastUnderlyingMap(obj);
             return map.Get(propertyName);
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -74,14 +77,16 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
@@ -90,27 +95,32 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetMapCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ExprDotMethod(underlyingExpression, "get", Constant(propertyName));
         }
 
-        private CodegenMethod GetMapCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+        private CodegenMethod GetMapCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(underlyingType, GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map").Block

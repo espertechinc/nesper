@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
         internal readonly ExprStddevNode parent;
         private AggregatorMethod aggregator;
 
-        public AggregationFactoryMethodStddev(ExprStddevNode parent, Type aggregatedValueType)
+        public AggregationFactoryMethodStddev(
+            ExprStddevNode parent,
+            Type aggregatedValueType)
         {
             this.parent = parent;
             this.aggregatedValueType = aggregatedValueType;
@@ -40,7 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             new AggregationPortableValidationStddev(parent.IsDistinct, parent.HasFilter, aggregatedValueType);
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             var distinctType = !parent.IsDistinct ? null : aggregatedValueType;
             aggregator = new AggregatorStddev(
@@ -48,7 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
                 parent.OptionalFilter);
         }
 
-        public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream)
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
         {
             return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
         }

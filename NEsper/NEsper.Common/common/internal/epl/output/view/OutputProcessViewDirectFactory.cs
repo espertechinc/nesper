@@ -35,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         }
 
         public virtual OutputProcessView MakeView(
-            ResultSetProcessor resultSetProcessor, AgentInstanceContext agentInstanceContext)
+            ResultSetProcessor resultSetProcessor,
+            AgentInstanceContext agentInstanceContext)
         {
             var postProcess = postProcessFactory.Make(agentInstanceContext);
             return new OutputProcessViewDirectPostProcess(agentInstanceContext, resultSetProcessor, postProcess);

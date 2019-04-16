@@ -60,7 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
         public override EventType EventType => rootView.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
                 OnTriggerType.ON_MERGE, newData, CollectionUtil.EVENTBEANARRAY_EMPTY);

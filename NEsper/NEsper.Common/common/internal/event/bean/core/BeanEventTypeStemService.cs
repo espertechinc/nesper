@@ -26,7 +26,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public BeanEventTypeStemService(
             IDictionary<Type, IList<string>> publicClassToTypeNames,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            PropertyResolutionStyle defaultPropertyResolutionStyle, AccessorStyle defaultAccessorStyle)
+            PropertyResolutionStyle defaultPropertyResolutionStyle,
+            AccessorStyle defaultAccessorStyle)
         {
             PublicClassToTypeNames = publicClassToTypeNames;
             EventBeanTypedEventFactory = eventBeanTypedEventFactory;
@@ -38,7 +39,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public IDictionary<Type, IList<string>> PublicClassToTypeNames { get; }
 
-        public BeanEventTypeStem GetCreateStem(Type clazz, ConfigurationCommonEventTypeBean optionalConfiguration)
+        public BeanEventTypeStem GetCreateStem(
+            Type clazz,
+            ConfigurationCommonEventTypeBean optionalConfiguration)
         {
             var stem = stems.Get(clazz);
             if (stem != null) {

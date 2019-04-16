@@ -7,14 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
 {
-	public interface MethodTargetStrategyFactory {
-	    MethodTargetStrategy Make(AgentInstanceContext agentInstanceContext);
-	}
+    public interface MethodTargetStrategyFactory
+    {
+        MethodTargetStrategy Make(AgentInstanceContext agentInstanceContext);
+    }
 } // end of namespace

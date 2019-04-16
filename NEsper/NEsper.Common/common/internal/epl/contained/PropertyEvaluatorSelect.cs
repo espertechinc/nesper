@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
             set => accumulative = value;
         }
 
-        public EventBean[] GetProperty(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public EventBean[] GetProperty(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var rows = accumulative.GetAccumulative(theEvent, exprEvaluatorContext);
             if (rows == null || rows.IsEmpty()) {

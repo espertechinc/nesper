@@ -28,13 +28,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public abstract ExprEvaluator ExprEvaluator { get; }
 
         public abstract CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         public abstract ExprForgeConstantType ForgeConstantType { get; }
 
         public abstract CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;

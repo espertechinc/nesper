@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             return buffer.ToString();
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             if (EventAsName != null) {
                 writer.Write(EventAsName);
@@ -131,8 +131,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         }
 
         protected override void InlineCodegen(
-            CodegenMethod method, 
-            SAIFFInitializeSymbol symbols, 
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, 
+            IList<FilterSpecCompiled> filters,
             IList<ScheduleHandleCallbackProvider> schedules)
         {
             filters.Add(filterSpec);

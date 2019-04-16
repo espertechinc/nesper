@@ -15,7 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     public class TableLookupKeyDesc
     {
         public TableLookupKeyDesc(
-            IList<QueryGraphValueEntryHashKeyedForge> hashes, IList<QueryGraphValueEntryRangeForge> ranges)
+            IList<QueryGraphValueEntryHashKeyedForge> hashes,
+            IList<QueryGraphValueEntryRangeForge> ranges)
         {
             Hashes = hashes;
             Ranges = ranges;

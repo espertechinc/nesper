@@ -6,20 +6,20 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Text;
 
 namespace com.espertech.esper.common.@internal.@event.render
 {
     /// <summary>
-    /// Renderer for a String-value into XML strings.
+    ///     Renderer for a String-value into XML strings.
     /// </summary>
     public class OutputValueRendererXMLString : OutputValueRenderer
     {
-        public void Render(Object o, StringBuilder buf)
+        public void Render(
+            object o,
+            StringBuilder buf)
         {
-            if (o == null)
-            {
+            if (o == null) {
                 buf.Append("null");
                 return;
             }
@@ -28,58 +28,51 @@ namespace com.espertech.esper.common.@internal.@event.render
         }
 
         /// <summary>
-        /// XML-Encode the passed string.
+        ///     XML-Encode the passed string.
         /// </summary>
         /// <param name="s">string to encode</param>
         /// <param name="sb">string buffer to populate</param>
         /// <param name="isEncodeSpecialChar">true for encoding of special characters below ' ', false for leaving special chars</param>
-        public static void XmlEncode(String s, StringBuilder sb, bool isEncodeSpecialChar)
+        public static void XmlEncode(
+            string s,
+            StringBuilder sb,
+            bool isEncodeSpecialChar)
         {
-            if (string.IsNullOrEmpty(s))
-            {
+            if (string.IsNullOrEmpty(s)) {
                 return;
             }
 
             char c;
             int i;
-            int len = s.Length;
-            String t;
+            var len = s.Length;
+            string t;
 
-            for (i = 0; i < len; i += 1)
-            {
+            for (i = 0; i < len; i += 1) {
                 c = s[i];
                 // replace literal values with entities
 
-                if (c == '&')
-                {
+                if (c == '&') {
                     sb.Append("&amp;");
                 }
-                else if (c == '<')
-                {
+                else if (c == '<') {
                     sb.Append("&lt;");
                 }
-                else if (c == '>')
-                {
+                else if (c == '>') {
                     sb.Append("&gt;");
                 }
-                else if (c == '\'')
-                {
+                else if (c == '\'') {
                     sb.Append("&apos;");
                 }
-                else if (c == '\"')
-                {
+                else if (c == '\"') {
                     sb.Append("&quot;");
                 }
-                else
-                {
-                    if ((c < ' ') && (isEncodeSpecialChar))
-                    {
-                        t = "000" + ((short)c).ToString("x2");
+                else {
+                    if (c < ' ' && isEncodeSpecialChar) {
+                        t = "000" + ((short) c).ToString("x2");
                         sb.Append("\\u");
                         sb.Append(t.Substring(t.Length - 4));
                     }
-                    else
-                    {
+                    else {
                         sb.Append(c);
                     }
                 }

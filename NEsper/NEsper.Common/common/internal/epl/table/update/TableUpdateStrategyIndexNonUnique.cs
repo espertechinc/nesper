@@ -24,14 +24,17 @@ namespace com.espertech.esper.common.@internal.epl.table.update
         private readonly EventBeanUpdateHelperNoCopy updateHelper;
 
         public TableUpdateStrategyIndexNonUnique(
-            EventBeanUpdateHelperNoCopy updateHelper, ISet<string> affectedIndexNames)
+            EventBeanUpdateHelperNoCopy updateHelper,
+            ISet<string> affectedIndexNames)
         {
             this.updateHelper = updateHelper;
             this.affectedIndexNames = affectedIndexNames;
         }
 
         public void UpdateTable(
-            ICollection<EventBean> eventsUnsafeIter, TableInstance instance, EventBean[] eventsPerStream,
+            ICollection<EventBean> eventsUnsafeIter,
+            TableInstance instance,
+            EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             // copy references to array - as it is allowed to pass an index-originating collection

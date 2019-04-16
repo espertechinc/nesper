@@ -9,7 +9,6 @@
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.lookup;
-
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.service.AdvancedIndexValidationHelper;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
@@ -17,7 +16,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
     public class AdvancedIndexFactoryProviderMXCIFQuadTree : AdvancedIndexFactoryProviderQuadTree
     {
         public override EventAdvancedIndexProvisionCompileTime ValidateEventIndex(
-            string indexName, string indexTypeName, ExprNode[] columns, ExprNode[] parameters)
+            string indexName,
+            string indexTypeName,
+            ExprNode[] columns,
+            ExprNode[] parameters)
         {
             ValidateColumnCount(4, indexTypeName, columns.Length);
             ValidateColumnReturnTypeNumber(indexTypeName, 0, columns[0], AdvancedIndexQuadTreeConstants.COL_X);

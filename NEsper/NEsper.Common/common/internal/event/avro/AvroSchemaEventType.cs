@@ -6,15 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.avro
 {
-	public interface AvroSchemaEventType : EventType {
-	    object Schema { get; }
-	}
+    public interface AvroSchemaEventType : EventType
+    {
+        object Schema { get; }
+    }
 } // end of namespace

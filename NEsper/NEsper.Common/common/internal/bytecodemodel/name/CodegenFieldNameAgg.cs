@@ -10,15 +10,16 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.name
 {
-	public class CodegenFieldNameAgg : CodegenFieldName {
+    public class CodegenFieldNameAgg : CodegenFieldName
+    {
+        public readonly static CodegenFieldNameAgg INSTANCE = new CodegenFieldNameAgg();
 
-	    public readonly static CodegenFieldNameAgg INSTANCE = new CodegenFieldNameAgg();
+        private CodegenFieldNameAgg()
+        {
+        }
 
-	    private CodegenFieldNameAgg() {
-	    }
-
-	    public string Name {
-	        get => CodegenPackageScopeNames.AggTop();
-	    }
-	}
+        public string Name {
+            get => CodegenPackageScopeNames.AggTop();
+        }
+    }
 } // end of namespace

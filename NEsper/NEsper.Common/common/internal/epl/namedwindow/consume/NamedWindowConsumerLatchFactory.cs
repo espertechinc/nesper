@@ -37,8 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         /// <param name="initializeNow">for initializing</param>
         /// <param name="enabled">for active indicator</param>
         public NamedWindowConsumerLatchFactory(
-            string name, bool enabled, long msecWait, Locking locking,
-            TimeSourceService timeSourceService, bool initializeNow)
+            string name,
+            bool enabled,
+            long msecWait,
+            Locking locking,
+            TimeSourceService timeSourceService,
+            bool initializeNow)
         {
             this.name = name;
             this.enabled = enabled;

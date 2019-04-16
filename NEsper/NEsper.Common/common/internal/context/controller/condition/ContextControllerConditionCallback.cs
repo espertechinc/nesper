@@ -53,11 +53,11 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             IDictionary<string, object> optionalPatternForInclusiveEval)
         {
             ProcRangeNotification(
-                conditionPath, 
-                originEndpoint, 
-                optionalTriggeringEvent, 
+                conditionPath,
+                originEndpoint,
+                optionalTriggeringEvent,
                 optionalTriggeringPattern,
-                optionalTriggeringEventPattern, 
+                optionalTriggeringEventPattern,
                 optionalPatternForInclusiveEval);
         }
     }

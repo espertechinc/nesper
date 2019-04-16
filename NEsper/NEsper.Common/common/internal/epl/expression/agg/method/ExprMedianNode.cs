@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
     /// </summary>
     public class ExprMedianNode : ExprAggregateNodeBase
     {
-        public ExprMedianNode(bool distinct) : base(distinct)
+        public ExprMedianNode(bool distinct)
+            : base(distinct)
         {
         }
 

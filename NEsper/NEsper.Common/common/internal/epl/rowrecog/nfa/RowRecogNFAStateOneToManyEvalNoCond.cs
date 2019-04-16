@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
     {
         private ExprEvaluator expression;
 
-        public override bool Matches(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext)
+        public override bool Matches(
+            EventBean[] eventsPerStream,
+            AgentInstanceContext agentInstanceContext)
         {
             return true;
         }

@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class EnumValue
     {
-        public EnumValue(Type enumClass, FieldInfo enumField)
+        public EnumValue(
+            Type enumClass,
+            FieldInfo enumField)
         {
             EnumClass = enumClass;
             EnumField = enumField;

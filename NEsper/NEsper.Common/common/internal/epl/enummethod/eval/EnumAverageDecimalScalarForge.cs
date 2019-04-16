@@ -23,8 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     {
         private readonly MathContext optionalMathContext;
 
-        public EnumAverageDecimalScalarForge(int streamCountIncoming, MathContext optionalMathContext) : base(
-            streamCountIncoming)
+        public EnumAverageDecimalScalarForge(
+            int streamCountIncoming,
+            MathContext optionalMathContext)
+            : base(
+                streamCountIncoming)
         {
             this.optionalMathContext = optionalMathContext;
         }
@@ -32,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public override EnumEval EnumEvaluator => this;
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var agg = new EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal(optionalMathContext);
 
@@ -49,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override CodegenExpression Codegen(
-            EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             CodegenExpression math =
                 codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(optionalMathContext));

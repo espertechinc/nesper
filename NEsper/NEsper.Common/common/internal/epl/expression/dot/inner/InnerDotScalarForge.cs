@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,58 +16,69 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
-	public class InnerDotScalarForge : ExprDotEvalRootChildInnerForge {
+    public class InnerDotScalarForge : ExprDotEvalRootChildInnerForge
+    {
+        private ExprForge rootForge;
 
-	    private ExprForge rootForge;
+        public InnerDotScalarForge(ExprForge rootForge)
+        {
+            this.rootForge = rootForge;
+        }
 
-	    public InnerDotScalarForge(ExprForge rootForge) {
-	        this.rootForge = rootForge;
-	    }
+        public ExprDotEvalRootChildInnerEval InnerEvaluator {
+            get => new InnerDotScalarEval(rootForge.ExprEvaluator);
+        }
 
-	    public ExprDotEvalRootChildInnerEval InnerEvaluator
-	    {
-	        get => new InnerDotScalarEval(rootForge.ExprEvaluator);
-	    }
+        public CodegenExpression CodegenEvaluate(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return rootForge.EvaluateCodegen(rootForge.EvaluationType, parentMethod, exprSymbol, codegenClassScope);
+        }
 
-	    public CodegenExpression CodegenEvaluate(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return rootForge.EvaluateCodegen(rootForge.EvaluationType, parentMethod, exprSymbol, codegenClassScope);
-	    }
+        public CodegenExpression EvaluateGetROCollectionEventsCodegen(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EvaluateGetROCollectionEventsCodegen(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public CodegenExpression EvaluateGetROCollectionScalarCodegen(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EvaluateGetROCollectionScalarCodegen(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public CodegenExpression EvaluateGetEventBeanCodegen(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EvaluateGetEventBeanCodegen(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public EventType EventTypeCollection {
+            get => null;
+        }
 
-	    public EventType EventTypeCollection
-	    {
-	        get => null;
-	    }
+        public Type ComponentTypeCollection {
+            get => null;
+        }
 
-	    public Type ComponentTypeCollection
-	    {
-	        get => null;
-	    }
+        public EventType EventTypeSingle {
+            get => null;
+        }
 
-	    public EventType EventTypeSingle
-	    {
-	        get => null;
-	    }
-
-	    public EPType TypeInfo
-	    {
-	        get => EPTypeHelper.SingleValue(rootForge.EvaluationType);
-	    }
-	}
+        public EPType TypeInfo {
+            get => EPTypeHelper.SingleValue(rootForge.EvaluationType);
+        }
+    }
 } // end of namespace

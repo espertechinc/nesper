@@ -41,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
             set => FragmentEventType = value;
         }
 
-        public EventBean[] GetProperty(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public EventBean[] GetProperty(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             try {
                 var result = containedEventEval.GetFragment(theEvent, new[] {theEvent}, exprEvaluatorContext);

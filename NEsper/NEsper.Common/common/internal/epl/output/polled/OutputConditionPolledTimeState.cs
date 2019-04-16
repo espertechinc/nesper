@@ -8,13 +8,13 @@
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
-	public sealed class OutputConditionPolledTimeState : OutputConditionPolledState
-	{
-	    public OutputConditionPolledTimeState(long? lastUpdate)
+    public sealed class OutputConditionPolledTimeState : OutputConditionPolledState
+    {
+        public OutputConditionPolledTimeState(long? lastUpdate)
         {
-	        LastUpdate = lastUpdate;
-	    }
+            LastUpdate = lastUpdate;
+        }
 
-	    public long? LastUpdate { get; set; }
-	}
+        public long? LastUpdate { get; set; }
+    }
 } // end of namespace

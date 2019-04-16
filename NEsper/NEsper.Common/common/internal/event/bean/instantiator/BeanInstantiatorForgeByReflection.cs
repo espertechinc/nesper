@@ -8,16 +8,15 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.logging;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 {
-    public class BeanInstantiatorForgeByReflection : BeanInstantiatorForge, BeanInstantiator
+    public class BeanInstantiatorForgeByReflection : BeanInstantiatorForge,
+        BeanInstantiator
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -30,30 +29,28 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 
         public object Instantiate()
         {
-            try
-            {
+            try {
                 return method.Invoke(null, null);
             }
-            catch (TargetException e)
-            {
-                string message = "Unexpected exception encountered invoking factory method '" + method.Name + "' on class '" + method.DeclaringType.Name + "': " + e.InnerException.Message;
+            catch (TargetException e) {
+                var message = "Unexpected exception encountered invoking factory method '" + method.Name + "' on class '" +
+                              method.DeclaringType.Name + "': " + e.InnerException.Message;
                 Log.Error(message, e);
                 return null;
             }
-            catch (MemberAccessException ex)
-            {
-                string message = "Unexpected exception encountered invoking factory method '" + method.Name + "' on class '" + method.DeclaringType.Name + "': " + ex.Message;
+            catch (MemberAccessException ex) {
+                var message = "Unexpected exception encountered invoking factory method '" + method.Name + "' on class '" +
+                              method.DeclaringType.Name + "': " + ex.Message;
                 Log.Error(message, ex);
                 return null;
             }
         }
 
-        public BeanInstantiator BeanInstantiator
-        {
-            get => this;
-        }
+        public BeanInstantiator BeanInstantiator => this;
 
-        public CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope codegenClassScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope codegenClassScope)
         {
             return StaticMethod(method.DeclaringType, method.Name);
         }

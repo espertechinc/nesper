@@ -7,35 +7,32 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
-	/// <summary>
-	/// Shortcut-evaluator for use with POJO-backed events only.
-	/// </summary>
-	public interface BeanEventPropertyGetter : EventPropertyGetterSPI {
-	    /// <summary>
-	    /// Returns the property as an object.
-	    /// </summary>
-	    /// <param name="object">to evaluate</param>
-	    /// <returns>property of object</returns>
-	    /// <throws>PropertyAccessException if access failed</throws>
-	    object GetBeanProp(object @object) ;
+    /// <summary>
+    ///     Shortcut-evaluator for use with POJO-backed events only.
+    /// </summary>
+    public interface BeanEventPropertyGetter : EventPropertyGetterSPI
+    {
+        Type BeanPropType { get; }
 
-	    /// <summary>
-	    /// Returns true if the dynamic property exists.
-	    /// </summary>
-	    /// <param name="object">to evaluate</param>
-	    /// <returns>indicator if property exists</returns>
-	    bool IsBeanExistsProperty(object @object);
+        Type TargetType { get; }
 
-	    Type BeanPropType { get; }
+        /// <summary>
+        ///     Returns the property as an object.
+        /// </summary>
+        /// <param name="object">to evaluate</param>
+        /// <returns>property of object</returns>
+        /// <throws>PropertyAccessException if access failed</throws>
+        object GetBeanProp(object @object);
 
-	    Type TargetType { get; }
-	}
+        /// <summary>
+        ///     Returns true if the dynamic property exists.
+        /// </summary>
+        /// <param name="object">to evaluate</param>
+        /// <returns>indicator if property exists</returns>
+        bool IsBeanExistsProperty(object @object);
+    }
 } // end of namespace

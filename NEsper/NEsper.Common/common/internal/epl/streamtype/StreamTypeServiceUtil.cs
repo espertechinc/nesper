@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
 {
     public class StreamTypeServiceUtil
     {
-        protected internal static Pair<int, string> FindLevMatch(EventType[] eventTypes, string propertyName)
+        protected internal static Pair<int, string> FindLevMatch(
+            EventType[] eventTypes,
+            string propertyName)
         {
             string bestMatch = null;
             var bestMatchDiff = int.MaxValue;
@@ -40,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             return null;
         }
 
-        protected internal static Pair<int, string> FindLevMatch(string propertyName, EventType eventType)
+        protected internal static Pair<int, string> FindLevMatch(
+            string propertyName,
+            EventType eventType)
         {
             string bestMatch = null;
             var bestMatchDiff = int.MaxValue;

@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
     public class DataFlowOpInputPort
     {
         public DataFlowOpInputPort(
-            GraphTypeDesc typeDesc, ICollection<string> streamNames, string optionalAlias, bool hasPunctuationSignal)
+            GraphTypeDesc typeDesc,
+            ICollection<string> streamNames,
+            string optionalAlias,
+            bool hasPunctuationSignal)
         {
             TypeDesc = typeDesc;
             StreamNames = streamNames;

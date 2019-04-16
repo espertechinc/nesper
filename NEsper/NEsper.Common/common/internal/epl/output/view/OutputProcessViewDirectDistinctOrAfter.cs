@@ -33,11 +33,15 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         private readonly OutputProcessViewDirectDistinctOrAfterFactory parent;
 
         public OutputProcessViewDirectDistinctOrAfter(
-            AgentInstanceContext agentInstanceContext, ResultSetProcessor resultSetProcessor, long? afterConditionTime,
-            int? afterConditionNumberOfEvents, bool afterConditionSatisfied,
-            OutputProcessViewDirectDistinctOrAfterFactory parent) : base(
-            agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
-            afterConditionSatisfied)
+            AgentInstanceContext agentInstanceContext,
+            ResultSetProcessor resultSetProcessor,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
+            OutputProcessViewDirectDistinctOrAfterFactory parent)
+            : base(
+                agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
+                afterConditionSatisfied)
         {
             this.parent = parent;
         }
@@ -53,7 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// </summary>
         /// <param name="newData">new events</param>
         /// <param name="oldData">old events</param>
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             var statementResultService = agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
@@ -96,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="newEvents">new events</param>
         /// <param name="oldEvents">old events</param>
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents, 
+            ISet<MultiKey<EventBean>> newEvents,
             ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
@@ -141,7 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         }
 
         protected virtual void PostProcess(
-            bool force, UniformPair<EventBean[]> newOldEvents, UpdateDispatchView childView)
+            bool force,
+            UniformPair<EventBean[]> newOldEvents,
+            UpdateDispatchView childView)
         {
             OutputStrategyUtil.Output(force, newOldEvents, childView);
         }

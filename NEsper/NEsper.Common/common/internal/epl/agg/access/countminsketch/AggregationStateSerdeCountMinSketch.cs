@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.approx.countminsketch;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
@@ -124,8 +123,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             if (hasTopk) {
                 var topkMax = input.ReadInt();
 
-                var topMap = new OrderedDictionary<long, object>(Collections.ReverseOrder());
-                IDictionary<ByteBuffer, long?> refMap = new Dictionary<ByteBuffer, long?>();
+                var topMap = new OrderedDictionary<long, object>(
+                    Comparers.Default<long>().Inverse());
+                var refMap = new Dictionary<ByteBuffer, long>();
                 var numRows = input.ReadInt();
                 for (var i = 0; i < numRows; i++) {
                     var freq = input.ReadLong();
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             DataOutput output,
             ByteBuffer value)
         {
-            byte[] bytes = value.Array();
+            byte[] bytes = value.Array;
             output.WriteInt(bytes.Length);
             output.Write(bytes);
         }
@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             var byteSize = input.ReadInt();
             var bytes = new byte[byteSize];
             input.ReadFully(bytes);
-            return ByteBuffer.Wrap(bytes);
+            return new ByteBuffer(bytes);
         }
     }
 } // end of namespace

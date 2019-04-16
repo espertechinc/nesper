@@ -11,10 +11,10 @@ using System;
 
 namespace com.espertech.esper.common.@internal.view.derived
 {
-	/// <summary>
-	/// Enumerates the valid values for each view's public fields. The name of the field or property can be used
-	/// to obtain values from the view rather than using the hardcoded String value for the field.
-	/// </summary>
+    /// <summary>
+    /// Enumerates the valid values for each view's public fields. The name of the field or property can be used
+    /// to obtain values from the view rather than using the hardcoded String value for the field.
+    /// </summary>
     public enum ViewFieldEnum
     {
         /// <summary> Count.</summary>
@@ -106,8 +106,7 @@ namespace com.espertech.esper.common.@internal.view.derived
     {
         public static string GetName(this ViewFieldEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS:
                     return ("datapoints");
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL:

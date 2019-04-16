@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     {
         public static SubordinateQueryPlannerIndexPropListPair ToListOfHashedAndBtreeProps(
             string[] hashIndexPropsProvided,
-            Type[] hashIndexCoercionType, 
+            Type[] hashIndexCoercionType,
             string[] rangeIndexPropsProvided,
             Type[] rangeIndexCoercionType)
         {
@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         public static void QueryPlanLogOnExpr(
-            bool queryPlanLogging, 
-            ILog queryPlanLog, 
+            bool queryPlanLogging,
+            ILog queryPlanLog,
             SubordinateWMatchExprQueryPlanForge strategy,
             Attribute[] annotations,
             ImportService importService)
@@ -79,11 +79,11 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         public static void QueryPlanLogOnSubq(
-            bool queryPlanLogging, 
-            ILog queryPlanLog, 
+            bool queryPlanLogging,
+            ILog queryPlanLog,
             SubordinateQueryPlanDescForge plan,
             int subqueryNum,
-            Attribute[] annotations, 
+            Attribute[] annotations,
             ImportService importService)
         {
             QueryPlanIndexHook hook = QueryPlanIndexHookUtil.GetHook(annotations, importService);

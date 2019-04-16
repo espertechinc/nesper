@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using com.espertech.esper.common.client;
@@ -19,8 +18,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -35,9 +33,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         private readonly MethodInfo method;
 
         public ListMethodPropertyGetter(
-            MethodInfo method, int index, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BeanEventTypeFactory beanEventTypeFactory) : base(
-            eventBeanTypedEventFactory, beanEventTypeFactory, TypeHelper.GetGenericReturnType(method, false), null)
+            MethodInfo method,
+            int index,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
+            : base(
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                TypeHelper.GetGenericReturnType(method, false),
+                null)
         {
             this.index = index;
             this.method = method;
@@ -73,7 +77,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public override Type TargetType => method.DeclaringType;
 
         public override CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -81,14 +86,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
@@ -97,18 +104,23 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
-        public object Get(EventBean eventBean, int index)
+        public object Get(
+            EventBean eventBean,
+            int index)
         {
             return GetBeanPropInternal(eventBean.Underlying, index);
         }
 
-        public object GetBeanPropInternal(object @object, int index)
+        public object GetBeanPropInternal(
+            object @object,
+            int index)
         {
             try {
                 var value = method.Invoke(@object, null);
@@ -123,16 +135,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
                 return valueList[index];
             }
-            catch (ClassCastException e) {
+            catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(method, @object, e);
             }
         }
 
         private static CodegenMethod GetBeanPropInternalCodegen(
-            CodegenMethodScope codegenMethodScope, Type beanPropType, Type targetType, MethodInfo method,
+            CodegenMethodScope codegenMethodScope,
+            Type beanPropType,
+            Type targetType,
+            MethodInfo method,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(beanPropType, typeof(ListMethodPropertyGetter), codegenClassScope)
+            return codegenMethodScope
+                .MakeChild(beanPropType, typeof(ListMethodPropertyGetter), codegenClassScope)
                 .AddParam(targetType, "object").AddParam(typeof(int), "index").Block
                 .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("object"), method.Name))
                 .IfRefNotTypeReturnConst("value", typeof(IList<object>), null)
@@ -149,8 +165,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope,
-            CodegenExpression beanExpression, CodegenExpression key)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            CodegenExpression beanExpression,
+            CodegenExpression key)
         {
             return LocalMethod(
                 GetBeanPropInternalCodegen(codegenMethodScope, BeanPropType, TargetType, method, codegenClassScope),

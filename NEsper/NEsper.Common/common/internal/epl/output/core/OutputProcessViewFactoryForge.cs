@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.schedule;
@@ -18,13 +17,22 @@ namespace com.espertech.esper.common.@internal.epl.output.core
     {
         bool IsCodeGenerated { get; }
 
-        void ProvideCodegen(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        void ProvideCodegen(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
-        void UpdateCodegen(CodegenMethod method, CodegenClassScope classScope);
+        void UpdateCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
-        void ProcessCodegen(CodegenMethod method, CodegenClassScope classScope);
+        void ProcessCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
-        void IteratorCodegen(CodegenMethod method, CodegenClassScope classScope);
+        void IteratorCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders);
     }

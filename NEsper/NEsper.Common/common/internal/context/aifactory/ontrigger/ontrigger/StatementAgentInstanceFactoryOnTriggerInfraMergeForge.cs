@@ -30,11 +30,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         private readonly InfraOnMergeHelperForge mergeHelperForge;
 
         public StatementAgentInstanceFactoryOnTriggerInfraMergeForge(
-            ViewableActivatorForge activator, EventType resultEventType,
+            ViewableActivatorForge activator,
+            EventType resultEventType,
             IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects,
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccesses,
-            string nonSelectRSPProviderClassName, NamedWindowMetaData namedWindow, TableMetaData table,
-            SubordinateWMatchExprQueryPlanForge queryPlanForge, InfraOnMergeHelperForge mergeHelperForge)
+            string nonSelectRSPProviderClassName,
+            NamedWindowMetaData namedWindow,
+            TableMetaData table,
+            SubordinateWMatchExprQueryPlanForge queryPlanForge,
+            InfraOnMergeHelperForge mergeHelperForge)
             : base(
                 activator, resultEventType, subselects, tableAccesses, nonSelectRSPProviderClassName, namedWindow,
                 table, queryPlanForge)
@@ -49,7 +53,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         protected override void InlineInitializeOnTriggerSpecific(
-            CodegenExpressionRef saiff, CodegenMethod method, SAIFFInitializeSymbol symbols,
+            CodegenExpressionRef saiff,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block

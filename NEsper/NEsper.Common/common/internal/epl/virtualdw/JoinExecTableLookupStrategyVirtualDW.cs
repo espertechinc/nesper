@@ -33,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         private readonly string namedWindowName;
 
         public JoinExecTableLookupStrategyVirtualDW(
-            string namedWindowName, VirtualDataWindowLookup externalIndex, TableLookupPlan tableLookupPlan)
+            string namedWindowName,
+            VirtualDataWindowLookup externalIndex,
+            TableLookupPlan tableLookupPlan)
         {
             this.namedWindowName = namedWindowName;
             this.externalIndex = externalIndex;
@@ -77,7 +79,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public LookupStrategyDesc StrategyDesc => new LookupStrategyDesc(LookupStrategyType.VDW);
 
-        public ISet<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean theEvent,
+            Cursor cursor,
+            ExprEvaluatorContext context)
         {
             eventsPerStream[lookupStream] = theEvent;
 
@@ -109,39 +114,47 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             return GetType().GetSimpleName() + " external index " + externalIndex;
         }
 
-        private interface ExternalEvaluator
+        internal interface ExternalEvaluator
         {
-            object Evaluate(EventBean[] events, ExprEvaluatorContext context);
+            object Evaluate(
+                EventBean[] events,
+                ExprEvaluatorContext context);
         }
 
-        private class ExternalEvaluatorHashRelOp : ExternalEvaluator
+        internal class ExternalEvaluatorHashRelOp : ExternalEvaluator
         {
             private readonly ExprEvaluator hashKeysEval;
 
-            private ExternalEvaluatorHashRelOp(ExprEvaluator hashKeysEval)
+            internal ExternalEvaluatorHashRelOp(ExprEvaluator hashKeysEval)
             {
                 this.hashKeysEval = hashKeysEval;
             }
 
-            public object Evaluate(EventBean[] events, ExprEvaluatorContext context)
+            public object Evaluate(
+                EventBean[] events,
+                ExprEvaluatorContext context)
             {
                 return hashKeysEval.Evaluate(events, true, context);
             }
         }
 
-        private class ExternalEvaluatorBtreeRange : ExternalEvaluator
+        internal class ExternalEvaluatorBtreeRange : ExternalEvaluator
         {
             private readonly ExprEvaluator endEval;
 
             private readonly ExprEvaluator startEval;
 
-            private ExternalEvaluatorBtreeRange(ExprEvaluator startEval, ExprEvaluator endEval)
+            internal ExternalEvaluatorBtreeRange(
+                ExprEvaluator startEval,
+                ExprEvaluator endEval)
             {
                 this.startEval = startEval;
                 this.endEval = endEval;
             }
 
-            public object Evaluate(EventBean[] events, ExprEvaluatorContext context)
+            public object Evaluate(
+                EventBean[] events,
+                ExprEvaluatorContext context)
             {
                 var start = startEval.Evaluate(events, true, context);
                 var end = endEval.Evaluate(events, true, context);

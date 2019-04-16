@@ -15,22 +15,23 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
     public class VirtualDataWindowLookupContextSPI : VirtualDataWindowLookupContext
     {
         public VirtualDataWindowLookupContextSPI(
-            string deploymentId, 
-            string statementName, 
-            int statementId, 
+            string deploymentId,
+            string statementName,
+            int statementId,
             Attribute[] statementAnnotations,
-            bool isFireAndForget, 
+            bool isFireAndForget,
             string namedWindowName,
             IList<VirtualDataWindowLookupFieldDesc> hashFields,
             IList<VirtualDataWindowLookupFieldDesc> btreeFields,
             int accessedByStatementSequenceNum)
-            : base(deploymentId, 
-                statementName, 
-                statementId, 
+            : base(
+                deploymentId,
+                statementName,
+                statementId,
                 statementAnnotations,
-                isFireAndForget, 
+                isFireAndForget,
                 namedWindowName,
-                hashFields, 
+                hashFields,
                 btreeFields)
         {
             AccessedByStatementSequenceNum = accessedByStatementSequenceNum;

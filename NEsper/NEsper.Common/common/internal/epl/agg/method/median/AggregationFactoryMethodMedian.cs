@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -21,39 +20,52 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.median
 {
-	public class AggregationFactoryMethodMedian : AggregationFactoryMethodBase {
-	    protected internal readonly ExprMedianNode parent;
-	    protected internal readonly Type aggregatedValueType;
-	    private AggregatorMethod aggregator;
+    public class AggregationFactoryMethodMedian : AggregationFactoryMethodBase
+    {
+        protected internal readonly ExprMedianNode parent;
+        protected internal readonly Type aggregatedValueType;
+        private AggregatorMethod aggregator;
 
-	    public AggregationFactoryMethodMedian(ExprMedianNode parent, Type aggregatedValueType) {
-	        this.parent = parent;
-	        this.aggregatedValueType = aggregatedValueType;
-	    }
+        public AggregationFactoryMethodMedian(
+            ExprMedianNode parent,
+            Type aggregatedValueType)
+        {
+            this.parent = parent;
+            this.aggregatedValueType = aggregatedValueType;
+        }
 
-	    public override Type ResultType {
-	        get => typeof(double?);
-	    }
+        public override Type ResultType {
+            get => typeof(double?);
+        }
 
-	    public override void InitMethodForge(int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope) {
-	        Type distinctType = !parent.IsDistinct ? null : aggregatedValueType;
-	        aggregator = new AggregatorMedian(this, col, rowCtor, membersColumnized, classScope, distinctType, parent.HasFilter, parent.OptionalFilter);
-	    }
+        public override void InitMethodForge(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
+        {
+            Type distinctType = !parent.IsDistinct ? null : aggregatedValueType;
+            aggregator = new AggregatorMedian(
+                this, col, rowCtor, membersColumnized, classScope, distinctType, parent.HasFilter, parent.OptionalFilter);
+        }
 
-	    public override AggregatorMethod Aggregator {
-	        get => aggregator;
-	    }
+        public override AggregatorMethod Aggregator {
+            get => aggregator;
+        }
 
-	    public override ExprAggregateNodeBase AggregationExpression {
-	        get => parent;
-	    }
+        public override ExprAggregateNodeBase AggregationExpression {
+            get => parent;
+        }
 
-	    public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream) {
-	        return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
-	    }
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
+        }
 
-	    public override AggregationPortableValidation AggregationPortableValidation {
-	        get => new AggregationPortableValidationMedian(parent.IsDistinct, parent.HasFilter, aggregatedValueType);
-	    }
-	}
+        public override AggregationPortableValidation AggregationPortableValidation {
+            get => new AggregationPortableValidationMedian(parent.IsDistinct, parent.HasFilter, aggregatedValueType);
+        }
+    }
 } // end of namespace

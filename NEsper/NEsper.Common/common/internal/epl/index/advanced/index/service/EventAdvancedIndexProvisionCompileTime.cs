@@ -10,7 +10,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityQuery;
 
@@ -19,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
     public class EventAdvancedIndexProvisionCompileTime
     {
         public EventAdvancedIndexProvisionCompileTime(
-            AdvancedIndexDescWExpr indexDesc, ExprNode[] parameters, EventAdvancedIndexFactoryForge factory,
+            AdvancedIndexDescWExpr indexDesc,
+            ExprNode[] parameters,
+            EventAdvancedIndexFactoryForge factory,
             EventAdvancedIndexConfigStatementForge configStatement)
         {
             IndexDesc = indexDesc;
@@ -36,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
 
         public EventAdvancedIndexConfigStatementForge ConfigStatement { get; }
 
-        public CodegenExpression CodegenMake(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenExpression CodegenMake(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
                 typeof(EventAdvancedIndexProvisionRuntime), typeof(EventAdvancedIndexProvisionCompileTime), classScope);

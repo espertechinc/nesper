@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
         private readonly XmlNode @event;
         private readonly string typeName;
 
-        public SendableEventXML(XmlNode @event, string typeName)
+        public SendableEventXML(
+            XmlNode @event,
+            string typeName)
         {
             this.@event = @event;
             this.typeName = typeName;

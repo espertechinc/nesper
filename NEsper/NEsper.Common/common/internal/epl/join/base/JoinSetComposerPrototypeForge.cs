@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,45 +16,59 @@ using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.@base
 {
-	public abstract class JoinSetComposerPrototypeForge {
-	    private readonly EventType[] streamTypes;
-	    private readonly ExprNode postJoinEvaluator;
-	    private readonly bool outerJoins;
+    public abstract class JoinSetComposerPrototypeForge
+    {
+        private readonly EventType[] streamTypes;
+        private readonly ExprNode postJoinEvaluator;
+        private readonly bool outerJoins;
 
-	    protected abstract Type Implementation();
+        protected abstract Type Implementation();
 
-	    protected abstract void PopulateInline(CodegenExpression impl, CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        protected abstract void PopulateInline(
+            CodegenExpression impl,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
-	    public abstract QueryPlanForge OptionalQueryPlan { get; }
+        public abstract QueryPlanForge OptionalQueryPlan { get; }
 
-	    protected JoinSetComposerPrototypeForge(EventType[] streamTypes, ExprNode postJoinEvaluator, bool outerJoins) {
-	        this.streamTypes = streamTypes;
-	        this.postJoinEvaluator = postJoinEvaluator;
-	        this.outerJoins = outerJoins;
-	    }
+        protected JoinSetComposerPrototypeForge(
+            EventType[] streamTypes,
+            ExprNode postJoinEvaluator,
+            bool outerJoins)
+        {
+            this.streamTypes = streamTypes;
+            this.postJoinEvaluator = postJoinEvaluator;
+            this.outerJoins = outerJoins;
+        }
 
-	    public CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        CodegenMethod method = parent.MakeChild(Implementation(), this.GetType(), classScope);
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            CodegenMethod method = parent.MakeChild(Implementation(), this.GetType(), classScope);
 
-	        method.Block
-	                .DeclareVar(Implementation(), "impl", NewInstance(Implementation()))
-	                .ExprDotMethod(@Ref("impl"), "setStreamTypes", EventTypeUtility.ResolveTypeArrayCodegen(streamTypes, symbols.GetAddInitSvc(method)))
-	                .ExprDotMethod(@Ref("impl"), "setOuterJoins", Constant(outerJoins));
+            method.Block
+                .DeclareVar(Implementation(), "impl", NewInstance(Implementation()))
+                .ExprDotMethod(@Ref("impl"), "setStreamTypes", EventTypeUtility.ResolveTypeArrayCodegen(streamTypes, symbols.GetAddInitSvc(method)))
+                .ExprDotMethod(@Ref("impl"), "setOuterJoins", Constant(outerJoins));
 
-	        if (postJoinEvaluator != null) {
-	            method.Block.ExprDotMethod(@Ref("impl"), "setPostJoinFilterEvaluator", ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(postJoinEvaluator.Forge, method, this.GetType(), classScope));
-	        }
+            if (postJoinEvaluator != null) {
+                method.Block.ExprDotMethod(
+                    @Ref("impl"), "setPostJoinFilterEvaluator",
+                    ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(postJoinEvaluator.Forge, method, this.GetType(), classScope));
+            }
 
-	        PopulateInline(@Ref("impl"), method, symbols, classScope);
+            PopulateInline(@Ref("impl"), method, symbols, classScope);
 
-	        method.Block.MethodReturn(@Ref("impl"));
+            method.Block.MethodReturn(@Ref("impl"));
 
-	        return LocalMethod(method);
-	    }
-	}
+            return LocalMethod(method);
+        }
+    }
 } // end of namespace

@@ -93,7 +93,9 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public ExprEvaluator ExpressionYEval { get; }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, viewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(viewFactory, newData, oldData);
@@ -193,7 +195,10 @@ namespace com.espertech.esper.common.@internal.view.derived
         /// <param name="decoration">decoration values</param>
         /// <returns>bean</returns>
         protected internal abstract EventBean PopulateMap(
-            BaseStatisticsBean baseStatisticsBean, EventBeanTypedEventFactory eventAdapterService,
-            EventType eventType, StatViewAdditionalPropsEval additionalProps, object[] decoration);
+            BaseStatisticsBean baseStatisticsBean,
+            EventBeanTypedEventFactory eventAdapterService,
+            EventType eventType,
+            StatViewAdditionalPropsEval additionalProps,
+            object[] decoration);
     }
 } // end of namespace

@@ -18,14 +18,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenExpression _left;
         private readonly CodegenExpression _right;
 
-        public CodegenExpressionOp(CodegenExpression left, string expressionText, CodegenExpression right)
+        public CodegenExpressionOp(
+            CodegenExpression left,
+            string expressionText,
+            CodegenExpression right)
         {
             _left = left;
             _expressionText = expressionText;
             _right = right;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("(");
             _left.Render(builder, imports, isInnerClass);

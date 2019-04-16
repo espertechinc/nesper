@@ -7,45 +7,48 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
-	public class OutputConditionPolledCrontabState : OutputConditionPolledState {
-	    private readonly ScheduleSpec scheduleSpec;
-	    private long? currentReferencePoint;
-	    private long nextScheduledTime;
+    public class OutputConditionPolledCrontabState : OutputConditionPolledState
+    {
+        private readonly ScheduleSpec scheduleSpec;
+        private long? currentReferencePoint;
+        private long nextScheduledTime;
 
-	    public OutputConditionPolledCrontabState(ScheduleSpec scheduleSpec, long? currentReferencePoint, long nextScheduledTime) {
-	        this.scheduleSpec = scheduleSpec;
-	        this.currentReferencePoint = currentReferencePoint;
-	        this.nextScheduledTime = nextScheduledTime;
-	    }
+        public OutputConditionPolledCrontabState(
+            ScheduleSpec scheduleSpec,
+            long? currentReferencePoint,
+            long nextScheduledTime)
+        {
+            this.scheduleSpec = scheduleSpec;
+            this.currentReferencePoint = currentReferencePoint;
+            this.nextScheduledTime = nextScheduledTime;
+        }
 
-	    public ScheduleSpec ScheduleSpec
-	    {
-	        get => scheduleSpec;
-	    }
+        public ScheduleSpec ScheduleSpec {
+            get => scheduleSpec;
+        }
 
-	    public long? CurrentReferencePoint
-	    {
-	        get => currentReferencePoint;
-	    }
+        public long? CurrentReferencePoint {
+            get => currentReferencePoint;
+        }
 
-	    public void SetCurrentReferencePoint(long? currentReferencePoint) {
-	        this.currentReferencePoint = currentReferencePoint;
-	    }
+        public void SetCurrentReferencePoint(long? currentReferencePoint)
+        {
+            this.currentReferencePoint = currentReferencePoint;
+        }
 
-	    public long NextScheduledTime
-	    {
-	        get => nextScheduledTime;
-	    }
+        public long NextScheduledTime {
+            get => nextScheduledTime;
+        }
 
-	    public void SetNextScheduledTime(long nextScheduledTime) {
-	        this.nextScheduledTime = nextScheduledTime;
-	    }
-	}
+        public void SetNextScheduledTime(long nextScheduledTime)
+        {
+            this.nextScheduledTime = nextScheduledTime;
+        }
+    }
 } // end of namespace

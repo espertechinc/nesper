@@ -10,8 +10,13 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-    /// <summary>Transform event returning the transformed event.</summary>
-    /// <param name="@event">event to transform</param>
-    /// <returns>transformed event</returns>
-    public delegate EventBean TransformEventMethod(EventBean @event);
+    public interface TransformEventMethod
+    {
+        /// <summary>
+        /// Transform event returning the transformed event.
+        /// </summary>
+        /// <param name="theEvent">event to transform</param>
+        /// <returns>transformed event</returns>
+        EventBean Transform(EventBean theEvent);
+    }
 } // End of namespace

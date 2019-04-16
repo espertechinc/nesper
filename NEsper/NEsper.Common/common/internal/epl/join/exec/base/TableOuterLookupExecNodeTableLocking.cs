@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.threading.locks;
@@ -19,8 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         private readonly ILockable @lock;
 
         public TableOuterLookupExecNodeTableLocking(
-            int indexedStream, 
-            JoinExecTableLookupStrategy lookupStrategy, 
+            int indexedStream,
+            JoinExecTableLookupStrategy lookupStrategy,
             ILockable @lock)
             : base(indexedStream, lookupStrategy)
         {
@@ -28,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         }
 
         public override void Process(
-            EventBean lookupEvent, EventBean[] prefillPath, ICollection<EventBean[]> result,
+            EventBean lookupEvent,
+            EventBean[] prefillPath,
+            ICollection<EventBean[]> result,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             // acquire table index lock
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             }
 
             // lookup events
-            ISet<EventBean> joinedEvents = lookupStrategy.Lookup(lookupEvent, null, exprEvaluatorContext);
+            var joinedEvents = lookupStrategy.Lookup(lookupEvent, null, exprEvaluatorContext);
 
             // process results
             base.ProcessResults(prefillPath, result, joinedEvents);

@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         }
 
         public TimePeriodCompute Evaluator =>
-            new TimePeriodComputeConstGivenCalAddEval(adders, added, timeAbacus, indexMicroseconds, TimeZoneInfo.Default);
+            new TimePeriodComputeConstGivenCalAddEval(adders, added, timeAbacus, indexMicroseconds, TimeZoneInfo.Local);
 
         public CodegenExpression MakeEvaluator(
             CodegenMethodScope parent,

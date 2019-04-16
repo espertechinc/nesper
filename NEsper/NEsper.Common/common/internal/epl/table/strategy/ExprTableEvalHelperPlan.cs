@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.compat.collections;
 
@@ -15,12 +14,13 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 {
     public class ExprTableEvalHelperPlan
     {
-        public static IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> PlanTableAccess(ICollection<ExprTableAccessNode> tableAccessNodes)
+        public static IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> PlanTableAccess(
+            ICollection<ExprTableAccessNode> tableAccessNodes)
         {
-            IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges = new LinkedHashMap<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge>();
+            IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges =
+                new LinkedHashMap<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge>();
 
-            foreach (ExprTableAccessNode entry in tableAccessNodes)
-            {
+            foreach (ExprTableAccessNode entry in tableAccessNodes) {
                 ExprTableEvalStrategyFactoryForge forge = entry.TableAccessFactoryForge;
                 tableAccessForges.Put(entry, forge);
             }

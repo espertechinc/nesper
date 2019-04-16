@@ -7,81 +7,81 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.hook.type;
 using com.espertech.esper.common.client.util;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
-	/// <summary>
-	/// Event representation metadata.
-	/// </summary>
-	[Serializable]
-	public class ConfigurationCommonEventTypeMeta
-	{
-	    private PropertyResolutionStyle _classPropertyResolutionStyle;
-	    private AccessorStyle _defaultAccessorStyle;
-	    private EventUnderlyingType _defaultEventRepresentation;
-	    private ConfigurationCommonEventTypeMeta.AvroSettingsConfig _avroSettings;
+    /// <summary>
+    /// Event representation metadata.
+    /// </summary>
+    [Serializable]
+    public class ConfigurationCommonEventTypeMeta
+    {
+        private PropertyResolutionStyle _classPropertyResolutionStyle;
+        private AccessorStyle _defaultAccessorStyle;
+        private EventUnderlyingType _defaultEventRepresentation;
+        private ConfigurationCommonEventTypeMeta.AvroSettingsConfig _avroSettings;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    public ConfigurationCommonEventTypeMeta() {
-	        this._classPropertyResolutionStyle = PropertyResolutionStyle.DEFAULT;
-	        this._defaultAccessorStyle = AccessorStyle.NATIVE;
-	        this._defaultEventRepresentation = EventUnderlyingType.Default;
-	        this._avroSettings = new AvroSettingsConfig();
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        public ConfigurationCommonEventTypeMeta()
+        {
+            this._classPropertyResolutionStyle = PropertyResolutionStyle.DEFAULT;
+            this._defaultAccessorStyle = AccessorStyle.NATIVE;
+            this._defaultEventRepresentation = EventUnderlyingType.Default;
+            this._avroSettings = new AvroSettingsConfig();
+        }
 
-	    /// <summary>
-	    /// Returns the default accessor style, JavaBean unless changed.
-	    /// </summary>
-	    /// <value>style enum</value>
-	    public AccessorStyle DefaultAccessorStyle {
-	        get => _defaultAccessorStyle;
-	        set => this._defaultAccessorStyle = value;
-	    }
+        /// <summary>
+        /// Returns the default accessor style, JavaBean unless changed.
+        /// </summary>
+        /// <value>style enum</value>
+        public AccessorStyle DefaultAccessorStyle {
+            get => _defaultAccessorStyle;
+            set => this._defaultAccessorStyle = value;
+        }
 
-	    /// <summary>
-	    /// Sets the property resolution style to use for resolving property names
-	    /// of Java classes.
-	    /// </summary>
-	    /// <value>style of property resolution</value>
-	    public PropertyResolutionStyle ClassPropertyResolutionStyle {
-	        set => this._classPropertyResolutionStyle = value;
-	        get => _classPropertyResolutionStyle;
-	    }
+        /// <summary>
+        /// Sets the property resolution style to use for resolving property names
+        /// of Java classes.
+        /// </summary>
+        /// <value>style of property resolution</value>
+        public PropertyResolutionStyle ClassPropertyResolutionStyle {
+            set => this._classPropertyResolutionStyle = value;
+            get => _classPropertyResolutionStyle;
+        }
 
-	    /// <summary>
-	    /// Returns the default event representation.
-	    /// </summary>
-	    /// <value>setting</value>
-	    public EventUnderlyingType DefaultEventRepresentation {
-	        get => _defaultEventRepresentation;
-	        set => this._defaultEventRepresentation = value;
-	    }
+        /// <summary>
+        /// Returns the default event representation.
+        /// </summary>
+        /// <value>setting</value>
+        public EventUnderlyingType DefaultEventRepresentation {
+            get => _defaultEventRepresentation;
+            set => this._defaultEventRepresentation = value;
+        }
 
-	    /// <summary>
-	    /// Returns the Avro settings.
-	    /// </summary>
-	    /// <value>avro settings</value>
-	    public AvroSettingsConfig AvroSettings {
-	        get => _avroSettings;
-	        set => this._avroSettings = value;
-	    }
+        /// <summary>
+        /// Returns the Avro settings.
+        /// </summary>
+        /// <value>avro settings</value>
+        public AvroSettingsConfig AvroSettings {
+            get => _avroSettings;
+            set => this._avroSettings = value;
+        }
 
-	    /// <summary>
+        /// <summary>
         /// Avro settings.
         /// </summary>
         [Serializable]
         public class AvroSettingsConfig
         {
-	        private bool _enableAvro = true;
-	        private bool _enableNativeString = true;
-	        private bool _enableSchemaDefaultNonNull = true;
-	        private string _typeRepresentationMapperClass;
-	        private string _objectValueTypeWidenerFactoryClass;
+            private bool _enableAvro = true;
+            private bool _enableNativeString = true;
+            private bool _enableSchemaDefaultNonNull = true;
+            private string _typeRepresentationMapperClass;
+            private string _objectValueTypeWidenerFactoryClass;
 
             /// <summary>
             /// Returns the indicator whether Avro support is enabled when available (true by default).
@@ -128,5 +128,5 @@ namespace com.espertech.esper.common.client.configuration.common
                 set => this._objectValueTypeWidenerFactoryClass = value;
             }
         }
-	}
+    }
 } // end of namespace

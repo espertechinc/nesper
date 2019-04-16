@@ -22,7 +22,11 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <param name="consumerObject">an object that identifies the consumer, the same instance or the add and for the remove event</param>
         /// <param name="statementName">statement name</param>
         /// <param name="agentInstanceId">agent instance id</param>
-        protected VirtualDataWindowEventConsumerBase(String namedWindowName, Object consumerObject, String statementName, int agentInstanceId)
+        protected VirtualDataWindowEventConsumerBase(
+            String namedWindowName,
+            Object consumerObject,
+            String statementName,
+            int agentInstanceId)
         {
             NamedWindowName = namedWindowName;
             ConsumerObject = consumerObject;

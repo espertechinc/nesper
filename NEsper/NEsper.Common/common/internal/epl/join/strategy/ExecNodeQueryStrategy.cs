@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.join.strategy
         /// <param name="forStream">stream the strategy is for</param>
         /// <param name="numStreams">number of streams in total</param>
         /// <param name="execNode">execution node for building join tuple set</param>
-        public ExecNodeQueryStrategy(int forStream, int numStreams, ExecNode execNode)
+        public ExecNodeQueryStrategy(
+            int forStream,
+            int numStreams,
+            ExecNode execNode)
         {
             ForStream = forStream;
             NumStreams = numStreams;

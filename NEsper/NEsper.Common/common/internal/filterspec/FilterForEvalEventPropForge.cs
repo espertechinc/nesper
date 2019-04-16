@@ -29,8 +29,11 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly string _resultEventProperty;
 
         public FilterForEvalEventPropForge(
-            string resultEventAsName, string resultEventProperty, ExprIdentNodeEvaluator exprIdentNodeEvaluator,
-            bool isMustCoerce, Type coercionType)
+            string resultEventAsName,
+            string resultEventProperty,
+            ExprIdentNodeEvaluator exprIdentNodeEvaluator,
+            bool isMustCoerce,
+            Type coercionType)
         {
             _resultEventAsName = resultEventAsName;
             _resultEventProperty = resultEventProperty;
@@ -43,12 +46,16 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public bool IsConstant => false;
 
-        public object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        public object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext evaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public CodegenExpression MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
             var get = _exprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("event"), method, classScope);

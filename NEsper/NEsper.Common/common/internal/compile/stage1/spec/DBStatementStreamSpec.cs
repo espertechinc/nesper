@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// Specification object for historical data poll via database SQL statement.
     /// </summary>
     [Serializable]
-    public class DBStatementStreamSpec : StreamSpecBase, StreamSpecRaw, StreamSpecCompiled
+    public class DBStatementStreamSpec : StreamSpecBase,
+        StreamSpecRaw,
+        StreamSpecCompiled
     {
         /// <summary>Ctor. </summary>
         /// <param name="optionalStreamName">is a stream name optionally given to stream</param>
@@ -24,7 +26,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="databaseName">is the database name to poll</param>
         /// <param name="sqlWithSubsParams">is the SQL with placeholder parameters</param>
         /// <param name="metadataSQL">is the sample SQL to retrieve statement metadata, if any was supplied</param>
-        public DBStatementStreamSpec(String optionalStreamName, ViewSpec[] viewSpecs, String databaseName, String sqlWithSubsParams, String metadataSQL)
+        public DBStatementStreamSpec(
+            String optionalStreamName,
+            ViewSpec[] viewSpecs,
+            String databaseName,
+            String sqlWithSubsParams,
+            String metadataSQL)
             : base(optionalStreamName, viewSpecs, StreamSpecOptions.DEFAULT)
         {
             DatabaseName = databaseName;

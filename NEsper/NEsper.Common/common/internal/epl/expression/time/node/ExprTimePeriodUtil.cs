@@ -13,12 +13,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 {
     public class ExprTimePeriodUtil
     {
-        public static bool ValidateTime(object timeInSeconds, TimeAbacus timeAbacus)
+        public static bool ValidateTime(
+            object timeInSeconds,
+            TimeAbacus timeAbacus)
         {
             return timeInSeconds != null && timeAbacus.DeltaForSecondsNumber(timeInSeconds) >= 1;
         }
 
-        public static string GetTimeInvalidMsg(string validateMsgName, string validateMsgValue, object timeInSeconds)
+        public static string GetTimeInvalidMsg(
+            string validateMsgName,
+            string validateMsgValue,
+            object timeInSeconds)
         {
             return validateMsgName + " " + validateMsgValue + " requires a size of at least 1 msec but received " +
                    timeInSeconds;

@@ -37,7 +37,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="schemas">schemas</param>
         /// <param name="operators">operators</param>
         public CreateDataFlowClause(
-            string dataFlowName, IList<CreateSchemaClause> schemas, IList<DataFlowOperator> operators)
+            string dataFlowName,
+            IList<CreateSchemaClause> schemas,
+            IList<DataFlowOperator> operators)
         {
             this.dataFlowName = dataFlowName;
             this.schemas = schemas;
@@ -76,7 +78,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">to use</param>
-        public virtual void ToEPL(StringWriter writer, EPStatementFormatter formatter)
+        public virtual void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             writer.Write("create dataflow ");
             writer.Write(dataFlowName);

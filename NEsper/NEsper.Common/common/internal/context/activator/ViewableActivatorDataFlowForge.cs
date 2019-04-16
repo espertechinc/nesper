@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ViewableActivatorDataFlow), GetType(), classScope);
             method.Block

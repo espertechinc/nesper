@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
 
         public long DeltaForSecondsDouble(double seconds)
         {
-            return Math.Round(1000000d * seconds);
+            return (long) Math.Round(1000000d * seconds);
         }
 
         public long DeltaForSecondsNumber(object timeInSeconds)
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             DateTimeEx dateTime)
         {
             var millis = fromTime / 1000;
-            dateTime.TimeInMillis = millis;
+            dateTime.SetUtcMillis(millis);
             return fromTime - millis * 1000;
         }
 
@@ -70,9 +70,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope.MakeChild(typeof(long), typeof(TimeAbacusMicroseconds), codegenClassScope)
-                .AddParam(typeof(long), "fromTime").AddParam(typeof(DateTimeEx), "cal").Block
+                .AddParam(typeof(long), "fromTime")
+                .AddParam(typeof(DateTimeEx), "dtx")
+                .Block
                 .DeclareVar(typeof(long), "millis", Op(Ref("fromTime"), "/", Constant(1000)))
-                .Expression(ExprDotMethod(Ref("cal"), "setTimeInMillis", Ref("millis")))
+                .Expression(ExprDotMethod(Ref("dtx"), "setTimeInMillis", Ref("millis")))
                 .MethodReturn(Op(Ref("fromTime"), "-", Op(Ref("millis"), "*", Constant(1000))));
             return LocalMethodBuild(method).Pass(startLong).Pass(dateTime).Call();
         }
@@ -85,14 +87,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             return Op(Op(ExprDotMethod(dateTime, "getTimeInMillis"), "*", Constant(1000)), "+", startRemainder);
         }
 
-        public DateTimeEx ToDate(long ts)
+        public DateTimeEx ToDateTimeEx(long ts)
         {
-            return new Date(ts / 1000);
+            return DateTimeEx.UtcInstance(ts / 1000); // return new Date(ts / 1000);
         }
 
         public CodegenExpression ToDateCodegen(CodegenExpression ts)
         {
-            return NewInstance(typeof(DateTimeEx), Op(ts, "/", Constant(1000)));
+            return StaticMethod(typeof(DateTimeEx), "UtcInstance", Op(ts, "/", Constant(1000)));
         }
     }
 } // end of namespace

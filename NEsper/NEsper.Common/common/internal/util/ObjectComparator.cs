@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.util
             _isDescendingValue = isDescendingValue;
         }
 
-        public int Compare(Object firstValue, Object secondValue)
+        public int Compare(
+            Object firstValue,
+            Object secondValue)
         {
             return MultiKeyComparator.CompareValues(firstValue, secondValue, _isDescendingValue);
         }

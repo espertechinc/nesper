@@ -10,13 +10,14 @@ using System;
 using System.Reflection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 {
-    public class BeanInstantiatorForgeByNewInstanceReflection : BeanInstantiatorForge, BeanInstantiator
+    public class BeanInstantiatorForgeByNewInstanceReflection : BeanInstantiatorForge,
+        BeanInstantiator
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -29,33 +30,29 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 
         public object Instantiate()
         {
-            try
-            {
-                return clazz.NewInstance();
+            try {
+                return TypeHelper.Instantiate(clazz);
             }
-            catch (MemberAccessException e)
-            {
+            catch (MemberAccessException e) {
                 return Handle(e);
             }
-            catch (TargetException e)
-            {
+            catch (TargetException e) {
                 return Handle(e);
             }
         }
 
-        public CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope codegenClassScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope codegenClassScope)
         {
             return NewInstance(clazz);
         }
 
-        public BeanInstantiator BeanInstantiator
-        {
-            get => this;
-        }
+        public BeanInstantiator BeanInstantiator => this;
 
         private object Handle(Exception e)
         {
-            string message = "Unexpected exception encountered invoking newInstance on class '" + clazz.Name + "': " + e.Message;
+            var message = "Unexpected exception encountered invoking newInstance on class '" + clazz.Name + "': " + e.Message;
             Log.Error(message, e);
             return null;
         }

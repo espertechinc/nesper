@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
     public class LogicalChannelBindingTypeCastWStreamNum : LogicalChannelBindingType
     {
-        public LogicalChannelBindingTypeCastWStreamNum(Type target, int streamNum)
+        public LogicalChannelBindingTypeCastWStreamNum(
+            Type target,
+            int streamNum)
         {
             Target = target;
             StreamNum = streamNum;

@@ -10,10 +10,9 @@ using System;
 
 namespace com.espertech.esper.common.@internal.util
 {
-	/// <summary>
-	/// Utility class around indenting and formatting text.
-	/// </summary>
-
+    /// <summary>
+    /// Utility class around indenting and formatting text.
+    /// </summary>
     public class Indent
     {
         /// <summary> Utility method to indent a text for a number of characters.</summary>
@@ -21,17 +20,14 @@ namespace com.espertech.esper.common.@internal.util
         /// </param>
         /// <returns> the formatted string
         /// </returns>
-
         public static String CreateIndent(int numChars)
         {
-            if (numChars < 0)
-            {
+            if (numChars < 0) {
                 throw new ArgumentException("Number of characters less then zero");
             }
 
             char[] buf = new char[numChars];
-            for (int ii = 0; ii < buf.Length; ii++)
-            {
+            for (int ii = 0; ii < buf.Length; ii++) {
                 buf[ii] = ' ';
             }
 

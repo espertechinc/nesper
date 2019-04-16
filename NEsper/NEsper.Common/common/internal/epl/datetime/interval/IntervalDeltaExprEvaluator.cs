@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -15,14 +14,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 {
     public interface IntervalDeltaExprEvaluator
     {
-        long Evaluate(long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        long Evaluate(
+            long reference,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
     }
 
     public class ProxyIntervalDeltaExprEvaluator : IntervalDeltaExprEvaluator
     {
         public Func<long, EventBean[], bool, ExprEvaluatorContext, long> ProcEvaluate { get; set; }
 
-        public long Evaluate(long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public long Evaluate(
+            long reference,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return ProcEvaluate.Invoke(
                 reference, eventsPerStream, isNewData, context);

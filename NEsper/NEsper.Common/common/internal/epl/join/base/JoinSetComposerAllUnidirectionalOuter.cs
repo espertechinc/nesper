@@ -37,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             return false;
         }
 
-        public void Init(EventBean[][] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public void Init(
+            EventBean[][] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
@@ -46,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         public UniformPair<ISet<MultiKey<EventBean>>> Join(
-            EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QJoinCompositionStreamToWin();

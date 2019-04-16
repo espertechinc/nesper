@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
@@ -17,29 +16,45 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
-	public class InnerEvaluatorColl : ExprDotEvalRootChildInnerEval {
+    public class InnerEvaluatorColl : ExprDotEvalRootChildInnerEval
+    {
+        private readonly ExprEvaluator rootEvaluator;
 
-	    private readonly ExprEvaluator rootEvaluator;
+        public InnerEvaluatorColl(ExprEvaluator rootEvaluator)
+        {
+            this.rootEvaluator = rootEvaluator;
+        }
 
-	    public InnerEvaluatorColl(ExprEvaluator rootEvaluator) {
-	        this.rootEvaluator = rootEvaluator;
-	    }
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        }
 
-	    public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        return rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-	    }
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
 
-	    public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
+        public ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
 
-	    public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
-
-	    public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
-
-	}
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
+    }
 } // end of namespace

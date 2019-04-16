@@ -22,11 +22,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         IntervalOp Op { get; }
 
         CodegenExpression Codegen(
-            CodegenExpression start, CodegenExpression end, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope);
+            CodegenExpression start,
+            CodegenExpression end,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
 
         FilterExprAnalyzerDTIntervalAffector GetFilterDesc(
-            EventType[] typesPerStream, DatetimeMethodEnum currentMethod, IList<ExprNode> currentParameters,
+            EventType[] typesPerStream,
+            DateTimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc);
     }
 } // end of namespace

@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     {
         public static readonly IntervalDeltaExprEvaluatorMax MAXEVAL = new IntervalDeltaExprEvaluatorMax();
 
-        public ExprOptionalConstantEval(IntervalDeltaExprEvaluator evaluator, long? optionalConstant)
+        public ExprOptionalConstantEval(
+            IntervalDeltaExprEvaluator evaluator,
+            long? optionalConstant)
         {
             Evaluator = evaluator;
             OptionalConstant = optionalConstant;
@@ -34,7 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         public class IntervalDeltaExprEvaluatorMax : IntervalDeltaExprEvaluator
         {
             public long Evaluate(
-                long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+                long reference,
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext context)
             {
                 return Int64.MaxValue;
             }

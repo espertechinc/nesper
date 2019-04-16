@@ -23,6 +23,12 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public string AnonymousTypeName => FormatSingleConst("out");
 
+        public string AnonymousRowrecogCompositeName => FormatSingleConst("mrcomp");
+
+        public string AnonymousRowrecogRowName => FormatSingleConst("mrrow");
+
+        public string AnonymousRowrecogMultimatchAllName => FormatSingleConst("mrma");
+
         public string GetAnonymousTypeNameWithInner(int expressionNum)
         {
             return FormatNV("eval", Convert.ToString(expressionNum));
@@ -38,23 +44,19 @@ namespace com.espertech.esper.common.@internal.@event.core
             return FormatNV("methodpoll", Convert.ToString(streamNum));
         }
 
-        public string AnonymousRowrecogCompositeName => FormatSingleConst("mrcomp");
-
-        public string AnonymousRowrecogRowName => FormatSingleConst("mrrow");
-
         public string GetAnonymousRowrecogMultimatchDefineName(int defineNum)
         {
             return FormatNV("mrmd", Convert.ToString(defineNum));
         }
-
-        public string AnonymousRowrecogMultimatchAllName => FormatSingleConst("mrma");
 
         public string GetPatternTypeName(int stream)
         {
             return FormatNV("pat", Convert.ToString(stream));
         }
 
-        public string GetViewDerived(string name, int streamNum)
+        public string GetViewDerived(
+            string name,
+            int streamNum)
         {
             return FormatNV("view", name + "(" + streamNum + ")");
         }
@@ -69,7 +71,9 @@ namespace com.espertech.esper.common.@internal.@event.core
             return FormatNV("grp", Convert.ToString(streamNum));
         }
 
-        public string GetAnonymousTypeNameEnumMethod(string enumMethod, string propertyName)
+        public string GetAnonymousTypeNameEnumMethod(
+            string enumMethod,
+            string propertyName)
         {
             return FormatNV("enum", enumMethod + "(" + propertyName + ")");
         }
@@ -79,17 +83,24 @@ namespace com.espertech.esper.common.@internal.@event.core
             return FormatNV("subq", Convert.ToString(subselectNumber));
         }
 
-        public string GetAnonymousTypeNameUDFMethod(string methodName, string typeName)
+        public string GetAnonymousTypeNameUDFMethod(
+            string methodName,
+            string typeName)
         {
             return FormatNV("mth", methodName + "(" + typeName + ")");
         }
 
-        public string GetAnonymousPatternName(int streamNum, short factoryNodeId)
+        public string GetAnonymousPatternName(
+            int streamNum,
+            short factoryNodeId)
         {
             return FormatNV("pan", streamNum + "(" + factoryNodeId + ")");
         }
 
-        public string GetAnonymousPatternNameWTag(int streamNum, short factoryNodeId, string tag)
+        public string GetAnonymousPatternNameWTag(
+            int streamNum,
+            short factoryNodeId,
+            string tag)
         {
             return FormatNV("pwt", streamNum + "(" + factoryNodeId + "_" + tag + ")");
         }
@@ -120,7 +131,9 @@ namespace com.espertech.esper.common.@internal.@event.core
             return builder.ToString();
         }
 
-        private string FormatNV(string postfixNameOne, string postfixValueOne)
+        private string FormatNV(
+            string postfixNameOne,
+            string postfixValueOne)
         {
             var builder = new StringBuilder();
             builder.Append("stmt");

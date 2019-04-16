@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -18,28 +17,40 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
-	public class InfraOnMergeActionDel : InfraOnMergeAction {
+    public class InfraOnMergeActionDel : InfraOnMergeAction
+    {
+        public InfraOnMergeActionDel(ExprEvaluator optionalFilter)
+            : base(optionalFilter)
 
-	    public InfraOnMergeActionDel(ExprEvaluator optionalFilter)
+        {
+        }
 
-	    	 : base(optionalFilter)
+        public override void Apply(
+            EventBean matchingEvent,
+            EventBean[] eventsPerStream,
+            OneEventCollection newData,
+            OneEventCollection oldData,
+            AgentInstanceContext agentInstanceContext)
+        {
+            oldData.Add(matchingEvent);
+        }
 
-	    {
-	    }
+        public override void Apply(
+            EventBean matchingEvent,
+            EventBean[] eventsPerStream,
+            TableInstance tableStateInstance,
+            OnExprViewTableChangeHandler changeHandlerAdded,
+            OnExprViewTableChangeHandler changeHandlerRemoved,
+            AgentInstanceContext agentInstanceContext)
+        {
+            tableStateInstance.DeleteEvent(matchingEvent);
+            if (changeHandlerRemoved != null) {
+                changeHandlerRemoved.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
+            }
+        }
 
-	    public override void Apply(EventBean matchingEvent, EventBean[] eventsPerStream, OneEventCollection newData, OneEventCollection oldData, AgentInstanceContext agentInstanceContext) {
-	        oldData.Add(matchingEvent);
-	    }
-
-	    public override void Apply(EventBean matchingEvent, EventBean[] eventsPerStream, TableInstance tableStateInstance, OnExprViewTableChangeHandler changeHandlerAdded, OnExprViewTableChangeHandler changeHandlerRemoved, AgentInstanceContext agentInstanceContext) {
-	        tableStateInstance.DeleteEvent(matchingEvent);
-	        if (changeHandlerRemoved != null) {
-	            changeHandlerRemoved.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
-	        }
-	    }
-
-	    public override string Name {
-	        get { return "delete"; }
-	    }
-	}
+        public override string Name {
+            get { return "delete"; }
+        }
+    }
 } // end of namespace

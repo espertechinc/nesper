@@ -34,9 +34,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         private static readonly ILog QUERY_PLAN_LOG = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
 
         public static OnTriggerPlan HandleContextFactoryOnTrigger(
-            string className, CodegenPackageScope packageScope, string classPostfix,
-            NamedWindowMetaData namedWindow, TableMetaData table, OnTriggerWindowPlan planDesc,
-            StatementBaseInfo @base, StatementCompileTimeServices services)
+            string className,
+            CodegenPackageScope packageScope,
+            string classPostfix,
+            NamedWindowMetaData namedWindow,
+            TableMetaData table,
+            OnTriggerWindowPlan planDesc,
+            StatementBaseInfo @base,
+            StatementCompileTimeServices services)
         {
             // validate context
             var infraName = planDesc.OnTriggerDesc.WindowName;
@@ -173,7 +178,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         protected internal static void ValidateOnExpressionContext(
-            string onExprContextName, string desiredContextName, string title)
+            string onExprContextName,
+            string desiredContextName,
+            string title)
         {
             if (onExprContextName == null) {
                 if (desiredContextName != null) {

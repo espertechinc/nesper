@@ -32,13 +32,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// </summary>
         /// <param name="clazz">to write to</param>
         /// <param name="writerMethod">write method</param>
-        public BeanEventPropertyWriter(Type clazz, MethodInfo writerMethod)
+        public BeanEventPropertyWriter(
+            Type clazz,
+            MethodInfo writerMethod)
         {
             this.clazz = clazz;
             this.writerMethod = writerMethod;
         }
 
-        public virtual void Write(object value, EventBean target)
+        public virtual void Write(
+            object value,
+            EventBean target)
         {
             Invoke(new[] {value}, target.Underlying);
         }
@@ -46,19 +50,23 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public CodegenExpression WriteCodegen(
             CodegenExpression assigned,
             CodegenExpression und,
-            CodegenExpression target, 
+            CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
             return ExprDotMethod(und, writerMethod.Name, assigned);
         }
 
-        public void WriteValue(object value, object target)
+        public void WriteValue(
+            object value,
+            object target)
         {
             Invoke(new[] {value}, target);
         }
 
-        protected void Invoke(object[] values, object target)
+        protected void Invoke(
+            object[] values,
+            object target)
         {
             try {
                 writerMethod.Invoke(target, values);

@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantTrue();
         }

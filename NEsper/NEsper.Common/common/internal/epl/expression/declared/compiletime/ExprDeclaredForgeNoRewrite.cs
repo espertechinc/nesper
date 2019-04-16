@@ -15,9 +15,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 {
     public class ExprDeclaredForgeNoRewrite : ExprDeclaredForgeBase
     {
-        public ExprDeclaredForgeNoRewrite(ExprDeclaredNodeImpl parent, ExprForge innerForge, bool isCache, bool audit, string statementName)
-
-             : base(parent, innerForge, isCache, audit, statementName)
+        public ExprDeclaredForgeNoRewrite(
+            ExprDeclaredNodeImpl parent,
+            ExprForge innerForge,
+            bool isCache,
+            bool audit,
+            string statementName)
+            : base(parent, innerForge, isCache, audit, statementName)
 
         {
         }
@@ -27,13 +31,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             return eventsPerStream;
         }
 
-        protected override CodegenExpression CodegenEventsPerStreamRewritten(CodegenExpression eventsPerStream, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+        protected override CodegenExpression CodegenEventsPerStreamRewritten(
+            CodegenExpression eventsPerStream,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return eventsPerStream;
         }
 
-        public override ExprForgeConstantType ForgeConstantType
-        {
+        public override ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
     }

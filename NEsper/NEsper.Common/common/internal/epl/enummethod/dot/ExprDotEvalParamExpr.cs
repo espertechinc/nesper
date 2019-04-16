@@ -12,8 +12,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public class ExprDotEvalParamExpr : ExprDotEvalParam
     {
-        public ExprDotEvalParamExpr(int parameterNum, ExprNode body, ExprForge bodyForge) : base(
-            parameterNum, body, bodyForge)
+        public ExprDotEvalParamExpr(
+            int parameterNum,
+            ExprNode body,
+            ExprForge bodyForge)
+            : base(
+                parameterNum, body, bodyForge)
         {
         }
     }

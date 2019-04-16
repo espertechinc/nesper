@@ -12,7 +12,11 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class IntSeqKeyFour : IntSeqKey
     {
-        public IntSeqKeyFour(int one, int two, int three, int four)
+        public IntSeqKeyFour(
+            int one,
+            int two,
+            int three,
+            int four)
         {
             One = one;
             Two = two;
@@ -90,7 +94,9 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        public static void Write(IntSeqKeyFour key, DataOutput output)
+        public static void Write(
+            IntSeqKeyFour key,
+            DataOutput output)
         {
             output.WriteInt(key.One);
             output.WriteInt(key.Two);

@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class GraphOperatorInputNamesAlias
     {
-        public GraphOperatorInputNamesAlias(String[] inputStreamNames, String optionalAsName)
+        public GraphOperatorInputNamesAlias(
+            String[] inputStreamNames,
+            String optionalAsName)
         {
             InputStreamNames = inputStreamNames;
             OptionalAsName = optionalAsName;

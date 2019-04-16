@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="timePeriod">time period expression</param>
         /// <param name="now">indicator whether "now"</param>
-        public ContextDescriptorConditionTimePeriod(Expression timePeriod, bool now)
+        public ContextDescriptorConditionTimePeriod(
+            Expression timePeriod,
+            bool now)
         {
             TimePeriod = timePeriod;
             IsNow = now;
@@ -37,12 +39,14 @@ namespace com.espertech.esper.common.client.soda
         /// <value>&quot;now&quot; indicator</value>
         public bool IsNow { get; set; }
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
-            if (IsNow)
-            {
+            if (IsNow) {
                 writer.Write("@now and");
             }
+
             writer.Write("after ");
             TimePeriod.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
         }

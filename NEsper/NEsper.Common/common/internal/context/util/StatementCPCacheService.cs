@@ -42,7 +42,8 @@ namespace com.espertech.esper.common.@internal.context.util
         public bool IsContextPartitioned { get; }
 
         public StatementResourceHolder MakeOrGetEntryCanNull(
-            int agentInstanceId, StatementContext statementContext)
+            int agentInstanceId,
+            StatementContext statementContext)
         {
             if (!IsContextPartitioned) {
                 return MakeOrGetEntryUnpartitioned(statementContext);
@@ -83,7 +84,8 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         private StatementResourceHolder MakeOrGetEntryPartitioned(
-            int agentInstanceId, StatementContext statementContext)
+            int agentInstanceId,
+            StatementContext statementContext)
         {
             var statementResourceService = statementContext.StatementCPCacheService.StatementResourceService;
             var resources = statementResourceService.ResourcesPartitioned.Get(agentInstanceId);
@@ -123,7 +125,9 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         private static AgentInstanceContext MakeNewAgentInstanceContextCanNull(
-            int agentInstanceId, StatementContext statementContext, bool partitioned)
+            int agentInstanceId,
+            StatementContext statementContext,
+            bool partitioned)
         {
             // re-allocate lock: for unpartitoned cases we use the same lock associated to the statement (no need to produce more locks)
             var @lock = statementContext.StatementAIFactoryProvider.Factory
@@ -162,7 +166,7 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         private void HookUpNewRealization(
-            StatementAgentInstanceFactoryResult result, 
+            StatementAgentInstanceFactoryResult result,
             StatementContext statementContext)
         {
             View dispatchChildView = statementContext.UpdateDispatchView;
@@ -181,7 +185,8 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         private void AssignAIResourcesForExpressionContextPartitions(
-            int agentInstanceId, StatementResourceHolder holder)
+            int agentInstanceId,
+            StatementResourceHolder holder)
         {
             AIRegistryUtil.AssignFutures(
                 statementAgentInstanceRegistry, agentInstanceId,

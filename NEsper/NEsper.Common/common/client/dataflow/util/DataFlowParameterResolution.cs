@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
@@ -35,7 +34,10 @@ namespace com.espertech.esper.common.client.dataflow.util
         /// <param name="context">initialization context</param>
         /// <returns>value</returns>
         public static object ResolveNumber(
-            string name, ExprEvaluator optionalEvaluator, object defaultValue, DataFlowOpInitializeContext context)
+            string name,
+            ExprEvaluator optionalEvaluator,
+            object defaultValue,
+            DataFlowOpInitializeContext context)
         {
             object resolvedFromProvider = TryParameterProvider(name, context, typeof(object));
             if (resolvedFromProvider != null) {
@@ -64,7 +66,9 @@ namespace com.espertech.esper.common.client.dataflow.util
         /// <returns>value</returns>
         /// <throws>EPException if no value was found</throws>
         public static string ResolveStringRequired(
-            string name, ExprEvaluator optionalEvaluator, DataFlowOpInitializeContext context)
+            string name,
+            ExprEvaluator optionalEvaluator,
+            DataFlowOpInitializeContext context)
         {
             string resolvedFromProvider = TryParameterProvider<string>(name, context);
             if (resolvedFromProvider != null) {
@@ -93,7 +97,9 @@ namespace com.espertech.esper.common.client.dataflow.util
         /// <returns>value</returns>
         /// <throws>EPException if no value was found</throws>
         public static string ResolveStringOptional(
-            string name, ExprEvaluator optionalEvaluator, DataFlowOpInitializeContext context)
+            string name,
+            ExprEvaluator optionalEvaluator,
+            DataFlowOpInitializeContext context)
         {
             string resolvedFromProvider = TryParameterProvider<string>(name, context);
             if (resolvedFromProvider != null) {
@@ -119,7 +125,9 @@ namespace com.espertech.esper.common.client.dataflow.util
         /// <param name="&lt;T&gt;">the type of value</param>
         /// <returns>value</returns>
         public static T ResolveWithDefault<T>(
-            string name, ExprEvaluator optionalEvaluator, T defaultValue,
+            string name,
+            ExprEvaluator optionalEvaluator,
+            T defaultValue,
             DataFlowOpInitializeContext context)
         {
             T resolvedFromProvider = TryParameterProvider<T>(name, context);
@@ -164,7 +172,9 @@ namespace com.espertech.esper.common.client.dataflow.util
         /// <param name="&lt;T&gt;">type of value returned</param>
         /// <returns>instance</returns>
         public static T ResolveOptionalInstance<T>(
-            string name, IDictionary<string, object> configuration, DataFlowOpInitializeContext context)
+            string name,
+            IDictionary<string, object> configuration,
+            DataFlowOpInitializeContext context)
             where T : class
         {
             T resolvedFromProvider = TryParameterProvider<T>(name, context);
@@ -206,7 +216,9 @@ namespace com.espertech.esper.common.client.dataflow.util
         /// <param name="context">initialization context</param>
         /// <returns>value</returns>
         public static IDictionary<string, object> ResolveMap(
-            string name, IDictionary<string, object> evals, DataFlowOpInitializeContext context)
+            string name,
+            IDictionary<string, object> evals,
+            DataFlowOpInitializeContext context)
         {
             if (evals == null) {
                 return null;
@@ -239,7 +251,9 @@ namespace com.espertech.esper.common.client.dataflow.util
             return map;
         }
 
-        private static T TryParameterProvider<T>(string name, DataFlowOpInitializeContext context)
+        private static T TryParameterProvider<T>(
+            string name,
+            DataFlowOpInitializeContext context)
             where T : class
         {
             if (context.AdditionalParameters != null && context.AdditionalParameters.ContainsKey(name)) {

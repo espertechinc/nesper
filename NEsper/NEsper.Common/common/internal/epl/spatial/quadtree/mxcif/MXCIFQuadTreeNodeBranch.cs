@@ -18,14 +18,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
         internal MXCIFQuadTreeNode<L> Sw;
 
         public MXCIFQuadTreeNodeBranch(
-            BoundingBox bb, 
+            BoundingBox bb,
             int level,
-            L data, 
-            int dataCount, 
-            MXCIFQuadTreeNode<L> nw, 
+            L data,
+            int dataCount,
+            MXCIFQuadTreeNode<L> nw,
             MXCIFQuadTreeNode<L> ne,
             MXCIFQuadTreeNode<L> sw,
-            MXCIFQuadTreeNode<L> se) : base(bb, level, data, dataCount)
+            MXCIFQuadTreeNode<L> se)
+            : base(bb, level, data, dataCount)
         {
             Nw = nw;
             Ne = ne;

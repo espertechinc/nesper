@@ -23,9 +23,14 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     public class QueryPlanIndexItem
     {
         public QueryPlanIndexItem(
-            string[] hashProps, Type[] hashPropTypes, EventPropertyValueGetter hashGetter,
-            string[] rangeProps, Type[] rangePropTypes, EventPropertyValueGetter[] rangeGetters,
-            bool unique, EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc)
+            string[] hashProps,
+            Type[] hashPropTypes,
+            EventPropertyValueGetter hashGetter,
+            string[] rangeProps,
+            Type[] rangePropTypes,
+            EventPropertyValueGetter[] rangeGetters,
+            bool unique,
+            EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc)
         {
             HashProps = hashProps;
             HashPropTypes = hashPropTypes;
@@ -84,7 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             return compared && AdvancedIndexProvisionDesc == null && other.AdvancedIndexProvisionDesc == null;
         }
 
-        private IList<IndexedPropDesc> AsList(string[] props, Type[] types)
+        private IList<IndexedPropDesc> AsList(
+            string[] props,
+            Type[] types)
         {
             if (props == null || props.Length == 0) {
                 return Collections.GetEmptyList<IndexedPropDesc>();
@@ -143,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             AdvancedIndexIndexMultiKeyPart part = null;
             if (AdvancedIndexProvisionDesc != null) {
                 part = new AdvancedIndexIndexMultiKeyPart(
-                    AdvancedIndexProvisionDesc.IndexTypeName, 
+                    AdvancedIndexProvisionDesc.IndexTypeName,
                     AdvancedIndexProvisionDesc.IndexExpressionTexts,
                     AdvancedIndexProvisionDesc.IndexProperties);
             }

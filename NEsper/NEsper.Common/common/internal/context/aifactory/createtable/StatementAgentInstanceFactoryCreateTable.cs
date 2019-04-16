@@ -73,7 +73,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         public StatementAgentInstanceFactoryResult NewContext(
-            AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
         {
             var tableState =
                 agentInstanceContext.TableManagementService.AllocateTableInstance(table, agentInstanceContext);
@@ -98,12 +99,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
         public StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
         }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             table = statementContext.TableManagementService.GetTable(statementContext.DeploymentId, tableName);
             if (table == null) {

@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// </summary>
         /// <param name="namedWindowName">named window name</param>
         /// <param name="agentInstanceId">agent instance id</param>
-        public VirtualDataWindowEventStopWindow(string namedWindowName, int agentInstanceId)
+        public VirtualDataWindowEventStopWindow(
+            string namedWindowName,
+            int agentInstanceId)
         {
             NamedWindowName = namedWindowName;
             AgentInstanceId = agentInstanceId;

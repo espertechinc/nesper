@@ -18,14 +18,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenExpression _lhs;
         private readonly CodegenExpression _rhs;
 
-        public CodegenExpressionEqualsReference(CodegenExpression lhs, CodegenExpression rhs, bool isNot)
+        public CodegenExpressionEqualsReference(
+            CodegenExpression lhs,
+            CodegenExpression rhs,
+            bool isNot)
         {
             this._lhs = lhs;
             this._rhs = rhs;
             this._isNot = isNot;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("(");
             _lhs.Render(builder, imports, isInnerClass);

@@ -36,7 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         /// <param name="all">when ALL, false for ANY</param>
         /// <param name="relationalOpEnum">operator</param>
         public ExprSubselectAllSomeAnyNode(
-            StatementSpecRaw statementSpec, bool not, bool all, RelationalOpEnum relationalOpEnum) : base(statementSpec)
+            StatementSpecRaw statementSpec,
+            bool not,
+            bool all,
+            RelationalOpEnum relationalOpEnum)
+            : base(statementSpec)
         {
             IsNot = not;
             IsAll = all;
@@ -79,54 +83,71 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public override EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
 
         protected override CodegenExpression EvalMatchesPlainCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return evalStrategy.EvaluateMatchesCodegen(parent, symbols, classScope);
         }
 
         protected override CodegenExpression EvalMatchesTypableMultiCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
         protected override CodegenExpression EvalMatchesGetEventBeanCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         protected override CodegenExpression EvalMatchesGetCollScalarCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         public override EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
 
         protected override CodegenExpression EvalMatchesTypableSingleCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         protected override CodegenExpression EvalMatchesGetCollEventsCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }

@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         protected OutputProcessViewBaseWAfter(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessor resultSetProcessor, 
+            ResultSetProcessor resultSetProcessor,
             long? afterConditionTime,
             int? afterConditionNumberOfEvents,
             bool afterConditionSatisfied)
@@ -43,7 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="newEvents">is the view new events</param>
         /// <param name="statementContext">context</param>
         /// <returns>indicator for output condition</returns>
-        public bool CheckAfterCondition(EventBean[] newEvents, StatementContext statementContext)
+        public bool CheckAfterCondition(
+            EventBean[] newEvents,
+            StatementContext statementContext)
         {
             return OptionalAfterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
         }
@@ -54,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="newEvents">is the join new events</param>
         /// <param name="statementContext">context</param>
         /// <returns>indicator for output condition</returns>
-        public bool CheckAfterCondition(ISet<MultiKey<EventBean>> newEvents, StatementContext statementContext)
+        public bool CheckAfterCondition(
+            ISet<MultiKey<EventBean>> newEvents,
+            StatementContext statementContext)
         {
             return OptionalAfterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
         }
@@ -65,7 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="newOldEvents">is the new and old events pair</param>
         /// <param name="statementContext">context</param>
         /// <returns>indicator for output condition</returns>
-        public bool CheckAfterCondition(UniformPair<EventBean[]> newOldEvents, StatementContext statementContext)
+        public bool CheckAfterCondition(
+            UniformPair<EventBean[]> newOldEvents,
+            StatementContext statementContext)
         {
             return OptionalAfterConditionState.CheckUpdateAfterCondition(newOldEvents, statementContext);
         }

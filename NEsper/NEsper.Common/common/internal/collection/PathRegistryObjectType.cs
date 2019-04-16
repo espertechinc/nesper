@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.collection
         public static readonly PathRegistryObjectType INDEX =
             new PathRegistryObjectType("index", "An");
 
-        private PathRegistryObjectType(string name, string prefix)
+        private PathRegistryObjectType(
+            string name,
+            string prefix)
         {
             Name = name;
             Prefix = prefix;

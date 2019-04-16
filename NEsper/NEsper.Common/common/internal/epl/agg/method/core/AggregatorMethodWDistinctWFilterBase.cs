@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         internal readonly Type optionalDistinctValueType;
         internal readonly ExprNode optionalFilter;
 
-        public abstract void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope);
+        public abstract void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         public AggregatorMethodWDistinctWFilterBase(
             AggregationForgeFactory factory,
@@ -60,7 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         }
 
         public void ApplyEvalEnterCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             if (optionalFilter != null) {
                 PrefixWithFilterCheck(optionalFilter.Forge, method, symbols, classScope);
@@ -70,7 +75,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         }
 
         public void ApplyTableEnterCodegen(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (hasFilter) {
                 method.Block
@@ -86,7 +94,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         }
 
         public virtual void ApplyEvalLeaveCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             if (optionalFilter != null) {
                 PrefixWithFilterCheck(optionalFilter.Forge, method, symbols, classScope);
@@ -96,7 +107,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         }
 
         public virtual void ApplyTableLeaveCodegen(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (hasFilter) {
                 method.Block
@@ -111,7 +125,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             }
         }
 
-        public void ClearCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void ClearCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (distinct != null) {
                 method.Block.ExprDotMethod(distinct, "clear");
@@ -121,8 +137,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         }
 
         public void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (distinct != null) {
                 method.Block.ExprDotMethod(distinctSerde, "write", RowDotRef(row, distinct), output, unitKey, writer);
@@ -132,8 +153,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         }
 
         public void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (distinct != null) {
                 method.Block.AssignRef(
@@ -145,25 +170,48 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         }
 
         protected abstract void ApplyEvalEnterFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope);
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope);
 
         protected abstract void ApplyEvalLeaveFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope);
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope);
 
         protected abstract void ApplyTableEnterFiltered(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         protected abstract void ApplyTableLeaveFiltered(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
-        protected abstract void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope);
+        protected abstract void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         protected abstract void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         protected abstract void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope);
     }
 } // end of namespace

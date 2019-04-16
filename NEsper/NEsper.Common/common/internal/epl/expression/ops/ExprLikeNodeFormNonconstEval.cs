@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator patternEval;
 
         public ExprLikeNodeFormNonconstEval(
-            ExprLikeNodeForgeNonconst forge, ExprEvaluator lhsEval, ExprEvaluator patternEval,
+            ExprLikeNodeForgeNonconst forge,
+            ExprEvaluator lhsEval,
+            ExprEvaluator patternEval,
             ExprEvaluator optionalEscapeEval)
         {
             form = forge;
@@ -33,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             this.optionalEscapeEval = optionalEscapeEval;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var pattern = (string) patternEval.Evaluate(eventsPerStream, isNewData, context);
             if (pattern == null) {
@@ -65,8 +70,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenMethod Codegen(
-            ExprLikeNodeForgeNonconst forge, ExprNode lhs, ExprNode pattern, ExprNode optionalEscape,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprLikeNodeForgeNonconst forge,
+            ExprNode lhs,
+            ExprNode pattern,
+            ExprNode optionalEscape,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(

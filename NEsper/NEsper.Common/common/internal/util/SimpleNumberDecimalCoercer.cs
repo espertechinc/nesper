@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="numToCoerce">number to widen</param>
         /// <returns>widened number</returns>
-        decimal? CoerceBoxedDecimal(object numToCoerce);
+        decimal CoerceBoxedDecimal(object numToCoerce);
 
         CodegenExpression CoerceBoxedDecimalCodegen(
             CodegenExpression expr,

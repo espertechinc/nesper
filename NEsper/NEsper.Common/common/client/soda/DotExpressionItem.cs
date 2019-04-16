@@ -33,7 +33,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">the property (or nested property) or method name</param>
         /// <param name="parameters">are optional and should only be provided if this chain item is a method;Parameters are expressions for parameters to the method (use only for methods and not for properties unless mapped property). </param>
         /// <param name="isProperty">true if this is a nested property name</param>
-        public DotExpressionItem(String name, IList<Expression> parameters, bool isProperty)
+        public DotExpressionItem(
+            String name,
+            IList<Expression> parameters,
+            bool isProperty)
         {
             Name = name;
             IsProperty = isProperty;
@@ -58,29 +61,30 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="chain">chain to render</param>
         /// <param name="writer">writer to output to</param>
         /// <param name="prefixDot">indicator whether to prefix with "."</param>
-        protected internal static void Render(IList<DotExpressionItem> chain, TextWriter writer, bool prefixDot)
+        protected internal static void Render(
+            IList<DotExpressionItem> chain,
+            TextWriter writer,
+            bool prefixDot)
         {
             var delimiterOuter = prefixDot ? "." : "";
-            foreach (var item in chain)
-            {
+            foreach (var item in chain) {
                 writer.Write(delimiterOuter);
                 writer.Write(item.Name);
 
-                if (!item.IsProperty || !item.Parameters.IsEmpty())
-                {
+                if (!item.IsProperty || !item.Parameters.IsEmpty()) {
                     writer.Write("(");
-                    if (!item.Parameters.IsEmpty())
-                    {
+                    if (!item.Parameters.IsEmpty()) {
                         String delimiter = "";
-                        foreach (var param in item.Parameters)
-                        {
+                        foreach (var param in item.Parameters) {
                             writer.Write(delimiter);
                             delimiter = ",";
                             param.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                         }
                     }
+
                     writer.Write(")");
                 }
+
                 delimiterOuter = ".";
             }
         }

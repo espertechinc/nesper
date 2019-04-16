@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// </summary>
         /// <param name="runtimeURI">runtime URI</param>
         /// <param name="specification">specifies statement groups</param>
-        public StatementMetricRepository(string runtimeURI, ConfigurationRuntimeMetricsReporting specification)
+        public StatementMetricRepository(
+            string runtimeURI,
+            ConfigurationRuntimeMetricsReporting specification)
         {
             this.specification = specification;
             var numGroups = specification.StatementGroups.Count + 1; // +1 for default group (remaining stmts)
@@ -56,7 +58,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
                 countGroups++;
             }
 
-            statementGroups = new Dictionary<>();
+            statementGroups = new Dictionary<DeploymentIdNamePair, int>();
         }
 
         /// <summary>
@@ -111,7 +113,11 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="cpu">time</param>
         /// <param name="wall">time</param>
         /// <param name="numInput">number of input rows</param>
-        public void AccountTimes(StatementMetricHandle handle, long cpu, long wall, int numInput)
+        public void AccountTimes(
+            StatementMetricHandle handle,
+            long cpu,
+            long wall,
+            int numInput)
         {
             var array = groupMetrics[handle.GroupNum];
             using (array.RwLock.AcquireReadLock()) {
@@ -128,11 +134,13 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="handle">statement handle</param>
         /// <param name="numIStream">num rows insert stream</param>
         /// <param name="numRStream">num rows remove stream</param>
-        public void AccountOutput(StatementMetricHandle handle, int numIStream, int numRStream)
+        public void AccountOutput(
+            StatementMetricHandle handle,
+            int numIStream,
+            int numRStream)
         {
             var array = groupMetrics[handle.GroupNum];
-            using (array.RwLock.AcquireReadLock())
-            {
+            using (array.RwLock.AcquireReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
                 metric.AddNumOutputIStream(numIStream);
                 metric.AddNumOutputRStream(numRStream);

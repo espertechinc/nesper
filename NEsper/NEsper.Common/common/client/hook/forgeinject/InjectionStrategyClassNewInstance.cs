@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -21,117 +20,139 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.client.hook.forgeinject
 {
-	/// <summary>
-	/// Provides the compiler with code that allocates and initializes an instance of some class
-	/// by using "new" and by using setters.
-	/// </summary>
-	public class InjectionStrategyClassNewInstance : InjectionStrategy {
-	    private readonly Type clazz;
-	    private readonly string fullyQualifiedClassName;
-	    private readonly IDictionary<string, object> constants = new Dictionary<string,  object>();
-	    private readonly IDictionary<string, ExprNode> expressions = new Dictionary<string,  ExprNode>();
-	    private Consumer<SAIFFInitializeBuilder> builderConsumer;
+    /// <summary>
+    /// Provides the compiler with code that allocates and initializes an instance of some class
+    /// by using "new" and by using setters.
+    /// </summary>
+    public class InjectionStrategyClassNewInstance : InjectionStrategy
+    {
+        private readonly Type clazz;
+        private readonly string fullyQualifiedClassName;
+        private readonly IDictionary<string, object> constants = new Dictionary<string, object>();
+        private readonly IDictionary<string, ExprNode> expressions = new Dictionary<string, ExprNode>();
+        private Consumer<SAIFFInitializeBuilder> builderConsumer;
 
-	    /// <summary>
-	    /// The class to be instantiated.
-	    /// </summary>
-	    /// <param name="clazz">class</param>
-	    public InjectionStrategyClassNewInstance(Type clazz) {
-	        if (clazz == null) {
-	            throw new ArgumentException("Invalid null value for class");
-	        }
-	        this.clazz = clazz;
-	        this.fullyQualifiedClassName = null;
-	    }
+        /// <summary>
+        /// The class to be instantiated.
+        /// </summary>
+        /// <param name="clazz">class</param>
+        public InjectionStrategyClassNewInstance(Type clazz)
+        {
+            if (clazz == null) {
+                throw new ArgumentException("Invalid null value for class");
+            }
 
-	    /// <summary>
-	    /// The class name of the class to be instantiated.
-	    /// </summary>
-	    /// <param name="fullyQualifiedClassName">class name</param>
-	    public InjectionStrategyClassNewInstance(string fullyQualifiedClassName) {
-	        if (fullyQualifiedClassName == null) {
-	            throw new ArgumentException("Invalid null value for class name");
-	        }
-	        this.fullyQualifiedClassName = fullyQualifiedClassName;
-	        this.clazz = null;
-	    }
+            this.clazz = clazz;
+            this.fullyQualifiedClassName = null;
+        }
 
-	    /// <summary>
-	    /// Returns the class, or null if providing a class name instead
-	    /// </summary>
-	    /// <returns>class</returns>
-	    public Type Clazz {
-	        get => clazz;	    }
+        /// <summary>
+        /// The class name of the class to be instantiated.
+        /// </summary>
+        /// <param name="fullyQualifiedClassName">class name</param>
+        public InjectionStrategyClassNewInstance(string fullyQualifiedClassName)
+        {
+            if (fullyQualifiedClassName == null) {
+                throw new ArgumentException("Invalid null value for class name");
+            }
 
-	    /// <summary>
-	    /// Returns the class name, or null if providing a class instead
-	    /// </summary>
-	    /// <returns>class name</returns>
-	    public string FullyQualifiedClassName {
-	        get => fullyQualifiedClassName;	    }
+            this.fullyQualifiedClassName = fullyQualifiedClassName;
+            this.clazz = null;
+        }
 
-	    /// <summary>
-	    /// Add a constant to be provided by invoking the setter method of the class, at deployment time
-	    /// </summary>
-	    /// <param name="name">property name</param>
-	    /// <param name="value">constant value</param>
-	    /// <returns>itself</returns>
-	    public InjectionStrategyClassNewInstance AddConstant(string name, object value) {
-	        constants.Put(name, value);
-	        return this;
-	    }
+        /// <summary>
+        /// Returns the class, or null if providing a class name instead
+        /// </summary>
+        /// <returns>class</returns>
+        public Type Clazz {
+            get => clazz;
+        }
 
-	    /// <summary>
-	    /// Add an expression to be provided by invoking the setter method of the class, at deployment time,
-	    /// the setter should accept an <seealso cref="com.espertech.esper.common.@internal.epl.expression.core.ExprEvaluator" /> instance.
-	    /// </summary>
-	    /// <param name="name">property name</param>
-	    /// <param name="value">expression</param>
-	    /// <returns>itself</returns>
-	    public InjectionStrategyClassNewInstance AddExpression(string name, ExprNode value) {
-	        expressions.Put(name, value);
-	        return this;
-	    }
+        /// <summary>
+        /// Returns the class name, or null if providing a class instead
+        /// </summary>
+        /// <returns>class name</returns>
+        public string FullyQualifiedClassName {
+            get => fullyQualifiedClassName;
+        }
 
-	    /// <summary>
-	    /// Returns the builder consumer, a consumer that the strategy invokes when it is ready to build the code
-	    /// </summary>
-	    /// <returns>builder consumer</returns>
-	    public Consumer<SAIFFInitializeBuilder> GetBuilderConsumer() {
-	        return builderConsumer;
-	    }
+        /// <summary>
+        /// Add a constant to be provided by invoking the setter method of the class, at deployment time
+        /// </summary>
+        /// <param name="name">property name</param>
+        /// <param name="value">constant value</param>
+        /// <returns>itself</returns>
+        public InjectionStrategyClassNewInstance AddConstant(
+            string name,
+            object value)
+        {
+            constants.Put(name, value);
+            return this;
+        }
 
-	    /// <summary>
-	    /// Sets the builder consumer, a consumer that the strategy invokes when it is ready to build the code
-	    /// </summary>
-	    /// <param name="builderConsumer">builder consumer</param>
-	    public void SetBuilderConsumer(Consumer<SAIFFInitializeBuilder> builderConsumer) {
-	        this.builderConsumer = builderConsumer;
-	    }
+        /// <summary>
+        /// Add an expression to be provided by invoking the setter method of the class, at deployment time,
+        /// the setter should accept an <seealso cref="com.espertech.esper.common.@internal.epl.expression.core.ExprEvaluator" /> instance.
+        /// </summary>
+        /// <param name="name">property name</param>
+        /// <param name="value">expression</param>
+        /// <returns>itself</returns>
+        public InjectionStrategyClassNewInstance AddExpression(
+            string name,
+            ExprNode value)
+        {
+            expressions.Put(name, value);
+            return this;
+        }
 
-	    public CodegenExpression GetInitializationExpression(CodegenClassScope classScope) {
-	        SAIFFInitializeSymbol symbols = new SAIFFInitializeSymbol();
-	        SAIFFInitializeBuilder builder;
-	        CodegenMethod init;
-	        if (clazz != null) {
-	            init = classScope.PackageScope.InitMethod.MakeChildWithScope(clazz, this.GetType(), symbols, classScope).AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
-	            builder = new SAIFFInitializeBuilder(clazz, this.GetType(), "instance", init, symbols, classScope);
-	        } else {
-	            init = classScope.PackageScope.InitMethod.MakeChildWithScope(fullyQualifiedClassName, this.GetType(), symbols, classScope).AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
-	            builder = new SAIFFInitializeBuilder(fullyQualifiedClassName, this.GetType(), "instance", init, symbols, classScope);
-	        }
+        /// <summary>
+        /// Returns the builder consumer, a consumer that the strategy invokes when it is ready to build the code
+        /// </summary>
+        /// <returns>builder consumer</returns>
+        public Consumer<SAIFFInitializeBuilder> GetBuilderConsumer()
+        {
+            return builderConsumer;
+        }
 
-	        if (builderConsumer != null) {
-	            builderConsumer.Accept(builder);
-	        }
-	        foreach (KeyValuePair<string, object> constantEntry in constants) {
-	            builder.Constant(constantEntry.Key, constantEntry.Value);
-	        }
-	        foreach (KeyValuePair<string, ExprNode> exprEntry in expressions) {
-	            builder.Exprnode(exprEntry.Key, exprEntry.Value);
-	        }
-	        init.Block.MethodReturn(builder.Build());
-	        return LocalMethod(init, EPStatementInitServicesConstants.REF);
-	    }
-	}
+        /// <summary>
+        /// Sets the builder consumer, a consumer that the strategy invokes when it is ready to build the code
+        /// </summary>
+        /// <param name="builderConsumer">builder consumer</param>
+        public void SetBuilderConsumer(Consumer<SAIFFInitializeBuilder> builderConsumer)
+        {
+            this.builderConsumer = builderConsumer;
+        }
+
+        public CodegenExpression GetInitializationExpression(CodegenClassScope classScope)
+        {
+            SAIFFInitializeSymbol symbols = new SAIFFInitializeSymbol();
+            SAIFFInitializeBuilder builder;
+            CodegenMethod init;
+            if (clazz != null) {
+                init = classScope.PackageScope.InitMethod.MakeChildWithScope(clazz, this.GetType(), symbols, classScope).AddParam(
+                    typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+                builder = new SAIFFInitializeBuilder(clazz, this.GetType(), "instance", init, symbols, classScope);
+            }
+            else {
+                init = classScope.PackageScope.InitMethod.MakeChildWithScope(fullyQualifiedClassName, this.GetType(), symbols, classScope).AddParam(
+                    typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+                builder = new SAIFFInitializeBuilder(fullyQualifiedClassName, this.GetType(), "instance", init, symbols, classScope);
+            }
+
+            if (builderConsumer != null) {
+                builderConsumer.Accept(builder);
+            }
+
+            foreach (KeyValuePair<string, object> constantEntry in constants) {
+                builder.Constant(constantEntry.Key, constantEntry.Value);
+            }
+
+            foreach (KeyValuePair<string, ExprNode> exprEntry in expressions) {
+                builder.Exprnode(exprEntry.Key, exprEntry.Value);
+            }
+
+            init.Block.MethodReturn(builder.Build());
+            return LocalMethod(init, EPStatementInitServicesConstants.REF);
+        }
+    }
 } // end of namespace

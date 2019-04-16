@@ -11,7 +11,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// <summary>
     /// Represents an stream property identifier in a filter expressiun tree.
     /// </summary>
-    public interface ExprIdentNode : ExprNode, ExprFilterOptimizableNode, ExprStreamRefNode
+    public interface ExprIdentNode : ExprNode,
+        ExprFilterOptimizableNode,
+        ExprStreamRefNode
     {
         string UnresolvedPropertyName { get; }
 

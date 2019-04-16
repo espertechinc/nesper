@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -88,7 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             return CollectionUtil.EVENTBEANARRAY_EMPTY;
         }
 
-        public override ICollection<EventBean> SnapshotBestEffort(QueryGraph queryGraph, Attribute[] annotations)
+        public override ICollection<EventBean> SnapshotBestEffort(
+            QueryGraph queryGraph,
+            Attribute[] annotations)
         {
             TableEvalLockUtil.ObtainLockUnless(instance.TableLevelRWLock.ReadLock, instance.AgentInstanceContext);
             var events = SnapshotNullWhenNoIndex(queryGraph, annotations, null, null);
@@ -104,7 +105,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
         ///     Returns best-effort matching events otherwise which should still be run through any filter expressions.
         /// </summary>
         private ICollection<EventBean> SnapshotNullWhenNoIndex(
-            QueryGraph queryGraph, Attribute[] annotations, ExprNode optionalWhereClause,
+            QueryGraph queryGraph,
+            Attribute[] annotations,
+            ExprNode optionalWhereClause,
             AgentInstanceContext agentInstanceContext)
         {
             // return null when filter cannot be applies
@@ -115,7 +118,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
         }
 
         private ICollection<EventBean> SnapshotAndApplyFilter(
-            QueryGraph queryGraph, Attribute[] annotations, ExprEvaluator filterExpr,
+            QueryGraph queryGraph,
+            Attribute[] annotations,
+            ExprEvaluator filterExpr,
             AgentInstanceContext agentInstanceContext)
         {
             var indexedResult = SnapshotNullWhenNoIndex(queryGraph, annotations, null, null);

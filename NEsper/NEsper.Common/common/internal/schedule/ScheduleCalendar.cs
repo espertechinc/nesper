@@ -9,36 +9,41 @@
 
 namespace com.espertech.esper.common.@internal.schedule
 {
-	/// <summary>
+    /// <summary>
     /// Calendar class for use in scheduling, specifically for use in computing the next invocation time.
     /// </summary>
-
     public class ScheduleCalendar
-	{
-	    public int Milliseconds { get; set; }
+    {
+        public int Milliseconds { get; set; }
 
-	    public int Second { get; set; }
+        public int Second { get; set; }
 
-	    public int Minute { get; set; }
+        public int Minute { get; set; }
 
-	    public int Hour { get; set; }
+        public int Hour { get; set; }
 
-	    public int DayOfMonth { get; set; }
+        public int DayOfMonth { get; set; }
 
-	    public int Month { get; set; }
+        public int Month { get; set; }
 
-	    internal ScheduleCalendar(int milliseconds, int second, int minute, int hour, int dayOfMonth, int month)
-		{
-			Milliseconds = milliseconds;
-			Second = second;
-			Minute = minute;
-			Hour = hour;
-			DayOfMonth = dayOfMonth;
-			Month = month;
-		}
+        internal ScheduleCalendar(
+            int milliseconds,
+            int second,
+            int minute,
+            int hour,
+            int dayOfMonth,
+            int month)
+        {
+            Milliseconds = milliseconds;
+            Second = second;
+            Minute = minute;
+            Hour = hour;
+            DayOfMonth = dayOfMonth;
+            Month = month;
+        }
 
-		internal ScheduleCalendar()
-		{
-		}
-	}
+        internal ScheduleCalendar()
+        {
+        }
+    }
 }

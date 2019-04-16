@@ -15,7 +15,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         private readonly double _maxX;
         private readonly double _maxY;
 
-        public BoundingBox(double minX, double minY, double maxX, double maxY)
+        public BoundingBox(
+            double minX,
+            double minY,
+            double maxX,
+            double maxY)
         {
             _minX = minX;
             _minY = minY;
@@ -31,18 +35,31 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 
         public double MaxY => _maxY;
 
-        public bool ContainsPoint(double x, double y)
+        public bool ContainsPoint(
+            double x,
+            double y)
         {
             return x >= _minX && y >= _minY && x < _maxX && y < _maxY;
         }
 
-        public bool IntersectsBoxIncludingEnd(double x, double y, double width, double height)
+        public bool IntersectsBoxIncludingEnd(
+            double x,
+            double y,
+            double width,
+            double height)
         {
             return IntersectsBoxIncludingEnd(_minX, _minY, _maxX, _maxY, x, y, width, height);
         }
 
-        public static bool IntersectsBoxIncludingEnd(double minX, double minY, double maxX, double maxY, double otherX,
-            double otherY, double otherWidth, double otherHeight)
+        public static bool IntersectsBoxIncludingEnd(
+            double minX,
+            double minY,
+            double maxX,
+            double maxY,
+            double otherX,
+            double otherY,
+            double otherWidth,
+            double otherHeight)
         {
             var otherMaxX = otherX + otherWidth;
             var otherMaxY = otherY + otherHeight;
@@ -53,7 +70,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             return true; // boxes overlap
         }
 
-        public static bool ContainsPoint(double x, double y, double width, double height, double px, double py)
+        public static bool ContainsPoint(
+            double x,
+            double y,
+            double width,
+            double height,
+            double px,
+            double py)
         {
             if (px >= x + width) return false;
             if (px < x) return false;
@@ -72,21 +95,26 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
                    '}';
         }
 
-        public QuadrantEnum GetQuadrant(double x, double y)
+        public QuadrantEnum GetQuadrant(
+            double x,
+            double y)
         {
             var deltaX = x - _minX;
             var deltaY = y - _minY;
             var halfWidth = (_maxX - _minX) / 2;
             var halfHeight = (_maxY - _minY) / 2;
-            if (deltaX < halfWidth)
-            {
+            if (deltaX < halfWidth) {
                 return deltaY < halfHeight ? QuadrantEnum.NW : QuadrantEnum.SW;
             }
 
             return deltaY < halfHeight ? QuadrantEnum.NE : QuadrantEnum.SE;
         }
 
-        public QuadrantAppliesEnum GetQuadrantApplies(double x, double y, double w, double h)
+        public QuadrantAppliesEnum GetQuadrantApplies(
+            double x,
+            double y,
+            double w,
+            double h)
         {
             var deltaX = x - _minX;
             var deltaY = y - _minY;
@@ -94,32 +122,25 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             var halfHeight = (_maxY - _minY) / 2;
             var midX = _minX + halfWidth;
             var midY = _minY + halfHeight;
-            if (deltaX < halfWidth)
-            {
-                if (deltaY < halfHeight)
-                {
+            if (deltaX < halfWidth) {
+                if (deltaY < halfHeight) {
                     // x,y is NW world
-                    if (x + w < _minX || y + h < _minY)
-                    {
+                    if (x + w < _minX || y + h < _minY) {
                         return QuadrantAppliesEnum.NONE;
                     }
 
-                    if (x + w >= midX || y + h >= midY)
-                    {
+                    if (x + w >= midX || y + h >= midY) {
                         return QuadrantAppliesEnum.SOME;
                     }
 
                     return QuadrantAppliesEnum.NW;
                 }
-                else
-                {
-                    if (y > _maxY || x + w < _minX)
-                    {
+                else {
+                    if (y > _maxY || x + w < _minX) {
                         return QuadrantAppliesEnum.NONE;
                     }
 
-                    if (x + w >= midX || y <= midY)
-                    {
+                    if (x + w >= midX || y <= midY) {
                         return QuadrantAppliesEnum.SOME;
                     }
 
@@ -127,30 +148,24 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
                 }
             }
 
-            if (deltaY < halfHeight)
-            {
+            if (deltaY < halfHeight) {
                 // x,y is NE world
-                if (x > _maxX || y + h < _minY)
-                {
+                if (x > _maxX || y + h < _minY) {
                     return QuadrantAppliesEnum.NONE;
                 }
 
-                if (x <= midX || y + h >= midY)
-                {
+                if (x <= midX || y + h >= midY) {
                     return QuadrantAppliesEnum.SOME;
                 }
 
                 return QuadrantAppliesEnum.NE;
             }
-            else
-            {
-                if (x > _maxX || y > _maxY)
-                {
+            else {
+                if (x > _maxX || y > _maxY) {
                     return QuadrantAppliesEnum.NONE;
                 }
 
-                if (x <= midX || y <= midY)
-                {
+                if (x <= midX || y <= midY) {
                     return QuadrantAppliesEnum.SOME;
                 }
 
@@ -186,8 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 
         public override int GetHashCode()
         {
-            unchecked
-            {
+            unchecked {
                 var hashCode = _minX.GetHashCode();
                 hashCode = (hashCode * 397) ^ _minY.GetHashCode();
                 hashCode = (hashCode * 397) ^ _maxX.GetHashCode();
@@ -199,8 +213,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         public BoundingBoxNode TreeForDepth(int depth)
         {
             var quadrants = new BoundingBoxNode[4];
-            if (depth > 0)
-            {
+            if (depth > 0) {
                 var subs = Subdivide();
                 quadrants[0] = subs[0].TreeForDepth(depth - 1);
                 quadrants[1] = subs[1].TreeForDepth(depth - 1);
@@ -211,7 +224,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             return new BoundingBoxNode(this, quadrants[0], quadrants[1], quadrants[2], quadrants[3]);
         }
 
-        public static BoundingBox From(double x, double y, double width, double height)
+        public static BoundingBox From(
+            double x,
+            double y,
+            double width,
+            double height)
         {
             return new BoundingBox(x, y, x + width, y + height);
         }
@@ -221,14 +238,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             return TreeForPath(path, 0);
         }
 
-        private BoundingBoxNode TreeForPath(string[] path, int offset)
+        private BoundingBoxNode TreeForPath(
+            string[] path,
+            int offset)
         {
             var quadrants = new BoundingBoxNode[4];
-            if (offset < path.Length)
-            {
+            if (offset < path.Length) {
                 var subs = Subdivide();
-                switch (path[offset])
-                {
+                switch (path[offset]) {
                     case "nw":
                         quadrants[0] = subs[0].TreeForPath(path, offset + 1);
                         break;
@@ -255,7 +272,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             public readonly BoundingBoxNode sw;
             public readonly BoundingBoxNode se;
 
-            public BoundingBoxNode(BoundingBox bb, BoundingBoxNode nw, BoundingBoxNode ne, BoundingBoxNode sw,
+            public BoundingBoxNode(
+                BoundingBox bb,
+                BoundingBoxNode nw,
+                BoundingBoxNode ne,
+                BoundingBoxNode sw,
                 BoundingBoxNode se)
             {
                 this.bb = bb;
@@ -267,8 +288,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 
             public BoundingBoxNode GetQuadrant(QuadrantEnum q)
             {
-                switch (q)
-                {
+                switch (q) {
                     case QuadrantEnum.NW:
                         return nw;
                     case QuadrantEnum.NE:

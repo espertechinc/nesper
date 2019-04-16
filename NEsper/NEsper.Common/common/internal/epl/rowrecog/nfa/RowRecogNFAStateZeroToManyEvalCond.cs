@@ -15,17 +15,20 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
     /// <summary>
     /// The '*' state in the regex NFA states.
     /// </summary>
-    public class RowRecogNFAStateZeroToManyEvalCond : RowRecogNFAStateBase, RowRecogNFAState
+    public class RowRecogNFAStateZeroToManyEvalCond : RowRecogNFAStateBase,
+        RowRecogNFAState
     {
         private ExprEvaluator expression;
 
-        public override bool Matches(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext)
+        public override bool Matches(
+            EventBean[] eventsPerStream,
+            AgentInstanceContext agentInstanceContext)
         {
             var result = expression.Evaluate(eventsPerStream, true, agentInstanceContext);
-            if (result != null)
-            {
+            if (result != null) {
                 return true.Equals(result);
             }
+
             return false;
         }
 
@@ -34,8 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             return "ZeroMany-Filtered";
         }
 
-        public ExprEvaluator Expression
-        {
+        public ExprEvaluator Expression {
             set { this.expression = value; }
         }
     }

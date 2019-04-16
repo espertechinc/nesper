@@ -16,7 +16,8 @@ namespace com.espertech.esper.common.client.hook.vdw
     /// without the need to retain any data in memory. <para/>An instance is associated to each 
     /// named window that is backed by a virtual data window.
     /// </summary>
-    public interface VirtualDataWindow : IEnumerable<EventBean>, IDisposable
+    public interface VirtualDataWindow : IEnumerable<EventBean>,
+        IDisposable
     {
         /// <summary>
         /// Returns the lookup strategy for use by an EPL statement to obtain data.
@@ -78,6 +79,8 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// </summary>
         /// <param name="newData">the insert stream</param>
         /// <param name="oldData">the remove stream</param>
-        void Update(EventBean[] newData, EventBean[] oldData);
+        void Update(
+            EventBean[] newData,
+            EventBean[] oldData);
     }
 }

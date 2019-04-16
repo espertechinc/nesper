@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private ExprConcatNode _parent;
         private readonly ThreadingProfile _threadingProfile;
 
-        public ExprConcatNodeForge(ExprConcatNode parent, ThreadingProfile threadingProfile)
+        public ExprConcatNodeForge(
+            ExprConcatNode parent,
+            ThreadingProfile threadingProfile)
         {
             _parent = parent;
             _threadingProfile = threadingProfile;
@@ -47,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public Type EvaluationType => typeof(string);
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -55,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprConcatNodeForgeEvalWNew.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);

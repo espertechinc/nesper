@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
     /// </summary>
     public class ExprCountEverNode : ExprAggregateNodeBase
     {
-        public ExprCountEverNode(bool distinct) : base(distinct)
+        public ExprCountEverNode(bool distinct)
+            : base(distinct)
         {
         }
 
@@ -30,27 +31,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            if (positionalParams.Length > 2)
-            {
+            if (positionalParams.Length > 2) {
                 throw MakeExceptionExpectedParamNum(0, 2);
             }
 
-            if (isDistinct)
-            {
+            if (isDistinct) {
                 throw new ExprValidationException(
                     "Aggregation function '" + AggregationFunctionName + "' does now allow distinct");
             }
 
             var ignoreNulls = false;
-            if (positionalParams.Length == 0)
-            {
+            if (positionalParams.Length == 0) {
                 // no parameters is allowed
             }
-            else
-            {
+            else {
                 ignoreNulls = !(positionalParams[0] is ExprWildcard);
-                if (positionalParams.Length == 2)
-                {
+                if (positionalParams.Length == 2) {
                     ValidateFilter(positionalParams[1]);
                     optionalFilter = positionalParams[1];
                 }

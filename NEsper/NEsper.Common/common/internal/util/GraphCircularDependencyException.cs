@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary>Ctor. </summary>
         /// <param name="message">supplies the detailed description</param>
         /// <param name="innerException">the exception cause</param>
-        public GraphCircularDependencyException(String message, Exception innerException)
+        public GraphCircularDependencyException(
+            String message,
+            Exception innerException)
             : base(message, innerException)
         {
         }

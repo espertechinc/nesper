@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -55,12 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 object input,
                 TimeZoneInfo timeZone)
             {
-                try
-                {
+                try {
                     return DateTimeEx.GetInstance(timeZone, format.Parse(input.ToString()));
                 }
-                catch (ParseException ex)
-                {
+                catch (ParseException ex) {
                     throw ExprCastNode.HandleParseException(format, input.ToString(), ex);
                 }
             }

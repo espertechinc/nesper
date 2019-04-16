@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             services = new ArrayWrap<AggregationService>(2);
         }
 
-        public void AssignService(int serviceId, AggregationService aggregationService)
+        public void AssignService(
+            int serviceId,
+            AggregationService aggregationService)
         {
             AIRegistryUtil.CheckExpand(serviceId, services);
             services.Array[serviceId] = aggregationService;
@@ -45,20 +47,27 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         public int InstanceCount { get; private set; }
 
         public void ApplyEnter(
-            EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             services.Array[exprEvaluatorContext.AgentInstanceId].ApplyEnter(
                 eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
         public void ApplyLeave(
-            EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             services.Array[exprEvaluatorContext.AgentInstanceId].ApplyLeave(
                 eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
-        public void SetCurrentAccess(object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
+        public void SetCurrentAccess(
+            object groupKey,
+            int agentInstanceId,
+            AggregationGroupByRollupLevel rollupLevel)
         {
             services.Array[agentInstanceId].SetCurrentAccess(groupKey, agentInstanceId, null);
         }
@@ -74,7 +83,10 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         }
 
         public object GetValue(
-            int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData,
+            int column,
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return services.Array[agentInstanceId].GetValue(
@@ -82,21 +94,30 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         }
 
         public ICollection<EventBean> GetCollectionOfEvents(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return services.Array[context.AgentInstanceId]
                 .GetCollectionOfEvents(column, eventsPerStream, isNewData, context);
         }
 
         public ICollection<object> GetCollectionScalar(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return services.Array[context.AgentInstanceId]
                 .GetCollectionScalar(column, eventsPerStream, isNewData, context);
         }
 
         public EventBean GetEventBean(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return services.Array[context.AgentInstanceId].GetEventBean(column, eventsPerStream, isNewData, context);
         }
@@ -130,8 +151,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         {
         }
 
-        public bool IsGrouped
-        {
+        public bool IsGrouped {
             get { throw new UnsupportedOperationException("Not applicable"); }
         }
     }

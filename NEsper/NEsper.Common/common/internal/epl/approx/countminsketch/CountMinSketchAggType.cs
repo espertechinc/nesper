@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -25,8 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
     {
         public static string GetFuncName(this CountMinSketchAggType enumValue)
         {
-            switch (enumValue)
-            {
+            switch (enumValue) {
                 case CountMinSketchAggType.ADD:
                     return "countMinSketchAdd";
                 case CountMinSketchAggType.FREQ:
@@ -42,8 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
         public static CountMinSketchAggType? FromNameMayMatch(string name)
         {
-            switch (name.ToLowerInvariant())
-            {
+            switch (name.ToLowerInvariant()) {
                 case "countminsketchadd":
                     return CountMinSketchAggType.ADD;
                 case "countminsketchfrequency":

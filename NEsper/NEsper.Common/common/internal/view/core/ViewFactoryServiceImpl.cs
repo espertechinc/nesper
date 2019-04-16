@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.view.derived;
 using com.espertech.esper.common.@internal.view.expression;
@@ -38,131 +37,162 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
-	public class ViewFactoryServiceImpl : ViewFactoryService {
+    public class ViewFactoryServiceImpl : ViewFactoryService
+    {
+        public readonly static ViewFactoryServiceImpl INSTANCE = new ViewFactoryServiceImpl();
 
-	    public readonly static ViewFactoryServiceImpl INSTANCE = new ViewFactoryServiceImpl();
+        private ViewFactoryServiceImpl()
+        {
+        }
 
-	    private ViewFactoryServiceImpl() {
-	    }
+        public LengthWindowViewFactory Length()
+        {
+            return new LengthWindowViewFactory();
+        }
 
-	    public LengthWindowViewFactory Length() {
-	        return new LengthWindowViewFactory();
-	    }
+        public PriorEventViewFactory Prior()
+        {
+            return new PriorEventViewFactory();
+        }
 
-	    public PriorEventViewFactory Prior() {
-	        return new PriorEventViewFactory();
-	    }
+        public TimeWindowViewFactory Time()
+        {
+            return new TimeWindowViewFactory();
+        }
 
-	    public TimeWindowViewFactory Time() {
-	        return new TimeWindowViewFactory();
-	    }
+        public KeepAllViewFactory Keepall()
+        {
+            return new KeepAllViewFactory();
+        }
 
-	    public KeepAllViewFactory Keepall() {
-	        return new KeepAllViewFactory();
-	    }
+        public TimeBatchViewFactory Timebatch()
+        {
+            return new TimeBatchViewFactory();
+        }
 
-	    public TimeBatchViewFactory Timebatch() {
-	        return new TimeBatchViewFactory();
-	    }
+        public TimeLengthBatchViewFactory Timelengthbatch()
+        {
+            return new TimeLengthBatchViewFactory();
+        }
 
-	    public TimeLengthBatchViewFactory Timelengthbatch() {
-	        return new TimeLengthBatchViewFactory();
-	    }
+        public LengthBatchViewFactory Lengthbatch()
+        {
+            return new LengthBatchViewFactory();
+        }
 
-	    public LengthBatchViewFactory Lengthbatch() {
-	        return new LengthBatchViewFactory();
-	    }
+        public SortWindowViewFactory Sort()
+        {
+            return new SortWindowViewFactory();
+        }
 
-	    public SortWindowViewFactory Sort() {
-	        return new SortWindowViewFactory();
-	    }
+        public RankWindowViewFactory Rank()
+        {
+            return new RankWindowViewFactory();
+        }
 
-	    public RankWindowViewFactory Rank() {
-	        return new RankWindowViewFactory();
-	    }
+        public TimeAccumViewFactory Timeaccum()
+        {
+            return new TimeAccumViewFactory();
+        }
 
-	    public TimeAccumViewFactory Timeaccum() {
-	        return new TimeAccumViewFactory();
-	    }
+        public UniqueByPropertyViewFactory Unique()
+        {
+            return new UniqueByPropertyViewFactory();
+        }
 
-	    public UniqueByPropertyViewFactory Unique() {
-	        return new UniqueByPropertyViewFactory();
-	    }
+        public FirstUniqueByPropertyViewFactory Firstunique()
+        {
+            return new FirstUniqueByPropertyViewFactory();
+        }
 
-	    public FirstUniqueByPropertyViewFactory Firstunique() {
-	        return new FirstUniqueByPropertyViewFactory();
-	    }
+        public FirstTimeViewFactory Firsttime()
+        {
+            return new FirstTimeViewFactory();
+        }
 
-	    public FirstTimeViewFactory Firsttime() {
-	        return new FirstTimeViewFactory();
-	    }
+        public ExternallyTimedBatchViewFactory Exttimebatch()
+        {
+            return new ExternallyTimedBatchViewFactory();
+        }
 
-	    public ExternallyTimedBatchViewFactory Exttimebatch() {
-	        return new ExternallyTimedBatchViewFactory();
-	    }
+        public ExternallyTimedWindowViewFactory Exttime()
+        {
+            return new ExternallyTimedWindowViewFactory();
+        }
 
-	    public ExternallyTimedWindowViewFactory Exttime() {
-	        return new ExternallyTimedWindowViewFactory();
-	    }
+        public TimeOrderViewFactory Timeorder()
+        {
+            return new TimeOrderViewFactory();
+        }
 
-	    public TimeOrderViewFactory Timeorder() {
-	        return new TimeOrderViewFactory();
-	    }
+        public LastEventViewFactory Lastevent()
+        {
+            return new LastEventViewFactory();
+        }
 
-	    public LastEventViewFactory Lastevent() {
-	        return new LastEventViewFactory();
-	    }
+        public FirstEventViewFactory Firstevent()
+        {
+            return new FirstEventViewFactory();
+        }
 
-	    public FirstEventViewFactory Firstevent() {
-	        return new FirstEventViewFactory();
-	    }
+        public FirstLengthWindowViewFactory Firstlength()
+        {
+            return new FirstLengthWindowViewFactory();
+        }
 
-	    public FirstLengthWindowViewFactory Firstlength() {
-	        return new FirstLengthWindowViewFactory();
-	    }
+        public SizeViewFactory Size()
+        {
+            return new SizeViewFactory();
+        }
 
-	    public SizeViewFactory Size() {
-	        return new SizeViewFactory();
-	    }
+        public UnivariateStatisticsViewFactory Uni()
+        {
+            return new UnivariateStatisticsViewFactory();
+        }
 
-	    public UnivariateStatisticsViewFactory Uni() {
-	        return new UnivariateStatisticsViewFactory();
-	    }
+        public WeightedAverageViewFactory Weightedavg()
+        {
+            return new WeightedAverageViewFactory();
+        }
 
-	    public WeightedAverageViewFactory Weightedavg() {
-	        return new WeightedAverageViewFactory();
-	    }
+        public RegressionLinestViewFactory Regression()
+        {
+            return new RegressionLinestViewFactory();
+        }
 
-	    public RegressionLinestViewFactory Regression() {
-	        return new RegressionLinestViewFactory();
-	    }
+        public CorrelationViewFactory Correlation()
+        {
+            return new CorrelationViewFactory();
+        }
 
-	    public CorrelationViewFactory Correlation() {
-	        return new CorrelationViewFactory();
-	    }
+        public GroupByViewFactory Group()
+        {
+            return new GroupByViewFactory();
+        }
 
-	    public GroupByViewFactory Group() {
-	        return new GroupByViewFactory();
-	    }
+        public IntersectViewFactory Intersect()
+        {
+            return new IntersectViewFactory();
+        }
 
-	    public IntersectViewFactory Intersect() {
-	        return new IntersectViewFactory();
-	    }
+        public UnionViewFactory Union()
+        {
+            return new UnionViewFactory();
+        }
 
-	    public UnionViewFactory Union() {
-	        return new UnionViewFactory();
-	    }
+        public ExpressionBatchViewFactory Exprbatch()
+        {
+            return new ExpressionBatchViewFactory();
+        }
 
-	    public ExpressionBatchViewFactory Exprbatch() {
-	        return new ExpressionBatchViewFactory();
-	    }
+        public ExpressionWindowViewFactory Expr()
+        {
+            return new ExpressionWindowViewFactory();
+        }
 
-	    public ExpressionWindowViewFactory Expr() {
-	        return new ExpressionWindowViewFactory();
-	    }
-
-	    public RowRecogNFAViewFactory RowRecog() {
-	        return new RowRecogNFAViewFactory();
-	    }
-	}
+        public RowRecogNFAViewFactory RowRecog()
+        {
+            return new RowRecogNFAViewFactory();
+        }
+    }
 } // end of namespace

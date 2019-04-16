@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -17,9 +16,16 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
-	public interface FAFQueryMethodForge {
-	    IList<StmtClassForgable> MakeForgables(string queryMethodProviderClassName, string classPostfix, CodegenPackageScope packageScope);
+    public interface FAFQueryMethodForge
+    {
+        IList<StmtClassForgable> MakeForgables(
+            string queryMethodProviderClassName,
+            string classPostfix,
+            CodegenPackageScope packageScope);
 
-	    void MakeMethod(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
-	}
+        void MakeMethod(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
+    }
 } // end of namespace

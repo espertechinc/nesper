@@ -42,7 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         /// <param name="numStreams">The number streams.</param>
         /// <param name="optionalHint">The optional hint.</param>
         /// <param name="nToZeroAnalysis">if set to <c>true</c> [n to zero analysis].</param>
-        public QueryGraphForge(int numStreams, ExcludePlanHint optionalHint, bool nToZeroAnalysis)
+        public QueryGraphForge(
+            int numStreams,
+            ExcludePlanHint optionalHint,
+            bool nToZeroAnalysis)
         {
             NumStreams = numStreams;
             this.optionalHint = optionalHint;
@@ -69,7 +72,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         /// <param name="nodeRight">The node right.</param>
         /// <returns></returns>
         public bool AddStrictEquals(
-            int streamLeft, string propertyLeft, ExprIdentNode nodeLeft, int streamRight, string propertyRight,
+            int streamLeft,
+            string propertyLeft,
+            ExprIdentNode nodeLeft,
+            int streamRight,
+            string propertyRight,
             ExprIdentNode nodeRight)
         {
             Check(streamLeft, streamRight);
@@ -86,7 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             return addedLeft || addedRight;
         }
 
-        public bool IsNavigableAtAll(int streamFrom, int streamTo)
+        public bool IsNavigableAtAll(
+            int streamFrom,
+            int streamTo)
         {
             var key = new QueryGraphKey(streamFrom, streamTo);
             var value = streamJoinMap.Get(key);
@@ -105,7 +114,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             return result;
         }
 
-        public QueryGraphValueForge GetGraphValue(int streamLookup, int streamIndexed)
+        public QueryGraphValueForge GetGraphValue(
+            int streamLookup,
+            int streamIndexed)
         {
             var key = new QueryGraphKey(streamLookup, streamIndexed);
             var value = streamJoinMap.Get(key);
@@ -123,7 +134,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         /// </summary>
         /// <param name="typesPerStream">type info</param>
         /// <param name="queryGraph">- navigablity info between streams</param>
-        public static void FillEquivalentNav(EventType[] typesPerStream, QueryGraphForge queryGraph)
+        public static void FillEquivalentNav(
+            EventType[] typesPerStream,
+            QueryGraphForge queryGraph)
         {
             bool addedEquivalency;
 
@@ -153,7 +166,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         /// </summary>
         /// <exception cref="IllegalStateException">Unexpected key and index property number mismatch</exception>
         private static bool FillEquivalentNav(
-            EventType[] typesPerStream, QueryGraphForge queryGraph, int lookupStream, int indexedStream)
+            EventType[] typesPerStream,
+            QueryGraphForge queryGraph,
+            int lookupStream,
+            int indexedStream)
         {
             var addedEquivalency = false;
 
@@ -198,7 +214,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         ///     Add navigation entry between stream s0 and property p0 to stream s2, property p2
         /// </summary>
         private static bool FillEquivalentNav(
-            EventType[] typesPerStream, QueryGraphForge queryGraph, int lookupStream, string keyProp, int indexedStream,
+            EventType[] typesPerStream,
+            QueryGraphForge queryGraph,
+            int lookupStream,
+            string keyProp,
+            int indexedStream,
             string indexProp)
         {
             var addedEquivalency = false;
@@ -260,9 +280,12 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public void AddRangeStrict(
-            int streamNumStart, ExprIdentNode propertyStartExpr,
-            int streamNumEnd, ExprIdentNode propertyEndExpr,
-            int streamNumValue, ExprIdentNode propertyValueExpr,
+            int streamNumStart,
+            ExprIdentNode propertyStartExpr,
+            int streamNumEnd,
+            ExprIdentNode propertyEndExpr,
+            int streamNumValue,
+            ExprIdentNode propertyValueExpr,
             QueryGraphRangeEnum rangeOp)
         {
             Check(streamNumStart, streamNumValue);
@@ -307,8 +330,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public void AddRelationalOpStrict(
-            int streamIdLeft, ExprIdentNode propertyLeftExpr,
-            int streamIdRight, ExprIdentNode propertyRightExpr,
+            int streamIdLeft,
+            ExprIdentNode propertyLeftExpr,
+            int streamIdRight,
+            ExprIdentNode propertyRightExpr,
             RelationalOpEnum relationalOpEnum)
         {
             Check(streamIdLeft, streamIdRight);
@@ -320,7 +345,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 propertyLeftExpr, false);
         }
 
-        public void AddUnkeyedExpression(int indexedStream, ExprIdentNode indexedProp, ExprNode exprNodeNoIdent)
+        public void AddUnkeyedExpression(
+            int indexedStream,
+            ExprIdentNode indexedProp,
+            ExprNode exprNodeNoIdent)
         {
             if (indexedStream < 0 || indexedStream >= NumStreams) {
                 throw new ArgumentException("Invalid indexed stream " + indexedStream);
@@ -339,13 +367,18 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public void AddKeyedExpression(
-            int indexedStream, ExprIdentNode indexedProp, int keyExprStream, ExprNode exprNodeNoIdent)
+            int indexedStream,
+            ExprIdentNode indexedProp,
+            int keyExprStream,
+            ExprNode exprNodeNoIdent)
         {
             Check(indexedStream, keyExprStream);
             InternalAddEqualsNoProp(keyExprStream, indexedStream, indexedProp, exprNodeNoIdent);
         }
 
-        private void Check(int indexedStream, int keyStream)
+        private void Check(
+            int indexedStream,
+            int keyStream)
         {
             if (indexedStream < 0 || indexedStream >= NumStreams) {
                 throw new ArgumentException("Invalid indexed stream " + indexedStream);
@@ -372,8 +405,13 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public void AddRangeExpr(
-            int indexedStream, ExprIdentNode indexedProp, ExprNode startNode, int? optionalStartStreamNum,
-            ExprNode endNode, int? optionalEndStreamNum, QueryGraphRangeEnum rangeOp)
+            int indexedStream,
+            ExprIdentNode indexedProp,
+            ExprNode startNode,
+            int? optionalStartStreamNum,
+            ExprNode endNode,
+            int? optionalEndStreamNum,
+            QueryGraphRangeEnum rangeOp)
         {
             if (optionalStartStreamNum == null && optionalEndStreamNum == null) {
                 if (NumStreams > 1) {
@@ -397,16 +435,19 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             // add for a specific stream only
             if (optionalStartStreamNum.Equals(optionalEndStreamNum) || optionalEndStreamNum.Equals(-1)) {
-                InternalAddRange(optionalStartStreamNum, indexedStream, rangeOp, startNode, endNode, indexedProp);
+                InternalAddRange(optionalStartStreamNum.Value, indexedStream, rangeOp, startNode, endNode, indexedProp);
             }
 
             if (optionalStartStreamNum.Equals(-1)) {
-                InternalAddRange(optionalEndStreamNum, indexedStream, rangeOp, startNode, endNode, indexedProp);
+                InternalAddRange(optionalEndStreamNum.Value, indexedStream, rangeOp, startNode, endNode, indexedProp);
             }
         }
 
         public void AddRelationalOp(
-            int indexedStream, ExprIdentNode indexedProp, int? keyStreamNum, ExprNode exprNodeNoIdent,
+            int indexedStream,
+            ExprIdentNode indexedProp,
+            int? keyStreamNum,
+            ExprNode exprNodeNoIdent,
             RelationalOpEnum relationalOpEnum)
         {
             if (keyStreamNum == null) {
@@ -432,18 +473,24 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             // add for a specific stream only
             InternalAddRelOp(
-                keyStreamNum, indexedStream, exprNodeNoIdent, QueryGraphRangeEnum.MapFrom(relationalOpEnum),
+                keyStreamNum.Value, indexedStream, exprNodeNoIdent, QueryGraphRangeEnum.MapFrom(relationalOpEnum),
                 indexedProp, false);
         }
 
         public void AddInSetSingleIndex(
-            int testStreamNum, ExprNode testPropExpr, int setStreamNum, ExprNode[] setPropExpr)
+            int testStreamNum,
+            ExprNode testPropExpr,
+            int setStreamNum,
+            ExprNode[] setPropExpr)
         {
             Check(testStreamNum, setStreamNum);
             InternalAddInKeywordSingleIndex(setStreamNum, testStreamNum, testPropExpr, setPropExpr);
         }
 
-        public void AddInSetSingleIndexUnkeyed(int testStreamNum, ExprNode testPropExpr, ExprNode[] setPropExpr)
+        public void AddInSetSingleIndexUnkeyed(
+            int testStreamNum,
+            ExprNode testPropExpr,
+            ExprNode[] setPropExpr)
         {
             if (NumStreams > 1) {
                 for (var i = 0; i < NumStreams; i++) {
@@ -458,13 +505,19 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public void AddInSetMultiIndex(
-            int testStreamNum, ExprNode testPropExpr, int setStreamNum, ExprNode[] setPropExpr)
+            int testStreamNum,
+            ExprNode testPropExpr,
+            int setStreamNum,
+            ExprNode[] setPropExpr)
         {
             Check(testStreamNum, setStreamNum);
             InternalAddInKeywordMultiIndex(testStreamNum, setStreamNum, testPropExpr, setPropExpr);
         }
 
-        public void AddInSetMultiIndexUnkeyed(ExprNode testPropExpr, int setStreamNum, ExprNode[] setPropExpr)
+        public void AddInSetMultiIndexUnkeyed(
+            ExprNode testPropExpr,
+            int setStreamNum,
+            ExprNode[] setPropExpr)
         {
             for (var i = 0; i < NumStreams; i++) {
                 if (i != setStreamNum) {
@@ -474,7 +527,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public void AddCustomIndex(
-            string operationName, ExprNode[] indexExpressions, IList<Pair<ExprNode, int[]>> streamKeys, int streamValue)
+            string operationName,
+            ExprNode[] indexExpressions,
+            IList<Pair<ExprNode, int[]>> streamKeys,
+            int streamValue)
         {
             var expressionPosition = 0;
             foreach (var pair in streamKeys) {
@@ -504,8 +560,12 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         private void InternalAddRange(
-            int streamKey, int streamValue, QueryGraphRangeEnum rangeOp, ExprNode propertyStartExpr,
-            ExprNode propertyEndExpr, ExprIdentNode propertyValueExpr)
+            int streamKey,
+            int streamValue,
+            QueryGraphRangeEnum rangeOp,
+            ExprNode propertyStartExpr,
+            ExprNode propertyEndExpr,
+            ExprIdentNode propertyValueExpr)
         {
             if (nToZeroAnalysis && streamValue != 0) {
                 return;
@@ -521,7 +581,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         private void InternalAddRelOp(
-            int streamKey, int streamValue, ExprNode keyExpr, QueryGraphRangeEnum rangeEnum, ExprIdentNode valueExpr,
+            int streamKey,
+            int streamValue,
+            ExprNode keyExpr,
+            QueryGraphRangeEnum rangeEnum,
+            ExprIdentNode valueExpr,
             bool isBetweenOrIn)
         {
             if (nToZeroAnalysis && streamValue != 0) {
@@ -538,7 +602,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         private bool InternalAddEquals(
-            int streamLookup, string propertyLookup, ExprIdentNode propertyLookupNode, int streamIndexed,
+            int streamLookup,
+            string propertyLookup,
+            ExprIdentNode propertyLookupNode,
+            int streamIndexed,
             ExprIdentNode propertyIndexedNode)
         {
             if (nToZeroAnalysis && streamIndexed != 0) {
@@ -556,7 +623,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         private void InternalAddEqualsNoProp(
-            int keyExprStream, int indexedStream, ExprIdentNode indexedProp, ExprNode exprNodeNoIdent)
+            int keyExprStream,
+            int indexedStream,
+            ExprIdentNode indexedProp,
+            ExprNode exprNodeNoIdent)
         {
             if (nToZeroAnalysis && indexedStream != 0) {
                 return;
@@ -572,7 +642,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         private void InternalAddEqualsUnkeyed(
-            int streamKey, int streamValue, ExprIdentNode indexedProp, ExprNode exprNodeNoIdent)
+            int streamKey,
+            int streamValue,
+            ExprIdentNode indexedProp,
+            ExprNode exprNodeNoIdent)
         {
             if (nToZeroAnalysis && streamValue != 0) {
                 return;
@@ -588,7 +661,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         private void InternalAddInKeywordSingleIndex(
-            int streamKey, int streamValue, ExprNode testPropExpr, ExprNode[] setPropExpr)
+            int streamKey,
+            int streamValue,
+            ExprNode testPropExpr,
+            ExprNode[] setPropExpr)
         {
             if (nToZeroAnalysis && streamValue != 0) {
                 return;
@@ -604,7 +680,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         private void InternalAddInKeywordMultiIndex(
-            int streamKey, int streamValue, ExprNode testPropExpr, ExprNode[] setPropExpr)
+            int streamKey,
+            int streamValue,
+            ExprNode testPropExpr,
+            ExprNode[] setPropExpr)
         {
             if (nToZeroAnalysis && streamValue != 0) {
                 return;
@@ -619,7 +698,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             value.AddInKeywordMultiIdx(testPropExpr, setPropExpr);
         }
 
-        private QueryGraphValueForge GetCreateValue(int streamKey, int streamValue)
+        private QueryGraphValueForge GetCreateValue(
+            int streamKey,
+            int streamValue)
         {
             Check(streamValue, streamKey);
             var key = new QueryGraphKey(streamKey, streamValue);
@@ -632,7 +713,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             return value;
         }
 
-        public CodegenExpression Make(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block.DeclareVar(
                 typeof(IDictionary<string, object>), "map", NewInstance(typeof(Dictionary<string, object>)));

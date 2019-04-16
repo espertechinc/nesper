@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
@@ -15,7 +14,10 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.script.compiletime
 {
-	public interface ScriptCompileTimeResolver : CompileTimeResolver {
-	    ExpressionScriptProvided Resolve(string name, int numParameters);
-	}
+    public interface ScriptCompileTimeResolver : CompileTimeResolver
+    {
+        ExpressionScriptProvided Resolve(
+            string name,
+            int numParameters);
+    }
 } // end of namespace

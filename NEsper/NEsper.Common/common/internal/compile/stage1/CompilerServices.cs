@@ -13,12 +13,16 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.compile.stage1
 {
-	public interface CompilerServices
-	{
-	    StatementSpecRaw ParseWalk(string epl, StatementSpecMapEnv mapEnv) ;
+    public interface CompilerServices
+    {
+        StatementSpecRaw ParseWalk(
+            string epl,
+            StatementSpecMapEnv mapEnv);
 
-	    string LexSampleSQL(string querySQL) ;
+        string LexSampleSQL(string querySQL);
 
-	    ExprNode CompileExpression(string expression, StatementCompileTimeServices services) ;
-	}
+        ExprNode CompileExpression(
+            string expression,
+            StatementCompileTimeServices services);
+    }
 } // end of namespace

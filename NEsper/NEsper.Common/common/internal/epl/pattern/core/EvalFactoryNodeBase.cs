@@ -15,7 +15,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
         public abstract bool IsFilterChildNonQuitting { get; }
         public abstract bool IsStateful { get; }
-        public abstract EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode);
+
+        public abstract EvalNode MakeEvalNode(
+            PatternAgentInstanceContext agentInstanceContext,
+            EvalNode parentNode);
+
         public abstract void Accept(EvalFactoryNodeVisitor visitor);
     }
 } // end of namespace

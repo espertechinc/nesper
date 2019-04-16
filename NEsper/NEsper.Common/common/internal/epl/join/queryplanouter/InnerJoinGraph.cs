@@ -21,14 +21,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
 
         private readonly int numStreams;
 
-        public InnerJoinGraph(int numStreams, ISet<InterchangeablePair<int, int>> innerJoins)
+        public InnerJoinGraph(
+            int numStreams,
+            ISet<InterchangeablePair<int, int>> innerJoins)
         {
             this.numStreams = numStreams;
             IsAllInnerJoin = false;
             this.innerJoins = innerJoins;
         }
 
-        public InnerJoinGraph(int numStreams, bool isAllInnerJoin)
+        public InnerJoinGraph(
+            int numStreams,
+            bool isAllInnerJoin)
         {
             this.numStreams = numStreams;
             IsAllInnerJoin = isAllInnerJoin;
@@ -66,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             return hasInnerJoin;
         }
 
-        public static InnerJoinGraph GraphInnerJoins(int numStreams, OuterJoinDesc[] outerJoinDescList)
+        public static InnerJoinGraph GraphInnerJoins(
+            int numStreams,
+            OuterJoinDesc[] outerJoinDescList)
         {
             if (outerJoinDescList.Length + 1 != numStreams) {
                 throw new ArgumentException("Number of outer join descriptors and number of streams not matching up");
@@ -106,7 +112,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             return new InnerJoinGraph(numStreams, graph);
         }
 
-        public void AddRequiredStreams(int streamNum, ISet<int> requiredStreams, ISet<int> completedStreams)
+        public void AddRequiredStreams(
+            int streamNum,
+            ISet<int> requiredStreams,
+            ISet<int> completedStreams)
         {
             if (IsAllInnerJoin) {
                 for (var i = 0; i < numStreams; i++) {

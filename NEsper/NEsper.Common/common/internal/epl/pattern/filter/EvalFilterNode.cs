@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         internal readonly EvalFilterFactoryNode factoryNode;
 
-        public EvalFilterNode(PatternAgentInstanceContext context, EvalFilterFactoryNode factoryNode) : base(context)
+        public EvalFilterNode(
+            PatternAgentInstanceContext context,
+            EvalFilterFactoryNode factoryNode)
+            : base(context)
         {
             this.factoryNode = factoryNode;
 

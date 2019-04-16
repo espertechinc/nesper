@@ -17,7 +17,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenClassScope : CodegenScope
     {
-        public CodegenClassScope(bool debug, CodegenPackageScope packageScope, string outermostClassName)
+        public CodegenClassScope(
+            bool debug,
+            CodegenPackageScope packageScope,
+            string outermostClassName)
             : base(debug)
         {
             PackageScope = packageScope;
@@ -32,22 +35,29 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public bool IsInstrumented => PackageScope.IsInstrumented;
 
-        public CodegenExpressionField AddFieldUnshared<T>(bool isFinal, CodegenExpression assignScopedPackageInitMethod)
+        public CodegenExpressionField AddFieldUnshared<T>(
+            bool isFinal,
+            CodegenExpression assignScopedPackageInitMethod)
         {
             return AddFieldUnshared(isFinal, typeof(T), assignScopedPackageInitMethod);
         }
 
-        public CodegenExpressionField AddFieldUnshared(bool isFinal, Type type, CodegenExpression assignScopedPackageInitMethod)
+        public CodegenExpressionField AddFieldUnshared(
+            bool isFinal,
+            Type type,
+            CodegenExpression assignScopedPackageInitMethod)
         {
             return PackageScope.AddFieldUnshared(isFinal, type, assignScopedPackageInitMethod);
         }
-        
+
         public CodegenExpressionField AddOrGetFieldSharable(CodegenFieldSharable sharable)
         {
             return PackageScope.AddOrGetFieldSharable(sharable);
         }
 
-        public CodegenExpressionField AddOrGetFieldWellKnown(CodegenFieldName fieldName, Type type)
+        public CodegenExpressionField AddOrGetFieldWellKnown(
+            CodegenFieldName fieldName,
+            Type type)
         {
             return PackageScope.AddOrGetFieldWellKnown(fieldName, type);
         }
@@ -62,7 +72,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             AdditionalInnerClasses.AddAll(innerClasses);
         }
 
-        public CodegenField AddSubstitutionParameter(string name, Type type)
+        public CodegenField AddSubstitutionParameter(
+            string name,
+            Type type)
         {
             return PackageScope.AddSubstitutionParameter(name, type);
         }

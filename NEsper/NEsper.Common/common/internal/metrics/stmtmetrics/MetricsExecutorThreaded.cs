@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             _threadPool = new DedicatedExecutorService("Metrics", 1);
         }
 
-        public void Execute(MetricExec execution, MetricExecutionContext executionContext)
+        public void Execute(
+            MetricExec execution,
+            MetricExecutionContext executionContext)
         {
             _threadPool.Submit(() => execution.Execute(executionContext));
         }

@@ -62,7 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         public override JoinSetComposerDesc Create(
-            Viewable[] streamViews, bool isFireAndForget, AgentInstanceContext agentInstanceContext,
+            Viewable[] streamViews,
+            bool isFireAndForget,
+            AgentInstanceContext agentInstanceContext,
             bool isRecoveringResilient)
         {
             // Build indexes
@@ -246,7 +248,8 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         private VirtualDWView GetNamedWindowVirtualDataWindow(
-            int streamNo, StreamJoinAnalysisResultRuntime streamJoinAnalysisResult,
+            int streamNo,
+            StreamJoinAnalysisResultRuntime streamJoinAnalysisResult,
             AgentInstanceContext agentInstanceContext)
         {
             NamedWindow namedWindow = streamJoinAnalysisResult.NamedWindows[streamNo];
@@ -263,7 +266,8 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         private IDictionary<TableLookupIndexReqKey, EventTable>[] RemoveTableIndexes(
-            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, Table[] tablesPerStream)
+            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream,
+            Table[] tablesPerStream)
         {
             var result = new IDictionary<TableLookupIndexReqKey, EventTable>[indexesPerStream.Length];
             for (var i = 0; i < indexesPerStream.Length; i++) {

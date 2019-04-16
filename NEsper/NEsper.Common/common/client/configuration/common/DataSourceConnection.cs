@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.client.configuration.common
@@ -23,7 +22,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="contextLookupName">is the object name to look up</param>
         /// <param name="envProperties">are the context properties to use constructing InitialContext</param>
-        public DataSourceConnection(string contextLookupName, Properties envProperties)
+        public DataSourceConnection(
+            string contextLookupName,
+            Properties envProperties)
         {
             ContextLookupName = contextLookupName;
             EnvProperties = envProperties;

@@ -34,8 +34,7 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns list of expressions in grouping set. </summary>
         /// <value>group-by expressions</value>
-        public IList<GroupByClauseExpression> Expressions
-        {
+        public IList<GroupByClauseExpression> Expressions {
             get { return _expressions; }
             set { _expressions = value; }
         }
@@ -44,12 +43,12 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("grouping sets(");
             String delimiter = "";
-            foreach (GroupByClauseExpression child in _expressions)
-            {
+            foreach (GroupByClauseExpression child in _expressions) {
                 writer.Write(delimiter);
                 child.ToEPL(writer);
                 delimiter = ", ";
             }
+
             writer.Write(")");
         }
     }

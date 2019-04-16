@@ -28,12 +28,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         }
 
         public Guard MakeGuard(
-            PatternAgentInstanceContext context, MatchedEventMap beginState, Quitable quitable, object guardState)
+            PatternAgentInstanceContext context,
+            MatchedEventMap beginState,
+            Quitable quitable,
+            object guardState)
         {
             return new TimerWithinGuard(ComputeTime(beginState, context), quitable);
         }
 
-        public long ComputeTime(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public long ComputeTime(
+            MatchedEventMap beginState,
+            PatternAgentInstanceContext context)
         {
             return deltaCompute.ComputeDelta(beginState, context);
         }

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -17,22 +16,29 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumOrderByAscDescEventsForge : EnumForgeBase {
+    public class EnumOrderByAscDescEventsForge : EnumForgeBase
+    {
+        internal readonly bool descending;
 
-	    internal readonly bool descending;
+        public EnumOrderByAscDescEventsForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            bool descending)
+            : base(innerExpression, streamCountIncoming)
+        {
+            this.descending = descending;
+        }
 
-	    public EnumOrderByAscDescEventsForge(ExprForge innerExpression, int streamCountIncoming, bool descending)
-	    	 : base(innerExpression, streamCountIncoming)
-	    {
-	        this.descending = descending;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumOrderByAscDescEventsForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumOrderByAscDescEventsForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumOrderByAscDescEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumOrderByAscDescEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

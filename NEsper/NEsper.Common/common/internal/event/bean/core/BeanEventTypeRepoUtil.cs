@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         }
 
         public static IDictionary<string, Type> ResolveBeanEventTypes(
-            IDictionary<string, string> typeToClassName, 
+            IDictionary<string, string> typeToClassName,
             ImportService importService)
         {
             if (typeToClassName.IsEmpty()) {

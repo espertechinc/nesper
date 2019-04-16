@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.settings
         /// </summary>
         /// <param name="msg">exception message</param>
         /// <param name="ex">inner exception</param>
-        public ImportUndefinedException(string msg, Exception ex)
+        public ImportUndefinedException(
+            string msg,
+            Exception ex)
             : base(msg, ex)
         {
         }

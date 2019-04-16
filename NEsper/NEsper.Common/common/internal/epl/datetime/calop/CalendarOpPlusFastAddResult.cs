@@ -10,15 +10,17 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
-	public class CalendarOpPlusFastAddResult
+    public class CalendarOpPlusFastAddResult
     {
-        public CalendarOpPlusFastAddResult(long factor, DateTimeEx scheduled)
+        public CalendarOpPlusFastAddResult(
+            long factor,
+            DateTimeEx scheduled)
         {
-	        Factor = factor;
-	        Scheduled = scheduled;
-	    }
+            Factor = factor;
+            Scheduled = scheduled;
+        }
 
-	    public long Factor { get; private set; }
+        public long Factor { get; private set; }
 
         public DateTimeEx Scheduled { get; private set; }
     }

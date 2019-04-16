@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -19,45 +18,53 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createschema
 {
-	public class StatementAgentInstanceFactoryCreateSchema : StatementAgentInstanceFactory {
+    public class StatementAgentInstanceFactoryCreateSchema : StatementAgentInstanceFactory
+    {
+        private EventType eventType;
+        private Viewable viewable;
 
-	    private EventType eventType;
-	    private Viewable viewable;
+        public EventType EventType {
+            set {
+                this.eventType = value;
+                this.viewable = new ViewableDefaultImpl(value);
+            }
+        }
 
-	    public EventType EventType {
-	        set {
-	            this.eventType = value;
-	            this.viewable = new ViewableDefaultImpl(value);
-	        }
-	    }
+        public EventType StatementEventType {
+            get => viewable.EventType;
+        }
 
-	    public EventType StatementEventType {
-	        get => viewable.EventType;
-	    }
+        public void StatementCreate(StatementContext statementContext)
+        {
+            if (eventType.Metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
+                throw new EPException("Unexpected visibility of value " + NameAccessModifier.PRECONFIGURED);
+            }
+        }
 
-	    public void StatementCreate(StatementContext statementContext) {
-	        if (eventType.Metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
-	            throw new EPException("Unexpected visibility of value " + NameAccessModifier.PRECONFIGURED);
-	        }
-	    }
+        public void StatementDestroy(StatementContext statementContext)
+        {
+        }
 
-	    public void StatementDestroy(StatementContext statementContext) {
-	    }
+        public void StatementDestroyPreconditions(StatementContext statementContext)
+        {
+        }
 
-	    public void StatementDestroyPreconditions(StatementContext statementContext)
-	    {
-	    }
+        public StatementAgentInstanceFactoryResult NewContext(
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
+        {
+            return new StatementAgentInstanceFactoryCreateSchemaResult(viewable, AgentInstanceStopCallbackNoAction.INSTANCE, agentInstanceContext);
+        }
 
-        public StatementAgentInstanceFactoryResult NewContext(AgentInstanceContext agentInstanceContext, bool isRecoveringResilient) {
-	        return new StatementAgentInstanceFactoryCreateSchemaResult(viewable, AgentInstanceStopCallbackNoAction.INSTANCE, agentInstanceContext);
-	    }
+        public AIRegistryRequirements RegistryRequirements {
+            get => AIRegistryRequirements.NoRequirements();
+        }
 
-	    public AIRegistryRequirements RegistryRequirements {
-	        get => AIRegistryRequirements.NoRequirements();
-	    }
-
-	    public StatementAgentInstanceLock ObtainAgentInstanceLock(StatementContext statementContext, int agentInstanceId) {
-	        return AgentInstanceUtil.NewLock(statementContext);
-	    }
-	}
+        public StatementAgentInstanceLock ObtainAgentInstanceLock(
+            StatementContext statementContext,
+            int agentInstanceId)
+        {
+            return AgentInstanceUtil.NewLock(statementContext);
+        }
+    }
 } // end of namespace

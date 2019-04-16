@@ -24,9 +24,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="wildcard">true for wildcard type</param>
         /// <param name="typeOrClassname">type name</param>
         /// <param name="typeParameters">optional additional type parameters</param>
-        public DataFlowOperatorOutputType(bool wildcard,
-                                          String typeOrClassname,
-                                          IList<DataFlowOperatorOutputType> typeParameters)
+        public DataFlowOperatorOutputType(
+            bool wildcard,
+            String typeOrClassname,
+            IList<DataFlowOperatorOutputType> typeParameters)
         {
             IsWildcard = wildcard;
             TypeOrClassname = typeOrClassname;

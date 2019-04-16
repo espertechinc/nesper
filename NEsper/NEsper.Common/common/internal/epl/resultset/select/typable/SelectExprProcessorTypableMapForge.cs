@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,52 +18,54 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
 {
-	public class SelectExprProcessorTypableMapForge : SelectExprProcessorTypableForge {
-	    internal readonly EventType mapType;
-	    internal readonly ExprForge innerForge;
+    public class SelectExprProcessorTypableMapForge : SelectExprProcessorTypableForge
+    {
+        internal readonly EventType mapType;
+        internal readonly ExprForge innerForge;
 
-	    public SelectExprProcessorTypableMapForge(EventType mapType, ExprForge innerForge) {
-	        this.mapType = mapType;
-	        this.innerForge = innerForge;
-	    }
+        public SelectExprProcessorTypableMapForge(
+            EventType mapType,
+            ExprForge innerForge)
+        {
+            this.mapType = mapType;
+            this.innerForge = innerForge;
+        }
 
-	    public ExprEvaluator ExprEvaluator
-	    {
-	        get => new SelectExprProcessorTypableMapEval(this);
-	    }
+        public ExprEvaluator ExprEvaluator {
+            get => new SelectExprProcessorTypableMapEval(this);
+        }
 
-	    public ExprForgeConstantType ForgeConstantType
-	    {
-	        get => ExprForgeConstantType.NONCONST;
-	    }
+        public ExprForgeConstantType ForgeConstantType {
+            get => ExprForgeConstantType.NONCONST;
+        }
 
-	    public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return SelectExprProcessorTypableMapEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
-	    }
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return SelectExprProcessorTypableMapEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
+        }
 
-	    public Type UnderlyingEvaluationType
-	    {
-	        get => typeof(IDictionary<object, object>);
-	    }
+        public Type UnderlyingEvaluationType {
+            get => typeof(IDictionary<object, object>);
+        }
 
-	    public Type EvaluationType
-	    {
-	        get => typeof(EventBean);
-	    }
+        public Type EvaluationType {
+            get => typeof(EventBean);
+        }
 
-	    public ExprForge InnerForge
-	    {
-	        get => innerForge;
-	    }
+        public ExprForge InnerForge {
+            get => innerForge;
+        }
 
-	    public ExprNodeRenderable ForgeRenderable
-	    {
-	        get => innerForge.ForgeRenderable;
-	    }
+        public ExprNodeRenderable ForgeRenderable {
+            get => innerForge.ForgeRenderable;
+        }
 
-	    public EventType MapType
-	    {
-	        get => mapType;
-	    }
-	}
+        public EventType MapType {
+            get => mapType;
+        }
+    }
 } // end of namespace

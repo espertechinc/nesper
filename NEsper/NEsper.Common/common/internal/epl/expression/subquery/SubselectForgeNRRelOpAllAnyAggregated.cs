@@ -21,15 +21,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         private readonly ExprForge havingEval;
 
         public SubselectForgeNRRelOpAllAnyAggregated(
-            ExprSubselectNode subselect, ExprForge valueEval, ExprForge selectEval, bool resultWhenNoMatchingEvents,
-            RelationalOpEnum.Computer computer, ExprForge havingEval) : base(
-            subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
+            ExprSubselectNode subselect,
+            ExprForge valueEval,
+            ExprForge selectEval,
+            bool resultWhenNoMatchingEvents,
+            RelationalOpEnum.Computer computer,
+            ExprForge havingEval)
+            : base(
+                subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
         {
             this.havingEval = havingEval;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
-            CodegenMethodScope parent, SubselectForgeNRSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SubselectForgeNRSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             CodegenExpression eps = symbols.GetAddEPS(method);

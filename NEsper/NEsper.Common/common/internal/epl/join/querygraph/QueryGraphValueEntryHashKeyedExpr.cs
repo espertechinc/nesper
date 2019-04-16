@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphValueEntryHashKeyedExpr : QueryGraphValueEntryHashKeyed
     {
-        public QueryGraphValueEntryHashKeyedExpr(ExprEvaluator keyExpr, bool requiresKey)
+        public QueryGraphValueEntryHashKeyedExpr(
+            ExprEvaluator keyExpr,
+            bool requiresKey)
             : base(keyExpr)
         {
             IsRequiresKey = requiresKey;

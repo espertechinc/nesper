@@ -16,20 +16,26 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-	public abstract class DTLocalForgeCalopReformatBase : DTLocalForge {
-	    internal readonly IList<CalendarForge> calendarForges;
-	    internal readonly ReformatForge reformatForge;
+    public abstract class DTLocalForgeCalopReformatBase : DTLocalForge
+    {
+        internal readonly IList<CalendarForge> calendarForges;
+        internal readonly ReformatForge reformatForge;
 
-	    public abstract DTLocalEvaluator DTEvaluator { get; }
+        public abstract DTLocalEvaluator DTEvaluator { get; }
 
-	    public abstract CodegenExpression Codegen(
-	        CodegenExpression inner, Type innerType,
-	        CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-	        CodegenClassScope codegenClassScope);
+        public abstract CodegenExpression Codegen(
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
 
-	    protected DTLocalForgeCalopReformatBase(IList<CalendarForge> calendarForges, ReformatForge reformatForge) {
-	        this.calendarForges = calendarForges;
-	        this.reformatForge = reformatForge;
-	    }
-	}
+        protected DTLocalForgeCalopReformatBase(
+            IList<CalendarForge> calendarForges,
+            ReformatForge reformatForge)
+        {
+            this.calendarForges = calendarForges;
+            this.reformatForge = reformatForge;
+        }
+    }
 } // end of namespace

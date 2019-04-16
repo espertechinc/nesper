@@ -6,138 +6,43 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.output.condition;
 using com.espertech.esper.common.@internal.epl.resultset.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
-	/// <summary>
-	/// A view that handles the "output snapshot" keyword in output rate stabilizing.
-	/// </summary>
-	public class OutputProcessViewConditionSpec {
-	    private EventType resultEventType;
-	    private OutputStrategyPostProcessFactory postProcessFactory;
-	    private OutputConditionFactory outputConditionFactory;
-	    private int streamCount;
-	    private ResultSetProcessorOutputConditionType conditionType;
-	    private bool terminable;
-	    private bool isUnaggregatedUngrouped;
-	    private SelectClauseStreamSelectorEnum selectClauseStreamSelector;
-	    private bool isDistinct;
-	    private bool hasAfter;
-	    private TimePeriodCompute afterTimePeriod;
-	    private int? afterConditionNumberOfEvents;
-	    private EventType[] eventTypes;
+    /// <summary>
+    ///     A view that handles the "output snapshot" keyword in output rate stabilizing.
+    /// </summary>
+    public class OutputProcessViewConditionSpec
+    {
+        public OutputConditionFactory OutputConditionFactory { get; set; }
 
-	    public OutputConditionFactory OutputConditionFactory {
-	        get => outputConditionFactory;
-	    }
+        public int StreamCount { get; set; }
 
-	    public void SetOutputConditionFactory(OutputConditionFactory outputConditionFactory) {
-	        this.outputConditionFactory = outputConditionFactory;
-	    }
+        public ResultSetProcessorOutputConditionType ConditionType { get; set; }
 
-	    public int StreamCount {
-	        get => streamCount;
-	    }
+        public bool IsTerminable { get; set; }
 
-	    public void SetStreamCount(int streamCount) {
-	        this.streamCount = streamCount;
-	    }
+        public bool HasAfter { get; set; }
 
-	    public ResultSetProcessorOutputConditionType ConditionType {
-	        get => conditionType;
-	    }
+        public bool IsUnaggregatedUngrouped { get; set; }
 
-	    public void SetConditionType(ResultSetProcessorOutputConditionType conditionType) {
-	        this.conditionType = conditionType;
-	    }
+        public SelectClauseStreamSelectorEnum SelectClauseStreamSelector { get; set; }
 
-	    public bool IsTerminable() {
-	        return terminable;
-	    }
+        public bool IsDistinct { get; set; }
 
-	    public void SetTerminable(bool terminable) {
-	        this.terminable = terminable;
-	    }
+        public TimePeriodCompute AfterTimePeriod { get; set; }
 
-	    public bool HasAfter() {
-	        return hasAfter;
-	    }
+        public int? AfterConditionNumberOfEvents { get; set; }
 
-	    public void SetHasAfter(bool hasAfter) {
-	        this.hasAfter = hasAfter;
-	    }
+        public OutputStrategyPostProcessFactory PostProcessFactory { get; set; }
 
-	    public bool IsUnaggregatedUngrouped() {
-	        return isUnaggregatedUngrouped;
-	    }
+        public EventType ResultEventType { get; set; }
 
-	    public void SetUnaggregatedUngrouped(bool unaggregatedUngrouped) {
-	        isUnaggregatedUngrouped = unaggregatedUngrouped;
-	    }
-
-	    public SelectClauseStreamSelectorEnum SelectClauseStreamSelector {
-	        get => selectClauseStreamSelector;
-	    }
-
-	    public void SetSelectClauseStreamSelector(SelectClauseStreamSelectorEnum selectClauseStreamSelector) {
-	        this.selectClauseStreamSelector = selectClauseStreamSelector;
-	    }
-
-	    public bool IsDistinct() {
-	        return isDistinct;
-	    }
-
-	    public void SetDistinct(bool distinct) {
-	        isDistinct = distinct;
-	    }
-
-	    public TimePeriodCompute AfterTimePeriod {
-	        get => afterTimePeriod;
-	    }
-
-	    public void SetAfterTimePeriod(TimePeriodCompute afterTimePeriod) {
-	        this.afterTimePeriod = afterTimePeriod;
-	    }
-
-	    public int? GetAfterConditionNumberOfEvents() {
-	        return afterConditionNumberOfEvents;
-	    }
-
-	    public void SetAfterConditionNumberOfEvents(int? afterConditionNumberOfEvents) {
-	        this.afterConditionNumberOfEvents = afterConditionNumberOfEvents;
-	    }
-
-	    public OutputStrategyPostProcessFactory PostProcessFactory {
-	        get => postProcessFactory;
-	    }
-
-	    public void SetPostProcessFactory(OutputStrategyPostProcessFactory postProcessFactory) {
-	        this.postProcessFactory = postProcessFactory;
-	    }
-
-	    public EventType ResultEventType {
-	        get => resultEventType;
-	    }
-
-	    public void SetResultEventType(EventType resultEventType) {
-	        this.resultEventType = resultEventType;
-	    }
-
-	    public EventType[] GetEventTypes() {
-	        return eventTypes;
-	    }
-
-	    public void SetEventTypes(EventType[] eventTypes) {
-	        this.eventTypes = eventTypes;
-	    }
-	}
+        public EventType[] EventTypes { get; set; }
+    }
 } // end of namespace

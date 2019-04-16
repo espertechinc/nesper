@@ -11,15 +11,15 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-	public class AgentInstanceArrayIterator
-	{
-	    public static IEnumerator<EventBean> Create(AgentInstance[] instances)
-	    {
-	        foreach (AgentInstance agentInstance in instances) {
-	            foreach (EventBean eventBean in agentInstance.FinalView) {
-	                yield return eventBean;
-	            }
-	        }
-	    }
-	}
+    public class AgentInstanceArrayIterator
+    {
+        public static IEnumerator<EventBean> Create(AgentInstance[] instances)
+        {
+            foreach (AgentInstance agentInstance in instances) {
+                foreach (EventBean eventBean in agentInstance.FinalView) {
+                    yield return eventBean;
+                }
+            }
+        }
+    }
 } // end of namespace

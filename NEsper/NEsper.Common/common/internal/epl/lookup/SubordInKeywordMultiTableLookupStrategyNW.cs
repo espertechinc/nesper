@@ -23,13 +23,16 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly PropertyHashedEventTable[] _indexes;
 
         public SubordInKeywordMultiTableLookupStrategyNW(
-            SubordInKeywordMultiTableLookupStrategyFactory factory, PropertyHashedEventTable[] indexes)
+            SubordInKeywordMultiTableLookupStrategyFactory factory,
+            PropertyHashedEventTable[] indexes)
         {
             this._factory = factory;
             this._indexes = indexes;
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, null, null);

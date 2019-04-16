@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     public class RowRecogHelper
     {
         protected internal static readonly IComparer<RowRecogNFAStateEntry> END_STATE_COMPARATOR = new ProxyComparer<RowRecogNFAStateEntry> {
-            ProcCompare = (o1, o2) => {
+            ProcCompare = (
+                o1,
+                o2) => {
                 if (o1.MatchEndEventSeqNo > o2.MatchEndEventSeqNo) {
                     return -1;
                 }

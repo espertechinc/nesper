@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var s1 = convOne.CoerceBoxedBigInt(d1);
                 var s2 = convTwo.CoerceBoxedBigInt(d2);
-                return s1.Add(s2);
+                return s1 + s2;
             }
 
             public CodegenExpression Codegen(

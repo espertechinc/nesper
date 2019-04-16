@@ -8,31 +8,31 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
-	/// <summary>
-	/// Grouping_id-function for use with rollup, cube or grouping sets.
-	/// </summary>
-	public class GroupingIdExpression : ExpressionBase {
+    /// <summary>
+    /// Grouping_id-function for use with rollup, cube or grouping sets.
+    /// </summary>
+    public class GroupingIdExpression : ExpressionBase
+    {
+        /// <summary>
+        /// Ctor - for use to create an expression tree, without child expression.
+        /// <para />Use add methods to add child expressions to acts upon.
+        /// </summary>
+        public GroupingIdExpression()
+        {
+        }
 
-	    /// <summary>
-	    /// Ctor - for use to create an expression tree, without child expression.
-	    /// <para />Use add methods to add child expressions to acts upon.
-	    /// </summary>
-	    public GroupingIdExpression() {
-	    }
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
-
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        ToPrecedenceFreeEPL("grouping_id", this.Children, writer);
-	    }
-	}
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            ToPrecedenceFreeEPL("grouping_id", this.Children, writer);
+        }
+    }
 } // end of namespace

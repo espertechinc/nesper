@@ -14,7 +14,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     public class SubordinateQueryPlannerIndexPropListPair
     {
         public SubordinateQueryPlannerIndexPropListPair(
-            IList<IndexedPropDesc> hashedProps, IList<IndexedPropDesc> btreeProps)
+            IList<IndexedPropDesc> hashedProps,
+            IList<IndexedPropDesc> btreeProps)
         {
             HashedProps = hashedProps;
             BtreeProps = btreeProps;

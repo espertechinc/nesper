@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                     if (types.Value is string) {
                         var typeName = types.Value.ToString();
-                        Type clazz = TypeHelper.GetPrimitiveClassForName(typeName);
+                        var clazz = TypeHelper.GetPrimitiveTypeForName(typeName);
                         if (clazz != null) {
                             writables.Add(new WriteablePropertyDescriptor(types.Key, clazz, null));
                         }
@@ -358,8 +358,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             return anonymous;
         }
 
-        public static LinkedHashMap<string, object> GetPropertyTypesNonPrimitive(
-            LinkedHashMap<string, object> propertyTypesMayPrimitive)
+        public static IDictionary<string, object> GetPropertyTypesNonPrimitive(
+            IDictionary<string, object> propertyTypesMayPrimitive)
         {
             var hasPrimitive = false;
             foreach (var entry in propertyTypesMayPrimitive) {
@@ -683,7 +683,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 var type = eventType.GetPropertyType(startTimestampProperty);
-                if (!TypeHelper.IsDatetimeClass(type)) {
+                if (!TypeHelper.IsDateTime(type)) {
                     throw new ConfigurationException(
                         "Declared start timestamp property '" + startTimestampProperty +
                         "' is expected to return a Date, Calendar or long-typed value but returns '" + type.Name + "'");
@@ -702,7 +702,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 var type = eventType.GetPropertyType(endTimestampProperty);
-                if (!TypeHelper.IsDatetimeClass(type)) {
+                if (!TypeHelper.IsDateTime(type)) {
                     throw new ConfigurationException(
                         "Declared end timestamp property '" + endTimestampProperty +
                         "' is expected to return a Date, Calendar or long-typed value but returns '" + type.Name + "'");
@@ -879,7 +879,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 // handle types that are String values
                 if (entry.Value is string) {
                     var value = entry.Value.ToString().Trim();
-                    Type clazz = TypeHelper.GetPrimitiveTypeForName(value);
+                    var clazz = TypeHelper.GetPrimitiveTypeForName(value);
                     if (clazz != null) {
                         entry.Value = clazz;
                     }
@@ -1724,7 +1724,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         public static EventType[] ShiftRight(IList<EventType> src)
         {
             var types = new EventType[src.Count + 1];
-            Array.Copy(src, 0, types, 1, src.Count);
+            src.CopyTo(types, 1);
             return types;
         }
 
@@ -1766,7 +1766,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                           typeOfEventType + " event type";
             if (existingType != null) {
                 message += ", the name '" + eventTypeName + "' refers to a " +
-                           TypeHelper.GetCleanName(existingType.UnderlyingType) + " event type";
+                           existingType.UnderlyingType.GetCleanName() + " event type";
             }
             else {
                 message += ", the name '" + eventTypeName + "' has not been defined as an event type";

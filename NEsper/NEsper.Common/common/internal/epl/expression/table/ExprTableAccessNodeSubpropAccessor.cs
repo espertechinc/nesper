@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         private AggregationTableReadDesc tableAccessDesc;
 
         public ExprTableAccessNodeSubpropAccessor(
-            string tableName, string subpropName, ExprNode aggregateAccessMultiValueNode) : base(tableName)
+            string tableName,
+            string subpropName,
+            ExprNode aggregateAccessMultiValueNode)
+            : base(tableName)
         {
             SubpropName = subpropName;
             this.aggregateAccessMultiValueNode = aggregateAccessMultiValueNode;
@@ -56,18 +59,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public string SubpropName { get; }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
@@ -75,7 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
         public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return tableAccessDesc.EventTypeCollection;
         }
@@ -83,7 +94,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public Type ComponentTypeCollection => tableAccessDesc.ComponentTypeCollection;
 
         public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return tableAccessDesc.EventTypeSingle;
         }
@@ -122,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             }
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ToPrecedenceFreeEPLInternal(writer, SubpropName);
             writer.Write(".");

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
@@ -15,24 +14,27 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
 {
-	public class ContextControllerDetailHashItem {
-	    private FilterSpecActivatable filterSpecActivatable;
-	    private ExprFilterSpecLookupable lookupable;
+    public class ContextControllerDetailHashItem
+    {
+        private FilterSpecActivatable filterSpecActivatable;
+        private ExprFilterSpecLookupable lookupable;
 
-	    public FilterSpecActivatable FilterSpecActivatable {
-	        get => filterSpecActivatable;
-	    }
+        public FilterSpecActivatable FilterSpecActivatable {
+            get => filterSpecActivatable;
+        }
 
-	    public void SetFilterSpecActivatable(FilterSpecActivatable filterSpecActivatable) {
-	        this.filterSpecActivatable = filterSpecActivatable;
-	    }
+        public void SetFilterSpecActivatable(FilterSpecActivatable filterSpecActivatable)
+        {
+            this.filterSpecActivatable = filterSpecActivatable;
+        }
 
-	    public ExprFilterSpecLookupable Lookupable {
-	        get => lookupable;
-	    }
+        public ExprFilterSpecLookupable Lookupable {
+            get => lookupable;
+        }
 
-	    public void SetLookupable(ExprFilterSpecLookupable lookupable) {
-	        this.lookupable = lookupable;
-	    }
-	}
+        public void SetLookupable(ExprFilterSpecLookupable lookupable)
+        {
+            this.lookupable = lookupable;
+        }
+    }
 } // end of namespace

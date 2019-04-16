@@ -31,35 +31,34 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 
         public ExprTableEvalStrategy MakeStrategy(TableAndLockProvider provider)
         {
-            switch (StrategyEnum)
-            {
+            switch (StrategyEnum) {
                 case ExprTableEvalStrategyEnum.UNGROUPED_TOP:
-                    return new ExprTableEvalStrategyUngroupedTopLevel((TableAndLockProviderUngrouped)provider, this);
+                    return new ExprTableEvalStrategyUngroupedTopLevel((TableAndLockProviderUngrouped) provider, this);
 
                 case ExprTableEvalStrategyEnum.GROUPED_TOP:
-                    return new ExprTableEvalStrategyGroupedTopLevel((TableAndLockProviderGrouped)provider, this);
+                    return new ExprTableEvalStrategyGroupedTopLevel((TableAndLockProviderGrouped) provider, this);
 
                 case ExprTableEvalStrategyEnum.UNGROUPED_AGG_SIMPLE:
-                    return new ExprTableEvalStrategyUngroupedAggSimple((TableAndLockProviderUngrouped)provider, this);
+                    return new ExprTableEvalStrategyUngroupedAggSimple((TableAndLockProviderUngrouped) provider, this);
 
                 case ExprTableEvalStrategyEnum.GROUPED_AGG_SIMPLE:
-                    return new ExprTableEvalStrategyGroupedAggSimple((TableAndLockProviderGrouped)provider, this);
+                    return new ExprTableEvalStrategyGroupedAggSimple((TableAndLockProviderGrouped) provider, this);
 
                 case ExprTableEvalStrategyEnum.UNGROUPED_PLAINCOL:
-                    return new ExprTableEvalStrategyUngroupedProp((TableAndLockProviderUngrouped)provider, this);
+                    return new ExprTableEvalStrategyUngroupedProp((TableAndLockProviderUngrouped) provider, this);
 
                 case ExprTableEvalStrategyEnum.GROUPED_PLAINCOL:
-                    return new ExprTableEvalStrategyGroupedProp((TableAndLockProviderGrouped)provider, this);
+                    return new ExprTableEvalStrategyGroupedProp((TableAndLockProviderGrouped) provider, this);
 
                 case ExprTableEvalStrategyEnum.UNGROUPED_AGG_ACCESSREAD:
                     return new ExprTableEvalStrategyUngroupedAggAccessRead(
-                        (TableAndLockProviderUngrouped)provider, this);
+                        (TableAndLockProviderUngrouped) provider, this);
 
                 case ExprTableEvalStrategyEnum.GROUPED_AGG_ACCESSREAD:
-                    return new ExprTableEvalStrategyGroupedAggAccessRead((TableAndLockProviderGrouped)provider, this);
+                    return new ExprTableEvalStrategyGroupedAggAccessRead((TableAndLockProviderGrouped) provider, this);
 
                 case ExprTableEvalStrategyEnum.KEYS:
-                    return new ExprTableEvalStrategyGroupedKeys((TableAndLockProviderGrouped)provider, this);
+                    return new ExprTableEvalStrategyGroupedKeys((TableAndLockProviderGrouped) provider, this);
 
                 default:
                     throw new IllegalStateException("Unrecognized strategy " + StrategyEnum);

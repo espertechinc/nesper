@@ -8,28 +8,33 @@
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
-	/// <summary>
-	/// Output condition for output rate limiting that handles when-then expressions for controlling output.
-	/// </summary>
-	public class OutputConditionPolledExpressionState : OutputConditionPolledState
-	{
-	    public OutputConditionPolledExpressionState(int totalNewEventsCount, int totalOldEventsCount, int totalNewEventsSum, int totalOldEventsSum, long? lastOutputTimestamp)
+    /// <summary>
+    /// Output condition for output rate limiting that handles when-then expressions for controlling output.
+    /// </summary>
+    public class OutputConditionPolledExpressionState : OutputConditionPolledState
+    {
+        public OutputConditionPolledExpressionState(
+            int totalNewEventsCount,
+            int totalOldEventsCount,
+            int totalNewEventsSum,
+            int totalOldEventsSum,
+            long? lastOutputTimestamp)
         {
-	        TotalNewEventsCount = totalNewEventsCount;
-	        TotalOldEventsCount = totalOldEventsCount;
-	        TotalNewEventsSum = totalNewEventsSum;
-	        TotalOldEventsSum = totalOldEventsSum;
-	        LastOutputTimestamp = lastOutputTimestamp;
-	    }
+            TotalNewEventsCount = totalNewEventsCount;
+            TotalOldEventsCount = totalOldEventsCount;
+            TotalNewEventsSum = totalNewEventsSum;
+            TotalOldEventsSum = totalOldEventsSum;
+            LastOutputTimestamp = lastOutputTimestamp;
+        }
 
-	    public int TotalNewEventsCount { get; set; }
+        public int TotalNewEventsCount { get; set; }
 
-	    public int TotalOldEventsCount { get; set; }
+        public int TotalOldEventsCount { get; set; }
 
-	    public int TotalNewEventsSum { get; set; }
+        public int TotalNewEventsSum { get; set; }
 
-	    public int TotalOldEventsSum { get; set; }
+        public int TotalOldEventsSum { get; set; }
 
-	    public long? LastOutputTimestamp { get; set; }
-	}
+        public long? LastOutputTimestamp { get; set; }
+    }
 } // end of namespace

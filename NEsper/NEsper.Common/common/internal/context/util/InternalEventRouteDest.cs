@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="theEvent">to route</param>
         /// <param name="statementHandle">provides statement resources</param>
         /// <param name="addToFront">if set to <c>true</c> [add to front].</param>
-        void Route(EventBean theEvent, EPStatementHandle statementHandle, bool addToFront);
+        void Route(
+            EventBean theEvent,
+            EPStatementHandle statementHandle,
+            bool addToFront);
 
         InternalEventRouter InternalEventRouter { set; }
 

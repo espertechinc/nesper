@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
@@ -38,14 +37,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             return Compute(parameter, events, exprEvaluatorContext);
         }
 
-        protected internal static TimerScheduleSpec Compute(ExprEvaluator parameter, EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        protected internal static TimerScheduleSpec Compute(
+            ExprEvaluator parameter,
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             object param = PatternExpressionUtil.EvaluateChecked(NAME_OBSERVER, parameter, events, exprEvaluatorContext);
             string iso = (string) param;
-            if (iso == null)
-            {
+            if (iso == null) {
                 throw new ScheduleParameterException("Received null parameter value");
             }
+
             return TimerScheduleISO8601Parser.Parse(iso);
         }
     }

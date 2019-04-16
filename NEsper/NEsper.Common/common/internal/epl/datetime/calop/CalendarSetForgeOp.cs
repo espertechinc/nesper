@@ -7,8 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,86 +14,160 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
+using com.espertech.esper.compat.datetime;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
-	public class CalendarSetForgeOp : CalendarOp {
+    public class CalendarSetForgeOp : CalendarOp
+    {
+        private readonly DateTimeFieldEnum fieldName;
+        private readonly ExprEvaluator valueExpr;
 
-	    private readonly CalendarFieldEnum fieldName;
-	    private readonly ExprEvaluator valueExpr;
+        public CalendarSetForgeOp(
+            DateTimeFieldEnum fieldName,
+            ExprEvaluator valueExpr)
+        {
+            this.fieldName = fieldName;
+            this.valueExpr = valueExpr;
+        }
 
-	    public CalendarSetForgeOp(CalendarFieldEnum fieldName, ExprEvaluator valueExpr) {
-	        this.fieldName = fieldName;
-	        this.valueExpr = valueExpr;
-	    }
+        public DateTimeEx Evaluate(
+            DateTimeEx dateTimeEx,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var value = CalendarOpUtil.GetInt(valueExpr, eventsPerStream, isNewData, context);
+            if (value == null) {
+                return dateTimeEx;
+            }
 
-	    public void Evaluate(DateTimeEx dateTimeEx, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        int? value = CalendarOpUtil.GetInt(valueExpr, eventsPerStream, isNewData, context);
-	        if (value == null) {
-	            return;
-	        }
-	        dateTimeEx.Set(fieldName.CalendarField, value);
-	    }
+            return dateTimeEx.SetFieldValue(fieldName, value.Value);
+        }
 
-	    public static CodegenExpression CodegenCalendar(CalendarSetForge forge, CodegenExpression cal, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenExpression calField = Constant(forge.fieldName.CalendarField);
-	        Type evaluationType = forge.valueExpr.EvaluationType;
-	        if (evaluationType.IsPrimitive) {
-	            CodegenExpression valueExpr = forge.valueExpr.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope);
-	            return ExprDotMethod(cal, "set", calField, valueExpr);
-	        }
+        public DateTimeOffset Evaluate(
+            DateTimeOffset dateTimeOffset,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var value = CalendarOpUtil.GetInt(valueExpr, eventsPerStream, isNewData, context);
+            if (value == null) {
+                return dateTimeOffset;
+            }
 
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(void), typeof(CalendarSetForgeOp), codegenClassScope).AddParam(typeof(DateTimeEx), "cal");
-	        CodegenExpression valueExpr = forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope);
-	        methodNode.Block
-	                .DeclareVar(typeof(int), "value", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(valueExpr, forge.valueExpr.EvaluationType, methodNode, codegenClassScope))
-	                .IfRefNullReturnNull("value")
-	                .Expression(ExprDotMethod(cal, "set", calField, @Ref("value")))
-	                .MethodEnd();
-	        return LocalMethod(methodNode, cal);
-	    }
+            return DateTimeFieldMath.SetFieldValue(dateTimeOffset, fieldName, value.Value);
+        }
 
-	    public DateTimeOffset Evaluate(DateTimeOffset dateTimeOffset, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        int? value = CalendarOpUtil.GetInt(valueExpr, eventsPerStream, isNewData, context);
-	        if (value == null) {
-	            return dateTimeOffset;
-	        }
-	        return dateTimeOffset.With(fieldName.ChronoField, value);
-	    }
+        public DateTime Evaluate(
+            DateTime dateTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var value = CalendarOpUtil.GetInt(valueExpr, eventsPerStream, isNewData, context);
+            if (value == null) {
+                return dateTime;
+            }
 
-	    public static CodegenExpression CodegenDateTimeOffset(CalendarSetForge forge, CodegenExpression dto, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        ChronoField chronoField = forge.fieldName.ChronoField;
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(DateTimeOffset), typeof(CalendarSetForgeOp), codegenClassScope).AddParam(typeof(DateTimeOffset), "dto");
-	        Type evaluationType = forge.valueExpr.EvaluationType;
+            return DateTimeFieldMath.SetFieldValue(dateTime, fieldName, value.Value);
+        }
 
-	        methodNode.Block
-	                .DeclareVar(typeof(int), "value", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope), evaluationType, methodNode, codegenClassScope))
-	                .IfRefNull("value").BlockReturn(@Ref("dto"))
-	                .MethodReturn(ExprDotMethod(@Ref("dto"), "with", EnumValue(typeof(ChronoField), chronoField.Name()), @Ref("value")));
-	        return LocalMethod(methodNode, dto);
-	    }
+        public static CodegenExpression CodegenCalendar(
+            CalendarSetForge forge,
+            CodegenExpression dateTimeEx,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var field = Constant(forge.field);
+            var evaluationType = forge.valueExpr.EvaluationType;
+            if (evaluationType.IsPrimitive) {
+                var valueExpr = forge.valueExpr
+                    .EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope);
+                return ExprDotMethod(dateTimeEx, "SetFieldValue", field, valueExpr);
+            }
+            else {
+                var methodNode = codegenMethodScope
+                    .MakeChild(typeof(void), typeof(CalendarSetForgeOp), codegenClassScope)
+                    .AddParam(typeof(DateTimeEx), "dtx");
+                var valueExpr = forge.valueExpr
+                    .EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope);
 
-	    public DateTime Evaluate(DateTime dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        int? value = CalendarOpUtil.GetInt(valueExpr, eventsPerStream, isNewData, context);
-	        if (value == null) {
-	            return dateTime;
-	        }
-	        return dateTime.With(fieldName.ChronoField, value);
-	    }
+                methodNode.Block
+                    .DeclareVar(
+                        typeof(int), "value",
+                        SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
+                            valueExpr, forge.valueExpr.EvaluationType, methodNode, codegenClassScope))
+                    .IfRefNullReturnNull("value")
+                    .Expression(
+                        ExprDotMethod(
+                            dateTimeEx, "SetFieldValue", field,
+                            Ref("value")))
+                    .MethodEnd();
+                return LocalMethod(methodNode, dateTimeEx);
+            }
+        }
 
-	    public static CodegenExpression CodegenDateTime(CalendarSetForge forge, CodegenExpression dateTime, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        ChronoField chronoField = forge.fieldName.ChronoField;
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(DateTime), typeof(CalendarSetForgeOp), codegenClassScope).AddParam(typeof(DateTime), "dateTime");
-	        Type evaluationType = forge.valueExpr.EvaluationType;
+        public static CodegenExpression CodegenDateTimeOffset(
+            CalendarSetForge forge,
+            CodegenExpression dto,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var field = forge.field;
+            var methodNode = codegenMethodScope
+                .MakeChild(typeof(DateTimeOffset), typeof(CalendarSetForgeOp), codegenClassScope)
+                .AddParam(typeof(DateTimeOffset), "dto");
+            var evaluationType = forge.valueExpr.EvaluationType;
 
-	        methodNode.Block
-	                .DeclareVar(typeof(int), "value", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope), evaluationType, methodNode, codegenClassScope))
-	                .IfRefNull("value").BlockReturn(@Ref("dateTime"))
-	                .MethodReturn(ExprDotMethod(@Ref("dateTime"), "with", EnumValue(typeof(ChronoField), chronoField.Name()), @Ref("value")));
-	        return LocalMethod(methodNode, dateTime);
-	    }
-	}
+            methodNode.Block
+                .DeclareVar(
+                    typeof(int), "value",
+                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
+                        forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope), evaluationType, methodNode,
+                        codegenClassScope))
+                .IfRefNull("value")
+                .BlockReturn(Ref("dto"))
+                .MethodReturn(
+                    ExprDotMethod(
+                        Ref("dto"), "SetFieldValue",
+                        EnumValue(typeof(ChronoField), field.GetName()),
+                        Ref("value")));
+            return LocalMethod(methodNode, dto);
+        }
+
+        public static CodegenExpression CodegenDateTime(
+            CalendarSetForge forge,
+            CodegenExpression dateTime,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var field = forge.field;
+            var methodNode = codegenMethodScope
+                .MakeChild(typeof(DateTime), typeof(CalendarSetForgeOp), codegenClassScope)
+                .AddParam(typeof(DateTime), "dateTime");
+            var evaluationType = forge.valueExpr.EvaluationType;
+
+            methodNode.Block
+                .DeclareVar(
+                    typeof(int), "value",
+                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
+                        forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
+                        evaluationType,
+                        methodNode,
+                        codegenClassScope))
+                .IfRefNull("value")
+                .BlockReturn(Ref("dateTime"))
+                .MethodReturn(
+                    ExprDotMethod(
+                        Ref("dateTime"), "SetFieldValue",
+                        EnumValue(typeof(ChronoField), field.GetName()),
+                        Ref("value")));
+            return LocalMethod(methodNode, dateTime);
+        }
+    }
 } // end of namespace

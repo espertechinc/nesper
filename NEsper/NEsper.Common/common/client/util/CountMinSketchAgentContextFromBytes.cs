@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.client.util
         ///     Ctor.
         /// </summary>
         /// <param name="state">the state</param>
-        public CountMinSketchAgentContextFromBytes(CountMinSketchState state) : base(state)
+        public CountMinSketchAgentContextFromBytes(CountMinSketchState state)
+            : base(state)
         {
         }
 
@@ -27,15 +28,6 @@ namespace com.espertech.esper.common.client.util
         ///     Returns the byte value.
         /// </summary>
         /// <returns>bytes</returns>
-        public byte[] Bytes { get; private set; }
-
-        /// <summary>
-        ///     Sets the byte value.
-        /// </summary>
-        /// <param name="bytes">bytes</param>
-        public void SetBytes(byte[] bytes)
-        {
-            Bytes = bytes;
-        }
+        public byte[] Bytes { get; set; }
     }
 } // end of namespace

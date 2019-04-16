@@ -8,25 +8,29 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
-	/// <summary>
-	/// A comparator on multikeys. The multikeys must contain the same number of values.
-	/// </summary>
-	public sealed class ComparatorHashableMultiKeyCasting : IComparer<object> {
-	    private readonly IComparer<HashableMultiKey> comparator;
+    /// <summary>
+    /// A comparator on multikeys. The multikeys must contain the same number of values.
+    /// </summary>
+    public sealed class ComparatorHashableMultiKeyCasting : IComparer<object>
+    {
+        private readonly IComparer<HashableMultiKey> comparator;
 
-	    public ComparatorHashableMultiKeyCasting(IComparer<HashableMultiKey> comparator) {
-	        this.comparator = comparator;
-	    }
+        public ComparatorHashableMultiKeyCasting(IComparer<HashableMultiKey> comparator)
+        {
+            this.comparator = comparator;
+        }
 
-	    public int Compare(object firstValues, object secondValues) {
-	        return comparator.Compare((HashableMultiKey) firstValues, (HashableMultiKey) secondValues);
-	    }
-	}
+        public int Compare(
+            object firstValues,
+            object secondValues)
+        {
+            return comparator.Compare((HashableMultiKey) firstValues, (HashableMultiKey) secondValues);
+        }
+    }
 } // end of namespace

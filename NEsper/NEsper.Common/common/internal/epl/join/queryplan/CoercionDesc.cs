@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
     public class CoercionDesc
     {
-        public CoercionDesc(bool coerce, Type[] coercionTypes)
+        public CoercionDesc(
+            bool coerce,
+            Type[] coercionTypes)
         {
             IsCoerce = coerce;
             CoercionTypes = coercionTypes;

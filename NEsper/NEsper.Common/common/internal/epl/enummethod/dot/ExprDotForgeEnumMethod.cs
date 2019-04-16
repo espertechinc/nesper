@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.rettype;
@@ -17,13 +16,14 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
-	public interface ExprDotForgeEnumMethod :  ExprDotForge {
-
-	    void Init(int? streamOfProviderIfApplicable,
-	                     EnumMethodEnum lambda,
-	                     string lambdaUsedName,
-	                     EPType currentInputType,
-	                     IList<ExprNode> parameters,
-	                     ExprValidationContext validationContext) ;
-	}
+    public interface ExprDotForgeEnumMethod : ExprDotForge
+    {
+        void Init(
+            int? streamOfProviderIfApplicable,
+            EnumMethodEnum lambda,
+            string lambdaUsedName,
+            EPType currentInputType,
+            IList<ExprNode> parameters,
+            ExprValidationContext validationContext);
+    }
 } // end of namespace

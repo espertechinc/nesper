@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             LinkedHashMap<string, object> optionalOaType,
             MethodPollingExecStrategyEnum strategy,
             bool isCollection,
-            bool isIterator, 
+            bool isIterator,
             VariableMetaData variable,
             EventType eventTypeEventBeanArray,
             ExprNodeScript scriptExpression)

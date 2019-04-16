@@ -8,20 +8,20 @@
 
 namespace com.espertech.esper.common.client.util
 {
+    /// <summary>
+    /// Modifier that dictates whether an event type allows or does not allow sending events in using one of the send-event
+    /// methods.
+    /// </summary>
+    public enum EventTypeBusModifier
+    {
+        /// <summary>
+        /// Allow sending in events of this type using the send-event API on event service.
+        /// </summary>
+        BUS,
 
-	/// <summary>
-	/// Modifier that dictates whether an event type allows or does not allow sending events in using one of the send-event
-	/// methods.
-	/// </summary>
-	public enum EventTypeBusModifier {
-	    /// <summary>
-	    /// Allow sending in events of this type using the send-event API on event service.
-	    /// </summary>
-	    BUS,
-
-	    /// <summary>
-	    /// Disallow sending in events of this type using the send-event API on event service.
-	    /// </summary>
-	    NONBUS
-	}
+        /// <summary>
+        /// Disallow sending in events of this type using the send-event API on event service.
+        /// </summary>
+        NONBUS
+    }
 } // end of namespace

@@ -201,12 +201,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             forge = new ExprCaseNodeForge(
                 this, resultType, mapResultType, isNumericResult, mustCoerce, coercer,
                 analysis.WhenThenNodeList,
-                analysis.OptionalCompareExprNode, 
+                analysis.OptionalCompareExprNode,
                 analysis.OptionalElseExprNode);
             return null;
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprCaseNode)) {
                 return false;
@@ -216,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return IsCase2 == otherExprCaseNode.IsCase2;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             CaseAnalysis analysis;
             try {
@@ -311,7 +313,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public class CaseAnalysis
         {
             public CaseAnalysis(
-                IList<UniformPair<ExprNode>> whenThenNodeList, ExprNode optionalCompareExprNode,
+                IList<UniformPair<ExprNode>> whenThenNodeList,
+                ExprNode optionalCompareExprNode,
                 ExprNode optionalElseExprNode)
             {
                 WhenThenNodeList = whenThenNodeList;

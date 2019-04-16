@@ -22,19 +22,28 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         TableExprEvaluatorContext TableExprEvaluatorContext { get; }
 
-        void AddTable(string tableName, TableMetaData tableMetaData, EPStatementInitServices services);
+        void AddTable(
+            string tableName,
+            TableMetaData tableMetaData,
+            EPStatementInitServices services);
 
-        Table GetTable(string deploymentId, string tableName);
+        Table GetTable(
+            string deploymentId,
+            string tableName);
 
-        void DestroyTable(string deploymentId, string tableName);
+        void DestroyTable(
+            string deploymentId,
+            string tableName);
 
         Table AllocateTable(TableMetaData metadata);
 
         TableSerdes GetTableSerdes<T>(
             Table table,
-            DataInputOutputSerdeWCollation<T> aggregationSerde, 
+            DataInputOutputSerdeWCollation<T> aggregationSerde,
             StatementContext statementContext);
 
-        TableInstance AllocateTableInstance(Table table, AgentInstanceContext agentInstanceContext);
+        TableInstance AllocateTableInstance(
+            Table table,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

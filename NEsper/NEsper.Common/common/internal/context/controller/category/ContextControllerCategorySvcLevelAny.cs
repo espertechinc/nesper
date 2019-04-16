@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         private readonly IDictionary<IntSeqKey, ContextControllerCategorySvcLevelAnyEntry> mgmt =
             new Dictionary<IntSeqKey, ContextControllerCategorySvcLevelAnyEntry>();
 
-        public void MgmtCreate(IntSeqKey controllerPath, object[] parentPartitionKeys, int[] subpathOrCPId)
+        public void MgmtCreate(
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys,
+            int[] subpathOrCPId)
         {
             ContextControllerCategorySvcLevelAnyEntry existing = mgmt.PutIfAbsent(
                 controllerPath, new ContextControllerCategorySvcLevelAnyEntry(parentPartitionKeys, subpathOrCPId));
@@ -46,7 +49,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         private class ContextControllerCategorySvcLevelAnyEntry
         {
-            public ContextControllerCategorySvcLevelAnyEntry(object[] parentPartitionKeys, int[] subpathOrCPids)
+            public ContextControllerCategorySvcLevelAnyEntry(
+                object[] parentPartitionKeys,
+                int[] subpathOrCPids)
             {
                 ParentPartitionKeys = parentPartitionKeys;
                 SubpathOrCPids = subpathOrCPids;

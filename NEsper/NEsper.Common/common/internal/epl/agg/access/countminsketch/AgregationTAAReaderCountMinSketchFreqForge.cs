@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         public Type ResultType => typeof(long);
 
         public CodegenExpression CodegenCreateReader(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(AgregationTAAReaderCountMinSketchFreq), GetType(), classScope);
             method.Block

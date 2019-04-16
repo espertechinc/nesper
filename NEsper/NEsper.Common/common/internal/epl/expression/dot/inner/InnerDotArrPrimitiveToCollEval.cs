@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,35 +20,58 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
-	public class InnerDotArrPrimitiveToCollEval : ExprDotEvalRootChildInnerEval {
+    public class InnerDotArrPrimitiveToCollEval : ExprDotEvalRootChildInnerEval
+    {
+        private readonly ExprEvaluator rootEvaluator;
 
-	    private readonly ExprEvaluator rootEvaluator;
+        public InnerDotArrPrimitiveToCollEval(ExprEvaluator rootEvaluator)
+        {
+            this.rootEvaluator = rootEvaluator;
+        }
 
-	    public InnerDotArrPrimitiveToCollEval(ExprEvaluator rootEvaluator) {
-	        this.rootEvaluator = rootEvaluator;
-	    }
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            object array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            return CollectionUtil.ArrayToCollectionAllowNull(array);
+        }
 
-	    public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        object array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-	        return CollectionUtil.ArrayToCollectionAllowNull(array);
-	    }
+        public static CodegenExpression Codegen(
+            InnerDotArrPrimitiveToCollForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            Type evaluationType = forge.rootForge.EvaluationType;
+            return CollectionUtil.ArrayToCollectionAllowNullCodegen(
+                codegenMethodScope, evaluationType,
+                forge.rootForge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope), codegenClassScope);
+        }
 
-	    public static CodegenExpression Codegen(InnerDotArrPrimitiveToCollForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        Type evaluationType = forge.rootForge.EvaluationType;
-	        return CollectionUtil.ArrayToCollectionAllowNullCodegen(codegenMethodScope, evaluationType, forge.rootForge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope), codegenClassScope);
-	    }
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
 
-	    public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
+        public ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
 
-	    public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
-
-	    public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
-
-	}
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
+    }
 } // end of namespace

@@ -8,43 +8,44 @@
 
 namespace com.espertech.esper.common.client.meta
 {
-	/// <summary>
-	/// Application type.
-	/// </summary>
-	public enum EventTypeApplicationType {
-	    /// <summary>
-	    /// Xml type.
-	    /// </summary>
-	    XML,
+    /// <summary>
+    /// Application type.
+    /// </summary>
+    public enum EventTypeApplicationType
+    {
+        /// <summary>
+        /// Xml type.
+        /// </summary>
+        XML,
 
-	    /// <summary>
-	    /// Map type.
-	    /// </summary>
-	    MAP,
+        /// <summary>
+        /// Map type.
+        /// </summary>
+        MAP,
 
-	    /// <summary>
-	    /// Object Array type.
-	    /// </summary>
-	    OBJECTARR,
+        /// <summary>
+        /// Object Array type.
+        /// </summary>
+        OBJECTARR,
 
-	    /// <summary>
-	    /// Class type.
-	    /// </summary>
-	    CLASS,
+        /// <summary>
+        /// Class type.
+        /// </summary>
+        CLASS,
 
-	    /// <summary>
-	    /// Avro type.
-	    /// </summary>
-	    AVRO,
+        /// <summary>
+        /// Avro type.
+        /// </summary>
+        AVRO,
 
-	    /// <summary>
-	    /// Wrapper type.
-	    /// </summary>
-	    WRAPPER,
+        /// <summary>
+        /// Wrapper type.
+        /// </summary>
+        WRAPPER,
 
-	    /// <summary>
-	    /// Variant type.
-	    /// </summary>
-	    VARIANT
-	}
+        /// <summary>
+        /// Variant type.
+        /// </summary>
+        VARIANT
+    }
 } // end of namespace

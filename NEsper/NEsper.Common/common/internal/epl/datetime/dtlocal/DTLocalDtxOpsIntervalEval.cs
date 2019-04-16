@@ -26,14 +26,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
     {
         private readonly TimeZoneInfo timeZone;
 
-        public DTLocalDtxOpsIntervalEval(IList<CalendarOp> calendarOps, IntervalOp intervalOp, TimeZoneInfo timeZone)
+        public DTLocalDtxOpsIntervalEval(
+            IList<CalendarOp> calendarOps,
+            IntervalOp intervalOp,
+            TimeZoneInfo timeZone)
             : base(calendarOps, intervalOp)
         {
             this.timeZone = timeZone;
         }
 
         public override object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var cal = ((DateTimeEx) target).Clone();
             EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -42,25 +48,31 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression CodegenPointInTime(
-            DTLocalDtxOpsIntervalForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            DTLocalDtxOpsIntervalForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxOpsIntervalEval), codegenClassScope)
                 .AddParam(typeof(DateTimeEx), "target");
 
             var block = methodNode.Block
-                .DeclareVar(typeof(DateTimeEx), "cal", Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "clone")));
+                .DeclareVar(typeof(DateTimeEx), "dtx", Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "clone")));
             EvaluateCalOpsCalendarCodegen(
-                block, forge.calendarForges, Ref("cal"), methodNode, exprSymbol, codegenClassScope);
-            block.DeclareVar(typeof(long), "time", ExprDotMethod(Ref("cal"), "getTimeInMillis"))
+                block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
+            block.DeclareVar(typeof(long), "time", ExprDotMethod(Ref("dtx"), "getTimeInMillis"))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
 
         public override object Evaluate(
-            object startTimestamp, object endTimestamp, EventBean[] eventsPerStream, bool isNewData,
+            object startTimestamp,
+            object endTimestamp,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var startLong = ((DateTimeEx) startTimestamp).TimeInMillis;
@@ -74,8 +86,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression CodegenStartEnd(
-            DTLocalDtxOpsIntervalForge forge, CodegenExpressionRef start, CodegenExpressionRef end,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            DTLocalDtxOpsIntervalForge forge,
+            CodegenExpressionRef start,
+            CodegenExpressionRef end,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression timeZoneField =
@@ -87,11 +102,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             var block = methodNode.Block
                 .DeclareVar(typeof(long), "startLong", ExprDotMethod(Ref("startTimestamp"), "getTimeInMillis"))
                 .DeclareVar(typeof(long), "endLong", ExprDotMethod(Ref("endTimestamp"), "getTimeInMillis"))
-                .DeclareVar(typeof(DateTimeEx), "cal", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
-                .Expression(ExprDotMethod(Ref("cal"), "setTimeInMillis", Ref("startLong")));
+                .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .Expression(ExprDotMethod(Ref("dtx"), "setTimeInMillis", Ref("startLong")));
             EvaluateCalOpsCalendarCodegen(
-                block, forge.calendarForges, Ref("cal"), methodNode, exprSymbol, codegenClassScope);
-            block.DeclareVar(typeof(long), "startTime", ExprDotMethod(Ref("cal"), "getTimeInMillis"))
+                block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
+            block.DeclareVar(typeof(long), "startTime", ExprDotMethod(Ref("dtx"), "getTimeInMillis"))
                 .DeclareVar(
                     typeof(long), "endTime", Op(Ref("startTime"), "+", Op(Ref("endLong"), "-", Ref("startLong"))))
                 .MethodReturn(

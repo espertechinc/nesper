@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
@@ -24,19 +23,16 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             this.keys = keys;
         }
 
-        public CompositeIndexLookup Next
-        {
+        public CompositeIndexLookup Next {
             set { this.next = value; }
         }
 
         private object GetKey()
         {
-            if (keys.Length == 1)
-            {
+            if (keys.Length == 1) {
                 return keys[0];
             }
-            else
-            {
+            else {
                 return new HashableMultiKey(keys);
             }
         }

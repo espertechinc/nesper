@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         internal readonly int NumStreamsOuter;
 
         public SubordHashedTableLookupStrategyExprFactory(
-            string[] expressionTexts, ExprEvaluator evaluator, bool isNWOnTrigger, int numStreamsOuter)
+            string[] expressionTexts,
+            ExprEvaluator evaluator,
+            bool isNWOnTrigger,
+            int numStreamsOuter)
         {
             this.ExpressionTexts = expressionTexts;
             this.Evaluator = evaluator;
@@ -34,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public SubordTableLookupStrategy MakeStrategy(
-            EventTable[] eventTable, AgentInstanceContext agentInstanceContext, VirtualDWView vdw)
+            EventTable[] eventTable,
+            AgentInstanceContext agentInstanceContext,
+            VirtualDWView vdw)
         {
             if (IsNWOnTrigger) {
                 return new SubordHashedTableLookupStrategyExprNW(this, (PropertyHashedEventTable) eventTable[0]);

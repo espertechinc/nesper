@@ -32,22 +32,26 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// on-select clause
         /// </returns>
-        public static OnSelectClause Create(String windowName, String optionalAsName)
+        public static OnSelectClause Create(
+            String windowName,
+            String optionalAsName)
         {
             return new OnSelectClause(windowName, optionalAsName);
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="windowName">is the named window name</param>
         /// <param name="optionalAsName">is the name of the named window</param>
-        public OnSelectClause(String windowName, String optionalAsName)
+        public OnSelectClause(
+            String windowName,
+            String optionalAsName)
         {
             WindowName = windowName;
             OptionalAsName = optionalAsName;
         }
-    
+
         /// <summary>
         /// Renders the clause in textual representation.
         /// </summary>
@@ -55,8 +59,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write(WindowName);
-            if (OptionalAsName != null)
-            {
+            if (OptionalAsName != null) {
                 writer.Write(" as ");
                 writer.Write(OptionalAsName);
             }

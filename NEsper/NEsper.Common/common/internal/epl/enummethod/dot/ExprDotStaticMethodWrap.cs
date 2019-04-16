@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         ICollection<EventBean> ConvertNonNull(object result);
 
         CodegenExpression CodegenConvertNonNull(
-            CodegenExpression result, 
-            CodegenMethodScope codegenMethodScope, 
+            CodegenExpression result,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope);
     }
 } // end of namespace

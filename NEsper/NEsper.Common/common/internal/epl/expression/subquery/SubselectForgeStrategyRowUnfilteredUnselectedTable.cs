@@ -20,15 +20,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     {
         private readonly TableMetaData table;
 
-        public SubselectForgeStrategyRowUnfilteredUnselectedTable(ExprSubselectRowNode subselect, TableMetaData table) :
+        public SubselectForgeStrategyRowUnfilteredUnselectedTable(
+            ExprSubselectRowNode subselect,
+            TableMetaData table)
+            :
             base(subselect)
         {
             this.table = table;
         }
 
         public override CodegenExpression EvaluateCodegen(
-            CodegenMethodScope parent, 
-            ExprSubselectEvalMatchSymbol symbols, 
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
             var eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, GetType());

@@ -21,12 +21,14 @@ namespace com.espertech.esper.common.@internal.context.activator
             this.factory = factory;
         }
 
-        public EventType EventType
-        {
+        public EventType EventType {
             get => factory.EventType;
         }
 
-        public ViewableActivationResult Activate(AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient)
+        public ViewableActivationResult Activate(
+            AgentInstanceContext agentInstanceContext,
+            bool isSubselect,
+            bool isRecoveringResilient)
         {
             HistoricalEventViewable viewable = factory.Activate(agentInstanceContext);
             return new ViewableActivationResult(viewable, viewable, null, false, false, null, null);

@@ -39,7 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public override ExprForge Forge => this;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw new UnsupportedOperationException();
         }
@@ -49,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             throw new UnsupportedOperationException();
@@ -66,12 +71,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             throw new UnsupportedOperationException();
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             return false;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
         }
     }

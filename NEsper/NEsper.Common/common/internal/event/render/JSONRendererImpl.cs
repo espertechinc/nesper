@@ -9,8 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.@event.util;
@@ -20,15 +20,15 @@ using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.@internal.@event.render
 {
-    using Map = IDictionary<String, Object>;
+    using Map = IDictionary<string, object>;
 
     /// <summary>RenderAny for the JSON format. </summary>
     public class JSONRendererImpl : JSONEventRenderer
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly static String NEWLINE = Environment.NewLine;
-        private readonly static String COMMA_DELIMITER_NEWLINE = "," + NEWLINE;
+        private static readonly string NEWLINE = Environment.NewLine;
+        private static readonly string COMMA_DELIMITER_NEWLINE = "," + NEWLINE;
 
         private readonly RendererMeta _meta;
         private readonly RendererMetaOptions _rendererOptions;
@@ -36,12 +36,13 @@ namespace com.espertech.esper.common.@internal.@event.render
         /// <summary>Ctor. </summary>
         /// <param name="eventType">type of Event(s)</param>
         /// <param name="options">rendering options</param>
-        public JSONRendererImpl(EventType eventType, JSONRenderingOptions options)
+        public JSONRendererImpl(
+            EventType eventType,
+            JSONRenderingOptions options)
         {
             EventPropertyRenderer propertyRenderer = null;
             EventPropertyRendererContext propertyRendererContext = null;
-            if (options.Renderer != null)
-            {
+            if (options.Renderer != null) {
                 propertyRenderer = options.Renderer;
                 propertyRendererContext = new EventPropertyRendererContext(eventType, true);
             }
@@ -50,7 +51,9 @@ namespace com.espertech.esper.common.@internal.@event.render
             _meta = new RendererMeta(eventType, new Stack<EventTypePropertyPair>(), _rendererOptions);
         }
 
-        public String Render(String title, EventBean theEvent)
+        public string Render(
+            string title,
+            EventBean theEvent)
         {
             var buf = new StringBuilder();
             buf.Append('{');
@@ -74,7 +77,7 @@ namespace com.espertech.esper.common.@internal.@event.render
             return buf.ToString();
         }
 
-        public String Render(EventBean theEvent)
+        public string Render(EventBean theEvent)
         {
             var buf = new StringBuilder();
             buf.Append('{');
@@ -83,10 +86,11 @@ namespace com.espertech.esper.common.@internal.@event.render
             return buf.ToString();
         }
 
-        private static void Ident(StringBuilder buf, int level)
+        private static void Ident(
+            StringBuilder buf,
+            int level)
         {
-            for (var i = 0; i < level; i++)
-            {
+            for (var i = 0; i < level; i++) {
                 IndentChar(buf);
             }
         }
@@ -97,7 +101,12 @@ namespace com.espertech.esper.common.@internal.@event.render
             buf.Append(' ');
         }
 
-        private static void RecursiveRender(EventBean theEvent, StringBuilder buf, int level, RendererMeta meta, RendererMetaOptions rendererOptions)
+        private static void RecursiveRender(
+            EventBean theEvent,
+            StringBuilder buf,
+            int level,
+            RendererMeta meta,
+            RendererMetaOptions rendererOptions)
         {
             var delimiter = "";
 
@@ -105,35 +114,33 @@ namespace com.espertech.esper.common.@internal.@event.render
 
             // simple properties
             var simpleProps = meta.SimpleProperties;
-            if (rendererOptions.Renderer == null)
-            {
+            if (rendererOptions.Renderer == null) {
                 foreach (var simpleProp in simpleProps.OrderBy(prop => prop.Name)) {
                     var name = simpleProp.Name;
                     var value = simpleProp.Getter.Get(theEvent);
-                    renderActions.Add(name, () =>
-                    {
-                        WriteDelimitedIndentedProp(buf, delimiter, level, name);
-                        simpleProp.Output.Render(value, buf);
-                        delimiter = COMMA_DELIMITER_NEWLINE;
-                    });
+                    renderActions.Add(
+                        name, () => {
+                            WriteDelimitedIndentedProp(buf, delimiter, level, name);
+                            simpleProp.Output.Render(value, buf);
+                            delimiter = COMMA_DELIMITER_NEWLINE;
+                        });
                 }
             }
-            else
-            {
+            else {
                 var context = rendererOptions.RendererContext;
                 context.SetStringBuilderAndReset(buf);
                 foreach (var simpleProp in simpleProps.OrderBy(prop => prop.Name)) {
                     var name = simpleProp.Name;
                     var value = simpleProp.Getter.Get(theEvent);
-                    renderActions.Add(name, () =>
-                    {
-                        WriteDelimitedIndentedProp(buf, delimiter, level, simpleProp.Name);
-                        context.DefaultRenderer = simpleProp.Output;
-                        context.PropertyName = simpleProp.Name;
-                        context.PropertyValue = value;
-                        rendererOptions.Renderer.Render(context);
-                        delimiter = COMMA_DELIMITER_NEWLINE;
-                    });
+                    renderActions.Add(
+                        name, () => {
+                            WriteDelimitedIndentedProp(buf, delimiter, level, simpleProp.Name);
+                            context.DefaultRenderer = simpleProp.Output;
+                            context.PropertyName = simpleProp.Name;
+                            context.PropertyValue = value;
+                            rendererOptions.Renderer.Render(context);
+                            delimiter = COMMA_DELIMITER_NEWLINE;
+                        });
                 }
             }
 
@@ -142,8 +149,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 var name = indexProp.Name;
 
                 renderActions.Add(
-                    name, () =>
-                    {
+                    name, () => {
                         WriteDelimitedIndentedProp(buf, delimiter, level, name);
 
                         var value = indexProp.Getter.Get(theEvent);
@@ -209,15 +215,13 @@ namespace com.espertech.esper.common.@internal.@event.render
                 var name = mappedProp.Name;
                 var value = mappedProp.Getter.Get(theEvent);
 
-                if ((value != null) && (!(value.GetType().IsGenericStringDictionary())))
-                {
+                if (value != null && !value.GetType().IsGenericStringDictionary()) {
                     Log.Warn("Property '" + mappedProp.Name + "' expected to return Map and returned " + value.GetType() + " instead");
                     continue;
                 }
 
                 renderActions.Add(
-                    name, () =>
-                    {
+                    name, () => {
                         WriteDelimitedIndentedProp(buf, delimiter, level, mappedProp.Name);
 
                         if (value == null) {
@@ -286,8 +290,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 var value = nestedProp.Getter.GetFragment(theEvent);
 
                 renderActions.Add(
-                    name, () =>
-                    {
+                    name, () => {
                         WriteDelimitedIndentedProp(buf, delimiter, level, nestedProp.Name);
 
                         if (value == null) {
@@ -357,7 +360,11 @@ namespace com.espertech.esper.common.@internal.@event.render
             buf.Append(NEWLINE);
         }
 
-        private static void WriteDelimitedIndentedProp(StringBuilder buf, String delimiter, int level, String name)
+        private static void WriteDelimitedIndentedProp(
+            StringBuilder buf,
+            string delimiter,
+            int level,
+            string name)
         {
             buf.Append(delimiter);
             Ident(buf, level);

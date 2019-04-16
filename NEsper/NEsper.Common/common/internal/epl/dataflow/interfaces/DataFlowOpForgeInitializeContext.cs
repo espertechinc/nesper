@@ -17,9 +17,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
     public class DataFlowOpForgeInitializeContext
     {
         public DataFlowOpForgeInitializeContext(
-            string dataflowName, int operatorNumber, Attribute[] operatorAnnotations, GraphOperatorSpec operatorSpec,
-            IDictionary<int, DataFlowOpInputPort> inputPorts, IDictionary<int, DataFlowOpOutputPort> outputPorts,
-            DataFlowOpForgeCodegenEnv codegenEnv, StatementBaseInfo @base, StatementCompileTimeServices services)
+            string dataflowName,
+            int operatorNumber,
+            Attribute[] operatorAnnotations,
+            GraphOperatorSpec operatorSpec,
+            IDictionary<int, DataFlowOpInputPort> inputPorts,
+            IDictionary<int, DataFlowOpOutputPort> outputPorts,
+            DataFlowOpForgeCodegenEnv codegenEnv,
+            StatementBaseInfo @base,
+            StatementCompileTimeServices services)
         {
             DataflowName = dataflowName;
             OperatorNumber = operatorNumber;

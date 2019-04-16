@@ -21,13 +21,19 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         ContextManagerRealization Realization { get; }
 
         void Activate(
-            IntSeqKey path, object[] parentPartitionKeys, EventBean optionalTriggeringEvent,
+            IntSeqKey path,
+            object[] parentPartitionKeys,
+            EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern);
 
-        void Deactivate(IntSeqKey path, bool terminateChildContexts);
+        void Deactivate(
+            IntSeqKey path,
+            bool terminateChildContexts);
 
         void VisitSelectedPartitions(
-            IntSeqKey path, ContextPartitionSelector selector, ContextPartitionVisitor visitor,
+            IntSeqKey path,
+            ContextPartitionSelector selector,
+            ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel);
 
         void Destroy();

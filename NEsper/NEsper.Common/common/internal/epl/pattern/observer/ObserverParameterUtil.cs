@@ -8,20 +8,23 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
 {
-	public class ObserverParameterUtil {
-	    public static void ValidateNoNamedParameters(string name, IList<ExprNode> parameter) {
-	        foreach (ExprNode node in parameter) {
-	            if (node is ExprNamedParameterNode) {
-	                throw new ObserverParameterException(name + " does not allow named parameters");
-	            }
-	        }
-	    }
-	}
+    public class ObserverParameterUtil
+    {
+        public static void ValidateNoNamedParameters(
+            string name,
+            IList<ExprNode> parameter)
+        {
+            foreach (ExprNode node in parameter) {
+                if (node is ExprNamedParameterNode) {
+                    throw new ObserverParameterException(name + " does not allow named parameters");
+                }
+            }
+        }
+    }
 } // end of namespace

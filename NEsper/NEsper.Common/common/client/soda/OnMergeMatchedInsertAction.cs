@@ -20,10 +20,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="selectList">select expression list</param>
         /// <param name="whereClause">optional condition or null</param>
         /// <param name="optionalStreamName">optionally a stream name for insert-into</param>
-        public OnMergeMatchedInsertAction(IList<string> columnNames,
-                                          IList<SelectClauseElement> selectList,
-                                          Expression whereClause,
-                                          String optionalStreamName)
+        public OnMergeMatchedInsertAction(
+            IList<string> columnNames,
+            IList<SelectClauseElement> selectList,
+            Expression whereClause,
+            String optionalStreamName)
         {
             ColumnNames = columnNames;
             SelectList = selectList;
@@ -59,35 +60,33 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("then insert");
-            if (OptionalStreamName != null)
-            {
+            if (OptionalStreamName != null) {
                 writer.Write(" into ");
                 writer.Write(OptionalStreamName);
             }
 
             string delimiter;
-            if (ColumnNames.Count > 0)
-            {
+            if (ColumnNames.Count > 0) {
                 writer.Write("(");
                 delimiter = "";
-                foreach (String name in ColumnNames)
-                {
+                foreach (String name in ColumnNames) {
                     writer.Write(delimiter);
                     writer.Write(name);
                     delimiter = ", ";
                 }
+
                 writer.Write(")");
             }
+
             writer.Write(" select ");
             delimiter = "";
-            foreach (SelectClauseElement element in SelectList)
-            {
+            foreach (SelectClauseElement element in SelectList) {
                 writer.Write(delimiter);
                 element.ToEPLElement(writer);
                 delimiter = ", ";
             }
-            if (WhereClause != null)
-            {
+
+            if (WhereClause != null) {
                 writer.Write(" where ");
                 WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

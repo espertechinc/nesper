@@ -25,13 +25,17 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         /// <param name="indexedStream">stream to full table scan</param>
         /// <param name="indexNum">index number for the table containing the full unindexed contents</param>
         public FullTableScanUniquePerKeyLookupPlan(
-            int lookupStream, int indexedStream, TableLookupIndexReqKey[] indexNum) : base(
-            lookupStream, indexedStream, indexNum)
+            int lookupStream,
+            int indexedStream,
+            TableLookupIndexReqKey[] indexNum)
+            : base(
+                lookupStream, indexedStream, indexNum)
         {
         }
 
         protected override JoinExecTableLookupStrategy MakeStrategyInternal(
-            EventTable[] eventTable, EventType[] eventTypes)
+            EventTable[] eventTable,
+            EventType[] eventTypes)
         {
             return new FullTableScanUniqueValueLookupStrategy((EventTableAsSet) eventTable[0]);
         }

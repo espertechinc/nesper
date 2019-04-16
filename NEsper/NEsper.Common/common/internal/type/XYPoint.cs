@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class XYPoint
     {
-        public XYPoint(double x, double y)
+        public XYPoint(
+            double x,
+            double y)
         {
             X = x;
             Y = y;
@@ -35,8 +37,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public override int GetHashCode()
         {
-            unchecked
-            {
+            unchecked {
                 return (X.GetHashCode() * 397) ^ Y.GetHashCode();
             }
         }

@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="msgGen">The MSG gen.</param>
-        public StreamNotFoundException(string message, StreamTypesExceptionSuggestionGen msgGen)
+        public StreamNotFoundException(
+            string message,
+            StreamTypesExceptionSuggestionGen msgGen)
             : base(message, msgGen)
         {
         }

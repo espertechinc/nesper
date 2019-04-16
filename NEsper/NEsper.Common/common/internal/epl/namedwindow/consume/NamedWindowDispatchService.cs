@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.context.util;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
@@ -23,7 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         /// <param name="delta">is the result to dispatch</param>
         /// <param name="consumers">is the destination of the dispatch, a map of statements to one or more consuming views</param>
         /// <param name="latchFactory">latch factory</param>
-        void AddDispatch(NamedWindowConsumerLatchFactory latchFactory, NamedWindowDeltaData delta, IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumers);
+        void AddDispatch(
+            NamedWindowConsumerLatchFactory latchFactory,
+            NamedWindowDeltaData delta,
+            IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumers);
 
         /// <summary>
         /// Dispatch events of the insert and remove stream of named windows to consumers, as part of the

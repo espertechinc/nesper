@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Linq;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -18,7 +19,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public class ContextSpecConditionPattern : ContextSpecCondition
     {
-        public ContextSpecConditionPattern(EvalForgeNode patternRaw, bool inclusive, bool immediate)
+        public ContextSpecConditionPattern(
+            EvalForgeNode patternRaw,
+            bool inclusive,
+            bool immediate)
         {
             PatternRaw = patternRaw;
             IsInclusive = inclusive;
@@ -36,21 +40,21 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public PatternContext PatternContext { get; set; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContextConditionDescriptorPattern), GetType(), classScope);
             method.Block
                 .DeclareVar(
                     typeof(ContextConditionDescriptorPattern), "condition",
                     NewInstance(typeof(ContextConditionDescriptorPattern)))
-                .ExprDotMethod(
-                    Ref("condition"), "setPattern",
-                    LocalMethod(PatternCompiled.Root.MakeCodegen(method, symbols, classScope)))
-                .ExprDotMethod(Ref("condition"), "setPatternContext", PatternContext.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("condition"), "setTaggedEvents", Constant(CollectionUtil.ToArray()))
-                .ExprDotMethod(Ref("condition"), "setArrayEvents", Constant(CollectionUtil.ToArray()))
-                .ExprDotMethod(Ref("condition"), "setInclusive", Constant(IsInclusive))
-                .ExprDotMethod(Ref("condition"), "setImmediate", Constant(IsImmediate))
+                .SetProperty(Ref("condition"), "Pattern", LocalMethod(PatternCompiled.Root.MakeCodegen(method, symbols, classScope)))
+                .SetProperty(Ref("condition"), "PatternContext", PatternContext.Make(method, symbols, classScope))
+                .SetProperty(Ref("condition"), "TaggedEvents", Constant(PatternCompiled.TaggedEventTypes.Keys.ToArray()))
+                .SetProperty(Ref("condition"), "ArrayEvents", Constant(PatternCompiled.ArrayEventTypes.Keys.ToArray()))
+                .SetProperty(Ref("condition"), "Inclusive", Constant(IsInclusive))
+                .SetProperty(Ref("condition"), "Immediate", Constant(IsImmediate))
                 .MethodReturn(Ref("condition"));
             return LocalMethod(method);
         }

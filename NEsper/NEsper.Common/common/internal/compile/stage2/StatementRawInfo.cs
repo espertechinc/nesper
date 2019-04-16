@@ -17,8 +17,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     public class StatementRawInfo
     {
         public StatementRawInfo(
-            int statementNumber, string statementName, Attribute[] annotations, StatementType statementType,
-            ContextCompileTimeDescriptor optionalContextDescriptor, string intoTableName, Compilable compilable,
+            int statementNumber,
+            string statementName,
+            Attribute[] annotations,
+            StatementType statementType,
+            ContextCompileTimeDescriptor optionalContextDescriptor,
+            string intoTableName,
+            Compilable compilable,
             string moduleName)
         {
             StatementNumber = statementNumber;
@@ -49,7 +54,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public Attribute[] Annotations { get; }
 
-        public void AppendCodeDebugInfo(StringWriter writer)
+        public void AppendCodeDebugInfo(TextWriter writer)
         {
             writer.Write("statement ");
             writer.Write(Convert.ToString(StatementNumber));

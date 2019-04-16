@@ -17,76 +17,94 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumTakeWhileEventsForgeEval : EnumEval {
+    public class EnumTakeWhileEventsForgeEval : EnumEval
+    {
+        private readonly EnumTakeWhileEventsForge forge;
+        private readonly ExprEvaluator innerExpression;
 
-	    private readonly EnumTakeWhileEventsForge forge;
-	    private readonly ExprEvaluator innerExpression;
+        public EnumTakeWhileEventsForgeEval(
+            EnumTakeWhileEventsForge forge,
+            ExprEvaluator innerExpression)
+        {
+            this.forge = forge;
+            this.innerExpression = innerExpression;
+        }
 
-	    public EnumTakeWhileEventsForgeEval(EnumTakeWhileEventsForge forge, ExprEvaluator innerExpression) {
-	        this.forge = forge;
-	        this.innerExpression = innerExpression;
-	    }
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            if (enumcoll.IsEmpty()) {
+                return enumcoll;
+            }
 
-	    public object EvaluateEnumMethod(EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context) {
-	        if (enumcoll.IsEmpty()) {
-	            return enumcoll;
-	        }
+            ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
+            if (enumcoll.Count == 1) {
+                EventBean item = beans.First();
+                eventsLambda[forge.streamNumLambda] = item;
 
-	        ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-	        if (enumcoll.Count == 1) {
-	            EventBean item = beans.First();
-	            eventsLambda[forge.streamNumLambda] = item;
+                object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                if (pass == null || false.Equals(pass)) {
+                    return Collections.GetEmptyList<object>();
+                }
 
-	            object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
-	            if (pass == null || false.Equals(pass)) {
-	                return Collections.GetEmptyList<object>();
-	            }
-	            return Collections.SingletonList(item);
-	        }
+                return Collections.SingletonList(item);
+            }
 
-	        ArrayDeque<object> result = new ArrayDeque<object>();
+            ArrayDeque<object> result = new ArrayDeque<object>();
 
-	        foreach (EventBean next in beans) {
-	            eventsLambda[forge.streamNumLambda] = next;
+            foreach (EventBean next in beans) {
+                eventsLambda[forge.streamNumLambda] = next;
 
-	            object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
-	            if (pass == null || false.Equals(pass)) {
-	                break;
-	            }
+                object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                if (pass == null || false.Equals(pass)) {
+                    break;
+                }
 
-	            result.Add(next);
-	        }
+                result.Add(next);
+            }
 
-	        return result;
-	    }
+            return result;
+        }
 
-	    public static CodegenExpression Codegen(EnumTakeWhileEventsForge forge, EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-	        CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(typeof(ICollection<object>), typeof(EnumTakeWhileEventsForgeEval), scope, codegenClassScope).AddParam(EnumForgeCodegenNames.PARAMS);
-	        CodegenExpression innerValue = forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
+        public static CodegenExpression Codegen(
+            EnumTakeWhileEventsForge forge,
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
+            CodegenMethod methodNode = codegenMethodScope
+                .MakeChildWithScope(typeof(ICollection<object>), typeof(EnumTakeWhileEventsForgeEval), scope, codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS);
+            CodegenExpression innerValue = forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
 
-	        CodegenBlock block = methodNode.Block
-	                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
-	                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
+            CodegenBlock block = methodNode.Block
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
 
-	        CodegenBlock blockSingle = block.IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), Constant(1)))
-	                .DeclareVar(typeof(EventBean), "item", Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")))
-	                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("item"));
-	        CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(blockSingle, forge.innerExpression.EvaluationType, innerValue, StaticMethod(typeof(Collections), "emptyList"));
-	        blockSingle.BlockReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("item")));
+            CodegenBlock blockSingle = block.IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), Constant(1)))
+                .DeclareVar(
+                    typeof(EventBean), "item",
+                    Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("item"));
+            CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
+                blockSingle, forge.innerExpression.EvaluationType, innerValue, StaticMethod(typeof(Collections), "emptyList"));
+            blockSingle.BlockReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("item")));
 
-	        block.DeclareVar(typeof(ArrayDeque<object>), "result", NewInstance(typeof(ArrayDeque<object>)));
-	        CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-	                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"));
-	        CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(forEach, forge.innerExpression.EvaluationType, innerValue);
-	        forEach.Expression(ExprDotMethod(@Ref("result"), "add", @Ref("next")));
-	        block.MethodReturn(@Ref("result"));
-	        return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
-	    }
-	}
+            block.DeclareVar(typeof(ArrayDeque<object>), "result", NewInstance(typeof(ArrayDeque<object>)));
+            CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"));
+            CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(forEach, forge.innerExpression.EvaluationType, innerValue);
+            forEach.Expression(ExprDotMethod(@Ref("result"), "add", @Ref("next")));
+            block.MethodReturn(@Ref("result"));
+            return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
+        }
+    }
 } // end of namespace

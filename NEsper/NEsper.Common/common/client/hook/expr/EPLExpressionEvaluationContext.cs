@@ -11,7 +11,7 @@ namespace com.espertech.esper.common.client.hook.expr
     /// <summary>
     /// Provides expression evaluation context information in an expression.
     /// </summary>
-	public class EPLExpressionEvaluationContext
+    public class EPLExpressionEvaluationContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EPLExpressionEvaluationContext"/> class.
@@ -20,20 +20,24 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="contextPartitionId">The context partition identifier.</param>
         /// <param name="engineURI">The engine URI.</param>
         /// <param name="statementUserObject">The statement user object.</param>
-	    public EPLExpressionEvaluationContext(string statementName, int contextPartitionId, string engineURI, object statementUserObject)
+        public EPLExpressionEvaluationContext(
+            string statementName,
+            int contextPartitionId,
+            string engineURI,
+            object statementUserObject)
         {
-	        StatementName = statementName;
-	        ContextPartitionId = contextPartitionId;
-	        EngineURI = engineURI;
-	        StatementUserObject = statementUserObject;
-	    }
+            StatementName = statementName;
+            ContextPartitionId = contextPartitionId;
+            EngineURI = engineURI;
+            StatementUserObject = statementUserObject;
+        }
 
-	    public string EngineURI { get; private set; }
+        public string EngineURI { get; private set; }
 
-	    public string StatementName { get; private set; }
+        public string StatementName { get; private set; }
 
-	    public int ContextPartitionId { get; private set; }
+        public int ContextPartitionId { get; private set; }
 
-	    public object StatementUserObject { get; private set; }
+        public object StatementUserObject { get; private set; }
     }
 } // end of namespace

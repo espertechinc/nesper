@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.type
             IsArrayOfPrimitive = false;
         }
 
-        public ClassIdentifierWArray(string classIdentifier, int arrayDimensions, bool arrayOfPrimitive)
+        public ClassIdentifierWArray(
+            string classIdentifier,
+            int arrayDimensions,
+            bool arrayOfPrimitive)
         {
             ClassIdentifier = classIdentifier;
             ArrayDimensions = arrayDimensions;

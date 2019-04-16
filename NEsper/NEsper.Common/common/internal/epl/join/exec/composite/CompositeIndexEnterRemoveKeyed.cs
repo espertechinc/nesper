@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
 
@@ -23,18 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             this.hashGetter = hashGetter;
         }
 
-        public CompositeIndexEnterRemove Next
-        {
+        public CompositeIndexEnterRemove Next {
             get => this.next;
             set => this.next = value;
         }
 
-        public void Enter(EventBean theEvent, IDictionary<object, CompositeIndexEntry> parent)
+        public void Enter(
+            EventBean theEvent,
+            IDictionary<object, CompositeIndexEntry> parent)
         {
             var mk = hashGetter.Get(theEvent);
             var innerIndex = parent.Get(mk);
-            if (innerIndex == null)
-            {
+            if (innerIndex == null) {
                 innerIndex = new CompositeIndexEntry(new OrderedDictionary<object, CompositeIndexEntry>());
                 parent.Put(mk, innerIndex);
             }
@@ -42,28 +41,29 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             next.Enter(theEvent, innerIndex.AssertIndex());
         }
 
-        public void Remove(EventBean theEvent, IDictionary<object, CompositeIndexEntry> parent)
+        public void Remove(
+            EventBean theEvent,
+            IDictionary<object, CompositeIndexEntry> parent)
         {
             var mk = hashGetter.Get(theEvent);
             var innerIndex = parent.Get(mk);
-            if (innerIndex == null)
-            {
+            if (innerIndex == null) {
                 return;
             }
 
             var branches = innerIndex.AssertIndex();
             next.Remove(theEvent, branches);
-            if (branches.IsEmpty())
-            {
+            if (branches.IsEmpty()) {
                 parent.Remove(mk);
             }
         }
 
-        public void GetAll(ISet<EventBean> result, IDictionary<object, CompositeIndexEntry> parent)
+        public void GetAll(
+            ISet<EventBean> result,
+            IDictionary<object, CompositeIndexEntry> parent)
         {
             //IDictionary<HashableMultiKey, IDictionary> map = parent;
-            foreach (var entry in parent)
-            {
+            foreach (var entry in parent) {
                 entry.Value.AssertIndex();
                 next.GetAll(result, entry.Value.Index);
             }

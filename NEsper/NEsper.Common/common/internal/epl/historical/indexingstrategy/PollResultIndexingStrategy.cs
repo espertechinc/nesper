@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -30,7 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         /// </param>
         /// <param name="agentInstanceContext">statement context</param>
         /// <returns>indexed collection of poll results</returns>
-        EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache, AgentInstanceContext agentInstanceContext);
+        EventTable[] Index(
+            IList<EventBean> pollResult,
+            bool isActiveCache,
+            AgentInstanceContext agentInstanceContext);
     }
 
     public class ProxyPollResultIndexingStrategy : PollResultIndexingStrategy
@@ -46,7 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             ProcIndex = procIndex;
         }
 
-        public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache, AgentInstanceContext agentInstanceContext)
+        public EventTable[] Index(
+            IList<EventBean> pollResult,
+            bool isActiveCache,
+            AgentInstanceContext agentInstanceContext)
         {
             return ProcIndex?.Invoke(pollResult, isActiveCache, agentInstanceContext);
         }

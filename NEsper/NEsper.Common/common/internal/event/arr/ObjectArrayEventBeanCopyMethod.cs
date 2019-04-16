@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 
@@ -25,7 +26,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="objectArrayEventType">map event type</param>
         /// <param name="eventAdapterService">for copying events</param>
         public ObjectArrayEventBeanCopyMethod(
-            ObjectArrayEventType objectArrayEventType, EventBeanTypedEventFactory eventAdapterService)
+            ObjectArrayEventType objectArrayEventType,
+            EventBeanTypedEventFactory eventAdapterService)
         {
             this.objectArrayEventType = objectArrayEventType;
             this.eventAdapterService = eventAdapterService;

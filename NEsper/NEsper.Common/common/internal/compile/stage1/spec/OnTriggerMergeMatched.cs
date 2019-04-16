@@ -16,7 +16,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class OnTriggerMergeMatched
     {
-        public OnTriggerMergeMatched(bool matchedUnmatched, ExprNode optionalMatchCond, IList<OnTriggerMergeAction> actions)
+        public OnTriggerMergeMatched(
+            bool matchedUnmatched,
+            ExprNode optionalMatchCond,
+            IList<OnTriggerMergeAction> actions)
         {
             IsMatchedUnmatched = matchedUnmatched;
             OptionalMatchCond = optionalMatchCond;
@@ -29,5 +32,4 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public IList<OnTriggerMergeAction> Actions { get; private set; }
     }
-
 }

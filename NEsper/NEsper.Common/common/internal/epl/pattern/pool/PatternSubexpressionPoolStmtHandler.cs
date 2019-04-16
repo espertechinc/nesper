@@ -12,16 +12,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
     {
         private int _count;
 
-        public int Count
-        {
+        public int Count {
             get { return _count; }
         }
 
         public void DecreaseCount()
         {
             _count--;
-            if (_count < 0)
-            {
+            if (_count < 0) {
                 _count = 0;
             }
         }

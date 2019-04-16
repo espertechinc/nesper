@@ -229,13 +229,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             return new PatternStreamSpecCompiled(
-                root, 
+                root,
                 tags.TaggedEventTypes,
                 tags.ArrayEventTypes,
                 allTagNamesOrdered,
                 streamSpecRaw.ViewSpecs,
                 streamSpecRaw.OptionalStreamName,
-                streamSpecRaw.Options, 
+                streamSpecRaw.Options,
                 streamSpecRaw.IsSuppressSameEventMatches,
                 streamSpecRaw.IsDiscardPartialsOnMatch);
         }
@@ -376,8 +376,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                 var spec = FilterSpecCompiler.MakeFilterSpec(
                     resolvedEventType, eventName, exprNodes,
-                    filterNode.RawFilterSpec.OptionalPropertyEvalSpec, 
-                    filterTaggedEventTypes, 
+                    filterNode.RawFilterSpec.OptionalPropertyEvalSpec,
+                    filterTaggedEventTypes,
                     arrayCompositeEventTypes,
                     streamTypeService, null, statementRawInfo, services);
                 filterNode.FilterSpec = spec;

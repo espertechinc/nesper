@@ -38,31 +38,46 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
         }
 
-        public void SetCurrentAccess(object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
+        public void SetCurrentAccess(
+            object groupKey,
+            int agentInstanceId,
+            AggregationGroupByRollupLevel rollupLevel)
         {
         }
 
         public object GetValue(
-            int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData,
+            int column,
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;
         }
 
         public ICollection<EventBean> GetCollectionOfEvents(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
         public ICollection<object> GetCollectionScalar(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
         public EventBean GetEventBean(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }

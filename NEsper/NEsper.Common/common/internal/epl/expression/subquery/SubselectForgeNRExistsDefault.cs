@@ -22,14 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         private readonly ExprForge filterEval;
         private readonly ExprForge havingEval;
 
-        public SubselectForgeNRExistsDefault(ExprForge filterEval, ExprForge havingEval)
+        public SubselectForgeNRExistsDefault(
+            ExprForge filterEval,
+            ExprForge havingEval)
         {
             this.filterEval = filterEval;
             this.havingEval = havingEval;
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
             method.Block.ApplyTri(new ReturnIfNoMatch(ConstantFalse(), ConstantFalse()), method, symbols);

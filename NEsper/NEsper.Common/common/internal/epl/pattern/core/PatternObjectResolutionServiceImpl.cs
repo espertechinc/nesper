@@ -76,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             return forge;
         }
 
-        private object CreateForge(ObjectSpec spec, PluggableObjectType type)
+        private object CreateForge(
+            ObjectSpec spec,
+            PluggableObjectType type)
         {
             if (Log.IsDebugEnabled) {
                 Log.Debug(".create Creating factory, spec=" + spec);

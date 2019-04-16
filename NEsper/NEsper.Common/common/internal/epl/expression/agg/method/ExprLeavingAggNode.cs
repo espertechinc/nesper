@@ -18,22 +18,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
     /// </summary>
     public class ExprLeavingAggNode : ExprAggregateNodeBase
     {
-        public ExprLeavingAggNode(bool distinct) : base(distinct)
+        public ExprLeavingAggNode(bool distinct)
+            : base(distinct)
         {
         }
 
         internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            if (optionalFilter == null && positionalParams.Length > 0)
-            {
+            if (optionalFilter == null && positionalParams.Length > 0) {
                 throw MakeExceptionExpectedParamNum(0, 0);
             }
 
             return new AggregationFactoryMethodLeaving(this);
         }
 
-        public override string AggregationFunctionName
-        {
+        public override string AggregationFunctionName {
             get => "leaving";
         }
 

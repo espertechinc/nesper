@@ -7,24 +7,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.airegistry
 {
-	public interface AIRegistryFactory {
-	    AIRegistryPriorEvalStrategy MakePrior();
+    public interface AIRegistryFactory
+    {
+        AIRegistryPriorEvalStrategy MakePrior();
 
-	    AIRegistryPreviousGetterStrategy MakePrevious();
+        AIRegistryPreviousGetterStrategy MakePrevious();
 
-	    AIRegistrySubselectLookup MakeSubqueryLookup(LookupStrategyDesc lookupStrategyDesc);
+        AIRegistrySubselectLookup MakeSubqueryLookup(LookupStrategyDesc lookupStrategyDesc);
 
-	    AIRegistryAggregation MakeAggregation();
+        AIRegistryAggregation MakeAggregation();
 
-	    AIRegistryTableAccess MakeTableAccess();
+        AIRegistryTableAccess MakeTableAccess();
 
-	    AIRegistryRowRecogPreviousStrategy MakeRowRecogPreviousStrategy();
-	}
+        AIRegistryRowRecogPreviousStrategy MakeRowRecogPreviousStrategy();
+    }
 } // end of namespace

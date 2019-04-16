@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private readonly String resolvedExpression;
         private readonly bool configuredAsSingleRow;
 
-        public ExprNodeUtilResolveExceptionHandlerDefault(String resolvedExpression, bool configuredAsSingleRow)
+        public ExprNodeUtilResolveExceptionHandlerDefault(
+            String resolvedExpression,
+            bool configuredAsSingleRow)
         {
             this.resolvedExpression = resolvedExpression;
             this.configuredAsSingleRow = configuredAsSingleRow;
@@ -24,14 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprValidationException Handle(Exception e)
         {
             String message;
-            if (configuredAsSingleRow)
-            {
+            if (configuredAsSingleRow) {
                 message = e.Message;
             }
-            else
-            {
-                message = "Failed to resolve '" + resolvedExpression + "' to a property, single-row function, aggregation function, script, stream or class name";
+            else {
+                message = "Failed to resolve '" + resolvedExpression +
+                          "' to a property, single-row function, aggregation function, script, stream or class name";
             }
+
             return new ExprValidationException(message, e);
         }
     }

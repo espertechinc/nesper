@@ -13,6 +13,9 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public interface StatementReadyCallback
     {
-        void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery);
+        void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery);
     }
 } // end of namespace

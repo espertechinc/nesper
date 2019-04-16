@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,7 +18,6 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.@join.analyze;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
@@ -41,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             this.timeAbacus = timeAbacus;
         }
 
-        private DateFormat DateFormatFormatter => (DateFormat)formatter.ExprEvaluator.Evaluate(null, true, null);
+        private DateFormat DateFormatFormatter => (DateFormat) formatter.ExprEvaluator.Evaluate(null, true, null);
 
         public ReformatOp Op => this;
 
@@ -49,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public FilterExprAnalyzerAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DatetimeMethodEnum currentMethod,
+            DateTimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {
@@ -65,9 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var formatField = CodegenFormatFieldInit(codegenClassScope);
             var blockMethod = codegenMethodScope
                 .MakeChild(typeof(string), typeof(ReformatFormatForge), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "cal").Block
+                .AddParam(typeof(DateTimeEx), "dtx").Block
                 .SynchronizedOn(formatField)
-                .BlockReturn(ExprDotMethod(formatField, "format", ExprDotMethod(Ref("cal"), "getTime")));
+                .BlockReturn(ExprDotMethod(formatField, "format", ExprDotMethod(Ref("dtx"), "getTime")));
             return LocalMethodBuild(blockMethod.MethodEnd()).Pass(inner).Call();
         }
 
@@ -101,12 +99,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var blockMethod = codegenMethodScope.MakeChild(typeof(string), typeof(ReformatFormatForge), classScope)
                 .AddParam(typeof(long), "ts").Block;
             var syncBlock = blockMethod.SynchronizedOn(formatField);
-            if (timeAbacus.OneSecond == 1000L)
-            {
+            if (timeAbacus.OneSecond == 1000L) {
                 syncBlock.BlockReturn(ExprDotMethod(formatField, "format", Ref("ts")));
             }
-            else
-            {
+            else {
                 syncBlock.BlockReturn(ExprDotMethod(formatField, "format", timeAbacus.ToDateCodegen(Ref("ts"))));
             }
 
@@ -119,14 +115,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            lock (this)
-            {
-                if (timeAbacus.OneSecond == 1000L)
-                {
+            lock (this) {
+                if (timeAbacus.OneSecond == 1000L) {
                     return DateFormatFormatter.Format(ts);
                 }
 
-                return DateFormatFormatter.Format(timeAbacus.ToDate(ts));
+                return DateFormatFormatter.Format(timeAbacus.ToDateTimeEx(ts));
             }
         }
 
@@ -163,12 +157,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 formatter, classScope.PackageScope.InitMethod, classScope);
             var formatEval = LocalMethod(formatEvalCall, ConstantNull(), ConstantTrue(), ConstantNull());
             CodegenExpression init;
-            if (formatterType.FormatterType != typeof(string))
-            {
+            if (formatterType.FormatterType != typeof(string)) {
                 init = formatEval;
             }
-            else
-            {
+            else {
                 var parse = classScope.PackageScope.InitMethod.MakeChild(
                     typeof(DateFormat), GetType(), classScope);
                 parse.Block.MethodReturn(NewInstance(typeof(SimpleDateFormat), formatEval));

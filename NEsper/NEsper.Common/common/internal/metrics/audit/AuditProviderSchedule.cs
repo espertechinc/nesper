@@ -14,13 +14,21 @@ namespace com.espertech.esper.common.@internal.metrics.audit
     public interface AuditProviderSchedule
     {
         void ScheduleAdd(
-            long nextScheduledTime, AgentInstanceContext agentInstanceContext, ScheduleHandle scheduleHandle,
-            ScheduleObjectType objectType, string name);
-
-        void ScheduleRemove(
-            AgentInstanceContext agentInstanceContext, ScheduleHandle scheduleHandle, ScheduleObjectType objectType,
+            long nextScheduledTime,
+            AgentInstanceContext agentInstanceContext,
+            ScheduleHandle scheduleHandle,
+            ScheduleObjectType objectType,
             string name);
 
-        void ScheduleFire(AgentInstanceContext agentInstanceContext, ScheduleObjectType objectType, string name);
+        void ScheduleRemove(
+            AgentInstanceContext agentInstanceContext,
+            ScheduleHandle scheduleHandle,
+            ScheduleObjectType objectType,
+            string name);
+
+        void ScheduleFire(
+            AgentInstanceContext agentInstanceContext,
+            ScheduleObjectType objectType,
+            string name);
     }
 } // end of namespace

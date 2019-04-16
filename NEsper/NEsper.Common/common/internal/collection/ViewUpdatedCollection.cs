@@ -7,31 +7,33 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-	/// <summary>
-	/// A general-purpose collection interface for collections updated by view data.
-	/// <para />Views post delta-data in terms of new data (insert stream) events and old data (remove stream) event that
-	/// leave a window.
-	/// </summary>
-	public interface ViewUpdatedCollection {
-	    /// <summary>
-	    /// Accepts view insert and remove stream.
-	    /// </summary>
-	    /// <param name="newData">is the insert stream events or null if no data</param>
-	    /// <param name="oldData">is the remove stream events or null if no data</param>
-	    void Update(EventBean[] newData, EventBean[] oldData);
+    /// <summary>
+    /// A general-purpose collection interface for collections updated by view data.
+    /// <para />Views post delta-data in terms of new data (insert stream) events and old data (remove stream) event that
+    /// leave a window.
+    /// </summary>
+    public interface ViewUpdatedCollection
+    {
+        /// <summary>
+        /// Accepts view insert and remove stream.
+        /// </summary>
+        /// <param name="newData">is the insert stream events or null if no data</param>
+        /// <param name="oldData">is the remove stream events or null if no data</param>
+        void Update(
+            EventBean[] newData,
+            EventBean[] oldData);
 
-	    /// <summary>
-	    /// De-allocate resources held by the collection.
-	    /// </summary>
-	    void Destroy();
+        /// <summary>
+        /// De-allocate resources held by the collection.
+        /// </summary>
+        void Destroy();
 
-	    int NumEventsInsertBuf { get; }
-	}
+        int NumEventsInsertBuf { get; }
+    }
 } // end of namespace

@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             if (start is ContextConditionDescriptorFilter) {
                 var filter = (ContextConditionDescriptorFilter) start;
                 if (filter.OptionalFilterAsName != null) {
-                    identifier.Properties = Collections.SingletonMap(filter.OptionalFilterAsName, key.TriggeringEvent);
+                    identifier.Properties = Collections.SingletonDataMap(filter.OptionalFilterAsName, key.TriggeringEvent);
                 }
             }
 

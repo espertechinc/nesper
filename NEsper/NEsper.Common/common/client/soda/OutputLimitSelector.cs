@@ -15,36 +15,39 @@ namespace com.espertech.esper.common.client.soda
     /// </summary>
     [Serializable]
     public enum OutputLimitSelector
-	{
+    {
         /// <summary>
         /// Output first event of last interval.
         /// </summary>
         FIRST,
+
         /// <summary>
         /// Output last event of last interval.
         /// </summary>
-	    LAST,
+        LAST,
+
         /// <summary>
         /// Output all events of last interval.   For group-by statements, output all groups
         /// regardless whether the group changed between the last output.
         /// </summary>
-	    ALL,
+        ALL,
+
         /// <summary>
         /// Output all events as a snapshot considering the current state regardless of interval.
         /// </summary>
         SNAPSHOT,
+
         /// <summary>
         /// Output all events of last interval.
         /// </summary>
         DEFAULT
-	}
+    }
 
     public static class OutputLimitSelectorExtensions
     {
         public static string GetText(this OutputLimitSelector @enum)
         {
-            switch (@enum)
-            {
+            switch (@enum) {
                 case OutputLimitSelector.FIRST:
                     return "first";
                 case OutputLimitSelector.LAST:

@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <param name="exprEvaluatorContext">evaluation context</param>
         /// <returns>value</returns>
         object GetValue(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
@@ -41,8 +44,11 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <param name="isNewData">new-data flag</param>
         /// <param name="exprEvaluatorContext">evaluation context</param>
         /// <returns>collection of &lt;seealso cref="EventBean" /&gt;</returns>
-        ICollection<object> GetValueCollectionEvents(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+        ICollection<EventBean> GetValueCollectionEvents(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
@@ -56,7 +62,10 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <param name="exprEvaluatorContext">evaluation context</param>
         /// <returns>collection of values</returns>
         ICollection<object> GetValueCollectionScalar(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
@@ -70,7 +79,10 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <param name="exprEvaluatorContext">evaluation context</param>
         /// <returns>event</returns>
         EventBean GetValueEventBean(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

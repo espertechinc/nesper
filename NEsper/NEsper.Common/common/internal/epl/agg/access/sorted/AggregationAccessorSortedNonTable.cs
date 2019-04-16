@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         private readonly Type componentType;
         private readonly bool max;
 
-        public AggregationAccessorSortedNonTable(bool max, Type componentType)
+        public AggregationAccessorSortedNonTable(
+            bool max,
+            Type componentType)
         {
             this.max = max;
             this.componentType = componentType;

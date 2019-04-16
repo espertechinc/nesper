@@ -34,7 +34,10 @@ namespace com.espertech.esper.common.@internal.@event.core
         ///     is zero or more property values that embellish the wrapped event
         /// </param>
         /// <param name="eventType">is the <see cref="WrapperEventType" />.</param>
-        public WrapperEventBean(EventBean theEvent, DataMap properties, EventType eventType)
+        public WrapperEventBean(
+            EventBean theEvent,
+            DataMap properties,
+            EventType eventType)
         {
             UnderlyingEvent = theEvent;
             UnderlyingMap = properties;
@@ -111,7 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public object GetFragment(string propertyExpression)
         {
-            EventPropertyGetter getter = EventType.GetGetter(propertyExpression);
+            var getter = EventType.GetGetter(propertyExpression);
             if (getter == null) {
                 throw PropertyAccessException.NotAValidProperty(propertyExpression);
             }
@@ -127,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <exception cref="PropertyAccessException">Property named '" + property + "' is not a valid property name for this type</exception>
         private object GetInternal(string property)
         {
-            EventPropertyGetter getter = EventType.GetGetter(property);
+            var getter = EventType.GetGetter(property);
             if (getter == null) {
                 throw new PropertyAccessException(
                     "Property named '" + property + "' is not a valid property name for this type");

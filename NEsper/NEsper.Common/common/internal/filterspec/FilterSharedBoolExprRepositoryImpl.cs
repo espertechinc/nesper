@@ -18,11 +18,15 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
         }
 
-        public void RegisterBoolExpr(int statementId, FilterSpecParamExprNode node)
+        public void RegisterBoolExpr(
+            int statementId,
+            FilterSpecParamExprNode node)
         {
         }
 
-        public FilterSpecParamExprNode GetFilterBoolExpr(int statementId, int filterBoolExprNum)
+        public FilterSpecParamExprNode GetFilterBoolExpr(
+            int statementId,
+            int filterBoolExprNum)
         {
             throw new UnsupportedOperationException("Not provided by this implementation");
         }

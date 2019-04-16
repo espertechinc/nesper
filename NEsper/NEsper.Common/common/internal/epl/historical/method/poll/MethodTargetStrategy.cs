@@ -13,6 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
     public interface MethodTargetStrategy
     {
         string Plan { get; }
-        object Invoke(object lookupValues, AgentInstanceContext agentInstanceContext);
+
+        object Invoke(
+            object lookupValues,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

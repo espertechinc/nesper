@@ -18,12 +18,12 @@ namespace com.espertech.esper.common.@internal.view.previous
             AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             IStreamRandomAccess randomAccess = null;
-            if (agentInstanceViewFactoryContext.PreviousNodeGetter != null)
-            {
+            if (agentInstanceViewFactoryContext.PreviousNodeGetter != null) {
                 var getter = (RandomAccessByIndexGetter) agentInstanceViewFactoryContext.PreviousNodeGetter;
                 randomAccess = new IStreamRandomAccess(getter);
                 getter.Updated(randomAccess);
             }
+
             return randomAccess;
         }
 
@@ -31,8 +31,7 @@ namespace com.espertech.esper.common.@internal.view.previous
             AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             IStreamRelativeAccess relativeAccessByEvent = null;
-            if (agentInstanceViewFactoryContext.PreviousNodeGetter != null)
-            {
+            if (agentInstanceViewFactoryContext.PreviousNodeGetter != null) {
                 var getter = (RelativeAccessByEventNIndexGetter) agentInstanceViewFactoryContext.PreviousNodeGetter;
                 var observer = (IStreamRelativeAccess.IStreamRelativeAccessUpdateObserver) getter;
                 relativeAccessByEvent = new IStreamRelativeAccess(observer);
@@ -46,8 +45,7 @@ namespace com.espertech.esper.common.@internal.view.previous
             AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             IStreamSortRankRandomAccess rankedRandomAccess = null;
-            if (agentInstanceViewFactoryContext.PreviousNodeGetter != null)
-            {
+            if (agentInstanceViewFactoryContext.PreviousNodeGetter != null) {
                 var getter = (RandomAccessByIndexGetter) agentInstanceViewFactoryContext.PreviousNodeGetter;
                 rankedRandomAccess = new IStreamSortRankRandomAccessImpl(getter);
                 getter.Updated(rankedRandomAccess);

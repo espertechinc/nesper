@@ -34,12 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         }
 
         public ReformatOp Op => this;
-        
+
         public Type ReturnType => typeof(DateTimeEx);
 
         public FilterExprAnalyzerAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DatetimeMethodEnum currentMethod,
+            DateTimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {

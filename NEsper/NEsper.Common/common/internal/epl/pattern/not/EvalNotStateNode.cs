@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -34,7 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
         /// <param name="evalNotNode">is the factory node associated to the state</param>
         public EvalNotStateNode(
             Evaluator parentNode,
-            EvalNotNode evalNotNode) : base(parentNode)
+            EvalNotNode evalNotNode)
+            : base(parentNode)
         {
             this.evalNotNode = evalNotNode;
         }
@@ -47,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
 
         public override bool IsObserverStateNodeNonRestarting => false;
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             var agentInstanceContext = evalNotNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternNotEvalFalse(evalNotNode.factoryNode);
@@ -55,15 +57,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
         }
 
         public void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent)
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             var agentInstanceContext = evalNotNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternNotEvaluateTrue(evalNotNode.factoryNode, matchEvent);
 
             // Only is the subexpression stopped listening can we tell the parent evaluator that this
             // turned permanently false.
-            if (isQuitted)
-            {
+            if (isQuitted) {
                 childNode = null;
                 agentInstanceContext.AuditProvider.PatternFalse(evalNotNode.FactoryNode, this, agentInstanceContext);
                 agentInstanceContext.AuditProvider.PatternInstance(
@@ -105,8 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
             agentInstanceContext.InstrumentationProvider.QPatternNotQuit(evalNotNode.factoryNode);
             agentInstanceContext.AuditProvider.PatternInstance(false, evalNotNode.factoryNode, agentInstanceContext);
 
-            if (childNode != null)
-            {
+            if (childNode != null) {
                 childNode.Quit();
             }
 
@@ -116,8 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitNot(evalNotNode.FactoryNode, this);
-            if (childNode != null)
-            {
+            if (childNode != null) {
                 childNode.Accept(visitor);
             }
         }

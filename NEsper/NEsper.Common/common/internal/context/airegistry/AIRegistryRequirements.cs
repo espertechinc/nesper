@@ -15,8 +15,11 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     public class AIRegistryRequirements
     {
         public AIRegistryRequirements(
-            bool[] priorFlagsPerStream, bool[] previousFlagsPerStream, AIRegistryRequirementSubquery[] subqueries,
-            int tableAccessCount, bool isRowRecogWithPrevious)
+            bool[] priorFlagsPerStream,
+            bool[] previousFlagsPerStream,
+            AIRegistryRequirementSubquery[] subqueries,
+            int tableAccessCount,
+            bool isRowRecogWithPrevious)
         {
             PriorFlagsPerStream = priorFlagsPerStream;
             PreviousFlagsPerStream = previousFlagsPerStream;

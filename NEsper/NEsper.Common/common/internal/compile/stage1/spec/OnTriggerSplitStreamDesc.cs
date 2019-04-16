@@ -21,8 +21,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="onTriggerType">type of trigger</param>
         /// <param name="isFirst">true for use the first-matching where clause, false for all</param>
         /// <param name="splitStreams">streams</param>
-        public OnTriggerSplitStreamDesc(OnTriggerType onTriggerType, bool isFirst,
-                                        IList<OnTriggerSplitStream> splitStreams)
+        public OnTriggerSplitStreamDesc(
+            OnTriggerType onTriggerType,
+            bool isFirst,
+            IList<OnTriggerSplitStream> splitStreams)
             : base(onTriggerType)
         {
             IsFirst = isFirst;

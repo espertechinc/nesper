@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +15,6 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -39,26 +37,30 @@ namespace com.espertech.esper.common.@internal.view.sort
 
         public override string ViewName => NAME;
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             viewParameters = parameters;
             useCollatorSort = viewForgeEnv.Configuration.Compiler.Language.IsSortUsingCollator;
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
             var message =
                 NAME + " window requires a numeric size parameter and a list of expressions providing sort keys";
-            if (viewParameters.Count < 2)
-            {
+            if (viewParameters.Count < 2) {
                 throw new ViewParameterException(message);
             }
 
             var validated = ViewForgeSupport.Validate(
                 NAME + " window", parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
-            for (var i = 1; i < validated.Length; i++)
-            {
+            for (var i = 1; i < validated.Length; i++) {
                 ViewForgeSupport.AssertReturnsNonConstant(NAME + " window", validated[i], i);
             }
 
@@ -68,15 +70,12 @@ namespace com.espertech.esper.common.@internal.view.sort
             sortCriteriaExpressions = new ExprNode[validated.Length - 1];
             isDescendingValues = new bool[sortCriteriaExpressions.Length];
 
-            for (var i = 1; i < validated.Length; i++)
-            {
-                if (validated[i] is ExprOrderedExpr)
-                {
-                    isDescendingValues[i - 1] = ((ExprOrderedExpr)validated[i]).IsDescending;
+            for (var i = 1; i < validated.Length; i++) {
+                if (validated[i] is ExprOrderedExpr) {
+                    isDescendingValues[i - 1] = ((ExprOrderedExpr) validated[i]).IsDescending;
                     sortCriteriaExpressions[i - 1] = validated[i].ChildNodes[0];
                 }
-                else
-                {
+                else {
                     sortCriteriaExpressions[i - 1] = validated[i];
                 }
             }
@@ -93,7 +92,9 @@ namespace com.espertech.esper.common.@internal.view.sort
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block

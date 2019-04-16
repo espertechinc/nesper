@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             AgentInstanceStopCallback stopCallback,
             AgentInstanceContext agentInstanceContext)
             : base(
-                finalView, stopCallback, agentInstanceContext, null, 
-                new EmptyDictionary<int, SubSelectFactoryResult>(), 
+                finalView, stopCallback, agentInstanceContext, null,
+                new EmptyDictionary<int, SubSelectFactoryResult>(),
                 null, null, null, null,
                 new EmptyList<StatementAgentInstancePreload>())
         {

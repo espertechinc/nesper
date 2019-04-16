@@ -8,7 +8,8 @@
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
-	public interface AggregationResultFutureReceptor {
-	    void Set(AggregationResultFuture future);
-	}
+    public interface AggregationResultFutureReceptor
+    {
+        void Set(AggregationResultFuture future);
+    }
 } // end of namespace

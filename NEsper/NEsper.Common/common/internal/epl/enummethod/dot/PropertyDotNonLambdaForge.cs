@@ -26,14 +26,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         private readonly int streamId;
 
-        public PropertyDotNonLambdaForge(int streamId, EventPropertyGetterSPI getter, Type returnType)
+        public PropertyDotNonLambdaForge(
+            int streamId,
+            EventPropertyGetterSPI getter,
+            Type returnType)
         {
             this.streamId = streamId;
             this.getter = getter;
             EvaluationType = returnType;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var @event = eventsPerStream[streamId];
             if (@event == null) {
@@ -48,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
@@ -68,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public ExprNodeRenderable ForgeRenderable => this;
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(GetType().Name);
         }

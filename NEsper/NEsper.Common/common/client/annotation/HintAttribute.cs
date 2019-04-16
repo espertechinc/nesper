@@ -36,7 +36,10 @@ namespace com.espertech.esper.common.client.annotation
         /// <param name="value">The value.</param>
         /// <param name="model">The model.</param>
         /// <param name="applies">What this hint applies to.</param>
-        public HintAttribute(string value = "", string model = "", AppliesTo applies = AppliesTo.UNDEFINED)
+        public HintAttribute(
+            string value = "",
+            string model = "",
+            AppliesTo applies = AppliesTo.UNDEFINED)
         {
             Value = value;
             Model = model;

@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly VariableManagementService _variableService;
 
         private ExprNodeAdapterMSStmtLock(
-            FilterSpecParamExprNode factory, ExprEvaluatorContext evaluatorContext, EventBean[] prototype,
+            FilterSpecParamExprNode factory,
+            ExprEvaluatorContext evaluatorContext,
+            EventBean[] prototype,
             VariableManagementService variableService)
             : base(factory, evaluatorContext, prototype)
 

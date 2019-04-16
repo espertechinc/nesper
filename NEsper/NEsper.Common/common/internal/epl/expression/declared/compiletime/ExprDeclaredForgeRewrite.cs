@@ -10,7 +10,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
@@ -19,9 +18,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
     {
         private readonly int[] streamAssignments;
 
-        public ExprDeclaredForgeRewrite(ExprDeclaredNodeImpl parent, ExprForge innerForge, bool isCache, int[] streamAssignments, bool audit, string statementName)
-
-             : base(parent, innerForge, isCache, audit, statementName)
+        public ExprDeclaredForgeRewrite(
+            ExprDeclaredNodeImpl parent,
+            ExprForge innerForge,
+            bool isCache,
+            int[] streamAssignments,
+            bool audit,
+            string statementName)
+            : base(parent, innerForge, isCache, audit, statementName)
 
         {
             this.streamAssignments = streamAssignments;
@@ -31,27 +35,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
             // rewrite streams
             EventBean[] events = new EventBean[streamAssignments.Length];
-            for (int i = 0; i < streamAssignments.Length; i++)
-            {
+            for (int i = 0; i < streamAssignments.Length; i++) {
                 events[i] = eps[streamAssignments[i]];
             }
 
             return events;
         }
 
-        public override ExprForgeConstantType ForgeConstantType
-        {
+        public override ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        protected override CodegenExpression CodegenEventsPerStreamRewritten(CodegenExpression eventsPerStream, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+        protected override CodegenExpression CodegenEventsPerStreamRewritten(
+            CodegenExpression eventsPerStream,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            CodegenBlock block = codegenMethodScope.MakeChild(typeof(EventBean[]), typeof(ExprDeclaredForgeRewrite), codegenClassScope).AddParam(typeof(EventBean[]), "eps").Block
-                    .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(streamAssignments.Length)));
-            for (int i = 0; i < streamAssignments.Length; i++)
-            {
+            CodegenBlock block = codegenMethodScope.MakeChild(typeof(EventBean[]), typeof(ExprDeclaredForgeRewrite), codegenClassScope)
+                .AddParam(typeof(EventBean[]), "eps").Block
+                .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(streamAssignments.Length)));
+            for (int i = 0; i < streamAssignments.Length; i++) {
                 block.AssignArrayElement("events", Constant(i), ArrayAtIndex(@Ref("eps"), Constant(streamAssignments[i])));
             }
+
             return LocalMethodBuild(block.MethodReturn(@Ref("events"))).Pass(eventsPerStream).Call();
         }
     }

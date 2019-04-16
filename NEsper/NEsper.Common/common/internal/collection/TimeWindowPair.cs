@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="eventHolder">The event holder.</param>
-        public TimeWindowPair(long timestamp, Object eventHolder)
+        public TimeWindowPair(
+            long timestamp,
+            Object eventHolder)
         {
             Timestamp = timestamp;
             EventHolder = eventHolder;

@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         internal TimeAbacus timeAbacus;
 
         public void SetObserverParameters(
-            IList<ExprNode> parameters, MatchedEventConvertorForge convertor, ExprValidationContext validationContext)
+            IList<ExprNode> parameters,
+            MatchedEventConvertorForge convertor,
+            ExprValidationContext validationContext)
         {
             ObserverParameterUtil.ValidateNoNamedParameters(NAME, parameters);
             var errorMessage = NAME + " requires a single numeric or time period parameter";
@@ -62,7 +64,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (scheduleCallbackId == -1) {
                 throw new IllegalStateException("Unassigned schedule callback id");

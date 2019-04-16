@@ -39,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         public int NumOuterStreams { get; set; }
 
         public SubordTableLookupStrategy MakeStrategy(
-            EventTable[] eventTable, AgentInstanceContext agentInstanceContext, VirtualDWView vdw)
+            EventTable[] eventTable,
+            AgentInstanceContext agentInstanceContext,
+            VirtualDWView vdw)
         {
             return vdw.GetSubordinateLookupStrategy(this, agentInstanceContext);
         }

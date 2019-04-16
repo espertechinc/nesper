@@ -21,14 +21,18 @@ namespace com.espertech.esper.common.@internal.context.activator
         private readonly ExprNode optionalFilterExpression;
         private readonly TableMetaData table;
 
-        public ViewableActivatorTableForge(TableMetaData table, ExprNode optionalFilterExpression)
+        public ViewableActivatorTableForge(
+            TableMetaData table,
+            ExprNode optionalFilterExpression)
         {
             this.table = table;
             this.optionalFilterExpression = optionalFilterExpression;
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ViewableActivatorTable), GetType(), classScope);
             method.Block

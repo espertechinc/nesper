@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.@event.path
         private readonly EventTypeNameResolver publics;
 
         public EventTypeResolverImpl(
-            IDictionary<string, EventType> locals, PathRegistry<string, EventType> path, EventTypeNameResolver publics,
+            IDictionary<string, EventType> locals,
+            PathRegistry<string, EventType> path,
+            EventTypeNameResolver publics,
             BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate)
         {
             this.locals = locals;

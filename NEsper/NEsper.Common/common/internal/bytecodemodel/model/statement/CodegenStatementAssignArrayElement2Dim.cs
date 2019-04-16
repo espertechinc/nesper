@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly CodegenExpression indexTwo;
 
         public CodegenStatementAssignArrayElement2Dim(
-            CodegenExpression array, CodegenExpression indexOne, CodegenExpression indexTwo,
+            CodegenExpression array,
+            CodegenExpression indexOne,
+            CodegenExpression indexTwo,
             CodegenExpression expression)
         {
             this.array = array;
@@ -31,7 +33,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             array.Render(builder, imports, isInnerClass);
             builder.Append("[");

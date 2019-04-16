@@ -32,7 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         public object GetValue(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var linear = (IList<EventBean>) row.GetCollectionOfEvents(
@@ -62,15 +65,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             return array;
         }
 
-        public ICollection<object> GetValueCollectionEvents(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+        public ICollection<EventBean> GetValueCollectionEvents(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return row.GetCollectionOfEvents(aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ICollection<object> GetValueCollectionScalar(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var linear = (IList<EventBean>) row.GetCollectionOfEvents(
@@ -93,7 +102,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         public EventBean GetValueEventBean(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;

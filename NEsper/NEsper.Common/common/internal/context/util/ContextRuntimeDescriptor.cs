@@ -11,7 +11,9 @@ namespace com.espertech.esper.common.@internal.context.util
     public class ContextRuntimeDescriptor
     {
         public ContextRuntimeDescriptor(
-            string contextName, string contextDeploymentId, ContextIteratorHandler iteratorHandler)
+            string contextName,
+            string contextDeploymentId,
+            ContextIteratorHandler iteratorHandler)
         {
             ContextName = contextName;
             ContextDeploymentId = contextDeploymentId;

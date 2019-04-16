@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.serde
         private readonly CodegenSharableSerdeName name;
         private readonly Type valueType;
 
-        public CodegenSharableSerdeClassTyped(CodegenSharableSerdeName name, Type valueType)
+        public CodegenSharableSerdeClassTyped(
+            CodegenSharableSerdeName name,
+            Type valueType)
         {
             this.name = name;
             this.valueType = valueType;
@@ -27,14 +29,14 @@ namespace com.espertech.esper.common.@internal.serde
 
         public Type Type()
         {
-            return typeof(DataInputOutputSerdeWCollation);
+            return typeof(DataInputOutputSerdeWCollation<object>);
         }
 
         public CodegenExpression InitCtorScoped()
         {
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                 .Add(EPStatementInitServicesConstants.GETDATAINPUTOUTPUTSERDEPROVIDER)
-                .Add(name.methodName, Constant(valueType));
+                .Add(name.MethodName, Constant(valueType));
         }
 
         public override bool Equals(object o)

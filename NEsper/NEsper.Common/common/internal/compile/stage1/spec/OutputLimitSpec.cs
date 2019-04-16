@@ -63,7 +63,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             AndAfterTerminateThenExpressions = andAfterTerminateSetExpressions;
         }
 
-        public OutputLimitSpec(OutputLimitLimitType displayLimit, OutputLimitRateType rateType)
+        public OutputLimitSpec(
+            OutputLimitLimitType displayLimit,
+            OutputLimitRateType rateType)
             : this(null, null, rateType, displayLimit, null, null, null, null, null, null, false, null, null)
         {
         }

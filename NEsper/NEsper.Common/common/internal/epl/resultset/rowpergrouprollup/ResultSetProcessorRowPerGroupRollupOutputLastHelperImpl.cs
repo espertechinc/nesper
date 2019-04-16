@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         private readonly ResultSetProcessorRowPerGroupRollup processor;
 
         public ResultSetProcessorRowPerGroupRollupOutputLastHelperImpl(
-            ResultSetProcessorRowPerGroupRollup processor, int levelCount)
+            ResultSetProcessorRowPerGroupRollup processor,
+            int levelCount)
         {
             this.processor = processor;
 
@@ -45,7 +46,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             }
         }
 
-        public void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic)
+        public void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic)
         {
             // apply to aggregates
             var groupKeysPerLevel = new object[processor.GroupByRollupDesc.Levels.Length];
@@ -96,7 +100,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic)
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
+            bool isGenerateSynthetic)
         {
             // apply to aggregates
             var groupKeysPerLevel = new object[processor.GroupByRollupDesc.Levels.Length];
@@ -160,7 +166,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             // no action required
         }
 
-        private UniformPair<EventBean[]> Output(bool isSynthesize, bool isJoin)
+        private UniformPair<EventBean[]> Output(
+            bool isSynthesize,
+            bool isJoin)
         {
             IList<EventBean> newEvents = new List<EventBean>(4);
             foreach (var level in processor.GroupByRollupDesc.Levels) {

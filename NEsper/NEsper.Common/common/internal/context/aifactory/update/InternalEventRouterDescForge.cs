@@ -29,8 +29,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         private readonly TypeWidenerSPI[] wideners;
 
         public InternalEventRouterDescForge(
-            EventBeanCopyMethodForge copyMethod, TypeWidenerSPI[] wideners, EventType eventType,
-            Attribute[] annotations, ExprNode optionalWhereClause, string[] properties, ExprNode[] assignments)
+            EventBeanCopyMethodForge copyMethod,
+            TypeWidenerSPI[] wideners,
+            EventType eventType,
+            Attribute[] annotations,
+            ExprNode optionalWhereClause,
+            string[] properties,
+            ExprNode[] assignments)
         {
             this.copyMethod = copyMethod;
             this.wideners = wideners;
@@ -42,7 +47,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(InternalEventRouterDesc), GetType(), classScope);
             method.Block
@@ -66,7 +73,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         }
 
         private CodegenExpression MakeWideners(
-            TypeWidenerSPI[] wideners, CodegenMethod method, CodegenClassScope classScope)
+            TypeWidenerSPI[] wideners,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             var init = new CodegenExpression[wideners.Length];
             for (var i = 0; i < init.Length; i++) {

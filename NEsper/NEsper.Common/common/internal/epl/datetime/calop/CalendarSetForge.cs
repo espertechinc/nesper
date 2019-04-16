@@ -10,38 +10,47 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
     public class CalendarSetForge : CalendarForge
     {
-        internal readonly CalendarFieldEnum fieldName;
+        internal readonly DateTimeFieldEnum field;
         internal readonly ExprForge valueExpr;
 
-        public CalendarSetForge(CalendarFieldEnum fieldName, ExprForge valueExpr)
+        public CalendarSetForge(
+            DateTimeFieldEnum field,
+            ExprForge valueExpr)
         {
-            this.fieldName = fieldName;
+            this.field = field;
             this.valueExpr = valueExpr;
         }
 
-        public CalendarOp EvalOp => new CalendarSetForgeOp(fieldName, valueExpr.ExprEvaluator);
+        public CalendarOp EvalOp => new CalendarSetForgeOp(field, valueExpr.ExprEvaluator);
 
         public CodegenExpression CodegenDateTimeEx(
-            CodegenExpression dateTimeEx, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTimeEx,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarSetForgeOp.CodegenCalendar(this, dateTimeEx, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTimeOffset(
-            CodegenExpression dateTimeOffset, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTimeOffset,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarSetForgeOp.CodegenDateTimeOffset(this, dateTimeOffset, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTime(
-            CodegenExpression dateTime, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTime,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarSetForgeOp.CodegenDateTime(this, dateTime, codegenMethodScope, exprSymbol, codegenClassScope);

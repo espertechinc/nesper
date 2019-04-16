@@ -29,8 +29,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>textual</returns>
         public static string GetText(this MatchRecognizeSkipClause value)
         {
-            switch(value)
-            {
+            switch (value) {
                 case MatchRecognizeSkipClause.TO_CURRENT_ROW:
                     return ("to current row");
                 case MatchRecognizeSkipClause.TO_NEXT_ROW:
@@ -43,4 +42,3 @@ namespace com.espertech.esper.common.client.soda
         }
     }
 }
-    

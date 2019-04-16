@@ -25,15 +25,18 @@ namespace com.espertech.esper.common.magic
         /// Underlying type managed by magic type
         /// </summary>
         private readonly Type _type;
+
         /// <summary>
         /// MagicType for parent type
         /// </summary>
         private readonly MagicType _parent;
+
         /// <summary>
         /// Case insensitive property table
         /// </summary>
         private readonly IDictionary<string, SimpleMagicPropertyInfo> _ciPropertyTable =
             new Dictionary<string, SimpleMagicPropertyInfo>();
+
         /// <summary>
         /// Case sensitive property table
         /// </summary>
@@ -61,16 +64,14 @@ namespace com.espertech.esper.common.magic
         /// <summary>
         /// Gets the type that magic type reflects.
         /// </summary>
-        public Type TargetType
-        {
+        public Type TargetType {
             get { return _type; }
         }
 
         /// <summary>
         /// Gets the magic type for the base type.
         /// </summary>
-        public MagicType BaseType
-        {
+        public MagicType BaseType {
             get { return _parent; }
         }
 
@@ -100,13 +101,13 @@ namespace com.espertech.esper.common.magic
             return _parent.ExtendsType(baseType);
         }
 
-        private static string GetPropertyName( string assumedName, ICustomAttributeProvider member )
+        private static string GetPropertyName(
+            string assumedName,
+            ICustomAttributeProvider member)
         {
             var attributes = member.GetCustomAttributes(typeof(PropertyNameAttribute), true);
-            if (attributes != null)
-            {
-                foreach (PropertyNameAttribute attribute in attributes)
-                {
+            if (attributes != null) {
+                foreach (PropertyNameAttribute attribute in attributes) {
                     return attribute.Name;
                 }
             }
@@ -114,7 +115,10 @@ namespace com.espertech.esper.common.magic
             return assumedName;
         }
 
-        private void AddProperty(string csName, string ciName, SimpleMagicPropertyInfo prop)
+        private void AddProperty(
+            string csName,
+            string ciName,
+            SimpleMagicPropertyInfo prop)
         {
             var ciProp = _ciPropertyTable.Get(ciName);
             if (ciProp != null) {
@@ -141,8 +145,7 @@ namespace com.espertech.esper.common.magic
         /// </summary>
         private void IndexSimpleProperties()
         {
-            foreach (PropertyInfo propertyInfo in FetchSimpleProperties())
-            {
+            foreach (PropertyInfo propertyInfo in FetchSimpleProperties()) {
                 var csName = GetPropertyName(propertyInfo.Name, propertyInfo);
                 var ciName = csName.ToUpper();
                 var prop = new SimpleMagicPropertyInfo(
@@ -155,8 +158,7 @@ namespace com.espertech.esper.common.magic
                 AddProperty(csName, ciName, prop);
             }
 
-            foreach (MethodInfo methodInfo in FetchSimpleAccessors())
-            {
+            foreach (MethodInfo methodInfo in FetchSimpleAccessors()) {
                 var csName = GetAccessorPropertyName(methodInfo);
                 var ciName = csName.ToUpper();
                 var setter = GetSimpleMutator(csName, methodInfo.ReturnType);
@@ -198,8 +200,7 @@ namespace com.espertech.esper.common.magic
             // processes.
 
 
-            foreach (var accessorInfo in FetchMappedAccessors())
-            {
+            foreach (var accessorInfo in FetchMappedAccessors()) {
                 var csName = GetAccessorPropertyName(accessorInfo);
                 var ciName = csName.ToUpper();
                 var prop = new SimpleMagicPropertyInfo(
@@ -218,8 +219,7 @@ namespace com.espertech.esper.common.magic
         /// </summary>
         private void IndexIndexedProperties()
         {
-            foreach (PropertyInfo propertyInfo in FetchIndexedProperties())
-            {
+            foreach (PropertyInfo propertyInfo in FetchIndexedProperties()) {
                 var csName = GetPropertyName(propertyInfo.Name, propertyInfo);
                 var ciName = csName.ToUpper();
                 var prop = new SimpleMagicPropertyInfo(
@@ -232,7 +232,7 @@ namespace com.espertech.esper.common.magic
                 AddProperty(csName, ciName, prop);
             }
 
-            foreach( MethodInfo methodInfo in FetchIndexedAccessors()) {
+            foreach (MethodInfo methodInfo in FetchIndexedAccessors()) {
                 var csName = GetAccessorPropertyName(methodInfo);
                 var ciName = csName.ToUpper();
                 var prop = new SimpleMagicPropertyInfo(
@@ -252,15 +252,14 @@ namespace com.espertech.esper.common.magic
         /// <param name="isCaseSensitive">if set to <c>true</c> [is case sensitive].</param>
         /// <param name="filter">The filter.</param>
         /// <returns></returns>
-        public IEnumerable<SimpleMagicPropertyInfo> GetAllProperties(bool isCaseSensitive, Predicate<MagicPropertyInfo> filter)
+        public IEnumerable<SimpleMagicPropertyInfo> GetAllProperties(
+            bool isCaseSensitive,
+            Predicate<MagicPropertyInfo> filter)
         {
             var table = isCaseSensitive ? _csPropertyTable : _ciPropertyTable;
-            foreach (var entry in table)
-            {
-                for (var temp = entry.Value; temp != null; temp = temp.Next )
-                {
-                    if (filter.Invoke(temp))
-                    {
+            foreach (var entry in table) {
+                for (var temp = entry.Value; temp != null; temp = temp.Next) {
+                    if (filter.Invoke(temp)) {
                         yield return temp;
                     }
                 }
@@ -272,7 +271,7 @@ namespace com.espertech.esper.common.magic
         /// </summary>
         /// <param name="isCaseSensitive">if set to <c>true</c> [case sensitive].</param>
         /// <returns></returns>
-        public IEnumerable<SimpleMagicPropertyInfo> GetAllProperties( bool isCaseSensitive )
+        public IEnumerable<SimpleMagicPropertyInfo> GetAllProperties(bool isCaseSensitive)
         {
             return GetAllProperties(isCaseSensitive, magicProperty => true);
         }
@@ -313,7 +312,9 @@ namespace com.espertech.esper.common.magic
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="resolutionStyle">The resolution style.</param>
         /// <returns></returns>
-        public MagicPropertyInfo ResolveComplexProperty(string propertyName, PropertyResolutionStyle resolutionStyle)
+        public MagicPropertyInfo ResolveComplexProperty(
+            string propertyName,
+            PropertyResolutionStyle resolutionStyle)
         {
             int indexOfDot = propertyName.IndexOf('.');
             if (indexOfDot != -1) {
@@ -338,7 +339,9 @@ namespace com.espertech.esper.common.magic
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="resolutionStyle">if set to <c>true</c> [is case sensitive].</param>
         /// <returns></returns>
-        public SimpleMagicPropertyInfo ResolveProperty(string propertyName, PropertyResolutionStyle resolutionStyle )
+        public SimpleMagicPropertyInfo ResolveProperty(
+            string propertyName,
+            PropertyResolutionStyle resolutionStyle)
         {
             switch (resolutionStyle) {
                 case PropertyResolutionStyle.CASE_SENSITIVE:
@@ -369,8 +372,9 @@ namespace com.espertech.esper.common.magic
                                 return property;
                             }
 
-                            throw new EPException("Unable to determine which property to use for \"" + propertyName +
-                                                  "\" because more than one property matched");
+                            throw new EPException(
+                                "Unable to determine which property to use for \"" + propertyName +
+                                "\" because more than one property matched");
                         }
 
                         if (_parent != null)
@@ -388,7 +392,9 @@ namespace com.espertech.esper.common.magic
         /// <param name="propertyName">The name.</param>
         /// <param name="resolutionStyle">The resolution style.</param>
         /// <returns></returns>
-        public MethodInfo ResolvePropertyMethod( string propertyName, PropertyResolutionStyle resolutionStyle)
+        public MethodInfo ResolvePropertyMethod(
+            string propertyName,
+            PropertyResolutionStyle resolutionStyle)
         {
             var property = ResolveProperty(propertyName, resolutionStyle) as SimpleMagicPropertyInfo;
             return property?.GetMethod;
@@ -402,10 +408,8 @@ namespace com.espertech.esper.common.magic
         public string GetMutatorPropertyName(MethodInfo mutatorMethod)
         {
             var attributes = mutatorMethod.GetCustomAttributes(typeof(PropertyNameAttribute), true);
-            if (attributes != null)
-            {
-                foreach (PropertyNameAttribute attribute in attributes)
-                {
+            if (attributes != null) {
+                foreach (PropertyNameAttribute attribute in attributes) {
                     return attribute.Name;
                 }
             }
@@ -414,20 +418,17 @@ namespace com.espertech.esper.common.magic
             String inferredName = mutatorMethod.Name.Substring(3);
             String newInferredName = null;
             // Leave uppercase inferred names such as URL
-            if (inferredName.Length >= 2)
-            {
+            if (inferredName.Length >= 2) {
                 if (Char.IsUpper(inferredName[0]) &&
-                    Char.IsUpper(inferredName[1]))
-                {
+                    Char.IsUpper(inferredName[1])) {
                     newInferredName = inferredName;
                 }
             }
+
             // camelCase the inferred name
-            if (newInferredName == null)
-            {
+            if (newInferredName == null) {
                 newInferredName = Char.ToString(Char.ToUpper(inferredName[0]));
-                if (inferredName.Length > 1)
-                {
+                if (inferredName.Length > 1) {
                     newInferredName += inferredName.Substring(1);
                 }
             }
@@ -440,14 +441,11 @@ namespace com.espertech.esper.common.magic
         /// </summary>
         /// <param name="accessorMethod"></param>
         /// <returns></returns>
-
         public string GetAccessorPropertyName(MethodInfo accessorMethod)
         {
             var attributes = accessorMethod.GetCustomAttributes(typeof(PropertyNameAttribute), true);
-            if (attributes != null)
-            {
-                foreach (PropertyNameAttribute attribute in attributes)
-                {
+            if (attributes != null) {
+                foreach (PropertyNameAttribute attribute in attributes) {
                     return attribute.Name;
                 }
             }
@@ -456,20 +454,17 @@ namespace com.espertech.esper.common.magic
             String inferredName = accessorMethod.Name.Substring(3);
             String newInferredName = null;
             // Leave uppercase inferred names such as URL
-            if (inferredName.Length >= 2)
-            {
+            if (inferredName.Length >= 2) {
                 if (Char.IsUpper(inferredName[0]) &&
-                    Char.IsUpper(inferredName[1]))
-                {
+                    Char.IsUpper(inferredName[1])) {
                     newInferredName = inferredName;
                 }
             }
+
             // camelCase the inferred name
-            if (newInferredName == null)
-            {
+            if (newInferredName == null) {
                 newInferredName = Char.ToString(Char.ToUpper(inferredName[0]));
-                if (inferredName.Length > 1)
-                {
+                if (inferredName.Length > 1) {
                     newInferredName += inferredName.Substring(1);
                 }
             }
@@ -481,16 +476,13 @@ namespace com.espertech.esper.common.magic
         /// Returns all simple properties
         /// </summary>
         /// <returns></returns>
-
         public IEnumerable<PropertyInfo> FetchSimpleProperties()
         {
-            foreach (PropertyInfo propInfo in _type.GetProperties())
-            {
+            foreach (PropertyInfo propInfo in _type.GetProperties()) {
                 var getMethod = propInfo.GetGetMethod();
                 if ((getMethod != null) &&
                     (getMethod.IsStatic == false) &&
-                    (getMethod.GetParameters().Length == 0))
-                {
+                    (getMethod.GetParameters().Length == 0)) {
                     yield return propInfo;
                 }
             }
@@ -501,14 +493,11 @@ namespace com.espertech.esper.common.magic
         /// parameters.
         /// </summary>
         /// <returns></returns>
-
         public IEnumerable<MethodInfo> FetchSimpleAccessors()
         {
-            foreach (var methodInfo in GetAccessors())
-            {
+            foreach (var methodInfo in GetAccessors()) {
                 var methodParams = methodInfo.GetParameters();
-                if (methodParams.Length == 0)
-                {
+                if (methodParams.Length == 0) {
                     yield return methodInfo;
                 }
             }
@@ -516,8 +505,7 @@ namespace com.espertech.esper.common.magic
 
         public IEnumerable<PropertyInfo> FetchIndexedProperties()
         {
-            foreach (PropertyInfo propInfo in _type.GetProperties())
-            {
+            foreach (PropertyInfo propInfo in _type.GetProperties()) {
                 var getMethod = propInfo.GetGetMethod();
                 if (getMethod == null)
                     continue;
@@ -537,15 +525,12 @@ namespace com.espertech.esper.common.magic
         /// parameter of type int.
         /// </summary>
         /// <returns></returns>
-
         public IEnumerable<MethodInfo> FetchIndexedAccessors()
         {
-            foreach (MethodInfo methodInfo in GetAccessors())
-            {
+            foreach (MethodInfo methodInfo in GetAccessors()) {
                 ParameterInfo[] methodParams = methodInfo.GetParameters();
                 if ((methodParams.Length == 1) &&
-                    (methodParams[0].ParameterType == typeof(int)))
-                {
+                    (methodParams[0].ParameterType == typeof(int))) {
                     yield return methodInfo;
                 }
             }
@@ -553,8 +538,7 @@ namespace com.espertech.esper.common.magic
 
         public IEnumerable<PropertyInfo> FetchMappedProperties()
         {
-            foreach (PropertyInfo propInfo in _type.GetProperties())
-            {
+            foreach (PropertyInfo propInfo in _type.GetProperties()) {
                 var getMethod = propInfo.GetGetMethod();
                 if (getMethod == null)
                     continue;
@@ -572,15 +556,12 @@ namespace com.espertech.esper.common.magic
         /// parameter of type string.
         /// </summary>
         /// <returns></returns>
-
         public IEnumerable<MethodInfo> FetchMappedAccessors()
         {
-            foreach (var methodInfo in GetAccessors())
-            {
+            foreach (var methodInfo in GetAccessors()) {
                 var methodParams = methodInfo.GetParameters();
                 if ((methodParams.Length == 1) &&
-                    (methodParams[0].ParameterType == typeof(string)))
-                {
+                    (methodParams[0].ParameterType == typeof(string))) {
                     yield return methodInfo;
                 }
             }
@@ -590,17 +571,14 @@ namespace com.espertech.esper.common.magic
         /// Enumerates all accessor methods for a type
         /// </summary>
         /// <returns></returns>
-
         public IEnumerable<MethodInfo> GetAccessors()
         {
-            foreach (var methodInfo in _type.GetMethods())
-            {
+            foreach (var methodInfo in _type.GetMethods()) {
                 var methodName = methodInfo.Name;
 
                 if ((methodInfo.IsSpecialName == false) &&
                     (methodName.StartsWith("Get")) &&
-                    (methodName != "Get"))
-                {
+                    (methodName != "Get")) {
                     // We don't need any of the pseudo accessors from System.Object
                     if ((methodName == "GetHashCode") ||
                         (methodName == "GetType")) {
@@ -614,15 +592,13 @@ namespace com.espertech.esper.common.magic
 
         public IEnumerable<MethodInfo> GetMutators()
         {
-            foreach (var methodInfo in _type.GetMethods())
-            {
+            foreach (var methodInfo in _type.GetMethods()) {
                 var methodName = methodInfo.Name;
 
                 if ((methodInfo.IsSpecialName == false) &&
                     (methodInfo.GetParameters().Length == 1) &&
                     (methodName.StartsWith("Set")) &&
-                    (methodName != "Set"))
-                {
+                    (methodName != "Set")) {
                     yield return methodInfo;
                 }
             }
@@ -630,56 +606,50 @@ namespace com.espertech.esper.common.magic
 
         public IEnumerable<MethodInfo> GetMappableMutators()
         {
-            foreach (var methodInfo in _type.GetMethods())
-            {
+            foreach (var methodInfo in _type.GetMethods()) {
                 var methodName = methodInfo.Name;
 
                 if ((methodInfo.IsSpecialName == false) &&
                     (methodInfo.GetParameters().Length == 2) &&
                     (methodInfo.GetParameters()[0].ParameterType == typeof(string)) &&
                     (methodName.StartsWith("Set")) &&
-                    (methodName != "Set"))
-                {
+                    (methodName != "Set")) {
                     yield return methodInfo;
                 }
             }
         }
 
-        private MethodInfo GetSimpleMutator(string propertyName, Type propertyType)
+        private MethodInfo GetSimpleMutator(
+            string propertyName,
+            Type propertyType)
         {
             var methodName = "Set" + propertyName;
-            try
-            {
+            try {
                 var methodInfo = _type.GetMethod(methodName);
-                if ((methodInfo != null) && methodInfo.IsPublic && !methodInfo.IsStatic)
-                {
+                if ((methodInfo != null) && methodInfo.IsPublic && !methodInfo.IsStatic) {
                     var parameters = methodInfo.GetParameters();
-                    if ((parameters.Length == 1) && (parameters[0].ParameterType == propertyType))
-                    {
+                    if ((parameters.Length == 1) && (parameters[0].ParameterType == propertyType)) {
                         return methodInfo;
                     }
                 }
-            } 
-            catch(AmbiguousMatchException)
-            {
+            }
+            catch (AmbiguousMatchException) {
                 var methods = _type
                     .GetMethods()
                     .Where(method => method.Name == methodName && method.IsPublic && !method.IsStatic);
-                foreach(var methodInfo in methods)
-                {
+                foreach (var methodInfo in methods) {
                     var parameters = methodInfo.GetParameters();
-                    if ((parameters.Length == 1) && (parameters[0].ParameterType == propertyType))
-                    {
+                    if ((parameters.Length == 1) && (parameters[0].ParameterType == propertyType)) {
                         return methodInfo;
                     }
                 }
-
             }
 
             return null;
         }
 
         private static readonly ILockable TypeCacheLock = new MonitorSpinLock(60000);
+
         private static readonly Dictionary<Type, MagicType> TypeCacheTable =
             new Dictionary<Type, MagicType>();
 
@@ -696,6 +666,7 @@ namespace com.espertech.esper.common.magic
         }
 
         private static readonly ILockable AccessorCacheLock = new MonitorSpinLock(60000);
+
         private static readonly Dictionary<MethodInfo, Func<object, object>> AccessorCacheTable =
             new Dictionary<MethodInfo, Func<object, object>>();
 
@@ -704,14 +675,14 @@ namespace com.espertech.esper.common.magic
             using (AccessorCacheLock.Acquire()) {
                 Func<object, object> lambdaAccessor;
                 if (!AccessorCacheTable.TryGetValue(methodInfo, out lambdaAccessor)) {
-                    var eParam = Expression.Parameter(typeof (object), "arg");
+                    var eParam = Expression.Parameter(typeof(object), "arg");
                     var eCast1 = methodInfo.DeclaringType.IsValueType
                         ? Expression.Unbox(eParam, methodInfo.DeclaringType)
                         : Expression.Convert(eParam, methodInfo.DeclaringType);
                     var eMethod = Expression.Call(methodInfo.IsStatic ? null : eCast1, methodInfo);
                     var eCast2 = methodInfo.ReturnType.IsValueType
-                                     ? (Expression) Expression.Convert(eMethod, typeof(object))
-                                     : eMethod;
+                        ? (Expression) Expression.Convert(eMethod, typeof(object))
+                        : eMethod;
                     var eLambda = Expression.Lambda<Func<object, object>>(eCast2, eParam);
                     AccessorCacheTable[methodInfo] = lambdaAccessor = eLambda.Compile();
                 }
@@ -722,6 +693,7 @@ namespace com.espertech.esper.common.magic
     }
 
     #region MagicPropertyInfo
+
     public abstract class MagicPropertyInfo
     {
         /// <summary>
@@ -771,17 +743,15 @@ namespace com.espertech.esper.common.magic
         public static T CastTo<T>(Object value)
         {
             if (value is T)
-                return (T)value;
+                return (T) value;
 
             // Arrays need to be converted by looking at the internal elements
             // within the array.  Since value is more than likely going to be
             // an array of System.Object, the conversion is basically a recursive
             // call to this method.
-            if (typeof(T).IsArray)
-            {
+            if (typeof(T).IsArray) {
                 var valueArray = value as Object[];
-                if (valueArray == null)
-                {
+                if (valueArray == null) {
                     return default(T); // null
                 }
 
@@ -791,12 +761,11 @@ namespace com.espertech.esper.common.magic
                     .MakeGenericMethod(subType);
 
                 var returnArray = Array.CreateInstance(subType, valueArray.Length);
-                for (int ii = 0; ii < valueArray.Length; ii++)
-                {
-                    returnArray.SetValue(subCast.Invoke(null, new[] { valueArray[ii] }), ii);
+                for (int ii = 0; ii < valueArray.Length; ii++) {
+                    returnArray.SetValue(subCast.Invoke(null, new[] {valueArray[ii]}), ii);
                 }
 
-                return (T)((Object)returnArray);
+                return (T) ((Object) returnArray);
             }
 
             var genericTypeCaster = CastHelper.GetCastConverter<T>();
@@ -828,8 +797,7 @@ namespace com.espertech.esper.common.magic
         /// Gets a value indicating whether this property can be set.
         /// </summary>
         /// <value><c>true</c> if this instance can write; otherwise, <c>false</c>.</value>
-        public override bool CanWrite
-        {
+        public override bool CanWrite {
             get { return SetMethod != null; }
         }
 
@@ -846,8 +814,7 @@ namespace com.espertech.esper.common.magic
         /// implementation.
         /// </summary>
         /// <value><c>true</c> if this instance is unique; otherwise, <c>false</c>.</value>
-        public bool IsUnique
-        {
+        public bool IsUnique {
             get { return Next == null; }
         }
 
@@ -858,10 +825,8 @@ namespace com.espertech.esper.common.magic
         /// property from an object instance.
         /// </summary>
         /// <value>The get function.</value>
-        public override Func<object, object> GetFunction
-        {
-            get
-            {
+        public override Func<object, object> GetFunction {
+            get {
                 if (_getFunction == null) {
                     var eParam1 = Expression.Parameter(typeof(object), "obj");
                     var eCast1 = Expression.ConvertChecked(eParam1, Member.DeclaringType);
@@ -881,16 +846,14 @@ namespace com.espertech.esper.common.magic
         /// property in an object instance.
         /// </summary>
         /// <value>The set function.</value>
-        public override Action<object, object> SetFunction
-        {
-            get
-            {
+        public override Action<object, object> SetFunction {
+            get {
                 if ((SetMethod != null) && (_setFunction == null)) {
                     var castTo = typeof(MagicPropertyInfo)
                         .GetMethod("CastTo")
                         .MakeGenericMethod(GetMethod.ReturnType);
 
-                    var eParam1 = Expression.Parameter(typeof (object), "obj");
+                    var eParam1 = Expression.Parameter(typeof(object), "obj");
                     var eParam2 = Expression.Parameter(typeof(object), "value");
                     var eCast1 = Expression.ConvertChecked(eParam1, Member.DeclaringType);
                     var eCast2 = Expression.Call(castTo, eParam2);
@@ -911,14 +874,19 @@ namespace com.espertech.esper.common.magic
         /// <param name="getMethod">The get method.</param>
         /// <param name="setMethod">The set method.</param>
         /// <param name="propertyType">Type of the property.</param>
-        public SimpleMagicPropertyInfo(string name, MemberInfo member, MethodInfo getMethod, MethodInfo setMethod, EventPropertyType propertyType)
+        public SimpleMagicPropertyInfo(
+            string name,
+            MemberInfo member,
+            MethodInfo getMethod,
+            MethodInfo setMethod,
+            EventPropertyType propertyType)
         {
             Name = name;
             Member = member;
-            
-            if ( member is PropertyInfo )
+
+            if (member is PropertyInfo)
                 PropertyType = ((PropertyInfo) member).PropertyType;
-            else if ( member is MethodInfo )
+            else if (member is MethodInfo)
                 PropertyType = ((MethodInfo) member).ReturnType;
 
             GetMethod = getMethod;
@@ -949,7 +917,9 @@ namespace com.espertech.esper.common.magic
         /// </summary>
         /// <param name="instance">The instance.</param>
         /// <param name="value">The value.</param>
-        private void SetValue(Object instance, Object value)
+        private void SetValue(
+            Object instance,
+            Object value)
         {
             var parentInstance = Parent.GetFunction.Invoke(instance);
             Child.SetFunction.Invoke(parentInstance, value);
@@ -960,8 +930,7 @@ namespace com.espertech.esper.common.magic
         /// property from an object instance.
         /// </summary>
         /// <value>The get function.</value>
-        public override Func<object, object> GetFunction
-        {
+        public override Func<object, object> GetFunction {
             get { return GetValue; }
         }
 
@@ -970,8 +939,7 @@ namespace com.espertech.esper.common.magic
         /// property in an object instance.
         /// </summary>
         /// <value>The set function.</value>
-        public override Action<object, object> SetFunction
-        {
+        public override Action<object, object> SetFunction {
             get { return SetValue; }
         }
 
@@ -979,8 +947,7 @@ namespace com.espertech.esper.common.magic
         /// Gets a value indicating whether this property can be set.
         /// </summary>
         /// <value><c>true</c> if this instance can write; otherwise, <c>false</c>.</value>
-        public override bool CanWrite
-        {
+        public override bool CanWrite {
             get { return Child.CanWrite; }
         }
 
@@ -989,7 +956,9 @@ namespace com.espertech.esper.common.magic
         /// </summary>
         /// <param name="parent">The parent.</param>
         /// <param name="child">The child.</param>
-        public DynamicMagicPropertyInfo(MagicPropertyInfo parent, MagicPropertyInfo child)
+        public DynamicMagicPropertyInfo(
+            MagicPropertyInfo parent,
+            MagicPropertyInfo child)
         {
             Parent = parent;
             Child = child;

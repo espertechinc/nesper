@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
         SCALAR_ANY,
         EVENTCOLL,
         ANY
-    } ;
+    };
 
     public static class DotMethodFPInputEnumExtensions
     {

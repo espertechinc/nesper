@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
     public interface AuditProviderView
     {
         void View(
-            EventBean[] newData, EventBean[] oldData, AgentInstanceContext agentInstanceContext,
+            EventBean[] newData,
+            EventBean[] oldData,
+            AgentInstanceContext agentInstanceContext,
             ViewFactory viewFactory);
     }
 } // end of namespace

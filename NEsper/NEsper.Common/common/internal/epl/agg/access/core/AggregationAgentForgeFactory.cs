@@ -21,25 +21,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             string statementName)
         {
             ExprForge evaluator = optionalFilter == null ? null : optionalFilter.Forge;
-            if (streamNum == 0)
-            {
-                if (optionalFilter == null)
-                {
+            if (streamNum == 0) {
+                if (optionalFilter == null) {
                     return AggregationAgentDefault.INSTANCE;
                 }
-                else
-                {
+                else {
                     return new AggregationAgentDefaultWFilterForge(evaluator);
                 }
             }
-            else
-            {
-                if (optionalFilter == null)
-                {
+            else {
+                if (optionalFilter == null) {
                     return new AggregationAgentRewriteStreamForge(streamNum);
                 }
-                else
-                {
+                else {
                     return new AggregationAgentRewriteStreamWFilterForge(streamNum, evaluator);
                 }
             }

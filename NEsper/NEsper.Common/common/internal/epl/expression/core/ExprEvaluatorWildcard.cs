@@ -23,7 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var @event = eventsPerStream[0];
             if (@event == null) {
@@ -34,8 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public static CodegenExpression Codegen(
-            Type requiredType, Type underlyingType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            Type requiredType,
+            Type underlyingType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
                 requiredType == typeof(object) ? typeof(object) : underlyingType, typeof(ExprEvaluatorWildcard),

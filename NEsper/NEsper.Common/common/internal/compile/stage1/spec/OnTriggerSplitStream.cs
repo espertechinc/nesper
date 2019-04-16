@@ -22,7 +22,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="selectClause">the select-clause</param>
         /// <param name="fromClause">the from-clause</param>
         /// <param name="whereClause">where-expression or null</param>
-        public OnTriggerSplitStream(InsertIntoDesc insertInto, SelectClauseSpecRaw selectClause, OnTriggerSplitStreamFromClause fromClause, ExprNode whereClause)
+        public OnTriggerSplitStream(
+            InsertIntoDesc insertInto,
+            SelectClauseSpecRaw selectClause,
+            OnTriggerSplitStreamFromClause fromClause,
+            ExprNode whereClause)
         {
             InsertInto = insertInto;
             SelectClause = selectClause;

@@ -11,7 +11,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
     /// <summary>
     /// An empty output condition that is always satisfied.
     /// </summary>
-    public class OutputConditionNull : OutputConditionBase, OutputCondition
+    public class OutputConditionNull : OutputConditionBase,
+        OutputCondition
     {
         private const bool DO_OUTPUT = true;
         private const bool FORCE_UPDATE = false;
@@ -20,11 +21,14 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         /// Ctor.
         /// </summary>
         /// <param name="outputCallback">is the callback to make once the condition is satisfied</param>
-        public OutputConditionNull(OutputCallback outputCallback) : base(outputCallback)
+        public OutputConditionNull(OutputCallback outputCallback)
+            : base(outputCallback)
         {
         }
 
-        public override void UpdateOutputCondition(int newEventsCount, int oldEventsCount)
+        public override void UpdateOutputCondition(
+            int newEventsCount,
+            int oldEventsCount)
         {
             outputCallback.Invoke(DO_OUTPUT, FORCE_UPDATE);
         }

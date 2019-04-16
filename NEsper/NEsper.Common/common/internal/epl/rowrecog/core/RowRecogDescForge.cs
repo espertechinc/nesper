@@ -56,14 +56,31 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private readonly LinkedHashMap<string, Pair<int, bool>> _variableStreams;
 
         public RowRecogDescForge(
-            EventType parentEventType, EventType rowEventType, EventType compositeEventType,
-            EventType multimatchEventType, int[] multimatchStreamNumToVariable, int[] multimatchVariableToStreamNum,
-            ExprNode[] partitionBy, LinkedHashMap<string, Pair<int, bool>> variableStreams, bool hasInterval,
-            bool iterateOnly, bool unbound, bool orTerminated, bool collectMultimatches, bool defineAsksMultimatches,
-            int numEventsEventsPerStreamDefine, string[] multimatchVariablesArray, RowRecogNFAStateForge[] startStates,
-            RowRecogNFAStateForge[] allStates, bool allMatches, MatchRecognizeSkipEnum skip,
-            ExprNode[] columnEvaluators, string[] columnNames, TimePeriodComputeForge intervalCompute,
-            int[] previousRandomAccessIndexes, AggregationServiceForgeDesc[] aggregationServices)
+            EventType parentEventType,
+            EventType rowEventType,
+            EventType compositeEventType,
+            EventType multimatchEventType,
+            int[] multimatchStreamNumToVariable,
+            int[] multimatchVariableToStreamNum,
+            ExprNode[] partitionBy,
+            LinkedHashMap<string, Pair<int, bool>> variableStreams,
+            bool hasInterval,
+            bool iterateOnly,
+            bool unbound,
+            bool orTerminated,
+            bool collectMultimatches,
+            bool defineAsksMultimatches,
+            int numEventsEventsPerStreamDefine,
+            string[] multimatchVariablesArray,
+            RowRecogNFAStateForge[] startStates,
+            RowRecogNFAStateForge[] allStates,
+            bool allMatches,
+            MatchRecognizeSkipEnum skip,
+            ExprNode[] columnEvaluators,
+            string[] columnNames,
+            TimePeriodComputeForge intervalCompute,
+            int[] previousRandomAccessIndexes,
+            AggregationServiceForgeDesc[] aggregationServices)
         {
             this._parentEventType = parentEventType;
             RowEventType = rowEventType;
@@ -95,7 +112,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         public EventType RowEventType { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(RowRecogDesc), GetType(), classScope);
             var desc = Ref("desc");
@@ -179,7 +198,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return LocalMethod(method);
         }
 
-        private CodegenExpression MakeAggAssignables(CodegenMethodScope parent, CodegenClassScope classScope)
+        private CodegenExpression MakeAggAssignables(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(AggregationResultFutureAssignable[]), GetType(), classScope);
             method.Block
@@ -207,7 +228,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private CodegenExpression MakeStates(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(RowRecogNFAStateBase[]), GetType(), classScope);
             method.Block.DeclareVar(
@@ -221,13 +244,15 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return LocalMethod(method);
         }
 
-        private CodegenExpression MakeNextStates(CodegenMethodScope parent, CodegenClassScope classScope)
+        private CodegenExpression MakeNextStates(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             IList<Pair<int, int[]>> nextStates = new List<Pair<int, int[]>>();
             foreach (var state in _allStates) {
                 var next = new int[state.NextStates.Count];
                 for (var i = 0; i < next.Length; i++) {
-                    next[i] = state.NextStates.Get(i).NodeNumFlat;
+                    next[i] = state.NextStates[i].NodeNumFlat;
                 }
 
                 nextStates.Add(new Pair<int, int[]>(state.NodeNumFlat, next));
@@ -246,7 +271,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private CodegenExpression MakeVariableStreams(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(LinkedHashMap<string, Pair<int, bool>>), GetType(), classScope);
             method.Block

@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
         public bool IsEvaluatedTrue { get; private set; }
 
         public void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent)
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             log.Warn(
                 "Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator, for statement '" +
@@ -43,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             IsEvaluatedTrue = true;
         }
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             log.Warn(
                 "Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator, for statement '" +

@@ -35,6 +35,8 @@ namespace com.espertech.esper.common.client.util
         /// <param name="parent">parent methods</param>
         /// <param name="classScope">class scope</param>
         /// <returns>expression</returns>
-        CodegenExpression CodegenMake(CodegenMethod parent, CodegenClassScope classScope);
+        CodegenExpression CodegenMake(
+            CodegenMethod parent,
+            CodegenClassScope classScope);
     }
 } // end of namespace

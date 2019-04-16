@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly ExprIdentNodeEvaluator _exprIdentNodeEvaluator;
 
         public FilterForEvalEventPropDoubleForge(
-            string resultEventAsName, string resultEventProperty, ExprIdentNodeEvaluator exprIdentNodeEvaluator)
+            string resultEventAsName,
+            string resultEventProperty,
+            ExprIdentNodeEvaluator exprIdentNodeEvaluator)
         {
             ResultEventAsName = resultEventAsName;
             ResultEventProperty = resultEventProperty;
@@ -43,7 +45,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <returns>event property name</returns>
         public string ResultEventProperty { get; }
 
-        public CodegenExpression MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
             var get = _exprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("event"), method, classScope);
@@ -63,7 +67,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
         }
 
-        public object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext)
+        public object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw new IllegalStateException("Cannot evaluate");
         }

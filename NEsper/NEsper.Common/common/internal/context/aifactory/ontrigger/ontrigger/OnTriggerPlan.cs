@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
     public class OnTriggerPlan
     {
         public OnTriggerPlan(
-            StmtClassForgableAIFactoryProviderBase factory, 
+            StmtClassForgableAIFactoryProviderBase factory,
             IList<StmtClassForgable> forgables,
             SelectSubscriberDescriptor subscriberDescriptor)
         {

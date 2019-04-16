@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -26,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         {
         }
 
-        public IEnumerator<EventBean> Lookup(EventBean lookupEvent, EventTable[] index, ExprEvaluatorContext context)
+        public IEnumerator<EventBean> Lookup(
+            EventBean lookupEvent,
+            EventTable[] index,
+            ExprEvaluatorContext context)
         {
             return index[0].GetEnumerator();
         }

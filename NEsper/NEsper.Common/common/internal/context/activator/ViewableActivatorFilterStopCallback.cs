@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.context.activator
         private readonly FilterSpecActivatable filterSpecActivatable;
 
         public ViewableActivatorFilterStopCallback(
-            FilterHandle filterHandle, FilterSpecActivatable filterSpecActivatable)
+            FilterHandle filterHandle,
+            FilterSpecActivatable filterSpecActivatable)
         {
             this.filterHandle = filterHandle;
             this.filterSpecActivatable = filterSpecActivatable;
@@ -28,14 +29,11 @@ namespace com.espertech.esper.common.@internal.context.activator
 
         public void Stop(AgentInstanceStopServices services)
         {
-            using (_lock.Acquire())
-            {
-                if (filterHandle != null)
-                {
+            using (_lock.Acquire()) {
+                if (filterHandle != null) {
                     FilterValueSetParam[][] addendum = null;
                     var agentInstanceContext = services.AgentInstanceContext;
-                    if (agentInstanceContext.AgentInstanceFilterProxy != null)
-                    {
+                    if (agentInstanceContext.AgentInstanceFilterProxy != null) {
                         addendum = agentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(
                             filterSpecActivatable, agentInstanceContext);
                     }

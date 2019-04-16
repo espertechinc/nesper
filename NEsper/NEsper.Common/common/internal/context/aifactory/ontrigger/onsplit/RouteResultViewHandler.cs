@@ -22,6 +22,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         /// <param name="theEvent">to handle</param>
         /// <param name="exprEvaluatorContext">expression eval context</param>
         /// <returns>true if at least one match was found, false if not</returns>
-        bool Handle(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext);
+        bool Handle(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

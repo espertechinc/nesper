@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.intersect;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.view.core.ViewFactoryForgeUtil;
 
@@ -46,11 +45,17 @@ namespace com.espertech.esper.common.@internal.view.union
 
         public override string ViewName => IntersectViewFactoryForge.GetViewNameUnionIntersect(false, unioned);
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
@@ -66,7 +71,9 @@ namespace com.espertech.esper.common.@internal.view.union
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(factory, "setHasAsymetric", Constant(hasAsymetric))

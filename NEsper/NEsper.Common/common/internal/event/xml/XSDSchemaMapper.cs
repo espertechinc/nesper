@@ -26,9 +26,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// </summary>
     public class XSDSchemaMapper
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         public const int DEFAULT_MAX_RECURSIVE_DEPTH = 10;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         protected internal static readonly SchemaItemAttribute[] EMPTY_SCHEMA_ATTRIBUTES = new SchemaItemAttribute[0];
 

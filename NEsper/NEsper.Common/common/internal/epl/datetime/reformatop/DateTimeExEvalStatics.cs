@@ -12,62 +12,52 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 {
     public class DateTimeExEvalStatics
     {
-        public static readonly DateTimeExEval MINUTE_OF_HOUR = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval MINUTE_OF_HOUR = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.Minute,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "Minute")
         };
 
-        public static readonly DateTimeExEval MONTH_OF_YEAR = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval MONTH_OF_YEAR = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.Month,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "Month")
         };
 
-        public static readonly DateTimeExEval DAY_OF_MONTH = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval DAY_OF_MONTH = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.Day,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "Day")
         };
 
-        public static readonly DateTimeExEval DAY_OF_WEEK = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval DAY_OF_WEEK = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.DayOfWeek,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "DayOfWeek")
         };
 
-        public static readonly DateTimeExEval DAY_OF_YEAR = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval DAY_OF_YEAR = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.DayOfYear,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "DayOfYear")
         };
 
-        public static readonly DateTimeExEval HOUR_OF_DAY = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval HOUR_OF_DAY = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.Hour,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "Hour")
         };
 
-        public static readonly DateTimeExEval MILLIS_OF_SECOND = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval MILLIS_OF_SECOND = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.Millisecond,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "Millisecond")
         };
 
-        public static readonly DateTimeExEval SECOND_OF_MINUTE = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval SECOND_OF_MINUTE = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.Second,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "Second")
         };
 
-        public static readonly DateTimeExEval WEEKYEAR = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval WEEKYEAR = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.WeekOfYear,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "WeekOfYear")
         };
 
-        public static readonly DateTimeExEval YEAR = new ProxyDateTimeExEval
-        {
+        public static readonly DateTimeExEval YEAR = new ProxyDateTimeExEval {
             ProcEvaluateInternal = dtx => dtx.Year,
             ProcCodegen = input => CodegenExpressionBuilder.GetProperty(input, "Year")
         };

@@ -32,7 +32,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
         private readonly CodegenMethod method;
 
         public SAIFFInitializeBuilder(
-            Type returnType, Type originator, string refName, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            Type returnType,
+            Type originator,
+            string refName,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             this.originator = originator;
@@ -45,8 +49,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
         }
 
         public SAIFFInitializeBuilder(
-            string returnType, Type originator, string refName, CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            string returnType,
+            Type originator,
+            string refName,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             this.originator = originator;
             this.refName = refName;
@@ -57,7 +65,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             method.Block.DeclareVar(returnType, refName, NewInstance(returnType));
         }
 
-        public SAIFFInitializeBuilder EventtypesMayNull(string name, EventType[] eventTypes)
+        public SAIFFInitializeBuilder EventtypesMayNull(
+            string name,
+            EventType[] eventTypes)
         {
             return SetValue(
                 name,
@@ -66,7 +76,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
                     : EventTypeUtility.ResolveTypeArrayCodegenMayNull(eventTypes, symbols.GetAddInitSvc(method)));
         }
 
-        public SAIFFInitializeBuilder Eventtype(string name, EventType eventType)
+        public SAIFFInitializeBuilder Eventtype(
+            string name,
+            EventType eventType)
         {
             return SetValue(
                 name,
@@ -75,7 +87,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
                     : EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)));
         }
 
-        public SAIFFInitializeBuilder Eventtypes(string name, EventType[] types)
+        public SAIFFInitializeBuilder Eventtypes(
+            string name,
+            EventType[] types)
         {
             return SetValue(
                 name,
@@ -84,7 +98,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
                     : EventTypeUtility.ResolveTypeArrayCodegen(types, symbols.GetAddInitSvc(method)));
         }
 
-        public SAIFFInitializeBuilder Exprnode(string name, ExprNode value)
+        public SAIFFInitializeBuilder Exprnode(
+            string name,
+            ExprNode value)
         {
             return SetValue(
                 name,
@@ -93,7 +109,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
                     : ExprNodeUtilityCodegen.CodegenEvaluator(value.Forge, method, GetType(), classScope));
         }
 
-        public SAIFFInitializeBuilder Constant(string name, object value)
+        public SAIFFInitializeBuilder Constant(
+            string name,
+            object value)
         {
             if (value is CodegenExpression) {
                 throw new ArgumentException("Expected a non-expression value, received " + value);
@@ -102,23 +120,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             return SetValue(name, value == null ? ConstantNull() : CodegenExpressionBuilder.Constant(value));
         }
 
-        public CodegenMethod GetMethod()
+        public CodegenMethod Method()
         {
             return method;
         }
 
-        public SAIFFInitializeBuilder Method(string name, Func<CodegenMethod, CodegenExpression> expressionFunc)
+        public SAIFFInitializeBuilder Method(
+            string name,
+            Func<CodegenMethod, CodegenExpression> expressionFunc)
         {
             CodegenExpression expression = expressionFunc.Invoke(method);
             return SetValue(name, expression ?? ConstantNull());
         }
 
-        public SAIFFInitializeBuilder Expression(string name, CodegenExpression expression)
+        public SAIFFInitializeBuilder Expression(
+            string name,
+            CodegenExpression expression)
         {
             return SetValue(name, expression == null ? ConstantNull() : expression);
         }
 
-        public SAIFFInitializeBuilder Forges(string name, ExprForge[] evaluatorForges)
+        public SAIFFInitializeBuilder Forges(
+            string name,
+            ExprForge[] evaluatorForges)
         {
             return SetValue(
                 name,
@@ -127,7 +151,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
                     : ExprNodeUtilityCodegen.CodegenEvaluators(evaluatorForges, method, originator, classScope));
         }
 
-        public SAIFFInitializeBuilder Manufacturer(string name, EventBeanManufacturerForge forge)
+        public SAIFFInitializeBuilder Manufacturer(
+            string name,
+            EventBeanManufacturerForge forge)
         {
             if (forge == null) {
                 return SetValue(name, ConstantNull());
@@ -138,7 +164,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             return SetValue(name, manufacturer);
         }
 
-        public SAIFFInitializeBuilder Map<T>(string name, IDictionary<string, T> values)
+        public SAIFFInitializeBuilder Map<T>(
+            string name,
+            IDictionary<string, T> values)
         {
             return SetValue(name, BuildMap(values));
         }
@@ -183,7 +211,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             return CodegenExpressionBuilder.Constant(value);
         }
 
-        private SAIFFInitializeBuilder SetValue(string name, CodegenExpression expression)
+        private SAIFFInitializeBuilder SetValue(
+            string name,
+            CodegenExpression expression)
         {
             method.Block.ExprDotMethod(Ref(refName), "set" + GetBeanCap(name), expression);
             return this;

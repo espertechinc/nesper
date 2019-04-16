@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.view.access;
@@ -17,110 +16,122 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.previous
 {
-	/// <summary>
-	/// Provides relative access to insert stream events for certain window.
-	/// </summary>
-	public class IStreamRelativeAccess : RelativeAccessByEventNIndex, ViewUpdatedCollection {
-	    private readonly IDictionary<EventBean, int> indexPerEvent;
-	    private EventBean[] lastNewData;
-	    private readonly IStreamRelativeAccessUpdateObserver updateObserver;
+    /// <summary>
+    /// Provides relative access to insert stream events for certain window.
+    /// </summary>
+    public class IStreamRelativeAccess : RelativeAccessByEventNIndex,
+        ViewUpdatedCollection
+    {
+        private readonly IDictionary<EventBean, int> indexPerEvent;
+        private EventBean[] lastNewData;
+        private readonly IStreamRelativeAccessUpdateObserver updateObserver;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="updateObserver">is invoked when updates are received</param>
-	    public IStreamRelativeAccess(IStreamRelativeAccessUpdateObserver updateObserver) {
-	        this.updateObserver = updateObserver;
-	        indexPerEvent = new Dictionary<EventBean, int>();
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="updateObserver">is invoked when updates are received</param>
+        public IStreamRelativeAccess(IStreamRelativeAccessUpdateObserver updateObserver)
+        {
+            this.updateObserver = updateObserver;
+            indexPerEvent = new Dictionary<EventBean, int>();
+        }
 
-	    public void Update(EventBean[] newData, EventBean[] oldData) {
-	        updateObserver.Updated(this, newData);
-	        indexPerEvent.Clear();
-	        lastNewData = newData;
+        public void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
+        {
+            updateObserver.Updated(this, newData);
+            indexPerEvent.Clear();
+            lastNewData = newData;
 
-	        if (newData != null) {
-	            for (int i = 0; i < newData.Length; i++) {
-	                indexPerEvent.Put(newData[i], i);
-	            }
-	        }
-	    }
+            if (newData != null) {
+                for (int i = 0; i < newData.Length; i++) {
+                    indexPerEvent.Put(newData[i], i);
+                }
+            }
+        }
 
-	    public EventBean GetRelativeToEvent(EventBean theEvent, int prevIndex) {
-	        if (lastNewData == null) {
-	            return null;
-	        }
+        public EventBean GetRelativeToEvent(
+            EventBean theEvent,
+            int prevIndex)
+        {
+            if (lastNewData == null) {
+                return null;
+            }
 
-	        if (prevIndex == 0) {
-	            return theEvent;
-	        }
+            if (prevIndex == 0) {
+                return theEvent;
+            }
 
-	        int? indexIncoming = indexPerEvent.Get(theEvent);
-	        if (indexIncoming == null) {
-	            return null;
-	        }
+            if (!indexPerEvent.TryGetValue(theEvent, out int indexIncoming)) {
+                return null;
+            }
 
-	        if (prevIndex > indexIncoming) {
-	            return null;
-	        }
+            if (prevIndex > indexIncoming) {
+                return null;
+            }
 
-	        int relativeIndex = indexIncoming - prevIndex;
-	        if ((relativeIndex < lastNewData.Length) && (relativeIndex >= 0)) {
-	            return lastNewData[relativeIndex];
-	        }
-	        return null;
-	    }
+            int relativeIndex = indexIncoming - prevIndex;
+            if ((relativeIndex < lastNewData.Length) && (relativeIndex >= 0)) {
+                return lastNewData[relativeIndex];
+            }
 
-	    public EventBean GetRelativeToEnd(int prevIndex) {
-	        if (lastNewData == null) {
-	            return null;
-	        }
+            return null;
+        }
 
-	        if (prevIndex < lastNewData.Length && prevIndex >= 0) {
-	            return lastNewData[prevIndex];
-	        }
-	        return null;
-	    }
+        public EventBean GetRelativeToEnd(int prevIndex)
+        {
+            if (lastNewData == null) {
+                return null;
+            }
 
-	    public IEnumerator<EventBean> WindowToEvent
-	    {
-	        get => new ReversedArrayEventIterator(lastNewData);
-	    }
+            if (prevIndex < lastNewData.Length && prevIndex >= 0) {
+                return lastNewData[prevIndex];
+            }
 
-	    public ICollection<EventBean> WindowToEventCollReadOnly
-	    {
-	        get => CompatExtensions.AsList(lastNewData);
-	    }
+            return null;
+        }
 
-	    public int WindowToEventCount {
-	        get {
-	            if (lastNewData == null) {
-	                return 0;
-	            }
+        public IEnumerator<EventBean> WindowToEvent {
+            get => ArrayHelper.ReverseIterate(lastNewData).GetEnumerator();
+        }
 
-	            return lastNewData.Length;
-	        }
-	    }
+        public ICollection<EventBean> WindowToEventCollReadOnly {
+            get => CompatExtensions.AsList(lastNewData);
+        }
 
-	    /// <summary>
-	    /// For indicating that the collection has been updated.
-	    /// </summary>
-	    public interface IStreamRelativeAccessUpdateObserver {
-	        /// <summary>
-	        /// Callback to indicate an update.
-	        /// </summary>
-	        /// <param name="iStreamRelativeAccess">is the collection</param>
-	        /// <param name="newData">is the new data available</param>
-	        void Updated(RelativeAccessByEventNIndex iStreamRelativeAccess, EventBean[] newData);
-	    }
+        public int WindowToEventCount {
+            get {
+                if (lastNewData == null) {
+                    return 0;
+                }
 
-	    public void Destroy() {
-	        // No action required
-	    }
+                return lastNewData.Length;
+            }
+        }
 
-	    public int NumEventsInsertBuf
-	    {
-	        get => indexPerEvent.Count;
-	    }
-	}
+        /// <summary>
+        /// For indicating that the collection has been updated.
+        /// </summary>
+        public interface IStreamRelativeAccessUpdateObserver
+        {
+            /// <summary>
+            /// Callback to indicate an update.
+            /// </summary>
+            /// <param name="iStreamRelativeAccess">is the collection</param>
+            /// <param name="newData">is the new data available</param>
+            void Updated(
+                RelativeAccessByEventNIndex iStreamRelativeAccess,
+                EventBean[] newData);
+        }
+
+        public void Destroy()
+        {
+            // No action required
+        }
+
+        public int NumEventsInsertBuf {
+            get => indexPerEvent.Count;
+        }
+    }
 } // end of namespace

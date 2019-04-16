@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     [Serializable]
     public class ConfigurationCompilerExecution
     {
-
         /// <summary>
         ///     Returns the maximum width for breaking up "or" expression in filters to
         ///     subexpressions for reverse indexing.

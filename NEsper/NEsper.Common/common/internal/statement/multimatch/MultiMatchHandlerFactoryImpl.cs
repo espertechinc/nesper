@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
             this.isSubselectPreeval = isSubselectPreeval;
         }
 
-        public MultiMatchHandler Make(bool hasSubselect, bool needDedup)
+        public MultiMatchHandler Make(
+            bool hasSubselect,
+            bool needDedup)
         {
             if (!hasSubselect) {
                 if (!needDedup) {

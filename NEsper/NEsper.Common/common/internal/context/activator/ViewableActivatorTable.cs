@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         public EventType EventType => Table.MetaData.PublicEventType;
 
         public ViewableActivationResult Activate(
-            AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isSubselect,
+            bool isRecoveringResilient)
         {
             var state = Table.GetTableInstance(agentInstanceContext.AgentInstanceId);
             return new ViewableActivationResult(

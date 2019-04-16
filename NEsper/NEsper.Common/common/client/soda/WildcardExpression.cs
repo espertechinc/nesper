@@ -8,24 +8,23 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
-	/// <summary>
-	/// Represents "*" in for example "last(*)"
-	/// </summary>
-	public class WildcardExpression : ExpressionBase {
+    /// <summary>
+    /// Represents "*" in for example "last(*)"
+    /// </summary>
+    public class WildcardExpression : ExpressionBase
+    {
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            writer.Write("*");
+        }
 
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        writer.Write("*");
-	    }
-
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
-	}
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
+    }
 } // end of namespace

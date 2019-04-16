@@ -16,12 +16,17 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
     public class TableLookupIndexReqKey : CodegenMakeable<SAIFFInitializeSymbol>
     {
-        public TableLookupIndexReqKey(string indexName, string indexModuleName)
+        public TableLookupIndexReqKey(
+            string indexName,
+            string indexModuleName)
             : this(indexName, indexModuleName, null)
         {
         }
 
-        public TableLookupIndexReqKey(string indexName, string indexModuleName, string tableName)
+        public TableLookupIndexReqKey(
+            string indexName,
+            string indexModuleName,
+            string tableName)
         {
             IndexName = indexName;
             IndexModuleName = indexModuleName;
@@ -35,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public string IndexModuleName { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return NewInstance(
                 typeof(TableLookupIndexReqKey), Constant(IndexName), Constant(IndexModuleName), Constant(TableName));
@@ -52,8 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         protected bool Equals(TableLookupIndexReqKey other)
         {
-            return string.Equals(IndexName, other.IndexName) 
-                   && string.Equals(TableName, other.TableName) 
+            return string.Equals(IndexName, other.IndexName)
+                   && string.Equals(TableName, other.TableName)
                    && string.Equals(IndexModuleName, other.IndexModuleName);
         }
 

@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public class ContextAgentInstanceInfo
     {
-        public ContextAgentInstanceInfo(MappedEventBean contextProperties, AgentInstanceFilterProxy filterProxy)
+        public ContextAgentInstanceInfo(
+            MappedEventBean contextProperties,
+            AgentInstanceFilterProxy filterProxy)
         {
             ContextProperties = contextProperties;
             FilterProxy = filterProxy;

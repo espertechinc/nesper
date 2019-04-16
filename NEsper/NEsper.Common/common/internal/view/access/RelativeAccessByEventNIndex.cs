@@ -22,8 +22,10 @@ namespace com.espertech.esper.common.@internal.view.access
         /// <param name="theEvent"></param>
         /// <param name="index">is the number of events to go back</param>
         /// <returns>event</returns>
-        EventBean GetRelativeToEvent(EventBean theEvent, int index);
-    
+        EventBean GetRelativeToEvent(
+            EventBean theEvent,
+            int index);
+
         EventBean GetRelativeToEnd(int index);
 
         IEnumerator<EventBean> WindowToEvent { get; }

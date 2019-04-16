@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.compat;
@@ -16,28 +15,37 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
 {
-	public class TableDeployment {
-	    private readonly IDictionary<string, Table> tables = new Dictionary<string, Table>(4);
+    public class TableDeployment
+    {
+        private readonly IDictionary<string, Table> tables = new Dictionary<string, Table>(4);
 
-	    public void Add(string tableName, TableMetaData metadata, EPStatementInitServices services) {
-	        Table existing = tables.Get(tableName);
-	        if (existing != null) {
-	            throw new IllegalStateException("Table already found for name '" + tableName + "'");
-	        }
-	        Table table = services.TableManagementService.AllocateTable(metadata);
-	        tables.Put(tableName, table);
-	    }
+        public void Add(
+            string tableName,
+            TableMetaData metadata,
+            EPStatementInitServices services)
+        {
+            Table existing = tables.Get(tableName);
+            if (existing != null) {
+                throw new IllegalStateException("Table already found for name '" + tableName + "'");
+            }
 
-	    public Table GetTable(string tableName) {
-	        return tables.Get(tableName);
-	    }
+            Table table = services.TableManagementService.AllocateTable(metadata);
+            tables.Put(tableName, table);
+        }
 
-	    public void Remove(string tableName) {
-	        tables.Remove(tableName);
-	    }
+        public Table GetTable(string tableName)
+        {
+            return tables.Get(tableName);
+        }
 
-	    public bool IsEmpty() {
-	        return tables.IsEmpty();
-	    }
-	}
+        public void Remove(string tableName)
+        {
+            tables.Remove(tableName);
+        }
+
+        public bool IsEmpty()
+        {
+            return tables.IsEmpty();
+        }
+    }
 } // end of namespace

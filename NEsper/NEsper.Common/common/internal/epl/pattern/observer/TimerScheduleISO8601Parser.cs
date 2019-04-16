@@ -122,12 +122,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 try {
                     numRepeats = long.Parse(repeat.Substring(1));
                 }
-                catch (EPException)
-                {
+                catch (EPException) {
                     throw;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     var message = "Invalid repeat '" + repeat + "', expecting an long-typed value but received '" +
                                   repeat.Substring(1) + "'";
                     log.Debug(message, ex);
@@ -164,7 +162,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             return timePeriod;
         }
 
-        private static void ParsePeriodDatePart(string datePart, TimePeriod timePeriod)
+        private static void ParsePeriodDatePart(
+            string datePart,
+            TimePeriod timePeriod)
         {
             var pattern = new Regex("(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?");
             var matcher = pattern.Match(datePart);
@@ -197,7 +197,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             return int.Parse(group.Substring(0, group.Length - 1));
         }
 
-        private static void ParsePeriodTimePart(string timePart, TimePeriod timePeriod)
+        private static void ParsePeriodTimePart(
+            string timePart,
+            TimePeriod timePeriod)
         {
             var pattern = new Regex("(\\d+H)?(\\d+M)?(\\d+S)?");
             var matcher = pattern.Match(timePart);

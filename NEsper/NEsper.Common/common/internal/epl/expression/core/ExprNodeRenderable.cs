@@ -13,23 +13,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public interface ExprNodeRenderable
     {
-        void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence);
+        void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence);
     }
 
     public class ProxyExprNodeRenderable : ExprNodeRenderable
     {
-        public Action<StringWriter, ExprPrecedenceEnum> ProcToEPL;
+        public Action<TextWriter, ExprPrecedenceEnum> ProcToEPL;
 
         public ProxyExprNodeRenderable()
         {
         }
 
-        public ProxyExprNodeRenderable(Action<StringWriter, ExprPrecedenceEnum> procToEpl)
+        public ProxyExprNodeRenderable(Action<TextWriter, ExprPrecedenceEnum> procToEpl)
         {
             ProcToEPL = procToEpl;
         }
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             ProcToEPL(writer, parentPrecedence);
         }

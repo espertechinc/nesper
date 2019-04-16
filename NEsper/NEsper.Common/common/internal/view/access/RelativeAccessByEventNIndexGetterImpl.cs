@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.view.access
         private readonly IDictionary<RelativeAccessByEventNIndex, EventBean[]> eventsByAccessor =
             new Dictionary<RelativeAccessByEventNIndex, EventBean[]>();
 
-        public void Updated(RelativeAccessByEventNIndex iStreamRelativeAccess, EventBean[] newData)
+        public void Updated(
+            RelativeAccessByEventNIndex iStreamRelativeAccess,
+            EventBean[] newData)
         {
             // remove data posted from the last update
             var lastNewData = eventsByAccessor.Get(iStreamRelativeAccess);

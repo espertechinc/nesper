@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public CodegenNamedMethods Methods { get; } = new CodegenNamedMethods();
 
-        public void AddMember(string name, Type type)
+        public void AddMember(
+            string name,
+            Type type)
         {
             if (members == null) {
                 members = new List<CodegenTypedParam>(2);

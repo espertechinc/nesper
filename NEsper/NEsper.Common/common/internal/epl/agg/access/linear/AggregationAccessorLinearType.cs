@@ -50,8 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         public static AggregationAccessorLinearType FromString(string text)
         {
             string compare = text.Trim().ToUpperInvariant();
-            return Values.FirstOrDefault(type => 
-                string.Equals(text, type.Name, StringComparison.InvariantCultureIgnoreCase));
+            return Values.FirstOrDefault(
+                type =>
+                    string.Equals(text, type.Name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         /// <summary>

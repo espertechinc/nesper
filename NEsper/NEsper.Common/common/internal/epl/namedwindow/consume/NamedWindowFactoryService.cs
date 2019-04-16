@@ -13,13 +13,16 @@ using com.espertech.esper.common.@internal.epl.namedwindow.path;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 {
-	public interface NamedWindowFactoryService {
-	    NamedWindow CreateNamedWindow(NamedWindowMetaData metadata, EPStatementInitServices services);
+    public interface NamedWindowFactoryService
+    {
+        NamedWindow CreateNamedWindow(
+            NamedWindowMetaData metadata,
+            EPStatementInitServices services);
 
-	    NamedWindowTailView CreateNamedWindowTailView(
-	        EventType eventType,
-	        bool isParentBatchWindow, 
-	        EPStatementInitServices services, 
-	        string contextNameWindow);
-	}
+        NamedWindowTailView CreateNamedWindowTailView(
+            EventType eventType,
+            bool isParentBatchWindow,
+            EPStatementInitServices services,
+            string contextNameWindow);
+    }
 } // end of namespace

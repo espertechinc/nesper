@@ -28,27 +28,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
         /// <param name="fragmentType">type of the entry returned</param>
         public ObjectArrayNestedEntryPropertyGetterBase(
-            int propertyIndex, EventType fragmentType, EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            int propertyIndex,
+            EventType fragmentType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.propertyIndex = propertyIndex;
             this.fragmentType = fragmentType;
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
-
-        public abstract object HandleNestedValue(object value);
-
-        public abstract bool HandleNestedValueExists(object value);
-
-        public abstract object HandleNestedValueFragment(object value);
-
-        public abstract CodegenExpression HandleNestedValueCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
-
-        public abstract CodegenExpression HandleNestedValueExistsCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
-
-        public abstract CodegenExpression HandleNestedValueFragmentCodegen(
-            CodegenExpression refName, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
 
         public object GetObjectArray(object[] array)
         {
@@ -70,15 +57,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return GetObjectArray(BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj));
         }
 
-        private CodegenMethod GetCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
-        {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array").Block
-                .DeclareVar(typeof(object), "value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
-                .IfRefNullReturnNull("value")
-                .MethodReturn(HandleNestedValueCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
-        }
-
         public bool IsExistsProperty(EventBean eventBean)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
@@ -88,16 +66,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             return HandleNestedValueExists(value);
-        }
-
-        private CodegenMethod IsExistsPropertyCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
-        {
-            return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array").Block
-                .DeclareVar(typeof(object), "value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
-                .IfRefNullReturnFalse("value")
-                .MethodReturn(HandleNestedValueExistsCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
 
         public object GetFragment(EventBean obj)
@@ -111,18 +79,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return HandleNestedValueFragment(value);
         }
 
-        private CodegenMethod GetFragmentCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
-        {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array").Block
-                .DeclareVar(typeof(object), "value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
-                .IfRefNullReturnFalse("value")
-                .MethodReturn(HandleNestedValueFragmentCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
-        }
-
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -130,7 +89,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -138,7 +98,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
@@ -146,24 +107,81 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(IsExistsPropertyCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
+        }
+
+        public abstract object HandleNestedValue(object value);
+
+        public abstract bool HandleNestedValueExists(object value);
+
+        public abstract object HandleNestedValueFragment(object value);
+
+        public abstract CodegenExpression HandleNestedValueCodegen(
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
+
+        public abstract CodegenExpression HandleNestedValueExistsCodegen(
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
+
+        public abstract CodegenExpression HandleNestedValueFragmentCodegen(
+            CodegenExpression refName,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
+
+        private CodegenMethod GetCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "array").Block
+                .DeclareVar(typeof(object), "value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .IfRefNullReturnNull("value")
+                .MethodReturn(HandleNestedValueCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
+        }
+
+        private CodegenMethod IsExistsPropertyCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "array").Block
+                .DeclareVar(typeof(object), "value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .IfRefNullReturnFalse("value")
+                .MethodReturn(HandleNestedValueExistsCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
+        }
+
+        private CodegenMethod GetFragmentCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "array").Block
+                .DeclareVar(typeof(object), "value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .IfRefNullReturnFalse("value")
+                .MethodReturn(HandleNestedValueFragmentCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
     }
 } // end of namespace

@@ -58,7 +58,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public int TableAccessNumber { get; set; } = -1;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
@@ -66,14 +69,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public ExprNodeRenderable ForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(PLAIN, this, EvaluationType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -115,7 +122,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             return null;
         }
 
-        protected void ValidateGroupKeys(TableMetaData metadata, ExprValidationContext validationContext)
+        protected void ValidateGroupKeys(
+            TableMetaData metadata,
+            ExprValidationContext validationContext)
         {
             if (ChildNodes.Length > 0) {
                 groupKeyEvaluators = ExprNodeUtilityQuery.GetForges(ChildNodes);
@@ -130,31 +139,39 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(GETEVENTCOLL, this, typeof(ICollection<object>), parent, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(GETSCALARCOLL, this, typeof(ICollection<object>), parent, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(GETEVENT, this, typeof(EventBean), parent, exprSymbol, codegenClassScope);
         }
 
-        protected void ToPrecedenceFreeEPLInternal(StringWriter writer, string subprop)
+        protected void ToPrecedenceFreeEPLInternal(
+            TextWriter writer,
+            string subprop)
         {
             ToPrecedenceFreeEPLInternal(writer);
             writer.Write(".");
             writer.Write(subprop);
         }
 
-        protected void ToPrecedenceFreeEPLInternal(StringWriter writer)
+        protected void ToPrecedenceFreeEPLInternal(TextWriter writer)
         {
             writer.Write(TableName);
             if (ChildNodes.Length > 0) {
@@ -170,7 +187,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             }
         }
 
-        protected TableMetadataColumn ValidateSubpropertyGetCol(TableMetaData tableMetadata, string subpropName)
+        protected TableMetadataColumn ValidateSubpropertyGetCol(
+            TableMetaData tableMetadata,
+            string subpropName)
         {
             var column = tableMetadata.Columns.Get(subpropName);
             if (column == null) {
@@ -181,7 +200,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             return column;
         }
 
-        public override bool EqualsNode(ExprNode o, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode o,
+            bool ignoreStreamPrefix)
         {
             if (this == o) {
                 return true;
@@ -200,8 +221,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         }
 
         protected internal static CodegenExpression MakeEvaluate(
-            AccessEvaluationType evaluationType, ExprTableAccessNode accessNode, Type resultType,
-            CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+            AccessEvaluationType evaluationType,
+            ExprTableAccessNode accessNode,
+            Type resultType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (accessNode.TableAccessNumber == -1) {
                 throw new IllegalStateException("Table expression node has not been assigned");

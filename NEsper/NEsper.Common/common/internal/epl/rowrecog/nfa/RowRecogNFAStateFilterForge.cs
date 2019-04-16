@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
@@ -33,8 +31,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
         /// <param name="multiple">true for multiple matches</param>
         /// <param name="expression">filter expression</param>
         /// <param name="exprRequiresMultimatchState">indicator for multi-match state required</param>
-        public RowRecogNFAStateFilterForge(string nodeNum, string variableName, int streamNum, bool multiple, bool exprRequiresMultimatchState, ExprNode expression)
-             : base(nodeNum, variableName, streamNum, multiple, null, exprRequiresMultimatchState)
+        public RowRecogNFAStateFilterForge(
+            string nodeNum,
+            string variableName,
+            int streamNum,
+            bool multiple,
+            bool exprRequiresMultimatchState,
+            ExprNode expression)
+            : base(nodeNum, variableName, streamNum, multiple, null, exprRequiresMultimatchState)
         {
             this.expression = expression;
         }
@@ -44,17 +48,21 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             return "FilterEvent";
         }
 
-        internal override Type EvalClass
-        {
+        internal override Type EvalClass {
             get { return typeof(RowRecogNFAStateFilterEval); }
         }
 
-        internal override void AssignInline(CodegenExpression eval, CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        internal override void AssignInline(
+            CodegenExpression eval,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(eval, "setExpression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, this.GetType(), classScope));
-            if (classScope.IsInstrumented)
-            {
-                method.Block.ExprDotMethod(eval, "setExpressionTextForAudit", Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression)));
+            method.Block.ExprDotMethod(
+                eval, "setExpression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, this.GetType(), classScope));
+            if (classScope.IsInstrumented) {
+                method.Block.ExprDotMethod(
+                    eval, "setExpressionTextForAudit", Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression)));
             }
         }
     }

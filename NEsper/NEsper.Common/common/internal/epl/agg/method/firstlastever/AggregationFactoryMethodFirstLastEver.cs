@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         internal readonly ExprFirstLastEverNode parent;
         private AggregatorMethod aggregator;
 
-        public AggregationFactoryMethodFirstLastEver(ExprFirstLastEverNode parent, Type childType)
+        public AggregationFactoryMethodFirstLastEver(
+            ExprFirstLastEverNode parent,
+            Type childType)
         {
             this.parent = parent;
             this.childType = childType;
@@ -41,7 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
                 parent.IsDistinct, parent.HasFilter, childType, parent.IsFirst);
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             if (parent.IsFirst) {
                 aggregator = new AggregatorFirstEver(
@@ -55,7 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             }
         }
 
-        public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream)
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
         {
             return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
         }

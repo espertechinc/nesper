@@ -14,6 +14,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
 {
     public interface ContainedEventEvalForge
     {
-        CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.agg.groupby;
 using com.espertech.esper.common.@internal.epl.agg.groupbylocal;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
@@ -17,33 +16,38 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
-	public interface AggregationServiceFactoryService {
-	    AggregationServiceFactory GroupAll(AggregationServiceFactory nonHAFactory,
-	                                       AggregationRowFactory rowFactory,
-	                                       AggregationUseFlags useFlags,
-	                                       DataInputOutputSerdeWCollation<AggregationRow> serde);
+    public interface AggregationServiceFactoryService
+    {
+        AggregationServiceFactory GroupAll(
+            AggregationServiceFactory nonHAFactory,
+            AggregationRowFactory rowFactory,
+            AggregationUseFlags useFlags,
+            DataInputOutputSerdeWCollation<AggregationRow> serde);
 
-	    AggregationServiceFactory GroupBy(AggregationServiceFactory nonHAFactory,
-	                                      AggregationRowFactory rowFactory,
-	                                      AggregationUseFlags useFlags,
-	                                      DataInputOutputSerdeWCollation<AggregationRow> serde,
-	                                      Type[] groupByTypes,
-	                                      AggSvcGroupByReclaimAgedEvalFuncFactory reclaimMaxAge,
-	                                      AggSvcGroupByReclaimAgedEvalFuncFactory reclaimFreq,
-	                                      TimeAbacus timeAbacus);
+        AggregationServiceFactory GroupBy(
+            AggregationServiceFactory nonHAFactory,
+            AggregationRowFactory rowFactory,
+            AggregationUseFlags useFlags,
+            DataInputOutputSerdeWCollation<AggregationRow> serde,
+            Type[] groupByTypes,
+            AggSvcGroupByReclaimAgedEvalFuncFactory reclaimMaxAge,
+            AggSvcGroupByReclaimAgedEvalFuncFactory reclaimFreq,
+            TimeAbacus timeAbacus);
 
-	    AggregationServiceFactory GroupByRollup(AggregationServiceFactory nonHAFactory,
-	                                            AggregationGroupByRollupDesc groupByRollupDesc,
-	                                            AggregationRowFactory rowFactory,
-	                                            AggregationUseFlags useFlags,
-	                                            DataInputOutputSerdeWCollation<AggregationRow> serde,
-	                                            Type[] groupByTypes);
+        AggregationServiceFactory GroupByRollup(
+            AggregationServiceFactory nonHAFactory,
+            AggregationGroupByRollupDesc groupByRollupDesc,
+            AggregationRowFactory rowFactory,
+            AggregationUseFlags useFlags,
+            DataInputOutputSerdeWCollation<AggregationRow> serde,
+            Type[] groupByTypes);
 
-	    AggregationServiceFactory GroupLocalGroupBy(AggregationServiceFactory nonHAFactory,
-	                                                AggregationUseFlags useFlags,
-	                                                bool hasGroupBy,
-	                                                AggregationLocalGroupByLevel optionalTop,
-	                                                AggregationLocalGroupByLevel[] levels,
-	                                                AggregationLocalGroupByColumn[] columns);
-	}
+        AggregationServiceFactory GroupLocalGroupBy(
+            AggregationServiceFactory nonHAFactory,
+            AggregationUseFlags useFlags,
+            bool hasGroupBy,
+            AggregationLocalGroupByLevel optionalTop,
+            AggregationLocalGroupByLevel[] levels,
+            AggregationLocalGroupByColumn[] columns);
+    }
 } // end of namespace

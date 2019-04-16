@@ -10,7 +10,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
     public class ObjectBindingPair
     {
-        public ObjectBindingPair(object target, string operatorPrettyPrint, LogicalChannelBinding binding)
+        public ObjectBindingPair(
+            object target,
+            string operatorPrettyPrint,
+            LogicalChannelBinding binding)
         {
             Target = target;
             OperatorPrettyPrint = operatorPrettyPrint;

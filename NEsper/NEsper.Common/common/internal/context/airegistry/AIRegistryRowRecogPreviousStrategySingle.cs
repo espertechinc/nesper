@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     {
         private RowRecogPreviousStrategy service;
 
-        public void AssignService(int serviceId, RowRecogPreviousStrategy strategy)
+        public void AssignService(
+            int serviceId,
+            RowRecogPreviousStrategy strategy)
         {
             service = strategy;
         }

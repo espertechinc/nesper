@@ -12,77 +12,65 @@ using System.Text;
 namespace com.espertech.esper.common.@internal.@event.render
 {
     /// <summary>
-    /// Renderer for a Object values that can simply be output via to-string.
+    ///     Renderer for a Object values that can simply be output via to-string.
     /// </summary>
     public class OutputValueRendererBase : OutputValueRenderer
     {
-        public void Render(Object o, StringBuilder buf)
+        public void Render(
+            object o,
+            StringBuilder buf)
         {
-            if (o == null)
-            {
+            if (o == null) {
                 buf.Append("null");
                 return;
             }
 
-            if ((o is decimal) ||
-                (o is decimal?) ||
-                (o is double) ||
-                (o is double?) ||
-                (o is float) ||
-                (o is float?))
-            {
+            if (o is decimal ||
+                o is decimal? ||
+                o is double ||
+                o is double? ||
+                o is float ||
+                o is float?) {
                 var text = o.ToString();
                 buf.Append(text);
-                if (text.IndexOf('.') == -1)
-                {
+                if (text.IndexOf('.') == -1) {
                     buf.Append(".0");
                 }
             }
-            else if (o is DateTimeOffset)
-            {
-                var dateTime = (DateTimeOffset)o;
+            else if (o is DateTimeOffset) {
+                var dateTime = (DateTimeOffset) o;
                 var dateOnly = dateTime.Date;
-                if (dateTime == dateOnly)
-                {
+                if (dateTime == dateOnly) {
                     buf.Append(dateTime.ToString("yyyy-MM-dd"));
                 }
-                else if (dateTime.Millisecond == 0)
-                {
+                else if (dateTime.Millisecond == 0) {
                     buf.Append(dateTime.ToString("yyyy-MM-dd hh:mm:ss"));
                 }
-                else
-                {
+                else {
                     buf.Append(dateTime.ToString("yyyy-MM-dd hh:mm:ss.ffff"));
                 }
             }
-            else if (o is DateTime)
-            {
+            else if (o is DateTime) {
                 var dateTime = (DateTime) o;
                 var dateOnly = dateTime.Date;
-                if (dateTime == dateOnly)
-                {
+                if (dateTime == dateOnly) {
                     buf.Append(dateTime.ToString("yyyy-MM-dd"));
                 }
-                else if (dateTime.Millisecond == 0)
-                {
+                else if (dateTime.Millisecond == 0) {
                     buf.Append(dateTime.ToString("yyyy-MM-dd hh:mm:ss"));
                 }
-                else
-                {
+                else {
                     buf.Append(dateTime.ToString("yyyy-MM-dd hh:mm:ss.ffff"));
                 }
             }
-            else if (o is bool)
-            {
+            else if (o is bool) {
                 buf.Append(o.ToString().ToLowerInvariant());
             }
-            else if (o.GetType().IsEnum)
-            {
+            else if (o.GetType().IsEnum) {
                 buf.AppendFormat("{0}", o);
             }
-            else
-            {
-                buf.Append(o.ToString());
+            else {
+                buf.Append(o);
             }
         }
     }

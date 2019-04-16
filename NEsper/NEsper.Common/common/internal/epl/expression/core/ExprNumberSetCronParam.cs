@@ -54,7 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (ChildNodes.Length == 0) {
                 return new CronParameter(CronOperator, null);
@@ -77,7 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public Type EvaluationType => typeof(CronParameter);
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var enumValue = EnumValue(typeof(CronOperatorEnum), CronOperator.GetName());
@@ -108,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return LocalMethod(methodNode);
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             if (ChildNodes.Length != 0) {
                 ChildNodes[0].ToEPL(writer, Precedence);
@@ -128,7 +133,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprNumberSetCronParam)) {
                 return false;

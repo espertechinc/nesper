@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
@@ -15,19 +14,20 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 {
-	public abstract class FireAndForgetProcessor {
-	    public abstract EventType EventTypeResultSetProcessor { get; }
+    public abstract class FireAndForgetProcessor
+    {
+        public abstract EventType EventTypeResultSetProcessor { get; }
 
-	    public abstract string ContextName { get; }
+        public abstract string ContextName { get; }
 
-	    public abstract string ContextDeploymentId { get; }
+        public abstract string ContextDeploymentId { get; }
 
-	    public abstract FireAndForgetInstance GetProcessorInstanceContextById(int agentInstanceId);
+        public abstract FireAndForgetInstance GetProcessorInstanceContextById(int agentInstanceId);
 
-	    public abstract FireAndForgetInstance ProcessorInstanceNoContext { get; }
+        public abstract FireAndForgetInstance ProcessorInstanceNoContext { get; }
 
-	    public abstract EventType EventTypePublic { get; }
+        public abstract EventType EventTypePublic { get; }
 
-	    public abstract StatementContext StatementContext { get; }
-	}
+        public abstract StatementContext StatementContext { get; }
+    }
 } // end of namespace

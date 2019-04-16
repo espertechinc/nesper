@@ -33,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name="isIntegerDivision">false for division returns double, true for using Java-standard integer division</param>
         /// <param name="isDivisionByZeroReturnsNull">false for division-by-zero returns infinity, true for null</param>
         public ExprMathNode(
-            MathArithTypeEnum mathArithTypeEnum, bool isIntegerDivision, bool isDivisionByZeroReturnsNull)
+            MathArithTypeEnum mathArithTypeEnum,
+            bool isIntegerDivision,
+            bool isDivisionByZeroReturnsNull)
         {
             MathArithTypeEnum = mathArithTypeEnum;
             this.isIntegerDivision = isIntegerDivision;
@@ -125,14 +127,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ChildNodes[0].ToEPL(writer, base.Precedence);
             writer.Write(MathArithTypeEnum.ExpressionText);
             ChildNodes[1].ToEPL(writer, base.Precedence);
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprMathNode)) {
                 return false;

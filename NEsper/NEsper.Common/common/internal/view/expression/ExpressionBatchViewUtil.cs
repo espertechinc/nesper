@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -33,7 +32,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                         return false;
                     }
 
-                    return resultX;
+                    return true.Equals(resultX);
                 }
             }
 
@@ -42,7 +41,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                 return false;
             }
 
-            return result;
+            return true.Equals(result);
         }
     }
 } // end of namespace

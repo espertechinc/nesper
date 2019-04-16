@@ -16,7 +16,8 @@ namespace com.espertech.esper.common.client.hook.condition
     {
         /// <summary>Ctor. </summary>
         /// <param name="max">limit reached</param>
-        public ConditionPatternSubexpressionMax(int max) {
+        public ConditionPatternSubexpressionMax(int max)
+        {
             Max = max;
         }
 

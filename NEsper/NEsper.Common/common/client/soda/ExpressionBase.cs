@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.client.soda
 
         public abstract ExpressionPrecedenceEnum Precedence { get; }
 
-        public virtual void ToEPL(TextWriter writer, ExpressionPrecedenceEnum parentPrecedence)
+        public virtual void ToEPL(
+            TextWriter writer,
+            ExpressionPrecedenceEnum parentPrecedence)
         {
             if (Precedence < parentPrecedence) {
                 writer.Write("(");
@@ -61,7 +63,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="functionName">function name</param>
         /// <param name="children">child nodes</param>
         /// <param name="writer">writer</param>
-        protected internal static void ToPrecedenceFreeEPL(string functionName, IList<Expression> children, TextWriter writer)
+        protected internal static void ToPrecedenceFreeEPL(
+            string functionName,
+            IList<Expression> children,
+            TextWriter writer)
         {
             writer.Write(functionName);
             writer.Write("(");
@@ -74,7 +79,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="children">expressions to render</param>
         /// <param name="writer">writer to render to</param>
-        public static void ToPrecedenceFreeEPL(IList<Expression> children, TextWriter writer)
+        public static void ToPrecedenceFreeEPL(
+            IList<Expression> children,
+            TextWriter writer)
         {
             var delimiter = "";
             foreach (var expr in children) {
@@ -92,7 +99,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="distinct">distinct flag</param>
         /// <param name="children">parameters to render</param>
         protected internal static void RenderAggregation(
-            StringWriter writer, string name, bool distinct, IList<Expression> children)
+            TextWriter writer,
+            string name,
+            bool distinct,
+            IList<Expression> children)
         {
             writer.Write(name);
             writer.Write("(");

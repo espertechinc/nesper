@@ -50,7 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
         /// <returns>array of lists with one list for each event-per-stream row</returns>
         EventTable[][] Poll(
-            EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy,
+            EventBean[][] lookupEventsPerStream,
+            PollResultIndexingStrategy indexingStrategy,
             ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

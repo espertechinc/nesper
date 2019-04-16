@@ -21,10 +21,12 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.epl.table.core
 {
     public abstract class TableInstanceGroupedBase
-        : TableInstanceBase
-        , TableInstanceGrouped
+        : TableInstanceBase,
+            TableInstanceGrouped
     {
-        protected TableInstanceGroupedBase(Table table, AgentInstanceContext agentInstanceContext)
+        protected TableInstanceGroupedBase(
+            Table table,
+            AgentInstanceContext agentInstanceContext)
             : base(table, agentInstanceContext)
         {
         }
@@ -75,7 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         }
 
         public abstract ObjectArrayBackedEventBean GetRowForGroupKey(object groupKey);
-        public abstract ObjectArrayBackedEventBean GetCreateRowIntoTable(object groupByKey, ExprEvaluatorContext exprEvaluatorContext);
+
+        public abstract ObjectArrayBackedEventBean GetCreateRowIntoTable(
+            object groupByKey,
+            ExprEvaluatorContext exprEvaluatorContext);
+
         public abstract ICollection<object> GroupKeys { get; }
     }
 } // end of namespace

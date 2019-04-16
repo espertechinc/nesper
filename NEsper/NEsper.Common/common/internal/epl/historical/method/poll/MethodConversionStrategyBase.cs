@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             set => eventType = value;
         }
 
-        protected bool CheckNonNullArrayValue(object value, MethodTargetStrategy origin)
+        protected bool CheckNonNullArrayValue(
+            object value,
+            MethodTargetStrategy origin)
         {
             if (value == null) {
                 Log.Warn(
@@ -38,6 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         }
 
         public abstract IList<EventBean> Convert(
-            object invocationResult, MethodTargetStrategy origin, AgentInstanceContext agentInstanceContext);
+            object invocationResult,
+            MethodTargetStrategy origin,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

@@ -19,7 +19,6 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>
         /// Constructor.
         /// </summary>
-
         public SortedDoubleVector()
         {
             _values = new List<Double>();
@@ -37,8 +36,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary> Returns the number of items in the collection.</summary>
         /// <returns> size
         /// </returns>
-        public virtual int Count
-        {
+        public virtual int Count {
             get { return _values.Count; }
         }
 
@@ -47,8 +45,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </param>
         /// <returns> value at index
         /// </returns>
-        public virtual double this[int index]
-        {
+        public virtual double this[int index] {
             get { return _values[index]; }
         }
 
@@ -63,12 +60,10 @@ namespace com.espertech.esper.common.@internal.collection
 
             int index = FindInsertIndex(val);
 
-            if (index == -1)
-            {
+            if (index == -1) {
                 _values.Add(val);
             }
-            else
-            {
+            else {
                 _values.Insert(index, val);
             }
         }
@@ -77,24 +72,22 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="val">to remove
         /// </param>
         /// <throws>  IllegalStateException if the value has not been added </throws>
-
         public virtual void Remove(double val)
         {
-            if (Double.IsNaN(val))
-            {
+            if (Double.IsNaN(val)) {
                 return;
             }
 
             int index = FindInsertIndex(val);
-            if (index == -1)
-            {
+            if (index == -1) {
                 throw new IllegalStateException("Value not found in collection");
             }
+
             double? valueAtIndex = _values[index];
-            if ((valueAtIndex != null) && (valueAtIndex != val))
-            {
+            if ((valueAtIndex != null) && (valueAtIndex != val)) {
                 throw new IllegalStateException("Value not found in collection");
             }
+
             _values.RemoveAt(index);
         }
 
@@ -111,8 +104,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <returns>vector with double values</returns>
 
-        public IList<Double> Values
-        {
+        public IList<Double> Values {
             get { return _values; }
         }
 
@@ -125,59 +117,48 @@ namespace com.espertech.esper.common.@internal.collection
         /// </returns>
         public virtual int FindInsertIndex(double val)
         {
-            if (_values.Count > 2)
-            {
+            if (_values.Count > 2) {
                 int startIndex = _values.Count >> 1;
                 double startValue = _values[startIndex];
                 int insertAt = -1;
 
-                if (val < startValue)
-                {
+                if (val < startValue) {
                     // find in lower half
                     insertAt = FindInsertIndex(0, startIndex - 1, val);
                 }
-                else if (val > startValue)
-                {
+                else if (val > startValue) {
                     // find in upper half
                     insertAt = FindInsertIndex(startIndex + 1, _values.Count - 1, val);
                 }
-                else
-                {
+                else {
                     // we hit the value
                     insertAt = startIndex;
                 }
 
-                if (insertAt == _values.Count)
-                {
+                if (insertAt == _values.Count) {
                     return -1;
                 }
+
                 return insertAt;
             }
 
-            if (_values.Count == 2)
-            {
-                if (val > _values[1])
-                {
+            if (_values.Count == 2) {
+                if (val > _values[1]) {
                     return -1;
                 }
-                else if (val <= _values[0])
-                {
+                else if (val <= _values[0]) {
                     return 0;
                 }
-                else
-                {
+                else {
                     return 1;
                 }
             }
 
-            if (_values.Count == 1)
-            {
-                if (val > _values[0])
-                {
+            if (_values.Count == 1) {
+                if (val > _values[0]) {
                     return -1;
                 }
-                else
-                {
+                else {
                     return 0;
                 }
             }
@@ -185,34 +166,30 @@ namespace com.espertech.esper.common.@internal.collection
             return -1;
         }
 
-        private int FindInsertIndex(int lowerBound, int upperBound, double val)
+        private int FindInsertIndex(
+            int lowerBound,
+            int upperBound,
+            double val)
         {
-            while (true)
-            {
-                if (upperBound == lowerBound)
-                {
+            while (true) {
+                if (upperBound == lowerBound) {
                     double valueLowerBound = _values[lowerBound];
-                    if (val <= valueLowerBound)
-                    {
+                    if (val <= valueLowerBound) {
                         return lowerBound;
                     }
-                    else
-                    {
+                    else {
                         return lowerBound + 1;
                     }
                 }
 
-                if (upperBound - lowerBound == 1)
-                {
+                if (upperBound - lowerBound == 1) {
                     double valueLowerBound = _values[lowerBound];
-                    if (val <= valueLowerBound)
-                    {
+                    if (val <= valueLowerBound) {
                         return lowerBound;
                     }
 
                     double valueUpperBound = _values[upperBound];
-                    if (val > valueUpperBound)
-                    {
+                    if (val > valueUpperBound) {
                         return upperBound + 1;
                     }
 
@@ -222,18 +199,15 @@ namespace com.espertech.esper.common.@internal.collection
                 int nextMiddle = lowerBound + ((upperBound - lowerBound) >> 1);
                 double valueAtMiddle = _values[nextMiddle];
 
-                if (val < valueAtMiddle)
-                {
+                if (val < valueAtMiddle) {
                     // find in lower half
                     upperBound = nextMiddle - 1;
                 }
-                else if (val > valueAtMiddle)
-                {
+                else if (val > valueAtMiddle) {
                     // find in upper half
                     lowerBound = nextMiddle;
                 }
-                else
-                {
+                else {
                     return nextMiddle;
                 }
             }

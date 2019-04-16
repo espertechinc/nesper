@@ -59,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
-        public virtual void AcceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
+        public virtual void AcceptChildnodes(
+            ExprNodeVisitorWithParent visitor,
+            ExprNode parent)
         {
             if (visitor.IsVisit(this)) {
                 visitor.Visit(this, parent);
@@ -80,17 +82,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ChildNodes = (ExprNode[]) CollectionUtil.ArrayExpandAddElements(ChildNodes, childNodeColl);
         }
 
-        public virtual void ReplaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode)
+        public virtual void ReplaceUnlistedChildNode(
+            ExprNode nodeToReplace,
+            ExprNode newNode)
         {
             // Override to replace child expression nodes that are chained or otherwise not listed as child nodes
         }
 
-        public void SetChildNode(int index, ExprNode newNode)
+        public void SetChildNode(
+            int index,
+            ExprNode newNode)
         {
             ChildNodes[index] = newNode;
         }
 
-        public virtual void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public virtual void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             if (this.Precedence.GetLevel() < parentPrecedence.GetLevel()) {
                 writer.Write("(");
@@ -102,8 +110,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
-        public abstract bool EqualsNode(ExprNode node, bool ignoreStreamPrefix);
-        public abstract void ToPrecedenceFreeEPL(StringWriter writer);
+        public abstract bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix);
+
+        public abstract void ToPrecedenceFreeEPL(TextWriter writer);
         public abstract ExprNode Validate(ExprValidationContext validationContext);
 
         public void AddChildNodeToFront(ExprNode childNode)

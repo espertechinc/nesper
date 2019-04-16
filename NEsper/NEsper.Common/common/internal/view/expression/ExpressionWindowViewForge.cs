@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.view.expression
     {
         public override string ViewName => "Expression";
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             if (parameters.Count != 1) {
                 var errorMessage = ViewName + " view requires a single expression as a parameter";
@@ -34,7 +37,9 @@ namespace com.espertech.esper.common.@internal.view.expression
             return typeof(ExpressionWindowViewFactory);
         }
 
-        internal override void MakeSetters(CodegenExpressionRef factory, CodegenBlock block)
+        internal override void MakeSetters(
+            CodegenExpressionRef factory,
+            CodegenBlock block)
         {
         }
 

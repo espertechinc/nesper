@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
     {
         private readonly IDictionary<object, EventBean[]> groupRepsView = new LinkedHashMap<object, EventBean[]>();
 
-        public object Put(object mk, EventBean[] array)
+        public object Put(
+            object mk,
+            EventBean[] array)
         {
             return groupRepsView.Push(mk, array);
         }

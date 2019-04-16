@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
@@ -40,53 +39,51 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="child">is the child URI to match against factory URIs</param>
         /// <param name="uris">is a map of factory URI and an object</param>
         /// <returns>matching factory URIs, if any</returns>
-        public static ICollection<KeyValuePair<Uri, V>> FilterSort<V>(Uri child, IDictionary<Uri, V> uris)
+        public static ICollection<KeyValuePair<Uri, V>> FilterSort<V>(
+            Uri child,
+            IDictionary<Uri, V> uris)
         {
             var childPathIsOpaque = IsOpaque(child);
             var childPathIsRelative = !child.IsAbsoluteUri;
             var childPathElements = ParsePathElements(child);
 
             var result = new OrderedDictionary<int, KeyValuePair<Uri, V>>();
-            foreach (var entry in uris)
-            {
+            foreach (var entry in uris) {
                 var factoryUri = entry.Key;
 
                 // handle opaque (mailto:) and relative (a/b) using equals
-                if (childPathIsOpaque || childPathIsRelative || !factoryUri.IsAbsoluteUri || IsOpaque(factoryUri))
-                {
-                    if (factoryUri.Equals(child))
-                    {
-                        result.Put(int.MinValue, entry);   // Equals is a perfect match
+                if (childPathIsOpaque || childPathIsRelative || !factoryUri.IsAbsoluteUri || IsOpaque(factoryUri)) {
+                    if (factoryUri.Equals(child)) {
+                        result.Put(int.MinValue, entry); // Equals is a perfect match
                     }
+
                     continue;
                 }
 
                 // handle absolute URIs, compare scheme and authority if present
-                if ( ((child.Scheme != null) && (factoryUri.Scheme == null)) ||
-                     ((child.Scheme == null) && (factoryUri.Scheme != null)) )
-                {
+                if (((child.Scheme != null) && (factoryUri.Scheme == null)) ||
+                    ((child.Scheme == null) && (factoryUri.Scheme != null))) {
                     continue;
                 }
-                if ((child.Scheme != null) && (!child.Scheme.Equals(factoryUri.Scheme)))
-                {
+
+                if ((child.Scheme != null) && (!child.Scheme.Equals(factoryUri.Scheme))) {
                     continue;
                 }
-                if ( ((child.Authority != null) && (factoryUri.Authority == null)) ||
-                     ((child.Authority == null) && (factoryUri.Authority != null)) )
-                {
+
+                if (((child.Authority != null) && (factoryUri.Authority == null)) ||
+                    ((child.Authority == null) && (factoryUri.Authority != null))) {
                     continue;
                 }
-                if ((child.Authority != null) && (child.Authority != factoryUri.Authority))
-                {
+
+                if ((child.Authority != null) && (child.Authority != factoryUri.Authority)) {
                     continue;
                 }
 
                 // Match the child
                 String[] factoryPathElements = ParsePathElements(factoryUri);
                 int score = ComputeScore(childPathElements, factoryPathElements);
-                if (score > 0)
-                {
-                    result.Put(score, entry);   // Partial match if score is positive
+                if (score > 0) {
+                    result.Put(score, entry); // Partial match if score is positive
                 }
             }
 
@@ -95,12 +92,10 @@ namespace com.espertech.esper.common.@internal.util
 
         private static String GetPath(Uri uri)
         {
-            try
-            {
+            try {
                 return uri.AbsolutePath;
             }
-            catch (InvalidOperationException)
-            {
+            catch (InvalidOperationException) {
                 return uri.OriginalString;
             }
         }
@@ -108,54 +103,50 @@ namespace com.espertech.esper.common.@internal.util
         public static String[] ParsePathElements(Uri uri)
         {
             var path = GetPath(uri);
-            if (path == null)
-            {
+            if (path == null) {
                 return new String[0];
             }
-            while (path.StartsWith("/"))
-            {
+
+            while (path.StartsWith("/")) {
                 path = path.Substring(1);
             }
+
             var split = path.Split('/');
-            if ((split.Length > 0) && (split[0].Length == 0))
-            {
+            if ((split.Length > 0) && (split[0].Length == 0)) {
                 return new String[0];
             }
+
             return split;
         }
 
-        private static int ComputeScore(String[] childPathElements, String[] factoryPathElements) {
+        private static int ComputeScore(
+            String[] childPathElements,
+            String[] factoryPathElements)
+        {
             int index = 0;
 
-            if (factoryPathElements.Length == 0)
-            {
-                return int.MaxValue;    // the most general factory scores the lowest
+            if (factoryPathElements.Length == 0) {
+                return int.MaxValue; // the most general factory scores the lowest
             }
 
-            while(true)
-            {
+            while (true) {
                 if ((childPathElements.Length > index) &&
-                   (factoryPathElements.Length > index))
-                {
-                    if (!(childPathElements[index].Equals(factoryPathElements[index])))
-                    {
+                    (factoryPathElements.Length > index)) {
+                    if (!(childPathElements[index].Equals(factoryPathElements[index]))) {
                         return 0;
                     }
                 }
-                else
-                {
-                    if (childPathElements.Length <= index)
-                    {
-                        if (factoryPathElements.Length > index)
-                        {
+                else {
+                    if (childPathElements.Length <= index) {
+                        if (factoryPathElements.Length > index) {
                             return 0;
                         }
+
                         return int.MaxValue - index - 1;
                     }
                 }
 
-                if (factoryPathElements.Length <= index)
-                {
+                if (factoryPathElements.Length <= index) {
                     break;
                 }
 

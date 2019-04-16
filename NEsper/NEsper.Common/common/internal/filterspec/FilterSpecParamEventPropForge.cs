@@ -9,11 +9,13 @@
 using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -42,9 +44,14 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <param name="exprIdentNodeEvaluator">evaluator</param>
         /// <throws>ArgumentException if an operator was supplied that does not take a single constant value</throws>
         public FilterSpecParamEventPropForge(
-            ExprFilterSpecLookupableForge lookupable, FilterOperator filterOperator, string resultEventAsName,
-            string resultEventProperty, ExprIdentNodeEvaluator exprIdentNodeEvaluator, bool isMustCoerce,
-            SimpleNumberCoercer numberCoercer, Type coercionType,
+            ExprFilterSpecLookupableForge lookupable,
+            FilterOperator filterOperator,
+            string resultEventAsName,
+            string resultEventProperty,
+            ExprIdentNodeEvaluator exprIdentNodeEvaluator,
+            bool isMustCoerce,
+            SimpleNumberCoercer numberCoercer,
+            Type coercionType,
             string statementName)
             : base(lookupable, filterOperator)
         {
@@ -90,8 +97,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         public ExprIdentNodeEvaluator ExprIdentNodeEvaluator { get; }
 
         public object GetFilterValue(
-            MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext,
-            ImportServiceRuntime importService, Attribute[] annotations)
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            ImportServiceRuntime importService,
+            Attribute[] annotations)
         {
             throw new IllegalStateException("Not possible to evaluate");
         }
@@ -134,7 +143,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public override CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbolWEventType symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols)
         {
             var method = parent.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
             var get = ExprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("event"), method, classScope);
@@ -143,10 +154,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar(
                     typeof(ExprFilterSpecLookupable), "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()));
+                .DeclareVar(typeof(FilterOperator), "op", EnumValue(filterOperator));
 
             var param = NewAnonymousClass(
-                method.Block, typeof(FilterSpecParam), CompatExtensions.AsList(Ref("lookupable"), Ref("op")));
+                method.Block, typeof(FilterSpecParam), CompatExtensions.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             param.AddMethod("getFilterValue", getFilterValue);

@@ -11,18 +11,18 @@ using System;
 namespace com.espertech.esper.common.@internal.@event.property
 {
     /// <summary>
-    /// Descriptor for a type and its generic type, if any.
+    ///     Descriptor for a type and its generic type, if any.
     /// </summary>
     public class GenericPropertyDesc
     {
-        private static readonly GenericPropertyDesc OBJECT_GENERIC = new GenericPropertyDesc(typeof (Object));
-
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="type">the type</param>
         /// <param name="generic">its generic type parameter, if any</param>
-        public GenericPropertyDesc(Type type, Type generic)
+        public GenericPropertyDesc(
+            Type type,
+            Type generic)
         {
             GenericType = type;
             Generic = generic;
@@ -42,21 +42,18 @@ namespace com.espertech.esper.common.@internal.@event.property
         ///     typeof(Object) type.
         /// </summary>
         /// <value>type descriptor</value>
-        public static GenericPropertyDesc ObjectGeneric
-        {
-            get { return OBJECT_GENERIC; }
-        }
+        public static GenericPropertyDesc ObjectGeneric { get; } = new GenericPropertyDesc(typeof(object));
 
         /// <summary>
         ///     Returns the type.
         /// </summary>
         /// <value>type</value>
-        public Type GenericType { get; private set; }
+        public Type GenericType { get; }
 
         /// <summary>
         ///     Returns the generic parameter, or null if none.
         /// </summary>
         /// <value>generic parameter</value>
-        public Type Generic { get; private set; }
+        public Type Generic { get; }
     }
 } // end of namespace

@@ -20,14 +20,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator evaluatorRight;
         private readonly ExprMathNodeForge forge;
 
-        public ExprMathNodeForgeEval(ExprMathNodeForge forge, ExprEvaluator evaluatorLeft, ExprEvaluator evaluatorRight)
+        public ExprMathNodeForgeEval(
+            ExprMathNodeForge forge,
+            ExprEvaluator evaluatorLeft,
+            ExprEvaluator evaluatorRight)
         {
             this.forge = forge;
             this.evaluatorLeft = evaluatorLeft;
             this.evaluatorRight = evaluatorRight;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var left = evaluatorLeft.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (left == null) {
@@ -43,8 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenMethod Codegen(
-            ExprMathNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope, ExprNode lhs, ExprNode rhs)
+            ExprMathNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope,
+            ExprNode lhs,
+            ExprNode rhs)
         {
             var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType, typeof(ExprMathNodeForgeEval), codegenClassScope);

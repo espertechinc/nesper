@@ -7,25 +7,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
 {
-	public class ExprDeclaredCompileTimeResolverEmpty : ExprDeclaredCompileTimeResolver {
-	    public readonly static ExprDeclaredCompileTimeResolverEmpty INSTANCE = new ExprDeclaredCompileTimeResolverEmpty();
+    public class ExprDeclaredCompileTimeResolverEmpty : ExprDeclaredCompileTimeResolver
+    {
+        public readonly static ExprDeclaredCompileTimeResolverEmpty INSTANCE = new ExprDeclaredCompileTimeResolverEmpty();
 
-	    private ExprDeclaredCompileTimeResolverEmpty() {
-	    }
+        private ExprDeclaredCompileTimeResolverEmpty()
+        {
+        }
 
-	    public ExpressionDeclItem Resolve(string name) {
-	        return null;
-	    }
+        public ExpressionDeclItem Resolve(string name)
+        {
+            return null;
+        }
 
-	    public ExpressionScriptProvided ResolveScript(string name, int numParameters) {
-	        return null;
-	    }
-	}
+        public ExpressionScriptProvided ResolveScript(
+            string name,
+            int numParameters)
+        {
+            return null;
+        }
+    }
 } // end of namespace

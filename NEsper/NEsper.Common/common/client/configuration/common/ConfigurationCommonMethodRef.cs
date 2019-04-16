@@ -43,7 +43,9 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     (also known as time-to-live)
         /// </param>
         /// <param name="purgeIntervalSeconds">is the interval at which the runtimepurges stale data from the cache</param>
-        public void SetExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds)
+        public void SetExpiryTimeCache(
+            double maxAgeSeconds,
+            double purgeIntervalSeconds)
         {
             DataCacheDesc = new ConfigurationCommonCacheExpiryTime(
                 maxAgeSeconds, purgeIntervalSeconds, CacheReferenceType.Default);
@@ -60,7 +62,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="purgeIntervalSeconds">is the interval at which the runtimepurges stale data from the cache</param>
         /// <param name="cacheReferenceType">specifies the reference type to use</param>
         public void SetExpiryTimeCache(
-            double maxAgeSeconds, double purgeIntervalSeconds, CacheReferenceType cacheReferenceType)
+            double maxAgeSeconds,
+            double purgeIntervalSeconds,
+            CacheReferenceType cacheReferenceType)
         {
             DataCacheDesc = new ConfigurationCommonCacheExpiryTime(
                 maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);

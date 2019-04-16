@@ -7,14 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.core
 {
-	public interface StatementAgentInstanceFactoryForge {
-	    CodegenMethod InitializeCodegen(CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols);
-	}
+    public interface StatementAgentInstanceFactoryForge
+    {
+        CodegenMethod InitializeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols);
+    }
 } // end of namespace

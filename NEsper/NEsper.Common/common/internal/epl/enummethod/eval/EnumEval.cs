@@ -15,9 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public interface EnumEval
     {
         object EvaluateEnumMethod(
-            EventBean[] eventsLambda, 
-            ICollection<object> enumcoll, 
-            bool isNewData, 
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
             ExprEvaluatorContext context);
     }
 } // end of namespace

@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
     public class ExprAggregateNodeParamDesc
     {
         public ExprAggregateNodeParamDesc(
-            ExprNode[] positionalParams, ExprAggregateLocalGroupByDesc optLocalGroupBy, ExprNode optionalFilter)
+            ExprNode[] positionalParams,
+            ExprAggregateLocalGroupByDesc optLocalGroupBy,
+            ExprNode optionalFilter)
         {
             PositionalParams = positionalParams;
             OptLocalGroupBy = optLocalGroupBy;

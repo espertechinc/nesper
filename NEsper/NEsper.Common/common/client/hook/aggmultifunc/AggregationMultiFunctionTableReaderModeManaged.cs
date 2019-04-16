@@ -7,34 +7,36 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
-	/// <summary>
-	/// Use this class to provide a table reader wherein there is no need to write code that generates code,
-	/// </summary>
-	public class AggregationMultiFunctionTableReaderModeManaged : AggregationMultiFunctionTableReaderMode {
-	    private InjectionStrategy injectionStrategyTableReaderFactory;
+    /// <summary>
+    /// Use this class to provide a table reader wherein there is no need to write code that generates code,
+    /// </summary>
+    public class AggregationMultiFunctionTableReaderModeManaged : AggregationMultiFunctionTableReaderMode
+    {
+        private InjectionStrategy injectionStrategyTableReaderFactory;
 
-	    /// <summary>
-	    /// Returns the injection strategy for the aggregation table reader factory
-	    /// </summary>
-	    /// <returns>strategy</returns>
-	    public InjectionStrategy InjectionStrategyTableReaderFactory {
-	        get => injectionStrategyTableReaderFactory;	    }
+        /// <summary>
+        /// Returns the injection strategy for the aggregation table reader factory
+        /// </summary>
+        /// <returns>strategy</returns>
+        public InjectionStrategy InjectionStrategyTableReaderFactory {
+            get => injectionStrategyTableReaderFactory;
+        }
 
-	    /// <summary>
-	    /// Sets the injection strategy for the aggregation table reader factory
-	    /// </summary>
-	    /// <param name="strategy">strategy</param>
-	    /// <returns>itself</returns>
-	    public AggregationMultiFunctionTableReaderModeManaged SetInjectionStrategyTableReaderFactory(InjectionStrategy strategy) {
-	        this.injectionStrategyTableReaderFactory = strategy;
-	        return this;
-	    }
-	}
+        /// <summary>
+        /// Sets the injection strategy for the aggregation table reader factory
+        /// </summary>
+        /// <param name="strategy">strategy</param>
+        /// <returns>itself</returns>
+        public AggregationMultiFunctionTableReaderModeManaged SetInjectionStrategyTableReaderFactory(InjectionStrategy strategy)
+        {
+            this.injectionStrategyTableReaderFactory = strategy;
+            return this;
+        }
+    }
 } // end of namespace

@@ -2031,7 +2031,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 var forLevels = methodNode.Block.ForEach(typeof(AggregationGroupByRollupLevel), "level", Ref("levels"));
                 {
                     var forEvents = forLevels.ForEach(
-                        typeof(KeyValuePair<object,object>), "pair",
+                        typeof(KeyValuePair<object, object>), "pair",
                         ExprDotMethod(
                             ArrayAtIndex(
                                 Ref("eventPairs"), ExprDotMethod(Ref("level"), "getLevelNumber")), "entrySet"));

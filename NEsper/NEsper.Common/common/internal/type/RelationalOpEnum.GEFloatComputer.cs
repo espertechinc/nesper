@@ -17,14 +17,23 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         /// Computer for relational op compare.
         /// </summary>
-        public class GEFloatComputer : Computer {
-            public bool Compare(object objOne, object objTwo) {
+        public class GEFloatComputer : Computer
+        {
+            public bool Compare(
+                object objOne,
+                object objTwo)
+            {
                 object s1 = (object) objOne;
                 object s2 = (object) objTwo;
                 return s1.AsFloat() >= s2.AsFloat();
             }
 
-            public CodegenExpression Codegen(CodegenExpressionRef lhs, Type lhsType, CodegenExpression rhs, Type rhsType) {
+            public CodegenExpression Codegen(
+                CodegenExpressionRef lhs,
+                Type lhsType,
+                CodegenExpression rhs,
+                Type rhsType)
+            {
                 return CodegenFloat(lhs, lhsType, rhs, rhsType, GE);
             }
         }

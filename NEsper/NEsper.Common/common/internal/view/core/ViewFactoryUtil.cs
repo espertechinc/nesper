@@ -16,7 +16,10 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public class ViewFactoryUtil
     {
-        public static int EvaluateSizeParam(string viewName, ExprEvaluator sizeEvaluator, AgentInstanceContext context)
+        public static int EvaluateSizeParam(
+            string viewName,
+            ExprEvaluator sizeEvaluator,
+            AgentInstanceContext context)
         {
             var size = sizeEvaluator.Evaluate(null, true, context);
             if (!ValidateSize(size)) {
@@ -31,13 +34,16 @@ namespace com.espertech.esper.common.@internal.view.core
             return !(size == null || size.AsInt() <= 0);
         }
 
-        private static string GetSizeValidationMsg(string viewName, object size)
+        private static string GetSizeValidationMsg(
+            string viewName,
+            object size)
         {
             return viewName + " view requires a positive integer for size but received " + size;
         }
 
         public static ViewablePair Materialize(
-            ViewFactory[] factories, Viewable eventStreamParent,
+            ViewFactory[] factories,
+            Viewable eventStreamParent,
             AgentInstanceViewFactoryChainContext viewFactoryChainContext,
             IList<AgentInstanceStopCallback> stopCallbacks)
         {

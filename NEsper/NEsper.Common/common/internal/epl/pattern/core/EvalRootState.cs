@@ -23,6 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         /// <value>is a pattern result call</value>
         PatternMatchCallback Callback { set; }
 
-        void StartRecoverable(bool startRecoverable, MatchedEventMap beginState);
+        void StartRecoverable(
+            bool startRecoverable,
+            MatchedEventMap beginState);
     }
 } // end of namespace

@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         public SelectSubscriberDescriptor(
-            Type[] selectClauseTypes, string[] selectClauseColumnNames, bool forClauseDelivery,
+            Type[] selectClauseTypes,
+            string[] selectClauseColumnNames,
+            bool forClauseDelivery,
             ExprNode[] groupDelivery)
         {
             SelectClauseTypes = selectClauseTypes;

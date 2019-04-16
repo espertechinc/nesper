@@ -13,11 +13,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
     public class PointRegionQuadTreeNodeBranch : PointRegionQuadTreeNode
     {
         public PointRegionQuadTreeNodeBranch(
-            BoundingBox bb, int level,
+            BoundingBox bb,
+            int level,
             PointRegionQuadTreeNode nw,
             PointRegionQuadTreeNode ne,
             PointRegionQuadTreeNode sw,
-            PointRegionQuadTreeNode se) : base(bb, level)
+            PointRegionQuadTreeNode se)
+            : base(bb, level)
         {
             Nw = nw;
             Ne = ne;

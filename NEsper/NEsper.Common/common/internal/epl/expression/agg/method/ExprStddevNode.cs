@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
     /// </summary>
     public class ExprStddevNode : ExprAggregateNodeBase
     {
-        public ExprStddevNode(bool distinct) : base(distinct)
+        public ExprStddevNode(bool distinct)
+            : base(distinct)
         {
         }
 
@@ -31,8 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             HasFilter = positionalParams.Length > 1;
-            if (HasFilter)
-            {
+            if (HasFilter) {
                 optionalFilter = positionalParams[1];
             }
 
@@ -42,8 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
-            if (!(node is ExprStddevNode))
-            {
+            if (!(node is ExprStddevNode)) {
                 return false;
             }
 

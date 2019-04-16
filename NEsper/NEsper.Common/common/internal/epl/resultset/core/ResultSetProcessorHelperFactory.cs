@@ -29,84 +29,117 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
     public interface ResultSetProcessorHelperFactory
     {
         ResultSetProcessorRowPerGroupUnboundHelper MakeRSRowPerGroupUnboundGroupRep(
-            Type[] groupKeyTypes, EventType eventType, AgentInstanceContext agentInstanceContext);
+            Type[] groupKeyTypes,
+            EventType eventType,
+            AgentInstanceContext agentInstanceContext);
 
         ResultSetProcessorGroupedOutputFirstHelper MakeRSGroupedOutputFirst(
-            AgentInstanceContext agentInstanceContext, Type[] groupKeyTypes,
+            AgentInstanceContext agentInstanceContext,
+            Type[] groupKeyTypes,
             OutputConditionPolledFactory optionalOutputFirstConditionFactory,
-            AggregationGroupByRollupDesc optionalGroupByRollupDesc, int optionalRollupLevel);
+            AggregationGroupByRollupDesc optionalGroupByRollupDesc,
+            int optionalRollupLevel);
 
         OutputProcessViewConditionDeltaSet MakeOutputConditionChangeSet(
-            EventType[] eventTypes, AgentInstanceContext agentInstanceContext);
+            EventType[] eventTypes,
+            AgentInstanceContext agentInstanceContext);
 
         OutputConditionFactory MakeOutputConditionTime(
-            bool hasVariable, TimePeriodCompute timePeriodCompute, bool isStartConditionOnCreation,
+            bool hasVariable,
+            TimePeriodCompute timePeriodCompute,
+            bool isStartConditionOnCreation,
             int scheduleCallbackId);
 
         ResultSetProcessorRowForAllOutputAllHelper MakeRSRowForAllOutputAll(
-            ResultSetProcessorRowForAll processor, AgentInstanceContext agentInstanceContext);
+            ResultSetProcessorRowForAll processor,
+            AgentInstanceContext agentInstanceContext);
 
         OutputConditionExpressionFactory MakeOutputConditionExpression();
 
         OutputConditionFactory MakeOutputConditionCrontab(
-            ExprEvaluator[] crontabAtSchedule, bool isStartConditionOnCreation, int scheduleCallbackId);
+            ExprEvaluator[] crontabAtSchedule,
+            bool isStartConditionOnCreation,
+            int scheduleCallbackId);
 
-        OutputConditionFactory MakeOutputConditionCount(int rate, Variable variableMetaData);
+        OutputConditionFactory MakeOutputConditionCount(
+            int rate,
+            Variable variableMetaData);
 
         OutputProcessViewAfterState MakeOutputConditionAfter(
-            long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
             AgentInstanceContext agentInstanceContext);
 
         ResultSetProcessorSimpleOutputLastHelper MakeRSSimpleOutputLast(
-            ResultSetProcessorSimple simple, AgentInstanceContext agentInstanceContext, EventType[] eventTypes);
+            ResultSetProcessorSimple simple,
+            AgentInstanceContext agentInstanceContext,
+            EventType[] eventTypes);
 
         ResultSetProcessorSimpleOutputAllHelper MakeRSSimpleOutputAll(
-            ResultSetProcessorSimple simple, AgentInstanceContext agentInstanceContext, EventType[] eventTypes);
+            ResultSetProcessorSimple simple,
+            AgentInstanceContext agentInstanceContext,
+            EventType[] eventTypes);
 
         ResultSetProcessorSimpleOutputFirstHelper MakeRSSimpleOutputFirst(AgentInstanceContext agentInstanceContext);
 
         ResultSetProcessorRowPerEventOutputLastHelper MakeRSRowPerEventOutputLast(
-            ResultSetProcessorRowPerEvent processor, AgentInstanceContext agentInstanceContext);
+            ResultSetProcessorRowPerEvent processor,
+            AgentInstanceContext agentInstanceContext);
 
         ResultSetProcessorRowPerEventOutputAllHelper MakeRSRowPerEventOutputAll(
-            ResultSetProcessorRowPerEvent processor, AgentInstanceContext agentInstanceContext);
+            ResultSetProcessorRowPerEvent processor,
+            AgentInstanceContext agentInstanceContext);
 
         ResultSetProcessorRowForAllOutputLastHelper MakeRSRowForAllOutputLast(
-            ResultSetProcessorRowForAll processor, AgentInstanceContext agentInstanceContext);
+            ResultSetProcessorRowForAll processor,
+            AgentInstanceContext agentInstanceContext);
 
         ResultSetProcessorGroupedOutputAllGroupReps MakeRSGroupedOutputAllNoOpt(
-            AgentInstanceContext agentInstanceContext, Type[] groupKeyTypes, EventType[] eventTypes);
+            AgentInstanceContext agentInstanceContext,
+            Type[] groupKeyTypes,
+            EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupOutputAllHelper MakeRSRowPerGroupOutputAllOpt(
-            AgentInstanceContext agentInstanceContext, ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
-            Type[] groupKeyTypes, EventType[] eventTypes);
+            AgentInstanceContext agentInstanceContext,
+            ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
+            Type[] groupKeyTypes,
+            EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupOutputLastHelper MakeRSRowPerGroupOutputLastOpt(
-            AgentInstanceContext agentInstanceContext, ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
-            Type[] groupKeyTypes, EventType[] eventTypes);
+            AgentInstanceContext agentInstanceContext,
+            ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
+            Type[] groupKeyTypes,
+            EventType[] eventTypes);
 
         ResultSetProcessorAggregateGroupedOutputAllHelper MakeRSAggregateGroupedOutputAll(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorAggregateGrouped resultSetProcessorAggregateGrouped, Type[] groupKeyTypes,
+            ResultSetProcessorAggregateGrouped resultSetProcessorAggregateGrouped,
+            Type[] groupKeyTypes,
             EventType[] eventTypes);
 
         ResultSetProcessorAggregateGroupedOutputLastHelper MakeRSAggregateGroupedOutputLastOpt(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorAggregateGrouped resultSetProcessorAggregateGrouped, Type[] groupKeyTypes);
+            ResultSetProcessorAggregateGrouped resultSetProcessorAggregateGrouped,
+            Type[] groupKeyTypes);
 
         ResultSetProcessorRowPerGroupRollupOutputLastHelper MakeRSRowPerGroupRollupLast(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup, Type[] groupKeyTypes,
+            ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup,
+            Type[] groupKeyTypes,
             EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupRollupOutputAllHelper MakeRSRowPerGroupRollupAll(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup, Type[] groupKeyTypes,
+            ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup,
+            Type[] groupKeyTypes,
             EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupRollupUnboundHelper MakeRSRowPerGroupRollupSnapshotUnbound(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup, Type[] groupKeyTypes,
-            int numStreams, EventType[] eventTypes);
+            ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup,
+            Type[] groupKeyTypes,
+            int numStreams,
+            EventType[] eventTypes);
     }
 } // end of namespace

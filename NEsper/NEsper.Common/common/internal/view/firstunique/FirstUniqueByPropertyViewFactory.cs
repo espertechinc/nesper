@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             set => criteriaTypes = value;
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

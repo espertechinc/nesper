@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
         public override Viewable TailViewInstance => ProcessorInstance.TailViewInstance;
 
-        public override ICollection<EventBean> SnapshotBestEffort(QueryGraph queryGraph, Attribute[] annotations)
+        public override ICollection<EventBean> SnapshotBestEffort(
+            QueryGraph queryGraph,
+            Attribute[] annotations)
         {
             return ProcessorInstance.TailViewInstance.Snapshot(queryGraph, annotations);
         }

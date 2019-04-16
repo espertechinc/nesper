@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         internal readonly ExprCountEverNode parent;
         private AggregatorCount aggregator;
 
-        public AggregationFactoryMethodCountEver(ExprCountEverNode parent, bool ignoreNulls)
+        public AggregationFactoryMethodCountEver(
+            ExprCountEverNode parent,
+            bool ignoreNulls)
         {
             this.parent = parent;
             this.ignoreNulls = ignoreNulls;
@@ -45,7 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         }
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             var distinctType = !parent.IsDistinct ? null : parent.ChildNodes[0].Forge.EvaluationType;
             aggregator = new AggregatorCount(
@@ -53,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
                 parent.OptionalFilter, true);
         }
 
-        public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream)
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
         {
             return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
         }

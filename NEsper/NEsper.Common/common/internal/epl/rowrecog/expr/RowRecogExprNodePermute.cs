@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     {
         public override RowRecogExprNodePrecedenceEnum Precedence => RowRecogExprNodePrecedenceEnum.UNARY;
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var delimiter = "";
             writer.Write("match_recognize_permute(");

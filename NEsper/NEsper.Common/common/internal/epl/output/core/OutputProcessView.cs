@@ -53,11 +53,16 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 
         public abstract IEnumerator<EventBean> GetEnumerator();
         public abstract EventType EventType { get; }
-        public abstract void Update(EventBean[] newData, EventBean[] oldData);
+
+        public abstract void Update(
+            EventBean[] newData,
+            EventBean[] oldData);
+
         public abstract void Process(
             ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents, 
+            ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext);
+
         public abstract void Stop(AgentInstanceStopServices services);
         public abstract void Terminated();
     }

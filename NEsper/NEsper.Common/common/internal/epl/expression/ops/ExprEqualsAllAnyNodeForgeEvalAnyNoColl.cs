@@ -16,20 +16,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprEqualsAllAnyNodeForge forge;
 
-        public ExprEqualsAllAnyNodeForgeEvalAnyNoColl(ExprEqualsAllAnyNodeForge forge, ExprEvaluator[] evaluators)
+        public ExprEqualsAllAnyNodeForgeEvalAnyNoColl(
+            ExprEqualsAllAnyNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             this.forge = forge;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
             return result;
         }
 
         private object EvaluateInternal(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var leftResult = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
@@ -42,7 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         private object CompareAny(
-            object leftResult, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object leftResult,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var isNot = forge.ForgeRenderable.IsNot;
             var hasNonNullRow = false;

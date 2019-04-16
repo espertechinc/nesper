@@ -12,14 +12,15 @@ using com.espertech.esper.common.@internal.context.controller.category;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public class ContextSpecCategoryItem
     {
-        public ContextSpecCategoryItem(ExprNode expression, string name)
+        public ContextSpecCategoryItem(
+            ExprNode expression,
+            string name)
         {
             Expression = expression;
             Name = name;
@@ -31,7 +32,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public FilterSpecParamForge[][] CompiledFilterParam { get; set; }
 
-        public CodegenMethod MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenMethod MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             CodegenMethod method = parent.MakeChild(typeof(ContextControllerDetailCategoryItem), GetType(), classScope)
                 .AddParam(typeof(EventType), REF_EVENTTYPE.Ref)

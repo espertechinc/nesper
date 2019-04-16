@@ -45,7 +45,8 @@ namespace com.espertech.esper.common.@internal.view.core
     ///     children
     ///     views.
     /// </summary>
-    public interface View : IEnumerable<EventBean>, Viewable
+    public interface View : IEnumerable<EventBean>,
+        Viewable
     {
         /// <summary>
         ///     Returns the View's parent Viewable.
@@ -72,6 +73,8 @@ namespace com.espertech.esper.common.@internal.view.core
         /// </summary>
         /// <param name="newData">is the new data that has been added to the parent view</param>
         /// <param name="oldData">is the old data that has been removed from the parent view</param>
-        void Update(EventBean[] newData, EventBean[] oldData);
+        void Update(
+            EventBean[] newData,
+            EventBean[] oldData);
     }
 } // end of namespace

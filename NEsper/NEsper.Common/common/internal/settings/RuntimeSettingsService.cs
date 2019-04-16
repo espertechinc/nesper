@@ -17,7 +17,8 @@ namespace com.espertech.esper.common.@internal.settings
     public class RuntimeSettingsService
     {
         public RuntimeSettingsService(
-            ConfigurationCommon configurationCommon, ConfigurationRuntime configurationRuntime)
+            ConfigurationCommon configurationCommon,
+            ConfigurationRuntime configurationRuntime)
         {
             ConfigurationCommon = configurationCommon;
             ConfigurationRuntime = configurationRuntime;

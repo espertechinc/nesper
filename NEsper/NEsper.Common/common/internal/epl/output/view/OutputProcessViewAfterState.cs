@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -15,10 +14,19 @@ using com.espertech.esper.common.@internal.context.util;
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
     public interface OutputProcessViewAfterState
-	{
-	    bool CheckUpdateAfterCondition(EventBean[] newEvents, StatementContext statementContext);
-	    bool CheckUpdateAfterCondition(ISet<MultiKey<EventBean>> newEvents, StatementContext statementContext);
-	    bool CheckUpdateAfterCondition(UniformPair<EventBean[]> newOldEvents, StatementContext statementContext);
-	    void Destroy();
-	}
+    {
+        bool CheckUpdateAfterCondition(
+            EventBean[] newEvents,
+            StatementContext statementContext);
+
+        bool CheckUpdateAfterCondition(
+            ISet<MultiKey<EventBean>> newEvents,
+            StatementContext statementContext);
+
+        bool CheckUpdateAfterCondition(
+            UniformPair<EventBean[]> newOldEvents,
+            StatementContext statementContext);
+
+        void Destroy();
+    }
 } // end of namespace

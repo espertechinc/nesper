@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                     return 1;
                 }
 
-                ICollection<XYPointMultiType> collection = new LinkedList<>();
+                ICollection<XYPointMultiType> collection = new LinkedList<XYPointMultiType>();
                 collection.Add(other);
                 collection.Add(new XYPointMultiType(x, y, value));
                 leaf.Points = collection;
@@ -254,7 +254,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             return 1;
         }
 
-        private static EPException HandleUniqueViolation(string indexName, double x, double y)
+        private static EPException HandleUniqueViolation(
+            string indexName,
+            double x,
+            double y)
         {
             return PropertyHashedEventTableUnique.HandleUniqueIndexViolation(indexName, "(" + x + "," + y + ")");
         }

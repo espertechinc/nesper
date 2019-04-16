@@ -17,14 +17,14 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class SelectClauseSpecRaw
     {
-    	private readonly List<SelectClauseElementRaw> _selectClauseElements;
+        private readonly List<SelectClauseElementRaw> _selectClauseElements;
 
         /// <summary>
         /// Ctor.
         /// </summary>
         public SelectClauseSpecRaw()
-    	{
-    		_selectClauseElements = new List<SelectClauseElementRaw>();
+        {
+            _selectClauseElements = new List<SelectClauseElementRaw>();
             IsDistinct = false;
         }
 
@@ -33,9 +33,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// </summary>
         /// <param name="element">is the expression to add</param>
         public void Add(SelectClauseElementRaw element)
-    	{
-    		_selectClauseElements.Add(element);
-    	}
+        {
+            _selectClauseElements.Add(element);
+        }
 
         /// <summary>
         /// Adds select expressions within the select clause.
@@ -53,8 +53,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// 	<c>true</c> if this instance is only wildcard; otherwise, <c>false</c>.
         /// </value>
         public bool IsOnlyWildcard {
-            get
-            {
+            get {
                 return
                     (_selectClauseElements.Count == 1) &&
                     (_selectClauseElements[0] is SelectClauseElementWildcard);
@@ -71,22 +70,20 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         /// <summary>Returns the list of select expressions. </summary>
         /// <returns>list of expressions</returns>
-        public IList<SelectClauseElementRaw> SelectExprList
-        {
+        public IList<SelectClauseElementRaw> SelectExprList {
             get { return _selectClauseElements; }
         }
 
         /// <summary>Returns true if the select clause contains at least one wildcard. </summary>
         /// <returns>true if clause contains wildcard, false if not</returns>
-        public bool IsUsingWildcard
-        {
-            get
-            {
+        public bool IsUsingWildcard {
+            get {
                 foreach (SelectClauseElementRaw element in _selectClauseElements) {
                     if (element is SelectClauseElementWildcard) {
                         return true;
                     }
                 }
+
                 return false;
             }
         }

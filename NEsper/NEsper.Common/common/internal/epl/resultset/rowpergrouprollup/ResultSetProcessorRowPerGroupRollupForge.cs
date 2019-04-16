@@ -109,7 +109,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         public Type[] GroupKeyTypes { get; }
 
         public void InstanceCodegen(
-            CodegenInstanceAux instance, CodegenClassScope classScope, CodegenCtor factoryCtor,
+            CodegenInstanceAux instance,
+            CodegenClassScope classScope,
+            CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
             instance.Methods.AddMethod(
@@ -156,7 +158,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         }
 
         public void ProcessViewResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (unbounded) {
                 ResultSetProcessorRowPerGroupRollupUnbound.ProcessViewResultUnboundCodegen(
@@ -168,13 +172,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         }
 
         public void ProcessJoinResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.ProcessJoinResultCodegen(this, classScope, method, instance);
         }
 
         public void GetIteratorViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (unbounded) {
                 ResultSetProcessorRowPerGroupRollupUnbound.GetIteratorViewUnboundCodegen(
@@ -186,25 +194,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         }
 
         public void GetIteratorJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.GetIteratorJoinCodegen(this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.ProcessOutputLimitedViewCodegen(this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.ProcessOutputLimitedJoinCodegen(this, classScope, method, instance);
         }
 
         public void ApplyViewResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (unbounded) {
                 ResultSetProcessorRowPerGroupRollupUnbound.ApplyViewResultUnboundCodegen(
@@ -216,44 +232,59 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         }
 
         public void ApplyJoinResultCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.ApplyJoinResultCodegen(this, classScope, method, instance);
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.ContinueOutputLimitedLastAllNonBufferedViewCodegen(this, method);
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.ContinueOutputLimitedLastAllNonBufferedJoinCodegen(this, method);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.ProcessOutputLimitedLastAllNonBufferedViewCodegen(
                 this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
                 this, classScope, method, instance);
         }
 
         public void AcceptHelperVisitorCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupRollupImpl.AcceptHelperVisitorCodegen(method, instance);
         }
 
-        public void StopMethodCodegen(CodegenClassScope classScope, CodegenMethod method, CodegenInstanceAux instance)
+        public void StopMethodCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenInstanceAux instance)
         {
             if (unbounded) {
                 ResultSetProcessorRowPerGroupRollupUnbound.StopMethodUnboundCodegen(this, classScope, method, instance);
@@ -263,7 +294,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             }
         }
 
-        public void ClearMethodCodegen(CodegenClassScope classScope, CodegenMethod method)
+        public void ClearMethodCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method)
         {
             ResultSetProcessorRowPerGroupRollupImpl.ClearMethodCodegen(method);
         }

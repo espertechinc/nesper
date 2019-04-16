@@ -17,7 +17,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public LinkedHashMap<CodegenExpressionRefWCol, Type> Members { get; } =
             new LinkedHashMap<CodegenExpressionRefWCol, Type>();
 
-        public CodegenExpressionRef AddMember(int column, Type type, string name)
+        public CodegenExpressionRef AddMember(
+            int column,
+            Type type,
+            string name)
         {
             if (type == null) {
                 throw new ArgumentException("Null type");

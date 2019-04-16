@@ -40,7 +40,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         // Substitution parameters
 
-        public CodegenPackageScope(string packageName, string fieldsClassNameOptional, bool instrumented)
+        public CodegenPackageScope(
+            string packageName,
+            string fieldsClassNameOptional,
+            bool instrumented)
         {
             PackageName = packageName;
             FieldsClassNameOptional = fieldsClassNameOptional;
@@ -70,12 +73,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public bool IsInstrumented { get; }
 
-        public CodegenExpressionField AddFieldUnshared<T>(bool isFinal, CodegenExpression initCtorScoped)
+        public CodegenExpressionField AddFieldUnshared<T>(
+            bool isFinal,
+            CodegenExpression initCtorScoped)
         {
             return AddFieldUnshared(isFinal, typeof(T), initCtorScoped);
         }
 
-        public CodegenExpressionField AddFieldUnshared(bool isFinal, Type type, CodegenExpression initCtorScoped)
+        public CodegenExpressionField AddFieldUnshared(
+            bool isFinal,
+            Type type,
+            CodegenExpression initCtorScoped)
         {
             if (FieldsClassNameOptional == null) {
                 throw new IllegalStateException("No fields class name");
@@ -96,7 +104,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return Field(member);
         }
 
-        public CodegenExpressionField AddOrGetFieldWellKnown(CodegenFieldName fieldName, Type type)
+        public CodegenExpressionField AddOrGetFieldWellKnown(
+            CodegenFieldName fieldName,
+            Type type)
         {
             var existing = fieldsNamed.Get(fieldName);
             if (existing != null) {
@@ -114,7 +124,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return Field(field);
         }
 
-        private CodegenField AddFieldUnsharedInternal(bool isFinal, Type type, CodegenExpression initCtorScoped)
+        private CodegenField AddFieldUnsharedInternal(
+            bool isFinal,
+            Type type,
+            CodegenExpression initCtorScoped)
         {
             var memberNumber = currentMemberNumber++;
             var name = CodegenPackageScopeNames.AnyField(memberNumber);
@@ -123,7 +136,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return member;
         }
 
-        public CodegenField AddSubstitutionParameter(string name, Type type)
+        public CodegenField AddSubstitutionParameter(
+            string name,
+            Type type)
         {
             var mixed = false;
             if (name == null) {

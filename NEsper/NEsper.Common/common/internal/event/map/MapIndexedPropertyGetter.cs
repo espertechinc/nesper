@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// </summary>
         /// <param name="fieldName">property name</param>
         /// <param name="index">index to get the element at</param>
-        public MapIndexedPropertyGetter(string fieldName, int index)
+        public MapIndexedPropertyGetter(
+            string fieldName,
+            int index)
         {
             this.index = index;
             this.fieldName = fieldName;
@@ -61,7 +63,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -70,7 +73,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -79,14 +83,16 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -94,7 +100,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -102,7 +109,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
@@ -116,7 +124,10 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// <param name="index">index</param>
         /// <returns>value</returns>
         /// <throws>PropertyAccessException exception</throws>
-        public static object GetMapIndexedValue(IDictionary<string, object> map, string fieldName, int index)
+        public static object GetMapIndexedValue(
+            IDictionary<string, object> map,
+            string fieldName,
+            int index)
         {
             var value = map.Get(fieldName);
             return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);
@@ -130,7 +141,10 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// <param name="index">index</param>
         /// <returns>value</returns>
         /// <throws>PropertyAccessException exception</throws>
-        public static bool GetMapIndexedExists(IDictionary<string, object> map, string fieldName, int index)
+        public static bool GetMapIndexedExists(
+            IDictionary<string, object> map,
+            string fieldName,
+            int index)
         {
             var value = map.Get(fieldName);
             return BaseNestableEventUtil.IsExistsIndexedValue(value, index);

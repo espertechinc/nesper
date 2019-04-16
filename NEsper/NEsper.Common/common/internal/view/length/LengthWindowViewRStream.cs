@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.view.length
         /// <param name="lengthWindowViewFactory">for copying this view in a group-by</param>
         /// <param name="agentInstanceContext">context</param>
         public LengthWindowViewRStream(
-            AgentInstanceViewFactoryChainContext agentInstanceContext, LengthWindowViewFactory lengthWindowViewFactory,
+            AgentInstanceViewFactoryChainContext agentInstanceContext,
+            LengthWindowViewFactory lengthWindowViewFactory,
             int size)
         {
             if (size < 1) {
@@ -62,7 +63,9 @@ namespace com.espertech.esper.common.@internal.view.length
 
         public override EventType EventType => parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, lengthWindowViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(

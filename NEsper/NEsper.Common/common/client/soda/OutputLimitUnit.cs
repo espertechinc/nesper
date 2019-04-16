@@ -36,8 +36,7 @@ namespace com.espertech.esper.common.client.soda
     {
         public static string GetText(this OutputLimitUnit value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case OutputLimitUnit.TIME_PERIOD:
                     return ("timeperiod");
                 case OutputLimitUnit.EVENTS:

@@ -26,8 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         private readonly int streamNum;
 
         public PollResultIndexingStrategyCompositeForge(
-            int streamNum, EventType eventType, string[] optHashPropertyNames, Type[] optHashCoercedTypes,
-            string[] rangeProps, Type[] rangeTypes)
+            int streamNum,
+            EventType eventType,
+            string[] optHashPropertyNames,
+            Type[] optHashCoercedTypes,
+            string[] rangeProps,
+            Type[] rangeTypes)
         {
             this.streamNum = streamNum;
             this.eventType = eventType;
@@ -43,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategyComposite), GetType(), classScope);
 

@@ -33,7 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// </summary>
         /// <param name="streamNum">is the stream number</param>
         /// <param name="numStreams">is the number of streams</param>
-        public BranchOptionalAssemblyNode(int streamNum, int numStreams) : base(streamNum, numStreams)
+        public BranchOptionalAssemblyNode(
+            int streamNum,
+            int numStreams)
+            : base(streamNum, numStreams)
         {
         }
 
@@ -63,7 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             }
         }
 
-        public override void Process(IList<Node>[] result, ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+        public override void Process(
+            IList<Node>[] result,
+            ICollection<EventBean[]> resultFinalRows,
+            EventBean resultRootEvent)
         {
             // there cannot be child nodes to compute a cartesian product if this node had no results
             if (resultsForStream == null) {
@@ -100,8 +106,12 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override void Result(
-            EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode,
-            ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+            EventBean[] row,
+            int fromStreamNum,
+            EventBean myEvent,
+            Node myNode,
+            ICollection<EventBean[]> resultFinalRows,
+            EventBean resultRootEvent)
         {
             row[streamNum] = myEvent;
             Node parentResultNode = myNode.Parent;
@@ -123,7 +133,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         private void ProcessEvent(
-            EventBean theEvent, Node currentNode, ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+            EventBean theEvent,
+            Node currentNode,
+            ICollection<EventBean[]> resultFinalRows,
+            EventBean resultRootEvent)
         {
             var row = new EventBean[numStreams];
             row[streamNum] = theEvent;

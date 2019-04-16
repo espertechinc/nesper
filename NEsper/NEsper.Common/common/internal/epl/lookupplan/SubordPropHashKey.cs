@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
     /// <summary>Holds property information for joined properties in a lookup. </summary>
     public class SubordPropHashKey
     {
-        public SubordPropHashKey(QueryGraphValueEntryHashKeyed hashKey, int? optionalKeyStreamNum, Type coercionType)
+        public SubordPropHashKey(
+            QueryGraphValueEntryHashKeyed hashKey,
+            int? optionalKeyStreamNum,
+            Type coercionType)
         {
             HashKey = hashKey;
             OptionalKeyStreamNum = optionalKeyStreamNum;

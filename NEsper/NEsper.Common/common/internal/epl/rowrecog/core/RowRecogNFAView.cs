@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
@@ -47,7 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         // state
         private RowRecogPartitionStateRepo _regexPartitionStateRepo;
 
-        private readonly ISet<EventBean> _windowMatchedEventset; // this is NOT per partition - some optimizations are done for batch-processing (minus is out-of-sequence in partition)
+        private readonly ISet<EventBean>
+            _windowMatchedEventset; // this is NOT per partition - some optimizations are done for batch-processing (minus is out-of-sequence in partition)
 
         private readonly ObjectArrayBackedEventBean _defineMultimatchEventBean;
 
@@ -102,7 +102,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             UpdateInternal(newData, oldData, true);
         }
@@ -123,7 +125,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             _regexPartitionStateRepo.Destroy();
         }
 
-        private void UpdateInternal(EventBean[] newData, EventBean[] oldData, bool postOutput)
+        private void UpdateInternal(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool postOutput)
         {
             RowRecogDesc desc = _factory.Desc;
             if (desc.IsIterateOnly) {
@@ -394,7 +399,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
         }
 
-        private long ComputeScheduleForwardDelta(long current, long deltaFromStart)
+        private long ComputeScheduleForwardDelta(
+            long current,
+            long deltaFromStart)
         {
             _agentInstanceContext.InstrumentationProvider.QRegIntervalValue();
             long result = _factory.Desc.IntervalCompute.DeltaAdd(current, null, true, null);
@@ -449,7 +456,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return found;
         }
 
-        private bool Compare(int[] current, int[] best)
+        private bool Compare(
+            int[] current,
+            int[] best)
         {
             foreach (RowRecogNFAState state in _factory.AllStates) {
                 if (state.IsGreedy == null) {
@@ -670,7 +679,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return endStatesRanked;
         }
 
-        private void RemoveSkippedEndStates(SortedDictionary<int, object> endStatesPerEndEvent, int skipPastRow)
+        private void RemoveSkippedEndStates(
+            SortedDictionary<int, object> endStatesPerEndEvent,
+            int skipPastRow)
         {
             foreach (KeyValuePair<int, object> entry in endStatesPerEndEvent) {
                 object value = entry.Value;
@@ -844,7 +855,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     // save state for each next state
                     bool copy = nextStatesFromHere.Length > 1;
                     foreach (RowRecogNFAState next in nextStatesFromHere) {
-
                         if (_factory.IsTrackMaxStates && !skipTrackMaxState) {
                             RowRecogStatePoolStmtSvc poolSvc =
                                 _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
@@ -920,7 +930,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     props[i] = null;
                 }
                 else {
-                    props[i] = state.ShrinkEventArray;
+                    props[i] = state.GetShrinkEventArray();
                 }
             }
 
@@ -944,7 +954,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private RowRecogMultimatchState[] AddTag(
-            int streamNum, EventBean theEvent, RowRecogMultimatchState[] multimatches)
+            int streamNum,
+            EventBean theEvent,
+            RowRecogMultimatchState[] multimatches)
         {
             if (multimatches == null) {
                 multimatches = new RowRecogMultimatchState[_factory.Desc.MultimatchVariablesArray.Length];
@@ -987,7 +999,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private EventBean GenerateOutputRowUnderLockIfRequired(
-            RowRecogNFAStateEntry entry, AggregationService[] aggregationServices)
+            RowRecogNFAStateEntry entry,
+            AggregationService[] aggregationServices)
         {
             object[] rowDataRaw = _compositeEventBean.Properties;
 
@@ -1009,7 +1022,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         continue;
                     }
 
-                    EventBean[] multimatchEvents = multimatchState[i].ShrinkEventArray;
+                    EventBean[] multimatchEvents = multimatchState[i].GetShrinkEventArray();
                     rowDataRaw[streamNum] = multimatchEvents;
 
                     if (aggregationServices != null && aggregationServices[streamNum] != null) {
@@ -1043,7 +1056,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 row, _factory.Desc.RowEventType);
         }
 
-        private void ScheduleCallback(long timeDelta, RowRecogNFAStateEntry endState)
+        private void ScheduleCallback(
+            long timeDelta,
+            RowRecogNFAStateEntry endState)
         {
             long matchBeginTime = endState.MatchBeginEventTime;
             if (_regexPartitionStateRepo.ScheduleState.IsEmpty) {
@@ -1062,7 +1077,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private void RemoveScheduleAddEndState(
-            RowRecogNFAStateEntry terminationState, IList<RowRecogNFAStateEntry> foundEndStates)
+            RowRecogNFAStateEntry terminationState,
+            IList<RowRecogNFAStateEntry> foundEndStates)
         {
             long matchBeginTime = terminationState.MatchBeginEventTime;
             bool removedOne = _regexPartitionStateRepo.ScheduleState.FindRemoveAddToList(

@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.context.compile
     public class ContextMetaData
     {
         public ContextMetaData(
-            string contextName, string contextModuleName, NameAccessModifier contextVisibility, EventType eventType,
+            string contextName,
+            string contextModuleName,
+            NameAccessModifier contextVisibility,
+            EventType eventType,
             ContextControllerPortableInfo[] validationInfos)
         {
             ContextName = contextName;

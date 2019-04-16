@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,58 +16,69 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
-	public class InnerDotCollForge : ExprDotEvalRootChildInnerForge {
+    public class InnerDotCollForge : ExprDotEvalRootChildInnerForge
+    {
+        private readonly ExprForge rootForge;
 
-	    private readonly ExprForge rootForge;
+        public InnerDotCollForge(ExprForge rootForge)
+        {
+            this.rootForge = rootForge;
+        }
 
-	    public InnerDotCollForge(ExprForge rootForge) {
-	        this.rootForge = rootForge;
-	    }
+        public ExprDotEvalRootChildInnerEval InnerEvaluator {
+            get => new InnerDotCollEval(rootForge.ExprEvaluator);
+        }
 
-	    public ExprDotEvalRootChildInnerEval InnerEvaluator
-	    {
-	        get => new InnerDotCollEval(rootForge.ExprEvaluator);
-	    }
+        public CodegenExpression CodegenEvaluate(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return rootForge.EvaluateCodegen(rootForge.EvaluationType, parentMethod, exprSymbol, codegenClassScope);
+        }
 
-	    public CodegenExpression CodegenEvaluate(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return rootForge.EvaluateCodegen(rootForge.EvaluationType, parentMethod, exprSymbol, codegenClassScope);
-	    }
+        public CodegenExpression EvaluateGetROCollectionEventsCodegen(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EvaluateGetROCollectionEventsCodegen(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public CodegenExpression EvaluateGetROCollectionScalarCodegen(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EvaluateGetROCollectionScalarCodegen(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public CodegenExpression EvaluateGetEventBeanCodegen(
+            CodegenMethod parentMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EvaluateGetEventBeanCodegen(CodegenMethod parentMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public EventType EventTypeCollection {
+            get => null;
+        }
 
-	    public EventType EventTypeCollection
-	    {
-	        get => null;
-	    }
+        public Type ComponentTypeCollection {
+            get => null;
+        }
 
-	    public Type ComponentTypeCollection
-	    {
-	        get => null;
-	    }
+        public EventType EventTypeSingle {
+            get => null;
+        }
 
-	    public EventType EventTypeSingle
-	    {
-	        get => null;
-	    }
-
-	    public EPType TypeInfo
-	    {
-	        get => EPTypeHelper.CollectionOfSingleValue(typeof(object));
-	    }
-	}
+        public EPType TypeInfo {
+            get => EPTypeHelper.CollectionOfSingleValue(typeof(object));
+        }
+    }
 } // end of namespace

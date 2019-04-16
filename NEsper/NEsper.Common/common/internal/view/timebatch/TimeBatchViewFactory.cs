@@ -58,7 +58,9 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             set => isStartEager = value;
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

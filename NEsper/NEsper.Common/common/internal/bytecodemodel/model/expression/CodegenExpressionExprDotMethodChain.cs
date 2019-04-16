@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this._expression = expression;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             _expression.Render(builder, imports, isInnerClass);
             foreach (var element in _chain) {
@@ -39,7 +42,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
         }
 
-        public CodegenExpressionExprDotMethodChain Add(string method, params CodegenExpression[] @params)
+        public CodegenExpressionExprDotMethodChain Add(
+            string method,
+            params CodegenExpression[] @params)
         {
             _chain.Add(new CodegenChainElement(method, @params));
             return this;

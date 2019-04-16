@@ -24,14 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         private readonly ExprSubselectNode subselect;
 
-        public SubselectForgeNRExistsWGroupByWHaving(ExprSubselectNode subselect, ExprForge havingEval)
+        public SubselectForgeNRExistsWGroupByWHaving(
+            ExprSubselectNode subselect,
+            ExprForge havingEval)
         {
             this.subselect = subselect;
             this.havingEval = havingEval;
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));

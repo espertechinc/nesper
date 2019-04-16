@@ -34,6 +34,9 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public abstract IEnumerator<EventBean> GetEnumerator();
         public abstract EventType EventType { get; }
-        public abstract void Update(EventBean[] newData, EventBean[] oldData);
+
+        public abstract void Update(
+            EventBean[] newData,
+            EventBean[] oldData);
     }
 } // end of namespace

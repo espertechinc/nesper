@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +15,6 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
@@ -26,13 +24,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         private readonly BeanEventType beanEventType;
         private readonly ConstructorInfo constructor;
 
-        public EventBeanManufacturerCtorForge(ConstructorInfo constructor, BeanEventType beanEventType)
+        public EventBeanManufacturerCtorForge(
+            ConstructorInfo constructor,
+            BeanEventType beanEventType)
         {
             this.constructor = constructor;
             this.beanEventType = beanEventType;
         }
 
-        public CodegenExpression Make(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+        public CodegenExpression Make(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var beanType = codegenClassScope.AddFieldUnshared(
@@ -56,17 +58,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         /// <param name="classes">classes</param>
         /// <param name="declaring">declaring</param>
         /// <returns>ctor</returns>
-        public static ConstructorInfo ResolveConstructor(Type[] classes, Type declaring)
+        public static ConstructorInfo ResolveConstructor(
+            Type[] classes,
+            Type declaring)
         {
             try {
                 return declaring.GetConstructor(classes);
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 throw new EPException(
                     "Failed to resolve constructor for class "
                     + declaring.GetType()
-                    + " params " 
+                    + " params "
                     + classes.RenderAny());
             }
         }

@@ -117,14 +117,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             return outObject;
         }
 
-        private void HandleAny(Exception ex, string methodName)
+        private void HandleAny(
+            Exception ex,
+            string methodName)
         {
             var message = "Unexpected exception encountered invoking setter-method '" + methodName + "' on class '" +
                           beanEventType.UnderlyingType.Name + "' : " + ex.Message;
             Log.Error(message, ex);
         }
 
-        private void Handle(MemberAccessException ex, string methodName)
+        private void Handle(
+            MemberAccessException ex,
+            string methodName)
         {
             var message = "Unexpected exception encountered invoking setter-method '" + methodName + "' on class '" +
                           beanEventType.UnderlyingType.Name + "' : " + ex.Message;

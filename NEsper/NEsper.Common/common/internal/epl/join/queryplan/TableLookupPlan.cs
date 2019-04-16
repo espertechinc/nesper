@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         internal readonly TableLookupIndexReqKey[] indexNum;
         internal readonly int lookupStream;
 
-        public TableLookupPlan(int lookupStream, int indexedStream, TableLookupIndexReqKey[] indexNum)
+        public TableLookupPlan(
+            int lookupStream,
+            int indexedStream,
+            TableLookupIndexReqKey[] indexNum)
         {
             this.lookupStream = lookupStream;
             this.indexedStream = indexedStream;
@@ -50,11 +53,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public Type[] VirtualDWRangeTypes { get; private set; }
 
         protected abstract JoinExecTableLookupStrategy MakeStrategyInternal(
-            EventTable[] eventTables, EventType[] eventTypes);
+            EventTable[] eventTables,
+            EventType[] eventTypes);
 
         public JoinExecTableLookupStrategy MakeStrategy(
             AgentInstanceContext agentInstanceContext,
-            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] eventTypes,
+            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream,
+            EventType[] eventTypes,
             VirtualDWView[] viewExternals)
         {
             var eventTables = new EventTable[indexNum.Length];

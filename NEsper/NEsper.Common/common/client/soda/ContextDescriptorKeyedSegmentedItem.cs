@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="propertyNames">list of property names</param>
         /// <param name="filter">event type name and optional filter predicates</param>
-        public ContextDescriptorKeyedSegmentedItem(IList<string> propertyNames, Filter filter)
+        public ContextDescriptorKeyedSegmentedItem(
+            IList<string> propertyNames,
+            Filter filter)
         {
             this.propertyNames = propertyNames;
             this.filter = filter;
@@ -46,7 +48,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="propertyNames">list of property names</param>
         /// <param name="filter">event type name and optional filter predicates</param>
         /// <param name="streamName">alias name</param>
-        public ContextDescriptorKeyedSegmentedItem(IList<string> propertyNames, Filter filter, string streamName)
+        public ContextDescriptorKeyedSegmentedItem(
+            IList<string> propertyNames,
+            Filter filter,
+            string streamName)
         {
             this.propertyNames = propertyNames;
             this.filter = filter;
@@ -110,7 +115,9 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             string delimiter = "";
             foreach (string prop in propertyNames) {

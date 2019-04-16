@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         private readonly OperatorStatisticsProvider statisticsProvider;
 
         public EPDataFlowEmitterWrapperWStatistics(
-            EPDataFlowEmitter facility, int producerOpNum, OperatorStatisticsProvider statisticsProvider,
+            EPDataFlowEmitter facility,
+            int producerOpNum,
+            OperatorStatisticsProvider statisticsProvider,
             bool cpuStatistics)
         {
             this.facility = facility;
@@ -39,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             facility.SubmitSignal(signal);
         }
 
-        public void SubmitPort(int portNumber, object @object)
+        public void SubmitPort(
+            int portNumber,
+            object @object)
         {
             if (!cpuStatistics) {
                 facility.SubmitPort(portNumber, @object);

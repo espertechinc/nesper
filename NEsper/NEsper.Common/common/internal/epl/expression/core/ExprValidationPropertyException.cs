@@ -15,12 +15,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// </summary>
     public class ExprValidationPropertyException : ExprValidationException
     {
-        public ExprValidationPropertyException(string message) : base(message)
+        public ExprValidationPropertyException(string message)
+            : base(message)
         {
         }
 
-        public ExprValidationPropertyException(string message,
-                 Exception cause) : base(message, cause)
+        public ExprValidationPropertyException(
+            string message,
+            Exception cause)
+            : base(message, cause)
         {
         }
     }

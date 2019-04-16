@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             strategies = new ArrayWrap<SubordTableLookupStrategy>(10);
         }
 
-        public void AssignService(int num, SubordTableLookupStrategy subselectStrategy)
+        public void AssignService(
+            int num,
+            SubordTableLookupStrategy subselectStrategy)
         {
             AIRegistryUtil.CheckExpand(num, strategies);
             strategies.Array[num] = subselectStrategy;
@@ -38,7 +40,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             InstanceCount--;
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             return strategies.Array[context.AgentInstanceId].Lookup(events, context);
         }

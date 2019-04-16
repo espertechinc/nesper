@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -18,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprMinMaxRowNodeForge : ExprForgeInstrumentable
     {
-        public ExprMinMaxRowNodeForge(ExprMinMaxRowNode parent, Type resultType)
+        public ExprMinMaxRowNodeForge(
+            ExprMinMaxRowNode parent,
+            Type resultType)
         {
             ForgeRenderable = parent;
             EvaluationType = resultType;
@@ -37,14 +38,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprMinMaxRowNodeForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(

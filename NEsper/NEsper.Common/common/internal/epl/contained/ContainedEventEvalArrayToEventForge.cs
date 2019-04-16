@@ -20,14 +20,18 @@ namespace com.espertech.esper.common.@internal.epl.contained
         private readonly ExprForge evaluator;
         private readonly EventBeanManufacturerForge manufacturer;
 
-        public ContainedEventEvalArrayToEventForge(ExprForge evaluator, EventBeanManufacturerForge manufacturer)
+        public ContainedEventEvalArrayToEventForge(
+            ExprForge evaluator,
+            EventBeanManufacturerForge manufacturer)
         {
             this.evaluator = evaluator;
             this.manufacturer = manufacturer;
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContainedEventEvalArrayToEvent), GetType(), classScope);
             CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluator(evaluator, method, GetType(), classScope);

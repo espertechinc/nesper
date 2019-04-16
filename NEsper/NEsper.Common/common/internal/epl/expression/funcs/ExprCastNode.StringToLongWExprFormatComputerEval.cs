@@ -55,19 +55,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         typeof(long), typeof(StringToLongWExprFormatComputerEval), codegenClassScope)
                     .AddParam(typeof(object), "input");
                 CodegenExpression format;
-                if (formatForge.ForgeConstantType.IsConstant)
-                {
+                if (formatForge.ForgeConstantType.IsConstant) {
                     format = FormatFieldExpr(typeof(DateFormat), formatForge, codegenClassScope);
                 }
-                else
-                {
+                else {
                     method.Block
                         .DeclareVar(
                             typeof(object), "format",
                             formatForge.EvaluateCodegen(typeof(object), method, exprSymbol, codegenClassScope))
                         .DeclareVar(
                             typeof(SimpleDateFormat), "dateFormat",
-                            CodegenExpressionBuilder.StaticMethod(typeof(ExprCastNode), "stringToSimpleDateFormatSafe", CodegenExpressionBuilder.Ref("format")));
+                            CodegenExpressionBuilder.StaticMethod(
+                                typeof(ExprCastNode), "stringToSimpleDateFormatSafe", CodegenExpressionBuilder.Ref("format")));
                     format = CodegenExpressionBuilder.Ref("dateFormat");
                 }
 

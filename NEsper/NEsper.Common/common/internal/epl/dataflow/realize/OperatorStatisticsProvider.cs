@@ -60,12 +60,17 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
         }
 
-        public void CountSubmitPort(int producerOpNum, int portNumber)
+        public void CountSubmitPort(
+            int producerOpNum,
+            int portNumber)
         {
             submitCounts[producerOpNum][portNumber]++;
         }
 
-        public void CountSubmitPortWithTime(int producerOpNum, int portNumber, long nanoTimeDelta)
+        public void CountSubmitPortWithTime(
+            int producerOpNum,
+            int portNumber,
+            long nanoTimeDelta)
         {
             CountSubmitPort(producerOpNum, portNumber);
             cpuDelta[producerOpNum][portNumber] += nanoTimeDelta;

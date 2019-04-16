@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
     {
         private readonly IDictionary<object, EventBean> groupReps = new LinkedHashMap<object, EventBean>();
 
-        public void Put(object key, EventBean @event)
+        public void Put(
+            object key,
+            EventBean @event)
         {
             groupReps.Put(key, @event);
         }

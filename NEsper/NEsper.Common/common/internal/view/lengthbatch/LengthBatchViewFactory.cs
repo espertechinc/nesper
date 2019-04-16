@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
             set => size = value;
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

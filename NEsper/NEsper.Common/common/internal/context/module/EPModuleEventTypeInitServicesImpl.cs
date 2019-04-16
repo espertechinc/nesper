@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.context.module
     public class EPModuleEventTypeInitServicesImpl : EPModuleEventTypeInitServices
     {
         public EPModuleEventTypeInitServicesImpl(
-            EventTypeCollector eventTypeCollector, EventTypeResolver eventTypeByMetaResolver)
+            EventTypeCollector eventTypeCollector,
+            EventTypeResolver eventTypeByMetaResolver)
         {
             EventTypeCollector = eventTypeCollector;
             EventTypeResolver = eventTypeByMetaResolver;

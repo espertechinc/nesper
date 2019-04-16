@@ -27,7 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     {
         private SubselectForgeNR subselectEvalStrategyNR;
 
-        public ExprSubselectExistsNode(StatementSpecRaw statementSpec) : base(statementSpec)
+        public ExprSubselectExistsNode(StatementSpecRaw statementSpec)
+            : base(statementSpec)
         {
         }
 
@@ -48,54 +49,71 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         protected override CodegenExpression EvalMatchesPlainCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return subselectEvalStrategyNR.EvaluateMatchesCodegen(parent, symbols, classScope);
         }
 
         public override EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
 
         protected override CodegenExpression EvalMatchesGetCollEventsCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         protected override CodegenExpression EvalMatchesGetCollScalarCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         protected override CodegenExpression EvalMatchesTypableMultiCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         public override EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
         protected override CodegenExpression EvalMatchesTypableSingleCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         protected override CodegenExpression EvalMatchesGetEventBeanCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }

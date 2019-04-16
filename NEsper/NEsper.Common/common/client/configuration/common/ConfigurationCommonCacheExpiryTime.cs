@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     otherwise
         /// </param>
         public ConfigurationCommonCacheExpiryTime(
-            double maxAgeSeconds, double purgeIntervalSeconds, CacheReferenceType cacheReferenceType)
+            double maxAgeSeconds,
+            double purgeIntervalSeconds,
+            CacheReferenceType cacheReferenceType)
         {
             MaxAgeSeconds = maxAgeSeconds;
             PurgeIntervalSeconds = purgeIntervalSeconds;

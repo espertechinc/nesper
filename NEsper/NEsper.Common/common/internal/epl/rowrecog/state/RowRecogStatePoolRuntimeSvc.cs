@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         private readonly bool preventStart;
         private long maxPoolCountConfigured;
 
-        public RowRecogStatePoolRuntimeSvc(long maxPoolCountConfigured, bool preventStart)
+        public RowRecogStatePoolRuntimeSvc(
+            long maxPoolCountConfigured,
+            bool preventStart)
         {
             this.maxPoolCountConfigured = maxPoolCountConfigured;
             this.preventStart = preventStart;
@@ -40,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             }
         }
 
-        public void AddPatternContext(DeploymentIdNamePair statement, RowRecogStatePoolStmtHandler stmtCounts)
+        public void AddPatternContext(
+            DeploymentIdNamePair statement,
+            RowRecogStatePoolStmtHandler stmtCounts)
         {
             matchRecognizeContexts.Add(new StatementEntry(statement, stmtCounts));
         }
@@ -84,7 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             DecreaseCount(agentInstanceContext, 1);
         }
 
-        public void DecreaseCount(AgentInstanceContext agentInstanceContext, int numRemoved)
+        public void DecreaseCount(
+            AgentInstanceContext agentInstanceContext,
+            int numRemoved)
         {
             long newMax = poolCount.IncrementAndGet(-1 * numRemoved);
             if (newMax < 0) {
@@ -94,7 +100,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             LogDecrease(agentInstanceContext, newMax);
         }
 
-        private void LogDecrease(AgentInstanceContext agentInstanceContext, long newMax)
+        private void LogDecrease(
+            AgentInstanceContext agentInstanceContext,
+            long newMax)
         {
         }
 
@@ -102,8 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         {
             IDictionary<DeploymentIdNamePair, long> counts = new Dictionary<DeploymentIdNamePair, long>();
             foreach (var context in matchRecognizeContexts) {
-                if (!counts.TryGetValue(context.Statement, out var count))
-                {
+                if (!counts.TryGetValue(context.Statement, out var count)) {
                     count = 0L;
                 }
 
@@ -116,7 +123,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
 
         public class StatementEntry
         {
-            public StatementEntry(DeploymentIdNamePair statement, RowRecogStatePoolStmtHandler stmtCounts)
+            public StatementEntry(
+                DeploymentIdNamePair statement,
+                RowRecogStatePoolStmtHandler stmtCounts)
             {
                 Statement = statement;
                 StmtCounts = stmtCounts;

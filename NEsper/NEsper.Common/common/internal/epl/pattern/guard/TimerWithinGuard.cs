@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         /// </summary>
         /// <param name="delta">number of millisecond to guard expiration</param>
         /// <param name="quitable">to use to indicate that the gaurd quitted</param>
-        public TimerWithinGuard(long delta, Quitable quitable)
+        public TimerWithinGuard(
+            long delta,
+            Quitable quitable)
         {
             deltaTime = delta;
             this.quitable = quitable;

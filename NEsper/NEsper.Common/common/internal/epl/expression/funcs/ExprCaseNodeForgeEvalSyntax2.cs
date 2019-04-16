@@ -40,7 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             this.optionalElseExprNode = optionalElseExprNode;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             // Case 2 expression example:
             //      case p when p1 then x [when p2 then y...] [else z]
@@ -73,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public static CodegenExpression Codegen(
-            ExprCaseNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprCaseNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var evaluationType = forge.EvaluationType == null
@@ -116,7 +121,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return LocalMethod(methodNode);
         }
 
-        private bool Compare(object leftResult, object rightResult)
+        private bool Compare(
+            object leftResult,
+            object rightResult)
         {
             if (leftResult == null) {
                 return rightResult == null;
@@ -136,8 +143,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         private static CodegenExpression CodegenCompare(
-            CodegenExpressionRef lhs, Type lhsType, CodegenExpressionRef rhs, Type rhsType, ExprCaseNodeForge forge,
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpressionRef lhs,
+            Type lhsType,
+            CodegenExpressionRef rhs,
+            Type rhsType,
+            ExprCaseNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             if (lhsType == null) {
                 return EqualsNull(rhs);

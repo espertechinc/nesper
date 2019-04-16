@@ -34,8 +34,10 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// <param name="mapPropertiesToCopy">map props</param>
         /// <param name="arrayPropertiesToCopy">array props</param>
         public MapEventBeanCopyMethodWithArrayMapForge(
-            MapEventType mapEventType, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            ISet<string> mapPropertiesToCopy, ISet<string> arrayPropertiesToCopy)
+            MapEventType mapEventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            ISet<string> mapPropertiesToCopy,
+            ISet<string> arrayPropertiesToCopy)
         {
             this.mapEventType = mapEventType;
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;

@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
 {
     public interface AIRegistryPriorEvalStrategy : PriorEvalStrategy
     {
-        void AssignService(int serviceId, PriorEvalStrategy priorEvalStrategy);
+        void AssignService(
+            int serviceId,
+            PriorEvalStrategy priorEvalStrategy);
 
         void DeassignService(int serviceId);
 

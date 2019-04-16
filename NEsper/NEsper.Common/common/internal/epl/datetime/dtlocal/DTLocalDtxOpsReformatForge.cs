@@ -19,8 +19,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public class DTLocalDtxOpsReformatForge : DTLocalForgeCalopReformatBase
     {
-        public DTLocalDtxOpsReformatForge(IList<CalendarForge> calendarForges, ReformatForge reformatForge) : base(
-            calendarForges, reformatForge)
+        public DTLocalDtxOpsReformatForge(
+            IList<CalendarForge> calendarForges,
+            ReformatForge reformatForge)
+            : base(
+                calendarForges, reformatForge)
         {
         }
 
@@ -28,8 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             new DTLocalDtxOpsReformatEval(GetCalendarOps(calendarForges), reformatForge.Op);
 
         public override CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return DTLocalDtxOpsReformatEval.Codegen(this, inner, codegenMethodScope, exprSymbol, codegenClassScope);
         }

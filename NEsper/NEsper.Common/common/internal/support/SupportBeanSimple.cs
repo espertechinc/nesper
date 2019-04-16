@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.support
     [Serializable]
     public class SupportBeanSimple
     {
-        public SupportBeanSimple(String myString, int myInt)
+        public SupportBeanSimple(
+            String myString,
+            int myInt)
         {
             MyString = myString;
             MyInt = myInt;

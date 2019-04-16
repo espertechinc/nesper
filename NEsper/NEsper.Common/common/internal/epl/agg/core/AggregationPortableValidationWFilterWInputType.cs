@@ -23,7 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
         }
 
-        protected AggregationPortableValidationWFilterWInputType(bool distinct, bool hasFilter, Type inputValueType)
+        protected AggregationPortableValidationWFilterWInputType(
+            bool distinct,
+            bool hasFilter,
+            Type inputValueType)
             : base(distinct)
         {
             this.hasFilter = hasFilter;
@@ -31,15 +34,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         protected abstract void CodegenInlineSetWFilterWInputType(
-            CodegenExpressionRef @ref, CodegenMethod method, ModuleTableInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope);
 
         protected abstract void ValidateIntoTableWFilterWInputType(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory);
 
         protected override void CodegenInlineSet(
-            CodegenExpressionRef @ref, CodegenMethod method, ModuleTableInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block
@@ -49,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         protected override void ValidateIntoTable(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory)
         {
             var that = (AggregationPortableValidationWFilterWInputType) intoTableAgg;

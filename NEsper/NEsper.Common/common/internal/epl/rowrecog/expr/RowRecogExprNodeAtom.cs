@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
         /// <param name="tag">variable name</param>
         /// <param name="type">multiplicity and greedy indicator</param>
         /// <param name="optionalRepeat">optional repeating information</param>
-        public RowRecogExprNodeAtom(string tag, RowRecogNFATypeEnum type, RowRecogExprRepeatDesc optionalRepeat)
+        public RowRecogExprNodeAtom(
+            string tag,
+            RowRecogNFATypeEnum type,
+            RowRecogExprRepeatDesc optionalRepeat)
         {
             Tag = tag;
             Type = type;
@@ -45,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
         public override RowRecogExprNodePrecedenceEnum Precedence => RowRecogExprNodePrecedenceEnum.UNARY;
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(Tag);
             writer.Write(Type.GetOptionalPostfix());

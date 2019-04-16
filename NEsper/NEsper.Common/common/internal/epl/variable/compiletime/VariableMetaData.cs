@@ -18,10 +18,19 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
     public class VariableMetaData
     {
         public VariableMetaData(
-            string variableName, string variableModuleName, NameAccessModifier variableVisibility,
-            string optionalContextName, NameAccessModifier optionalContextVisibility, string optionalContextModule,
-            Type type, EventType eventType, bool preconfigured, bool constant, bool compileTimeConstant,
-            object valueWhenAvailable, bool createdByCurrentModule)
+            string variableName,
+            string variableModuleName,
+            NameAccessModifier variableVisibility,
+            string optionalContextName,
+            NameAccessModifier optionalContextVisibility,
+            string optionalContextModule,
+            Type type,
+            EventType eventType,
+            bool preconfigured,
+            bool constant,
+            bool compileTimeConstant,
+            object valueWhenAvailable,
+            bool createdByCurrentModule)
         {
             VariableName = variableName;
             VariableModuleName = variableModuleName;

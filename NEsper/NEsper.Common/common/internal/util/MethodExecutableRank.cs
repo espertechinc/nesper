@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.util
     {
         private readonly bool varargs;
 
-        public MethodExecutableRank(int conversionCount, bool varargs)
+        public MethodExecutableRank(
+            int conversionCount,
+            bool varargs)
         {
             ConversionCount = conversionCount;
             this.varargs = varargs;
@@ -20,7 +22,9 @@ namespace com.espertech.esper.common.@internal.util
 
         public int ConversionCount { get; }
 
-        public int CompareTo(int conversionCount, bool varargs)
+        public int CompareTo(
+            int conversionCount,
+            bool varargs)
         {
             int compareCount = ConversionCount.CompareTo(conversionCount);
             if (compareCount != 0) {

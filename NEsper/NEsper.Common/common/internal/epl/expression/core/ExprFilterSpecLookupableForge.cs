@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         internal readonly Type returnType;
 
         public ExprFilterSpecLookupableForge(
-            string expression, EventPropertyValueGetterForge optionalEventPropForge, Type returnType,
+            string expression,
+            EventPropertyValueGetterForge optionalEventPropForge,
+            Type returnType,
             bool isNonPropertyGetter)
         {
             this.expression = expression;
@@ -42,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public string Expression => expression;
 
         public virtual CodegenMethod MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbolWEventType symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
                 typeof(ExprFilterSpecLookupable), typeof(ExprFilterSpecLookupableForge), classScope);

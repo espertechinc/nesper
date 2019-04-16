@@ -33,7 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             }
         }
 
-        public IEnumerator<EventBean> Lookup(EventBean lookupEvent, EventTable[] index, ExprEvaluatorContext context)
+        public IEnumerator<EventBean> Lookup(
+            EventBean lookupEvent,
+            EventTable[] index,
+            ExprEvaluatorContext context)
         {
             if (index[0] is PropertyHashedEventTable) {
                 eventsPerStream[lookupStream] = lookupEvent;

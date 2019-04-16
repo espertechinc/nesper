@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -25,7 +24,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
         private readonly IDictionary<string, ContextDeployment> deployments =
             new Dictionary<string, ContextDeployment>();
 
-        public void AddContext(ContextDefinition contextDefinition, EPStatementInitServices services)
+        public void AddContext(
+            ContextDefinition contextDefinition,
+            EPStatementInitServices services)
         {
             var deployment = deployments.Get(services.DeploymentId);
             if (deployment == null) {
@@ -37,7 +38,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         public void AddStatement(
-            string deploymentIdCreateContext, string contextName, ContextControllerStatementDesc statement,
+            string deploymentIdCreateContext,
+            string contextName,
+            ContextControllerStatementDesc statement,
             bool recovery)
         {
             var contextManager = GetAssertContextManager(deploymentIdCreateContext, contextName);
@@ -45,13 +48,17 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         public void StoppedStatement(
-            string deploymentIdCreateContext, string contextName, ContextControllerStatementDesc statement)
+            string deploymentIdCreateContext,
+            string contextName,
+            ContextControllerStatementDesc statement)
         {
             var contextManager = GetAssertContextManager(deploymentIdCreateContext, contextName);
             contextManager.StopStatement(statement);
         }
 
-        public ContextManager GetContextManager(string deploymentIdCreateContext, string contextName)
+        public ContextManager GetContextManager(
+            string deploymentIdCreateContext,
+            string contextName)
         {
             var deployment = deployments.Get(deploymentIdCreateContext);
             if (deployment == null) {
@@ -72,7 +79,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
             }
         }
 
-        public void DestroyedContext(string runtimeURI, string deploymentIdCreateContext, string contextName)
+        public void DestroyedContext(
+            string runtimeURI,
+            string deploymentIdCreateContext,
+            string contextName)
         {
             var deployment = deployments.Get(deploymentIdCreateContext);
             if (deployment == null) {
@@ -90,12 +100,16 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ContextStateEventUtil.DispatchContext(
                 Listeners,
                 () => new ContextStateEventContextDestroyed(runtimeURI, deploymentIdCreateContext, contextName),
-                (listener, eventContext) => listener.OnContextDestroyed(eventContext));
+                (
+                    listener,
+                    eventContext) => listener.OnContextDestroyed(eventContext));
         }
 
         public CopyOnWriteList<ContextStateListener> Listeners { get; } = new CopyOnWriteList<ContextStateListener>();
 
-        private ContextManager GetAssertContextManager(string deploymentIdCreateContext, string contextName)
+        private ContextManager GetAssertContextManager(
+            string deploymentIdCreateContext,
+            string contextName)
         {
             var contextManager = GetContextManager(deploymentIdCreateContext, contextName);
             if (contextManager == null) {

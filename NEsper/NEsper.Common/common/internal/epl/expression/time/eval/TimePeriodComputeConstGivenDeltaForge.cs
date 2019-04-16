@@ -7,31 +7,33 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
 {
-	public class TimePeriodComputeConstGivenDeltaForge : TimePeriodComputeForge {
-	    private readonly long timeDelta;
+    public class TimePeriodComputeConstGivenDeltaForge : TimePeriodComputeForge
+    {
+        private readonly long timeDelta;
 
-	    public TimePeriodComputeConstGivenDeltaForge(long timeDelta) {
-	        this.timeDelta = timeDelta;
-	    }
+        public TimePeriodComputeConstGivenDeltaForge(long timeDelta)
+        {
+            this.timeDelta = timeDelta;
+        }
 
-	    public TimePeriodCompute Evaluator
-	    {
-	        get => new TimePeriodComputeConstGivenDeltaEval(timeDelta);
-	    }
+        public TimePeriodCompute Evaluator {
+            get => new TimePeriodComputeConstGivenDeltaEval(timeDelta);
+        }
 
-	    public CodegenExpression MakeEvaluator(CodegenMethodScope parent, CodegenClassScope classScope) {
-	        return NewInstance(typeof(TimePeriodComputeConstGivenDeltaEval), Constant(timeDelta));
-	    }
-	}
+        public CodegenExpression MakeEvaluator(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
+        {
+            return NewInstance(typeof(TimePeriodComputeConstGivenDeltaEval), Constant(timeDelta));
+        }
+    }
 } // end of namespace

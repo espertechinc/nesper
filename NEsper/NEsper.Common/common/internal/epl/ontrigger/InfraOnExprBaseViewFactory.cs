@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger;
 using com.espertech.esper.common.@internal.context.util;
@@ -19,22 +18,26 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
-	/// <summary>
-	/// View for the on-delete statement that handles removing events from a named window.
-	/// </summary>
-	public abstract class InfraOnExprBaseViewFactory : InfraOnExprFactory {
-	    internal readonly EventType infraEventType;
+    /// <summary>
+    /// View for the on-delete statement that handles removing events from a named window.
+    /// </summary>
+    public abstract class InfraOnExprBaseViewFactory : InfraOnExprFactory
+    {
+        internal readonly EventType infraEventType;
 
-	    protected InfraOnExprBaseViewFactory(EventType infraEventType) {
-	        this.infraEventType = infraEventType;
-	    }
+        protected InfraOnExprBaseViewFactory(EventType infraEventType)
+        {
+            this.infraEventType = infraEventType;
+        }
 
-	    public abstract InfraOnExprBaseViewResult MakeNamedWindow(
-	        SubordWMatchExprLookupStrategy lookupStrategy, NamedWindowRootViewInstance namedWindowRootViewInstance,
-	        AgentInstanceContext agentInstanceContext);
+        public abstract InfraOnExprBaseViewResult MakeNamedWindow(
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            NamedWindowRootViewInstance namedWindowRootViewInstance,
+            AgentInstanceContext agentInstanceContext);
 
-	    public abstract InfraOnExprBaseViewResult MakeTable(
-	        SubordWMatchExprLookupStrategy lookupStrategy, TableInstance tableInstance,
-	        AgentInstanceContext agentInstanceContext);
-	}
+        public abstract InfraOnExprBaseViewResult MakeTable(
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableInstance tableInstance,
+            AgentInstanceContext agentInstanceContext);
+    }
 } // end of namespace

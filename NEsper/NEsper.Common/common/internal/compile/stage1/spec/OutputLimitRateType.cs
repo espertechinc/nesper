@@ -28,6 +28,5 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         /// <summary>Output upon context partition (agent instance) termination </summary>
         TERM
-
     }
 }

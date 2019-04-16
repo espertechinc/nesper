@@ -7,43 +7,46 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.core
 {
-	public class ExprDeclaredCacheKeyLocalCodegenField : CodegenFieldSharable {
+    public class ExprDeclaredCacheKeyLocalCodegenField : CodegenFieldSharable
+    {
+        private readonly string expressionName;
 
-	    private readonly string expressionName;
+        public ExprDeclaredCacheKeyLocalCodegenField(string expressionName)
+        {
+            this.expressionName = expressionName;
+        }
 
-	    public ExprDeclaredCacheKeyLocalCodegenField(string expressionName) {
-	        this.expressionName = expressionName;
-	    }
+        public Type Type()
+        {
+            return typeof(object);
+        }
 
-	    public Type Type() {
-	        return typeof(object);
-	    }
+        public CodegenExpression InitCtorScoped()
+        {
+            return NewInstance(typeof(object));
+        }
 
-	    public CodegenExpression InitCtorScoped() {
-	        return NewInstance(typeof(object));
-	    }
+        public override bool Equals(object o)
+        {
+            if (this == o) return true;
+            if (o == null || GetType() != o.GetType()) return false;
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+            ExprDeclaredCacheKeyLocalCodegenField that = (ExprDeclaredCacheKeyLocalCodegenField) o;
 
-	        ExprDeclaredCacheKeyLocalCodegenField that = (ExprDeclaredCacheKeyLocalCodegenField) o;
+            return expressionName.Equals(that.expressionName);
+        }
 
-	        return expressionName.Equals(that.expressionName);
-	    }
-
-	    public override int GetHashCode() {
-	        return expressionName.GetHashCode();
-	    }
-	}
+        public override int GetHashCode()
+        {
+            return expressionName.GetHashCode();
+        }
+    }
 } // end of namespace

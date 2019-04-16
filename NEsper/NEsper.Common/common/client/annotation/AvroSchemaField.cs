@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -17,14 +16,14 @@ namespace com.espertech.esper.common.client.annotation
     /// <summary>
     /// Attribute for use with Avro to provide a schema for a given event property.
     /// </summary>
-    public class AvroSchemaFieldAttribute : Attribute 
+    public class AvroSchemaFieldAttribute : Attribute
     {
         /// <summary>
         /// Property name.
         /// </summary>
         /// <returns>name</returns>
         public virtual string Name { get; set; }
-    
+
         /// <summary>
         /// Schema text.
         /// </summary>
@@ -43,7 +42,9 @@ namespace com.espertech.esper.common.client.annotation
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="schema">The schema.</param>
-        public AvroSchemaFieldAttribute(string name = "", string schema = "")
+        public AvroSchemaFieldAttribute(
+            string name = "",
+            string schema = "")
         {
             Name = name;
             Schema = schema;

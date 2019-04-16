@@ -45,50 +45,68 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         void ANamedWindowDispatch();
 
         void QNamedWindowCPSingle(
-            string runtimeURI, int numConsumers, EventBean[] newData, EventBean[] oldData,
-            EPStatementAgentInstanceHandle handle, long time);
+            string runtimeURI,
+            int numConsumers,
+            EventBean[] newData,
+            EventBean[] oldData,
+            EPStatementAgentInstanceHandle handle,
+            long time);
 
         void ANamedWindowCPSingle();
 
         void QNamedWindowCPMulti(
-            string runtimeURI, IDictionary<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer,
-            EPStatementAgentInstanceHandle handle, long time);
+            string runtimeURI,
+            IDictionary<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer,
+            EPStatementAgentInstanceHandle handle,
+            long time);
 
         void ANamedWindowCPMulti();
 
-        void QRegEx(EventBean newEvent, RowRecogPartitionState partitionState);
+        void QRegEx(
+            EventBean newEvent,
+            RowRecogPartitionState partitionState);
 
         void ARegEx(
-            RowRecogPartitionState partitionState, IList<RowRecogNFAStateEntry> endStates,
+            RowRecogPartitionState partitionState,
+            IList<RowRecogNFAStateEntry> endStates,
             IList<RowRecogNFAStateEntry> terminationStates);
 
         void QRegExState(
-            RowRecogNFAStateEntry currentState, IDictionary<string, Pair<int, bool>> variableStreams,
+            RowRecogNFAStateEntry currentState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable);
 
         void ARegExState(
-            IList<RowRecogNFAStateEntry> next, IDictionary<string, Pair<int, bool>> variableStreams,
+            IList<RowRecogNFAStateEntry> next,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable);
 
         void QRegExStateStart(
-            RowRecogNFAState startState, IDictionary<string, Pair<int, bool>> variableStreams,
+            RowRecogNFAState startState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable);
 
         void ARegExStateStart(
-            IList<RowRecogNFAStateEntry> nextStates, IDictionary<string, Pair<int, bool>> variableStreams,
+            IList<RowRecogNFAStateEntry> nextStates,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable);
 
         void QRegExPartition(EventBean theEvent);
 
-        void ARegExPartition(bool exists, object partitionKey, RowRecogPartitionState state);
+        void ARegExPartition(
+            bool exists,
+            object partitionKey,
+            RowRecogPartitionState state);
 
         void QRegIntervalValue();
 
         void ARegIntervalValue(long result);
 
         void QRegIntervalState(
-            RowRecogNFAStateEntry endState, IDictionary<string, Pair<int, bool>> variableStreams,
-            int[] multimatchStreamNumToVariable, long runtimeTime);
+            RowRecogNFAStateEntry endState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
+            int[] multimatchStreamNumToVariable,
+            long runtimeTime);
 
         void ARegIntervalState(bool scheduled);
 
@@ -97,7 +115,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         void ARegOut();
 
         void QRegMeasure(
-            RowRecogNFAStateEntry endState, IDictionary<string, Pair<int, bool>> variableStreams,
+            RowRecogNFAStateEntry endState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             int[] multimatchStreamNumToVariable);
 
         void ARegMeasure(EventBean outBean);
@@ -106,26 +125,44 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void ARegExScheduledEval();
 
-        void QRegFilter(string text, EventBean[] eventsPerStream);
+        void QRegFilter(
+            string text,
+            EventBean[] eventsPerStream);
 
         void ARegFilter(bool? result);
 
         void QFilterActivationStream(
-            string eventTypeName, int streamNumber, AgentInstanceContext agentInstanceContext, bool subselect,
+            string eventTypeName,
+            int streamNumber,
+            AgentInstanceContext agentInstanceContext,
+            bool subselect,
             int subselectNumber);
 
-        void AFilterActivationStream(AgentInstanceContext agentInstanceContext, bool subselect, int subselectNumber);
+        void AFilterActivationStream(
+            AgentInstanceContext agentInstanceContext,
+            bool subselect,
+            int subselectNumber);
 
         void QIndexSubordLookup(
-            SubordTableLookupStrategy subordTableLookupStrategy, EventTable optionalEventIndex, int[] keyStreamNums);
+            SubordTableLookupStrategy subordTableLookupStrategy,
+            EventTable optionalEventIndex,
+            int[] keyStreamNums);
 
-        void AIndexSubordLookup(ICollection<EventBean> events, object keys);
+        void AIndexSubordLookup(
+            ICollection<EventBean> events,
+            object keys);
 
-        void QViewProcessIRStream(ViewFactory viewFactory, EventBean[] newData, EventBean[] oldData);
+        void QViewProcessIRStream(
+            ViewFactory viewFactory,
+            EventBean[] newData,
+            EventBean[] oldData);
 
         void AViewProcessIRStream();
 
-        void QViewIndicate(ViewFactory viewFactory, EventBean[] newData, EventBean[] oldData);
+        void QViewIndicate(
+            ViewFactory viewFactory,
+            EventBean[] newData,
+            EventBean[] oldData);
 
         void AViewIndicate();
 
@@ -133,11 +170,15 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void AViewScheduledEval();
 
-        void QPatternFilterMatch(EvalFilterFactoryNode filterNode, EventBean theEvent);
+        void QPatternFilterMatch(
+            EvalFilterFactoryNode filterNode,
+            EventBean theEvent);
 
         void APatternFilterMatch(bool quitted);
 
-        void QPatternNotEvaluateTrue(EvalNotFactoryNode evalNotNode, MatchedEventMapMinimal matchEvent);
+        void QPatternNotEvaluateTrue(
+            EvalNotFactoryNode evalNotNode,
+            MatchedEventMapMinimal matchEvent);
 
         void APatternNotEvaluateTrue(bool quitted);
 
@@ -157,32 +198,46 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void APatternObserverScheduledEval();
 
-        void QPatternObserverEvaluateTrue(EvalObserverFactoryNode evalObserverNode, MatchedEventMap matchEvent);
+        void QPatternObserverEvaluateTrue(
+            EvalObserverFactoryNode evalObserverNode,
+            MatchedEventMap matchEvent);
 
         void APatternObserverEvaluateTrue();
 
         void QPatternFollowedByEvaluateTrue(
-            EvalFollowedByFactoryNode evalFollowedByNode, MatchedEventMap matchEvent, int? index);
+            EvalFollowedByFactoryNode evalFollowedByNode,
+            MatchedEventMap matchEvent,
+            int? index);
 
         void APatternFollowedByEvaluateTrue(bool quitted);
 
-        void QPatternGuardStart(EvalGuardFactoryNode evalGuardNode, MatchedEventMap beginState);
+        void QPatternGuardStart(
+            EvalGuardFactoryNode evalGuardNode,
+            MatchedEventMap beginState);
 
         void APatternGuardStart();
 
-        void QPatternAndStart(EvalAndFactoryNode evalAndNode, MatchedEventMap beginState);
+        void QPatternAndStart(
+            EvalAndFactoryNode evalAndNode,
+            MatchedEventMap beginState);
 
         void APatternAndStart();
 
-        void QPatternFilterStart(EvalFilterFactoryNode evalFilterNode, MatchedEventMap beginState);
+        void QPatternFilterStart(
+            EvalFilterFactoryNode evalFilterNode,
+            MatchedEventMap beginState);
 
         void APatternFilterStart();
 
-        void QPatternNotStart(EvalNotFactoryNode evalNotNode, MatchedEventMap beginState);
+        void QPatternNotStart(
+            EvalNotFactoryNode evalNotNode,
+            MatchedEventMap beginState);
 
         void APatternNotStart();
 
-        void QPatternAndEvaluateTrue(EvalAndFactoryNode evalAndNode, MatchedEventMap passUp);
+        void QPatternAndEvaluateTrue(
+            EvalAndFactoryNode evalAndNode,
+            MatchedEventMap passUp);
 
         void APatternAndEvaluateTrue(bool quitted);
 
@@ -198,7 +253,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void APatternAndQuit();
 
-        void QPatternFilterQuit(EvalFilterFactoryNode evalFilterNode, MatchedEventMap beginState);
+        void QPatternFilterQuit(
+            EvalFilterFactoryNode evalFilterNode,
+            MatchedEventMap beginState);
 
         void APatternFilterQuit();
 
@@ -214,16 +271,22 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void APatternRootEvaluateTrue(bool quitted);
 
-        void QPatternObserverStart(EvalObserverFactoryNode evalObserverNode, MatchedEventMap beginState);
+        void QPatternObserverStart(
+            EvalObserverFactoryNode evalObserverNode,
+            MatchedEventMap beginState);
 
         void APatternObserverStart();
 
         void QPatternMatchUntilEvaluateTrue(
-            EvalMatchUntilFactoryNode evalMatchUntilNode, MatchedEventMap matchEvent, bool matchFromUntil);
+            EvalMatchUntilFactoryNode evalMatchUntilNode,
+            MatchedEventMap matchEvent,
+            bool matchFromUntil);
 
         void APatternMatchUntilEvaluateTrue(bool quitted);
 
-        void QPatternMatchUntilStart(EvalMatchUntilFactoryNode evalMatchUntilNode, MatchedEventMap beginState);
+        void QPatternMatchUntilStart(
+            EvalMatchUntilFactoryNode evalMatchUntilNode,
+            MatchedEventMap beginState);
 
         void APatternMatchUntilStart();
 
@@ -231,11 +294,15 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void APatternMatchUntilQuit();
 
-        void QPatternMatchUntilEvalFalse(EvalMatchUntilFactoryNode evalMatchUntilNode, bool matchFromUntil);
+        void QPatternMatchUntilEvalFalse(
+            EvalMatchUntilFactoryNode evalMatchUntilNode,
+            bool matchFromUntil);
 
         void APatternMatchUntilEvalFalse();
 
-        void QPatternGuardEvaluateTrue(EvalGuardFactoryNode evalGuardNode, MatchedEventMap matchEvent);
+        void QPatternGuardEvaluateTrue(
+            EvalGuardFactoryNode evalGuardNode,
+            MatchedEventMap matchEvent);
 
         void APatternGuardEvaluateTrue(bool quitted);
 
@@ -244,13 +311,18 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         void APatternGuardQuit();
 
         void QPatternEveryDistinctEvaluateTrue(
-            EvalEveryDistinctFactoryNode everyDistinctNode, MatchedEventMap matchEvent);
+            EvalEveryDistinctFactoryNode everyDistinctNode,
+            MatchedEventMap matchEvent);
 
         void APatternEveryDistinctEvaluateTrue(
-            ISet<object> keysFromNodeNoExpire, IDictionary<object, long?> keysFromNodeExpire, object matchEventKey,
+            ISet<object> keysFromNodeNoExpire,
+            IDictionary<object, long> keysFromNodeExpire,
+            object matchEventKey,
             bool haveSeenThis);
 
-        void QPatternEveryDistinctStart(EvalEveryDistinctFactoryNode everyNode, MatchedEventMap beginState);
+        void QPatternEveryDistinctStart(
+            EvalEveryDistinctFactoryNode everyNode,
+            MatchedEventMap beginState);
 
         void APatternEveryDistinctStart();
 
@@ -266,11 +338,15 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void APatternEveryDistinctEvalFalse();
 
-        void QPatternEveryEvaluateTrue(EvalEveryFactoryNode evalEveryNode, MatchedEventMap matchEvent);
+        void QPatternEveryEvaluateTrue(
+            EvalEveryFactoryNode evalEveryNode,
+            MatchedEventMap matchEvent);
 
         void APatternEveryEvaluateTrue();
 
-        void QPatternEveryStart(EvalEveryFactoryNode evalEveryNode, MatchedEventMap beginState);
+        void QPatternEveryStart(
+            EvalEveryFactoryNode evalEveryNode,
+            MatchedEventMap beginState);
 
         void APatternEveryStart();
 
@@ -282,11 +358,15 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void APatternEveryEvalFalse();
 
-        void QPatternOrEvaluateTrue(EvalOrFactoryNode evalOrNode, MatchedEventMap matchEvent);
+        void QPatternOrEvaluateTrue(
+            EvalOrFactoryNode evalOrNode,
+            MatchedEventMap matchEvent);
 
         void APatternOrEvaluateTrue(bool quitted);
 
-        void QPatternOrStart(EvalOrFactoryNode evalOrNode, MatchedEventMap beginState);
+        void QPatternOrStart(
+            EvalOrFactoryNode evalOrNode,
+            MatchedEventMap beginState);
 
         void APatternOrStart();
 
@@ -298,7 +378,9 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void APatternOrEvalFalse();
 
-        void QPatternFollowedByStart(EvalFollowedByFactoryNode evalFollowedByNode, MatchedEventMap beginState);
+        void QPatternFollowedByStart(
+            EvalFollowedByFactoryNode evalFollowedByNode,
+            MatchedEventMap beginState);
 
         void APatternFollowedByStart();
 
@@ -330,7 +412,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void APatternRootQuit();
 
-        void QInfraOnAction(OnTriggerType triggerType, EventBean[] triggerEvents, EventBean[] matchingEvents);
+        void QInfraOnAction(
+            OnTriggerType triggerType,
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents);
 
         void AInfraOnAction();
 
@@ -338,19 +423,28 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void ATableUpdatedEvent();
 
-        void QInfraMergeWhenThens(bool matched, EventBean triggerEvent, int numWhenThens);
+        void QInfraMergeWhenThens(
+            bool matched,
+            EventBean triggerEvent,
+            int numWhenThens);
 
         void AInfraMergeWhenThens(bool matched);
 
-        void QInfraMergeWhenThenItem(bool matched, int count);
+        void QInfraMergeWhenThenItem(
+            bool matched,
+            int count);
 
-        void AInfraMergeWhenThenItem(bool matched, bool actionsApplied);
+        void AInfraMergeWhenThenItem(
+            bool matched,
+            bool actionsApplied);
 
         void QInfraMergeWhenThenActions(int numActions);
 
         void AInfraMergeWhenThenActions();
 
-        void QInfraMergeWhenThenActionItem(int count, string actionName);
+        void QInfraMergeWhenThenActionItem(
+            int count,
+            string actionName);
 
         void AInfraMergeWhenThenActionItem(bool applies);
 
@@ -358,11 +452,17 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void AInfraTriggeredLookup(EventBean[] result);
 
-        void QIndexJoinLookup(JoinExecTableLookupStrategy strategy, EventTable index);
+        void QIndexJoinLookup(
+            JoinExecTableLookupStrategy strategy,
+            EventTable index);
 
-        void AIndexJoinLookup(ISet<EventBean> result, object keys);
+        void AIndexJoinLookup(
+            ICollection<EventBean> result,
+            object keys);
 
-        void QJoinDispatch(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream);
+        void QJoinDispatch(
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream);
 
         void AJoinDispatch();
 
@@ -374,23 +474,36 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void AJoinCompositionStreamToWin(ISet<MultiKey<EventBean>> newResults);
 
-        void QJoinCompositionStepUpdIndex(int stream, EventBean[] added, EventBean[] removed);
+        void QJoinCompositionStepUpdIndex(
+            int stream,
+            EventBean[] added,
+            EventBean[] removed);
 
         void AJoinCompositionStepUpdIndex();
 
-        void QIndexAddRemove(EventTable eventTable, EventBean[] newData, EventBean[] oldData);
+        void QIndexAddRemove(
+            EventTable eventTable,
+            EventBean[] newData,
+            EventBean[] oldData);
 
         void AIndexAddRemove();
 
-        void QIndexAdd(EventTable eventTable, EventBean[] addEvents);
+        void QIndexAdd(
+            EventTable eventTable,
+            EventBean[] addEvents);
 
         void AIndexAdd();
 
-        void QIndexRemove(EventTable eventTable, EventBean[] removeEvents);
+        void QIndexRemove(
+            EventTable eventTable,
+            EventBean[] removeEvents);
 
         void AIndexRemove();
 
-        void QJoinCompositionQueryStrategy(bool insert, int streamNum, EventBean[] events);
+        void QJoinCompositionQueryStrategy(
+            bool insert,
+            int streamNum,
+            EventBean[] events);
 
         void AJoinCompositionQueryStrategy();
 
@@ -400,13 +513,19 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void QJoinCompositionWinToWin();
 
-        void AJoinCompositionWinToWin(ISet<MultiKey<EventBean>> newResults, ISet<MultiKey<EventBean>> oldResults);
+        void AJoinCompositionWinToWin(
+            ISet<MultiKey<EventBean>> newResults,
+            ISet<MultiKey<EventBean>> oldResults);
 
-        void QOutputProcessWCondition(EventBean[] newData, EventBean[] oldData);
+        void QOutputProcessWCondition(
+            EventBean[] newData,
+            EventBean[] oldData);
 
         void AOutputProcessWCondition(bool buffered);
 
-        void QOutputRateConditionUpdate(int newDataLength, int oldDataLength);
+        void QOutputRateConditionUpdate(
+            int newDataLength,
+            int oldDataLength);
 
         void AOutputRateConditionUpdate();
 
@@ -414,25 +533,42 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void AOutputRateConditionOutputNow(bool generate);
 
-        void QOutputProcessWConditionJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
+        void QOutputProcessWConditionJoin(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents);
 
         void AOutputProcessWConditionJoin(bool buffered);
 
-        void QWhereClauseFilter(string text, EventBean[] newData, EventBean[] oldData);
+        void QWhereClauseFilter(
+            string text,
+            EventBean[] newData,
+            EventBean[] oldData);
 
-        void AWhereClauseFilter(EventBean[] filteredNewData, EventBean[] filteredOldData);
+        void AWhereClauseFilter(
+            EventBean[] filteredNewData,
+            EventBean[] filteredOldData);
 
-        void QWhereClauseFilterEval(int num, EventBean @event, bool newData);
+        void QWhereClauseFilterEval(
+            int num,
+            EventBean @event,
+            bool newData);
 
         void AWhereClauseFilterEval(bool? pass);
 
-        void QWhereClauseIR(EventBean[] filteredNewData, EventBean[] filteredOldData);
+        void QWhereClauseIR(
+            EventBean[] filteredNewData,
+            EventBean[] filteredOldData);
 
         void AWhereClauseIR();
 
-        void QSplitStream(bool all, EventBean theEvent, int numWhereClauses);
+        void QSplitStream(
+            bool all,
+            EventBean theEvent,
+            int numWhereClauses);
 
-        void ASplitStream(bool all, bool handled);
+        void ASplitStream(
+            bool all,
+            bool handled);
 
         void QSplitStreamWhere(int index);
 
@@ -458,25 +594,47 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void ATableDeleteEvent();
 
-        void QAggregationGroupedApplyEnterLeave(bool enter, int numAggregators, int numAccessStates, object groupKey);
+        void QAggregationGroupedApplyEnterLeave(
+            bool enter,
+            int numAggregators,
+            int numAccessStates,
+            object groupKey);
 
         void AAggregationGroupedApplyEnterLeave(bool enter);
 
-        void QAggNoAccessEnterLeave(bool enter, int index, object currentValue, string aggExpression);
+        void QAggNoAccessEnterLeave(
+            bool enter,
+            int index,
+            object currentValue,
+            string aggExpression);
 
-        void AAggNoAccessEnterLeave(bool enter, int index, object newValue);
+        void AAggNoAccessEnterLeave(
+            bool enter,
+            int index,
+            object newValue);
 
-        void QAggAccessEnterLeave(bool enter, int index, string aggExpr);
+        void QAggAccessEnterLeave(
+            bool enter,
+            int index,
+            string aggExpr);
 
-        void AAggAccessEnterLeave(bool enter, int index);
+        void AAggAccessEnterLeave(
+            bool enter,
+            int index);
 
         void QUpdateIStream(InternalEventRouterEntry[] entries);
 
-        void AUpdateIStream(EventBean finalEvent, bool haveCloned);
+        void AUpdateIStream(
+            EventBean finalEvent,
+            bool haveCloned);
 
-        void QUpdateIStreamApply(int index, InternalEventRouterEntry entry);
+        void QUpdateIStreamApply(
+            int index,
+            InternalEventRouterEntry entry);
 
-        void AUpdateIStreamApply(EventBean updated, bool applied);
+        void AUpdateIStreamApply(
+            EventBean updated,
+            bool applied);
 
         void QUpdateIStreamApplyWhere();
 
@@ -500,10 +658,14 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void QJoinExecFilter();
 
-        void AJoinExecFilter(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
+        void AJoinExecFilter(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents);
 
         void QJoinCompositionHistorical();
 
-        void AJoinCompositionHistorical(ISet<MultiKey<EventBean>> newResults, ISet<MultiKey<EventBean>> oldResults);
+        void AJoinCompositionHistorical(
+            ISet<MultiKey<EventBean>> newResults,
+            ISet<MultiKey<EventBean>> oldResults);
     }
 } // end of namespace

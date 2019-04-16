@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filtersvc;
@@ -21,12 +20,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
     public class EvalFilterStateNodeConsumeImpl : EvalFilterStateNode,
         EvalFilterStateNodeConsume
     {
-        public EvalFilterStateNodeConsumeImpl(Evaluator parentNode, EvalFilterNode evalFilterNode) : base(
-            parentNode, evalFilterNode)
+        public EvalFilterStateNodeConsumeImpl(
+            Evaluator parentNode,
+            EvalFilterNode evalFilterNode)
+            : base(
+                parentNode, evalFilterNode)
         {
         }
 
-        public override void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches)
+        public override void MatchFound(
+            EventBean theEvent,
+            ICollection<FilterHandleCallback> allStmtMatches)
         {
             // not receiving the remaining matches simply means we evaluate the event
             if (allStmtMatches == null) {
@@ -39,9 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         }
 
         private static void ProcessMatches(
-            EvalFilterConsumptionHandler handler, EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches)
+            EvalFilterConsumptionHandler handler,
+            EventBean theEvent,
+            ICollection<FilterHandleCallback> allStmtMatches)
         {
-
             // ignore all other callbacks for the same event
             if (handler.LastEvent == theEvent) {
                 return;

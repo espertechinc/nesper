@@ -28,7 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         private readonly bool max;
         private readonly EPType resultType;
 
-        public EnumMinMaxScalarForge(int streamCountIncoming, bool max, EPType resultType) : base(streamCountIncoming)
+        public EnumMinMaxScalarForge(
+            int streamCountIncoming,
+            bool max,
+            EPType resultType)
+            : base(streamCountIncoming)
         {
             this.max = max;
             this.resultType = resultType;
@@ -37,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public override EnumEval EnumEvaluator => this;
 
         public override CodegenExpression Codegen(
-            EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var innerTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(resultType));
 
@@ -60,7 +66,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             return LocalMethod(method, args.Expressions);
         }
 
-        public object EvaluateEnumMethod(EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             IComparable minKey = null;
 

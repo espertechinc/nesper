@@ -25,8 +25,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         /// <value>set of stream numbers</value>
         SortedSet<int> RequiredStreams { get; }
 
-        void Validate(StreamTypeService typeService, StatementBaseInfo @base, StatementCompileTimeServices services);
+        void Validate(
+            StreamTypeService typeService,
+            StatementBaseInfo @base,
+            StatementCompileTimeServices services);
 
-        CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

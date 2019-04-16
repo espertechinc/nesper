@@ -102,7 +102,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
         }
 
         public override void Process(
-            EventBean lookupEvent, EventBean[] prefillPath, ICollection<EventBean[]> resultFinalRows,
+            EventBean lookupEvent,
+            EventBean[] prefillPath,
+            ICollection<EventBean[]> resultFinalRows,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var repository = new RepositoryImpl(rootStream, lookupEvent, numStreams);
@@ -203,8 +205,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             }
 
             public void Result(
-                EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode,
-                ICollection<EventBean[]> resultFinalRows, EventBean resultRootEvent)
+                EventBean[] row,
+                int fromStreamNum,
+                EventBean myEvent,
+                Node myNode,
+                ICollection<EventBean[]> resultFinalRows,
+                EventBean resultRootEvent)
             {
                 row[rootStream] = resultRootEvent;
                 resultFinalRows.Add(row);

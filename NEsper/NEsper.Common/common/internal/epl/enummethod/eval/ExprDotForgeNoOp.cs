@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -20,15 +19,33 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class ExprDotForgeNoOp : ExprDotForgeEnumMethodBase {
+    public class ExprDotForgeNoOp : ExprDotForgeEnumMethodBase
+    {
+        public override EventType[] GetAddStreamTypes(
+            string enumMethodUsedName,
+            IList<string> goesToNames,
+            EventType inputEventType,
+            Type collectionComponentType,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            return new EventType[] { };
+        }
 
-	    public override EventType[] GetAddStreamTypes(string enumMethodUsedName, IList<string> goesToNames, EventType inputEventType, Type collectionComponentType, IList<ExprDotEvalParam> bodiesAndParameters, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
-	        return new EventType[]{};
-	    }
-
-	    public override EnumForge GetEnumForge(StreamTypeService streamTypeService, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
-	        base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
-	        return new EnumForgeNoOp(0);
-	    }
-	}
+        public override EnumForge GetEnumForge(
+            StreamTypeService streamTypeService,
+            string enumMethodUsedName,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            EventType inputEventType,
+            Type collectionComponentType,
+            int numStreamsIncoming,
+            bool disablePropertyExpressionEventCollCache,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+            return new EnumForgeNoOp(0);
+        }
+    }
 } // end of namespace

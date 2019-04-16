@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
@@ -29,10 +28,16 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         public abstract string ToQueryPlan();
 
         protected abstract Type TypeOf();
-        protected abstract IList<CodegenExpression> AdditionalParams(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
 
-        public EventTableFactoryFactoryForgeBase(int indexedStreamNum, int? subqueryNum, bool isFireAndForget)
+        protected abstract IList<CodegenExpression> AdditionalParams(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
+
+        public EventTableFactoryFactoryForgeBase(
+            int indexedStreamNum,
+            int? subqueryNum,
+            bool isFireAndForget)
         {
             this.indexedStreamNum = indexedStreamNum;
             this.subqueryNum = subqueryNum;
@@ -40,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenMethod method = parent.MakeChild(typeof(EventTableFactoryFactory), this.GetType(), classScope);
             IList<CodegenExpression> @params = new List<CodegenExpression>();

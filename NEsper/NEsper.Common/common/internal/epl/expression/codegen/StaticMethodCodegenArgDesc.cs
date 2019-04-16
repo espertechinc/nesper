@@ -7,34 +7,38 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.codegen
 {
-	public class StaticMethodCodegenArgDesc {
-	    private readonly string blockRefName;
-	    private readonly Type declareType;
-	    private readonly CodegenExpression argExpression;
+    public class StaticMethodCodegenArgDesc
+    {
+        private readonly string blockRefName;
+        private readonly Type declareType;
+        private readonly CodegenExpression argExpression;
 
-	    public StaticMethodCodegenArgDesc(string blockRefName, Type declareType, CodegenExpression argExpression) {
-	        this.blockRefName = blockRefName;
-	        this.declareType = declareType;
-	        this.argExpression = argExpression;
-	    }
+        public StaticMethodCodegenArgDesc(
+            string blockRefName,
+            Type declareType,
+            CodegenExpression argExpression)
+        {
+            this.blockRefName = blockRefName;
+            this.declareType = declareType;
+            this.argExpression = argExpression;
+        }
 
-	    public string BlockRefName {
-	        get => blockRefName;
-	    }
+        public string BlockRefName {
+            get => blockRefName;
+        }
 
-	    public Type DeclareType {
-	        get => declareType;
-	    }
+        public Type DeclareType {
+            get => declareType;
+        }
 
-	    public CodegenExpression ArgExpression {
-	        get => argExpression;
-	    }
-	}
+        public CodegenExpression ArgExpression {
+            get => argExpression;
+        }
+    }
 } // end of namespace

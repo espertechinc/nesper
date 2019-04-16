@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
 {
     public class DataFlowOpOutputPort
     {
-        public DataFlowOpOutputPort(string streamName, GraphTypeDesc optionalDeclaredType)
+        public DataFlowOpOutputPort(
+            string streamName,
+            GraphTypeDesc optionalDeclaredType)
         {
             StreamName = streamName;
             OptionalDeclaredType = optionalDeclaredType;

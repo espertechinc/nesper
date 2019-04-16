@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -17,48 +16,53 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.derived
 {
-	/// <summary>
-	/// Factory for <seealso cref="CorrelationView" /> instances.
-	/// </summary>
-	public class CorrelationViewFactory : ViewFactory {
-	    protected ExprEvaluator expressionXEval;
-	    protected ExprEvaluator expressionYEval;
-	    protected StatViewAdditionalPropsEval additionalProps;
-	    protected EventType eventType;
+    /// <summary>
+    /// Factory for <seealso cref="CorrelationView" /> instances.
+    /// </summary>
+    public class CorrelationViewFactory : ViewFactory
+    {
+        protected ExprEvaluator expressionXEval;
+        protected ExprEvaluator expressionYEval;
+        protected StatViewAdditionalPropsEval additionalProps;
+        protected EventType eventType;
 
-	    public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services) {
-	        if (eventType == null) {
-	            throw new IllegalStateException("Event type not provided");
-	        }
-	    }
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
+        {
+            if (eventType == null) {
+                throw new IllegalStateException("Event type not provided");
+            }
+        }
 
-	    public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext) {
-	        return new CorrelationView(this, agentInstanceViewFactoryContext.AgentInstanceContext, expressionXEval, expressionYEval, eventType, additionalProps);
-	    }
+        public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
+        {
+            return new CorrelationView(
+                this, agentInstanceViewFactoryContext.AgentInstanceContext, expressionXEval, expressionYEval, eventType, additionalProps);
+        }
 
-	    public EventType EventType {
-	        get => eventType;
-	        set { this.eventType = value; }
-	    }
+        public EventType EventType {
+            get => eventType;
+            set { this.eventType = value; }
+        }
 
-	    public StatViewAdditionalPropsEval AdditionalProps {
-	        get => additionalProps;
-	        set { this.additionalProps = value; }
-	    }
+        public StatViewAdditionalPropsEval AdditionalProps {
+            get => additionalProps;
+            set { this.additionalProps = value; }
+        }
 
-	    public ExprEvaluator ExpressionXEval {
-	        get => expressionXEval;
-	        set { this.expressionXEval = value; }
-	    }
+        public ExprEvaluator ExpressionXEval {
+            get => expressionXEval;
+            set { this.expressionXEval = value; }
+        }
 
-	    public ExprEvaluator ExpressionYEval {
-	        get => expressionYEval;
-	        set { this.expressionYEval = value; }
-	    }
+        public ExprEvaluator ExpressionYEval {
+            get => expressionYEval;
+            set { this.expressionYEval = value; }
+        }
 
-	    public string ViewName
-	    {
-	        get => ViewEnum.CORRELATION.Name;
-	    }
-	}
+        public string ViewName {
+            get => ViewEnum.CORRELATION.Name;
+        }
+    }
 } // end of namespace

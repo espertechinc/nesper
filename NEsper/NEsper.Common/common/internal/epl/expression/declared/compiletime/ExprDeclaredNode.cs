@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -16,22 +15,23 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
 {
-	/// <summary>
-	/// Expression instance as declared elsewhere.
-	/// <para />(1) Statement parse: Expression tree from expression body gets deep-copied.
-	/// (2) Statement create (lifecyle event): Subselect visitor compiles Subselect-list
-	/// (3) Statement start:
-	/// a) event types of each stream determined
-	/// b) subselects filter expressions get validated and subselect started
-	/// (4) Remaining expressions get validated
-	/// </summary>
-	public interface ExprDeclaredNode : ExprNode {
-	    IList<ExprNode> ChainParameters { get; }
+    /// <summary>
+    /// Expression instance as declared elsewhere.
+    /// <para />(1) Statement parse: Expression tree from expression body gets deep-copied.
+    /// (2) Statement create (lifecyle event): Subselect visitor compiles Subselect-list
+    /// (3) Statement start:
+    /// a) event types of each stream determined
+    /// b) subselects filter expressions get validated and subselect started
+    /// (4) Remaining expressions get validated
+    /// </summary>
+    public interface ExprDeclaredNode : ExprNode
+    {
+        IList<ExprNode> ChainParameters { get; }
 
-	    ExpressionDeclItem Prototype { get; }
+        ExpressionDeclItem Prototype { get; }
 
-	    IDictionary<string, int> GetOuterStreamNames(IDictionary<string, int> outerStreamNames) ;
+        IDictionary<string, int> GetOuterStreamNames(IDictionary<string, int> outerStreamNames);
 
-	    ExprNode Body { get; }
-	}
+        ExprNode Body { get; }
+    }
 } // end of namespace

@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     {
         int InstanceCount { get; }
 
-        void AssignService(int num, SubordTableLookupStrategy value);
+        void AssignService(
+            int num,
+            SubordTableLookupStrategy value);
 
         void DeassignService(int num);
     }

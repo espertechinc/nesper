@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
 
         public override bool IsStateful => true;
 
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        public override EvalNode MakeEvalNode(
+            PatternAgentInstanceContext agentInstanceContext,
+            EvalNode parentNode)
         {
             var child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNode, agentInstanceContext, parentNode);
             return new EvalEveryNode(agentInstanceContext, this, child);

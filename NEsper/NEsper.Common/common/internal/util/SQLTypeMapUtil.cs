@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.util
         /// is the classname that result metadata returns for a column
         /// </param>
         /// <returns>Type for sql types</returns>
-        public static Type SqlTypeToClass(int sqlType, String className)
+        public static Type SqlTypeToClass(
+            int sqlType,
+            String className)
         {
             throw new ArgumentException("Logic path is not active");
         }

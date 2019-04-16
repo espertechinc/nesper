@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.collection
     /// each unique key value. Each time the same key is added, the reference counter increases.
     /// Each time a key is removed, the reference counter decreases.
     /// </summary>
-
     public class RefCountedSet<TK>
     {
         private bool _hasNullEntry;
@@ -26,13 +25,14 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>
         /// Constructor.
         /// </summary>
-
         public RefCountedSet()
         {
             _refSet = new Dictionary<TK, Int32>();
         }
 
-        public RefCountedSet(IDictionary<TK, int> refSet, int numValues)
+        public RefCountedSet(
+            IDictionary<TK, int> refSet,
+            int numValues)
         {
             _refSet = refSet;
             _numValues = numValues;
@@ -42,11 +42,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// Adds a key to the set, but the key is null.  It behaves the same, but has its own
         /// variables that need to be incremented.
         /// </summary>
-
         private bool AddNull()
         {
-            if (!_hasNullEntry)
-            {
+            if (!_hasNullEntry) {
                 _hasNullEntry = true;
                 _numValues++;
                 _nullEntry = 0;
@@ -69,14 +67,12 @@ namespace com.espertech.esper.common.@internal.collection
         /// </returns>
         public virtual bool Add(TK key)
         {
-            if (ReferenceEquals(key, null))
-            {
+            if (ReferenceEquals(key, null)) {
                 return AddNull();
             }
 
             int value;
-            if (!_refSet.TryGetValue(key, out value))
-            {
+            if (!_refSet.TryGetValue(key, out value)) {
                 _refSet[key] = 1;
                 _numValues++;
                 return true;
@@ -91,11 +87,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>
         /// Removes the null key
         /// </summary>
-
         private bool RemoveNull()
         {
-            if (_nullEntry == 1)
-            {
+            if (_nullEntry == 1) {
                 _hasNullEntry = false;
                 _nullEntry--;
                 return true;
@@ -112,15 +106,17 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="numReferences">The num references.</param>
-        public void Add(TK key, int numReferences)
+        public void Add(
+            TK key,
+            int numReferences)
         {
             int value;
-            if (!_refSet.TryGetValue(key, out value))
-            {
+            if (!_refSet.TryGetValue(key, out value)) {
                 _refSet[key] = numReferences;
                 _numValues += numReferences;
                 return;
             }
+
             throw new ArgumentException("Value '" + key + "' already in collection");
         }
 
@@ -133,22 +129,18 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns> true if the key is removed, false if it stays in the set
         /// </returns>
         /// <throws>  IllegalStateException is a key is removed that wasn't added to the map </throws>
-
         public virtual bool Remove(TK key)
         {
-            if (ReferenceEquals(key, null))
-            {
+            if (ReferenceEquals(key, null)) {
                 return RemoveNull();
             }
 
             int value;
-            if (!_refSet.TryGetValue(key, out value))
-            {
+            if (!_refSet.TryGetValue(key, out value)) {
                 return true; // ignore duplcate removals
             }
 
-            if (value == 1)
-            {
+            if (value == 1) {
                 _refSet.Remove(key);
                 _numValues--;
                 return true;
@@ -176,16 +168,13 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary> Returns an iterator over the entry set.</summary>
         /// <returns> entry set iterator
         /// </returns>
-
         public IEnumerator<KeyValuePair<TK, int>> GetEnumerator()
         {
-            if (_hasNullEntry)
-            {
+            if (_hasNullEntry) {
                 yield return new KeyValuePair<TK, int>(default(TK), _nullEntry);
             }
 
-            foreach (KeyValuePair<TK, int> value in _refSet)
-            {
+            foreach (KeyValuePair<TK, int> value in _refSet) {
                 yield return value;
             }
         }
@@ -194,8 +183,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets the keys.
         /// </summary>
         /// <value>The keys.</value>
-        public ICollection<TK> Keys
-        {
+        public ICollection<TK> Keys {
             get { return _refSet.Keys; }
         }
 
@@ -203,8 +191,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns> size
         /// </returns>
 
-        public virtual int Count
-        {
+        public virtual int Count {
             get { return _numValues; }
         }
 
@@ -217,13 +204,11 @@ namespace com.espertech.esper.common.@internal.collection
             _numValues = 0;
         }
 
-        public IDictionary<TK, int> RefSet
-        {
+        public IDictionary<TK, int> RefSet {
             get { return _refSet; }
         }
 
-        public int NumValues
-        {
+        public int NumValues {
             get { return _numValues; }
             set { _numValues = value; }
         }

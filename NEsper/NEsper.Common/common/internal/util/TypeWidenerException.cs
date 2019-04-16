@@ -12,11 +12,15 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class TypeWidenerException : Exception
     {
-        public TypeWidenerException(string message) : base(message)
+        public TypeWidenerException(string message)
+            : base(message)
         {
         }
 
-        public TypeWidenerException(string message, Exception innerException) : base(message, innerException)
+        public TypeWidenerException(
+            string message,
+            Exception innerException)
+            : base(message, innerException)
         {
         }
     }

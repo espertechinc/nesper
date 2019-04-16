@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             return null;
         }
 
-        public ICollection<object> GetValueCollectionEvents(
+        public ICollection<EventBean> GetValueCollectionEvents(
             int aggColNum,
             AggregationRow row,
             EventBean[] eventsPerStream,

@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     {
         [NonSerialized] private FilterSpecCompiled filterSpecCompiled;
 
-        public ContextSpecCategory(IList<ContextSpecCategoryItem> items, FilterSpecRaw filterSpecRaw)
+        public ContextSpecCategory(
+            IList<ContextSpecCategoryItem> items,
+            FilterSpecRaw filterSpecRaw)
         {
             Items = items;
             FilterSpecRaw = filterSpecRaw;
@@ -39,7 +41,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailCategory), GetType(), classScope);
 
@@ -55,7 +59,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 method.Block.AssignArrayElement(
                     "items", Constant(i),
                     LocalMethod(
-                        Items.Get(i).MakeCodegen(classScope, method), Ref("eventType"), symbols.GetAddInitSvc(method)));
+                        Items[i].MakeCodegen(classScope, method), Ref("eventType"), symbols.GetAddInitSvc(method)));
             }
 
             method.Block

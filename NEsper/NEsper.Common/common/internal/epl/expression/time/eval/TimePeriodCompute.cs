@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
@@ -16,15 +15,32 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
 {
-	public interface TimePeriodCompute {
-	    long DeltaAdd(long fromTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+    public interface TimePeriodCompute
+    {
+        long DeltaAdd(
+            long fromTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
-	    long DeltaSubtract(long fromTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        long DeltaSubtract(
+            long fromTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
-	    TimePeriodDeltaResult DeltaAddWReference(long fromTime, long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        TimePeriodDeltaResult DeltaAddWReference(
+            long fromTime,
+            long reference,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
-	    long DeltaUseRuntimeTime(EventBean[] eventsPerStream, ExprEvaluatorContext context, TimeProvider timeProvider);
+        long DeltaUseRuntimeTime(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context,
+            TimeProvider timeProvider);
 
-	    TimePeriodProvide GetNonVariableProvide(ExprEvaluatorContext context);
-	}
+        TimePeriodProvide GetNonVariableProvide(ExprEvaluatorContext context);
+    }
 } // end of namespace

@@ -16,20 +16,23 @@ namespace com.espertech.esper.common.client.soda
     public class PatternFilterExpr : PatternExprBase
     {
         /// <summary>Ctor. </summary>
-        public PatternFilterExpr() {
+        public PatternFilterExpr()
+        {
         }
-    
+
         /// <summary> Ctor. </summary>
         /// <param name="filter">specifies to events to filter out</param>
         public PatternFilterExpr(Filter filter)
             : this(filter, null)
         {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="filter">specifies to events to filter out</param>
         /// <param name="tagName">specifies the name of the tag to assigned to matching events</param>
-        public PatternFilterExpr(Filter filter, String tagName)
+        public PatternFilterExpr(
+            Filter filter,
+            String tagName)
         {
             TagName = tagName;
             Filter = filter;
@@ -43,8 +46,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>filter</value>
         public Filter Filter { get; set; }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
+        public override PatternExprPrecedenceEnum Precedence {
             get { return PatternExprPrecedenceEnum.ATOM; }
         }
 
@@ -52,13 +54,15 @@ namespace com.espertech.esper.common.client.soda
         /// <value>consume level</value>
         public int? OptionalConsumptionLevel { get; set; }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer, EPStatementFormatter formatter)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
-            if (TagName != null)
-            {
+            if (TagName != null) {
                 writer.Write(TagName);
                 writer.Write('=');
             }
+
             Filter.ToEPL(writer, formatter);
             if (OptionalConsumptionLevel != null) {
                 writer.Write("@consume");

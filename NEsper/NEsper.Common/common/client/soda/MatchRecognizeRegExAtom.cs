@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="name">of variable</param>
         /// <param name="type">multiplicity</param>
-        public MatchRecognizeRegExAtom(string name, MatchRecogizePatternElementType type)
+        public MatchRecognizeRegExAtom(
+            string name,
+            MatchRecogizePatternElementType type)
         {
             this.name = name;
             this.type = type;
@@ -48,7 +50,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="type">multiplicity</param>
         /// <param name="optionalRepeat">repetition</param>
         public MatchRecognizeRegExAtom(
-            string name, MatchRecogizePatternElementType type, MatchRecognizeRegExRepeat optionalRepeat)
+            string name,
+            MatchRecogizePatternElementType type,
+            MatchRecognizeRegExRepeat optionalRepeat)
         {
             this.name = name;
             this.type = type;

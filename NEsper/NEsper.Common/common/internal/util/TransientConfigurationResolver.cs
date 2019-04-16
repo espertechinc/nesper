@@ -34,7 +34,10 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         private static T Resolve<T>(
-            IDictionary<string, object> transientConfiguration, T defaultProvider, string name, Type interfaceClass)
+            IDictionary<string, object> transientConfiguration,
+            T defaultProvider,
+            string name,
+            Type interfaceClass)
         {
             if (transientConfiguration == null) {
                 return defaultProvider;

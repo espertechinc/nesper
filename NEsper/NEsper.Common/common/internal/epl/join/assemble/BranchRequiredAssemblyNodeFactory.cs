@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// </summary>
         /// <param name="streamNum">is the stream number</param>
         /// <param name="numStreams">is the number of streams</param>
-        public BranchRequiredAssemblyNodeFactory(int streamNum, int numStreams) : base(streamNum, numStreams)
+        public BranchRequiredAssemblyNodeFactory(
+            int streamNum,
+            int numStreams)
+            : base(streamNum, numStreams)
         {
         }
 
@@ -39,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return NewInstance(typeof(BranchRequiredAssemblyNodeFactory), Constant(streamNum), Constant(numStreams));
         }

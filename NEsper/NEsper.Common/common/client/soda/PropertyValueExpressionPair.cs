@@ -13,18 +13,21 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Pair of expressions with "equals" operator between.
     /// </summary>
-
     [Serializable]
-    public class PropertyValueExpressionPair 
+    public class PropertyValueExpressionPair
     {
         /// <summary>Ctor. </summary>
-        public PropertyValueExpressionPair() {
+        public PropertyValueExpressionPair()
+        {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="left">expression</param>
         /// <param name="right">expression</param>
-        public PropertyValueExpressionPair(PropertyValueExpression left, PropertyValueExpression right) {
+        public PropertyValueExpressionPair(
+            PropertyValueExpression left,
+            PropertyValueExpression right)
+        {
             Left = left;
             Right = right;
         }

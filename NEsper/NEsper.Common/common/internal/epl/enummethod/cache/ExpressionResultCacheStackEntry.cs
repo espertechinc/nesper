@@ -8,6 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
-    public interface ExpressionResultCacheStackEntry {
+    public interface ExpressionResultCacheStackEntry
+    {
     }
 }

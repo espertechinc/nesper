@@ -32,7 +32,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="first">provides value to AND</param>
         /// <param name="second">provides value to AND</param>
         /// <param name="expressions">is more expressions to put in the AND-relationship.</param>
-        public Conjunction(Expression first, Expression second, params Expression[] expressions)
+        public Conjunction(
+            Expression first,
+            Expression second,
+            params Expression[] expressions)
         {
             AddChild(first);
             AddChild(second);

@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             int indexTarget)
         {
             var arrayEntry = array[index];
-            if (arrayEntry != null && (arrayEntry is Array arrayEntryArray) && arrayEntryArray.Length > indexTarget) {
+            if (arrayEntry != null && arrayEntry is Array arrayEntryArray && arrayEntryArray.Length > indexTarget) {
                 arrayEntryArray.SetValue(value, indexTarget);
             }
         }

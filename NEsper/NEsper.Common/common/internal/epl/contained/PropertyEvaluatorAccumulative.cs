@@ -51,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
         /// <param name="theEvent">is the input event</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         /// <returns>events per stream for each row</returns>
-        public ArrayDeque<EventBean[]> GetAccumulative(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public ArrayDeque<EventBean[]> GetAccumulative(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             ArrayDeque<EventBean[]> resultEvents = new ArrayDeque<EventBean[]>();
             var eventsPerStream = new EventBean[fragmentEventTypeIsIndexed.Length + 1];
@@ -65,7 +67,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
         }
 
         private void PopulateEvents(
-            EventBean[] eventsPerStream, EventBean branch, int level, ICollection<EventBean[]> events,
+            EventBean[] eventsPerStream,
+            EventBean branch,
+            int level,
+            ICollection<EventBean[]> events,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             try {

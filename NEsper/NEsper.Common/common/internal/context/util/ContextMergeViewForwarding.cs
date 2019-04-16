@@ -12,11 +12,14 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public class ContextMergeViewForwarding : ContextMergeView
     {
-        public ContextMergeViewForwarding(EventType eventType) : base(eventType)
+        public ContextMergeViewForwarding(EventType eventType)
+            : base(eventType)
         {
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             Child.Update(newData, oldData);
         }

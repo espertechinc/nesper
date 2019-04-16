@@ -8,14 +8,17 @@
 
 namespace com.espertech.esper.common.@internal.epl.join.analyze
 {
-    public enum Eligibility {
+    public enum Eligibility
+    {
         REQUIRE_NONE,
         REQUIRE_ONE,
         INELIGIBLE
     }
 
-    public static class EligibilityExtensions {
-        public static bool IsEligible(this Eligibility e) {
+    public static class EligibilityExtensions
+    {
+        public static bool IsEligible(this Eligibility e)
+        {
             return e != Eligibility.INELIGIBLE;
         }
     }

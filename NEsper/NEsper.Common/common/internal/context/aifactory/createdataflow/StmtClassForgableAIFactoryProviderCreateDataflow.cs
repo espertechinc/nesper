@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         private readonly StatementAgentInstanceFactoryCreateDataflowForge forge;
 
         public StmtClassForgableAIFactoryProviderCreateDataflow(
-            string className, CodegenPackageScope packageScope, StatementAgentInstanceFactoryCreateDataflowForge forge)
+            string className,
+            CodegenPackageScope packageScope,
+            StatementAgentInstanceFactoryCreateDataflowForge forge)
             : base(className, packageScope)
 
         {
@@ -33,7 +35,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             return typeof(StatementAgentInstanceFactoryCreateDataflow);
         }
 
-        protected override CodegenMethod CodegenConstructorInit(CodegenMethodScope parent, CodegenClassScope classScope)
+        protected override CodegenMethod CodegenConstructorInit(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var saiffInitializeSymbol = new SAIFFInitializeSymbol();
             var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)

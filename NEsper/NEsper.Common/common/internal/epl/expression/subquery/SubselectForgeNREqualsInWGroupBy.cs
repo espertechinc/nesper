@@ -25,15 +25,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         private readonly ExprForge havingEval;
 
         public SubselectForgeNREqualsInWGroupBy(
-            ExprSubselectNode subselect, ExprForge valueEval, ExprForge selectEval, bool resultWhenNoMatchingEvents,
-            bool isNotIn, SimpleNumberCoercer coercer, ExprForge havingEval) : base(
-            subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNotIn, coercer)
+            ExprSubselectNode subselect,
+            ExprForge valueEval,
+            ExprForge selectEval,
+            bool resultWhenNoMatchingEvents,
+            bool isNotIn,
+            SimpleNumberCoercer coercer,
+            ExprForge havingEval)
+            : base(
+                subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNotIn, coercer)
         {
             this.havingEval = havingEval;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
-            CodegenMethodScope parent, SubselectForgeNRSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SubselectForgeNRSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));

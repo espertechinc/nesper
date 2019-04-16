@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.statement.resource
     public class StatementResourceHolderUtil
     {
         public static StatementResourceHolder PopulateHolder(
-            AgentInstanceContext agentInstanceContext, StatementAgentInstanceFactoryResult startResult)
+            AgentInstanceContext agentInstanceContext,
+            StatementAgentInstanceFactoryResult startResult)
         {
             var holder = new StatementResourceHolder(
                 agentInstanceContext, startResult.StopCallback, startResult.FinalView,

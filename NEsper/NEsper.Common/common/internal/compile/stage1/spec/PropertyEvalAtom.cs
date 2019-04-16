@@ -25,7 +25,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="optionalAsName">column name assigned, if any</param>
         /// <param name="optionalSelectClause">select clause, if any</param>
         /// <param name="optionalWhereClause">where clause, if any</param>
-        public PropertyEvalAtom(ExprNode splitterExpression, String optionalResultEventType, String optionalAsName, SelectClauseSpecRaw optionalSelectClause, ExprNode optionalWhereClause)
+        public PropertyEvalAtom(
+            ExprNode splitterExpression,
+            String optionalResultEventType,
+            String optionalAsName,
+            SelectClauseSpecRaw optionalSelectClause,
+            ExprNode optionalWhereClause)
         {
             SplitterExpression = splitterExpression;
             OptionalResultEventType = optionalResultEventType;

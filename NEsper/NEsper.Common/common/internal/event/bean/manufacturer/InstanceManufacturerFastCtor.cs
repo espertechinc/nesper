@@ -22,13 +22,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         private readonly ExprEvaluator[] evaluators;
         private readonly InstanceManufacturerFactoryFastCtor factory;
 
-        public InstanceManufacturerFastCtor(InstanceManufacturerFactoryFastCtor factory, ExprEvaluator[] evaluators)
+        public InstanceManufacturerFastCtor(
+            InstanceManufacturerFactoryFastCtor factory,
+            ExprEvaluator[] evaluators)
         {
             this.factory = factory;
             this.evaluators = evaluators;
         }
 
-        public object Make(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Make(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var row = new object[evaluators.Length];
             for (var i = 0; i < row.Length; i++) {
@@ -38,7 +43,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             return MakeUnderlyingFromFastCtor(row, factory.Ctor, factory.TargetClass);
         }
 
-        public static object MakeUnderlyingFromFastCtor(object[] properties, ConstructorInfo ctor, Type target)
+        public static object MakeUnderlyingFromFastCtor(
+            object[] properties,
+            ConstructorInfo ctor,
+            Type target)
         {
             try {
                 return ctor.Invoke(properties);
@@ -60,7 +68,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         /// <param name="targetClassName">name</param>
         /// <param name="thrown">ex</param>
         /// <returns>exception</returns>
-        public static EPException GetTargetExceptionAsEPException(string targetClassName, Exception thrown)
+        public static EPException GetTargetExceptionAsEPException(
+            string targetClassName,
+            Exception thrown)
         {
             var targetException = thrown is TargetException ? ((TargetException) thrown).InnerException : thrown;
             return new EPException(
@@ -69,8 +79,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         }
 
         public static CodegenExpression Codegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope, Type targetClass, ExprForge[] forges)
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope,
+            Type targetClass,
+            ExprForge[] forges)
         {
             var methodNode = codegenMethodScope.MakeChild(
                 targetClass, typeof(InstanceManufacturerFastCtor), codegenClassScope);

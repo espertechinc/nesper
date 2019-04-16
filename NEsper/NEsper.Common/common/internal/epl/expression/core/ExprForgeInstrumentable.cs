@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public interface ExprForgeInstrumentable : ExprForge
     {
         CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
     }
 } // end of namespace

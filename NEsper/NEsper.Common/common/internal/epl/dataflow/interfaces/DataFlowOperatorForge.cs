@@ -16,6 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
     {
         DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context);
 
-        CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

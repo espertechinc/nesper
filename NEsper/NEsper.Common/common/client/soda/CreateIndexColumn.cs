@@ -26,7 +26,8 @@ namespace com.espertech.esper.common.client.soda
         /// Initializes a new instance of the <see cref="CreateIndexColumn"/> class.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
-        public CreateIndexColumn(String columnName) : this(columnName, CreateIndexColumnType.HASH)
+        public CreateIndexColumn(String columnName)
+            : this(columnName, CreateIndexColumnType.HASH)
         {
         }
 
@@ -35,7 +36,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <param name="type">The index type.</param>
-        public CreateIndexColumn(String columnName, CreateIndexColumnType type)
+        public CreateIndexColumn(
+            String columnName,
+            CreateIndexColumnType type)
         {
             this.columns = Collections.SingletonList<Expression>(Expressions.Property(columnName));
             this.indexType = type.GetName();
@@ -47,8 +50,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="columns">The columns.</param>
         /// <param name="type">The type.</param>
         /// <param name="parameters">The parameters.</param>
-
-        public CreateIndexColumn(IList<Expression> columns, String type, IList<Expression> parameters)
+        public CreateIndexColumn(
+            IList<Expression> columns,
+            String type,
+            IList<Expression> parameters)
         {
             this.columns = columns;
             this.indexType = type;
@@ -59,28 +64,23 @@ namespace com.espertech.esper.common.client.soda
         /// Renders the clause in textual representation.
         /// </summary>
         /// <param name="writer">The writer.</param>
-
         public virtual void ToEPL(TextWriter writer)
         {
-            if (columns.Count > 1)
-            {
+            if (columns.Count > 1) {
                 writer.Write("(");
             }
 
             ExpressionBase.ToPrecedenceFreeEPL(columns, writer);
-            if (columns.Count > 1)
-            {
+            if (columns.Count > 1) {
                 writer.Write(")");
             }
 
-            if ((indexType != null) && !String.Equals(indexType, CreateIndexColumnType.HASH.GetName(), StringComparison.InvariantCultureIgnoreCase))
-            {
+            if ((indexType != null) && !String.Equals(indexType, CreateIndexColumnType.HASH.GetName(), StringComparison.InvariantCultureIgnoreCase)) {
                 writer.Write(' ');
                 writer.Write(indexType.ToLowerInvariant());
             }
 
-            if (!parameters.IsEmpty())
-            {
+            if (!parameters.IsEmpty()) {
                 writer.Write("(");
                 ExpressionBase.ToPrecedenceFreeEPL(parameters, writer);
                 writer.Write(")");
@@ -90,8 +90,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Returns index column expressions
         /// </summary>
-        public IList<Expression> Columns
-        {
+        public IList<Expression> Columns {
             get => columns;
             set => columns = value;
         }
@@ -102,8 +101,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The type of the index.
         /// </value>
-        public String IndexType
-        {
+        public String IndexType {
             get => indexType;
             set => indexType = value;
         }
@@ -114,8 +112,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The parameters.
         /// </value>
-        public IList<Expression> Parameters
-        {
+        public IList<Expression> Parameters {
             get => parameters;
             set => parameters = value;
         }

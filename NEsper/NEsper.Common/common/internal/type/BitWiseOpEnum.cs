@@ -105,7 +105,9 @@ namespace com.espertech.esper.common.@internal.type
             /// <param name="objOne">is the first number or boolean</param>
             /// <param name="objTwo">is the second number or boolean</param>
             /// <returns>result</returns>
-            object Compute(object objOne, object objTwo);
+            object Compute(
+                object objOne,
+                object objTwo);
         }
 
         /// <summary>
@@ -116,7 +118,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BAndByte : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (byte) objOne;
                 var n2 = (byte) objTwo;
@@ -129,7 +133,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BOrByte : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (byte) objOne;
                 var n2 = (byte) objTwo;
@@ -142,7 +148,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BXorByte : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (byte) objOne;
                 var n2 = (byte) objTwo;
@@ -158,7 +166,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BAndShort : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (short) objOne;
                 var n2 = (short) objTwo;
@@ -171,7 +181,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BOrShort : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (short) objOne;
                 var n2 = (short) objTwo;
@@ -184,7 +196,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BXorShort : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (short) objOne;
                 var n2 = (short) objTwo;
@@ -200,7 +214,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BAndInt : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (int) objOne;
                 var n2 = (int) objTwo;
@@ -213,7 +229,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BOrInt : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (int) objOne;
                 var n2 = (int) objTwo;
@@ -226,7 +244,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BXorInt : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (int) objOne;
                 var n2 = (int) objTwo;
@@ -242,7 +262,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BAndLong : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (long) objOne;
                 var n2 = (long) objTwo;
@@ -255,7 +277,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BOrLong : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (long) objOne;
                 var n2 = (long) objTwo;
@@ -268,7 +292,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BXorLong : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var n1 = (long) objOne;
                 var n2 = (long) objTwo;
@@ -284,7 +310,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BAndBoolean : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var b1 = (bool) objOne;
                 var b2 = (bool) objTwo;
@@ -297,7 +325,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BOrBoolean : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var b1 = (bool) objOne;
                 var b2 = (bool) objTwo;
@@ -310,7 +340,9 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class BXorBoolean : Computer
         {
-            public object Compute(object objOne, object objTwo)
+            public object Compute(
+                object objOne,
+                object objTwo)
             {
                 var b1 = (bool) objOne;
                 var b2 = (bool) objTwo;

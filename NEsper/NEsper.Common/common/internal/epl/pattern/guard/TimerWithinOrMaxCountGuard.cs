@@ -37,7 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         /// <param name="deltaTime">number of millisecond to guard expiration</param>
         /// <param name="numCountTo">max number of counts</param>
         /// <param name="quitable">to use to indicate that the gaurd quitted</param>
-        public TimerWithinOrMaxCountGuard(long deltaTime, int numCountTo, Quitable quitable)
+        public TimerWithinOrMaxCountGuard(
+            long deltaTime,
+            int numCountTo,
+            Quitable quitable)
         {
             this.deltaTime = deltaTime;
             this.numCountTo = numCountTo;

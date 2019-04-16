@@ -7,22 +7,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
-	public class FAFQueryMethodEnv {
-	    private readonly ContextManagementService contextManagementService;
+    public class FAFQueryMethodEnv
+    {
+        private readonly ContextManagementService contextManagementService;
 
-	    public FAFQueryMethodEnv(ContextManagementService contextManagementService) {
-	        this.contextManagementService = contextManagementService;
-	    }
+        public FAFQueryMethodEnv(ContextManagementService contextManagementService)
+        {
+            this.contextManagementService = contextManagementService;
+        }
 
-	    public ContextManagementService ContextManagementService {
-	        get => contextManagementService;
-	    }
-	}
+        public ContextManagementService ContextManagementService {
+            get => contextManagementService;
+        }
+    }
 } // end of namespace

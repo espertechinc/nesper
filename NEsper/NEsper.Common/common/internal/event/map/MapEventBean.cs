@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// </summary>
         /// <param name="properties">are the event property values</param>
         /// <param name="eventType">is the type of the event, i.e. describes the map entries</param>
-        public MapEventBean(IDictionary<string, object> properties, EventType eventType)
+        public MapEventBean(
+            IDictionary<string, object> properties,
+            EventType eventType)
         {
             Properties = properties;
             EventType = eventType;
@@ -75,6 +77,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             return getter.GetFragment(this);
         }
 
+        public object this[string property] => Get(property);
+
         /// <summary>
         ///     Returns the properties.
         /// </summary>
@@ -86,7 +90,5 @@ namespace com.espertech.esper.common.@internal.@event.map
             return "MapEventBean " +
                    "eventType=" + EventType;
         }
-
-        public object this[string property] => Get(property);
     }
 } // end of namespace

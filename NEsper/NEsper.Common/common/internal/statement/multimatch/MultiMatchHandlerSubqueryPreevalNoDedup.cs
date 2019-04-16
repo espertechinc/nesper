@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filtersvc;
 
@@ -22,7 +21,9 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
         {
         }
 
-        public void Handle(ICollection<FilterHandleCallback> callbacks, EventBean theEvent)
+        public void Handle(
+            ICollection<FilterHandleCallback> callbacks,
+            EventBean theEvent)
         {
             foreach (var callback in callbacks) {
                 if (callback.IsSubSelect) {

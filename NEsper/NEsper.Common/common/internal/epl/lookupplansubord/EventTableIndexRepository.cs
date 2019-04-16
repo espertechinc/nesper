@@ -61,7 +61,6 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             AgentInstanceContext agentInstanceContext,
             object optionalSerde)
         {
-
             IndexMultiKey indexMultiKey = desc.ToIndexMultiKey();
             if (desc.HashPropsAsList.IsEmpty() && desc.BtreePropsAsList.IsEmpty() &&
                 desc.AdvancedIndexProvisionDesc == null) {
@@ -82,7 +81,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 optionalSerde);
         }
 
-        public void AddIndex(IndexMultiKey indexMultiKey, EventTableIndexRepositoryEntry entry)
+        public void AddIndex(
+            IndexMultiKey indexMultiKey,
+            EventTableIndexRepositoryEntry entry)
         {
             tableIndexesRefCount.Put(indexMultiKey, entry);
             tables.Add(entry.Table);
@@ -110,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         public Pair<IndexMultiKey, EventTableAndNamePair> FindTable(
-            ISet<string> keyPropertyNames, 
+            ISet<string> keyPropertyNames,
             ISet<string> rangePropertyNames,
             IList<IndexHintInstruction> optionalIndexHintInstructions)
         {
@@ -138,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
         public void ValidateAddExplicitIndex(
             string explicitIndexName,
-            string explicitIndexModuleName, 
+            string explicitIndexModuleName,
             QueryPlanIndexItem explicitIndexDesc,
             EventType eventType,
             IEnumerable<EventBean> dataWindowContents,
@@ -160,12 +161,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         public void AddExplicitIndex(
-            string explicitIndexName, 
-            string explicitIndexModuleName, 
+            string explicitIndexName,
+            string explicitIndexModuleName,
             QueryPlanIndexItem desc,
             EventType eventType,
             IEnumerable<EventBean> dataWindowContents,
-            AgentInstanceContext agentInstanceContext, 
+            AgentInstanceContext agentInstanceContext,
             object optionalSerde)
         {
             Pair<IndexMultiKey, EventTableAndNamePair> pair = AddExplicitIndexOrReuse(
@@ -190,16 +191,15 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         private Pair<IndexMultiKey, EventTableAndNamePair> AddIndex(
-            QueryPlanIndexItem indexItem, 
-            IEnumerable<EventBean> prefilledEvents, 
-            EventType indexedType, 
+            QueryPlanIndexItem indexItem,
+            IEnumerable<EventBean> prefilledEvents,
+            EventType indexedType,
             string indexName,
-            string indexModuleName, 
-            bool mustCoerce, 
-            AgentInstanceContext agentInstanceContext, 
+            string indexModuleName,
+            bool mustCoerce,
+            AgentInstanceContext agentInstanceContext,
             object optionalSerde)
         {
-
             // not resolved as full match and not resolved as unique index match, allocate
             IndexMultiKey indexPropKey = indexItem.ToIndexMultiKey();
 

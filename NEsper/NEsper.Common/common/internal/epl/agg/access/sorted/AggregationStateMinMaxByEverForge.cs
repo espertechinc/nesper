@@ -31,14 +31,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public ExprNode Expression => factory.AggregationExpression;
 
         public void InitAccessForge(
-            int col, bool join, CodegenCtor ctor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            bool join,
+            CodegenCtor ctor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             aggregator = new AggregatorAccessSortedMinMaxByEver(
                 this, col, ctor, membersColumnized, classScope, factory.Parent.OptionalFilter);
         }
 
         public CodegenExpression CodegenGetAccessTableState(
-            int column, CodegenMethodScope parent, CodegenClassScope classScope)
+            int column,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             return AggregatorAccessSortedMinMaxByEver.CodegenGetAccessTableState(column, parent, classScope);
         }

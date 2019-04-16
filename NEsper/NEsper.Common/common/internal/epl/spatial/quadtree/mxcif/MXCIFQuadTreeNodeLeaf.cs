@@ -12,7 +12,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 {
     public class MXCIFQuadTreeNodeLeaf<TL> : MXCIFQuadTreeNode<TL>
     {
-        public MXCIFQuadTreeNodeLeaf(BoundingBox bb, int level, TL data, int dataCount)
+        public MXCIFQuadTreeNodeLeaf(
+            BoundingBox bb,
+            int level,
+            TL data,
+            int dataCount)
             : base(bb, level, data, dataCount)
         {
         }

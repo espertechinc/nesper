@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="all">is all, false if any</param>
         /// <param name="operator">=, !=, &amp;lt;, &amp;gt;, &amp;lt;=, &amp;gt;=, &amp;lt;&amp;gt;</param>
-        public CompareListExpression(bool all, string @operator)
+        public CompareListExpression(
+            bool all,
+            string @operator)
         {
             IsAll = all;
             this.@operator = @operator;

@@ -7,14 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
-	public interface SignalHandler {
-	    void HandleSignal(EPDataFlowSignal signal);
-	}
+    public interface SignalHandler
+    {
+        void HandleSignal(EPDataFlowSignal signal);
+    }
 } // end of namespace

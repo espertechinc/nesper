@@ -21,14 +21,18 @@ namespace com.espertech.esper.common.@internal.epl.contained
         private readonly ExprForge evaluator;
         private readonly EventType eventType;
 
-        public ContainedEventEvalExprNodeForge(ExprForge evaluator, EventType eventType)
+        public ContainedEventEvalExprNodeForge(
+            ExprForge evaluator,
+            EventType eventType)
         {
             this.evaluator = evaluator;
             this.eventType = eventType;
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContainedEventEvalExprNode), GetType(), classScope);
             method.Block

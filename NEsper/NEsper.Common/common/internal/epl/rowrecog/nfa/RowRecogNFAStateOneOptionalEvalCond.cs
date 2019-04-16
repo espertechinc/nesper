@@ -20,11 +20,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
     {
         public ExprEvaluator Expression { get; set; }
 
-        public override bool Matches(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext)
+        public override bool Matches(
+            EventBean[] eventsPerStream,
+            AgentInstanceContext agentInstanceContext)
         {
-            var result = (bool?)Expression.Evaluate(eventsPerStream, true, agentInstanceContext);
-            if (result != null)
-            {
+            var result = (bool?) Expression.Evaluate(eventsPerStream, true, agentInstanceContext);
+            if (result != null) {
                 return result.Value;
             }
 

@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         private readonly Type arrayType;
         private readonly string methodName;
 
-        public ExprDotStaticMethodWrapArrayScalar(string methodName, Type arrayType)
+        public ExprDotStaticMethodWrapArrayScalar(
+            string methodName,
+            Type arrayType)
         {
             this.methodName = methodName;
             this.arrayType = arrayType;
@@ -36,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression CodegenConvertNonNull(
-            CodegenExpression result, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression result,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return CollectionUtil.ArrayToCollectionAllowNullCodegen(
                 codegenMethodScope, arrayType, result, codegenClassScope);

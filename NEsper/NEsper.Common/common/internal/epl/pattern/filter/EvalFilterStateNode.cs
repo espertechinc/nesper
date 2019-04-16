@@ -36,7 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         /// <param name="evalFilterNode">is the factory node associated to the state</param>
         public EvalFilterStateNode(
             Evaluator parentNode,
-            EvalFilterNode evalFilterNode) : base(parentNode)
+            EvalFilterNode evalFilterNode)
+            : base(parentNode)
         {
             this.evalFilterNode = evalFilterNode;
         }
@@ -51,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
 
         public override bool IsObserverStateNodeNonRestarting => false;
 
-        public virtual void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches)
+        public virtual void MatchFound(
+            EventBean theEvent,
+            ICollection<FilterHandleCallback> allStmtMatches)
         {
             var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFilterMatch(evalFilterNode.factoryNode, theEvent);
@@ -146,7 +149,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             agentInstanceContext.InstrumentationProvider.APatternFilterQuit();
         }
 
-        private void EvaluateTrue(MatchedEventMap theEvent, bool isQuitted, EventBean optionalTriggeringEvent)
+        private void EvaluateTrue(
+            MatchedEventMap theEvent,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
             agentInstanceContext.AuditProvider.PatternTrue(

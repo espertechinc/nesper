@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -41,34 +40,27 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             end = parameters[1];
             secondCoercer = DatetimeLongCoercerFactory.GetCoercer(end.Forge.EvaluationType);
 
-            if (parameters.Count == 2)
-            {
+            if (parameters.Count == 2) {
                 includeBoth = true;
                 includeLow = true;
                 includeHigh = true;
             }
-            else
-            {
-                if (parameters[2].Forge.ForgeConstantType.IsCompileTimeConstant)
-                {
+            else {
+                if (parameters[2].Forge.ForgeConstantType.IsCompileTimeConstant) {
                     includeLow = GetBooleanValue(parameters[2]);
                 }
-                else
-                {
+                else {
                     forgeIncludeLow = parameters[2].Forge;
                 }
 
-                if (parameters[3].Forge.ForgeConstantType.IsCompileTimeConstant)
-                {
+                if (parameters[3].Forge.ForgeConstantType.IsCompileTimeConstant) {
                     includeHigh = GetBooleanValue(parameters[3]);
                 }
-                else
-                {
+                else {
                     forgeIncludeHigh = parameters[3].Forge;
                 }
 
-                if (includeLow.GetValueOrDefault(false) && includeHigh.GetValueOrDefault(false))
-                {
+                if (includeLow.GetValueOrDefault(false) && includeHigh.GetValueOrDefault(false)) {
                     includeBoth = true;
                 }
             }
@@ -118,32 +110,28 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public FilterExprAnalyzerAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DatetimeMethodEnum currentMethod,
+            DateTimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {
-            if (includeLow == null || includeHigh == null)
-            {
+            if (includeLow == null || includeHigh == null) {
                 return null;
             }
 
             int targetStreamNum;
             string targetProperty;
-            if (inputDesc is ExprDotNodeFilterAnalyzerInputStream)
-            {
+            if (inputDesc is ExprDotNodeFilterAnalyzerInputStream) {
                 var targetStream = (ExprDotNodeFilterAnalyzerInputStream) inputDesc;
                 targetStreamNum = targetStream.StreamNum;
                 var targetType = typesPerStream[targetStreamNum];
                 targetProperty = targetType.StartTimestampPropertyName;
             }
-            else if (inputDesc is ExprDotNodeFilterAnalyzerInputProp)
-            {
+            else if (inputDesc is ExprDotNodeFilterAnalyzerInputProp) {
                 var targetStream = (ExprDotNodeFilterAnalyzerInputProp) inputDesc;
                 targetStreamNum = targetStream.StreamNum;
                 targetProperty = targetStream.PropertyName;
             }
-            else
-            {
+            else {
                 return null;
             }
 
@@ -161,8 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         private bool GetBooleanValue(ExprNode exprNode)
         {
             var value = exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
-            if (value == null)
-            {
+            if (value == null) {
                 throw new ExprValidationException("Date-time method 'between' requires non-null parameter values");
             }
 

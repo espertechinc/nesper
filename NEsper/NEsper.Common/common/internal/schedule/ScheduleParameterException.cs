@@ -23,7 +23,10 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is null. </exception>
         /// <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
-        protected ScheduleParameterException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected ScheduleParameterException(
+            SerializationInfo info,
+            StreamingContext context)
+            : base(info, context)
         {
         }
 
@@ -37,7 +40,9 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <summary>Constructor for an inner exception and message. </summary>
         /// <param name="message">is the error message</param>
         /// <param name="innerException">is the inner exception</param>
-        public ScheduleParameterException(String message, Exception innerException)
+        public ScheduleParameterException(
+            String message,
+            Exception innerException)
             : base(message, innerException)
         {
         }

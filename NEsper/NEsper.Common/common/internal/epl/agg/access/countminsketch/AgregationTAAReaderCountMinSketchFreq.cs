@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -19,29 +18,55 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
-	public class AgregationTAAReaderCountMinSketchFreq : AggregationMultiFunctionTableReader {
-	    private ExprEvaluator frequencyEval;
+    public class AgregationTAAReaderCountMinSketchFreq : AggregationMultiFunctionTableReader
+    {
+        private ExprEvaluator frequencyEval;
 
-	    public void SetFrequencyEval(ExprEvaluator frequencyEval) {
-	        this.frequencyEval = frequencyEval;
-	    }
+        public void SetFrequencyEval(ExprEvaluator frequencyEval)
+        {
+            this.frequencyEval = frequencyEval;
+        }
 
-	    public object GetValue(int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        object value = frequencyEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-	        CountMinSketchAggState state = (CountMinSketchAggState) row.GetAccessState(aggColNum);
-	        return state.Frequency(value);
-	    }
+        public object GetValue(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            object value = frequencyEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            CountMinSketchAggState state = (CountMinSketchAggState) row.GetAccessState(aggColNum);
+            return state.Frequency(value);
+        }
 
-	    public ICollection<object> GetValueCollectionEvents(int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        return null;
-	    }
+        public ICollection<EventBean> GetValueCollectionEvents(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
 
-	    public ICollection<object> GetValueCollectionScalar(int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        return null;
-	    }
+        public ICollection<object> GetValueCollectionScalar(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
 
-	    public EventBean GetValueEventBean(int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        return null;
-	    }
-	}
+        public EventBean GetValueEventBean(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
+    }
 } // end of namespace

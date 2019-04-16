@@ -41,8 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     {
         public static int GetLevel(this PatternExpressionPrecedenceEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case PatternExpressionPrecedenceEnum.MINIMUM:
                     return int.MinValue;
                 case PatternExpressionPrecedenceEnum.FOLLOWEDBY:

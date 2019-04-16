@@ -13,27 +13,38 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-	/// <summary>
-	/// Provides statement-level locks.
-	/// </summary>
-	public class StatementAgentInstanceLockFactoryImpl : StatementAgentInstanceLockFactory {
-	    private readonly bool fairlocks;
-	    private readonly bool disableLocking;
+    /// <summary>
+    /// Provides statement-level locks.
+    /// </summary>
+    public class StatementAgentInstanceLockFactoryImpl : StatementAgentInstanceLockFactory
+    {
+        private readonly bool fairlocks;
+        private readonly bool disableLocking;
 
-	    public StatementAgentInstanceLockFactoryImpl(bool fairlocks, bool disableLocking) {
-	        this.fairlocks = fairlocks;
-	        this.disableLocking = disableLocking;
-	    }
+        public StatementAgentInstanceLockFactoryImpl(
+            bool fairlocks,
+            bool disableLocking)
+        {
+            this.fairlocks = fairlocks;
+            this.disableLocking = disableLocking;
+        }
 
-	    public StatementAgentInstanceLock GetStatementLock(string statementName, Attribute[] annotations, bool stateless, StatementType statementType) {
-	        if (statementType.IsOnTriggerInfra) {
-	            throw new UnsupportedOperationException("Operation not available for statement type " + statementType);
-	        }
-	        bool foundNoLock = AnnotationUtil.FindAnnotation(annotations, typeof(NoLock)) != null;
-	        if (disableLocking || foundNoLock || stateless) {
-	            return new StatementAgentInstanceLockNoLockImpl(statementName);
-	        }
-	        return new StatementAgentInstanceLockRW(fairlocks);
-	    }
-	}
+        public StatementAgentInstanceLock GetStatementLock(
+            string statementName,
+            Attribute[] annotations,
+            bool stateless,
+            StatementType statementType)
+        {
+            if (statementType.IsOnTriggerInfra) {
+                throw new UnsupportedOperationException("Operation not available for statement type " + statementType);
+            }
+
+            bool foundNoLock = AnnotationUtil.FindAnnotation(annotations, typeof(NoLock)) != null;
+            if (disableLocking || foundNoLock || stateless) {
+                return new StatementAgentInstanceLockNoLockImpl(statementName);
+            }
+
+            return new StatementAgentInstanceLockRW(fairlocks);
+        }
+    }
 } // end of namespace

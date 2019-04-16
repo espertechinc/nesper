@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         private IDictionary<int, EventTypeWithOptionalFlag> underlyingStreamNums =
             Collections.GetEmptyMap<int, EventTypeWithOptionalFlag>();
 
-        public ExprForgeCodegenSymbol(bool allowUnderlyingReferences, bool? newDataValue)
+        public ExprForgeCodegenSymbol(
+            bool allowUnderlyingReferences,
+            bool? newDataValue)
         {
             IsAllowUnderlyingReferences = allowUnderlyingReferences;
             this.newDataValue = newDataValue;
@@ -93,7 +95,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         }
 
         public CodegenExpressionRef GetAddRequiredUnderlying(
-            CodegenMethodScope scope, int streamNum, EventType eventType, bool optionalEvent)
+            CodegenMethodScope scope,
+            int streamNum,
+            EventType eventType,
+            bool optionalEvent)
         {
             if (underlyingStreamNums.IsEmpty()) {
                 underlyingStreamNums = new Dictionary<int, EventTypeWithOptionalFlag>();
@@ -113,7 +118,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         }
 
         public void DerivedSymbolsCodegen(
-            CodegenMethod parent, CodegenBlock processBlock, CodegenClassScope codegenClassScope)
+            CodegenMethod parent,
+            CodegenBlock processBlock,
+            CodegenClassScope codegenClassScope)
         {
             foreach (var underlying in underlyingStreamNums) {
                 Type underlyingType = underlying.Value.EventType.UnderlyingType;

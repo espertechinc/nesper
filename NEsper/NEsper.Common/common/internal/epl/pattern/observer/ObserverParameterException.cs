@@ -11,25 +11,30 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
 {
-	/// <summary>Thrown to indicate a validation error in guard parameterization.</summary>
-	public class ObserverParameterException : Exception
-	{
+    /// <summary>Thrown to indicate a validation error in guard parameterization.</summary>
+    public class ObserverParameterException : Exception
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="ObserverParameterException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-	    public ObserverParameterException(string message) : base(message)
-	    {
-	    }
+        public ObserverParameterException(string message)
+            : base(message)
+        {
+        }
 
-	    /// <summary>
+        /// <summary>
         /// Initializes a new instance of the <see cref="ObserverParameterException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="innerException">The inner exception.</param>
-	    public ObserverParameterException(string message, Exception innerException) : base(message, innerException)
-	    {
-	    }
+        public ObserverParameterException(
+            string message,
+            Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ObserverParameterException"/> class.
         /// </summary>
@@ -41,9 +46,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         /// <exception cref="T:System.Runtime.Serialization.SerializationException">
         /// The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0).
         /// </exception>
-
-	    protected ObserverParameterException(SerializationInfo info, StreamingContext context) : base(info, context)
-	    {
-	    }
-	}
+        protected ObserverParameterException(
+            SerializationInfo info,
+            StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
 } // End of namespace

@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
         public string[][] UniqueIndexes => Table.IndexMetadata.UniqueIndexProps;
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(FireAndForgetProcessorTable), GetType(), classScope);
             var nw = Ref("tbl");

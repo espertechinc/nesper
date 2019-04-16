@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="xmlEventType">the originating type</param>
         /// <param name="propertyExpression">property expression</param>
         public FragmentFactoryDOMGetter(
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BaseXMLEventType xmlEventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BaseXMLEventType xmlEventType,
             string propertyExpression)
         {
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
@@ -41,7 +42,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             this.propertyExpression = propertyExpression;
         }
 
-        public CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var xmlType = Cast(

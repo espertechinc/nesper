@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         /// <throws>IOException if the streams returned an exception</throws>
         /// <throws>ClassNotFoundException if the de-serialize fails</throws>
-        public static Object Copy(IContainer container, Object orig)
+        public static Object Copy(
+            IContainer container,
+            Object orig)
         {
             // Create the formatter
             var formatter = new BinaryFormatter();
@@ -40,8 +42,7 @@ namespace com.espertech.esper.common.@internal.util
 #endif
             formatter.Context = new StreamingContext(StreamingContextStates.Clone, container);
 
-            using (MemoryStream stream = new MemoryStream())
-            {
+            using (MemoryStream stream = new MemoryStream()) {
                 // Serialize the object graph to the stream
                 formatter.Serialize(stream, orig);
                 // Rewind the stream

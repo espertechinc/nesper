@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         private readonly GroupByView groupByView;
         private readonly ICollection<View> parentViews;
 
-        public MergeView(GroupByView groupByView, EventType eventType)
+        public MergeView(
+            GroupByView groupByView,
+            EventType eventType)
         {
             this.groupByView = groupByView;
             EventType = eventType;
@@ -27,7 +29,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public override EventType EventType { get; }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             groupByView.Child.Update(newData, oldData);
         }

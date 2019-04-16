@@ -251,7 +251,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         private static void WriteFilter(
-            StringWriter writer,
+            TextWriter writer,
             FilterSpecParam[] paramLine)
         {
             var delimiter = "";

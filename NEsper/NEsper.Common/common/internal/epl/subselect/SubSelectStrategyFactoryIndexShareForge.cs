@@ -43,10 +43,18 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         private readonly TableMetaData table;
 
         public SubSelectStrategyFactoryIndexShareForge(
-            int subqueryNumber, SubSelectActivationPlan subselectActivation, EventType[] outerEventTypesSelect,
-            NamedWindowMetaData namedWindow, TableMetaData table, bool fullTableScan, IndexHint indexHint,
-            SubordPropPlan joinedPropPlan, ExprForge filterExprEval, ExprNode[] groupKeys,
-            AggregationServiceForgeDesc aggregationServiceForgeDesc, StatementBaseInfo statement,
+            int subqueryNumber,
+            SubSelectActivationPlan subselectActivation,
+            EventType[] outerEventTypesSelect,
+            NamedWindowMetaData namedWindow,
+            TableMetaData table,
+            bool fullTableScan,
+            IndexHint indexHint,
+            SubordPropPlan joinedPropPlan,
+            ExprForge filterExprEval,
+            ExprNode[] groupKeys,
+            AggregationServiceForgeDesc aggregationServiceForgeDesc,
+            StatementBaseInfo statement,
             StatementCompileTimeServices services)
         {
             this.subqueryNumber = subqueryNumber;
@@ -103,7 +111,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         public IList<ViewFactoryForge> ViewForges => Collections.GetEmptyList<ViewFactoryForge>();
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(SubSelectStrategyFactoryIndexShare), GetType(), classScope);
 

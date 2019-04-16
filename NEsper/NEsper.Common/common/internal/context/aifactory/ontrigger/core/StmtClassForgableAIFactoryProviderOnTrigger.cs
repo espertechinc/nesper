@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.context.aifactory.core.SAIFFInitializeSymbol;
 
@@ -23,8 +21,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
         private readonly StatementAgentInstanceFactoryOnTriggerBaseForge forge;
 
         public StmtClassForgableAIFactoryProviderOnTrigger(
-            string className, 
-            CodegenPackageScope packageScope, 
+            string className,
+            CodegenPackageScope packageScope,
             StatementAgentInstanceFactoryOnTriggerBaseForge forge)
             : base(className, packageScope)
         {
@@ -36,7 +34,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             return typeof(StatementAgentInstanceFactoryOnTriggerBase);
         }
 
-        protected override CodegenMethod CodegenConstructorInit(CodegenMethodScope parent, CodegenClassScope classScope)
+        protected override CodegenMethod CodegenConstructorInit(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var saiffInitializeSymbol = new SAIFFInitializeSymbol();
             var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)

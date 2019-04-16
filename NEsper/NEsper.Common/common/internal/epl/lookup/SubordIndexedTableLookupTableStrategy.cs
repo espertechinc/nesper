@@ -23,13 +23,17 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly SubordTableLookupStrategy _inner;
         private readonly ILockable _lock;
 
-        public SubordIndexedTableLookupTableStrategy(SubordTableLookupStrategy inner, ILockable @lock)
+        public SubordIndexedTableLookupTableStrategy(
+            SubordTableLookupStrategy inner,
+            ILockable @lock)
         {
             this._inner = inner;
             this._lock = @lock;
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, null, null);
@@ -48,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             return GetType().Name + " inner " + _inner.ToQueryPlan();
         }
 
-        private ICollection<EventBean> LookupInternal(EventBean[] events, ExprEvaluatorContext context)
+        private ICollection<EventBean> LookupInternal(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             TableEvalLockUtil.ObtainLockUnless(_lock, context);
 

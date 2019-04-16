@@ -34,7 +34,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
         internal readonly View[] views;
 
         public IntersectAsymetricView(
-            AgentInstanceViewFactoryChainContext agentInstanceContext, IntersectViewFactory factory,
+            AgentInstanceViewFactoryChainContext agentInstanceContext,
+            IntersectViewFactory factory,
             IList<View> viewList)
         {
             this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
@@ -61,7 +62,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, ViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(ViewFactory, newData, oldData);
@@ -226,7 +229,10 @@ namespace com.espertech.esper.common.@internal.view.intersect
             throw new UnsupportedOperationException("Cannot visit as contained");
         }
 
-        public void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents)
+        public void NewData(
+            int streamId,
+            EventBean[] newEvents,
+            EventBean[] oldEvents)
         {
             var localState = ViewFactory.AsymetricViewLocalStatePerThread;
             localState.NewDataChildView = newEvents;

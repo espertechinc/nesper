@@ -19,7 +19,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
     public class AggregationPortableValidationMinMax : AggregationPortableValidationWFilterWInputType
     {
         public AggregationPortableValidationMinMax(
-            bool distinct, bool hasFilter, Type inputValueType, MinMaxTypeEnum minMax, bool unbound)
+            bool distinct,
+            bool hasFilter,
+            Type inputValueType,
+            MinMaxTypeEnum minMax,
+            bool unbound)
             : base(distinct, hasFilter, inputValueType)
 
         {
@@ -41,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         }
 
         protected override void CodegenInlineSetWFilterWInputType(
-            CodegenExpressionRef @ref, CodegenMethod method, ModuleTableInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block
@@ -50,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         }
 
         protected override void ValidateIntoTableWFilterWInputType(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory)
         {
             var that = (AggregationPortableValidationMinMax) intoTableAgg;

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.strategy;
@@ -48,9 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         }
 
         public override void Process(
-            EventBean lookupEvent, 
-            EventBean[] prefillPath, 
-            ICollection<EventBean[]> result, 
+            EventBean lookupEvent,
+            EventBean[] prefillPath,
+            ICollection<EventBean[]> result,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             nestingOrderLength = childNodes.Count;
@@ -67,10 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         /// <param name="result">result tuple rows to be populated</param>
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
         protected void RecursiveNestedJoin(
-            EventBean lookupEvent, 
-            int nestingOrderIndex, 
-            EventBean[] currentPath, 
-            ICollection<EventBean[]> result, 
+            EventBean lookupEvent,
+            int nestingOrderIndex,
+            EventBean[] currentPath,
+            ICollection<EventBean[]> result,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             IList<EventBean[]> nestedResult = new List<EventBean[]>();
@@ -80,19 +79,17 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
 
             // This is not the last nesting level so no result rows are added. Invoke next nesting level for
             // each event found.
-            if (!isLastStream)
-            {
-                foreach (EventBean[] row in nestedResult)
-                {
+            if (!isLastStream) {
+                foreach (EventBean[] row in nestedResult) {
                     EventBean lookup = row[nestedStreams[nestingOrderIndex]];
                     RecursiveNestedJoin(lookup, nestingOrderIndex + 1, row, result, exprEvaluatorContext);
                 }
+
                 return;
             }
 
             // Loop to add result rows
-            foreach (EventBean[] row in nestedResult)
-            {
+            foreach (EventBean[] row in nestedResult) {
                 result.Add(row);
             }
         }
@@ -102,10 +99,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             writer.WriteLine("NestedIterationExecNode");
             writer.IncrIndent();
 
-            foreach (ExecNode child in childNodes)
-            {
+            foreach (ExecNode child in childNodes) {
                 child.Print(writer);
             }
+
             writer.DecrIndent();
         }
     }

@@ -11,15 +11,18 @@ using System;
 
 namespace com.espertech.esper.common.@internal.type
 {
-	/// <summary> Enum for the type of outer join.</summary>
+    /// <summary> Enum for the type of outer join.</summary>
     public enum OuterJoinType
     {
-	    /// <summary> Left outer join.</summary>
-	    LEFT,
+        /// <summary> Left outer join.</summary>
+        LEFT,
+
         /// <summary> Right outer join.</summary>
         RIGHT,
+
         /// <summary> Full outer join.</summary>
         FULL,
+
         /// <summary> Inner join.</summary>
         INNER
     }
@@ -28,8 +31,7 @@ namespace com.espertech.esper.common.@internal.type
     {
         public static String GetText(this OuterJoinType joinType)
         {
-            switch (joinType)
-            {
+            switch (joinType) {
                 case OuterJoinType.LEFT:
                     return "left";
                 case OuterJoinType.RIGHT:

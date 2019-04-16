@@ -48,7 +48,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         public StmtForgeMethodResult Make(
-            string packageName, string classPostfix, StatementCompileTimeServices services)
+            string packageName,
+            string classPostfix,
+            StatementCompileTimeServices services)
         {
             try {
                 return Build(packageName, classPostfix, services);
@@ -64,7 +66,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         private StmtForgeMethodResult Build(
-            string packageName, string classPostfix, StatementCompileTimeServices services)
+            string packageName,
+            string classPostfix,
+            StatementCompileTimeServices services)
         {
             var createDesc = @base.StatementSpec.Raw.CreateTableDesc;
             var tableName = createDesc.TableName;
@@ -127,9 +131,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
                 @base,
-                new EmptyList<FilterSpecCompiled>(), 
-                new EmptyList<ScheduleHandleCallbackProvider>(), 
-                new EmptyList<NamedWindowConsumerStreamSpec>(), 
+                new EmptyList<FilterSpecCompiled>(),
+                new EmptyList<ScheduleHandleCallbackProvider>(),
+                new EmptyList<NamedWindowConsumerStreamSpec>(),
                 true,
                 selectSubscriberDescriptor, packageScope, services);
             forgables.Add(
@@ -146,7 +150,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         private void ValidateKeyTypes(
-            IList<CreateTableColumn> columns, ImportServiceCompileTime importService)
+            IList<CreateTableColumn> columns,
+            ImportServiceCompileTime importService)
         {
             foreach (var col in columns) {
                 if (col.PrimaryKey == null || !col.PrimaryKey.Value) {
@@ -172,7 +177,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         private IList<TableColumnDesc> ValidateExpressions(
-            IList<CreateTableColumn> columns, 
+            IList<CreateTableColumn> columns,
             StatementCompileTimeServices services)
         {
             ISet<string> columnNames = new HashSet<string>();
@@ -216,7 +221,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         private static EventType ValidateExpressionGetEventType(
-            string msgprefix, IList<AnnotationDesc> annotations, StatementCompileTimeServices services)
+            string msgprefix,
+            IList<AnnotationDesc> annotations,
+            StatementCompileTimeServices services)
         {
             var annos = AnnotationUtil.MapByNameLowerCase(annotations);
 
@@ -240,7 +247,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         private ExprAggregateNode ValidateAggregationExpr(
-            ExprNode columnExpressionType, EventType optionalProvidedType, StatementCompileTimeServices services)
+            ExprNode columnExpressionType,
+            EventType optionalProvidedType,
+            StatementCompileTimeServices services)
         {
             var classpathImportService = services.ImportServiceCompileTime;
 
@@ -316,7 +325,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         private TableAccessAnalysisResult AnalyzePlanAggregations(
-            string tableName, IList<TableColumnDesc> columns, StatementRawInfo statementRawInfo,
+            string tableName,
+            IList<TableColumnDesc> columns,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             // once upfront: obtains aggregation factories for each aggregation

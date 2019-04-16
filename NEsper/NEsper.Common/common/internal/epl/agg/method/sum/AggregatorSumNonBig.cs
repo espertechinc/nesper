@@ -24,18 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
     public class AggregatorSumNonBig : AggregatorSumBase
     {
         public AggregatorSumNonBig(
-            AggregationForgeFactory factory, 
+            AggregationForgeFactory factory,
             int col,
-            CodegenCtor rowCtor, 
+            CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, 
-            Type optionalDistinctValueType, 
-            bool hasFilter, 
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
             ExprNode optionalFilter,
             Type sumType)
             : base(
-                factory, col, rowCtor, 
-                membersColumnized, classScope, 
+                factory, col, rowCtor,
+                membersColumnized, classScope,
                 optionalDistinctValueType, hasFilter,
                 optionalFilter, sumType)
 
@@ -56,30 +56,45 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             return Constant(0);
         }
 
-        protected override void ApplyAggEnterSum(CodegenExpressionRef value, Type valueType, CodegenMethod method)
+        protected override void ApplyAggEnterSum(
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method)
         {
             ApplyAgg(true, value, valueType, method);
         }
 
         protected override void ApplyTableEnterSum(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             ApplyTable(true, value, method, classScope);
         }
 
-        protected override void ApplyAggLeaveSum(CodegenExpressionRef value, Type valueType, CodegenMethod method)
+        protected override void ApplyAggLeaveSum(
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method)
         {
             ApplyAgg(false, value, valueType, method);
         }
 
         protected override void ApplyTableLeaveSum(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             ApplyTable(false, value, method, classScope);
         }
 
         protected override void WriteSum(
-            CodegenExpressionRef row, CodegenExpressionRef output, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            CodegenExpressionRef output,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (sumType == typeof(double?)) {
                 method.Block.Apply(WriteDouble(output, row, sum));
@@ -99,7 +114,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         }
 
         protected override void ReadSum(
-            CodegenExpressionRef row, CodegenExpressionRef input, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            CodegenExpressionRef input,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (sumType == typeof(double?)) {
                 method.Block.Apply(ReadDouble(row, sum, input));
@@ -118,14 +136,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             }
         }
 
-        private void ApplyAgg(bool enter, CodegenExpressionRef value, Type valueType, CodegenMethod method)
+        private void ApplyAgg(
+            bool enter,
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method)
         {
             var coercer = GetCoercerNonBigIntDec(valueType);
             method.Block.AssignRef(sum, Op(sum, enter ? "+" : "-", coercer.CoerceCodegen(value, valueType)));
         }
 
         private void ApplyTable(
-            bool enter, CodegenExpressionRef value, CodegenMethod method, CodegenClassScope classScope)
+            bool enter,
+            CodegenExpressionRef value,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(sum, Op(sum, enter ? "+" : "-", Cast(sumType, value)));
         }

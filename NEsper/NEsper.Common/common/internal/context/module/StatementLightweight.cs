@@ -13,8 +13,10 @@ namespace com.espertech.esper.common.@internal.context.module
     public class StatementLightweight
     {
         public StatementLightweight(
-            StatementProvider statementProvider, StatementInformationalsRuntime statementInformationals,
-            StatementResultService statementResultService, StatementContext statementContext)
+            StatementProvider statementProvider,
+            StatementInformationalsRuntime statementInformationals,
+            StatementResultService statementResultService,
+            StatementContext statementContext)
         {
             StatementProvider = statementProvider;
             StatementInformationals = statementInformationals;

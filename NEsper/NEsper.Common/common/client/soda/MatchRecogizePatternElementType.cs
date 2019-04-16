@@ -17,16 +17,22 @@ namespace com.espertech.esper.common.client.soda
     {
         // For single multiplicity.
         SINGLE,
+
         // For greedy '*' multiplicity.
         ZERO_TO_MANY,
+
         // For greedy '+' multiplicity.
         ONE_TO_MANY,
+
         // For greedy '?' multiplicity.
         ONE_OPTIONAL,
+
         // For reluctant '*' multiplicity.
         ZERO_TO_MANY_RELUCTANT,
+
         // For reluctant '+' multiplicity.
         ONE_TO_MANY_RELUCTANT,
+
         // For reluctant '?' multiplicity.
         ONE_OPTIONAL_RELUCTANT
     }

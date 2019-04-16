@@ -39,7 +39,10 @@ namespace com.espertech.esper.common.@internal.view.timewin
             set => scheduleCallbackId = value;
         }
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             if (parameters.Count != 1) {
                 throw new ViewParameterException(ViewParamMessage);
@@ -49,7 +52,10 @@ namespace com.espertech.esper.common.@internal.view.timewin
                 ViewName, parameters[0], ViewParamMessage, 0, viewForgeEnv, streamNumber);
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
@@ -65,7 +71,9 @@ namespace com.espertech.esper.common.@internal.view.timewin
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             if (scheduleCallbackId == -1) {

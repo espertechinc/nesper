@@ -21,8 +21,7 @@ namespace com.espertech.esper.common.@internal.util
     {
         private readonly bool _isDescendingValue;
 
-        [NonSerialized]
-        private readonly StringComparer _collator = null;
+        [NonSerialized] private readonly StringComparer _collator = null;
 
         /// <summary>Ctor. </summary>
         /// <param name="isDescendingValue">ascending or descending</param>
@@ -32,7 +31,9 @@ namespace com.espertech.esper.common.@internal.util
             _collator = StringComparer.CurrentCulture;
         }
 
-        public int Compare(Object firstValue, Object secondValue)
+        public int Compare(
+            Object firstValue,
+            Object secondValue)
         {
             return MultiKeyComparator.CompareValues(firstValue, secondValue, _isDescendingValue, _collator);
         }

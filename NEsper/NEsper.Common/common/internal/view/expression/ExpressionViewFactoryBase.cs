@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.@internal.view.expression
 
         public Variable[] Variables { get; set; }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

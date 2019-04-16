@@ -17,8 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <summary>Ctor. </summary>
         /// <param name="indexSpecs">specs for indexes to create</param>
         /// <param name="execNodeSpecs">specs for execution nodes to create</param>
-        public QueryPlan(QueryPlanIndex[] indexSpecs,
-                         QueryPlanNode[] execNodeSpecs)
+        public QueryPlan(
+            QueryPlanIndex[] indexSpecs,
+            QueryPlanNode[] execNodeSpecs)
         {
             IndexSpecs = indexSpecs;
             ExecNodeSpecs = execNodeSpecs;

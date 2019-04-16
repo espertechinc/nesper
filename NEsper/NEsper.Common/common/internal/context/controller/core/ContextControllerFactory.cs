@@ -22,10 +22,16 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         ContextController Create(ContextManagerRealization contextManagerRealization);
 
         FilterValueSetParam[][] PopulateFilterAddendum(
-            FilterSpecActivatable filterSpec, bool forStatement, int nestingLevel, object partitionKey,
-            ContextControllerStatementDesc optionalStatementDesc, AgentInstanceContext agentInstanceContextStatement);
+            FilterSpecActivatable filterSpec,
+            bool forStatement,
+            int nestingLevel,
+            object partitionKey,
+            ContextControllerStatementDesc optionalStatementDesc,
+            AgentInstanceContext agentInstanceContextStatement);
 
-        void PopulateContextProperties(IDictionary<string, object> props, object allPartitionKey);
+        void PopulateContextProperties(
+            IDictionary<string, object> props,
+            object allPartitionKey);
 
         StatementAIResourceRegistry AllocateAgentInstanceResourceRegistry(AIRegistryRequirements registryRequirements);
 

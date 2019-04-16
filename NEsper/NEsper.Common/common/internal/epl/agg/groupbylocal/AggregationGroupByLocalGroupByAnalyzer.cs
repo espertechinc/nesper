@@ -20,10 +20,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     public class AggregationGroupByLocalGroupByAnalyzer
     {
         public static AggregationLocalGroupByPlanForge Analyze(
-            ExprForge[][] methodForges, AggregationForgeFactory[] methodFactories,
-            AggregationStateFactoryForge[] accessAggregations, AggregationGroupByLocalGroupDesc localGroupDesc,
-            ExprNode[] groupByExpressions, AggregationAccessorSlotPairForge[] accessors,
-            ImportService importService, bool fireAndForget, string statementName)
+            ExprForge[][] methodForges,
+            AggregationForgeFactory[] methodFactories,
+            AggregationStateFactoryForge[] accessAggregations,
+            AggregationGroupByLocalGroupDesc localGroupDesc,
+            ExprNode[] groupByExpressions,
+            AggregationAccessorSlotPairForge[] accessors,
+            ImportService importService,
+            bool fireAndForget,
+            string statementName)
         {
             if (groupByExpressions == null) {
                 groupByExpressions = ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY;
@@ -105,11 +110,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
         // Obtain those method and state factories for each level
         private static AggregationLocalGroupByLevelForge GetLevel(
-            int levelNumber, AggregationGroupByLocalGroupLevel level, ExprForge[][] methodForgesAll,
-            AggregationForgeFactory[] methodFactoriesAll, AggregationStateFactoryForge[] accessForges,
-            AggregationLocalGroupByColumnForge[] columns, bool defaultLevel,
-            AggregationAccessorSlotPairForge[] accessors, ImportService importService,
-            bool isFireAndForget, string statementName)
+            int levelNumber,
+            AggregationGroupByLocalGroupLevel level,
+            ExprForge[][] methodForgesAll,
+            AggregationForgeFactory[] methodFactoriesAll,
+            AggregationStateFactoryForge[] accessForges,
+            AggregationLocalGroupByColumnForge[] columns,
+            bool defaultLevel,
+            AggregationAccessorSlotPairForge[] accessors,
+            ImportService importService,
+            bool isFireAndForget,
+            string statementName)
         {
             var partitionExpr = level.PartitionExpr;
             ExprForge[] partitionForges = ExprNodeUtilityQuery.GetForges(partitionExpr);

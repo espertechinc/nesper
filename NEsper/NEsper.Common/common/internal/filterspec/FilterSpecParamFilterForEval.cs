@@ -21,7 +21,8 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <param name="filterEvalEnv">env</param>
         /// <returns>filter value</returns>
         object GetFilterValue(
-            MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext,
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv);
     }
 } // end of namespace

@@ -16,10 +16,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
     public class EPDataFlowEmitter1Stream1TargetPassAlong : EPDataFlowEmitter1Stream1TargetBase
     {
         public EPDataFlowEmitter1Stream1TargetPassAlong(
-            int operatorNum, DataFlowSignalManager signalManager, SignalHandler signalHandler,
-            EPDataFlowEmitterExceptionHandler exceptionHandler, ObjectBindingPair target,
-            ImportService importService) : base(
-            operatorNum, signalManager, signalHandler, exceptionHandler, target, importService)
+            int operatorNum,
+            DataFlowSignalManager signalManager,
+            SignalHandler signalHandler,
+            EPDataFlowEmitterExceptionHandler exceptionHandler,
+            ObjectBindingPair target,
+            ImportService importService)
+            : base(
+                operatorNum, signalManager, signalHandler, exceptionHandler, target, importService)
         {
         }
 

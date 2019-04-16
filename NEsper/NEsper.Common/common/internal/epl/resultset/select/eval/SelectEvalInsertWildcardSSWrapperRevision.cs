@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,51 +17,68 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalInsertWildcardSSWrapperRevision : SelectEvalBaseMap {
+    public class SelectEvalInsertWildcardSSWrapperRevision : SelectEvalBaseMap
+    {
+        private readonly VariantEventType variantEventType;
 
-	    private readonly VariantEventType variantEventType;
+        public SelectEvalInsertWildcardSSWrapperRevision(
+            SelectExprForgeContext selectExprForgeContext,
+            EventType resultEventType,
+            VariantEventType variantEventType)
+            : base(selectExprForgeContext, resultEventType)
 
-	    public SelectEvalInsertWildcardSSWrapperRevision(SelectExprForgeContext selectExprForgeContext, EventType resultEventType, VariantEventType variantEventType)
+        {
+            this.variantEventType = variantEventType;
+        }
 
-	    	 : base(selectExprForgeContext, resultEventType)
+        protected override CodegenExpression ProcessSpecificCodegen(
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenExpression props,
+            CodegenMethod methodNode,
+            SelectExprProcessorCodegenSymbol selectEnv,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenExpressionField type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
+            CodegenExpression refEPS = exprSymbol.GetAddEPS(methodNode);
+            return StaticMethod(
+                typeof(SelectEvalInsertWildcardSSWrapperRevision), "selectExprInsertWildcardSSWrapRevision", refEPS,
+                evaluators == null ? Constant(0) : Constant(evaluators.Length), props, type);
+        }
 
-	    {
-	        this.variantEventType = variantEventType;
-	    }
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="eventsPerStream">events</param>
+        /// <param name="numEvaluators">num evals</param>
+        /// <param name="props">props</param>
+        /// <param name="variantEventType">variant</param>
+        /// <returns>bean</returns>
+        public static EventBean SelectExprInsertWildcardSSWrapRevision(
+            EventBean[] eventsPerStream,
+            int numEvaluators,
+            IDictionary<string, object> props,
+            VariantEventType variantEventType)
+        {
+            DecoratingEventBean wrapper = (DecoratingEventBean) eventsPerStream[0];
+            if (wrapper != null) {
+                IDictionary<string, object> map = wrapper.DecoratingProperties;
+                if ((numEvaluators == 0) && (!map.IsEmpty())) {
+                    // no action
+                }
+                else {
+                    props.PutAll(map);
+                }
+            }
 
-	    protected override CodegenExpression ProcessSpecificCodegen(CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenExpression props, CodegenMethod methodNode, SelectExprProcessorCodegenSymbol selectEnv, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenExpressionField type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
-	        CodegenExpression refEPS = exprSymbol.GetAddEPS(methodNode);
-	        return StaticMethod(typeof(SelectEvalInsertWildcardSSWrapperRevision), "selectExprInsertWildcardSSWrapRevision", refEPS, evaluators == null ? Constant(0) : Constant(evaluators.Length), props, type);
-	    }
-
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="eventsPerStream">events</param>
-	    /// <param name="numEvaluators">num evals</param>
-	    /// <param name="props">props</param>
-	    /// <param name="variantEventType">variant</param>
-	    /// <returns>bean</returns>
-	    public static EventBean SelectExprInsertWildcardSSWrapRevision(EventBean[] eventsPerStream, int numEvaluators, IDictionary<string, object> props, VariantEventType variantEventType) {
-	        DecoratingEventBean wrapper = (DecoratingEventBean) eventsPerStream[0];
-	        if (wrapper != null) {
-	            IDictionary<string, object> map = wrapper.DecoratingProperties;
-	            if ((numEvaluators == 0) && (!map.IsEmpty())) {
-	                // no action
-	            } else {
-	                props.PutAll(map);
-	            }
-	        }
-
-	        EventBean theEvent = eventsPerStream[0];
-	        return variantEventType.GetValueAddEventBean(theEvent);
-	    }
-	}
+            EventBean theEvent = eventsPerStream[0];
+            return variantEventType.GetValueAddEventBean(theEvent);
+        }
+    }
 } // end of namespace

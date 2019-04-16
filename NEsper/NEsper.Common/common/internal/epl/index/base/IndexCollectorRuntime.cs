@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             this.moduleIndexes = moduleIndexes;
         }
 
-        public void RegisterIndex(IndexCompileTimeKey indexKey, IndexDetail indexDetail)
+        public void RegisterIndex(
+            IndexCompileTimeKey indexKey,
+            IndexDetail indexDetail)
         {
             if (indexKey.Visibility == NameAccessModifier.PUBLIC) {
                 moduleIndexes.Add(

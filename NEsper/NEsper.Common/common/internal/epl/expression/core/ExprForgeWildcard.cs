@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprEvaluator ExprEvaluator => ExprEvaluatorWildcard.INSTANCE;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprEvaluatorWildcard.Codegen(
@@ -45,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             {
             }
 
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+            public void ToEPL(
+                TextWriter writer,
+                ExprPrecedenceEnum parentPrecedence)
             {
                 writer.Write("underlying-stream-0");
             }

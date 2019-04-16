@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.view.access
     /// </summary>
     public class ViewResourceDelegateDesc
     {
-        public ViewResourceDelegateDesc(bool hasPrevious, SortedSet<int> priorRequests)
+        public ViewResourceDelegateDesc(
+            bool hasPrevious,
+            SortedSet<int> priorRequests)
         {
             HasPrevious = hasPrevious;
             PriorRequests = priorRequests;

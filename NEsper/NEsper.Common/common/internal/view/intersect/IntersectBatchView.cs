@@ -43,7 +43,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
         internal readonly View[] views;
 
         public IntersectBatchView(
-            AgentInstanceViewFactoryChainContext agentInstanceContext, IntersectViewFactory factory,
+            AgentInstanceViewFactoryChainContext agentInstanceContext,
+            IntersectViewFactory factory,
             IList<View> viewList)
         {
             this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
@@ -70,7 +71,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
@@ -169,7 +172,10 @@ namespace com.espertech.esper.common.@internal.view.intersect
             throw new UnsupportedOperationException("Must visit container");
         }
 
-        public void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents)
+        public void NewData(
+            int streamId,
+            EventBean[] newEvents,
+            EventBean[] oldEvents)
         {
             var localState = factory.BatchViewLocalStatePerThread;
 

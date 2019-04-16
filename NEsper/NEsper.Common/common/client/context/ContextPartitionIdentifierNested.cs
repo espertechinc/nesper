@@ -19,43 +19,49 @@ namespace com.espertech.esper.common.client.context
         private ContextPartitionIdentifier[] _identifiers;
 
         /// <summary>Ctor. </summary>
-        public ContextPartitionIdentifierNested() {
+        public ContextPartitionIdentifierNested()
+        {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="identifiers">nested identifiers, count should match nesting level of context</param>
-        public ContextPartitionIdentifierNested(ContextPartitionIdentifier[] identifiers) {
+        public ContextPartitionIdentifierNested(ContextPartitionIdentifier[] identifiers)
+        {
             _identifiers = identifiers;
         }
 
         /// <summary>Returns nested partition identifiers. </summary>
         /// <value>identifiers</value>
-        public ContextPartitionIdentifier[] Identifiers
-        {
+        public ContextPartitionIdentifier[] Identifiers {
             get { return _identifiers; }
             set { this._identifiers = value; }
         }
 
-        public override bool CompareTo(ContextPartitionIdentifier other) {
+        public override bool CompareTo(ContextPartitionIdentifier other)
+        {
             if (!(other is ContextPartitionIdentifierNested)) {
                 return false;
             }
+
             var nestedOther = (ContextPartitionIdentifierNested) other;
             if (nestedOther.Identifiers.Length != _identifiers.Length) {
                 return false;
             }
+
             for (int i = 0; i < _identifiers.Length; i++) {
                 if (!_identifiers[i].CompareTo(nestedOther.Identifiers[i])) {
                     return false;
                 }
             }
+
             return true;
         }
-    
-        public override String ToString() {
+
+        public override String ToString()
+        {
             return "ContextPartitionIdentifierNested{" +
-                    "identifiers=" + (_identifiers) +
-                    '}';
+                   "identifiers=" + (_identifiers) +
+                   '}';
         }
     }
 }

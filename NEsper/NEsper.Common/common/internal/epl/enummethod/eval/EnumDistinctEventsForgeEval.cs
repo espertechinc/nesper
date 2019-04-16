@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
@@ -43,19 +41,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprEvaluatorContext context)
         {
             ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-            if (beans.Count <= 1)
-            {
+            if (beans.Count <= 1) {
                 return beans;
             }
 
             IDictionary<IComparable, EventBean> distinct = new LinkedHashMap<IComparable, EventBean>();
-            foreach (EventBean next in beans)
-            {
+            foreach (EventBean next in beans) {
                 eventsLambda[forge.streamNumLambda] = next;
 
                 IComparable comparable = (IComparable) innerExpression.Evaluate(eventsLambda, isNewData, context);
-                if (!distinct.ContainsKey(comparable))
-                {
+                if (!distinct.ContainsKey(comparable)) {
                     distinct.Put(comparable, next);
                 }
             }

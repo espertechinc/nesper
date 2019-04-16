@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression CodegenConvertNonNull(
-            CodegenExpression result, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression result,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return result;
         }

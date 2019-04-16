@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.soda
     /// Represents a single expression declaration that applies to a given statement.
     /// </summary>
     [Serializable]
-    public class ExpressionDeclaration 
+    public class ExpressionDeclaration
     {
         /// <summary>
         /// Ctor.
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.client.soda
         public ExpressionDeclaration()
         {
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -33,7 +33,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="parameterNames">expression paramater names</param>
         /// <param name="expression">the expression body</param>
         /// <param name="alias">indicator whether this is an expression alias or not</param>
-        public ExpressionDeclaration(string name, IList<string> parameterNames, Expression expression, bool alias)
+        public ExpressionDeclaration(
+            string name,
+            IList<string> parameterNames,
+            Expression expression,
+            bool alias)
         {
             this.Name = name;
             this.ParameterNames = parameterNames;
@@ -76,17 +80,15 @@ namespace com.espertech.esper.common.client.soda
             IList<ExpressionDeclaration> expressionDeclarations,
             EPStatementFormatter formatter)
         {
-            if ((expressionDeclarations == null) || (expressionDeclarations.IsEmpty()))
-            {
+            if ((expressionDeclarations == null) || (expressionDeclarations.IsEmpty())) {
                 return;
             }
 
-            foreach (var part in expressionDeclarations)
-            {
-                if (part.Name == null)
-                {
+            foreach (var part in expressionDeclarations) {
+                if (part.Name == null) {
                     continue;
                 }
+
                 formatter.BeginExpressionDecl(writer);
                 part.ToEPL(writer);
             }
@@ -100,39 +102,36 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("expression ");
             writer.Write(Name);
-            if (IsAlias)
-            {
+            if (IsAlias) {
                 writer.Write(" alias for");
             }
+
             writer.Write(" {");
-            if (!IsAlias)
-            {
-                if (ParameterNames != null && ParameterNames.Count == 1)
-                {
+            if (!IsAlias) {
+                if (ParameterNames != null && ParameterNames.Count == 1) {
                     writer.Write(ParameterNames[0]);
                 }
-                else if (ParameterNames != null && !ParameterNames.IsEmpty())
-                {
+                else if (ParameterNames != null && !ParameterNames.IsEmpty()) {
                     var delimiter = "";
                     writer.Write("(");
-                    foreach (var name in ParameterNames)
-                    {
+                    foreach (var name in ParameterNames) {
                         writer.Write(delimiter);
                         writer.Write(name);
                         delimiter = ",";
                     }
+
                     writer.Write(")");
                 }
 
-                if (ParameterNames != null && !ParameterNames.IsEmpty())
-                {
+                if (ParameterNames != null && !ParameterNames.IsEmpty()) {
                     writer.Write(" => ");
                 }
             }
-            if (Expression != null)
-            {
+
+            if (Expression != null) {
                 Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
+
             writer.Write("}");
         }
     }

@@ -19,7 +19,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     {
         [NonSerialized] private IList<SelectClauseElementCompiled> selectClauseCompiled;
 
-        public OnTriggerMergeActionInsert(ExprNode optionalWhereClause, String optionalStreamName, IList<String> columns, IList<SelectClauseElementRaw> selectClause)
+        public OnTriggerMergeActionInsert(
+            ExprNode optionalWhereClause,
+            String optionalStreamName,
+            IList<String> columns,
+            IList<SelectClauseElementRaw> selectClause)
             : base(optionalWhereClause)
         {
             OptionalStreamName = optionalStreamName;
@@ -33,11 +37,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public IList<SelectClauseElementRaw> SelectClause { get; private set; }
 
-        public IList<SelectClauseElementCompiled> SelectClauseCompiled
-        {
+        public IList<SelectClauseElementCompiled> SelectClauseCompiled {
             get { return selectClauseCompiled; }
             set { this.selectClauseCompiled = value; }
         }
     }
-
 }

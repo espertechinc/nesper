@@ -20,7 +20,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         internal ExprForge msec;
         internal ExprForge sec;
 
-        public CalendarWithTimeForge(ExprForge hour, ExprForge min, ExprForge sec, ExprForge msec)
+        public CalendarWithTimeForge(
+            ExprForge hour,
+            ExprForge min,
+            ExprForge sec,
+            ExprForge msec)
         {
             this.hour = hour;
             this.min = min;
@@ -32,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             hour.ExprEvaluator, min.ExprEvaluator, sec.ExprEvaluator, msec.ExprEvaluator);
 
         public CodegenExpression CodegenDateTimeEx(
-            CodegenExpression dateTimeEx, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTimeEx,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarWithTimeForgeOp.CodegenCalendar(
@@ -40,14 +46,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         }
 
         public CodegenExpression CodegenDateTimeOffset(
-            CodegenExpression dateTimeOffset, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTimeOffset,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarWithTimeForgeOp.CodegenDateTimeOffset(this, dateTimeOffset, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTime(
-            CodegenExpression dateTime, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression dateTime,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return CalendarWithTimeForgeOp.CodegenDateTime(this, dateTime, codegenMethodScope, exprSymbol, codegenClassScope);

@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.@event.bean.instantiator
@@ -26,31 +25,28 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 
         #region BeanInstantiator Members
 
-        public Object Instantiate()
+        public object Instantiate()
         {
-            try
-            {
+            try {
                 return _ctor.Invoke(new object[0]);
             }
-            catch (TargetInvocationException e)
-            {
-                String message = "Unexpected exception encountered invoking constructor '" + _ctor.Name + "' on class '" +
-                                 _ctor.DeclaringType.FullName + "': " + e.InnerException.Message;
+            catch (TargetInvocationException e) {
+                var message = "Unexpected exception encountered invoking constructor '" + _ctor.Name + "' on class '" +
+                              _ctor.DeclaringType.FullName + "': " + e.InnerException.Message;
                 Log.Error(message, e);
                 return null;
             }
-            catch (MemberAccessException ex)
-            {
+            catch (MemberAccessException ex) {
                 return Handle(ex);
             }
         }
 
         #endregion
 
-        private Object Handle(Exception e)
+        private object Handle(Exception e)
         {
-            String message = "Unexpected exception encountered invoking newInstance on class '" +
-                             _ctor.DeclaringType.FullName + "': " + e.Message;
+            var message = "Unexpected exception encountered invoking newInstance on class '" +
+                          _ctor.DeclaringType.FullName + "': " + e.Message;
             Log.Error(message, e);
             return null;
         }

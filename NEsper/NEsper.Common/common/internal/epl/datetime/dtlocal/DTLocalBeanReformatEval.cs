@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -15,21 +14,31 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-	class DTLocalBeanReformatEval : DTLocalEvaluator {
-	    private readonly EventPropertyGetter getter;
-	    private readonly DTLocalEvaluator inner;
+    class DTLocalBeanReformatEval : DTLocalEvaluator
+    {
+        private readonly EventPropertyGetter getter;
+        private readonly DTLocalEvaluator inner;
 
-	    public DTLocalBeanReformatEval(EventPropertyGetter getter, DTLocalEvaluator inner) {
-	        this.getter = getter;
-	        this.inner = inner;
-	    }
+        public DTLocalBeanReformatEval(
+            EventPropertyGetter getter,
+            DTLocalEvaluator inner)
+        {
+            this.getter = getter;
+            this.inner = inner;
+        }
 
-	    public object Evaluate(object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        object timestamp = getter.Get((EventBean) target);
-	        if (timestamp == null) {
-	            return null;
-	        }
-	        return inner.Evaluate(timestamp, eventsPerStream, isNewData, exprEvaluatorContext);
-	    }
-	}
+        public object Evaluate(
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            object timestamp = getter.Get((EventBean) target);
+            if (timestamp == null) {
+                return null;
+            }
+
+            return inner.Evaluate(timestamp, eventsPerStream, isNewData, exprEvaluatorContext);
+        }
+    }
 } // end of namespace

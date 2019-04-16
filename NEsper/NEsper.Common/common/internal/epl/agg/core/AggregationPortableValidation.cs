@@ -15,12 +15,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public interface AggregationPortableValidation
     {
         void ValidateIntoTableCompatible(
-            string tableExpression, 
-            AggregationPortableValidation intoTableAgg, 
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
             string intoExpression,
             AggregationForgeFactory factory);
 
         CodegenExpression Make(
-            CodegenMethodScope parent, ModuleTableInitializeSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ModuleTableInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -22,41 +21,64 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class ExprDotForgeWhere : ExprDotForgeEnumMethodBase {
+    public class ExprDotForgeWhere : ExprDotForgeEnumMethodBase
+    {
+        public override EventType[] GetAddStreamTypes(
+            string enumMethodUsedName,
+            IList<string> goesToNames,
+            EventType inputEventType,
+            Type collectionComponentType,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            EventType firstParamType;
+            if (inputEventType == null) {
+                firstParamType = ExprDotNodeUtility.MakeTransientOAType(
+                    enumMethodUsedName, goesToNames[0], collectionComponentType, statementRawInfo, services);
+            }
+            else {
+                firstParamType = inputEventType;
+            }
 
-	    public override EventType[] GetAddStreamTypes(string enumMethodUsedName, IList<string> goesToNames, EventType inputEventType, Type collectionComponentType, IList<ExprDotEvalParam> bodiesAndParameters, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
-	        EventType firstParamType;
-	        if (inputEventType == null) {
-	            firstParamType = ExprDotNodeUtility.MakeTransientOAType(enumMethodUsedName, goesToNames[0], collectionComponentType, statementRawInfo, services);
-	        } else {
-	            firstParamType = inputEventType;
-	        }
+            if (goesToNames.Count == 1) {
+                return new EventType[] {firstParamType};
+            }
 
-	        if (goesToNames.Count == 1) {
-	            return new EventType[]{firstParamType};
-	        }
+            ObjectArrayEventType indexEventType = ExprDotNodeUtility.MakeTransientOAType(
+                enumMethodUsedName, goesToNames[1], typeof(int), statementRawInfo, services);
+            return new EventType[] {firstParamType, indexEventType};
+        }
 
-	        ObjectArrayEventType indexEventType = ExprDotNodeUtility.MakeTransientOAType(enumMethodUsedName, goesToNames.Get(1), typeof(int), statementRawInfo, services);
-	        return new EventType[]{firstParamType, indexEventType};
-	    }
+        public override EnumForge GetEnumForge(
+            StreamTypeService streamTypeService,
+            string enumMethodUsedName,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            EventType inputEventType,
+            Type collectionComponentType,
+            int numStreamsIncoming,
+            bool disablePropertyExpressionEventCollCache,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
 
-	    public override EnumForge GetEnumForge(StreamTypeService streamTypeService, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
+            if (inputEventType != null) {
+                base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+                if (first.GoesToNames.Count == 1) {
+                    return new EnumWhereEventsForge(first.BodyForge, first.StreamCountIncoming);
+                }
 
-	        ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+                return new EnumWhereIndexEventsForge(first.BodyForge, first.StreamCountIncoming, (ObjectArrayEventType) first.GoesToTypes[1]);
+            }
 
-	        if (inputEventType != null) {
-	            base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
-	            if (first.GoesToNames.Count == 1) {
-	                return new EnumWhereEventsForge(first.BodyForge, first.StreamCountIncoming);
-	            }
-	            return new EnumWhereIndexEventsForge(first.BodyForge, first.StreamCountIncoming, (ObjectArrayEventType) first.GoesToTypes[1]);
-	        }
+            base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+            if (first.GoesToNames.Count == 1) {
+                return new EnumWhereScalarForge(first.BodyForge, first.StreamCountIncoming, (ObjectArrayEventType) first.GoesToTypes[0]);
+            }
 
-	        base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
-	        if (first.GoesToNames.Count == 1) {
-	            return new EnumWhereScalarForge(first.BodyForge, first.StreamCountIncoming, (ObjectArrayEventType) first.GoesToTypes[0]);
-	        }
-	        return new EnumWhereScalarIndexForge(first.BodyForge, first.StreamCountIncoming, (ObjectArrayEventType) first.GoesToTypes[0], (ObjectArrayEventType) first.GoesToTypes[1]);
-	    }
-	}
+            return new EnumWhereScalarIndexForge(
+                first.BodyForge, first.StreamCountIncoming, (ObjectArrayEventType) first.GoesToTypes[0], (ObjectArrayEventType) first.GoesToTypes[1]);
+        }
+    }
 } // end of namespace

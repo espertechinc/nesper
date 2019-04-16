@@ -7,26 +7,29 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.codegen
 {
     public class CodegenLegoMayVoid
     {
-        public static CodegenExpression ExpressionMayVoid(Type requiredType, ExprForge forge, CodegenMethod parentNode, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public static CodegenExpression ExpressionMayVoid(
+            Type requiredType,
+            ExprForge forge,
+            CodegenMethod parentNode,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            if (forge.EvaluationType != typeof(void))
-            {
+            if (forge.EvaluationType != typeof(void)) {
                 return forge.EvaluateCodegen(requiredType, parentNode, exprSymbol, codegenClassScope);
             }
+
             CodegenMethod methodNode = parentNode.MakeChild(typeof(object), typeof(CodegenLegoMayVoid), codegenClassScope);
             methodNode.Block.Expression(forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
-                    .MethodReturn(ConstantNull());
+                .MethodReturn(ConstantNull());
             return LocalMethod(methodNode);
         }
     }

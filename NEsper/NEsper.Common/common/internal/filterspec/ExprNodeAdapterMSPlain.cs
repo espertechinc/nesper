@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.core;
@@ -30,27 +29,24 @@ namespace com.espertech.esper.common.@internal.filterspec
             ExprEvaluatorContext evaluatorContext,
             EventBean[] prototype,
             VariableManagementService variableService)
-             : base(factory, evaluatorContext, prototype)
+            : base(factory, evaluatorContext, prototype)
         {
             this._variableService = variableService;
 
-            _arrayPerThread = new SystemThreadLocal<EventBean[]>()
-            {
-                ProcInitialValue = () =>
-                {
+            _arrayPerThread = new FastThreadLocal<EventBean[]>(
+                () => {
                     EventBean[] eventsPerStream = new EventBean[prototypeArray.Length];
                     Array.Copy(prototypeArray, 0, eventsPerStream, 0, prototypeArray.Length);
                     return eventsPerStream;
-                },
-            };
+                });
         }
 
         public override bool Evaluate(EventBean theEvent)
         {
-            if (_variableService != null)
-            {
+            if (_variableService != null) {
                 _variableService.SetLocalVersion();
             }
+
             EventBean[] eventsPerStream = _arrayPerThread.GetOrCreate();
             eventsPerStream[0] = theEvent;
             return EvaluatePerStream(eventsPerStream);

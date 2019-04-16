@@ -8,7 +8,8 @@
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
-	public interface AggregationRowFactory {
-	    AggregationRow Make();
-	}
+    public interface AggregationRowFactory
+    {
+        AggregationRow Make();
+    }
 } // end of namespace

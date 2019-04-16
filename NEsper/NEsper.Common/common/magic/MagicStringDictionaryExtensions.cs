@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
@@ -15,7 +14,9 @@ namespace com.espertech.esper.common.magic
         private static readonly IDictionary<Type, FunctionalAtom> FunctionalAtomTable =
             new Dictionary<Type, FunctionalAtom>();
 
-        public static object GetInternal<V>(IDictionary<string, V> dictionary, string key)
+        public static object GetInternal<V>(
+            IDictionary<string, V> dictionary,
+            string key)
         {
             return dictionary.TryGetValue(key, out var value) ? (object) value : null;
         }
@@ -63,13 +64,17 @@ namespace com.espertech.esper.common.magic
             }
         }
 
-        public static object SDGet(this object dict, string key)
+        public static object SDGet(
+            this object dict,
+            string key)
         {
             var functionalAtom = GetFunctionalAtom(dict.GetType());
             return functionalAtom.Get.Invoke(dict, key);
         }
 
-        public static bool SDContainsKey(this object dict, string key)
+        public static bool SDContainsKey(
+            this object dict,
+            string key)
         {
             var functionalAtom = GetFunctionalAtom(dict.GetType());
             return functionalAtom.ContainsKey.Invoke(dict, key);

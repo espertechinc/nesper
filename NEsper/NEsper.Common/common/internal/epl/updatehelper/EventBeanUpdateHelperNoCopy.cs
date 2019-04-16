@@ -18,6 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
         bool IsRequiresStream2InitialValueEvent { get; }
 
         void UpdateNoCopy(
-            EventBean matchingEvent, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext);
+            EventBean matchingEvent,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

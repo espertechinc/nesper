@@ -7,31 +7,35 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.util
 {
-	public class DefaultSupportGraphOpProvider : EPDataFlowOperatorProvider {
-	    private readonly object[] ops;
+    public class DefaultSupportGraphOpProvider : EPDataFlowOperatorProvider
+    {
+        private readonly object[] ops;
 
-	    public DefaultSupportGraphOpProvider(object op) {
-	        this.ops = new object[]{op};
-	    }
+        public DefaultSupportGraphOpProvider(object op)
+        {
+            this.ops = new object[] {op};
+        }
 
-	    public DefaultSupportGraphOpProvider(params object[] ops) {
-	        this.ops = ops;
-	    }
+        public DefaultSupportGraphOpProvider(params object[] ops)
+        {
+            this.ops = ops;
+        }
 
-	    public object Provide(EPDataFlowOperatorProviderContext context) {
-	        foreach (object op in ops) {
-	            if (context.OperatorName.Equals(op.GetType().GetSimpleName())) {
-	                return op;
-	            }
-	        }
-	        return null;
-	    }
-	}
+        public object Provide(EPDataFlowOperatorProviderContext context)
+        {
+            foreach (object op in ops) {
+                if (context.OperatorName.Equals(op.GetType().GetSimpleName())) {
+                    return op;
+                }
+            }
+
+            return null;
+        }
+    }
 } // end of namespace

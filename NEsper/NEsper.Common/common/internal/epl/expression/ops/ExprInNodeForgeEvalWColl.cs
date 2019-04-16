@@ -29,20 +29,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprInNodeForge forge;
 
-        public ExprInNodeForgeEvalWColl(ExprInNodeForge forge, ExprEvaluator[] evaluators)
+        public ExprInNodeForgeEvalWColl(
+            ExprInNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             this.forge = forge;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
             return result;
         }
 
         private bool? EvaluateInternal(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var inPropResult = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             var isNotIn = forge.ForgeRenderable.IsNotIn;
@@ -56,53 +63,42 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     continue;
                 }
 
-                if (rightResult.GetType().IsGenericDictionary())
-                {
-                    if (inPropResult == null)
-                    {
+                if (rightResult.GetType().IsGenericDictionary()) {
+                    if (inPropResult == null) {
                         return null;
                     }
 
                     var coll = rightResult.UnwrapDictionary();
-                    if (coll.ContainsKey(inPropResult))
-                    {
+                    if (coll.ContainsKey(inPropResult)) {
                         return !isNotIn;
                     }
                 }
                 else if (rightResult is Array array) {
                     var arrayLength = array.Length;
-                    if (arrayLength > 0 && inPropResult == null)
-                    {
+                    if (arrayLength > 0 && inPropResult == null) {
                         return null;
                     }
 
-                    for (var index = 0; index < arrayLength; index++)
-                    {
+                    for (var index = 0; index < arrayLength; index++) {
                         object item = array.GetValue(index);
-                        if (item == null)
-                        {
+                        if (item == null) {
                             hasNullRow = true;
                             continue;
                         }
 
-                        if (!forge.IsMustCoerce)
-                        {
-                            if (inPropResult.Equals(item))
-                            {
+                        if (!forge.IsMustCoerce) {
+                            if (inPropResult.Equals(item)) {
                                 return !isNotIn;
                             }
                         }
-                        else
-                        {
-                            if (!(item.IsNumber()))
-                            {
+                        else {
+                            if (!(item.IsNumber())) {
                                 continue;
                             }
 
                             var left = forge.Coercer.CoerceBoxed(inPropResult);
                             var right = forge.Coercer.CoerceBoxed(item);
-                            if (left.Equals(right))
-                            {
+                            if (left.Equals(right)) {
                                 return !isNotIn;
                             }
                         }
@@ -148,7 +144,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprInNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprInNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var forges = ExprNodeUtilityQuery.GetForges(forge.ForgeRenderable.ChildNodes);

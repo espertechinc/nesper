@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -16,13 +15,22 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.prev
 {
-	public interface ExprPreviousEvalStrategy {
-	    object Evaluate(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext);
+    public interface ExprPreviousEvalStrategy
+    {
+        object Evaluate(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-	    ICollection<EventBean> EvaluateGetCollEvents(EventBean[] eventsPerStream, ExprEvaluatorContext context);
+        ICollection<EventBean> EvaluateGetCollEvents(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context);
 
-	    ICollection<object> EvaluateGetCollScalar(EventBean[] eventsPerStream, ExprEvaluatorContext context);
+        ICollection<object> EvaluateGetCollScalar(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context);
 
-	    EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, ExprEvaluatorContext context);
-	}
+        EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context);
+    }
 } // end of namespace

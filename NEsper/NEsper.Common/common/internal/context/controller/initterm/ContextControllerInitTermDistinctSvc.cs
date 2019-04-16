@@ -7,21 +7,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
-	public interface ContextControllerInitTermDistinctSvc {
+    public interface ContextControllerInitTermDistinctSvc
+    {
+        bool AddUnlessExists(
+            IntSeqKey controllerPath,
+            object key);
 
-	    bool AddUnlessExists(IntSeqKey controllerPath, object key);
+        void Remove(
+            IntSeqKey controllerPath,
+            object key);
 
-	    void Remove(IntSeqKey controllerPath, object key);
+        void Clear(IntSeqKey path);
 
-	    void Clear(IntSeqKey path);
-
-	    void Destroy();
-	}
+        void Destroy();
+    }
 } // end of namespace

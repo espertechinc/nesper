@@ -19,20 +19,27 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public class DTLocalDtxIntervalEval : DTLocalEvaluatorIntervalBase
     {
-        public DTLocalDtxIntervalEval(IntervalOp intervalOp) : base(intervalOp)
+        public DTLocalDtxIntervalEval(IntervalOp intervalOp)
+            : base(intervalOp)
         {
         }
 
         public override object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var time = ((DateTimeEx) target).TimeInMillis;
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDtxIntervalForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            DTLocalDtxIntervalForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxIntervalEval), codegenClassScope)
@@ -46,7 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public override object Evaluate(
-            object startTimestamp, object endTimestamp, EventBean[] eventsPerStream, bool isNewData,
+            object startTimestamp,
+            object endTimestamp,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var start = ((DateTimeEx) startTimestamp).TimeInMillis;
@@ -55,8 +65,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDtxIntervalForge forge, CodegenExpressionRef start, CodegenExpressionRef end,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            DTLocalDtxIntervalForge forge,
+            CodegenExpressionRef start,
+            CodegenExpressionRef end,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope

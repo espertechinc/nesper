@@ -56,18 +56,20 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             // assign
             assignerSetter.Assign(
                 new StatementAIFactoryAssignmentsImpl(
-                    pair.Second, 
-                    null, 
-                    null, 
+                    pair.Second,
+                    null,
+                    null,
                     Collections.GetEmptyMap<int, SubSelectFactoryResult>(),
-                    tableAccessEvals, 
+                    tableAccessEvals,
                     null));
 
             return pair.First;
         }
 
         protected internal static ICollection<EventBean> Filtered(
-            ICollection<EventBean> snapshot, ExprEvaluator filterExpressions, AgentInstanceContext agentInstanceContext)
+            ICollection<EventBean> snapshot,
+            ExprEvaluator filterExpressions,
+            AgentInstanceContext agentInstanceContext)
         {
             ArrayDeque<EventBean> deque = new ArrayDeque<EventBean>(Math.Min(snapshot.Count, 16));
             ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
@@ -76,7 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         }
 
         protected internal static EPPreparedQueryResult ProcessedNonJoin(
-            ResultSetProcessor resultSetProcessor, ICollection<EventBean> events, EventBeanReader distinctHandler)
+            ResultSetProcessor resultSetProcessor,
+            ICollection<EventBean> events,
+            EventBeanReader distinctHandler)
         {
             var rows = events.ToArray();
             var results = resultSetProcessor.ProcessViewResult(rows, null, true);

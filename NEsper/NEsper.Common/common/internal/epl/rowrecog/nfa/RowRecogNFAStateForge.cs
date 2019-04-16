@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -61,6 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
         /// <value>indicator</value>
         bool IsExprRequiresMultimatchState { get; }
 
-        CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbol, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbol,
+            CodegenClassScope classScope);
     }
 } // end of namespace

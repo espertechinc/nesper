@@ -21,10 +21,14 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         ContextControllerPortableInfo ValidationInfo { get; }
 
         void ValidateGetContextProps(
-            LinkedHashMap<string, object> props, string contextName, StatementRawInfo statementRawInfo,
+            LinkedHashMap<string, object> props,
+            string contextName,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services);
 
         CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols);
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols);
     }
 } // end of namespace

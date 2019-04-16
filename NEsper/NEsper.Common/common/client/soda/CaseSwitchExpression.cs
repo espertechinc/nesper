@@ -45,7 +45,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="when">expression to match on</param>
         /// <param name="then">expression to return a conditional result when the when-expression matches</param>
         /// <returns>expression</returns>
-        public CaseSwitchExpression Add(Expression when, Expression then)
+        public CaseSwitchExpression Add(
+            Expression when,
+            Expression then)
         {
             var size = Children.Count;
             if (size % 2 != 0) {

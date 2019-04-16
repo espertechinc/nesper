@@ -24,7 +24,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private CodegenBlock finallyBlock;
         private CodegenBlock tryBlock;
 
-        public CodegenStatementTryCatch(CodegenBlock parent) : base(parent)
+        public CodegenStatementTryCatch(CodegenBlock parent)
+            : base(parent)
         {
         }
 
@@ -39,7 +40,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             }
         }
 
-        public CodegenBlock AddCatch(Type ex, string name)
+        public CodegenBlock AddCatch(
+            Type ex,
+            string name)
         {
             var block = new CodegenBlock(this);
             catchBlocks.Add(new CodegenStatementTryCatchCatchBlock(ex, name, block));
@@ -57,7 +60,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public override void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level,
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
             CodegenIndent indent)
         {
             builder.Append("try {\n");

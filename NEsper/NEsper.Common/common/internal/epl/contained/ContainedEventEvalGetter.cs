@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
             this.getter = getter;
         }
 
-        public object GetFragment(EventBean eventBean, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public object GetFragment(
+            EventBean eventBean,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return getter.GetFragment(eventBean);
         }

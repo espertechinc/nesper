@@ -31,8 +31,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="streamSelector">selects the stream</param>
         /// <param name="selectList">is a list of elements in the select-clause</param>
-        protected SelectClause(StreamSelector streamSelector,
-                               List<SelectClauseElement> selectList)
+        protected SelectClause(
+            StreamSelector streamSelector,
+            List<SelectClauseElement> selectList)
         {
             _streamSelector = streamSelector;
             _selectList = selectList;
@@ -60,10 +61,10 @@ namespace com.espertech.esper.common.client.soda
         public static SelectClause Create(params String[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (String name in propertyNames)
-            {
+            foreach (String name in propertyNames) {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
+
             return new SelectClause(soda.StreamSelector.ISTREAM_ONLY, selectList);
         }
 
@@ -99,14 +100,15 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="propertyNames">is the names of properties to select</param>
         /// <param name="streamSelector">can be used to select insert or remove streams</param>
         /// <returns>select-clause</returns>
-        public static SelectClause Create(StreamSelector streamSelector,
-                                          params String[] propertyNames)
+        public static SelectClause Create(
+            StreamSelector streamSelector,
+            params String[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (String name in propertyNames)
-            {
+            foreach (String name in propertyNames) {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
+
             return new SelectClause(streamSelector, selectList);
         }
 
@@ -115,10 +117,10 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>clause</returns>
         public SelectClause Add(params String[] propertyNames)
         {
-            foreach (String name in propertyNames)
-            {
+            foreach (String name in propertyNames) {
                 _selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
+
             return this;
         }
 
@@ -126,8 +128,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="propertyName">name of property</param>
         /// <param name="asName">is the "as"-asName for the column</param>
         /// <returns>clause</returns>
-        public SelectClause AddWithAsProvidedName(String propertyName,
-                                                  String asName)
+        public SelectClause AddWithAsProvidedName(
+            String propertyName,
+            String asName)
         {
             _selectList.Add(new SelectClauseExpression(new PropertyValueExpression(propertyName), asName));
             return this;
@@ -146,8 +149,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="expression">to add</param>
         /// <param name="asName">is the "as"-provided for the column</param>
         /// <returns>clause</returns>
-        public SelectClause Add(Expression expression,
-                                String asName)
+        public SelectClause Add(
+            Expression expression,
+            String asName)
         {
             _selectList.Add(new SelectClauseExpression(expression, asName));
             return this;
@@ -155,8 +159,7 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns the list of expressions in the select clause. </summary>
         /// <value>list of expressions with column names</value>
-        public IList<SelectClauseElement> SelectList
-        {
+        public IList<SelectClauseElement> SelectList {
             get { return _selectList; }
             set { _selectList = value; }
         }
@@ -182,8 +185,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="streamName">is the name given to a stream</param>
         /// <param name="columnName">the name given to the column</param>
         /// <returns>select-clause</returns>
-        public SelectClause AddStreamWildcard(String streamName,
-                                              String columnName)
+        public SelectClause AddStreamWildcard(
+            String streamName,
+            String columnName)
         {
             _selectList.Add(new SelectClauseStreamWildcard(streamName, columnName));
             return this;
@@ -208,8 +212,7 @@ namespace com.espertech.esper.common.client.soda
         /// Gets or sets the stream selector.
         /// </summary>
         /// <value>The stream selector.</value>
-        public StreamSelector StreamSelector
-        {
+        public StreamSelector StreamSelector {
             get { return _streamSelector; }
             set { _streamSelector = value; }
         }
@@ -229,43 +232,41 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="formatter">for NewLine-whitespace formatting</param>
         /// <param name="isTopLevel">to indicate if this select-clause is inside other clauses.</param>
         /// <param name="andDelete">indicator whether select and delete.</param>
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter, bool isTopLevel, bool andDelete)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter,
+            bool isTopLevel,
+            bool andDelete)
         {
             formatter.BeginSelect(writer, isTopLevel);
             writer.Write("select ");
-            if (andDelete)
-            {
+            if (andDelete) {
                 writer.Write("and delete ");
             }
-            if (IsDistinct)
-            {
+
+            if (IsDistinct) {
                 writer.Write("distinct ");
             }
-            if (_streamSelector == soda.StreamSelector.ISTREAM_ONLY)
-            {
+
+            if (_streamSelector == soda.StreamSelector.ISTREAM_ONLY) {
                 // the default, no action
             }
-            else if (_streamSelector == soda.StreamSelector.RSTREAM_ONLY)
-            {
+            else if (_streamSelector == soda.StreamSelector.RSTREAM_ONLY) {
                 writer.Write("rstream ");
             }
-            else if (_streamSelector == soda.StreamSelector.RSTREAM_ISTREAM_BOTH)
-            {
+            else if (_streamSelector == soda.StreamSelector.RSTREAM_ISTREAM_BOTH) {
                 writer.Write("irstream ");
             }
 
-            if (_selectList != null && !_selectList.IsEmpty())
-            {
+            if (_selectList != null && !_selectList.IsEmpty()) {
                 String delimiter = "";
-                foreach (SelectClauseElement element in _selectList)
-                {
+                foreach (SelectClauseElement element in _selectList) {
                     writer.Write(delimiter);
                     element.ToEPLElement(writer);
                     delimiter = ", ";
                 }
             }
-            else
-            {
+            else {
                 writer.Write('*');
             }
         }

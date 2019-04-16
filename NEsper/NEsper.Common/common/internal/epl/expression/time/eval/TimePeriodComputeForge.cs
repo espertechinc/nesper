@@ -15,6 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
     {
         TimePeriodCompute Evaluator { get; }
 
-        CodegenExpression MakeEvaluator(CodegenMethodScope parent, CodegenClassScope classScope);
+        CodegenExpression MakeEvaluator(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope);
     }
 } // end of namespace

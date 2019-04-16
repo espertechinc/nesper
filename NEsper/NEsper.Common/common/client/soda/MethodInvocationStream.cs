@@ -36,7 +36,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="className">is the name of the class providing the method</param>
         /// <param name="methodName">is the name of the public static method</param>
         /// <param name="optStreamName">is the optional as-name of the stream, or null if unnamed</param>
-        public MethodInvocationStream(string className, string methodName, string optStreamName) : base(optStreamName)
+        public MethodInvocationStream(
+            string className,
+            string methodName,
+            string optStreamName)
+            : base(optStreamName)
         {
             this.className = className;
             this.methodName = methodName;
@@ -85,7 +89,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="className">is the name of the class providing the method</param>
         /// <param name="methodName">is the name of the public static method</param>
         /// <returns>stream</returns>
-        public static MethodInvocationStream Create(string className, string methodName)
+        public static MethodInvocationStream Create(
+            string className,
+            string methodName)
         {
             return new MethodInvocationStream(className, methodName, null);
         }
@@ -97,7 +103,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="methodName">is the name of the public static method</param>
         /// <param name="optStreamName">is the optional as-name of the stream, or null if unnamed</param>
         /// <returns>stream</returns>
-        public static MethodInvocationStream Create(string className, string methodName, string optStreamName)
+        public static MethodInvocationStream Create(
+            string className,
+            string methodName,
+            string optStreamName)
         {
             return new MethodInvocationStream(className, methodName, optStreamName);
         }
@@ -113,7 +122,9 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override void ToEPLStream(TextWriter writer, EPStatementFormatter formatter)
+        public override void ToEPLStream(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             writer.Write("method:");
             writer.Write(className);

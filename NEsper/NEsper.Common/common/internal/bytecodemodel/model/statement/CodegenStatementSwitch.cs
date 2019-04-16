@@ -16,56 +16,69 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
-	public class CodegenStatementSwitch : CodegenStatementWBlockBase {
-	    private readonly string @ref;
-	    private readonly int[] options;
-	    private readonly CodegenBlock[] blocks;
-	    private readonly bool blocksReturnValues;
+    public class CodegenStatementSwitch : CodegenStatementWBlockBase
+    {
+        private readonly string @ref;
+        private readonly int[] options;
+        private readonly CodegenBlock[] blocks;
+        private readonly bool blocksReturnValues;
 
-	    public CodegenStatementSwitch(CodegenBlock parent, string @ref, int[] options, bool blocksReturnValues) : base(parent)
-	        {
-	        this.@ref = @ref;
-	        this.options = options;
-	        blocks = new CodegenBlock[options.Length];
-	        for (int i = 0; i < options.Length; i++) {
-	            blocks[i] = new CodegenBlock(this);
-	        }
-	        this.blocksReturnValues = blocksReturnValues;
-	    }
+        public CodegenStatementSwitch(
+            CodegenBlock parent,
+            string @ref,
+            int[] options,
+            bool blocksReturnValues)
+            : base(parent)
+        {
+            this.@ref = @ref;
+            this.options = options;
+            blocks = new CodegenBlock[options.Length];
+            for (int i = 0; i < options.Length; i++) {
+                blocks[i] = new CodegenBlock(this);
+            }
 
-	    public CodegenBlock[] Blocks
-	    {
-	        get => blocks;
-	    }
+            this.blocksReturnValues = blocksReturnValues;
+        }
 
-	    public override void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level, CodegenIndent indent) {
-	        builder.Append("switch(").Append(@ref).Append(") {\n");
+        public CodegenBlock[] Blocks {
+            get => blocks;
+        }
 
-	        for (int i = 0; i < options.Length; i++) {
-	            indent.Indent(builder, level + 1);
-	            builder.Append("case ").Append(options[i]).Append(": {\n");
-	            blocks[i].Render(builder, imports, isInnerClass, level + 2, indent);
+        public override void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
+        {
+            builder.Append("switch(").Append(@ref).Append(") {\n");
 
-	            if (!blocksReturnValues) {
-	                indent.Indent(builder, level + 2);
-	                builder.Append("break;\n");
-	            }
+            for (int i = 0; i < options.Length; i++) {
+                indent.Indent(builder, level + 1);
+                builder.Append("case ").Append(options[i]).Append(": {\n");
+                blocks[i].Render(builder, imports, isInnerClass, level + 2, indent);
 
-	            indent.Indent(builder, level + 1);
-	            builder.Append("}\n");
-	        }
+                if (!blocksReturnValues) {
+                    indent.Indent(builder, level + 2);
+                    builder.Append("break;\n");
+                }
 
-	        indent.Indent(builder, level + 1);
-	        builder.Append("default: throw new UnsupportedOperationException();\n");
+                indent.Indent(builder, level + 1);
+                builder.Append("}\n");
+            }
 
-	        indent.Indent(builder, level);
-	        builder.Append("}\n");
-	    }
+            indent.Indent(builder, level + 1);
+            builder.Append("default: throw new UnsupportedOperationException();\n");
 
-	    public override void MergeClasses(ISet<Type> classes) {
-	        for (int i = 0; i < blocks.Length; i++) {
-	            blocks[i].MergeClasses(classes);
-	        }
-	    }
-	}
+            indent.Indent(builder, level);
+            builder.Append("}\n");
+        }
+
+        public override void MergeClasses(ISet<Type> classes)
+        {
+            for (int i = 0; i < blocks.Length; i++) {
+                blocks[i].MergeClasses(classes);
+            }
+        }
+    }
 } // end of namespace

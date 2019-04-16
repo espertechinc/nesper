@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.compat;
@@ -17,27 +16,38 @@ using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
-	public interface ContextControllerInitTermSvc {
-	    void MgmtCreate(IntSeqKey controllerPath, object[] parentPartitionKeys);
+    public interface ContextControllerInitTermSvc
+    {
+        void MgmtCreate(
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys);
 
-	    object[] MgmtGetParentPartitionKeys(IntSeqKey controllerPath);
+        object[] MgmtGetParentPartitionKeys(IntSeqKey controllerPath);
 
-	    int MgmtUpdIncSubpath(IntSeqKey controllerPath);
+        int MgmtUpdIncSubpath(IntSeqKey controllerPath);
 
-	    ContextControllerConditionNonHA MgmtUpdClearStartCondition(IntSeqKey controllerPath);
+        ContextControllerConditionNonHA MgmtUpdClearStartCondition(IntSeqKey controllerPath);
 
-	    void MgmtUpdSetStartCondition(IntSeqKey controllerPath, ContextControllerConditionNonHA startCondition);
+        void MgmtUpdSetStartCondition(
+            IntSeqKey controllerPath,
+            ContextControllerConditionNonHA startCondition);
 
-	    ContextControllerConditionNonHA MgmtDelete(IntSeqKey controllerPath);
+        ContextControllerConditionNonHA MgmtDelete(IntSeqKey controllerPath);
 
-	    void EndCreate(IntSeqKey endConditionPath, int subpathIdOrCPId, ContextControllerConditionNonHA endCondition, ContextControllerInitTermPartitionKey partitionKey);
+        void EndCreate(
+            IntSeqKey endConditionPath,
+            int subpathIdOrCPId,
+            ContextControllerConditionNonHA endCondition,
+            ContextControllerInitTermPartitionKey partitionKey);
 
-	    ICollection<ContextControllerInitTermSvcEntry> EndDeleteByParentPath(IntSeqKey controllerPath);
+        ICollection<ContextControllerInitTermSvcEntry> EndDeleteByParentPath(IntSeqKey controllerPath);
 
-	    ContextControllerInitTermSvcEntry EndDelete(IntSeqKey conditionPath);
+        ContextControllerInitTermSvcEntry EndDelete(IntSeqKey conditionPath);
 
-	    void EndVisit(IntSeqKey controllerPath, BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId);
+        void EndVisit(
+            IntSeqKey controllerPath,
+            BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId);
 
-	    void Destroy();
-	}
+        void Destroy();
+    }
 } // end of namespace

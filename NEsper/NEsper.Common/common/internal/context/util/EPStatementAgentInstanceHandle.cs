@@ -15,7 +15,8 @@ namespace com.espertech.esper.common.@internal.context.util
         private readonly int hashCode;
 
         public EPStatementAgentInstanceHandle(
-            EPStatementHandle statementHandle, int agentInstanceId,
+            EPStatementHandle statementHandle,
+            int agentInstanceId,
             StatementAgentInstanceLock statementAgentInstanceLock)
         {
             StatementHandle = statementHandle;

@@ -35,12 +35,16 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         protected abstract Type ResultType { get; }
 
         public abstract CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
         public abstract string ToQueryPlan();
 
         public abstract CodegenExpression Make(
-            Type optionalCoercionType, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            Type optionalCoercionType,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
 
         public static string ToQueryPlan(IList<QueryGraphValueEntryRangeForge> rangeKeyPairs)
@@ -57,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public static CodegenExpression MakeArray(
-            QueryGraphValueEntryRangeForge[] ranges, CodegenMethod method, SAIFFInitializeSymbol symbols,
+            QueryGraphValueEntryRangeForge[] ranges,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var expressions = new CodegenExpression[ranges.Length];

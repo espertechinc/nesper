@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -18,7 +17,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class OnTriggerMergeActionDelete : OnTriggerMergeAction
     {
-        public OnTriggerMergeActionDelete(ExprNode optionalMatchCond) : base(optionalMatchCond)
+        public OnTriggerMergeActionDelete(ExprNode optionalMatchCond)
+            : base(optionalMatchCond)
         {
         }
     }

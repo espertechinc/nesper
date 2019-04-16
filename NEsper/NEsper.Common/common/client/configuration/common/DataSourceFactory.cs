@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -24,7 +23,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="properties">to pass to the data source factory</param>
         /// <param name="factoryClassname">the class name of the data source factory</param>
-        public DataSourceFactory(Properties properties, string factoryClassname)
+        public DataSourceFactory(
+            Properties properties,
+            string factoryClassname)
         {
             Properties = properties;
             FactoryClassname = factoryClassname;
@@ -47,7 +48,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="name">key</param>
         /// <param name="value">value of property</param>
-        public void AddProperty(string name, string value)
+        public void AddProperty(
+            string name,
+            string value)
         {
             Properties.Put(name, value);
         }

@@ -45,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             this.allTags = allTags;
         }
 
-        public CodegenMethod Make(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenMethod Make(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var size = filterTypes.Count + arrayEventTypes.Count;
             var method = parent.MakeChild(typeof(EventBean[]), GetType(), classScope)
@@ -87,7 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             return method;
         }
 
-        private int FindTag(ISet<string> allTags, string tag)
+        private int FindTag(
+            ISet<string> allTags,
+            string tag)
         {
             var index = 0;
             foreach (var oneTag in allTags) {
@@ -101,7 +105,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             throw new IllegalStateException("Unexpected tag '" + tag + "'");
         }
 
-        public CodegenExpression MakeAnonymous(CodegenMethod method, CodegenClassScope classScope)
+        public CodegenExpression MakeAnonymous(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             var clazz = NewAnonymousClass(method.Block, typeof(MatchedEventConvertor));
             var convert = CodegenMethod.MakeParentNode(typeof(EventBean[]), GetType(), classScope)

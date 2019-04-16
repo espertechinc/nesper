@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         /// <param name="optionalStreamName">stream name, or null if none supplied</param>
         /// <param name="streamSpecOptions">additional options such as unidirectional stream in a join</param>
         public FilterStreamSpecCompiled(
-            FilterSpecCompiled filterSpec, ViewSpec[] viewSpecs, string optionalStreamName,
+            FilterSpecCompiled filterSpec,
+            ViewSpec[] viewSpecs,
+            string optionalStreamName,
             StreamSpecOptions streamSpecOptions)
             : base(optionalStreamName, viewSpecs, streamSpecOptions)
         {

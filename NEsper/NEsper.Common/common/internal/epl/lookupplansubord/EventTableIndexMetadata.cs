@@ -22,8 +22,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             new Dictionary<IndexMultiKey, EventTableIndexMetadataEntry>();
 
         public void AddIndexExplicit(
-            bool isPrimary, IndexMultiKey indexMultiKey, string explicitIndexName, string explicitIndexModuleName,
-            QueryPlanIndexItem explicitIndexDesc, string deploymentId)
+            bool isPrimary,
+            IndexMultiKey indexMultiKey,
+            string explicitIndexName,
+            string explicitIndexModuleName,
+            QueryPlanIndexItem explicitIndexDesc,
+            string deploymentId)
         {
             if (GetIndexByName(explicitIndexName) != null) {
                 throw new ExprValidationException("An index by name '" + explicitIndexName + "' already exists");
@@ -41,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         public void AddIndexNonExplicit(
-            IndexMultiKey indexMultiKey, string deploymentId, QueryPlanIndexItem queryPlanIndexItem)
+            IndexMultiKey indexMultiKey,
+            string deploymentId,
+            QueryPlanIndexItem queryPlanIndexItem)
         {
             if (indexMultiKey == null) {
                 throw new ArgumentException("Null index multikey");
@@ -62,7 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             Indexes.Remove(imk);
         }
 
-        public bool RemoveIndexReference(IndexMultiKey index, string referringDeploymentId)
+        public bool RemoveIndexReference(
+            IndexMultiKey index,
+            string referringDeploymentId)
         {
             if (index == null) {
                 throw new ArgumentException("Null index multikey");
@@ -76,19 +84,25 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             return entry.RemoveReferringStatement(referringDeploymentId);
         }
 
-        public void AddIndexReference(string indexName, string deploymentId)
+        public void AddIndexReference(
+            string indexName,
+            string deploymentId)
         {
             var entry = FindIndex(indexName);
             entry?.Value.AddReferringDeployment(deploymentId);
         }
 
-        public void RemoveIndexReference(string indexName, string deploymentId)
+        public void RemoveIndexReference(
+            string indexName,
+            string deploymentId)
         {
             var entry = FindIndex(indexName);
             entry?.Value.RemoveReferringStatement(deploymentId);
         }
 
-        public void AddIndexReference(IndexMultiKey indexMultiKey, string deploymentId)
+        public void AddIndexReference(
+            IndexMultiKey indexMultiKey,
+            string deploymentId)
         {
             var entry = Indexes.Get(indexMultiKey);
             entry?.AddReferringDeployment(deploymentId);

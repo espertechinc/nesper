@@ -7,78 +7,76 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
-	public class ScriptDescriptorCompileTime {
-	    private readonly string optionalDialect;
-	    private readonly string scriptName;
-	    private readonly string expression;
-	    private readonly string[] parameterNames;
-	    private readonly ExprForge[] parameters;
-	    private readonly Type returnType;
-	    private readonly string defaultDialect;
+    public class ScriptDescriptorCompileTime
+    {
+        private readonly string defaultDialect;
 
-	    public ScriptDescriptorCompileTime(string optionalDialect, string scriptName, string expression, string[] parameterNames, ExprForge[] parameters, Type returnType, string defaultDialect) {
-	        this.optionalDialect = optionalDialect;
-	        this.scriptName = scriptName;
-	        this.expression = expression;
-	        this.parameterNames = parameterNames;
-	        this.parameters = parameters;
-	        this.returnType = returnType;
-	        this.defaultDialect = defaultDialect;
-	    }
+        public ScriptDescriptorCompileTime(
+            string optionalDialect,
+            string scriptName,
+            string expression,
+            string[] parameterNames,
+            ExprForge[] parameters,
+            Type returnType,
+            string defaultDialect)
+        {
+            OptionalDialect = optionalDialect;
+            ScriptName = scriptName;
+            Expression = expression;
+            ParameterNames = parameterNames;
+            Parameters = parameters;
+            ReturnType = returnType;
+            this.defaultDialect = defaultDialect;
+        }
 
-	    public CodegenExpression Make(CodegenMethodScope parentInitMethod, CodegenClassScope classScope) {
-	        CodegenMethod method = parentInitMethod.MakeChild(typeof(ScriptDescriptorRuntime), this.GetType(), classScope).AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
-	        method.Block
-	                .DeclareVar(typeof(ScriptDescriptorRuntime), "sd", NewInstance(typeof(ScriptDescriptorRuntime)))
-	                .ExprDotMethod(@Ref("sd"), "setOptionalDialect", Constant(optionalDialect))
-	                .ExprDotMethod(@Ref("sd"), "setScriptName", Constant(scriptName))
-	                .ExprDotMethod(@Ref("sd"), "setExpression", Constant(expression))
-	                .ExprDotMethod(@Ref("sd"), "setParameterNames", Constant(parameterNames))
-	                .ExprDotMethod(@Ref("sd"), "setEvaluationTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(parameters)))
-	                .ExprDotMethod(@Ref("sd"), "setParameters", ExprNodeUtilityCodegen.CodegenEvaluators(parameters, method, this.GetType(), classScope))
-	                .ExprDotMethod(@Ref("sd"), "setDefaultDialect", Constant(defaultDialect))
-	                .ExprDotMethod(@Ref("sd"), "setClasspathImportService", ExprDotMethodChain(EPStatementInitServicesConstants.REF).Add(EPStatementInitServicesConstants.GETCLASSPATHIMPORTSERVICERUNTIME))
-	                .ExprDotMethod(@Ref("sd"), "setCoercer", TypeHelper.IsNumeric(returnType) ? StaticMethod(typeof(SimpleNumberCoercerFactory), "getCoercer", Constant(typeof(object)),
-	                        Constant(Boxing.GetBoxedType(returnType))) : ConstantNull())
-	                .MethodReturn(@Ref("sd"));
-	        return LocalMethod(method, EPStatementInitServicesConstants.REF);
-	    }
+        public string OptionalDialect { get; }
 
-	    public string OptionalDialect {
-	        get => optionalDialect;
-	    }
+        public string ScriptName { get; }
 
-	    public string ScriptName {
-	        get => scriptName;
-	    }
+        public string Expression { get; }
 
-	    public string Expression {
-	        get => expression;
-	    }
+        public string[] ParameterNames { get; }
 
-	    public string[] GetParameterNames() {
-	        return parameterNames;
-	    }
+        public ExprForge[] Parameters { get; }
 
-	    public ExprForge[] GetParameters() {
-	        return parameters;
-	    }
+        public Type ReturnType { get; }
 
-	    public Type ReturnType {
-	        get => returnType;
-	    }
-	}
+        public CodegenExpression Make(
+            CodegenMethodScope parentInitMethod,
+            CodegenClassScope classScope)
+        {
+            var method = parentInitMethod.MakeChild(typeof(ScriptDescriptorRuntime), GetType(), classScope).AddParam(
+                typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+            method.Block
+                .DeclareVar(typeof(ScriptDescriptorRuntime), "sd", NewInstance(typeof(ScriptDescriptorRuntime)))
+                .SetProperty(Ref("sd"), "OptionalDialect", Constant(OptionalDialect))
+                .SetProperty(Ref("sd"), "ScriptName", Constant(ScriptName))
+                .SetProperty(Ref("sd"), "Expression", Constant(Expression))
+                .SetProperty(Ref("sd"), "ParameterNames", Constant(ParameterNames))
+                .SetProperty(Ref("sd"), "EvaluationTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(Parameters)))
+                .SetProperty(Ref("sd"), "Parameters", ExprNodeUtilityCodegen.CodegenEvaluators(Parameters, method, GetType(), classScope))
+                .SetProperty(Ref("sd"), "DefaultDialect", Constant(defaultDialect))
+                .SetProperty(
+                    Ref("sd"), "ClasspathImportService",
+                    ExprDotMethodChain(EPStatementInitServicesConstants.REF).Add(EPStatementInitServicesConstants.GETCLASSPATHIMPORTSERVICERUNTIME))
+                .SetProperty(
+                    Ref("sd"), "Coercer", ReturnType.IsNumeric()
+                        ? StaticMethod(
+                            typeof(SimpleNumberCoercerFactory), "GetCoercer", Constant(typeof(object)),
+                            Constant(ReturnType.GetBoxedType()))
+                        : ConstantNull())
+                .MethodReturn(Ref("sd"));
+            return LocalMethod(method, EPStatementInitServicesConstants.REF);
+        }
+    }
 } // end of namespace

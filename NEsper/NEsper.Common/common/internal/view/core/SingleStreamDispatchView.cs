@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.@internal.view.core
             return Parent.GetEnumerator();
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             newDataBuffer.Add(newData);
             oldDataBuffer.Add(oldData);

@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
     /// </summary>
     public class RootOptionalAssemblyNodeFactory : BaseAssemblyNodeFactory
     {
-        public RootOptionalAssemblyNodeFactory(int streamNum, int numStreams) : base(streamNum, numStreams)
+        public RootOptionalAssemblyNodeFactory(
+            int streamNum,
+            int numStreams)
+            : base(streamNum, numStreams)
         {
         }
 
@@ -34,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         }
 
         public override CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return NewInstance(typeof(RootOptionalAssemblyNodeFactory), Constant(streamNum), Constant(numStreams));
         }

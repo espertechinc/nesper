@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly string @operator;
 
         public CodegenStatementAssignCompound(
-            CodegenExpressionRef expressionRef, string @operator, CodegenExpression assignment)
+            CodegenExpressionRef expressionRef,
+            string @operator,
+            CodegenExpression assignment)
         {
             this.expressionRef = expressionRef;
             this.@operator = @operator;
@@ -29,7 +31,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             expressionRef.Render(builder, imports, isInnerClass);
             builder.Append(@operator);

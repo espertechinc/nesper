@@ -8,31 +8,34 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.compile
 {
-	public class EnumMethodCallStackHelperImpl : EnumMethodCallStackHelper {
+    public class EnumMethodCallStackHelperImpl : EnumMethodCallStackHelper
+    {
+        private Deque<ExpressionResultCacheStackEntry> callStack;
 
-	    private Deque<ExpressionResultCacheStackEntry> callStack;
+        public void PushStack(ExpressionResultCacheStackEntry lambda)
+        {
+            if (callStack == null) {
+                callStack = new ArrayDeque<ExpressionResultCacheStackEntry>();
+            }
 
-	    public void PushStack(ExpressionResultCacheStackEntry lambda) {
-	        if (callStack == null) {
-	            callStack = new ArrayDeque<ExpressionResultCacheStackEntry>();
-	        }
-	        callStack.Push(lambda);
-	    }
+            callStack.AddFirst(lambda); //Push(lambda);
+        }
 
-	    public bool PopLambda() {
-	        callStack.Remove();
-	        return callStack.IsEmpty();
-	    }
+        public bool PopLambda()
+        {
+            callStack.RemoveFirst(); //Remove();
+            return callStack.IsEmpty();
+        }
 
-	    public Deque<ExpressionResultCacheStackEntry> GetStack() {
-	        return callStack;
-	    }
-	}
+        public Deque<ExpressionResultCacheStackEntry> GetStack()
+        {
+            return callStack;
+        }
+    }
 } // end of namespace

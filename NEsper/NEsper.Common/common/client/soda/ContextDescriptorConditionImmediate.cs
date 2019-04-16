@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             writer.Write("@now");
         }

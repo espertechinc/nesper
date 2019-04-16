@@ -28,15 +28,21 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly Table table;
         private TableUpdateStrategy tableUpdateStrategy;
 
-        public InfraOnMergeActionUpd(ExprEvaluator optionalFilter, EventBeanUpdateHelperWCopy namedWindowUpdate) : base(
-            optionalFilter)
+        public InfraOnMergeActionUpd(
+            ExprEvaluator optionalFilter,
+            EventBeanUpdateHelperWCopy namedWindowUpdate)
+            : base(
+                optionalFilter)
         {
             this.namedWindowUpdate = namedWindowUpdate;
             tableUpdate = null;
         }
 
         public InfraOnMergeActionUpd(
-            ExprEvaluator optionalFilter, EventBeanUpdateHelperNoCopy tableUpdate, Table table) : base(optionalFilter)
+            ExprEvaluator optionalFilter,
+            EventBeanUpdateHelperNoCopy tableUpdate,
+            Table table)
+            : base(optionalFilter)
         {
             this.tableUpdate = tableUpdate;
             namedWindowUpdate = null;
@@ -46,7 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
         public override string Name => "update";
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             table.AddUpdateStrategyCallback(this);
             statementContext.AddFinalizeCallback(
@@ -71,8 +80,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         public override void Apply(
-            EventBean matchingEvent, EventBean[] eventsPerStream, OneEventCollection newData,
-            OneEventCollection oldData, AgentInstanceContext agentInstanceContext)
+            EventBean matchingEvent,
+            EventBean[] eventsPerStream,
+            OneEventCollection newData,
+            OneEventCollection oldData,
+            AgentInstanceContext agentInstanceContext)
         {
             var copy = namedWindowUpdate.UpdateWCopy(matchingEvent, eventsPerStream, agentInstanceContext);
             newData.Add(copy);
@@ -80,8 +92,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         public override void Apply(
-            EventBean matchingEvent, EventBean[] eventsPerStream, TableInstance tableStateInstance,
-            OnExprViewTableChangeHandler changeHandlerAdded, OnExprViewTableChangeHandler changeHandlerRemoved,
+            EventBean matchingEvent,
+            EventBean[] eventsPerStream,
+            TableInstance tableStateInstance,
+            OnExprViewTableChangeHandler changeHandlerAdded,
+            OnExprViewTableChangeHandler changeHandlerRemoved,
             AgentInstanceContext agentInstanceContext)
         {
             if (changeHandlerRemoved != null) {

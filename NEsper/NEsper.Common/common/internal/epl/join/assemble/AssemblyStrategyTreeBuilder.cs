@@ -18,106 +18,131 @@ using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
-	/// <summary>
-	/// Builds a tree of assembly nodes given a strategy for how to join streams.
-	/// </summary>
-	public class AssemblyStrategyTreeBuilder {
-	    /// <summary>
-	    /// Builds a tree of <seealso cref="BaseAssemblyNode" /> from join strategy information.
-	    /// </summary>
-	    /// <param name="rootStream">the root stream supplying the event to evaluate</param>
-	    /// <param name="streamsJoinedPerStream">a map in which the key is the stream number to supply an event,and the value is an array of streams to find events in for the given event
-	    /// </param>
-	    /// <param name="isRequiredPerStream">indicates which streams are required join streams versus optional streams</param>
-	    /// <returns>root assembly node</returns>
-	    public static BaseAssemblyNodeFactory Build(int rootStream, IDictionary<int, int[]> streamsJoinedPerStream, bool[] isRequiredPerStream) {
-	        if (streamsJoinedPerStream.Count < 3) {
-	            throw new ArgumentException("Not a 3-way join");
-	        }
-	        if ((rootStream < 0) || (rootStream >= streamsJoinedPerStream.Count)) {
-	            throw new ArgumentException("Invalid root stream");
-	        }
-	        if (isRequiredPerStream.Length != streamsJoinedPerStream.Count) {
-	            throw new ArgumentException("Arrays not matching up");
-	        }
+    /// <summary>
+    /// Builds a tree of assembly nodes given a strategy for how to join streams.
+    /// </summary>
+    public class AssemblyStrategyTreeBuilder
+    {
+        /// <summary>
+        /// Builds a tree of <seealso cref="BaseAssemblyNode" /> from join strategy information.
+        /// </summary>
+        /// <param name="rootStream">the root stream supplying the event to evaluate</param>
+        /// <param name="streamsJoinedPerStream">a map in which the key is the stream number to supply an event,and the value is an array of streams to find events in for the given event
+        /// </param>
+        /// <param name="isRequiredPerStream">indicates which streams are required join streams versus optional streams</param>
+        /// <returns>root assembly node</returns>
+        public static BaseAssemblyNodeFactory Build(
+            int rootStream,
+            IDictionary<int, int[]> streamsJoinedPerStream,
+            bool[] isRequiredPerStream)
+        {
+            if (streamsJoinedPerStream.Count < 3) {
+                throw new ArgumentException("Not a 3-way join");
+            }
 
-	        NStreamOuterQueryPlanBuilder.VerifyJoinedPerStream(rootStream, streamsJoinedPerStream);
+            if ((rootStream < 0) || (rootStream >= streamsJoinedPerStream.Count)) {
+                throw new ArgumentException("Invalid root stream");
+            }
 
-	        if (Log.IsDebugEnabled) {
-	            Log.Debug(".build Building node for root stream " + rootStream +
-	                    " streamsJoinedPerStream=" + NStreamOuterQueryPlanBuilder.Print(streamsJoinedPerStream) +
-	                    " isRequiredPerStream=" + CompatExtensions.Render(isRequiredPerStream));
-	        }
+            if (isRequiredPerStream.Length != streamsJoinedPerStream.Count) {
+                throw new ArgumentException("Arrays not matching up");
+            }
 
-	        BaseAssemblyNodeFactory topNode = CreateNode(true, rootStream, streamsJoinedPerStream.Count, streamsJoinedPerStream.Get(rootStream), isRequiredPerStream);
+            NStreamOuterQueryPlanBuilder.VerifyJoinedPerStream(rootStream, streamsJoinedPerStream);
 
-	        RecursiveBuild(rootStream, topNode, streamsJoinedPerStream, isRequiredPerStream);
+            if (Log.IsDebugEnabled) {
+                Log.Debug(
+                    ".build Building node for root stream " + rootStream +
+                    " streamsJoinedPerStream=" + NStreamOuterQueryPlanBuilder.Print(streamsJoinedPerStream) +
+                    " isRequiredPerStream=" + CompatExtensions.Render(isRequiredPerStream));
+            }
 
-	        if (Log.IsDebugEnabled) {
-	            StringWriter buf = new StringWriter();
-	            IndentWriter indentWriter = new IndentWriter(buf, 0, 2);
-	            topNode.PrintDescendends(indentWriter);
+            BaseAssemblyNodeFactory topNode = CreateNode(
+                true, rootStream, streamsJoinedPerStream.Count, streamsJoinedPerStream.Get(rootStream), isRequiredPerStream);
 
-	            Log.Debug(".build Dumping root node for stream " + rootStream + ": \n" + buf.ToString());
-	        }
+            RecursiveBuild(rootStream, topNode, streamsJoinedPerStream, isRequiredPerStream);
 
-	        return topNode;
-	    }
+            if (Log.IsDebugEnabled) {
+                StringWriter buf = new StringWriter();
+                IndentWriter indentWriter = new IndentWriter(buf, 0, 2);
+                topNode.PrintDescendends(indentWriter);
 
-	    private static void RecursiveBuild(int parentStreamNum, BaseAssemblyNodeFactory parentNode,
-	                                       IDictionary<int, int[]> streamsJoinedPerStream, bool[] isRequiredPerStream) {
-	        int numStreams = streamsJoinedPerStream.Count;
+                Log.Debug(".build Dumping root node for stream " + rootStream + ": \n" + buf.ToString());
+            }
 
-	        for (int i = 0; i < streamsJoinedPerStream.Get(parentStreamNum).Length; i++) {
-	            int streamJoined = streamsJoinedPerStream.Get(parentStreamNum)[i];
-	            BaseAssemblyNodeFactory childNode = CreateNode(false, streamJoined, numStreams, streamsJoinedPerStream.Get(streamJoined), isRequiredPerStream);
-	            parentNode.AddChild(childNode);
+            return topNode;
+        }
 
-	            if (streamsJoinedPerStream.Get(streamJoined).Length > 0) {
-	                RecursiveBuild(streamJoined, childNode, streamsJoinedPerStream, isRequiredPerStream);
-	            }
-	        }
-	    }
+        private static void RecursiveBuild(
+            int parentStreamNum,
+            BaseAssemblyNodeFactory parentNode,
+            IDictionary<int, int[]> streamsJoinedPerStream,
+            bool[] isRequiredPerStream)
+        {
+            int numStreams = streamsJoinedPerStream.Count;
 
-	    private static BaseAssemblyNodeFactory CreateNode(bool isRoot, int streamNum, int numStreams, int[] joinedStreams, bool[] isRequiredPerStream) {
-	        if (joinedStreams.Length == 0) {
-	            return new LeafAssemblyNodeFactory(streamNum, numStreams);
-	        }
-	        if (joinedStreams.Length == 1) {
-	            int joinedStream = joinedStreams[0];
-	            bool isRequired = isRequiredPerStream[joinedStream];
-	            if (isRequired) {
-	                if (isRoot) {
-	                    return new RootRequiredAssemblyNodeFactory(streamNum, numStreams);
-	                } else {
-	                    return new BranchRequiredAssemblyNodeFactory(streamNum, numStreams);
-	                }
-	            } else {
-	                if (isRoot) {
-	                    return new RootOptionalAssemblyNodeFactory(streamNum, numStreams);
-	                } else {
-	                    return new BranchOptionalAssemblyNodeFactory(streamNum, numStreams);
-	                }
-	            }
-	        }
+            for (int i = 0; i < streamsJoinedPerStream.Get(parentStreamNum).Length; i++) {
+                int streamJoined = streamsJoinedPerStream.Get(parentStreamNum)[i];
+                BaseAssemblyNodeFactory childNode = CreateNode(
+                    false, streamJoined, numStreams, streamsJoinedPerStream.Get(streamJoined), isRequiredPerStream);
+                parentNode.AddChild(childNode);
 
-	        // Determine if all substream are outer (optional) joins
-	        bool allSubStreamsOptional = true;
-	        for (int i = 0; i < joinedStreams.Length; i++) {
-	            int stream = joinedStreams[i];
-	            if (isRequiredPerStream[stream]) {
-	                allSubStreamsOptional = false;
-	            }
-	        }
+                if (streamsJoinedPerStream.Get(streamJoined).Length > 0) {
+                    RecursiveBuild(streamJoined, childNode, streamsJoinedPerStream, isRequiredPerStream);
+                }
+            }
+        }
 
-	        // Make node for building a cartesian product
-	        if (isRoot) {
-	            return new RootCartProdAssemblyNodeFactory(streamNum, numStreams, allSubStreamsOptional);
-	        } else {
-	            return new CartesianProdAssemblyNodeFactory(streamNum, numStreams, allSubStreamsOptional);
-	        }
-	    }
+        private static BaseAssemblyNodeFactory CreateNode(
+            bool isRoot,
+            int streamNum,
+            int numStreams,
+            int[] joinedStreams,
+            bool[] isRequiredPerStream)
+        {
+            if (joinedStreams.Length == 0) {
+                return new LeafAssemblyNodeFactory(streamNum, numStreams);
+            }
 
-	    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-	}
+            if (joinedStreams.Length == 1) {
+                int joinedStream = joinedStreams[0];
+                bool isRequired = isRequiredPerStream[joinedStream];
+                if (isRequired) {
+                    if (isRoot) {
+                        return new RootRequiredAssemblyNodeFactory(streamNum, numStreams);
+                    }
+                    else {
+                        return new BranchRequiredAssemblyNodeFactory(streamNum, numStreams);
+                    }
+                }
+                else {
+                    if (isRoot) {
+                        return new RootOptionalAssemblyNodeFactory(streamNum, numStreams);
+                    }
+                    else {
+                        return new BranchOptionalAssemblyNodeFactory(streamNum, numStreams);
+                    }
+                }
+            }
+
+            // Determine if all substream are outer (optional) joins
+            bool allSubStreamsOptional = true;
+            for (int i = 0; i < joinedStreams.Length; i++) {
+                int stream = joinedStreams[i];
+                if (isRequiredPerStream[stream]) {
+                    allSubStreamsOptional = false;
+                }
+            }
+
+            // Make node for building a cartesian product
+            if (isRoot) {
+                return new RootCartProdAssemblyNodeFactory(streamNum, numStreams, allSubStreamsOptional);
+            }
+            else {
+                return new CartesianProdAssemblyNodeFactory(streamNum, numStreams, allSubStreamsOptional);
+            }
+        }
+
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    }
 } // end of namespace

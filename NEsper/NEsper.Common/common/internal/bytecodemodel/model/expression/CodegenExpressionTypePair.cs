@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionTypePair
     {
-        public CodegenExpressionTypePair(Type type, CodegenExpression expression)
+        public CodegenExpressionTypePair(
+            Type type,
+            CodegenExpression expression)
         {
             Type = type;
             Expression = expression;

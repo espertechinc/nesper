@@ -12,7 +12,10 @@ namespace com.espertech.esper.common.@internal.util
 {
     public interface TriConsumer<T, U, V>
     {
-        void Accept(T t, U u, V v);
+        void Accept(
+            T t,
+            U u,
+            V v);
     }
 
     public class ProxyTriConsumer<T, U, V> : TriConsumer<T, U, V>
@@ -28,7 +31,10 @@ namespace com.espertech.esper.common.@internal.util
             ProcAccept = procAccept;
         }
 
-        public void Accept(T t, U u, V v)
+        public void Accept(
+            T t,
+            U u,
+            V v)
         {
             ProcAccept(t, u, v);
         }

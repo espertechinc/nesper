@@ -24,7 +24,11 @@ namespace com.espertech.esper.common.client.hook.condition
         /// <param name="statementName">statement name</param>
         /// <param name="epl">statement EPL expression text</param>
         /// <param name="engineCondition">condition reported</param>
-        public ConditionHandlerContext(String engineURI, String statementName, String epl, BaseCondition engineCondition)
+        public ConditionHandlerContext(
+            String engineURI,
+            String statementName,
+            String epl,
+            BaseCondition engineCondition)
         {
             EngineURI = engineURI;
             StatementName = statementName;

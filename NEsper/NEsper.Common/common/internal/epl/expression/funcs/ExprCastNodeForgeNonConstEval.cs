@@ -22,14 +22,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly ExprCastNodeForge forge;
 
         public ExprCastNodeForgeNonConstEval(
-            ExprCastNodeForge forge, ExprEvaluator evaluator, ExprCastNode.CasterParserComputer casterParserComputer)
+            ExprCastNodeForge forge,
+            ExprEvaluator evaluator,
+            ExprCastNode.CasterParserComputer casterParserComputer)
         {
             this.forge = forge;
             this.evaluator = evaluator;
             this.casterParserComputer = casterParserComputer;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var result = evaluator.Evaluate(eventsPerStream, isNewData, context);
             if (result != null) {
@@ -40,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public static CodegenExpression Codegen(
-            ExprCastNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprCastNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (forge.EvaluationType == null) {

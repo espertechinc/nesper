@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
     /// </summary>
     public class ExprSumNode : ExprAggregateNodeBase
     {
-        public ExprSumNode(bool distinct) : base(distinct)
+        public ExprSumNode(bool distinct)
+            : base(distinct)
         {
         }
 
@@ -31,8 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             IsFilter = positionalParams.Length > 1;
-            if (IsFilter)
-            {
+            if (IsFilter) {
                 optionalFilter = positionalParams[1];
             }
 

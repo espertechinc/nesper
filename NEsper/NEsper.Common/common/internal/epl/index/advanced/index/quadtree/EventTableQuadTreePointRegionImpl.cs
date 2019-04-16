@@ -9,14 +9,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex;
-
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree.AdvancedIndexPointRegionQuadTree;
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.service.AdvancedIndexEvaluationHelper;
 
@@ -29,19 +27,29 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         private readonly AdvancedIndexConfigStatementPointRegionQuadtree config;
         private readonly PointRegionQuadTree<object> quadTree;
 
-        public EventTableQuadTreePointRegionImpl(EventTableOrganization organization, AdvancedIndexConfigStatementPointRegionQuadtree config, PointRegionQuadTree<object> quadTree)
+        public EventTableQuadTreePointRegionImpl(
+            EventTableOrganization organization,
+            AdvancedIndexConfigStatementPointRegionQuadtree config,
+            PointRegionQuadTree<object> quadTree)
         {
             this.organization = organization;
             this.config = config;
             this.quadTree = quadTree;
         }
 
-        public ICollection<EventBean> QueryRange(double x, double y, double width, double height)
+        public ICollection<EventBean> QueryRange(
+            double x,
+            double y,
+            double width,
+            double height)
         {
-            return (ICollection<EventBean>)PointRegionQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height);
+            return (ICollection<EventBean>) PointRegionQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height);
         }
 
-        public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
+        public void AddRemove(
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
@@ -51,35 +59,42 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             exprEvaluatorContext.InstrumentationProvider.AIndexAddRemove();
         }
 
-        public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            foreach (EventBean added in events)
-            {
+            foreach (EventBean added in events) {
                 Add(added, exprEvaluatorContext);
             }
         }
 
-        public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            foreach (EventBean removed in events)
-            {
+            foreach (EventBean removed in events) {
                 Remove(removed, exprEvaluatorContext);
             }
         }
 
-        public void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
+        public void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             eventsPerStream[0] = @event;
             double x = EvalDoubleColumn(config.XEval, organization.IndexName, COL_X, eventsPerStream, true, exprEvaluatorContext);
             double y = EvalDoubleColumn(config.YEval, organization.IndexName, COL_Y, eventsPerStream, true, exprEvaluatorContext);
             bool added = PointRegionQuadTreeRowIndexAdd.Add(x, y, @event, quadTree, organization.IsUnique, organization.IndexName);
-            if (!added)
-            {
-                throw InvalidColumnValue(organization.IndexName, "(x,y)", "(" + x + "," + y + ")", "a value within index bounding box (range-end-non-inclusive) " + quadTree.Root.Bb);
+            if (!added) {
+                throw InvalidColumnValue(
+                    organization.IndexName, "(x,y)", "(" + x + "," + y + ")",
+                    "a value within index bounding box (range-end-non-inclusive) " + quadTree.Root.Bb);
             }
         }
 
-        public void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
+        public void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             eventsPerStream[0] = @event;
             double x = EvalDoubleColumn(config.XEval, organization.IndexName, COL_X, eventsPerStream, false, exprEvaluatorContext);
@@ -115,28 +130,23 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             return this.GetType().ToString();
         }
 
-        public Type ProviderClass
-        {
+        public Type ProviderClass {
             get => this.GetType();
         }
 
-        public int? NumberOfEvents
-        {
+        public int? NumberOfEvents {
             get => null;
         }
 
-        public int NumKeys
-        {
+        public int NumKeys {
             get => -1;
         }
 
-        public object Index
-        {
+        public object Index {
             get => quadTree;
         }
 
-        public EventTableOrganization Organization
-        {
+        public EventTableOrganization Organization {
             get => organization;
         }
     }

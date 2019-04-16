@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotMethodForgeNoDuckEvalWrapArray : ExprDotMethodForgeNoDuckEvalPlain
     {
-        public ExprDotMethodForgeNoDuckEvalWrapArray(ExprDotMethodForgeNoDuck forge, ExprEvaluator[] parameters)
+        public ExprDotMethodForgeNoDuckEvalWrapArray(
+            ExprDotMethodForgeNoDuck forge,
+            ExprEvaluator[] parameters)
             : base(forge, parameters)
         {
         }
@@ -30,7 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public override EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(forge.Method.ReturnType.GetElementType());
 
         public override object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var result = base.Evaluate(target, eventsPerStream, isNewData, exprEvaluatorContext);
             if (result == null || !result.GetType().IsArray) {
@@ -42,8 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public static CodegenExpression CodegenWrapArray(
             ExprDotMethodForgeNoDuck forge,
-            CodegenExpression inner, Type innerType,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(

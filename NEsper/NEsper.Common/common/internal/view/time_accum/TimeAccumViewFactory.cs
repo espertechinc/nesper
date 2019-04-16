@@ -17,25 +17,25 @@ using com.espertech.esper.common.@internal.view.previous;
 namespace com.espertech.esper.common.@internal.view.time_accum
 {
     public class TimeAccumViewFactory
-        : DataWindowViewFactory
-        , DataWindowViewWithPrevious
+        : DataWindowViewFactory,
+            DataWindowViewWithPrevious
     {
         internal EventType eventType;
         internal int scheduleCallbackId;
         internal TimePeriodCompute timePeriodCompute;
 
-        public TimePeriodCompute TimePeriodCompute
-        {
+        public TimePeriodCompute TimePeriodCompute {
             set => timePeriodCompute = value;
         }
 
-        public int ScheduleCallbackId
-        {
+        public int ScheduleCallbackId {
             get => scheduleCallbackId;
             set => scheduleCallbackId = value;
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 
@@ -47,16 +47,14 @@ namespace com.espertech.esper.common.@internal.view.time_accum
                 .StatementContext
                 .ViewServicePreviousFactory
                 .GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
-            if (agentInstanceViewFactoryContext.IsRemoveStream)
-            {
+            if (agentInstanceViewFactoryContext.IsRemoveStream) {
                 return new TimeAccumViewRStream(this, agentInstanceViewFactoryContext, timePeriodProvide);
             }
 
             return new TimeAccumView(this, agentInstanceViewFactoryContext, randomAccess, timePeriodProvide);
         }
 
-        public EventType EventType
-        {
+        public EventType EventType {
             get => eventType;
             set => eventType = value;
         }

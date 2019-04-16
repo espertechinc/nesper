@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -17,30 +16,39 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
-	public class InfraOnSelectUtil {
-	    public static EventBean[] HandleDistintAndInsert(EventBean[] newData, InfraOnSelectViewFactory parent, AgentInstanceContext agentInstanceContext, TableInstance tableInstanceInsertInto, bool audit) {
-	        if (parent.IsDistinct) {
-	            newData = EventBeanUtility.GetDistinctByProp(newData, parent.EventBeanReader);
-	        }
+    public class InfraOnSelectUtil
+    {
+        public static EventBean[] HandleDistintAndInsert(
+            EventBean[] newData,
+            InfraOnSelectViewFactory parent,
+            AgentInstanceContext agentInstanceContext,
+            TableInstance tableInstanceInsertInto,
+            bool audit)
+        {
+            if (parent.IsDistinct) {
+                newData = EventBeanUtility.GetDistinctByProp(newData, parent.EventBeanReader);
+            }
 
-	        if (tableInstanceInsertInto != null) {
-	            if (newData != null) {
-	                foreach (EventBean aNewData in newData) {
-	                    tableInstanceInsertInto.AddEventUnadorned(aNewData);
-	                }
-	            }
-	        } else if (parent.IsInsertInto) {
-	            if (newData != null) {
-	                foreach (EventBean aNewData in newData) {
-	                    if (audit) {
-	                        agentInstanceContext.AuditProvider.Insert(aNewData, agentInstanceContext);
-	                    }
-	                    agentInstanceContext.InternalEventRouter.Route(aNewData, agentInstanceContext, parent.IsAddToFront);
-	                }
-	            }
-	        }
+            if (tableInstanceInsertInto != null) {
+                if (newData != null) {
+                    foreach (EventBean aNewData in newData) {
+                        tableInstanceInsertInto.AddEventUnadorned(aNewData);
+                    }
+                }
+            }
+            else if (parent.IsInsertInto) {
+                if (newData != null) {
+                    foreach (EventBean aNewData in newData) {
+                        if (audit) {
+                            agentInstanceContext.AuditProvider.Insert(aNewData, agentInstanceContext);
+                        }
 
-	        return newData;
-	    }
-	}
+                        agentInstanceContext.InternalEventRouter.Route(aNewData, agentInstanceContext, parent.IsAddToFront);
+                    }
+                }
+            }
+
+            return newData;
+        }
+    }
 } // end of namespace

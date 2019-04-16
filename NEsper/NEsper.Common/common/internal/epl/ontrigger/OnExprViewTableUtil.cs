@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -16,17 +15,25 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
-	public class OnExprViewTableUtil {
-	    public static EventBean[] ToPublic(EventBean[] matching, Table table, EventBean[] triggers, bool isNewData, ExprEvaluatorContext context) {
-	        EventBean[] eventsPerStream = new EventBean[2];
-	        eventsPerStream[0] = triggers[0];
+    public class OnExprViewTableUtil
+    {
+        public static EventBean[] ToPublic(
+            EventBean[] matching,
+            Table table,
+            EventBean[] triggers,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            EventBean[] eventsPerStream = new EventBean[2];
+            eventsPerStream[0] = triggers[0];
 
-	        EventBean[] events = new EventBean[matching.Length];
-	        for (int i = 0; i < events.Length; i++) {
-	            eventsPerStream[1] = matching[i];
-	            events[i] = table.EventToPublic.Convert(matching[i], eventsPerStream, isNewData, context);
-	        }
-	        return events;
-	    }
-	}
+            EventBean[] events = new EventBean[matching.Length];
+            for (int i = 0; i < events.Length; i++) {
+                eventsPerStream[1] = matching[i];
+                events[i] = table.EventToPublic.Convert(matching[i], eventsPerStream, isNewData, context);
+            }
+
+            return events;
+        }
+    }
 } // end of namespace

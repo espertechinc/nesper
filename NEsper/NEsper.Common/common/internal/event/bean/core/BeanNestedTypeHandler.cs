@@ -13,6 +13,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     public interface BeanNestedTypeHandler
     {
-        EventType HandleSupertype(Type clazz, Type superClass);
+        EventType HandleSupertype(
+            Type clazz,
+            Type superClass);
     }
 } // end of namespace

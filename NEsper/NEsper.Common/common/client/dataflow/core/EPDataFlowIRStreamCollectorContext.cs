@@ -28,8 +28,12 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="statement">statement posting events</param>
         /// <param name="runtime">runtime instance</param>
         public EPDataFlowIRStreamCollectorContext(
-            EPDataFlowEmitter emitter, bool submitEventBean, EventBean[] newEvents, EventBean[] oldEvents,
-            object statement, object runtime)
+            EPDataFlowEmitter emitter,
+            bool submitEventBean,
+            EventBean[] newEvents,
+            EventBean[] oldEvents,
+            object statement,
+            object runtime)
         {
             Emitter = emitter;
             IsSubmitEventBean = submitEventBean;

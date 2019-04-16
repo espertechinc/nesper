@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -19,14 +18,23 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.derived
 {
-	public class DerivedViewTypeUtil {
-	    public static EventType NewType(string name, LinkedHashMap<string, object> schemaMap, ViewForgeEnv env, int streamNum) {
-	        string outputEventTypeName = env.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewDerived(name, streamNum);
-	        EventTypeMetadata metadata = new EventTypeMetadata(outputEventTypeName, env.ModuleName, EventTypeTypeClass.VIEWDERIVED, EventTypeApplicationType.MAP, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
-	        IDictionary<string, object> propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(schemaMap);
-	        EventType resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(metadata, propertyTypes, null, null, null, null, env.BeanEventTypeFactoryProtected, env.EventTypeCompileTimeResolver);
-	        env.EventTypeModuleCompileTimeRegistry.NewType(resultEventType);
-	        return resultEventType;
-	    }
-	}
+    public class DerivedViewTypeUtil
+    {
+        public static EventType NewType(
+            string name,
+            LinkedHashMap<string, object> schemaMap,
+            ViewForgeEnv env,
+            int streamNum)
+        {
+            string outputEventTypeName = env.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewDerived(name, streamNum);
+            EventTypeMetadata metadata = new EventTypeMetadata(
+                outputEventTypeName, env.ModuleName, EventTypeTypeClass.VIEWDERIVED, EventTypeApplicationType.MAP, NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+            IDictionary<string, object> propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(schemaMap);
+            EventType resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
+                metadata, propertyTypes, null, null, null, null, env.BeanEventTypeFactoryProtected, env.EventTypeCompileTimeResolver);
+            env.EventTypeModuleCompileTimeRegistry.NewType(resultEventType);
+            return resultEventType;
+        }
+    }
 } // end of namespace

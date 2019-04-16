@@ -7,20 +7,27 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
 {
-	public interface ResultSetProcessorRowForAllOutputAllHelper
+    public interface ResultSetProcessorRowForAllOutputAllHelper
         : ResultSetProcessorOutputHelper
-	{
-	    void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic);
-	    void ProcessJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic);
-	    UniformPair<EventBean[]> OutputView(bool isGenerateSynthetic);
-	    UniformPair<EventBean[]> OutputJoin(bool isGenerateSynthetic);
-	    void Destroy();
-	}
+    {
+        void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic);
+
+        void ProcessJoin(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
+            bool isGenerateSynthetic);
+
+        UniformPair<EventBean[]> OutputView(bool isGenerateSynthetic);
+        UniformPair<EventBean[]> OutputJoin(bool isGenerateSynthetic);
+        void Destroy();
+    }
 } // end of namespace

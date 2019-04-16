@@ -44,7 +44,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         /// <param name="optionalPropertyEvaluator">optional if evaluating properties returned by filtered events</param>
         /// <throws>ArgumentException if validation invalid</throws>
         public FilterSpecCompiled(
-            EventType eventType, string eventTypeName, IList<FilterSpecParamForge>[] filterParameters,
+            EventType eventType,
+            string eventTypeName,
+            IList<FilterSpecParamForge>[] filterParameters,
             PropertyEvaluatorForge optionalPropertyEvaluator)
         {
             FilterForEventType = eventType;
@@ -230,7 +232,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         }
 
         public CodegenMethod MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(FilterSpecActivatable), typeof(FilterSpecCompiled), classScope);
 

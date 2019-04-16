@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
 
         private readonly int lookupStream;
 
-        public HistoricalIndexLookupStrategyHashForge(int lookupStream, ExprForge[] evaluators, Type[] coercionTypes)
+        public HistoricalIndexLookupStrategyHashForge(
+            int lookupStream,
+            ExprForge[] evaluators,
+            Type[] coercionTypes)
         {
             this.lookupStream = lookupStream;
             this.evaluators = evaluators;
@@ -35,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyHash), GetType(), classScope);
 

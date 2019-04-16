@@ -15,7 +15,11 @@ namespace com.espertech.esper.common.@internal.util
     public interface Serializer
     {
         bool Accepts(Type c);
-        void SerializeAny(Object value, Stream stream);
+
+        void SerializeAny(
+            Object value,
+            Stream stream);
+
         Object DeserializeAny(Stream stream);
     }
 
@@ -39,7 +43,9 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="stream">The output stream.</param>
-        public void SerializeAny(object value, Stream stream)
+        public void SerializeAny(
+            object value,
+            Stream stream)
         {
             ProcSerialize.Invoke(value, stream);
         }
@@ -62,18 +68,21 @@ namespace com.espertech.esper.common.@internal.util
 
         public bool Accepts(Type c)
         {
-            return c.IsAssignableFrom(typeof (T));
+            return c.IsAssignableFrom(typeof(T));
         }
 
-        public void SerializeAny(object value, Stream stream)
+        public void SerializeAny(
+            object value,
+            Stream stream)
         {
-            if (value is T)
-            {
+            if (value is T) {
                 Serialize((T) value, new BinaryWriter(stream));
             }
         }
 
-        public void Serialize(T value, BinaryWriter writer)
+        public void Serialize(
+            T value,
+            BinaryWriter writer)
         {
             ProcSerialize.Invoke(value, writer);
         }

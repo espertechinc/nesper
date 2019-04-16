@@ -7,34 +7,39 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public class ExprValidationMemberNameQualifiedView : ExprValidationMemberName {
-	    private readonly int streamNumber;
+    public class ExprValidationMemberNameQualifiedView : ExprValidationMemberName
+    {
+        private readonly int streamNumber;
 
-	    public ExprValidationMemberNameQualifiedView(int streamNumber) {
-	        this.streamNumber = streamNumber;
-	    }
+        public ExprValidationMemberNameQualifiedView(int streamNumber)
+        {
+            this.streamNumber = streamNumber;
+        }
 
-	    public CodegenFieldName AggregationResultFutureRef() {
-	        return new CodegenFieldNameViewAgg(streamNumber);
-	    }
+        public CodegenFieldName AggregationResultFutureRef()
+        {
+            return new CodegenFieldNameViewAgg(streamNumber);
+        }
 
-	    public CodegenFieldName PriorStrategy(int streamNum) {
-	        throw new UnsupportedOperationException("Not supported for views");
-	    }
+        public CodegenFieldName PriorStrategy(int streamNum)
+        {
+            throw new UnsupportedOperationException("Not supported for views");
+        }
 
-	    public CodegenFieldName PreviousStrategy(int streamNumber) {
-	        throw new UnsupportedOperationException("Not supported for views");
-	    }
+        public CodegenFieldName PreviousStrategy(int streamNumber)
+        {
+            throw new UnsupportedOperationException("Not supported for views");
+        }
 
-	    public CodegenFieldName PreviousMatchrecognizeStrategy() {
-	        throw new IllegalStateException("Match-recognize not supported in view parameters");
-	    }
-	}
+        public CodegenFieldName PreviousMatchrecognizeStrategy()
+        {
+            throw new IllegalStateException("Match-recognize not supported in view parameters");
+        }
+    }
 } // end of namespace

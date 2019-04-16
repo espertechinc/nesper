@@ -22,19 +22,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
         private readonly AggregationFactoryMethodLeaving factory;
         private readonly CodegenExpressionRef leaving;
 
-        public AggregatorLeaving(AggregationFactoryMethodLeaving factory, int col, CodegenMemberCol membersColumnized)
+        public AggregatorLeaving(
+            AggregationFactoryMethodLeaving factory,
+            int col,
+            CodegenMemberCol membersColumnized)
         {
             this.factory = factory;
             leaving = membersColumnized.AddMember(col, typeof(bool), "leaving");
         }
 
         public void ApplyEvalEnterCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
         }
 
         public void ApplyEvalLeaveCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             if (factory.AggregationExpression.PositionalParams.Length > 0) {
                 PrefixWithFilterCheck(
@@ -45,36 +54,55 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
         }
 
         public void ApplyTableEnterCodegen(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
         }
 
         public void ApplyTableLeaveCodegen(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(leaving, ConstantTrue());
         }
 
-        public void ClearCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void ClearCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(leaving, ConstantFalse());
         }
 
-        public void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(leaving);
         }
 
         public void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(WriteBoolean(output, row, leaving));
         }
 
         public void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(ReadBoolean(row, leaving, input));
         }

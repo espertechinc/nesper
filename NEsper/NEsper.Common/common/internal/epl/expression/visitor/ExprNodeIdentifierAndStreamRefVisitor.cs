@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -25,12 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             _isVisitAggregateNodes = isVisitAggregateNodes;
         }
 
-        public IList<ExprNodePropOrStreamDesc> Refs
-        {
-            get
-            {
-                if (_refs == null)
-                {
+        public IList<ExprNodePropOrStreamDesc> Refs {
+            get {
+                if (_refs == null) {
                     return Collections.GetEmptyList<ExprNodePropOrStreamDesc>();
                 }
 
@@ -40,13 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
 
         public bool IsVisit(ExprNode exprNode)
         {
-            if (exprNode is ExprLambdaGoesNode)
-            {
+            if (exprNode is ExprLambdaGoesNode) {
                 return false;
             }
 
-            if (_isVisitAggregateNodes)
-            {
+            if (_isVisitAggregateNodes) {
                 return true;
             }
 
@@ -55,21 +49,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
 
         public void Visit(ExprNode exprNode)
         {
-            if (exprNode is ExprIdentNode)
-            {
-                var identNode = (ExprIdentNode)exprNode;
+            if (exprNode is ExprIdentNode) {
+                var identNode = (ExprIdentNode) exprNode;
                 var streamId = identNode.StreamId;
                 var propertyName = identNode.ResolvedPropertyName;
                 CheckAllocatedRefs();
                 _refs.Add(new ExprNodePropOrStreamPropDesc(streamId, propertyName));
             }
-            else if (exprNode is ExprStreamRefNode)
-            {
-                var streamRefNode = (ExprStreamRefNode)exprNode;
+            else if (exprNode is ExprStreamRefNode) {
+                var streamRefNode = (ExprStreamRefNode) exprNode;
                 var stream = streamRefNode.StreamReferencedIfAny;
                 CheckAllocatedRefs();
-                if (stream != null)
-                {
+                if (stream != null) {
                     _refs.Add(new ExprNodePropOrStreamExprDesc(stream.Value, streamRefNode));
                 }
             }
@@ -77,16 +68,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
 
         public void Reset()
         {
-            if (_refs != null)
-            {
+            if (_refs != null) {
                 _refs.Clear();
             }
         }
 
         private void CheckAllocatedRefs()
         {
-            if (_refs == null)
-            {
+            if (_refs == null) {
                 _refs = new List<ExprNodePropOrStreamDesc>(4);
             }
         }

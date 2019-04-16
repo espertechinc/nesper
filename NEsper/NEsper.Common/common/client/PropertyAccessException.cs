@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.client
         /// </summary>
         /// <param name="message">is the error message</param>
         /// <param name="propertyExpression">property expression</param>
-        public PropertyAccessException(string message, string propertyExpression)
+        public PropertyAccessException(
+            string message,
+            string propertyExpression)
             : base(message)
         {
             _expression = propertyExpression;
@@ -34,7 +36,9 @@ namespace com.espertech.esper.common.client
         /// </summary>
         /// <param name="message">is the error message</param>
         /// <param name="cause">is the inner exception</param>
-        public PropertyAccessException(string message, Exception cause)
+        public PropertyAccessException(
+            string message,
+            Exception cause)
             : base(message, cause)
         {
         }
@@ -70,30 +74,27 @@ namespace com.espertech.esper.common.client
         /// <summary>
         /// Gets a message that describes the current exception.
         /// </summary>
-        public override string Message
-        {
-            get
-            {
+        public override string Message {
+            get {
                 StringBuilder msg;
 
-                if (!string.IsNullOrEmpty(base.Message))
-                {
+                if (!string.IsNullOrEmpty(base.Message)) {
                     msg = new StringBuilder(base.Message);
                 }
-                else
-                {
+                else {
                     msg = new StringBuilder("Unexpected exception");
                     if (InnerException != null) {
                         msg.Append(" : ");
                         msg.Append(InnerException.Message);
                     }
                 }
-                if (_expression != null)
-                {
+
+                if (_expression != null) {
                     msg.Append(" [");
                     msg.Append(_expression);
                     msg.Append(']');
                 }
+
                 return msg.ToString();
             }
         }

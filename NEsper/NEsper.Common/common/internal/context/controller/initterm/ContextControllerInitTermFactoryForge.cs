@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
@@ -24,13 +23,19 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
     {
         private readonly ContextSpecInitiatedTerminated detail;
 
-        public ContextControllerInitTermFactoryForge(ContextControllerFactoryEnv ctx, ContextSpecInitiatedTerminated detail)
+        public ContextControllerInitTermFactoryForge(
+            ContextControllerFactoryEnv ctx,
+            ContextSpecInitiatedTerminated detail)
             : base(ctx)
         {
             this.detail = detail;
         }
 
-        public override void ValidateGetContextProps(LinkedHashMap<string, object> props, string contextName, StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+        public override void ValidateGetContextProps(
+            LinkedHashMap<string, object> props,
+            string contextName,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             props.Put(ContextPropertyEventType.PROP_CTX_STARTTIME, typeof(long?));
             props.Put(ContextPropertyEventType.PROP_CTX_ENDTIME, typeof(long?));
@@ -40,18 +45,23 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextPropertyEventType.AddEndpointTypes(detail.EndCondition, props, allTags);
         }
 
-        public override CodegenMethod MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols)
+        public override CodegenMethod MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols)
         {
             CodegenMethod method = parent.MakeChild(typeof(ContextControllerInitTermFactory), this.GetType(), classScope);
             method.Block
-                    .DeclareVar(typeof(ContextControllerInitTermFactory), "factory", ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY).Add("initTermFactory"))
-                    .ExprDotMethod(@Ref("factory"), "setInitTermSpec", detail.MakeCodegen(method, symbols, classScope))
-                    .MethodReturn(@Ref("factory"));
+                .DeclareVar(
+                    typeof(ContextControllerInitTermFactory), "factory",
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY)
+                        .Add("initTermFactory"))
+                .ExprDotMethod(@Ref("factory"), "setInitTermSpec", detail.MakeCodegen(method, symbols, classScope))
+                .MethodReturn(@Ref("factory"));
             return method;
         }
 
-        public override ContextControllerPortableInfo ValidationInfo
-        {
+        public override ContextControllerPortableInfo ValidationInfo {
             get => ContextControllerInitTermValidation.INSTANCE;
         }
     }

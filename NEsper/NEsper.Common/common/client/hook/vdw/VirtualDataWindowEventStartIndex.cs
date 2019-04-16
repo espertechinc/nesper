@@ -23,7 +23,10 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <param name="fields">index fields</param>
         /// <param name="unique">for unique indexes</param>
         public VirtualDataWindowEventStartIndex(
-            string namedWindowName, string indexName, IList<VDWCreateIndexField> fields, bool unique)
+            string namedWindowName,
+            string indexName,
+            IList<VDWCreateIndexField> fields,
+            bool unique)
         {
             NamedWindowName = namedWindowName;
             IndexName = indexName;
@@ -65,7 +68,9 @@ namespace com.espertech.esper.common.client.hook.vdw
             /// </summary>
             /// <param name="name">field name</param>
             /// <param name="type">type</param>
-            public VDWCreateIndexField(string name, string type)
+            public VDWCreateIndexField(
+                string name,
+                string type)
             {
                 Name = name;
                 Type = type;

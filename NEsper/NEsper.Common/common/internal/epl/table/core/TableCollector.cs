@@ -12,6 +12,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 {
     public interface TableCollector
     {
-        void RegisterTable(string tableName, TableMetaData table);
+        void RegisterTable(
+            string tableName,
+            TableMetaData table);
     }
 } // end of namespace

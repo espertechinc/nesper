@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             int subpathId,
             ContextController originator,
             EventBean optionalTriggeringEvent,
-            IDictionary<string, object> optionalTriggeringPattern, object[] parentPartitionKeys, object partitionKey);
+            IDictionary<string, object> optionalTriggeringPattern,
+            object[] parentPartitionKeys,
+            object partitionKey);
 
         void ContextPartitionTerminate(
             IntSeqKey controllerPath,

@@ -137,7 +137,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             }
         }
 
-        public static void CheckExpand<T>(int serviceId, ArrayWrap<T> services)
+        public static void CheckExpand<T>(
+            int serviceId,
+            ArrayWrap<T> services)
         {
             if (serviceId > services.Array.Length - 1) {
                 var delta = serviceId - services.Array.Length + 1;

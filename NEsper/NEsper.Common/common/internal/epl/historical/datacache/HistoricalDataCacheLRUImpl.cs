@@ -63,7 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         /// </summary>
         /// <param name="methodParams">the keys with which the specified value is to be associated.</param>
         /// <param name="rows">a value to be associated with the specified key.</param>
-        public void Put(object methodParams, EventTable[] rows)
+        public void Put(
+            object methodParams,
+            EventTable[] rows)
         {
             lock (this) {
                 var key = methodParams;

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.container;
@@ -17,7 +16,6 @@ namespace com.espertech.esper.common.@internal.db
     /// <summary>
     /// Connection factory settings for using a DbDriverFactory.
     /// </summary>
-
     [Serializable]
     public class DbDriverFactoryConnection
     {
@@ -35,7 +33,6 @@ namespace com.espertech.esper.common.@internal.db
         /// <summary>
         /// Where do drivers in the default search path reside
         /// </summary>
-
         public const string DriverNamespace = "com.espertech.esper.epl.db.drivers";
 
         /// <summary>
@@ -53,23 +50,20 @@ namespace com.espertech.esper.common.@internal.db
             Type driverType;
 
             // Check for the type with no modifications
-            if ((driverType = TypeHelper.ResolveType(driverName, false)) != null)
-            {
+            if ((driverType = TypeHelper.ResolveType(driverName, false)) != null) {
                 return driverType;
             }
 
             // Check for the type in the driverNamespace
             String specificName = String.Format("{0}.{1}", DriverNamespace, driverName);
-            if ((driverType = TypeHelper.ResolveType(specificName, false)) != null)
-            {
+            if ((driverType = TypeHelper.ResolveType(specificName, false)) != null) {
                 return driverType;
             }
 
             // Check for the type in the driverNamespace, but modified to include
             // a prefix to the name.
             String pseudoName = String.Format("{0}.DbDriver{1}", DriverNamespace, driverName);
-            if ((driverType = TypeHelper.ResolveType(pseudoName, false)) != null)
-            {
+            if ((driverType = TypeHelper.ResolveType(pseudoName, false)) != null) {
                 return driverType;
             }
 
@@ -83,9 +77,12 @@ namespace com.espertech.esper.common.@internal.db
         /// <param name="container">The container.</param>
         /// <param name="driverName">Name of the driver.</param>
         /// <returns></returns>
-        public static DbDriver ResolveDriverFromName(IContainer container, String driverName)
+        public static DbDriver ResolveDriverFromName(
+            IContainer container,
+            String driverName)
         {
-            return ResolveDriverFromType(container, 
+            return ResolveDriverFromType(
+                container,
                 ResolveDriverTypeFromName(driverName));
         }
 
@@ -94,23 +91,26 @@ namespace com.espertech.esper.common.@internal.db
         /// </summary>
         /// <param name="container">The container.</param>
         /// <param name="driverType">Type of the driver.</param>
-        public static DbDriver ResolveDriverFromType(IContainer container, Type driverType)
+        public static DbDriver ResolveDriverFromType(
+            IContainer container,
+            Type driverType)
         {
             if (typeof(DbDriver).IsAssignableFrom(driverType)) {
                 return container.Resolve<DbDriver>(driverType.FullName);
                 //return Activator.CreateInstance(driverType) as DbDriver;
             }
 
-            throw new EPException("Unable to create driver because it was not assignable from " +
-                                  typeof(DbDriver).FullName);
+            throw new EPException(
+                "Unable to create driver because it was not assignable from " +
+                typeof(DbDriver).FullName);
         }
 
 #if false
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbDriverFactoryConnection"/> class.
-        /// </summary>
-        /// <param name="driverType">Type of the driver.</param>
-        /// <param name="properties">The properties.</param>
+/// <summary>
+/// Initializes a new instance of the <see cref="DbDriverFactoryConnection"/> class.
+/// </summary>
+/// <param name="driverType">Type of the driver.</param>
+/// <param name="properties">The properties.</param>
         public DbDriverFactoryConnection(IContainer container, Type driverType, Properties properties)
         {
             _driver = ResolveDriverFromType(container, driverType);

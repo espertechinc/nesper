@@ -30,7 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             this.processor = processor;
         }
 
-        public void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic)
+        public void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic)
         {
             if (newData != null) {
                 foreach (var aNewData in newData) {
@@ -73,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newData, ISet<MultiKey<EventBean>> oldData, bool isGenerateSynthetic)
+            ISet<MultiKey<EventBean>> newData,
+            ISet<MultiKey<EventBean>> oldData,
+            bool isGenerateSynthetic)
         {
             if (newData != null) {
                 foreach (var aNewData in newData) {
@@ -130,7 +135,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             groupReps.Remove(key);
         }
 
-        private UniformPair<EventBean[]> Output(bool isSynthesize, bool join)
+        private UniformPair<EventBean[]> Output(
+            bool isSynthesize,
+            bool join)
         {
             IList<EventBean> newEvents = new List<EventBean>(4);
             processor.GenerateOutputBatchedArrFromIterator(

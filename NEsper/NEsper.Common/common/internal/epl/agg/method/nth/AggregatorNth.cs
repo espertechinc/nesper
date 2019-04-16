@@ -34,8 +34,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         private readonly CodegenExpressionField serdeValue;
 
         public AggregatorNth(
-            AggregationFactoryMethodNth factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter)
+            AggregationFactoryMethodNth factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter)
             : base(
                 factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
                 optionalFilter)
@@ -49,39 +55,60 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         }
 
         protected override void ApplyEvalEnterNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             ApplyEvalEnterNonNull(value, method);
         }
 
         protected override void ApplyEvalLeaveNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             ApplyEvalLeaveNonNull(method);
         }
 
         protected override void ApplyTableEnterNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             ApplyEvalEnterNonNull(value, method);
         }
 
         protected override void ApplyTableLeaveNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             ApplyEvalLeaveNonNull(method);
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(ClearCode());
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.StaticMethod(
                 GetType(), "write", output, unitKey, writer, serdeValue, RowDotRef(row, circularBuffer),
@@ -90,8 +117,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             CodegenExpressionRef state = RefCol("state", col);
             method.Block
@@ -104,7 +135,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
                 .AssignRef(RowDotRef(row, numDataPoints), ExprDotMethod(state, "getNumDataPoints"));
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             var sizeBuf = Constant(factory.SizeOfBuf);
             method.Block.IfRefNullReturnNull(circularBuffer)
@@ -122,7 +155,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         /// <returns>state</returns>
         /// <throws>IOException ioerror</throws>
         public static AggregationNthState Read(
-            DataInput input, byte[] unitKey, DataInputOutputSerdeWCollation<object> serdeNullable, int sizeBuf)
+            DataInput input,
+            byte[] unitKey,
+            DataInputOutputSerdeWCollation<object> serdeNullable,
+            int sizeBuf)
         {
             var filled = input.ReadBoolean();
             var state = new AggregationNthState();
@@ -154,9 +190,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         /// <param name="sizeBuf">size</param>
         /// <throws>IOException io error</throws>
         public static void Write(
-            DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer,
-            DataInputOutputSerdeWCollation<object> serdeNullable, object[] circularBuffer, long numDataPoints,
-            int currentBufferElementPointer, int sizeBuf)
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer,
+            DataInputOutputSerdeWCollation<object> serdeNullable,
+            object[] circularBuffer,
+            long numDataPoints,
+            int currentBufferElementPointer,
+            int sizeBuf)
         {
             output.WriteBoolean(circularBuffer != null);
             if (circularBuffer != null) {
@@ -177,7 +218,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             };
         }
 
-        protected void ApplyEvalEnterNonNull(CodegenExpressionRef valueExpr, CodegenMethod method)
+        protected void ApplyEvalEnterNonNull(
+            CodegenExpressionRef valueExpr,
+            CodegenMethod method)
         {
             method.Block.Increment(numDataPoints)
                 .IfCondition(EqualsNull(circularBuffer))

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -36,12 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             this.isNWOnTrigger = isNWOnTrigger;
             this.lookupStream = lookupStream;
 
-            if (lookupStream != -1)
-            {
+            if (lookupStream != -1) {
                 events = new EventBean[lookupStream + 1];
             }
-            else
-            {
+            else {
                 events = new EventBean[numStreams + 1];
             }
         }
@@ -60,8 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             events[lookupStream] = theEvent;
             var mk = hashGetter.Evaluate(events, true, context);
             var innerEntry = parent.Get(mk);
-            if (innerEntry == null)
-            {
+            if (innerEntry == null) {
                 return null;
             }
 
@@ -78,18 +74,15 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         {
             events[lookupStream] = theEvent;
             var mk = hashGetter.Evaluate(events, true, context);
-            if (mk is MultiKey<object> multiKeyArray)
-            {
+            if (mk is MultiKey<object> multiKeyArray) {
                 keys.AddAll(multiKeyArray.Array);
             }
-            else
-            {
+            else {
                 keys.Add(mk);
             }
 
             var innerEntry = parent.Get(mk);
-            if (innerEntry == null)
-            {
+            if (innerEntry == null) {
                 return null;
             }
 
@@ -104,20 +97,17 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             EventBean[] eventsToUse;
-            if (isNWOnTrigger)
-            {
+            if (isNWOnTrigger) {
                 eventsToUse = eventsPerStream;
             }
-            else
-            {
+            else {
                 Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
                 eventsToUse = events;
             }
 
             var mk = hashGetter.Evaluate(eventsToUse, true, context);
             var innerEntry = parent.Get(mk);
-            if (innerEntry == null)
-            {
+            if (innerEntry == null) {
                 return null;
             }
 
@@ -133,29 +123,24 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             EventBean[] eventsToUse;
-            if (isNWOnTrigger)
-            {
+            if (isNWOnTrigger) {
                 eventsToUse = eventsPerStream;
             }
-            else
-            {
+            else {
                 Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
                 eventsToUse = events;
             }
 
             var mk = hashGetter.Evaluate(eventsToUse, true, context);
-            if (mk is MultiKey<object> mkArray)
-            {
+            if (mk is MultiKey<object> mkArray) {
                 keys.AddAll(mkArray.Array);
             }
-            else
-            {
+            else {
                 keys.Add(mk);
             }
 
             var innerEntry = parent.Get(mk);
-            if (innerEntry == null)
-            {
+            if (innerEntry == null) {
                 return null;
             }
 

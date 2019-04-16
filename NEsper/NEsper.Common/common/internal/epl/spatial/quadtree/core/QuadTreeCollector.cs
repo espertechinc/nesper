@@ -7,14 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 {
     public interface QuadTreeCollector<TL, TT>
     {
-        void CollectInto(EventBean @event, TL value, TT target);
+        void CollectInto(
+            EventBean @event,
+            TL value,
+            TT target);
     }
 
     public class ProxyQuadTreeCollector<TL, TT> : QuadTreeCollector<TL, TT>
@@ -30,7 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         {
         }
 
-        public void CollectInto(EventBean @event, TL value, TT target)
+        public void CollectInto(
+            EventBean @event,
+            TL value,
+            TT target)
         {
             ProcCollectInto.Invoke(@event, value, target);
         }

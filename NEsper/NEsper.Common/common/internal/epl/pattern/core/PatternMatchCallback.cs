@@ -23,14 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         /// </summary>
         /// <param name="matchEvent">contains a map of event tags and event objects</param>
         /// <param name="optionalTriggeringEvent">in case the pattern fired as a result of an event arriving, provides the event</param>
-        void MatchFound(IDictionary<string, object> matchEvent, EventBean optionalTriggeringEvent);
+        void MatchFound(
+            IDictionary<string, object> matchEvent,
+            EventBean optionalTriggeringEvent);
     }
 
     public class ProxyPatternMatchCallback : PatternMatchCallback
     {
         public Action<IDictionary<string, object>, EventBean> ProcMatchFound;
 
-        public void MatchFound(IDictionary<string, object> matchEvent, EventBean optionalTriggeringEvent)
+        public void MatchFound(
+            IDictionary<string, object> matchEvent,
+            EventBean optionalTriggeringEvent)
         {
             ProcMatchFound?.Invoke(matchEvent, optionalTriggeringEvent);
         }

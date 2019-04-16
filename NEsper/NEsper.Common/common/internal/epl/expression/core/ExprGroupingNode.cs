@@ -8,77 +8,85 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     [Serializable]
-	public class ExprGroupingNode : ExprNodeBase , ExprForge, ExprEvaluator
+    public class ExprGroupingNode : ExprNodeBase,
+        ExprForge,
+        ExprEvaluator
     {
-	    public override ExprNode Validate(ExprValidationContext validationContext) {
-	        if (!validationContext.IsAllowRollupFunctions) {
-	            throw ExprGroupingIdNode.MakeException("grouping");
-	        }
-	        return null;
-	    }
+        public override ExprNode Validate(ExprValidationContext validationContext)
+        {
+            if (!validationContext.IsAllowRollupFunctions) {
+                throw ExprGroupingIdNode.MakeException("grouping");
+            }
 
-	    public ExprEvaluator ExprEvaluator
-	    {
-	        get => this;
-	    }
+            return null;
+        }
 
-	    public Type EvaluationType
-	    {
-	        get => typeof(int?);
-	    }
+        public ExprEvaluator ExprEvaluator {
+            get => this;
+        }
 
-	    public override ExprForge Forge
-	    {
-	        get => this;
-	    }
+        public Type EvaluationType {
+            get => typeof(int?);
+        }
 
-	    public ExprNodeRenderable ForgeRenderable
-	    {
-	        get => this;
-	    }
+        public override ExprForge Forge {
+            get => this;
+        }
 
-	    public override void ToPrecedenceFreeEPL(StringWriter writer) {
-	        ExprNodeUtilityPrint.ToExpressionStringWFunctionName("grouping", this.ChildNodes, writer);
-	    }
+        public ExprNodeRenderable ForgeRenderable {
+            get => this;
+        }
 
-	    public ExprForgeConstantType ForgeConstantType
-	    {
-	        get => ExprForgeConstantType.DEPLOYCONST;
-	    }
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            ExprNodeUtilityPrint.ToExpressionStringWFunctionName("grouping", this.ChildNodes, writer);
+        }
 
-	    public override ExprPrecedenceEnum Precedence
-	    {
-	        get => ExprPrecedenceEnum.UNARY;
-	    }
+        public ExprForgeConstantType ForgeConstantType {
+            get => ExprForgeConstantType.DEPLOYCONST;
+        }
 
-	    public bool IsConstantResult
-	    {
-	        get => false;
-	    }
+        public override ExprPrecedenceEnum Precedence {
+            get => ExprPrecedenceEnum.UNARY;
+        }
 
-	    public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix) {
-	        return false;
-	    }
+        public bool IsConstantResult {
+            get => false;
+        }
 
-	    public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
+        {
+            return false;
+        }
 
-	    public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
-	}
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
+
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
+    }
 } // end of namespace

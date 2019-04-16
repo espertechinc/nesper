@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(BigDecimal), typeof(EnumAverageDecimalScalarLambdaForgeEval), scope, codegenClassScope)
+                    typeof(decimal), typeof(EnumAverageDecimalScalarLambdaForgeEval), scope, codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block;

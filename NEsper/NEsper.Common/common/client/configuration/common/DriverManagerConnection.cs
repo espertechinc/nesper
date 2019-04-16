@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.client.configuration.common
@@ -24,7 +23,10 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="className">is the driver class name</param>
         /// <param name="url">is the database URL</param>
         /// <param name="optionalProperties">is connection properties</param>
-        public DriverManagerConnection(string className, string url, Properties optionalProperties)
+        public DriverManagerConnection(
+            string className,
+            string url,
+            Properties optionalProperties)
         {
             ClassName = className;
             Url = url;
@@ -39,7 +41,10 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="optionalUserName">is a user name for connecting</param>
         /// <param name="optionalPassword">is a password for connecting</param>
         public DriverManagerConnection(
-            string className, string url, string optionalUserName, string optionalPassword)
+            string className,
+            string url,
+            string optionalUserName,
+            string optionalPassword)
         {
             ClassName = className;
             Url = url;
@@ -56,7 +61,10 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="optionalPassword">is a password for connecting</param>
         /// <param name="optionalProperties">is connection properties</param>
         public DriverManagerConnection(
-            string className, string url, string optionalUserName, string optionalPassword,
+            string className,
+            string url,
+            string optionalUserName,
+            string optionalPassword,
             Properties optionalProperties)
         {
             ClassName = className;

@@ -15,7 +15,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
     public class AggregationLinearFactoryDesc
     {
         public AggregationLinearFactoryDesc(
-            AggregationForgeFactory factory, EventType enumerationEventType, Type scalarCollectionType, int streamNum)
+            AggregationForgeFactory factory,
+            EventType enumerationEventType,
+            Type scalarCollectionType,
+            int streamNum)
         {
             Factory = factory;
             EnumerationEventType = enumerationEventType;

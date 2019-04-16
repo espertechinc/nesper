@@ -12,7 +12,6 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.compat;
@@ -405,7 +404,11 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         public static MethodInfo ResolveExtensionMethod(
-            Type declaringClass, String methodName, Type[] paramTypes, bool allowInstance, bool[] allowEventBeanType,
+            Type declaringClass,
+            String methodName,
+            Type[] paramTypes,
+            bool allowInstance,
+            bool[] allowEventBeanType,
             bool[] allowEventBeanCollType)
         {
             var extensionMethods = TypeHelper.GetExtensionMethods(declaringClass)
@@ -433,7 +436,10 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         private static void LogWarnBoxedToPrimitiveType(
-            Type declaringClass, String methodName, MethodInfo bestMatch, Type[] paramTypes)
+            Type declaringClass,
+            String methodName,
+            MethodInfo bestMatch,
+            Type[] paramTypes)
         {
             var parametersMethod = bestMatch.GetParameters().Select(p => p.ParameterType).ToArray();
             for (int i = 0; i < parametersMethod.Length; i++) {
@@ -506,14 +512,18 @@ namespace com.espertech.esper.common.@internal.util
             return concretes.First();
         }
 
-        private static bool IsWideningConversion(Type declarationType, Type invocationType)
+        private static bool IsWideningConversion(
+            Type declarationType,
+            Type invocationType)
         {
             return
                 WIDENING_CONVERSIONS.ContainsKey(declarationType) &&
                 WIDENING_CONVERSIONS.Get(declarationType).Contains(invocationType);
         }
 
-        private static bool IsPublicAndStatic(MethodInfo method, bool allowInstance)
+        private static bool IsPublicAndStatic(
+            MethodInfo method,
+            bool allowInstance)
         {
             if (allowInstance) {
                 return method.IsPublic;
@@ -698,7 +708,9 @@ namespace com.espertech.esper.common.@internal.util
 
         // Identity conversion means no conversion, wrapper conversion,
         // or conversion to a supertype
-        private static bool IsIdentityConversion(Type declarationType, Type invocationType)
+        private static bool IsIdentityConversion(
+            Type declarationType,
+            Type invocationType)
         {
             if (WrappingConversions.ContainsKey(declarationType)) {
                 return WrappingConversions.Get(declarationType).Contains(invocationType) ||
@@ -712,7 +724,9 @@ namespace com.espertech.esper.common.@internal.util
             return declarationType.IsAssignableFrom(invocationType);
         }
 
-        public static ConstructorInfo ResolveCtor(Type declaringClass, Type[] paramTypes)
+        public static ConstructorInfo ResolveCtor(
+            Type declaringClass,
+            Type[] paramTypes)
         {
             // Get all the methods for this class
             ConstructorInfo[] ctors = declaringClass.GetConstructors();
@@ -766,7 +780,6 @@ namespace com.espertech.esper.common.@internal.util
                         bestConversionCount = conversionCount;
                     }
                 }
-
             }
 
             if (bestMatch != null) {

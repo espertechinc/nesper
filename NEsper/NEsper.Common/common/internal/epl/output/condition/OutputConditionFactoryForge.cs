@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -17,7 +16,10 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 {
     public interface OutputConditionFactoryForge
     {
-        CodegenExpression Make(CodegenMethodScope method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+        CodegenExpression Make(
+            CodegenMethodScope method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
         void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders);
     }

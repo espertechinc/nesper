@@ -22,13 +22,17 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly EventPropertyGetterSPI _getter;
         private readonly string _propertyName;
 
-        public FilterForEvalContextPropStringForge(EventPropertyGetterSPI getter, string propertyName)
+        public FilterForEvalContextPropStringForge(
+            EventPropertyGetterSPI getter,
+            string propertyName)
         {
             _getter = getter;
             _propertyName = propertyName;
         }
 
-        public object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext)
+        public object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (exprEvaluatorContext.ContextProperties == null) {
                 return null;
@@ -37,7 +41,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             return _getter.Get(exprEvaluatorContext.ContextProperties);
         }
 
-        public CodegenExpression MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
 

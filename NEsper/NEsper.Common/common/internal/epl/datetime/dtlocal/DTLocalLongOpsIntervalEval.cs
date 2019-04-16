@@ -46,10 +46,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var cal = DateTimeEx.GetInstance(timeZone);
-            var startRemainder = timeAbacus.DateTimeSet((long?) target, cal);
-            EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            var time = timeAbacus.DateTimeGet(cal, startRemainder);
+            var dtx = DateTimeEx.GetInstance(timeZone);
+            var startRemainder = timeAbacus.DateTimeSet(target.AsLong(), dtx);
+            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            var time = timeAbacus.DateTimeGet(dtx, startRemainder);
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -68,15 +68,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(long), "target");
 
             var block = methodNode.Block
-                .DeclareVar(typeof(DateTimeEx), "cal", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
                 .DeclareVar(
                     typeof(long), "startRemainder",
-                    forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("cal"), methodNode, codegenClassScope));
+                    forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("dtx"), methodNode, codegenClassScope));
             EvaluateCalOpsCalendarCodegen(
-                block, forge.calendarForges, Ref("cal"), methodNode, exprSymbol, codegenClassScope);
+                block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
             block.DeclareVar(
                     typeof(long), "time",
-                    forge.timeAbacus.DateTimeGetCodegen(Ref("cal"), Ref("startRemainder"), codegenClassScope))
+                    forge.timeAbacus.DateTimeGetCodegen(Ref("dtx"), Ref("startRemainder"), codegenClassScope))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
@@ -114,15 +114,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(long), "startLong").AddParam(typeof(long), "endLong");
 
             var block = methodNode.Block
-                .DeclareVar(typeof(DateTimeEx), "cal", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
                 .DeclareVar(
                     typeof(long), "startRemainder",
-                    forge.timeAbacus.DateTimeSetCodegen(Ref("startLong"), Ref("cal"), methodNode, codegenClassScope));
+                    forge.timeAbacus.DateTimeSetCodegen(Ref("startLong"), Ref("dtx"), methodNode, codegenClassScope));
             EvaluateCalOpsCalendarCodegen(
-                block, forge.calendarForges, Ref("cal"), methodNode, exprSymbol, codegenClassScope);
+                block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
             block.DeclareVar(
                     typeof(long), "startTime",
-                    forge.timeAbacus.DateTimeGetCodegen(Ref("cal"), Ref("startRemainder"), codegenClassScope))
+                    forge.timeAbacus.DateTimeGetCodegen(Ref("dtx"), Ref("startRemainder"), codegenClassScope))
                 .DeclareVar(
                     typeof(long), "endTime", Op(Ref("startTime"), "+", Op(Ref("endLong"), "-", Ref("startLong"))))
                 .MethodReturn(

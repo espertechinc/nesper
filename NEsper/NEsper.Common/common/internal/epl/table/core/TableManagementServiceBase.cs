@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         public int DeploymentCount => deployments.Count;
 
-        public void AddTable(string tableName, TableMetaData tableMetaData, EPStatementInitServices services)
+        public void AddTable(
+            string tableName,
+            TableMetaData tableMetaData,
+            EPStatementInitServices services)
         {
             var deployment = deployments.Get(services.DeploymentId);
             if (deployment == null) {
@@ -39,13 +42,17 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             deployment.Add(tableName, tableMetaData, services);
         }
 
-        public Table GetTable(string deploymentId, string tableName)
+        public Table GetTable(
+            string deploymentId,
+            string tableName)
         {
             var deployment = deployments.Get(deploymentId);
             return deployment == null ? null : deployment.GetTable(tableName);
         }
 
-        public void DestroyTable(string deploymentId, string tableName)
+        public void DestroyTable(
+            string deploymentId,
+            string tableName)
         {
             var deployment = deployments.Get(deploymentId);
             if (deployment == null) {
@@ -61,8 +68,12 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         public abstract Table AllocateTable(TableMetaData metadata);
 
         public abstract TableSerdes GetTableSerdes<T>(
-            Table table, DataInputOutputSerdeWCollation<T> aggregationSerde, StatementContext statementContext);
+            Table table,
+            DataInputOutputSerdeWCollation<T> aggregationSerde,
+            StatementContext statementContext);
 
-        public abstract TableInstance AllocateTableInstance(Table table, AgentInstanceContext agentInstanceContext);
+        public abstract TableInstance AllocateTableInstance(
+            Table table,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

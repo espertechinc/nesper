@@ -10,43 +10,47 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
     public class CalendarForgeFactory : ForgeFactory
     {
         public CalendarForge GetOp(
-            DatetimeMethodEnum method, string methodNameUsed, IList<ExprNode> parameters, ExprForge[] forges)
+            DateTimeMethodEnum method,
+            string methodNameUsed,
+            IList<ExprNode> parameters,
+            ExprForge[] forges)
         {
-            if (method == DatetimeMethodEnum.WITHTIME) {
+            if (method == DateTimeMethodEnum.WITHTIME) {
                 return new CalendarWithTimeForge(forges[0], forges[1], forges[2], forges[3]);
             }
 
-            if (method == DatetimeMethodEnum.WITHDATE) {
+            if (method == DateTimeMethodEnum.WITHDATE) {
                 return new CalendarWithDateForge(forges[0], forges[1], forges[2]);
             }
 
-            if (method == DatetimeMethodEnum.PLUS || method == DatetimeMethodEnum.MINUS) {
-                return new CalendarPlusMinusForge(forges[0], method == DatetimeMethodEnum.MINUS ? -1 : 1);
+            if (method == DateTimeMethodEnum.PLUS || method == DateTimeMethodEnum.MINUS) {
+                return new CalendarPlusMinusForge(forges[0], method == DateTimeMethodEnum.MINUS ? -1 : 1);
             }
 
-            if (method == DatetimeMethodEnum.WITHMAX ||
-                method == DatetimeMethodEnum.WITHMIN ||
-                method == DatetimeMethodEnum.ROUNDCEILING ||
-                method == DatetimeMethodEnum.ROUNDFLOOR ||
-                method == DatetimeMethodEnum.ROUNDHALF ||
-                method == DatetimeMethodEnum.SET) {
-                CalendarFieldEnum fieldNum = CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]);
-                if (method == DatetimeMethodEnum.WITHMIN) {
+            if (method == DateTimeMethodEnum.WITHMAX ||
+                method == DateTimeMethodEnum.WITHMIN ||
+                method == DateTimeMethodEnum.ROUNDCEILING ||
+                method == DateTimeMethodEnum.ROUNDFLOOR ||
+                method == DateTimeMethodEnum.ROUNDHALF ||
+                method == DateTimeMethodEnum.SET) {
+                DateTimeFieldEnum fieldNum = CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]);
+                if (method == DateTimeMethodEnum.WITHMIN) {
                     return new CalendarWithMinForge(fieldNum);
                 }
 
-                if (method == DatetimeMethodEnum.ROUNDCEILING || method == DatetimeMethodEnum.ROUNDFLOOR ||
-                    method == DatetimeMethodEnum.ROUNDHALF) {
+                if (method == DateTimeMethodEnum.ROUNDCEILING || method == DateTimeMethodEnum.ROUNDFLOOR ||
+                    method == DateTimeMethodEnum.ROUNDHALF) {
                     return new CalendarForgeRound(fieldNum, method);
                 }
 
-                if (method == DatetimeMethodEnum.SET) {
+                if (method == DateTimeMethodEnum.SET) {
                     return new CalendarSetForge(fieldNum, forges[1]);
                 }
 

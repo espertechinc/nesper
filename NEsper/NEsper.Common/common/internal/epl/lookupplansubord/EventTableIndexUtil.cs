@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -39,8 +38,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             new IndexComparatorShortestPath();
 
         public static QueryPlanIndexItemForge ValidateCompileExplicitIndex(
-            string indexName, bool unique, IList<CreateIndexItem> columns, EventType eventType,
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            string indexName,
+            bool unique,
+            IList<CreateIndexItem> columns,
+            EventType eventType,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             IList<IndexedPropDesc> hashProps = new List<IndexedPropDesc>();
             IList<IndexedPropDesc> btreeProps = new List<IndexedPropDesc>();
@@ -76,8 +79,11 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         private static EventAdvancedIndexProvisionCompileTime ValidateAdvanced(
-            string indexName, string indexType, CreateIndexItem columnDesc,
-            EventType eventType, StatementRawInfo statementRawInfo,
+            string indexName,
+            string indexType,
+            CreateIndexItem columnDesc,
+            EventType eventType,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             // validate index expressions: valid and plain expressions
@@ -121,8 +127,11 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         private static void ValidateBuiltin(
-            CreateIndexItem columnDesc, EventType eventType, IList<IndexedPropDesc> hashProps,
-            IList<IndexedPropDesc> btreeProps, ISet<string> indexedColumns)
+            CreateIndexItem columnDesc,
+            EventType eventType,
+            IList<IndexedPropDesc> hashProps,
+            IList<IndexedPropDesc> btreeProps,
+            ISet<string> indexedColumns)
         {
             if (columnDesc.Expressions.IsEmpty()) {
                 throw new ExprValidationException("Invalid empty list of index expressions");
@@ -312,7 +321,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         public static IndexMultiKey FindExactMatchNameAndType(
-            ICollection<IndexMultiKey> indexMultiKeys, IndexMultiKey proposed)
+            ICollection<IndexMultiKey> indexMultiKeys,
+            IndexMultiKey proposed)
         {
             foreach (var existing in indexMultiKeys) {
                 if (existing.Equals(proposed)) {
@@ -339,7 +349,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         private static IDictionary<IndexMultiKey, T> FindCandidates<T>(
-            IDictionary<IndexMultiKey, T> indexes, IList<IndexedPropDesc> hashProps, IList<IndexedPropDesc> btreeProps)
+            IDictionary<IndexMultiKey, T> indexes,
+            IList<IndexedPropDesc> hashProps,
+            IList<IndexedPropDesc> btreeProps)
             where T : EventTableIndexEntryBase
         {
             IDictionary<IndexMultiKey, T> indexCandidates =
@@ -359,7 +371,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         private static IndexMultiKey FindExplicitIndexByName<T>(
-            IDictionary<IndexMultiKey, T> indexCandidates, string name)
+            IDictionary<IndexMultiKey, T> indexCandidates,
+            string name)
             where T : EventTableIndexEntryBase
         {
             foreach (var entry in indexCandidates) {
@@ -384,7 +397,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         private static bool IndexHashIsProvided(
-            IndexedPropDesc hashPropIndexed, IList<IndexedPropDesc> hashPropsProvided)
+            IndexedPropDesc hashPropIndexed,
+            IList<IndexedPropDesc> hashPropsProvided)
         {
             foreach (var hashPropProvided in hashPropsProvided) {
                 var nameMatch = hashPropProvided.IndexPropName.Equals(hashPropIndexed.IndexPropName);
@@ -404,7 +418,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         private static bool IsExactMatch(
-            IndexMultiKey existing, bool unique, IList<IndexedPropDesc> hashProps, IList<IndexedPropDesc> btreeProps)
+            IndexMultiKey existing,
+            bool unique,
+            IList<IndexedPropDesc> hashProps,
+            IList<IndexedPropDesc> btreeProps)
         {
             if (existing.IsUnique != unique) {
                 return false;
@@ -422,7 +439,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         }
 
         private static bool IndexMatchesProvided(
-            IndexMultiKey indexDesc, IList<IndexedPropDesc> hashPropsProvided,
+            IndexMultiKey indexDesc,
+            IList<IndexedPropDesc> hashPropsProvided,
             IList<IndexedPropDesc> rangePropsProvided)
         {
             var hashPropIndexedList = indexDesc.HashIndexedProps;
@@ -456,7 +474,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         [Serializable]
         private class IndexComparatorShortestPath : IComparer<IndexMultiKey>
         {
-            public int Compare(IndexMultiKey o1, IndexMultiKey o2)
+            public int Compare(
+                IndexMultiKey o1,
+                IndexMultiKey o2)
             {
                 var indexedProps1 = IndexedPropDesc.GetIndexProperties(o1.HashIndexedProps);
                 var indexedProps2 = IndexedPropDesc.GetIndexProperties(o2.HashIndexedProps);

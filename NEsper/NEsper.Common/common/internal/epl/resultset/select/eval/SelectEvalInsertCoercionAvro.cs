@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,29 +14,36 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalInsertCoercionAvro : SelectExprProcessorForge {
+    public class SelectEvalInsertCoercionAvro : SelectExprProcessorForge
+    {
+        private EventType resultEventType;
 
-	    private EventType resultEventType;
+        public SelectEvalInsertCoercionAvro(EventType resultEventType)
+        {
+            this.resultEventType = resultEventType;
+        }
 
-	    public SelectEvalInsertCoercionAvro(EventType resultEventType) {
-	        this.resultEventType = resultEventType;
-	    }
+        public EventType ResultEventType {
+            get => resultEventType;
+        }
 
-	    public EventType ResultEventType {
-	        get => resultEventType;
-	    }
-
-	    public CodegenMethod ProcessCodegen(CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
-	        CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-	        CodegenExpression bean = ExprDotMethod(ArrayAtIndex(refEPS, Constant(0)), "getUnderlying");
-	        methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedAvro", bean, resultEventType));
-	        return methodNode;
-	    }
-	}
+        public CodegenMethod ProcessCodegen(
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            CodegenExpression bean = ExprDotMethod(ArrayAtIndex(refEPS, Constant(0)), "getUnderlying");
+            methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedAvro", bean, resultEventType));
+            return methodNode;
+        }
+    }
 } // end of namespace

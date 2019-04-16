@@ -34,7 +34,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             }
         }
 
-        public void Add(EventBean theEvent, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public void Add(
+            EventBean theEvent,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             if (coll == null) {
                 coll = new OneEventCollection();

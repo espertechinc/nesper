@@ -10,12 +10,12 @@ using System;
 
 namespace com.espertech.esper.common.client.configuration.compiler
 {
-	/// <summary>
-	/// Holder for script settings.
-	/// </summary>
-	[Serializable]
-	public class ConfigurationCompilerScripts
-	{
+    /// <summary>
+    /// Holder for script settings.
+    /// </summary>
+    [Serializable]
+    public class ConfigurationCompilerScripts
+    {
         /// <summary>
         /// Returns the default script dialect.
         /// </summary>

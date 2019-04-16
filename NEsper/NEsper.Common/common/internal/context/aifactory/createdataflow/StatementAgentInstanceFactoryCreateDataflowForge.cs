@@ -20,14 +20,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
         private readonly EventType eventType;
 
-        public StatementAgentInstanceFactoryCreateDataflowForge(EventType eventType, DataflowDescForge dataflowForge)
+        public StatementAgentInstanceFactoryCreateDataflowForge(
+            EventType eventType,
+            DataflowDescForge dataflowForge)
         {
             this.eventType = eventType;
             this.dataflowForge = dataflowForge;
         }
 
         public CodegenMethod InitializeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateDataflow), GetType(), classScope);
             method.Block

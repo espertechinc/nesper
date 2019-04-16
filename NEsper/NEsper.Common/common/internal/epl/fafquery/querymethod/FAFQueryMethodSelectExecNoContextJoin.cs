@@ -21,7 +21,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
 
@@ -36,8 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         }
 
         public EPPreparedQueryResult Execute(
-            FAFQueryMethodSelect select, ContextPartitionSelector[] contextPartitionSelectors,
-            FAFQueryMethodAssignerSetter assignerSetter, ContextManagementService contextManagementService)
+            FAFQueryMethodSelect select,
+            ContextPartitionSelector[] contextPartitionSelectors,
+            FAFQueryMethodAssignerSetter assignerSetter,
+            ContextManagementService contextManagementService)
         {
             int numStreams = select.Processors.Length;
             ICollection<EventBean>[] snapshots = new ICollection<EventBean>[numStreams];

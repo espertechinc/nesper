@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             _runtimeConstant = runtimeConstant;
         }
 
-        public CodegenExpression MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(double), GetType(), classScope);
             var result = CodegenLegoMethodExpression.CodegenExpression(_runtimeConstant.Forge, method, classScope);
@@ -34,7 +36,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             return LocalMethod(method);
         }
 
-        public object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        public object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext evaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }

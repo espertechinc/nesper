@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -19,41 +18,51 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
-	/// <summary>
-	/// Factory for output condition instances that are polled/queried only.
-	/// </summary>
-	public class OutputConditionPolledFactoryFactory {
-	    public static OutputConditionPolledFactoryForge CreateConditionFactory(OutputLimitSpec outputLimitSpec, StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
-	            {
-	        if (outputLimitSpec == null) {
-	            throw new NullPointerException("Output condition requires a non-null callback");
-	        }
+    /// <summary>
+    /// Factory for output condition instances that are polled/queried only.
+    /// </summary>
+    public class OutputConditionPolledFactoryFactory
+    {
+        public static OutputConditionPolledFactoryForge CreateConditionFactory(
+            OutputLimitSpec outputLimitSpec,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            if (outputLimitSpec == null) {
+                throw new NullPointerException("Output condition requires a non-null callback");
+            }
 
-	        // check variable use
-	        VariableMetaData variableMetaData = null;
-	        if (outputLimitSpec.VariableName != null) {
-	            variableMetaData = compileTimeServices.VariableCompileTimeResolver.Resolve(outputLimitSpec.VariableName);
-	            if (variableMetaData == null) {
-	                throw new ArgumentException("Variable named '" + outputLimitSpec.VariableName + "' has not been declared");
-	            }
-	        }
+            // check variable use
+            VariableMetaData variableMetaData = null;
+            if (outputLimitSpec.VariableName != null) {
+                variableMetaData = compileTimeServices.VariableCompileTimeResolver.Resolve(outputLimitSpec.VariableName);
+                if (variableMetaData == null) {
+                    throw new ArgumentException("Variable named '" + outputLimitSpec.VariableName + "' has not been declared");
+                }
+            }
 
-	        if (outputLimitSpec.RateType == OutputLimitRateType.CRONTAB) {
-	            return new OutputConditionPolledCrontabFactoryForge(outputLimitSpec.CrontabAtSchedule, statementRawInfo, compileTimeServices);
-	        } else if (outputLimitSpec.RateType == OutputLimitRateType.WHEN_EXPRESSION) {
-	            return new OutputConditionPolledExpressionFactoryForge(outputLimitSpec.WhenExpressionNode, outputLimitSpec.ThenExpressions, compileTimeServices);
-	        } else if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS) {
-	            int rate = -1;
-	            if (outputLimitSpec.Rate != null) {
-	                rate = outputLimitSpec.Rate.IntValue();
-	            }
-	            return new OutputConditionPolledCountFactoryForge(rate, variableMetaData);
-	        } else {
-	            if (variableMetaData != null && (!TypeHelper.IsNumeric(variableMetaData.Type))) {
-	                throw new ArgumentException("Variable named '" + outputLimitSpec.VariableName + "' must be of numeric type");
-	            }
-	            return new OutputConditionPolledTimeFactoryForge(outputLimitSpec.TimePeriodExpr);
-	        }
-	    }
-	}
+            if (outputLimitSpec.RateType == OutputLimitRateType.CRONTAB) {
+                return new OutputConditionPolledCrontabFactoryForge(outputLimitSpec.CrontabAtSchedule, statementRawInfo, compileTimeServices);
+            }
+            else if (outputLimitSpec.RateType == OutputLimitRateType.WHEN_EXPRESSION) {
+                return new OutputConditionPolledExpressionFactoryForge(
+                    outputLimitSpec.WhenExpressionNode, outputLimitSpec.ThenExpressions, compileTimeServices);
+            }
+            else if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS) {
+                int rate = -1;
+                if (outputLimitSpec.Rate != null) {
+                    rate = outputLimitSpec.Rate.IntValue();
+                }
+
+                return new OutputConditionPolledCountFactoryForge(rate, variableMetaData);
+            }
+            else {
+                if (variableMetaData != null && (!TypeHelper.IsNumeric(variableMetaData.Type))) {
+                    throw new ArgumentException("Variable named '" + outputLimitSpec.VariableName + "' must be of numeric type");
+                }
+
+                return new OutputConditionPolledTimeFactoryForge(outputLimitSpec.TimePeriodExpr);
+            }
+        }
+    }
 } // end of namespace

@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class AggregationRowCtorDesc
     {
         public AggregationRowCtorDesc(
-            CodegenClassScope classScope, CodegenCtor rowCtor, IList<CodegenTypedParam> rowMembers,
+            CodegenClassScope classScope,
+            CodegenCtor rowCtor,
+            IList<CodegenTypedParam> rowMembers,
             CodegenNamedMethods namedMethods)
         {
             ClassScope = classScope;

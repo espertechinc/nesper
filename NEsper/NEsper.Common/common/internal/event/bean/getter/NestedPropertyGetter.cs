@@ -28,9 +28,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         private readonly BeanEventPropertyGetter[] getterChain;
 
         public NestedPropertyGetter(
-            IList<EventPropertyGetter> getterChain, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            Type finalPropertyType, Type finalGenericType, BeanEventTypeFactory beanEventTypeFactory) : base(
-            eventBeanTypedEventFactory, beanEventTypeFactory, finalPropertyType, finalGenericType)
+            IList<EventPropertyGetter> getterChain,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            Type finalPropertyType,
+            Type finalGenericType,
+            BeanEventTypeFactory beanEventTypeFactory)
+            : base(
+                eventBeanTypedEventFactory, beanEventTypeFactory, finalPropertyType, finalGenericType)
         {
             this.getterChain = new BeanEventPropertyGetter[getterChain.Count];
 
@@ -92,7 +96,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public override Type TargetType => getterChain[0].TargetType;
 
         public override CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -100,7 +105,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -108,21 +114,25 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetBeanPropCodegen(codegenMethodScope, codegenClassScope, false), underlyingExpression);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetBeanPropCodegen(codegenMethodScope, codegenClassScope, true), underlyingExpression);
         }
 
         private CodegenMethod GetBeanPropCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope, bool exists)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            bool exists)
         {
             var block = codegenMethodScope.MakeChild(
                 exists ? typeof(bool) : getterChain[getterChain.Length - 1].BeanPropType.GetBoxedType(), GetType(),

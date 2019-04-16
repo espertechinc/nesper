@@ -9,7 +9,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -30,21 +29,21 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             this.factory = factory;
         }
 
-        public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
+        public void AddRemove(
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
-            if (newData != null)
-            {
-                foreach (EventBean theEvent in newData)
-                {
+            if (newData != null) {
+                foreach (EventBean theEvent in newData) {
                     Add(theEvent, exprEvaluatorContext);
                 }
             }
-            if (oldData != null)
-            {
-                foreach (EventBean theEvent in oldData)
-                {
+
+            if (oldData != null) {
+                foreach (EventBean theEvent in oldData) {
                     Remove(theEvent, exprEvaluatorContext);
                 }
             }
@@ -59,12 +58,12 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         /// <param name="events">to add</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
         /// <throws>ArgumentException if the event was already existed in the index</throws>
-        public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (events != null)
-            {
-                foreach (EventBean theEvent in events)
-                {
+            if (events != null) {
+                foreach (EventBean theEvent in events) {
                     Add(theEvent, exprEvaluatorContext);
                 }
             }
@@ -76,12 +75,12 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         /// <param name="events">to be removed, can be null instead of an empty array.</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
         /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
-        public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (events != null)
-            {
-                foreach (EventBean theEvent in events)
-                {
+            if (events != null) {
+                foreach (EventBean theEvent in events) {
                     Remove(theEvent, exprEvaluatorContext);
                 }
             }
@@ -97,23 +96,19 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             return this.GetType().Name;
         }
 
-        public int? NumberOfEvents
-        {
+        public int? NumberOfEvents {
             get => null;
         }
 
-        public EventTableOrganization Organization
-        {
+        public EventTableOrganization Organization {
             get => factory.Organization;
         }
 
-        public Type[] OptKeyCoercedTypes
-        {
+        public Type[] OptKeyCoercedTypes {
             get => factory.OptKeyCoercedTypes;
         }
 
-        public Type[] OptRangeCoercedTypes
-        {
+        public Type[] OptRangeCoercedTypes {
             get => factory.OptRangeCoercedTypes;
         }
 
@@ -128,9 +123,13 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         public abstract int NumKeys { get; }
         object EventTable.Index => Index;
 
-        public abstract void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        public abstract void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-        public abstract void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        public abstract void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         public abstract bool IsEmpty { get; }
 

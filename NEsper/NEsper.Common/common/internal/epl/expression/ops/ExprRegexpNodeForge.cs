@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -17,40 +16,47 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
-	public abstract class ExprRegexpNodeForge : ExprForgeInstrumentable {
-	    private readonly ExprRegexpNode parent;
-	    private readonly bool isNumericValue;
+    public abstract class ExprRegexpNodeForge : ExprForgeInstrumentable
+    {
+        private readonly ExprRegexpNode parent;
+        private readonly bool isNumericValue;
 
-	    public abstract ExprEvaluator ExprEvaluator { get; }
+        public abstract ExprEvaluator ExprEvaluator { get; }
 
-	    public abstract CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope);
+        public abstract CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
 
-	    public abstract ExprForgeConstantType ForgeConstantType { get; }
+        public abstract ExprForgeConstantType ForgeConstantType { get; }
 
-	    public abstract CodegenExpression EvaluateCodegenUninstrumented(
-	        Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-	        CodegenClassScope codegenClassScope);
+        public abstract CodegenExpression EvaluateCodegenUninstrumented(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope);
 
-	    public ExprRegexpNodeForge(ExprRegexpNode parent, bool isNumericValue) {
-	        this.parent = parent;
-	        this.isNumericValue = isNumericValue;
-	    }
+        public ExprRegexpNodeForge(
+            ExprRegexpNode parent,
+            bool isNumericValue)
+        {
+            this.parent = parent;
+            this.isNumericValue = isNumericValue;
+        }
 
-	    public ExprRegexpNode ForgeRenderable
-	    {
-	        get => parent;
-	    }
+        public ExprRegexpNode ForgeRenderable {
+            get => parent;
+        }
 
-	    ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
 
-	    public bool IsNumericValue
-	    {
-	        get => isNumericValue;
-	    }
+        public bool IsNumericValue {
+            get => isNumericValue;
+        }
 
-	    public Type EvaluationType
-	    {
-	        get => typeof(bool?);
-	    }
-	}
+        public Type EvaluationType {
+            get => typeof(bool?);
+        }
+    }
 } // end of namespace

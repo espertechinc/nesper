@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private readonly ExprDotMethodForgeDuck forge;
         private readonly ExprEvaluator[] parameters;
 
-        private ExprDotMethodForgeDuckEval(ExprDotMethodForgeDuck forge, ExprEvaluator[] parameters)
+        private ExprDotMethodForgeDuckEval(
+            ExprDotMethodForgeDuck forge,
+            ExprEvaluator[] parameters)
         {
             this.forge = forge;
             this.parameters = parameters;
@@ -41,7 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public EPType TypeInfo => forge.TypeInfo;
 
         public object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (target == null) {
                 return null;
@@ -64,8 +69,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public ExprDotForge DotForge => forge;
 
         public static CodegenExpression Codegen(
-            ExprDotMethodForgeDuck forge, CodegenExpression inner, Type innerType,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprDotMethodForgeDuck forge,
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression mCache = codegenClassScope.AddFieldUnshared<IDictionary<Type, MethodInfo>>(
@@ -109,7 +117,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         /// <param name="allFalse">all-false boolean same size as params</param>
         /// <returns>method</returns>
         public static MethodInfo DotMethodDuckGetMethod(
-            Type targetClass, IDictionary<Type, MethodInfo> cache, string methodName, Type[] paramTypes,
+            Type targetClass,
+            IDictionary<Type, MethodInfo> cache,
+            string methodName,
+            Type[] paramTypes,
             bool[] allFalse)
         {
             MethodInfo method;
@@ -135,7 +146,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         /// <param name="statementName">statementName</param>
         /// <returns>result</returns>
         public static object DotMethodDuckInvokeMethod(
-            MethodInfo method, object target, object[] args, string statementName)
+            MethodInfo method,
+            object target,
+            object[] args,
+            string statementName)
         {
             try {
                 return method.Invoke(target, args);
@@ -153,7 +167,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return null;
         }
 
-        private static MethodInfo GetMethod(Type clazz, string methodName, Type[] paramTypes, bool[] allFalse)
+        private static MethodInfo GetMethod(
+            Type clazz,
+            string methodName,
+            Type[] paramTypes,
+            bool[] allFalse)
         {
             try {
                 return MethodResolver.ResolveMethod(clazz, methodName, paramTypes, true, allFalse, allFalse);

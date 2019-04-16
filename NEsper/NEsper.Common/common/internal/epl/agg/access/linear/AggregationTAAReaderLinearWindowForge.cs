@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
     {
         private readonly ExprNode optionalEvaluator;
 
-        public AggregationTAAReaderLinearWindowForge(Type arrayType, ExprNode optionalEvaluator)
+        public AggregationTAAReaderLinearWindowForge(
+            Type arrayType,
+            ExprNode optionalEvaluator)
         {
             ResultType = arrayType;
             this.optionalEvaluator = optionalEvaluator;
@@ -29,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         public Type ResultType { get; }
 
         public CodegenExpression CodegenCreateReader(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(AggregationTAAReaderLinearWindow), GetType(), classScope);
             method.Block

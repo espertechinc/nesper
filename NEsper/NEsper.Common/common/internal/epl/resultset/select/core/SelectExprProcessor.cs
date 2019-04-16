@@ -26,6 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         /// <param name="exprEvaluatorContext">context</param>
         /// <returns>event with properties containing selected items</returns>
         EventBean Process(
-            EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

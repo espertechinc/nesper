@@ -9,7 +9,6 @@
 using System;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
@@ -25,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         /// <param name="streamNum">stream id</param>
         /// <param name="childNode">expression</param>
         /// <param name="componentType">type</param>
-        public AggregationAccessorWindowWEvalForge(int streamNum, ExprForge childNode, Type componentType)
+        public AggregationAccessorWindowWEvalForge(
+            int streamNum,
+            ExprForge childNode,
+            Type componentType)
         {
             StreamNum = streamNum;
             ChildNode = childNode;

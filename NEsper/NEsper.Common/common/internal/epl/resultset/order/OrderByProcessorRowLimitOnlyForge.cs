@@ -7,11 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.order.OrderByProcessorCodegenNames;
@@ -33,49 +31,77 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             this.rowLimitProcessorFactoryForge = rowLimitProcessorFactoryForge;
         }
 
-        public void InstantiateCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void InstantiateCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
-            CodegenExpressionField rowLimitFactory = classScope.AddFieldUnshared(true, typeof(RowLimitProcessorFactory), rowLimitProcessorFactoryForge.Make(classScope.PackageScope.InitMethod, classScope));
-            method.Block.DeclareVar(typeof(RowLimitProcessor), REF_ROWLIMITPROCESSOR.Ref, ExprDotMethod(rowLimitFactory, "instantiate", REF_AGENTINSTANCECONTEXT))
-                    .MethodReturn(CodegenExpressionBuilder.NewInstance(CLASSNAME_ORDERBYPROCESSOR, @Ref("o"), REF_ROWLIMITPROCESSOR));
+            CodegenExpressionField rowLimitFactory = classScope.AddFieldUnshared(
+                true, typeof(RowLimitProcessorFactory), rowLimitProcessorFactoryForge.Make(classScope.PackageScope.InitMethod, classScope));
+            method.Block.DeclareVar(
+                    typeof(RowLimitProcessor), REF_ROWLIMITPROCESSOR.Ref, ExprDotMethod(rowLimitFactory, "instantiate", REF_AGENTINSTANCECONTEXT))
+                .MethodReturn(CodegenExpressionBuilder.NewInstance(CLASSNAME_ORDERBYPROCESSOR, @Ref("o"), REF_ROWLIMITPROCESSOR));
         }
 
-        public void CtorCodegen(CodegenCtor ctor, IList<CodegenTypedParam> members, CodegenClassScope classScope)
+        public void CtorCodegen(
+            CodegenCtor ctor,
+            IList<CodegenTypedParam> members,
+            CodegenClassScope classScope)
         {
             ctor.CtorParams.Add(new CodegenTypedParam(typeof(RowLimitProcessor), REF_ROWLIMITPROCESSOR.Ref));
         }
 
-        public void SortPlainCodegen(CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+        public void SortPlainCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorRowLimitOnly.SortPlainCodegen(method);
         }
 
-        public void SortWGroupKeysCodegen(CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+        public void SortWGroupKeysCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorRowLimitOnly.SortWGroupKeysCodegen(method);
         }
 
-        public void SortRollupCodegen(CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+        public void SortRollupCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorRowLimitOnly.SortRollupCodegen(method);
         }
 
-        public void GetSortKeyCodegen(CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+        public void GetSortKeyCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(ConstantNull());
         }
 
-        public void GetSortKeyRollupCodegen(CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+        public void GetSortKeyRollupCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(ConstantNull());
         }
 
-        public void SortWOrderKeysCodegen(CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+        public void SortWOrderKeysCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorRowLimitOnly.SortWOrderKeysCodegen(method);
         }
 
-        public void SortTwoKeysCodegen(CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+        public void SortTwoKeysCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             OrderByProcessorRowLimitOnly.SortTwoKeysCodegen(method);
         }

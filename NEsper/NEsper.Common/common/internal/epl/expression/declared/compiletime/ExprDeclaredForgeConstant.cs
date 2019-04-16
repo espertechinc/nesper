@@ -29,7 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         private readonly object value;
 
         public ExprDeclaredForgeConstant(
-            ExprDeclaredNodeImpl parent, Type returnType, ExpressionDeclItem prototype, object value, bool audit,
+            ExprDeclaredNodeImpl parent,
+            Type returnType,
+            ExpressionDeclItem prototype,
+            object value,
+            bool audit,
             string statementName)
         {
             this.parent = parent;
@@ -40,7 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             this.statementName = statementName;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return value;
         }
@@ -48,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (!audit) {
@@ -68,7 +77,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(

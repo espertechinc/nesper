@@ -26,8 +26,7 @@ namespace com.espertech.esper.common.client.context
     {
         public Func<IList<object[]>> ProcPartitionKeys { get; set; }
 
-        public IList<object[]> PartitionKeys
-        {
+        public IList<object[]> PartitionKeys {
             get { return ProcPartitionKeys.Invoke(); }
         }
 

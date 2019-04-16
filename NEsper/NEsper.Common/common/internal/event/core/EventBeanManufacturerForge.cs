@@ -18,6 +18,8 @@ namespace com.espertech.esper.common.@internal.@event.core
     {
         EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory);
 
-        CodegenExpression Make(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
+        CodegenExpression Make(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
     }
 } // end of namespace

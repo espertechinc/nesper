@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
@@ -25,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
         public abstract EventBean[] ProcessUpdate(FAFQueryMethodIUDUpdate update);
 
-        public abstract ICollection<EventBean> SnapshotBestEffort(QueryGraph queryGraph, Attribute[] annotations);
+        public abstract ICollection<EventBean> SnapshotBestEffort(
+            QueryGraph queryGraph,
+            Attribute[] annotations);
 
         public abstract AgentInstanceContext AgentInstanceContext { get; }
 

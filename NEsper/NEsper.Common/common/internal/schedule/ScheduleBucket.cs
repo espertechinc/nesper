@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -28,7 +27,8 @@ namespace com.espertech.esper.common.@internal.schedule
     /// deterministically.
     /// </para>
     /// </summary>
-    public class ScheduleBucket {
+    public class ScheduleBucket
+    {
         private readonly int bucketNum;
         private int lastSlot;
 
@@ -36,20 +36,26 @@ namespace com.espertech.esper.common.@internal.schedule
         /// Ctor.
         /// </summary>
         /// <param name="bucketNum">is a simple integer number for this bucket by which buckets can be sorted</param>
-        public ScheduleBucket(int bucketNum) {
+        public ScheduleBucket(int bucketNum)
+        {
             this.bucketNum = bucketNum;
             lastSlot = 0;
         }
 
-        public static long ToLong(int bucket, int slot) {
+        public static long ToLong(
+            int bucket,
+            int slot)
+        {
             return ((long) bucket << 32) | slot & 0xFFFFFFFFL;
         }
 
-        public long AllocateSlot() {
+        public long AllocateSlot()
+        {
             return ToLong(bucketNum, lastSlot++);
         }
 
-        public long AllocateSlot(int slotNumber) {
+        public long AllocateSlot(int slotNumber)
+        {
             return ToLong(bucketNum, slotNumber);
         }
     }

@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="expressionToCheck">provides values to cast</param>
         /// <param name="typeName">is the type to cast to: a fully-qualified class names or Java primitive type names or "string"</param>
-        public CastExpression(Expression expressionToCheck, string typeName)
+        public CastExpression(
+            Expression expressionToCheck,
+            string typeName)
         {
             Children.Add(expressionToCheck);
             TypeName = typeName;

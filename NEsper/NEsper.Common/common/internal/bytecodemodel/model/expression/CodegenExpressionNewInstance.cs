@@ -18,14 +18,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly Type _clazz;
         private readonly CodegenExpression[] _params;
 
-        public CodegenExpressionNewInstance(Type clazz, CodegenExpression[] @params)
+        public CodegenExpressionNewInstance(
+            Type clazz,
+            CodegenExpression[] @params)
         {
             this._clazz = clazz;
             this._params = @params;
             CodegenExpressionExtensions.AssertNonNullArgs(@params);
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("new ");
             CodeGenerationHelper.AppendClassName(builder, _clazz, null, imports);

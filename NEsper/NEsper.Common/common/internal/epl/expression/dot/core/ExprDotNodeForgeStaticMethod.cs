@@ -23,10 +23,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     public class ExprDotNodeForgeStaticMethod : ExprDotNodeForge
     {
         public ExprDotNodeForgeStaticMethod(
-            ExprNode parent, bool isReturnsConstantResult, string classOrPropertyName, MethodInfo staticMethod,
-            ExprForge[] childForges, bool isConstantParameters,
+            ExprNode parent,
+            bool isReturnsConstantResult,
+            string classOrPropertyName,
+            MethodInfo staticMethod,
+            ExprForge[] childForges,
+            bool isConstantParameters,
             ExprDotForge[] chainForges,
-            ExprDotStaticMethodWrap resultWrapLambda, bool rethrowExceptions, object targetObject,
+            ExprDotStaticMethodWrap resultWrapLambda,
+            bool rethrowExceptions,
+            object targetObject,
             string optionalStatementName)
         {
             ForgeRenderable = parent;
@@ -89,7 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public bool IsRethrowExceptions { get; }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprDotNodeForgeStaticMethodEval.CodegenExprEval(
@@ -97,7 +105,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -105,7 +115,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ExprDotNodeForgeStaticMethodEval.CodegenGet(

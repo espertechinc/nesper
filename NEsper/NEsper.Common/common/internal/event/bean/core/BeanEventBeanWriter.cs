@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             this.writers = writers;
         }
 
-        public void Write(object[] values, EventBean theEvent)
+        public void Write(
+            object[] values,
+            EventBean theEvent)
         {
             for (var i = 0; i < values.Length; i++) {
                 writers[i].Write(values[i], theEvent);

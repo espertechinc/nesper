@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         /// <param name="indicator">for presenting the info to a view</param>
         /// <param name="staticExprEvaluatorContext">expression evaluation context for static evaluation (not for runtime eval)</param>
         public JoinExecutionStrategyImpl(
-            JoinSetComposer composer, ExprEvaluator optionalFilter, JoinSetProcessor indicator,
+            JoinSetComposer composer,
+            ExprEvaluator optionalFilter,
+            JoinSetProcessor indicator,
             ExprEvaluatorContext staticExprEvaluatorContext)
         {
             this.composer = composer;
@@ -43,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             this.staticExprEvaluatorContext = staticExprEvaluatorContext;
         }
 
-        public void Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+        public void Join(
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream)
         {
             var instrumentationCommon = staticExprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QJoinExecStrategy();
@@ -76,7 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         private void ProcessFilter(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             Filter(optionalFilter, newEvents, true, exprEvaluatorContext);

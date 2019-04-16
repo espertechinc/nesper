@@ -42,7 +42,9 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
         public string ViewName => ViewEnum.TIME_WINDOW.Name;
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

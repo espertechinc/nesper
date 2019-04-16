@@ -28,6 +28,6 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         ///     Returns the optional suggestion for a matching name.
         /// </summary>
         /// <value>suggested match</value>
-        public Pair<int, string> OptionalSuggestion => _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.Invoke() : null;
+        public Pair<int, string> OptionalSuggestion => _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.Suggestion : null;
     }
 } // end of namespace

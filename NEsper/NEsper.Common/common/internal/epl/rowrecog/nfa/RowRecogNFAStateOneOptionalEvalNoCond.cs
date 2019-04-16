@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
     /// </summary>
     public class RowRecogNFAStateOneOptionalEvalNoCond : RowRecogNFAStateBase
     {
-        public override bool Matches(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext)
+        public override bool Matches(
+            EventBean[] eventsPerStream,
+            AgentInstanceContext agentInstanceContext)
         {
             return true;
         }

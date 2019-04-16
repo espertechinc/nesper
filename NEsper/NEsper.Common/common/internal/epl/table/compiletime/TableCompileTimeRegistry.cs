@@ -6,40 +6,40 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
-	public class TableCompileTimeRegistry : CompileTimeRegistry {
-	    private readonly IDictionary<string, TableMetaData> tables;
+    public class TableCompileTimeRegistry : CompileTimeRegistry
+    {
+        public TableCompileTimeRegistry(IDictionary<string, TableMetaData> tables)
+        {
+            Tables = tables;
+        }
 
-	    public TableCompileTimeRegistry(IDictionary<string, TableMetaData> tables) {
-	        this.tables = tables;
-	    }
+        public IDictionary<string, TableMetaData> Tables { get; }
 
-	    public void NewTable(TableMetaData metaData) {
-	        if (!metaData.TableVisibility.IsModuleProvidedAccessModifier) {
-	            throw new IllegalStateException("Invalid visibility for tables");
-	        }
-	        string tableName = metaData.TableName;
-	        TableMetaData existing = tables.Get(tableName);
-	        if (existing != null) {
-	            throw new IllegalStateException("Duplicate table encountered for name '" + tableName + "'");
-	        }
-	        tables.Put(tableName, metaData);
-	    }
+        public void NewTable(TableMetaData metaData)
+        {
+            if (!metaData.TableVisibility.IsModuleProvidedAccessModifier) {
+                throw new IllegalStateException("Invalid visibility for tables");
+            }
 
-	    public IDictionary<string, TableMetaData> GetTables() {
-	        return tables;
-	    }
+            var tableName = metaData.TableName;
+            var existing = Tables.Get(tableName);
+            if (existing != null) {
+                throw new IllegalStateException("Duplicate table encountered for name '" + tableName + "'");
+            }
 
-	    public TableMetaData GetTable(string tableName) {
-	        return tables.Get(tableName);
-	    }
-	}
+            Tables.Put(tableName, metaData);
+        }
+
+        public TableMetaData GetTable(string tableName)
+        {
+            return Tables.Get(tableName);
+        }
+    }
 } // end of namespace

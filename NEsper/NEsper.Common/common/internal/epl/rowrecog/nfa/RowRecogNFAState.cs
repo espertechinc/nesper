@@ -70,6 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
         /// <param name="eventsPerStream">variable values</param>
         /// <param name="agentInstanceContext">expression evaluation context</param>
         /// <returns>match indicator</returns>
-        bool Matches(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext);
+        bool Matches(
+            EventBean[] eventsPerStream,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

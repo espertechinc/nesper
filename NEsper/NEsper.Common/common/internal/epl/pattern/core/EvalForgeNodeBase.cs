@@ -33,6 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         }
 
         public abstract PatternExpressionPrecedenceEnum Precedence { get; }
+
         public abstract void CollectSelfFilterAndSchedule(
             IList<FilterSpecCompiled> filters,
             IList<ScheduleHandleCallbackProvider> schedules);
@@ -67,7 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             set => audit = value;
         }
 
-        public void ToEPL(StringWriter writer, PatternExpressionPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            PatternExpressionPrecedenceEnum parentPrecedence)
         {
             if (this.Precedence.GetLevel() < parentPrecedence.GetLevel()) {
                 writer.Write("(");
@@ -80,7 +83,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         }
 
         public CodegenMethod MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(TypeOfFactory(), GetType(), classScope);
             method.Block
@@ -106,8 +111,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         protected abstract string NameOfFactory();
 
         protected abstract void InlineCodegen(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
-        public abstract void ToPrecedenceFreeEPL(StringWriter writer);
+        public abstract void ToPrecedenceFreeEPL(TextWriter writer);
     }
 } // end of namespace

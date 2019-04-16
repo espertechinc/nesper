@@ -23,7 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         /// Ctor.
         /// </summary>
         /// <param name="distinct">flag indicating unique or non-unique value aggregation</param>
-        public ExprNthAggNode(bool distinct) : base(distinct)
+        public ExprNthAggNode(bool distinct)
+            : base(distinct)
         {
         }
 
@@ -31,31 +32,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         {
             string message =
                 "The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant";
-            if (this.positionalParams.Length != 2)
-            {
+            if (this.positionalParams.Length != 2) {
                 throw new ExprValidationException(message);
             }
 
             ExprNode first = this.positionalParams[0];
             ExprNode second = this.positionalParams[1];
-            if (!second.Forge.ForgeConstantType.IsCompileTimeConstant)
-            {
+            if (!second.Forge.ForgeConstantType.IsCompileTimeConstant) {
                 throw new ExprValidationException(message);
             }
 
             var num = second.Forge.ExprEvaluator.Evaluate(null, true, null);
             int size = num.AsInt();
 
-            if (optionalFilter != null)
-            {
+            if (optionalFilter != null) {
                 this.positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
             }
 
             return new AggregationFactoryMethodNth(this, first.Forge.EvaluationType, size);
         }
 
-        public override string AggregationFunctionName
-        {
+        public override string AggregationFunctionName {
             get => "nth";
         }
 

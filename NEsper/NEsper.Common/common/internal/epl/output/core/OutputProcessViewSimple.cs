@@ -35,13 +35,15 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         }
 
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents, 
+            ISet<MultiKey<EventBean>> newEvents,
             ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             var statementResultService = agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;

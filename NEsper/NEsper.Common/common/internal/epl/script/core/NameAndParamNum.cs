@@ -6,58 +6,66 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
-using com.espertech.esper.compat;
+using System.Linq;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
-	public class NameAndParamNum {
-	    private readonly static NameAndParamNum[] EMPTY_ARRAY = new NameAndParamNum[0];
+    public class NameAndParamNum
+    {
+        private static readonly NameAndParamNum[] EMPTY_ARRAY = new NameAndParamNum[0];
 
-	    private readonly string name;
-	    private readonly int paramNum;
+        public NameAndParamNum(
+            string name,
+            int paramNum)
+        {
+            Name = name;
+            ParamNum = paramNum;
+        }
 
-	    public NameAndParamNum(string name, int paramNum) {
-	        this.name = name;
-	        this.paramNum = paramNum;
-	    }
+        public string Name { get; }
 
-	    public string Name {
-	        get => name;
-	    }
+        public int ParamNum { get; }
 
-	    public int ParamNum {
-	        get => paramNum;
-	    }
+        public override bool Equals(object o)
+        {
+            if (this == o) {
+                return true;
+            }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
 
-	        NameAndParamNum that = (NameAndParamNum) o;
+            var that = (NameAndParamNum) o;
 
-	        if (paramNum != that.paramNum) return false;
-	        return name.Equals(that.name);
-	    }
+            if (ParamNum != that.ParamNum) {
+                return false;
+            }
 
-	    public override int GetHashCode() {
-	        int result = name.GetHashCode();
-	        result = 31 * result + paramNum;
-	        return result;
-	    }
+            return Name.Equals(that.Name);
+        }
 
-	    public static NameAndParamNum[] ToArray(IList<NameAndParamNum> pathScripts) {
-	        if (pathScripts.IsEmpty()) {
-	            return EMPTY_ARRAY;
-	        }
-	        return pathScripts.ToArray();
-	    }
+        public override int GetHashCode()
+        {
+            var result = Name.GetHashCode();
+            result = 31 * result + ParamNum;
+            return result;
+        }
 
-	    public override string ToString() {
-	        return name + " (" + paramNum + " parameters)";
-	    }
-	}
+        public static NameAndParamNum[] ToArray(IList<NameAndParamNum> pathScripts)
+        {
+            if (pathScripts.IsEmpty()) {
+                return EMPTY_ARRAY;
+            }
+
+            return pathScripts.ToArray();
+        }
+
+        public override string ToString()
+        {
+            return Name + " (" + ParamNum + " parameters)";
+        }
+    }
 } // end of namespace

@@ -45,15 +45,20 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         }
 
         public EventObserver MakeObserver(
-            PatternAgentInstanceContext context, MatchedEventMap beginState,
-            ObserverEventEvaluator observerEventEvaluator, object observerState, bool isFilterChildNonQuitting)
+            PatternAgentInstanceContext context,
+            MatchedEventMap beginState,
+            ObserverEventEvaluator observerEventEvaluator,
+            object observerState,
+            bool isFilterChildNonQuitting)
         {
             return new TimerAtObserver(ComputeSpec(beginState, context), beginState, observerEventEvaluator);
         }
 
         public bool IsNonRestarting => false;
 
-        public ScheduleSpec ComputeSpec(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public ScheduleSpec ComputeSpec(
+            MatchedEventMap beginState,
+            PatternAgentInstanceContext context)
         {
             if (spec != null) {
                 return spec;
@@ -70,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         }
 
         private static object[] EvaluateRuntime(
-            MatchedEventMap beginState, ExprEvaluator[] parameters, MatchedEventConvertor optionalConvertor,
+            MatchedEventMap beginState,
+            ExprEvaluator[] parameters,
+            MatchedEventConvertor optionalConvertor,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var results = new object[parameters.Length];

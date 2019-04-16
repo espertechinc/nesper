@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
         }
 
         public override InfraOnExprBaseViewResult DetermineOnExprView(
-            AgentInstanceContext agentInstanceContext, 
+            AgentInstanceContext agentInstanceContext,
             IList<AgentInstanceStopCallback> stopCallbacks,
             bool isRecoveringReslient)
         {
@@ -40,7 +40,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
         }
 
         public override View DetermineFinalOutputView(
-            AgentInstanceContext agentInstanceContext, View onExprView)
+            AgentInstanceContext agentInstanceContext,
+            View onExprView)
         {
             // create result-processing
             var pair =
@@ -54,7 +55,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
         }
 
         public override StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
         }

@@ -19,7 +19,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
         private readonly int streamNum;
 
-        public SignalHandlerDefaultWInvokeStream(object target, MethodInfo method, int streamNum) : base(target, method)
+        public SignalHandlerDefaultWInvokeStream(
+            object target,
+            MethodInfo method,
+            int streamNum)
+            : base(target, method)
         {
             this.streamNum = streamNum;
         }

@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="selectExpression">the expression node to evaluate for matching events</param>
         /// <param name="optionalAsName">the name of the item, null if not name supplied</param>
         /// <param name="isEvents">whether event selected</param>
-        public SelectClauseExprRawSpec(ExprNode selectExpression, string optionalAsName, bool isEvents)
+        public SelectClauseExprRawSpec(
+            ExprNode selectExpression,
+            string optionalAsName,
+            bool isEvents)
         {
             SelectExpression = selectExpression;
             OptionalAsName = optionalAsName == null ? null : StringValue.RemoveTicks(optionalAsName);

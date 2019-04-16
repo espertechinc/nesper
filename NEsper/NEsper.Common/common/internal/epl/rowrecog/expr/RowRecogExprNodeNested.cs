@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     /// </summary>
     public class RowRecogExprNodeNested : RowRecogExprNode
     {
-        public RowRecogExprNodeNested(RowRecogNFATypeEnum type, RowRecogExprRepeatDesc optionalRepeat)
+        public RowRecogExprNodeNested(
+            RowRecogNFATypeEnum type,
+            RowRecogExprRepeatDesc optionalRepeat)
         {
             Type = type;
             OptionalRepeat = optionalRepeat;
@@ -32,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
         public override RowRecogExprNodePrecedenceEnum Precedence => RowRecogExprNodePrecedenceEnum.GROUPING;
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ChildNodes[0].ToEPL(writer, Precedence);
             writer.Write(Type.GetOptionalPostfix());

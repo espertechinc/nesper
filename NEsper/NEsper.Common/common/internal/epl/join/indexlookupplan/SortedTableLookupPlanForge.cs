@@ -26,8 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         private readonly Type optionalCoercionType;
 
         public SortedTableLookupPlanForge(
-            int lookupStream, int indexedStream, bool indexedStreamIsVDW, EventType[] typesPerStream,
-            TableLookupIndexReqKey indexNum, QueryGraphValueEntryRangeForge rangeKeyPair, Type optionalCoercionType) :
+            int lookupStream,
+            int indexedStream,
+            bool indexedStreamIsVDW,
+            EventType[] typesPerStream,
+            TableLookupIndexReqKey indexNum,
+            QueryGraphValueEntryRangeForge rangeKeyPair,
+            Type optionalCoercionType)
+            :
             base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
         {
             RangeKeyPair = rangeKeyPair;
@@ -52,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         }
 
         public override ICollection<CodegenExpression> AdditionalParams(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return Collections.SingletonList(RangeKeyPair.Make(optionalCoercionType, method, symbols, classScope));
         }

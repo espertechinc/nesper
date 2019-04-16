@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         public PropertyCompositeEventTableFactory Factory { get; set; }
 
         public EventTable[] Index(
-            IList<EventBean> pollResult, bool isActiveCache, AgentInstanceContext agentInstanceContext)
+            IList<EventBean> pollResult,
+            bool isActiveCache,
+            AgentInstanceContext agentInstanceContext)
         {
             if (!isActiveCache) {
                 return new EventTable[] {new UnindexedEventTableList(pollResult, StreamNum)};

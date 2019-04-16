@@ -7,14 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
-	public interface ScriptCollector {
-	    void RegisterScript(string scriptName, int numParameters, ExpressionScriptProvided meta);
-	}
+    public interface ScriptCollector
+    {
+        void RegisterScript(
+            string scriptName,
+            int numParameters,
+            ExpressionScriptProvided meta);
+    }
 } // end of namespace

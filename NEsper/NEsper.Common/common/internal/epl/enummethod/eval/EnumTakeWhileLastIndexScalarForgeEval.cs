@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,7 +18,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
@@ -33,14 +31,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         private readonly ExprEvaluator innerExpression;
 
         public EnumTakeWhileLastIndexScalarForgeEval(
-            EnumTakeWhileLastIndexScalarForge forge, ExprEvaluator innerExpression)
+            EnumTakeWhileLastIndexScalarForge forge,
+            ExprEvaluator innerExpression)
         {
             this.forge = forge;
             this.innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             if (enumcoll.IsEmpty()) {
                 return enumcoll;
@@ -86,7 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public static CodegenExpression Codegen(
-            EnumTakeWhileLastIndexScalarForge forge, EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope,
+            EnumTakeWhileLastIndexScalarForge forge,
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             var evalTypeMember = codegenClassScope.AddFieldUnshared(

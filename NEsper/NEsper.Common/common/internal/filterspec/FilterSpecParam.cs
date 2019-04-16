@@ -45,7 +45,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         internal readonly ExprFilterSpecLookupable lookupable;
 
-        protected FilterSpecParam(ExprFilterSpecLookupable lookupable, FilterOperator filterOperator)
+        protected FilterSpecParam(
+            ExprFilterSpecLookupable lookupable,
+            FilterOperator filterOperator)
         {
             this.lookupable = lookupable;
             FilterOperator = filterOperator;
@@ -56,7 +58,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         public FilterOperator FilterOperator { get; }
 
         public abstract object GetFilterValue(
-            MatchedEventMap matchedEvents, 
+            MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv);
 

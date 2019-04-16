@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 {
     public class AggregationGroupByLocalGroupDesc
     {
-        public AggregationGroupByLocalGroupDesc(int numColumns, AggregationGroupByLocalGroupLevel[] levels)
+        public AggregationGroupByLocalGroupDesc(
+            int numColumns,
+            AggregationGroupByLocalGroupLevel[] levels)
         {
             NumColumns = numColumns;
             Levels = levels;

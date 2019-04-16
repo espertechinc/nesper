@@ -21,29 +21,38 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         private readonly AggregationMultiFunctionStateModeManaged mode;
         private AggregatorAccessPlugin access;
 
-        public AggregationStateFactoryForgePlugin(AggregationForgeFactoryAccessPlugin forgeFactory, AggregationMultiFunctionStateModeManaged mode)
+        public AggregationStateFactoryForgePlugin(
+            AggregationForgeFactoryAccessPlugin forgeFactory,
+            AggregationMultiFunctionStateModeManaged mode)
         {
             this.forgeFactory = forgeFactory;
             this.mode = mode;
         }
 
-        public void InitAccessForge(int col, bool join, CodegenCtor ctor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+        public void InitAccessForge(
+            int col,
+            bool join,
+            CodegenCtor ctor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
-            access = new AggregatorAccessPlugin(col, join, ctor, membersColumnized, classScope, forgeFactory.AggregationExpression.OptionalFilter, mode);
+            access = new AggregatorAccessPlugin(
+                col, join, ctor, membersColumnized, classScope, forgeFactory.AggregationExpression.OptionalFilter, mode);
         }
 
-        public AggregatorAccess Aggregator
-        {
+        public AggregatorAccess Aggregator {
             get => access;
         }
 
-        public CodegenExpression CodegenGetAccessTableState(int column, CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenExpression CodegenGetAccessTableState(
+            int column,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             return AggregatorAccessPlugin.CodegenGetAccessTableState(column);
         }
 
-        public ExprNode Expression
-        {
+        public ExprNode Expression {
             get => forgeFactory.AggregationExpression;
         }
     }

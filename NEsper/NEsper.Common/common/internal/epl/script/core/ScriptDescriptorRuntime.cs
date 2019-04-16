@@ -7,97 +7,40 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
-	public class ScriptDescriptorRuntime {
-	    private string optionalDialect;
-	    private string scriptName;
-	    private string expression;
-	    private string[] parameterNames;
-	    private ExprEvaluator[] parameters;
-	    private Type[] evaluationTypes;
-	    private SimpleNumberCoercer coercer;
+    public class ScriptDescriptorRuntime
+    {
+        public string OptionalDialect { get; set; }
 
-	    private string defaultDialect;
-	    private ImportService _importService;
+        public string ScriptName { get; set; }
 
-	    public void SetOptionalDialect(string optionalDialect) {
-	        this.optionalDialect = optionalDialect;
-	    }
+        public string Expression { get; set; }
 
-	    public void SetScriptName(string scriptName) {
-	        this.scriptName = scriptName;
-	    }
+        public string[] ParameterNames { get; set; }
 
-	    public void SetExpression(string expression) {
-	        this.expression = expression;
-	    }
+        public Type[] EvaluationTypes { get; set; }
 
-	    public void SetParameterNames(string[] parameterNames) {
-	        this.parameterNames = parameterNames;
-	    }
+        public string DefaultDialect { get; set; }
 
-	    public void SetEvaluationTypes(Type[] evaluationTypes) {
-	        this.evaluationTypes = evaluationTypes;
-	    }
+        public ImportService ImportService { get; set; }
 
-	    public string OptionalDialect {
-	        get => optionalDialect;
-	    }
+        public ImportService ClasspathImportService {
+            get => ImportService;
+            set => ImportService = value;
+        }
 
-	    public string ScriptName {
-	        get => scriptName;
-	    }
+        public ExprEvaluator[] Parameters { get; set; }
 
-	    public string Expression {
-	        get => expression;
-	    }
+        public SimpleNumberCoercer SimpleNumberCoercer { get; set; }
 
-	    public string[] GetParameterNames() {
-	        return parameterNames;
-	    }
-
-	    public Type[] GetEvaluationTypes() {
-	        return evaluationTypes;
-	    }
-
-	    public string DefaultDialect {
-	        get => defaultDialect;
-	    }
-
-	    public void SetDefaultDialect(string defaultDialect) {
-	        this.defaultDialect = defaultDialect;
-	    }
-
-	    public ImportService ImportService {
-	        get => _importService;
-	    }
-
-	    public void SetClasspathImportService(ImportService importService) {
-	        this._importService = importService;
-	    }
-
-	    public ExprEvaluator[] GetParameters() {
-	        return parameters;
-	    }
-
-	    public void SetParameters(ExprEvaluator[] parameters) {
-	        this.parameters = parameters;
-	    }
-
-	    public SimpleNumberCoercer SimpleNumberCoercer {
-	        get => coercer;
-	    }
-
-	    public void SetCoercer(SimpleNumberCoercer coercer) {
-	        this.coercer = coercer;
-	    }
-	}
+        public SimpleNumberCoercer Coercer {
+            get => SimpleNumberCoercer;
+            set => SimpleNumberCoercer = value;
+        }
+    }
 } // end of namespace

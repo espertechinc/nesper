@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.logging;
 
@@ -34,13 +33,16 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         public NamedWindowConsumerLatchWait(
             NamedWindowDeltaData deltaData,
             IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> dispatchTo,
-            NamedWindowConsumerLatchFactory factory, NamedWindowConsumerLatchWait earlier) : base(deltaData, dispatchTo)
+            NamedWindowConsumerLatchFactory factory,
+            NamedWindowConsumerLatchWait earlier)
+            : base(deltaData, dispatchTo)
         {
             this.factory = factory;
             EarlierLocal = earlier;
         }
 
-        public NamedWindowConsumerLatchWait(NamedWindowConsumerLatchFactory factory) : base(null, null)
+        public NamedWindowConsumerLatchWait(NamedWindowConsumerLatchFactory factory)
+            : base(null, null)
         {
             this.factory = factory;
             isCompleted = true;
@@ -61,8 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         ///     Hand a later latch to use for indicating completion via notify.
         /// </summary>
         /// <value>is the later latch</value>
-        public NamedWindowConsumerLatchWait Later
-        {
+        public NamedWindowConsumerLatchWait Later {
             set => later = value;
         }
 
@@ -71,28 +72,22 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         /// </summary>
         public override void Await()
         {
-            if (EarlierLocal.isCompleted)
-            {
+            if (EarlierLocal.isCompleted) {
                 return;
             }
 
-            lock (this)
-            {
-                if (!EarlierLocal.isCompleted)
-                {
-                    try
-                    {
+            lock (this) {
+                if (!EarlierLocal.isCompleted) {
+                    try {
                         this.Wait(factory.MsecWait);
                     }
-                    catch (ThreadInterruptedException e)
-                    {
+                    catch (ThreadInterruptedException e) {
                         Log.Error("Interrupted: " + e.Message, e);
                     }
                 }
             }
 
-            if (!EarlierLocal.isCompleted)
-            {
+            if (!EarlierLocal.isCompleted) {
                 Log.Info("Wait timeout exceeded for named window '" + "' consumer dispatch with notify");
             }
         }
@@ -103,10 +98,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         public override void Done()
         {
             isCompleted = true;
-            if (later != null)
-            {
-                lock (later)
-                {
+            if (later != null) {
+                lock (later) {
                     later.Notify();
                 }
             }

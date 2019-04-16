@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -28,14 +27,14 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly TableInstance tableInstanceInsertInto;
 
         public OnExprViewTableSelect(
-            SubordWMatchExprLookupStrategy lookupStrategy, 
-            TableInstance tableInstance, 
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableInstance tableInstance,
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessor resultSetProcessor, 
-            InfraOnSelectViewFactory parent, 
+            ResultSetProcessor resultSetProcessor,
+            InfraOnSelectViewFactory parent,
             bool audit,
-            bool deleteAndSelect, 
-            TableInstance tableInstanceInsertInto) 
+            bool deleteAndSelect,
+            TableInstance tableInstanceInsertInto)
             : base(lookupStrategy, tableInstance, agentInstanceContext, deleteAndSelect)
         {
             this.parent = parent;
@@ -45,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             this.tableInstanceInsertInto = tableInstanceInsertInto;
         }
 
-        public override void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
+        public override void HandleMatching(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(OnTriggerType.ON_SELECT, triggerEvents, matchingEvents);
 
@@ -64,12 +65,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             newData = InfraOnSelectUtil.HandleDistintAndInsert(newData, parent, agentInstanceContext, tableInstanceInsertInto, audit);
 
             // The on-select listeners receive the events selected
-            if ((newData != null) && (newData.Length > 0))
-            {
+            if ((newData != null) && (newData.Length > 0)) {
                 // And post only if we have listeners/subscribers that need the data
                 StatementResultService statementResultService = agentInstanceContext.StatementResultService;
-                if (statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic)
-                {
+                if (statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic) {
                     Child.Update(newData, null);
                 }
             }
@@ -78,10 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             resultSetProcessor.Clear();
 
             // Events to delete are indicated via old data
-            if (deleteAndSelect)
-            {
-                foreach (EventBean @event in matchingEvents)
-                {
+            if (deleteAndSelect) {
+                foreach (EventBean @event in matchingEvents) {
                     tableInstance.DeleteEvent(@event);
                 }
             }

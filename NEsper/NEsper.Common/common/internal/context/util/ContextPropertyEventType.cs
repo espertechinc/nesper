@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.context.util
         public const string PROP_CTX_KEY_PREFIX_SINGLE = "key1";
 
         public static void AddEndpointTypes(
-            ContextSpecCondition endpoint, IDictionary<string, object> properties, ISet<string> allTags)
+            ContextSpecCondition endpoint,
+            IDictionary<string, object> properties,
+            ISet<string> allTags)
         {
             if (endpoint is ContextSpecConditionFilter) {
                 var filter = (ContextSpecConditionFilter) endpoint;

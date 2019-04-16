@@ -23,13 +23,16 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly StatementAgentInstanceLock _statementLock;
 
         public SubordFullTableScanLookupStrategyLocking(
-            IEnumerable<EventBean> contents, StatementAgentInstanceLock statementLock)
+            IEnumerable<EventBean> contents,
+            StatementAgentInstanceLock statementLock)
         {
             this._contents = contents;
             this._statementLock = statementLock;
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, null, null);

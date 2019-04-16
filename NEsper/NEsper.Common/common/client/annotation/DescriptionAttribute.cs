@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.annotation
     /// <summary>
     /// Annotation for use in EPL statements to add a description.
     /// </summary>
-
     public class DescriptionAttribute : Attribute
     {
         /// <summary>

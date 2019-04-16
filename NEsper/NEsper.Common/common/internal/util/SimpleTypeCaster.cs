@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.util
         bool IsNumericCast { get; }
 
         CodegenExpression Codegen(
-            CodegenExpression input, Type inputType,
+            CodegenExpression input,
+            Type inputType,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope);
     }
@@ -41,6 +42,7 @@ namespace com.espertech.esper.common.@internal.util
     public class ProxyTypeCaster : SimpleTypeCaster
     {
         public Func<object, object> ProcCast;
+
         public object Cast(object @object)
             => ProcCast?.Invoke(@object);
 

@@ -98,7 +98,9 @@ namespace com.espertech.esper.common.@internal.view.timetolive
 
         public override EventType EventType => Parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
@@ -299,7 +301,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             }
 
             // Next callback
-            long callbackWait = oldestKey - expireBeforeTimestamp + 1;
+            long callbackWait = oldestKey.Value - expireBeforeTimestamp + 1;
             agentInstanceContext.AuditProvider.ScheduleAdd(
                 callbackWait, agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
             agentInstanceContext.StatementContext.SchedulingService.Add(callbackWait, handle, scheduleSlot);

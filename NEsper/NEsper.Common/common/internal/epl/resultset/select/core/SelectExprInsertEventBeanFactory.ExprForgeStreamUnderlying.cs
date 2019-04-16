@@ -27,18 +27,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 
             private readonly int streamNumEval;
 
-            public ExprForgeStreamUnderlying(int streamNumEval, Type returnType)
+            public ExprForgeStreamUnderlying(
+                int streamNumEval,
+                Type returnType)
             {
                 this.streamNumEval = streamNumEval;
                 this.returnType = returnType;
             }
 
             public object Evaluate(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 var theEvent = eventsPerStream[streamNumEval];
-                if (theEvent != null)
-                {
+                if (theEvent != null) {
                     return theEvent.Underlying;
                 }
 
@@ -57,9 +60,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 methodNode.Block
-                    .DeclareVar(typeof(EventBean), "theEvent", CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(streamNumEval)))
+                    .DeclareVar(
+                        typeof(EventBean), "theEvent",
+                        CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(streamNumEval)))
                     .IfRefNullReturnNull("theEvent")
-                    .MethodReturn(CodegenExpressionBuilder.Cast(returnType, CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.Ref("theEvent"))));
+                    .MethodReturn(
+                        CodegenExpressionBuilder.Cast(
+                            returnType, CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.Ref("theEvent"))));
                 return CodegenExpressionBuilder.LocalMethod(methodNode);
             }
 
@@ -69,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+            public void ToEPL(
+                TextWriter writer,
+                ExprPrecedenceEnum parentPrecedence)
             {
                 writer.Write(typeof(ExprForgeStreamUnderlying).GetSimpleName());
             }

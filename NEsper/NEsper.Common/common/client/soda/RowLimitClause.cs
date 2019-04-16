@@ -31,10 +31,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="optionalOffsetRows">offset</param>
         /// <param name="numRowsVariable">name of the variable providing the maximum number of rows</param>
         /// <param name="optionalOffsetRowsVariable">name of the variable providing the offset</param>
-        public RowLimitClause(int? numRows,
-                              int? optionalOffsetRows,
-                              string numRowsVariable,
-                              string optionalOffsetRowsVariable)
+        public RowLimitClause(
+            int? numRows,
+            int? optionalOffsetRows,
+            string numRowsVariable,
+            string optionalOffsetRowsVariable)
         {
             NumRows = numRows;
             OptionalOffsetRows = optionalOffsetRows;
@@ -95,7 +96,9 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// clause
         /// </returns>
-        public static RowLimitClause Create(String numRowsVariable, String offsetVariable)
+        public static RowLimitClause Create(
+            String numRowsVariable,
+            String offsetVariable)
         {
             return new RowLimitClause(null, null, numRowsVariable, offsetVariable);
         }
@@ -120,7 +123,9 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// clause
         /// </returns>
-        public static RowLimitClause Create(int numRows, int offset)
+        public static RowLimitClause Create(
+            int numRows,
+            int offset)
         {
             return new RowLimitClause(numRows, offset, null, null);
         }
@@ -132,30 +137,24 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             var numRowsVariable = NumRowsVariable;
-            if (numRowsVariable != null)
-            {
+            if (numRowsVariable != null) {
                 writer.Write(numRowsVariable);
             }
-            else
-            {
+            else {
                 var numRows = NumRows;
-                if (numRows != null)
-                {
+                if (numRows != null) {
                     writer.Write(numRows);
                 }
-                else
-                {
+                else {
                     writer.Write(Int32.MaxValue);
                 }
             }
 
-            if (OptionalOffsetRowsVariable != null)
-            {
+            if (OptionalOffsetRowsVariable != null) {
                 writer.Write(" offset ");
                 writer.Write(OptionalOffsetRowsVariable);
             }
-            else if (OptionalOffsetRows.GetValueOrDefault(0) != 0)
-            {
+            else if (OptionalOffsetRows.GetValueOrDefault(0) != 0) {
                 writer.Write(" offset ");
                 writer.Write(OptionalOffsetRows);
             }

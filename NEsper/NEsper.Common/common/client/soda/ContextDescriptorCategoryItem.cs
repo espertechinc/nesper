@@ -26,8 +26,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="expression">category expression</param>
         /// <param name="label">category label</param>
-        public ContextDescriptorCategoryItem(Expression expression,
-                                             String label)
+        public ContextDescriptorCategoryItem(
+            Expression expression,
+            String label)
         {
             Expression = expression;
             Label = label;
@@ -43,7 +44,9 @@ namespace com.espertech.esper.common.client.soda
 
         #region ContextDescriptor Members
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             writer.Write("group ");
             Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);

@@ -29,7 +29,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         ///     indicates additional options such as unidirectional stream or retain-union or
         ///     retain-intersection
         /// </param>
-        public StreamSpecBase(string optionalStreamName, ViewSpec[] viewSpecs, StreamSpecOptions streamSpecOptions)
+        public StreamSpecBase(
+            string optionalStreamName,
+            ViewSpec[] viewSpecs,
+            StreamSpecOptions streamSpecOptions)
         {
             OptionalStreamName = optionalStreamName;
             ViewSpecs = viewSpecs;

@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator rhs;
 
         public ExprEqualsNodeForgeCoercionEval(
-            ExprEqualsNodeImpl parent, ExprEvaluator lhs, ExprEvaluator rhs, SimpleNumberCoercer numberCoercerLHS,
+            ExprEqualsNodeImpl parent,
+            ExprEvaluator lhs,
+            ExprEvaluator rhs,
+            SimpleNumberCoercer numberCoercerLHS,
             SimpleNumberCoercer numberCoercerRHS)
         {
             this.parent = parent;
@@ -34,13 +37,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             this.numberCoercerRHS = numberCoercerRHS;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var result = EvaluateInternal(eventsPerStream, isNewData, context);
             return result;
         }
 
-        private bool? EvaluateInternal(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        private bool? EvaluateInternal(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var leftResult = lhs.Evaluate(eventsPerStream, isNewData, context);
             var rightResult = rhs.Evaluate(eventsPerStream, isNewData, context);
@@ -67,8 +76,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenMethod Codegen(
-            ExprEqualsNodeForgeCoercion forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope, ExprNode lhs, ExprNode rhs)
+            ExprEqualsNodeForgeCoercion forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope,
+            ExprNode lhs,
+            ExprNode rhs)
         {
             var lhsType = lhs.Forge.EvaluationType;
             var rhsType = rhs.Forge.EvaluationType;

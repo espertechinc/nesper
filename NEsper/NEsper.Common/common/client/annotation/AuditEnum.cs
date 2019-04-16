@@ -135,7 +135,9 @@ namespace com.espertech.esper.common.client.annotation
             return null;
         }
 
-        private static bool IsListed(string list, string lookedForValueInput)
+        private static bool IsListed(
+            string list,
+            string lookedForValueInput)
         {
             if (list == null) {
                 return false;

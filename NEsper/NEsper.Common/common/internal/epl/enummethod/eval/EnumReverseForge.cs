@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             if (enumcoll.IsEmpty()) {
                 return enumcoll;
@@ -42,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public int StreamNumSize { get; }
 
         public CodegenExpression Codegen(
-            EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(EnumReverseForge), codegenClassScope)

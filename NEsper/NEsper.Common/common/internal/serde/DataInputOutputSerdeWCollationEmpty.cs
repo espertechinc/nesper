@@ -18,11 +18,17 @@ namespace com.espertech.esper.common.@internal.serde
         {
         }
 
-        public void Write(object @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer)
+        public void Write(
+            object @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
         {
         }
 
-        public object Read(DataInput input, byte[] unitKey)
+        public object Read(
+            DataInput input,
+            byte[] unitKey)
         {
             return null;
         }

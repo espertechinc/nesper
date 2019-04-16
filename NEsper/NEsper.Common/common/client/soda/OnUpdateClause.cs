@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="windowName">is the named window name</param>
         /// <param name="optionalAsName">is the optional as-provided name</param>
         /// <returns>on-Update clause without assignments</returns>
-        public static OnUpdateClause Create(String windowName, String optionalAsName)
+        public static OnUpdateClause Create(
+            String windowName,
+            String optionalAsName)
         {
             return new OnUpdateClause(windowName, optionalAsName);
         }
@@ -42,7 +44,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="windowName">is the named window name</param>
         /// <param name="optionalAsName">is the as-provided name of the named window</param>
-        public OnUpdateClause(String windowName, String optionalAsName)
+        public OnUpdateClause(
+            String windowName,
+            String optionalAsName)
         {
             WindowName = windowName;
             OptionalAsName = optionalAsName;
@@ -56,12 +60,11 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write(WindowName);
-            if (OptionalAsName != null)
-            {
+            if (OptionalAsName != null) {
                 writer.Write(" as ");
                 writer.Write(OptionalAsName);
             }
-    
+
             writer.Write(" ");
             UpdateClause.RenderEPLAssignments(writer, Assignments);
         }

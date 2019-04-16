@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
     public abstract class TableColumnDesc
     {
-        protected TableColumnDesc(int positionInDeclaration, string columnName)
+        protected TableColumnDesc(
+            int positionInDeclaration,
+            string columnName)
         {
             PositionInDeclaration = positionInDeclaration;
             ColumnName = columnName;

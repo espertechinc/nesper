@@ -10,9 +10,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
     public class LogicalChannelBinding
     {
-        public LogicalChannelBinding(LogicalChannel logicalChannel,
-                                     LogicalChannelBindingMethodDesc consumingBindingDesc,
-                                     LogicalChannelBindingMethodDesc consumingSignalBindingDesc)
+        public LogicalChannelBinding(
+            LogicalChannel logicalChannel,
+            LogicalChannelBindingMethodDesc consumingBindingDesc,
+            LogicalChannelBindingMethodDesc consumingSignalBindingDesc)
         {
             LogicalChannel = logicalChannel;
             ConsumingBindingDesc = consumingBindingDesc;

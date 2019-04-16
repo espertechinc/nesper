@@ -80,7 +80,9 @@ namespace com.espertech.esper.common.@internal.view.prior
 
         public RollingEventBuffer NewEvents { get; }
 
-        public EventBean GetRelativeToEvent(EventBean theEvent, int priorToIndex)
+        public EventBean GetRelativeToEvent(
+            EventBean theEvent,
+            int priorToIndex)
         {
             if (priorToIndex >= priorToIndexesSize) {
                 throw new ArgumentException(
@@ -107,7 +109,9 @@ namespace com.espertech.esper.common.@internal.view.prior
 
         public ICollection<EventBean> WindowToEventCollReadOnly => null;
 
-        public void Update(EventBean[] newData, EventBean[] oldData)
+        public void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             // Remove last old data posted in previous post
             if (lastOldData != null) {
@@ -146,7 +150,10 @@ namespace com.espertech.esper.common.@internal.view.prior
 
         public int NumEventsInsertBuf => NewEvents.Count;
 
-        public void Update(EventBean[] newData, EventBean[] oldData, PriorEventBufferChangeCaptureMulti capture)
+        public void Update(
+            EventBean[] newData,
+            EventBean[] oldData,
+            PriorEventBufferChangeCaptureMulti capture)
         {
             // Remove last old data posted in previous post
             if (lastOldData != null) {

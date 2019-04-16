@@ -25,8 +25,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private readonly ExprDotNodeImpl parent;
 
         public ExprDotNodeForgeStream(
-            ExprDotNodeImpl parent, FilterExprAnalyzerAffector filterExprAnalyzerAffector, int streamNumber,
-            EventType eventType, ExprDotForge[] evaluators, bool method)
+            ExprDotNodeImpl parent,
+            FilterExprAnalyzerAffector filterExprAnalyzerAffector,
+            int streamNumber,
+            EventType eventType,
+            ExprDotForge[] evaluators,
+            bool method)
         {
             this.parent = parent;
             FilterExprAnalyzerAffector = filterExprAnalyzerAffector;
@@ -78,7 +82,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public EventType EventType { get; }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (!method) {
@@ -90,7 +96,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(

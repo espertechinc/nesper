@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -15,21 +14,23 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
-	public class StmtForgeMethodSelect : StmtForgeMethod {
+    public class StmtForgeMethodSelect : StmtForgeMethod
+    {
+        private readonly StatementBaseInfo @base;
 
-	    private readonly StatementBaseInfo @base;
+        public StmtForgeMethodSelect(StatementBaseInfo @base)
+        {
+            this.@base = @base;
+        }
 
-	    public StmtForgeMethodSelect(StatementBaseInfo @base) {
-	        this.@base = @base;
-	    }
-
-	    public StmtForgeMethodResult Make(
-	        string packageName,
-	        string classPostfix,
-	        StatementCompileTimeServices services) {
-	        StmtForgeMethodSelectResult forgablesResult = StmtForgeMethodSelectUtil.Make(
-	            false, packageName, classPostfix, @base, services);
-	        return forgablesResult.ForgeResult;
-	    }
-	}
+        public StmtForgeMethodResult Make(
+            string packageName,
+            string classPostfix,
+            StatementCompileTimeServices services)
+        {
+            StmtForgeMethodSelectResult forgablesResult = StmtForgeMethodSelectUtil.Make(
+                false, packageName, classPostfix, @base, services);
+            return forgablesResult.ForgeResult;
+        }
+    }
 } // end of namespace

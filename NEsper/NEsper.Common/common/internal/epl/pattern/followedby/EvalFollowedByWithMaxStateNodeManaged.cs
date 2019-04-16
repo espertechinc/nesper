@@ -36,7 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         /// <param name="evalFollowedByNode">is the factory node associated to the state</param>
         public EvalFollowedByWithMaxStateNodeManaged(
             Evaluator parentNode,
-            EvalFollowedByNode evalFollowedByNode) : base(parentNode)
+            EvalFollowedByNode evalFollowedByNode)
+            : base(parentNode)
         {
             this.evalFollowedByNode = evalFollowedByNode;
             nodes = new Dictionary<EvalStateNode, int>();
@@ -59,7 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         public override bool IsObserverStateNodeNonRestarting => false;
 
         public void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent)
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             bool hasIndex = nodes.TryGetValue(fromNode, out var index);
 
@@ -145,7 +149,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             agentInstanceContext.InstrumentationProvider.APatternFollowedByEvaluateTrue(isFollowedByQuitted);
         }
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByEvalFalse(evalFollowedByNode.factoryNode);

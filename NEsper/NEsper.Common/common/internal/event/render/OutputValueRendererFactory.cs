@@ -23,24 +23,23 @@ namespace com.espertech.esper.common.@internal.@event.render
         /// <param name="type">to render</param>
         /// <param name="options">options</param>
         /// <returns>renderer</returns>
-        protected internal static OutputValueRenderer GetOutputValueRenderer(Type type, RendererMetaOptions options)
+        protected internal static OutputValueRenderer GetOutputValueRenderer(
+            Type type,
+            RendererMetaOptions options)
         {
-            if (type.IsArray)
-            {
+            if (type.IsArray) {
                 type = type.GetElementType();
             }
-            if ((type == typeof(string)) || (type == typeof(char?)) || (type == typeof(char)) || type.IsEnum)
-            {
+
+            if (type == typeof(string) || type == typeof(char?) || type == typeof(char) || type.IsEnum) {
                 return options.IsXmlOutput ? XmlStringOutput : JsonStringOutput;
             }
-            if (type.IsEnum || (type.IsNullable() && Nullable.GetUnderlyingType(type).IsEnum))
-            {
+
+            if (type.IsEnum || type.IsNullable() && Nullable.GetUnderlyingType(type).IsEnum) {
                 return options.IsXmlOutput ? BaseOutput : JsonEnumOutput;
             }
-            else
-            {
-                return BaseOutput;
-            }
+
+            return BaseOutput;
         }
     }
 }

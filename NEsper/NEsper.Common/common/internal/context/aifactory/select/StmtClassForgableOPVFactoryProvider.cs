@@ -44,9 +44,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         private readonly OutputProcessViewFactoryForge spec;
 
         public StmtClassForgableOPVFactoryProvider(
-            string className, 
-            OutputProcessViewFactoryForge spec, 
-            CodegenPackageScope packageScope, 
+            string className,
+            OutputProcessViewFactoryForge spec,
+            CodegenPackageScope packageScope,
             int numStreams,
             StatementRawInfo raw)
         {
@@ -126,10 +126,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         public StmtClassForgableType ForgableType => StmtClassForgableType.OPVPROVIDER;
 
         private static void MakeOPVFactory(
-            CodegenClassScope classScope, 
+            CodegenClassScope classScope,
             IList<CodegenInnerClass> innerClasses,
-            IList<CodegenTypedParam> providerExplicitMembers, 
-            CodegenCtor providerCtor, 
+            IList<CodegenTypedParam> providerExplicitMembers,
+            CodegenCtor providerCtor,
             string providerClassName)
         {
             var makeViewMethod = CodegenMethod.MakeParentNode(
@@ -156,17 +156,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .AssignRef(
                     MEMBERNAME_STATEMENTRESULTSVC,
                     ExprDotMethod(
-                        EPStatementInitServicesConstants.REF, 
+                        EPStatementInitServicesConstants.REF,
                         EPStatementInitServicesConstants.GETSTATEMENTRESULTSERVICE));
         }
 
         private static void MakeOPV(
-            CodegenClassScope classScope, 
+            CodegenClassScope classScope,
             IList<CodegenInnerClass> innerClasses,
-            IList<CodegenTypedParam> factoryExplicitMembers, 
-            CodegenCtor factoryCtor, 
+            IList<CodegenTypedParam> factoryExplicitMembers,
+            CodegenCtor factoryCtor,
             string classNameParent,
-            OutputProcessViewFactoryForge forge, 
+            OutputProcessViewFactoryForge forge,
             int numStreams)
         {
             IList<CodegenTypedParam> ctorParams = new List<CodegenTypedParam>();
@@ -241,7 +241,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             CodegenStackGenerator.RecursiveBuildStack(terminatedMethod, "terminated", innerMethods);
 
             var innerClass = new CodegenInnerClass(
-                CLASSNAME_OUTPUTPROCESSVIEW, typeof(OutputProcessView), serviceCtor, 
+                CLASSNAME_OUTPUTPROCESSVIEW, typeof(OutputProcessView), serviceCtor,
                 Collections.GetEmptyList<CodegenTypedParam>(),
                 innerMethods);
             innerClasses.Add(innerClass);

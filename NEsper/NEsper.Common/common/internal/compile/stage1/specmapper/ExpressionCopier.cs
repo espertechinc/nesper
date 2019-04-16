@@ -23,8 +23,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         private readonly ExprNodeSubselectDeclaredDotVisitor visitor;
 
         public ExpressionCopier(
-            StatementSpecRaw statementSpecRaw, ContextCompileTimeDescriptor contextCompileTimeDescriptor,
-            StatementCompileTimeServices services, ExprNodeSubselectDeclaredDotVisitor visitor)
+            StatementSpecRaw statementSpecRaw,
+            ContextCompileTimeDescriptor contextCompileTimeDescriptor,
+            StatementCompileTimeServices services,
+            ExprNodeSubselectDeclaredDotVisitor visitor)
         {
             this.statementSpecRaw = statementSpecRaw;
             this.contextCompileTimeDescriptor = contextCompileTimeDescriptor;

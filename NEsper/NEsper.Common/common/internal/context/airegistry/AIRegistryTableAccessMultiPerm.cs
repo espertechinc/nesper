@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             strategies = new ArrayWrap<ExprTableEvalStrategy>(8);
         }
 
-        public void AssignService(int num, ExprTableEvalStrategy subselectStrategy)
+        public void AssignService(
+            int num,
+            ExprTableEvalStrategy subselectStrategy)
         {
             AIRegistryUtil.CheckExpand(num, strategies);
             strategies.Array[num] = subselectStrategy;
@@ -36,32 +38,45 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             InstanceCount--;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return strategies.Array[exprEvaluatorContext.AgentInstanceId].Evaluate(
                 eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return strategies.Array[context.AgentInstanceId]
                 .EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return strategies.Array[context.AgentInstanceId].EvaluateGetEventBean(eventsPerStream, isNewData, context);
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return strategies.Array[context.AgentInstanceId]
                 .EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
         }
 
-        public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object[] EvaluateTypableSingle(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return strategies.Array[context.AgentInstanceId].EvaluateTypableSingle(eventsPerStream, isNewData, context);
         }

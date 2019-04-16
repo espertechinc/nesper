@@ -7,16 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
-	public interface OutputConditionPolledFactory {
-	    OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext);
+    public interface OutputConditionPolledFactory
+    {
+        OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext);
 
-	    OutputConditionPolled MakeFromState(AgentInstanceContext agentInstanceContext, OutputConditionPolledState state);
-	}
+        OutputConditionPolled MakeFromState(
+            AgentInstanceContext agentInstanceContext,
+            OutputConditionPolledState state);
+    }
 } // end of namespace

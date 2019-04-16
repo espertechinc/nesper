@@ -22,54 +22,51 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             Deque<AnnotationPart> parts = null;
 
-            if (pattern.IsDiscardPartialsOnMatch)
-            {
+            if (pattern.IsDiscardPartialsOnMatch) {
                 parts = new ArrayDeque<AnnotationPart>();
                 parts.Add(new AnnotationPart(DISCARDPARTIALSONMATCH));
             }
 
-            if (pattern.IsSuppressSameEventMatches)
-            {
-                if (parts == null)
-                {
+            if (pattern.IsSuppressSameEventMatches) {
+                if (parts == null) {
                     parts = new ArrayDeque<AnnotationPart>();
                 }
+
                 parts.Add(new AnnotationPart(SUPPRESSOVERLAPPINGMATCHES));
             }
 
-            if (parts == null)
-            {
+            if (parts == null) {
                 return null;
             }
+
             return parts.ToArray();
         }
 
         public static PatternLevelAnnotationFlags AnnotationsToSpec(AnnotationPart[] parts)
         {
             var flags = new PatternLevelAnnotationFlags();
-            if (parts == null)
-            {
+            if (parts == null) {
                 return flags;
             }
-            foreach (AnnotationPart part in parts)
-            {
+
+            foreach (AnnotationPart part in parts) {
                 ValidateSetFlags(flags, part.Name);
             }
+
             return flags;
         }
 
-        public static void ValidateSetFlags(PatternLevelAnnotationFlags flags, string annotation)
+        public static void ValidateSetFlags(
+            PatternLevelAnnotationFlags flags,
+            string annotation)
         {
-            if (string.Equals(annotation, DISCARDPARTIALSONMATCH, StringComparison.InvariantCultureIgnoreCase))
-            {
+            if (string.Equals(annotation, DISCARDPARTIALSONMATCH, StringComparison.InvariantCultureIgnoreCase)) {
                 flags.IsDiscardPartialsOnMatch = true;
             }
-            else if (string.Equals(annotation, SUPPRESSOVERLAPPINGMATCHES, StringComparison.InvariantCultureIgnoreCase))
-            {
+            else if (string.Equals(annotation, SUPPRESSOVERLAPPINGMATCHES, StringComparison.InvariantCultureIgnoreCase)) {
                 flags.IsSuppressSameEventMatches = true;
             }
-            else
-            {
+            else {
                 throw new ArgumentException("Unrecognized pattern-level annotation '" + annotation + "'");
             }
         }

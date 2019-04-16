@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -16,17 +15,19 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
     public class ExprTableEvalStrategyUngroupedAggAccessRead : ExprTableEvalStrategyUngroupedBase
     {
         public ExprTableEvalStrategyUngroupedAggAccessRead(
-            TableAndLockProviderUngrouped provider, ExprTableEvalStrategyFactory factory)
+            TableAndLockProviderUngrouped provider,
+            ExprTableEvalStrategyFactory factory)
             : base(provider, factory)
         {
         }
 
         public override object Evaluate(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var row = LockTableReadAndGet(exprEvaluatorContext);
-            if (row == null)
-            {
+            if (row == null) {
                 return null;
             }
 
@@ -36,11 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
         }
 
         public override ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var row = LockTableReadAndGet(context);
-            if (row == null)
-            {
+            if (row == null) {
                 return null;
             }
 
@@ -50,11 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
         }
 
         public override EventBean EvaluateGetEventBean(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var row = LockTableReadAndGet(context);
-            if (row == null)
-            {
+            if (row == null) {
                 return null;
             }
 
@@ -64,11 +67,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
         }
 
         public override ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var row = LockTableReadAndGet(context);
-            if (row == null)
-            {
+            if (row == null) {
                 return null;
             }
 
@@ -78,7 +82,9 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
         }
 
         public override object[] EvaluateTypableSingle(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }

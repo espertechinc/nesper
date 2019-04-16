@@ -30,7 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         private AggregatorMethod _aggregator;
 
         public AggregationFactoryMethodFirstLastUnbound(
-            ExprAggMultiFunctionLinearAccessNode parent, EventType collectionEventType, Type resultType, int streamNum,
+            ExprAggMultiFunctionLinearAccessNode parent,
+            EventType collectionEventType,
+            Type resultType,
+            int streamNum,
             bool hasFilter)
         {
             this.parent = parent;
@@ -53,7 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 "Not available as linear-access first/last is not used with tables");
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             if (parent.StateType == AggregationAccessorLinearType.FIRST) {
                 _aggregator = new AggregatorFirstEver(
@@ -70,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             }
         }
 
-        public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream)
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
         {
             return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
         }

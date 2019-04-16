@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.prior
@@ -45,7 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
         public int RelativeIndex { get; set; } = -1;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
@@ -57,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var method = parent.MakeChild(EvaluationType, GetType(), codegenClassScope);
@@ -87,7 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -98,13 +103,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 2)
-            {
+            if (ChildNodes.Length != 2) {
                 throw new ExprValidationException("Prior node must have 2 parameters");
             }
 
-            if (!ChildNodes[0].Forge.ForgeConstantType.IsCompileTimeConstant)
-            {
+            if (!ChildNodes[0].Forge.ForgeConstantType.IsCompileTimeConstant) {
                 throw new ExprValidationException(
                     "Prior function requires a constant-value integer-typed index expression as the first parameter");
             }
@@ -114,8 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
             var constantNode = ChildNodes[0];
             var constantNodeType = constantNode.Forge.EvaluationType;
-            if (constantNodeType != typeof(int?) && constantNodeType != typeof(int))
-            {
+            if (constantNodeType != typeof(int?) && constantNodeType != typeof(int)) {
                 throw new ExprValidationException("Prior function requires an integer index parameter");
             }
 
@@ -124,26 +126,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             InnerForge = ChildNodes[1].Forge;
 
             // Determine stream number
-            if (ChildNodes[1] is ExprIdentNode)
-            {
-                var identNode = (ExprIdentNode)ChildNodes[1];
+            if (ChildNodes[1] is ExprIdentNode) {
+                var identNode = (ExprIdentNode) ChildNodes[1];
                 StreamNumber = identNode.StreamId;
                 EvaluationType = InnerForge.EvaluationType.GetBoxedType();
             }
-            else if (ChildNodes[1] is ExprStreamUnderlyingNode)
-            {
-                var streamNode = (ExprStreamUnderlyingNode)ChildNodes[1];
+            else if (ChildNodes[1] is ExprStreamUnderlyingNode) {
+                var streamNode = (ExprStreamUnderlyingNode) ChildNodes[1];
                 StreamNumber = streamNode.StreamId;
                 EvaluationType = InnerForge.EvaluationType.GetBoxedType();
             }
-            else
-            {
+            else {
                 throw new ExprValidationException("Previous function requires an event property as parameter");
             }
 
             // add request
-            if (validationContext.ViewResourceDelegate == null)
-            {
+            if (validationContext.ViewResourceDelegate == null) {
                 throw new ExprValidationException("Prior function cannot be used in this context");
             }
 
@@ -152,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("prior(");
             ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
@@ -161,10 +159,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             writer.Write(')');
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
-            if (!(node is ExprPriorNode))
-            {
+            if (!(node is ExprPriorNode)) {
                 return false;
             }
 

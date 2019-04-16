@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.manufacturer;
 using com.espertech.esper.common.@internal.settings;
@@ -21,14 +20,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// Represents the "new Class(...)" operator in an expression tree.
     /// </summary>
     [Serializable]
-    public class ExprNewInstanceNode : ExprNodeBase {
-	    private readonly string classIdent;
+    public class ExprNewInstanceNode : ExprNodeBase
+    {
+        private readonly string classIdent;
 
-	    [NonSerialized] private ExprNewInstanceNodeForge forge;
+        [NonSerialized] private ExprNewInstanceNodeForge forge;
 
-	    public ExprNewInstanceNode(string classIdent) {
-	        this.classIdent = classIdent;
-	    }
+        public ExprNewInstanceNode(string classIdent)
+        {
+            this.classIdent = classIdent;
+        }
 
         public ExprEvaluator ExprEvaluator {
             get {
@@ -44,46 +45,51 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        public override ExprNode Validate(ExprValidationContext validationContext) {
-	        Type targetClass;
-	        try {
-	            targetClass = validationContext.ImportService.ResolveClass(classIdent, false);
-	        } catch (ImportException e) {
-	            throw new ExprValidationException("Failed to resolve new-operator class name '" + classIdent + "'");
-	        }
-	        InstanceManufacturerFactory manufacturerFactory = InstanceManufacturerFactoryFactory.GetManufacturer(targetClass, validationContext.ImportService, this.ChildNodes);
-	        forge = new ExprNewInstanceNodeForge(this, targetClass, manufacturerFactory);
-	        return null;
-	    }
+        public override ExprNode Validate(ExprValidationContext validationContext)
+        {
+            Type targetClass;
+            try {
+                targetClass = validationContext.ImportService.ResolveClass(classIdent, false);
+            }
+            catch (ImportException e) {
+                throw new ExprValidationException("Failed to resolve new-operator class name '" + classIdent + "'");
+            }
 
-	    public bool IsConstantResult
-	    {
-	        get => false;
-	    }
+            InstanceManufacturerFactory manufacturerFactory =
+                InstanceManufacturerFactoryFactory.GetManufacturer(targetClass, validationContext.ImportService, this.ChildNodes);
+            forge = new ExprNewInstanceNodeForge(this, targetClass, manufacturerFactory);
+            return null;
+        }
 
-	    public string ClassIdent
-	    {
-	        get => classIdent;
-	    }
+        public bool IsConstantResult {
+            get => false;
+        }
 
-	    public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix) {
-	        if (!(node is ExprNewInstanceNode)) {
-	            return false;
-	        }
+        public string ClassIdent {
+            get => classIdent;
+        }
 
-	        ExprNewInstanceNode other = (ExprNewInstanceNode) node;
-	        return other.classIdent.Equals(this.classIdent);
-	    }
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
+        {
+            if (!(node is ExprNewInstanceNode)) {
+                return false;
+            }
 
-	    public override void ToPrecedenceFreeEPL(StringWriter writer) {
-	        writer.Write("new ");
-	        writer.Write(classIdent);
-	        ExprNodeUtilityPrint.ToExpressionStringParams(writer, this.ChildNodes);
-	    }
+            ExprNewInstanceNode other = (ExprNewInstanceNode) node;
+            return other.classIdent.Equals(this.classIdent);
+        }
 
-	    public override ExprPrecedenceEnum Precedence
-	    {
-	        get => ExprPrecedenceEnum.UNARY;
-	    }
-	}
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            writer.Write("new ");
+            writer.Write(classIdent);
+            ExprNodeUtilityPrint.ToExpressionStringParams(writer, this.ChildNodes);
+        }
+
+        public override ExprPrecedenceEnum Precedence {
+            get => ExprPrecedenceEnum.UNARY;
+        }
+    }
 } // end of namespace

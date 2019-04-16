@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedValidationItem // : Supplier<EventType>
     {
-        public ContextControllerKeyedValidationItem(EventType eventType, string[] propertyNames)
+        public ContextControllerKeyedValidationItem(
+            EventType eventType,
+            string[] propertyNames)
         {
             EventType = eventType;
             PropertyNames = propertyNames;

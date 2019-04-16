@@ -79,7 +79,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         public override StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return StatementAgentInstanceFactoryOnTriggerUtil.ObtainAgentInstanceLock(
                 this, statementContext, agentInstanceId);

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
@@ -15,7 +14,10 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.statement.resource
 {
-	public interface StatementResourceHolderBuilder {
-	    StatementResourceHolder Build(AgentInstanceContext agentInstanceContext, StatementAgentInstanceFactoryResult resultOfStart);
-	}
+    public interface StatementResourceHolderBuilder
+    {
+        StatementResourceHolder Build(
+            AgentInstanceContext agentInstanceContext,
+            StatementAgentInstanceFactoryResult resultOfStart);
+    }
 } // end of namespace

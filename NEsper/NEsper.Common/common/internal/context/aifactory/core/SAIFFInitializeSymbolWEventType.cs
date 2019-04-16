@@ -8,35 +8,37 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.core
 {
-	public class SAIFFInitializeSymbolWEventType : SAIFFInitializeSymbol {
-	    public readonly static CodegenExpressionRef REF_EVENTTYPE = @Ref("eventType");
+    public class SAIFFInitializeSymbolWEventType : SAIFFInitializeSymbol
+    {
+        public readonly static CodegenExpressionRef REF_EVENTTYPE = @Ref("eventType");
 
-	    private CodegenExpressionRef optionalEventTypeRef;
+        private CodegenExpressionRef optionalEventTypeRef;
 
-	    public CodegenExpressionRef GetAddEventType(CodegenMethodScope scope) {
-	        if (optionalEventTypeRef == null) {
-	            optionalEventTypeRef = REF_EVENTTYPE;
-	        }
-	        scope.AddSymbol(optionalEventTypeRef);
-	        return optionalEventTypeRef;
-	    }
+        public CodegenExpressionRef GetAddEventType(CodegenMethodScope scope)
+        {
+            if (optionalEventTypeRef == null) {
+                optionalEventTypeRef = REF_EVENTTYPE;
+            }
 
-	    public void Provide(IDictionary<string, Type> symbols) {
-	        base.Provide(symbols);
-	        if (optionalEventTypeRef != null) {
-	            symbols.Put(optionalEventTypeRef.Ref, typeof(EventType));
-	        }
-	    }
-	}
+            scope.AddSymbol(optionalEventTypeRef);
+            return optionalEventTypeRef;
+        }
+
+        public void Provide(IDictionary<string, Type> symbols)
+        {
+            base.Provide(symbols);
+            if (optionalEventTypeRef != null) {
+                symbols.Put(optionalEventTypeRef.Ref, typeof(EventType));
+            }
+        }
+    }
 } // end of namespace

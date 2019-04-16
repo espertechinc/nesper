@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
         }
 
-        public void RegisterLookupable(int statementId, EventType eventType, ExprFilterSpecLookupable lookupable)
+        public void RegisterLookupable(
+            int statementId,
+            EventType eventType,
+            ExprFilterSpecLookupable lookupable)
         {
             // not required
         }
@@ -30,7 +33,10 @@ namespace com.espertech.esper.common.@internal.filterspec
             // not required
         }
 
-        public void ApplyLookupableFromType(EventType asEventType, EventType eventType, int statementId)
+        public void ApplyLookupableFromType(
+            EventType asEventType,
+            EventType eventType,
+            int statementId)
         {
             // not required
         }

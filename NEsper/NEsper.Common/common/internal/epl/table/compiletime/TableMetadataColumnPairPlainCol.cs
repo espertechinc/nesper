@@ -10,7 +10,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
     public class TableMetadataColumnPairPlainCol : TableMetadataColumnPairBase
     {
-        public TableMetadataColumnPairPlainCol(int dest, int source) : base(dest)
+        public TableMetadataColumnPairPlainCol(
+            int dest,
+            int source)
+            : base(dest)
         {
             Source = source;
         }

@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
     public interface AuditProviderDataflowTransition
     {
         void DataflowTransition(
-            string dataflowName, string dataFlowInstanceId, EPDataFlowState state, EPDataFlowState newState,
+            string dataflowName,
+            string dataFlowInstanceId,
+            EPDataFlowState state,
+            EPDataFlowState newState,
             AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

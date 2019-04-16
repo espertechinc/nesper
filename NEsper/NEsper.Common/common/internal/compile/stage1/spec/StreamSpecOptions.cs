@@ -24,7 +24,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public static readonly StreamSpecOptions DEFAULT = new StreamSpecOptions();
 
         /// <summary>Ctor, sets all options off.</summary>
-        private StreamSpecOptions() {
+        private StreamSpecOptions()
+        {
             IsUnidirectional = false;
             IsRetainUnion = false;
             IsRetainIntersection = false;
@@ -36,10 +37,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="isUnidirectional">- true to indicate a unidirectional stream in a join, applicable for joins</param>
         /// <param name="isRetainUnion">- for retaining the union of multiple data windows</param>
         /// <param name="isRetainIntersection">- for retaining the intersection of multiple data windows</param>
-        public StreamSpecOptions(bool isUnidirectional, bool isRetainUnion, bool isRetainIntersection) {
+        public StreamSpecOptions(
+            bool isUnidirectional,
+            bool isRetainUnion,
+            bool isRetainIntersection)
+        {
             if (isRetainUnion && isRetainIntersection) {
                 throw new ArgumentException("Invalid retain flags");
             }
+
             IsUnidirectional = isUnidirectional;
             IsRetainUnion = isRetainUnion;
             IsRetainIntersection = isRetainIntersection;

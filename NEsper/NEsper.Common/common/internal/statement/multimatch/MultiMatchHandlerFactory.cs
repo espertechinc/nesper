@@ -10,6 +10,8 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
 {
     public interface MultiMatchHandlerFactory
     {
-        MultiMatchHandler Make(bool hasSubselect, bool needDedup);
+        MultiMatchHandler Make(
+            bool hasSubselect,
+            bool needDedup);
     }
 } // end of namespace

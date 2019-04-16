@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
         /// <param name="theEvent">is the current event</param>
         /// <param name="stream">is the current stream</param>
         /// <param name="node">is the node containing the set of events to which the event belongs to</param>
-        public Cursor(EventBean theEvent, int stream, Node node)
+        public Cursor(
+            EventBean theEvent,
+            int stream,
+            Node node)
         {
             Event = theEvent;
             Stream = stream;

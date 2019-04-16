@@ -29,7 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public EvalMatchUntilForgeNode(ExprNode lowerBounds, ExprNode upperBounds, ExprNode singleBound)
+        public EvalMatchUntilForgeNode(
+            ExprNode lowerBounds,
+            ExprNode upperBounds,
+            ExprNode singleBound)
         {
             if (singleBound != null && (lowerBounds != null || upperBounds != null)) {
                 throw new ArgumentException("Invalid bounds, specify either single bound or range bounds");
@@ -83,7 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
         }
 
         protected override void InlineCodegen(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block.DeclareVar(
                 typeof(EvalFactoryNode[]), "children",
@@ -128,7 +133,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, IList<ScheduleHandleCallbackProvider> schedules)
+            IList<FilterSpecCompiled> filters,
+            IList<ScheduleHandleCallbackProvider> schedules)
         {
             // nothing for this node, children navigated elsewhere
         }
@@ -138,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             return "EvalMatchUntilNode children=" + this.ChildNodes.Count;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             if (SingleBound != null) {
                 writer.Write("[");

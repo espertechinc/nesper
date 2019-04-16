@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
     public class GroupByRollupInfo
     {
-        public GroupByRollupInfo(ExprNode[] exprNodes, AggregationGroupByRollupDesc rollupDesc)
+        public GroupByRollupInfo(
+            ExprNode[] exprNodes,
+            AggregationGroupByRollupDesc rollupDesc)
         {
             ExprNodes = exprNodes;
             RollupDesc = rollupDesc;

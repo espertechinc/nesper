@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// Event row regular expressions are organized into a tree-like structure
     /// with nodes representing sub-expressions. 
     /// </summary>
-
     [Serializable]
     public class MatchRecognizeRegExAlteration
         : MatchRecognizeRegEx
@@ -25,8 +24,7 @@ namespace com.espertech.esper.common.client.soda
         public override void WriteEPL(TextWriter writer)
         {
             String delimiter = "";
-            foreach (MatchRecognizeRegEx node in this.Children)
-            {
+            foreach (MatchRecognizeRegEx node in this.Children) {
                 writer.Write(delimiter);
                 node.WriteEPL(writer);
                 delimiter = "|";

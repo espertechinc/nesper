@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -27,16 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         public EventPropertyValueGetter ValueGetter { get; set; }
 
         public EventTable[] Index(
-            IList<EventBean> pollResult, bool isActiveCache, AgentInstanceContext agentInstanceContext)
+            IList<EventBean> pollResult,
+            bool isActiveCache,
+            AgentInstanceContext agentInstanceContext)
         {
-            if (!isActiveCache)
-            {
-                return new EventTable[] { new UnindexedEventTableList(pollResult, StreamNum) };
+            if (!isActiveCache) {
+                return new EventTable[] {new UnindexedEventTableList(pollResult, StreamNum)};
             }
 
             var tables = factory.MakeEventTables(agentInstanceContext, null);
-            foreach (var table in tables)
-            {
+            foreach (var table in tables) {
                 table.Add(pollResult.ToArray(), agentInstanceContext);
             }
 

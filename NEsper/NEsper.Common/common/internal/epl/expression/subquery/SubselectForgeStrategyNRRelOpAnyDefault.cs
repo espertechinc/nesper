@@ -24,15 +24,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         private readonly ExprForge filterEval;
 
         public SubselectForgeStrategyNRRelOpAnyDefault(
-            ExprSubselectNode subselect, ExprForge valueEval, ExprForge selectEval, bool resultWhenNoMatchingEvents,
-            RelationalOpEnum.Computer computer, ExprForge filterEval) : base(
-            subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
+            ExprSubselectNode subselect,
+            ExprForge valueEval,
+            ExprForge selectEval,
+            bool resultWhenNoMatchingEvents,
+            RelationalOpEnum.Computer computer,
+            ExprForge filterEval)
+            : base(
+                subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
         {
             this.filterEval = filterEval;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
-            CodegenMethodScope parent, SubselectForgeNRSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SubselectForgeNRSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             method.Block

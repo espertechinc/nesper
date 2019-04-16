@@ -29,7 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.property
     public class IndexedProperty : PropertyBase,
         PropertyWithIndex
     {
-        public IndexedProperty(string propertyName) : base(propertyName)
+        public IndexedProperty(string propertyName)
+            : base(propertyName)
         {
         }
 
@@ -38,7 +39,10 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// </summary>
         /// <param name="propertyName">is the property name</param>
         /// <param name="index">is the index to use to access the property value</param>
-        public IndexedProperty(string propertyName, int index) : base(propertyName)
+        public IndexedProperty(
+            string propertyName,
+            int index)
+            : base(propertyName)
         {
             Index = index;
         }
@@ -99,7 +103,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return new ListFieldPropertyGetter(field, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
             }
 
-            if (returnType.IsGenericEnumerable() || TypeHelper.IsImplementsInterface(returnType, typeof(IEnumerable))) {
+            if (returnType.IsGenericEnumerable() || returnType.IsImplementsInterface(typeof(IEnumerable))) {
                 if (propertyDesc.ReadMethod != null) {
                     var method = propertyDesc.ReadMethod;
                     return new IterableMethodPropertyGetter(
@@ -114,7 +118,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         }
 
         public override GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType, BeanEventTypeFactory beanEventTypeFactory)
+            BeanEventType eventType,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             var descriptor = eventType.GetIndexedProperty(PropertyNameAtomic);
             if (descriptor != null) {
@@ -132,7 +137,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return new GenericPropertyDesc(returnType.GetElementType());
             }
 
-            if (returnType.IsGenericEnumerable() || TypeHelper.IsImplementsInterface(returnType, typeof(IEnumerable))) {
+            if (returnType.IsGenericEnumerable() || returnType.IsImplementsInterface(typeof(IEnumerable))) {
                 if (descriptor.ReadMethod != null) {
                     var genericType = TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
                     return new GenericPropertyDesc(genericType);
@@ -149,7 +154,9 @@ namespace com.espertech.esper.common.@internal.@event.property
             return null;
         }
 
-        public override Type GetPropertyType(BeanEventType eventType, BeanEventTypeFactory beanEventTypeFactory)
+        public override Type GetPropertyType(
+            BeanEventType eventType,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             var descriptor = eventType.GetIndexedProperty(PropertyNameAtomic);
             if (descriptor != null) {
@@ -167,7 +174,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return returnType.GetElementType();
             }
 
-            if (returnType.IsGenericEnumerable() || TypeHelper.IsImplementsInterface(returnType, typeof(IEnumerable))) {
+            if (returnType.IsGenericEnumerable() || returnType.IsImplementsInterface(typeof(IEnumerable))) {
                 if (descriptor.ReadMethod != null) {
                     return TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
                 }
@@ -245,7 +252,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 PropertyNameAtomic, Index, eventBeanTypedEventFactory, beanEventTypeFactory, componentType);
         }
 
-        public override void ToPropertyEPL(StringWriter writer)
+        public override void ToPropertyEPL(TextWriter writer)
         {
             writer.Write(PropertyNameAtomic);
             writer.Write("[");
@@ -254,8 +261,10 @@ namespace com.espertech.esper.common.@internal.@event.property
         }
 
         public override EventPropertyGetterSPI GetGetterDOM(
-            SchemaElementComplex complexProperty, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BaseXMLEventType eventType, string propertyExpression)
+            SchemaElementComplex complexProperty,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BaseXMLEventType eventType,
+            string propertyExpression)
         {
             foreach (var simple in complexProperty.SimpleElements) {
                 if (!simple.IsArray) {

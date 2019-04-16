@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="views">is a list of views upon the stream</param>
         /// <param name="optStreamName">is the stream as-name, or null if unnamed</param>
-        protected ProjectedStream(IList<View> views, string optStreamName)
+        protected ProjectedStream(
+            IList<View> views,
+            string optStreamName)
             : base(optStreamName)
         {
             Views = views;
@@ -66,7 +68,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">for newline-whitespace formatting</param>
-        public abstract void ToEPLProjectedStream(TextWriter writer, EPStatementFormatter formatter);
+        public abstract void ToEPLProjectedStream(
+            TextWriter writer,
+            EPStatementFormatter formatter);
 
         /// <summary>
         ///     Represent type as textual non complete.
@@ -80,7 +84,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="@namespace">is the view namespace, for example "win" for most data windows</param>
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <returns>stream</returns>
-        public ProjectedStream AddView(string @namespace, string name)
+        public ProjectedStream AddView(
+            string @namespace,
+            string name)
         {
             Views.Add(View.Create(@namespace, name));
             return this;
@@ -93,7 +99,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <param name="parameters">is a list of view parameters</param>
         /// <returns>stream</returns>
-        public ProjectedStream AddView(string @namespace, string name, IList<Expression> parameters)
+        public ProjectedStream AddView(
+            string @namespace,
+            string name,
+            IList<Expression> parameters)
         {
             Views.Add(View.Create(@namespace, name, parameters));
             return this;
@@ -106,7 +115,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <param name="parameters">is a list of view parameters</param>
         /// <returns>stream</returns>
-        public ProjectedStream AddView(string @namespace, string name, params Expression[] parameters)
+        public ProjectedStream AddView(
+            string @namespace,
+            string name,
+            params Expression[] parameters)
         {
             Views.Add(View.Create(@namespace, name, parameters));
             return this;
@@ -118,7 +130,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <param name="parameters">is a list of view parameters</param>
         /// <returns>stream</returns>
-        public ProjectedStream AddView(string name, params Expression[] parameters)
+        public ProjectedStream AddView(
+            string name,
+            params Expression[] parameters)
         {
             Views.Add(View.Create(null, name, parameters));
             return this;
@@ -140,7 +154,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter"></param>
-        public override void ToEPLStream(TextWriter writer, EPStatementFormatter formatter)
+        public override void ToEPLStream(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             ToEPLProjectedStream(writer, formatter);
             ToEPLViews(writer, Views);
@@ -180,7 +196,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to render to</param>
         /// <param name="views">to render</param>
-        protected internal static void ToEPLViews(TextWriter writer, IList<View> views)
+        protected internal static void ToEPLViews(
+            TextWriter writer,
+            IList<View> views)
         {
             if (views != null && views.Count != 0) {
                 if (views.First().Namespace == null) {

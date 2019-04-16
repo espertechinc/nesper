@@ -36,6 +36,6 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <returns>filter parameter constant's value</returns>
         object FilterForValue { get; }
 
-        void AppendTo(StringWriter writer);
+        void AppendTo(TextWriter writer);
     }
 } // end of namespace

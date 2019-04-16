@@ -8,7 +8,6 @@
 
 using System.Collections;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -32,7 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
         private static readonly PollResultIndexingStrategy ITERATOR_INDEXING_STRATEGY =
             new ProxyPollResultIndexingStrategy {
-                ProcIndex = (pollResult, _, __) => new EventTable[] {
+                ProcIndex = (
+                    pollResult,
+                    _,
+                    __) => new EventTable[] {
                     new UnindexedEventTableList(pollResult, -1)
                 },
 #if false
@@ -55,7 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         }
 
         public HistoricalEventViewableBase(
-            HistoricalEventViewableFactoryBase factory, PollExecStrategy pollExecStrategy,
+            HistoricalEventViewableFactoryBase factory,
+            PollExecStrategy pollExecStrategy,
             AgentInstanceContext agentInstanceContext)
         {
             this.factory = factory;
@@ -70,7 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         }
 
         public EventTable[][] Poll(
-            EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy,
+            EventBean[][] lookupEventsPerStream,
+            PollResultIndexingStrategy indexingStrategy,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var localDataCache = factory.DataCacheThreadLocal.GetOrCreate();

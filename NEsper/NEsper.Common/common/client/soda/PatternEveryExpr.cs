@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.client.soda
         public PatternEveryExpr()
         {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="inner">is the pattern expression to control lifecycle on</param>
         public PatternEveryExpr(PatternExpr inner)
@@ -27,18 +27,20 @@ namespace com.espertech.esper.common.client.soda
             AddChild(inner);
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
+        public override PatternExprPrecedenceEnum Precedence {
             get { return PatternExprPrecedenceEnum.EVERY_NOT; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer, EPStatementFormatter formatter)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             writer.Write("every ");
             PatternExprPrecedenceEnum precedence = Precedence;
             if (Children[0] is PatternEveryExpr) {
                 precedence = PatternExprPrecedenceEnum.MAXIMIM;
             }
+
             Children[0].ToEPL(writer, precedence, formatter);
         }
     }

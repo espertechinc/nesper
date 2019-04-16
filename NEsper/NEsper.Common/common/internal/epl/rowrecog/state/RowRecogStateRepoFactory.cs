@@ -17,12 +17,18 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
     public interface RowRecogStateRepoFactory
     {
         RowRecogPartitionStateRepo MakeSingle(
-            RowRecogPreviousStrategyImpl prevGetter, AgentInstanceContext agentInstanceContext, RowRecogNFAView view,
-            bool keepScheduleState, RowRecogPartitionTerminationStateComparator terminationStateCompare);
+            RowRecogPreviousStrategyImpl prevGetter,
+            AgentInstanceContext agentInstanceContext,
+            RowRecogNFAView view,
+            bool keepScheduleState,
+            RowRecogPartitionTerminationStateComparator terminationStateCompare);
 
         RowRecogPartitionStateRepo MakePartitioned(
-            RowRecogPreviousStrategyImpl prevGetter, RowRecogPartitionStateRepoGroupMeta stateRepoGroupMeta,
-            AgentInstanceContext agentInstanceContext, RowRecogNFAView view, bool keepScheduleState,
+            RowRecogPreviousStrategyImpl prevGetter,
+            RowRecogPartitionStateRepoGroupMeta stateRepoGroupMeta,
+            AgentInstanceContext agentInstanceContext,
+            RowRecogNFAView view,
+            bool keepScheduleState,
             RowRecogPartitionTerminationStateComparator terminationStateCompare);
     }
 } // end of namespace

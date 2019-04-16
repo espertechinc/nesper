@@ -23,8 +23,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
@@ -136,8 +135,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 if (eventType is BaseNestableEventType) {
-                    object typeEntity = !isArray
-                        ? (object) new TypeBeanOrUnderlying(eventType)
+                    var typeEntity = !isArray
+                        ? new TypeBeanOrUnderlying(eventType)
                         : (object) new[] {new TypeBeanOrUnderlying(eventType)};
                     verified.Put(propertyName, typeEntity);
                     continue;
@@ -563,8 +562,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return false;
             }
 
-            if (!(value is Array array))
-            {
+            if (!(value is Array array)) {
                 return false;
             }
 
@@ -615,18 +613,18 @@ namespace com.espertech.esper.common.@internal.@event.core
             if (value is object[]) {
                 var subEvents = (object[]) value;
 
-                var countNull = 0;
+                var countNullX = 0;
                 foreach (var subEvent in subEvents) {
                     if (subEvent != null) {
-                        countNull++;
+                        countNullX++;
                     }
                 }
 
-                var outEvents = new EventBean[countNull];
-                var count = 0;
+                var outEvents = new EventBean[countNullX];
+                var countX = 0;
                 foreach (var item in subEvents) {
                     if (item != null) {
-                        outEvents[count++] = GetBNFragmentNonPojo(item, fragmentEventType, eventBeanTypedEventFactory);
+                        outEvents[countX++] = GetBNFragmentNonPojo(item, fragmentEventType, eventBeanTypedEventFactory);
                     }
                 }
 
@@ -674,7 +672,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return null;
             }
 
-            object arrayItem = array.GetValue(index);
+            var arrayItem = array.GetValue(index);
             if (arrayItem == null) {
                 return null;
             }

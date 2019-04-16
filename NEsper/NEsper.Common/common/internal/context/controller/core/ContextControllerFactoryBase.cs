@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -23,10 +22,16 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         public abstract ContextController Create(ContextManagerRealization contextManagerRealization);
 
         public abstract FilterValueSetParam[][] PopulateFilterAddendum(
-            FilterSpecActivatable filterSpec, bool forStatement, int nestingLevel, object partitionKey,
-            ContextControllerStatementDesc optionalStatementDesc, AgentInstanceContext agentInstanceContextStatement);
+            FilterSpecActivatable filterSpec,
+            bool forStatement,
+            int nestingLevel,
+            object partitionKey,
+            ContextControllerStatementDesc optionalStatementDesc,
+            AgentInstanceContext agentInstanceContextStatement);
 
-        public abstract void PopulateContextProperties(IDictionary<string, object> props, object allPartitionKey);
+        public abstract void PopulateContextProperties(
+            IDictionary<string, object> props,
+            object allPartitionKey);
 
         public abstract StatementAIResourceRegistry AllocateAgentInstanceResourceRegistry(AIRegistryRequirements registryRequirements);
 

@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// </summary>
         /// <param name="value">value to write</param>
         /// <param name="target">property to write to</param>
-        void Write(object value, EventBean target);
+        void Write(
+            object value,
+            EventBean target);
     }
 
     public class ProxyEventPropertyWriter : EventPropertyWriter
@@ -42,7 +44,9 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// </summary>
         /// <param name="value">value to write</param>
         /// <param name="target">property to write to</param>
-        public void Write(object value, EventBean target)
+        public void Write(
+            object value,
+            EventBean target)
         {
             ProcWrite(value, target);
         }

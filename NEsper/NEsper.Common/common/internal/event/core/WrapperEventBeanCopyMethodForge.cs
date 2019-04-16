@@ -9,8 +9,6 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.core
@@ -29,7 +27,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="wrapperEventType">wrapper type</param>
         /// <param name="underlyingCopyMethod">copy method for the underlying event</param>
         public WrapperEventBeanCopyMethodForge(
-            WrapperEventType wrapperEventType, EventBeanCopyMethodForge underlyingCopyMethod)
+            WrapperEventType wrapperEventType,
+            EventBeanCopyMethodForge underlyingCopyMethod)
         {
             this.wrapperEventType = wrapperEventType;
             this.underlyingCopyMethod = underlyingCopyMethod;

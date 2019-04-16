@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.@event.core
     public interface EventPropertyWriterSPI : EventPropertyWriter
     {
         CodegenExpression WriteCodegen(
-            CodegenExpression assigned, CodegenExpression und, CodegenExpression target, CodegenMethodScope parent,
+            CodegenExpression assigned,
+            CodegenExpression und,
+            CodegenExpression target,
+            CodegenMethodScope parent,
             CodegenClassScope classScope);
     }
 
@@ -27,16 +30,20 @@ namespace com.espertech.esper.common.@internal.@event.core
     {
         public Action<object, EventBean> ProcWrite;
 
-        public void Write(object value, EventBean target)
-            => ProcWrite(value, target);
-
         public Func<
             CodegenExpression,
-            CodegenExpression, 
-            CodegenExpression, 
-            CodegenMethodScope, 
+            CodegenExpression,
+            CodegenExpression,
+            CodegenMethodScope,
             CodegenClassScope,
             CodegenExpression> ProcWriteCodegen;
+
+        public void Write(
+            object value,
+            EventBean target)
+        {
+            ProcWrite(value, target);
+        }
 
         public CodegenExpression WriteCodegen(
             CodegenExpression assigned,
@@ -44,11 +51,13 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
-            => ProcWriteCodegen(
+        {
+            return ProcWriteCodegen(
                 assigned,
                 und,
                 target,
                 parent,
                 classScope);
+        }
     }
 } // end of namespace

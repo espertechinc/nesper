@@ -9,8 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -22,62 +22,94 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionRef(@ref);
         }
 
-        public static CodegenExpressionRefWCol RefCol(string @ref, int column)
+        public static CodegenExpressionRefWCol RefCol(
+            string @ref,
+            int column)
         {
             return new CodegenExpressionRefWCol(@ref, column);
         }
 
-        public static CodegenExpression Op(CodegenExpression left, string expressionText, CodegenExpression right)
+        public static CodegenExpression Op(
+            CodegenExpression left,
+            string expressionText,
+            CodegenExpression right)
         {
             return new CodegenExpressionOp(left, expressionText, right);
         }
 
         public static CodegenExpression And(
-            CodegenExpression first, CodegenExpression second, params CodegenExpression[] more)
+            CodegenExpression first,
+            CodegenExpression second,
+            params CodegenExpression[] more)
         {
             return new CodegenExpressionAndOr(true, first, second, more);
         }
 
         public static CodegenExpression Or(
-            CodegenExpression first, CodegenExpression second, params CodegenExpression[] more)
+            CodegenExpression first,
+            CodegenExpression second,
+            params CodegenExpression[] more)
         {
             return new CodegenExpressionAndOr(false, first, second, more);
         }
 
-        public static CodegenExpressionExprDotName ExprDotName(CodegenExpression left, string name)
+        public static CodegenExpressionExprDotName ExprDotName(
+            CodegenExpression left,
+            string name)
         {
             return new CodegenExpressionExprDotName(left, name);
         }
 
         public static CodegenExpression ExprDotMethod(
-            CodegenExpression expression, string method, params CodegenExpression[] @params)
+            CodegenExpression expression,
+            string method,
+            params CodegenExpression[] @params)
         {
             return new CodegenExpressionExprDotMethod(expression, method, @params);
         }
 
         public static CodegenExpression GetProperty(
-            CodegenExpression expression, string property)
+            CodegenExpression expression,
+            string property)
         {
             throw new NotImplementedException();
         }
 
         public static CodegenExpression SetProperty(
-            CodegenExpression expression, string property, CodegenExpression value)
+            CodegenExpression expression,
+            string property,
+            CodegenExpression value)
         {
             throw new NotImplementedException();
         }
 
-        public static CodegenExpression EnumValue(Type enumType, string enumValue)
+        public static CodegenExpression EnumValue<T>(T enumValue)
+            where T : struct
+        {
+            if (!typeof(T).IsEnum) {
+                throw new ArgumentException("type is not an enumeration");
+            }
+
+            return EnumValue(typeof(T), enumValue.GetName());
+        }
+
+        public static CodegenExpression EnumValue(
+            Type enumType,
+            string enumValue)
         {
             return new CodegenExpressionEnumOrPublicConstantValue(enumType, enumValue);
         }
 
-        public static CodegenExpression PublicConstValue(Type enumType, string enumValue)
+        public static CodegenExpression PublicConstValue(
+            Type enumType,
+            string enumValue)
         {
             return new CodegenExpressionEnumOrPublicConstantValue(enumType, enumValue);
         }
 
-        public static CodegenExpression PublicConstValue(string enumType, string enumValue)
+        public static CodegenExpression PublicConstValue(
+            string enumType,
+            string enumValue)
         {
             return new CodegenExpressionEnumOrPublicConstantValue(enumType, enumValue);
         }
@@ -98,7 +130,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         }
 
         public static CodegenExpressionLocalMethod LocalMethod(
-            CodegenMethod methodNode, params CodegenExpression[] parameters)
+            CodegenMethod methodNode,
+            params CodegenExpression[] parameters)
         {
             return new CodegenExpressionLocalMethod(methodNode, parameters);
         }
@@ -129,13 +162,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         }
 
         public static CodegenExpressionNewAnonymousClass NewAnonymousClass(
-            CodegenBlock parentBlock, Type interfaceOrSuperClass, IList<CodegenExpression> ctorParams)
+            CodegenBlock parentBlock,
+            Type interfaceOrSuperClass,
+            IList<CodegenExpression> ctorParams)
         {
             return new CodegenExpressionNewAnonymousClass(parentBlock, interfaceOrSuperClass, ctorParams);
         }
 
         public static CodegenExpressionNewAnonymousClass NewAnonymousClass(
-            CodegenBlock parentBlock, Type interfaceOrSuperClass)
+            CodegenBlock parentBlock,
+            Type interfaceOrSuperClass)
         {
             return new CodegenExpressionNewAnonymousClass(
                 parentBlock, interfaceOrSuperClass, Collections.GetEmptyList<CodegenExpression>());
@@ -146,22 +182,30 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return CodegenExpressionNoOp.INSTANCE;
         }
 
-        public static CodegenExpression CastUnderlying(Type clazz, CodegenExpression expression)
+        public static CodegenExpression CastUnderlying(
+            Type clazz,
+            CodegenExpression expression)
         {
             return new CodegenExpressionCastUnderlying(clazz, expression);
         }
 
-        public static CodegenExpression InstanceOf(CodegenExpression lhs, Type clazz)
+        public static CodegenExpression InstanceOf(
+            CodegenExpression lhs,
+            Type clazz)
         {
             return new CodegenExpressionInstanceOf(lhs, clazz, false);
         }
 
-        public static CodegenExpression NotInstanceOf(CodegenExpression lhs, Type clazz)
+        public static CodegenExpression NotInstanceOf(
+            CodegenExpression lhs,
+            Type clazz)
         {
             return new CodegenExpressionInstanceOf(lhs, clazz, true);
         }
 
-        public static CodegenExpression CastRef(Type clazz, string @ref)
+        public static CodegenExpression CastRef(
+            Type clazz,
+            string @ref)
         {
             return new CodegenExpressionCastRef(clazz, @ref);
         }
@@ -187,7 +231,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         }
 
         public static CodegenExpression Conditional(
-            CodegenExpression condition, CodegenExpression expressionTrue, CodegenExpression expressionFalse)
+            CodegenExpression condition,
+            CodegenExpression expressionTrue,
+            CodegenExpression expressionFalse)
         {
             return new CodegenExpressionConditional(condition, expressionTrue, expressionFalse);
         }
@@ -197,17 +243,23 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionNot(true, expression);
         }
 
-        public static CodegenExpression NotOptional(bool isNot, CodegenExpression expression)
+        public static CodegenExpression NotOptional(
+            bool isNot,
+            CodegenExpression expression)
         {
             return new CodegenExpressionNot(isNot, expression);
         }
 
-        public static CodegenExpression Cast(Type clazz, CodegenExpression expression)
+        public static CodegenExpression Cast(
+            Type clazz,
+            CodegenExpression expression)
         {
             return new CodegenExpressionCastExpression(clazz, expression);
         }
 
-        public static CodegenExpression Cast(string typeName, CodegenExpression expression)
+        public static CodegenExpression Cast(
+            string typeName,
+            CodegenExpression expression)
         {
             return new CodegenExpressionCastExpression(typeName, expression);
         }
@@ -222,22 +274,39 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionEqualsNull(lhs, false);
         }
 
-        public static CodegenExpression EqualsIdentity(CodegenExpression lhs, CodegenExpression rhs)
+        public static CodegenExpression EqualsIdentity(
+            CodegenExpression lhs,
+            CodegenExpression rhs)
         {
             return new CodegenExpressionEqualsReference(lhs, rhs, false);
         }
 
-        public static CodegenExpression StaticMethod(Type clazz, string method, params CodegenExpression[] @params)
+        public static CodegenExpression StaticMethod<T>(
+            string method,
+            params CodegenExpression[] @params)
+        {
+            return new CodegenExpressionStaticMethod(typeof(T), method, @params);
+        }
+
+        public static CodegenExpression StaticMethod(
+            Type clazz,
+            string method,
+            params CodegenExpression[] @params)
         {
             return new CodegenExpressionStaticMethod(clazz, method, @params);
         }
 
-        public static CodegenExpression StaticMethod(string clazz, string method, params CodegenExpression[] @params)
+        public static CodegenExpression StaticMethod(
+            string clazz,
+            string method,
+            params CodegenExpression[] @params)
         {
             return new CodegenExpressionStaticMethod(clazz, method, @params);
         }
 
-        public static CodegenExpression ClassMethod(string method, params CodegenExpression[] @params)
+        public static CodegenExpression ClassMethod(
+            string method,
+            params CodegenExpression[] @params)
         {
             return new CodegenExpressionClassMethod(method, @params);
         }
@@ -247,12 +316,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionClass(clazz);
         }
 
-        public static CodegenExpression ArrayAtIndex(CodegenExpression expression, CodegenExpression index)
+        public static CodegenExpression ArrayAtIndex(
+            CodegenExpression expression,
+            CodegenExpression index)
         {
             return new CodegenExpressionArrayAtIndex(expression, index);
         }
 
-        public static CodegenExpression Assign(CodegenExpression lhs, CodegenExpression rhs)
+        public static CodegenExpression Assign(
+            CodegenExpression lhs,
+            CodegenExpression rhs)
         {
             return new CodegenExpressionAssign(lhs, rhs);
         }
@@ -262,34 +335,52 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionArrayLength(expression);
         }
 
-        public static CodegenExpression NewInstance(Type clazz, params CodegenExpression[] @params)
+        public static CodegenExpression NewInstance<T>(
+            params CodegenExpression[] @params)
+        {
+            return new CodegenExpressionNewInstance(typeof(T), @params);
+        }
+
+        public static CodegenExpression NewInstance(
+            Type clazz,
+            params CodegenExpression[] @params)
         {
             return new CodegenExpressionNewInstance(clazz, @params);
         }
 
-        public static CodegenExpression NewInstance(string name, params CodegenExpression[] @params)
+        public static CodegenExpression NewInstance(
+            string name,
+            params CodegenExpression[] @params)
         {
             return new CodegenExpressionNewInstanceInnerClass(name, @params);
         }
 
         public static CodegenExpression Relational(
-            CodegenExpression lhs, CodegenExpressionRelational.CodegenRelational op, CodegenExpression rhs)
+            CodegenExpression lhs,
+            CodegenExpressionRelational.CodegenRelational op,
+            CodegenExpression rhs)
         {
             return new CodegenExpressionRelational(lhs, op, rhs);
         }
 
-        public static CodegenExpression NewArrayByLength(Type component, CodegenExpression expression)
+        public static CodegenExpression NewArrayByLength(
+            Type component,
+            CodegenExpression expression)
         {
             return new CodegenExpressionNewArrayByLength(component, expression);
         }
 
-        public static CodegenExpression NewArrayWithInit(Type component, params CodegenExpression[] expressions)
+        public static CodegenExpression NewArrayWithInit(
+            Type component,
+            params CodegenExpression[] expressions)
         {
             return new CodegenExpressionNewArrayWithInit(component, expressions);
         }
 
         public static void RenderExpressions(
-            StringBuilder builder, CodegenExpression[] expressions, IDictionary<Type, string> imports,
+            StringBuilder builder,
+            CodegenExpression[] expressions,
+            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             var delimiter = "";
@@ -300,7 +391,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
         }
 
-        public static void MergeClassesExpressions(ISet<Type> classes, CodegenExpression[] expressions)
+        public static void MergeClassesExpressions(
+            ISet<Type> classes,
+            CodegenExpression[] expressions)
         {
             foreach (var expression in expressions) {
                 expression.MergeClasses(classes);

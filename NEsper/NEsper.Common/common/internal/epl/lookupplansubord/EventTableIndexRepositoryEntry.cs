@@ -13,8 +13,11 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     public class EventTableIndexRepositoryEntry : EventTableIndexEntryBase
     {
         public EventTableIndexRepositoryEntry(
-            string optionalIndexName, string optionalIndexModuleName, EventTable table) : base(
-            optionalIndexName, optionalIndexModuleName)
+            string optionalIndexName,
+            string optionalIndexModuleName,
+            EventTable table)
+            : base(
+                optionalIndexName, optionalIndexModuleName)
         {
             Table = table;
         }

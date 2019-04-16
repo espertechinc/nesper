@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.client
             this.classType = classType;
         }
 
-        public EPNotSerializableException(Exception cause, Type classType)
+        public EPNotSerializableException(
+            Exception cause,
+            Type classType)
             : base("class is not serializable", cause)
         {
             this.classType = classType;

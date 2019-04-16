@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         /// <param name="version">version number</param>
         /// <param name="value">value at that version</param>
         /// <param name="timestamp">time when version was taken</param>
-        public VersionedValue(int version, T value, long timestamp)
+        public VersionedValue(
+            int version,
+            T value,
+            long timestamp)
         {
             Version = version;
             Value = value;

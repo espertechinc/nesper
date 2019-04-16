@@ -65,8 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         public static string GetClauseName(this ExprNodeOrigin enumValue)
         {
-            switch (enumValue)
-            {
+            switch (enumValue) {
                 case ExprNodeOrigin.SELECT:
                     return ("select-clause");
                 case ExprNodeOrigin.WHERE:

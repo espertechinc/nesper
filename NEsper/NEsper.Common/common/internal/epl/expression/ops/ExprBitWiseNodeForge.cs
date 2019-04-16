@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprBitWiseNodeForge : ExprForgeInstrumentable
     {
-        public ExprBitWiseNodeForge(ExprBitWiseNode parent, Type resultType, BitWiseOpEnum.Computer computer)
+        public ExprBitWiseNodeForge(
+            ExprBitWiseNode parent,
+            Type resultType,
+            BitWiseOpEnum.Computer computer)
         {
             ForgeRenderable = parent;
             EvaluationType = resultType;
@@ -41,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ForgeRenderable.ChildNodes[1].Forge.ExprEvaluator);
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -51,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprBitWiseNodeForgeEval.Codegen(

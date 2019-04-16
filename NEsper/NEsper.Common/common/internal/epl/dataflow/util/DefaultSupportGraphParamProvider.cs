@@ -8,22 +8,24 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.util
 {
-	public class DefaultSupportGraphParamProvider : EPDataFlowOperatorParameterProvider {
-	    private readonly IDictionary<string, object> @params;
+    public class DefaultSupportGraphParamProvider : EPDataFlowOperatorParameterProvider
+    {
+        private readonly IDictionary<string, object> @params;
 
-	    public DefaultSupportGraphParamProvider(IDictionary<string, object> @params) {
-	        this.@params = @params;
-	    }
+        public DefaultSupportGraphParamProvider(IDictionary<string, object> @params)
+        {
+            this.@params = @params;
+        }
 
-	    public object Provide(EPDataFlowOperatorParameterProviderContext context) {
-	        return @params.Get(context.ParameterName);
-	    }
-	}
+        public object Provide(EPDataFlowOperatorParameterProviderContext context)
+        {
+            return @params.Get(context.ParameterName);
+        }
+    }
 } // end of namespace

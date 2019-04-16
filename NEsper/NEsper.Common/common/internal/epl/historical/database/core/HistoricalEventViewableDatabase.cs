@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
     public class HistoricalEventViewableDatabase : HistoricalEventViewableBase
     {
         public HistoricalEventViewableDatabase(
-            HistoricalEventViewableDatabaseFactory factory, 
+            HistoricalEventViewableDatabaseFactory factory,
             PollExecStrategy pollExecStrategy,
             AgentInstanceContext agentInstanceContext)
             : base(factory, pollExecStrategy, agentInstanceContext)

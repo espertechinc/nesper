@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         {
         }
 
-        protected TableMetadataColumn(string columnName, bool key)
+        protected TableMetadataColumn(
+            string columnName,
+            bool key)
         {
             ColumnName = columnName;
             IsKey = key;
@@ -31,20 +33,27 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public string ColumnName { get; set; }
 
         protected abstract CodegenExpression Make(
-            CodegenMethodScope parent, ModuleTableInitializeSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            ModuleTableInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
-        internal void MakeSettersInline(CodegenExpressionRef col, CodegenBlock block)
+        internal void MakeSettersInline(
+            CodegenExpressionRef col,
+            CodegenBlock block)
         {
             block.ExprDotMethod(col, "setKey", Constant(IsKey))
                 .ExprDotMethod(col, "setColumnName", Constant(ColumnName));
         }
 
         public static CodegenExpression MakeColumns(
-            IDictionary<string, TableMetadataColumn> columns, CodegenMethodScope parent,
-            ModuleTableInitializeSymbol symbols, CodegenClassScope classScope)
+            IDictionary<string, TableMetadataColumn> columns,
+            CodegenMethodScope parent,
+            ModuleTableInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(IDictionary<string, TableMetadataColumn>), typeof(TableMetadataColumn), classScope);
-            method.Block.DeclareVar(typeof(IDictionary<string, TableMetadataColumn>), "cols", NewInstance(typeof(Dictionary<string, TableMetadataColumn>)));
+            method.Block.DeclareVar(
+                typeof(IDictionary<string, TableMetadataColumn>), "cols", NewInstance(typeof(Dictionary<string, TableMetadataColumn>)));
             foreach (KeyValuePair<string, TableMetadataColumn> entry in columns) {
                 method.Block.ExprDotMethod(
                     Ref("cols"), "put", Constant(entry.Key), entry.Value.Make(method, symbols, classScope));

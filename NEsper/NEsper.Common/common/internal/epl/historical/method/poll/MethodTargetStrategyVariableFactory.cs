@@ -43,7 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             return new MethodTargetStrategyVariable(this, reader);
         }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             method = MethodTargetStrategyStaticMethod.ResolveMethod(
                 variable.MetaData.Type, methodName, methodParameters);

@@ -28,10 +28,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         internal readonly Type sumType;
 
         public AggregatorSumBase(
-            AggregationForgeFactory factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter,
-            Type sumType) : base(
-            factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter, optionalFilter)
+            AggregationForgeFactory factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter,
+            Type sumType)
+            : base(
+                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter, optionalFilter)
         {
             cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
             sum = membersColumnized.AddMember(col, sumType.GetPrimitiveType(), "sum");
@@ -41,40 +48,69 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 
         protected abstract CodegenExpression InitOfSum();
 
-        protected abstract void ApplyAggEnterSum(CodegenExpressionRef value, Type valueType, CodegenMethod method);
+        protected abstract void ApplyAggEnterSum(
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method);
 
         protected abstract void ApplyTableEnterSum(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
-        protected abstract void ApplyAggLeaveSum(CodegenExpressionRef value, Type valueType, CodegenMethod method);
+        protected abstract void ApplyAggLeaveSum(
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method);
 
         protected abstract void ApplyTableLeaveSum(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         protected abstract void WriteSum(
-            CodegenExpressionRef row, CodegenExpressionRef output, CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef row,
+            CodegenExpressionRef output,
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         protected abstract void ReadSum(
-            CodegenExpressionRef row, CodegenExpressionRef input, CodegenMethod method, CodegenClassScope classScope);
+            CodegenExpressionRef row,
+            CodegenExpressionRef input,
+            CodegenMethod method,
+            CodegenClassScope classScope);
 
         protected override void ApplyEvalEnterNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             method.Block.Increment(cnt);
             ApplyAggEnterSum(value, valueType, method);
         }
 
         protected override void ApplyTableEnterNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Increment(cnt);
             ApplyTableEnterSum(value, evaluationTypes, method, classScope);
         }
 
         protected override void ApplyEvalLeaveNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             method.Block
                 .IfCondition(Relational(cnt, LE, Constant(1)))
@@ -86,7 +122,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         }
 
         protected override void ApplyTableLeaveNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .IfCondition(Relational(cnt, LE, Constant(1)))
@@ -97,14 +136,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             ApplyTableLeaveSum(value, evaluationTypes, method, classScope);
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .AssignRef(cnt, Constant(0))
                 .AssignRef(sum, InitOfSum());
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.IfCondition(EqualsIdentity(cnt, Constant(0)))
                 .BlockReturn(ConstantNull())
@@ -112,16 +155,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(WriteLong(output, row, cnt));
             WriteSum(row, output, method, classScope);
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(ReadLong(row, cnt, input));
             ReadSum(row, input, method, classScope);

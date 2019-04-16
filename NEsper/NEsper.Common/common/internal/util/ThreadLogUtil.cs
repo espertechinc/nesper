@@ -44,12 +44,14 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="text">to log</param>
         /// <param name="objects">to write</param>
-        public static void Trace(string text, params Object[] objects)
+        public static void Trace(
+            string text,
+            params Object[] objects)
         {
-            if (!ENABLED_TRACE)
-            {
+            if (!ENABLED_TRACE) {
                 return;
             }
+
             Write(text, objects);
         }
 
@@ -58,12 +60,14 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="text">to log</param>
         /// <param name="objects">to write</param>
-        public static void Info(string text, params Object[] objects)
+        public static void Info(
+            string text,
+            params Object[] objects)
         {
-            if (!ENABLED_INFO)
-            {
+            if (!ENABLED_INFO) {
                 return;
             }
+
             Write(text, objects);
         }
 
@@ -72,12 +76,14 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="lockAction">is the action towards the lock</param>
         /// <param name="lock">is the lock instance</param>
-        public static void TraceLock(string lockAction, IReaderWriterLock @lock)
+        public static void TraceLock(
+            string lockAction,
+            IReaderWriterLock @lock)
         {
-            if (!ENABLED_TRACE)
-            {
+            if (!ENABLED_TRACE) {
                 return;
             }
+
             Write(lockAction + " " + GetLockInfo(@lock));
         }
 
@@ -97,25 +103,26 @@ namespace com.espertech.esper.common.@internal.util
                    " isWriteLocked=" + lockObj.IsWriterLockHeld;
         }
 
-        private static void Write(String text, params Object[] objects)
+        private static void Write(
+            String text,
+            params Object[] objects)
         {
             StringBuilder buf = new StringBuilder();
             buf.Append(text);
             buf.Append(' ');
-            foreach (Object obj in objects)
-            {
-                if ((obj is String) || (obj is ValueType))
-                {
+            foreach (Object obj in objects) {
+                if ((obj is String) || (obj is ValueType)) {
                     buf.Append(obj.ToString());
                 }
-                else
-                {
+                else {
                     buf.Append(obj.GetType().FullName);
                     buf.Append('@');
                     buf.Append(String.Format("{0:X2}", obj.GetHashCode()));
                 }
+
                 buf.Append(' ');
             }
+
             Write(buf.ToString());
         }
 

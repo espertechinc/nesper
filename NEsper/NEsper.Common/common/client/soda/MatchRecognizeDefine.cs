@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Ctor.
         /// </summary>
-        public MatchRecognizeDefine() {
+        public MatchRecognizeDefine()
+        {
         }
 
         /// <summary>
@@ -27,7 +28,10 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="name">variable name</param>
         /// <param name="expression">expression</param>
-        public MatchRecognizeDefine(String name, Expression expression) {
+        public MatchRecognizeDefine(
+            String name,
+            Expression expression)
+        {
             Name = name;
             Expression = expression;
         }

@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <param name="name">of the aggregation function</param>
         /// <param name="forgeClassName">the name of the aggregation function factory class</param>
-        public ConfigurationCompilerPlugInAggregationFunction(string name, string forgeClassName)
+        public ConfigurationCompilerPlugInAggregationFunction(
+            string name,
+            string forgeClassName)
         {
             Name = name;
             ForgeClassName = forgeClassName;

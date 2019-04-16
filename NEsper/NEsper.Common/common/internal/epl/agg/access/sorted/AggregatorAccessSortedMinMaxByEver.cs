@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     /// <summary>
     ///     Implementation of access function for single-stream (not joins).
     /// </summary>
-    public class AggregatorAccessSortedMinMaxByEver : AggregatorAccessWFilterBase
-        , AggregatorAccessSorted
+    public class AggregatorAccessSortedMinMaxByEver : AggregatorAccessWFilterBase,
+        AggregatorAccessSorted
     {
         private readonly CodegenExpressionField comparator;
         private readonly CodegenExpressionRef currentMinMax;
@@ -43,8 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         private readonly AggregationStateMinMaxByEverForge forge;
 
         public AggregatorAccessSortedMinMaxByEver(
-            AggregationStateMinMaxByEverForge forge, int col, CodegenCtor ctor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, ExprNode optionalFilter)
+            AggregationStateMinMaxByEverForge forge,
+            int col,
+            CodegenCtor ctor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            ExprNode optionalFilter)
             : base(optionalFilter)
         {
             this.forge = forge;
@@ -67,15 +71,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                     forge.Spec.SortDescending));
         }
 
-        public override void ClearCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void ClearCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(currentMinMaxBean, ConstantNull())
                 .AssignRef(currentMinMax, ConstantNull());
         }
 
         public override void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .ExprDotMethod(currentMinMaxSerde, "write", RowDotRef(row, currentMinMax), output, unitKey, writer)
@@ -84,8 +95,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         public override void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenMethod method,
-            CodegenExpressionRef unitKey, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenMethod method,
+            CodegenExpressionRef unitKey,
+            CodegenClassScope classScope)
         {
             method.Block
                 .AssignRef(
@@ -96,7 +111,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                     Cast(typeof(EventBean), ExprDotMethod(currentMinMaxBeanSerde, "read", input, unitKey)));
         }
 
-        public CodegenExpression GetFirstValueCodegen(CodegenClassScope classScope, CodegenMethod method)
+        public CodegenExpression GetFirstValueCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method)
         {
             if (forge.Spec.IsMax) {
                 method.Block.MethodThrowUnsupported();
@@ -105,7 +122,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             return currentMinMaxBean;
         }
 
-        public CodegenExpression GetLastValueCodegen(CodegenClassScope classScope, CodegenMethod method)
+        public CodegenExpression GetLastValueCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod method)
         {
             if (!forge.Spec.IsMax) {
                 method.Block.MethodThrowUnsupported();
@@ -134,7 +153,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         internal override void ApplyEnterFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             CodegenExpression eps = symbols.GetAddEPS(method);
@@ -145,14 +166,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         internal override void ApplyLeaveFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             // this is an ever-type aggregation
         }
 
         private CodegenMethod AddEventCodegen(
-            CodegenMethod parent, CodegenNamedMethods namedMethods, CodegenClassScope classScope)
+            CodegenMethod parent,
+            CodegenNamedMethods namedMethods,
+            CodegenClassScope classScope)
         {
             var comparable = GetComparableWObjectArrayKeyCodegen(
                 forge.Spec.Criteria, currentMinMaxBean, namedMethods, classScope);
@@ -176,7 +201,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         private static CodegenMethod GetComparableWObjectArrayKeyCodegen(
-            ExprNode[] criteria, CodegenExpressionRef @ref, CodegenNamedMethods namedMethods,
+            ExprNode[] criteria,
+            CodegenExpressionRef @ref,
+            CodegenNamedMethods namedMethods,
             CodegenClassScope classScope)
         {
             var methodName = "getComparable_" + @ref.Ref;
@@ -214,7 +241,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         public static CodegenExpression CodegenGetAccessTableState(
-            int column, CodegenMethodScope parent, CodegenClassScope classScope)
+            int column,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(EventBean), typeof(AggregatorAccessSortedMinMaxByEver), classScope);
             method.Block.MethodReturn(RefCol("currentMinMaxBean", column));

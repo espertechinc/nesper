@@ -27,13 +27,12 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>object</returns>
         public static Object ByteArrToObject(byte[] bytes)
         {
-            if (bytes == null)
-            {
+            if (bytes == null) {
                 return null;
             }
 
             return SerializerFactory.Deserialize(
-                1, bytes, new[] { SerializerFactory.OBJECT_SERIALIZER })[0];
+                1, bytes, new[] {SerializerFactory.OBJECT_SERIALIZER})[0];
         }
     }
 }

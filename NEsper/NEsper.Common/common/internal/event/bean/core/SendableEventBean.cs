@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     {
         private readonly string typeName;
 
-        public SendableEventBean(object @event, string typeName)
+        public SendableEventBean(
+            object @event,
+            string typeName)
         {
             Underlying = @event;
             this.typeName = typeName;

@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     public class QueryGraphValueEntryHashKeyedForgeProp : QueryGraphValueEntryHashKeyedForgeExpr
     {
         public QueryGraphValueEntryHashKeyedForgeProp(
-            ExprNode keyExpr, string keyProperty, EventPropertyGetterSPI eventPropertyGetter) : base(keyExpr, true)
+            ExprNode keyExpr,
+            string keyProperty,
+            EventPropertyGetterSPI eventPropertyGetter)
+            : base(keyExpr, true)
         {
             KeyProperty = keyProperty;
             EventPropertyGetter = eventPropertyGetter;

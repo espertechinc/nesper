@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
         internal readonly Regex regex;
         internal readonly TokenType token;
 
-        public TokenInfo(Regex regex, TokenType token)
+        public TokenInfo(
+            Regex regex,
+            TokenType token)
         {
             this.regex = regex;
             this.token = token;

@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Reflection;
-
 using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -48,10 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
         public void RemoveStatement(int statementId)
         {
             ISet<StatementEntry> removed = new HashSet<StatementEntry>();
-            foreach (var context in patternContexts)
-            {
-                if (context.StatementId == statementId)
-                {
+            foreach (var context in patternContexts) {
+                if (context.StatementId == statementId) {
                     removed.Add(context);
                 }
             }
@@ -65,15 +62,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
         {
             // test pool max
             var newMax = poolCount.IncrementAndGet();
-            if (newMax > maxPoolCountConfigured && maxPoolCountConfigured >= 0)
-            {
+            if (newMax > maxPoolCountConfigured && maxPoolCountConfigured >= 0) {
                 var counts = GetCounts();
                 agentInstanceContext.StatementContext.ExceptionHandlingService.HandleCondition(
                     new ConditionPatternRuntimeSubexpressionMax(maxPoolCountConfigured, counts),
                     agentInstanceContext.StatementContext);
                 if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled &&
-                    ExecutionPathDebugLog.IsTimerDebugEnabled)
-                {
+                    ExecutionPathDebugLog.IsTimerDebugEnabled) {
                     var stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
                     var stmtName = agentInstanceContext.StatementContext.StatementName;
                     Log.Debug(
@@ -81,8 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
                         " statement count was " + stmtHandler.Count + " preventStart=" + preventStart);
                 }
 
-                if (preventStart)
-                {
+                if (preventStart) {
                     poolCount.DecrementAndGet();
                     return false;
                 }
@@ -90,8 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
                 return true;
             }
 
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled)
-            {
+            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
                 var stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
                 var stmtName = agentInstanceContext.StatementContext.StatementName;
                 Log.Debug(
@@ -108,8 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
             AgentInstanceContext agentInstanceContext)
         {
             var newMax = poolCount.IncrementAndGet();
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled)
-            {
+            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
                 var stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
                 var stmtName = agentInstanceContext.StatementContext.StatementName;
                 Log.Debug(
@@ -123,8 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
             AgentInstanceContext agentInstanceContext)
         {
             var newMax = poolCount.DecrementAndGet();
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled)
-            {
+            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
                 var stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
                 var stmtName = agentInstanceContext.StatementContext.StatementName;
                 Log.Debug(
@@ -136,11 +127,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
         private IDictionary<string, long?> GetCounts()
         {
             IDictionary<string, long?> counts = new Dictionary<string, long?>();
-            foreach (var context in patternContexts)
-            {
+            foreach (var context in patternContexts) {
                 var count = counts.Get(context.StatementName);
-                if (count == null)
-                {
+                if (count == null) {
                     count = 0L;
                 }
 

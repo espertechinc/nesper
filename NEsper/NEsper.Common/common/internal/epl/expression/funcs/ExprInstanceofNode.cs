@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -38,19 +37,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             this.classIdentifiers = classIdentifiers;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
-            get
-            {
+        public ExprEvaluator ExprEvaluator {
+            get {
                 CheckValidated(forge);
                 return forge.ExprEvaluator;
             }
         }
 
-        public override ExprForge Forge
-        {
-            get
-            {
+        public override ExprForge Forge {
+            get {
                 CheckValidated(forge);
                 return forge;
             }
@@ -58,22 +53,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (this.ChildNodes.Length != 1)
-            {
+            if (this.ChildNodes.Length != 1) {
                 throw new ExprValidationException(
                     "Instanceof node must have 1 child expression node supplying the expression to test");
             }
 
-            if ((classIdentifiers == null) || (classIdentifiers.Length == 0))
-            {
+            if ((classIdentifiers == null) || (classIdentifiers.Length == 0)) {
                 throw new ExprValidationException(
                     "Instanceof node must have 1 or more class identifiers to verify type against");
             }
 
             ISet<Type> classList = GetClassSet(classIdentifiers, validationContext.ImportService);
             Type[] classes;
-            lock (this)
-            {
+            lock (this) {
                 classes = classList.ToArray();
             }
 
@@ -81,20 +73,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
-        public bool IsConstantResult
-        {
+        public bool IsConstantResult {
             get => false;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("instanceof(");
             this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
             writer.Write(",");
 
             string delimiter = "";
-            for (int i = 0; i < classIdentifiers.Length; i++)
-            {
+            for (int i = 0; i < classIdentifiers.Length; i++) {
                 writer.Write(delimiter);
                 writer.Write(classIdentifiers[i]);
                 delimiter = ",";
@@ -103,8 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             writer.Write(')');
         }
 
-        public override ExprPrecedenceEnum Precedence
-        {
+        public override ExprPrecedenceEnum Precedence {
             get => ExprPrecedenceEnum.UNARY;
         }
 
@@ -112,14 +101,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprInstanceofNode))
-            {
+            if (!(node is ExprInstanceofNode)) {
                 return false;
             }
 
-            var other = (ExprInstanceofNode)node;
-            if (Collections.AreEqual(other.classIdentifiers, classIdentifiers))
-            {
+            var other = (ExprInstanceofNode) node;
+            if (Collections.AreEqual(other.classIdentifiers, classIdentifiers)) {
                 return true;
             }
 
@@ -130,8 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// Returns the list of class names or types to check instance of.
         /// </summary>
         /// <returns>class names</returns>
-        public string[] ClassIdentifiers
-        {
+        public string[] ClassIdentifiers {
             get => classIdentifiers;
         }
 
@@ -140,26 +126,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ImportServiceCompileTime importService)
         {
             ISet<Type> classList = new HashSet<Type>();
-            foreach (string className in classIdentifiers)
-            {
+            foreach (string className in classIdentifiers) {
                 Type clazz;
 
                 // try the primitive names including "string"
                 clazz = TypeHelper.GetPrimitiveTypeForName(className.Trim());
-                if (clazz != null)
-                {
+                if (clazz != null) {
                     classList.Add(clazz);
                     classList.Add(clazz.GetBoxedType());
                     continue;
                 }
 
                 // try to look up the class, not a primitive type name
-                try
-                {
+                try {
                     clazz = TypeHelper.GetClassForName(className.Trim(), importService.ClassForNameProvider);
                 }
-                catch (TypeLoadException e)
-                {
+                catch (TypeLoadException e) {
                     throw new ExprValidationException(
                         "Class as listed in instanceof function by name '" + className + "' cannot be loaded", e);
                 }

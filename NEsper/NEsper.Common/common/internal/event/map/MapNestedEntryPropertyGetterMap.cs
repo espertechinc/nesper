@@ -23,8 +23,11 @@ namespace com.espertech.esper.common.@internal.@event.map
         private readonly MapEventPropertyGetter mapGetter;
 
         public MapNestedEntryPropertyGetterMap(
-            string propertyMap, EventType fragmentType, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            MapEventPropertyGetter mapGetter) : base(propertyMap, fragmentType, eventBeanTypedEventFactory)
+            string propertyMap,
+            EventType fragmentType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            MapEventPropertyGetter mapGetter)
+            : base(propertyMap, fragmentType, eventBeanTypedEventFactory)
         {
             this.mapGetter = mapGetter;
         }
@@ -43,7 +46,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         private CodegenMethod HandleNestedValueCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "value").Block
@@ -73,7 +77,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         private CodegenMethod HandleNestedValueFragmentCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "value").Block
@@ -89,13 +94,17 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public override CodegenExpression HandleNestedValueCodegen(
-            CodegenExpression name, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return LocalMethod(HandleNestedValueCodegen(codegenMethodScope, codegenClassScope), name);
         }
 
         public override CodegenExpression HandleNestedValueFragmentCodegen(
-            CodegenExpression name, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return LocalMethod(HandleNestedValueFragmentCodegen(codegenMethodScope, codegenClassScope), name);
         }

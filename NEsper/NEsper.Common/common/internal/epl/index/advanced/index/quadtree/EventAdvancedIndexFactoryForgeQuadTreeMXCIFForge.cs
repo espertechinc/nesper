@@ -9,7 +9,6 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.lookup;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
@@ -30,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             return operationName.Equals(SettingsApplicationDotMethodRectangeIntersectsRectangle.LOOKUP_OPERATION_NAME);
         }
 
-        public override CodegenExpression CodegenMake(CodegenMethodScope parent, CodegenClassScope classScope)
+        public override CodegenExpression CodegenMake(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             return PublicConstValue(typeof(EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory), "INSTANCE");
         }

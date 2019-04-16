@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         private readonly bool oneToOne;
 
         public EventBeanManufacturerObjectArray(
-            ObjectArrayEventType eventType, EventBeanTypedEventFactory eventAdapterService, int[] indexPerWritable,
+            ObjectArrayEventType eventType,
+            EventBeanTypedEventFactory eventAdapterService,
+            int[] indexPerWritable,
             bool oneToOne)
         {
             this.eventType = eventType;

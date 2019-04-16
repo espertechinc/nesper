@@ -11,7 +11,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 {
     public abstract class EventTableIndexEntryBase
     {
-        protected EventTableIndexEntryBase(string optionalIndexName, string optionalIndexModuleName)
+        protected EventTableIndexEntryBase(
+            string optionalIndexName,
+            string optionalIndexModuleName)
         {
             OptionalIndexName = optionalIndexName;
             OptionalIndexModuleName = optionalIndexModuleName;

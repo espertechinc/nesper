@@ -44,14 +44,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             set => methodParameters = value;
         }
 
-        public object Invoke(object lookupValues, AgentInstanceContext agentInstanceContext)
+        public object Invoke(
+            object lookupValues,
+            AgentInstanceContext agentInstanceContext)
         {
             try {
                 switch (invokeType) {
                     case MethodTargetStrategyStaticMethodInvokeType.NOPARAM:
                         return method.Invoke(null, null);
                     case MethodTargetStrategyStaticMethodInvokeType.SINGLE:
-                        return method.Invoke(null, new [] { lookupValues });
+                        return method.Invoke(null, new[] {lookupValues});
                     case MethodTargetStrategyStaticMethodInvokeType.MULTIKEY:
                         return method.Invoke(null, ((HashableMultiKey) lookupValues).Keys);
                     default:
@@ -72,19 +74,27 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             return this;
         }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             method = ResolveMethod(clazz, methodName, methodParameters);
             invokeType = MethodTargetStrategyStaticMethodInvokeType.GetInvokeType(method);
         }
 
-        protected internal static MethodInfo ResolveMethod(Type clazz, string methodName, Type[] methodParameters)
+        protected internal static MethodInfo ResolveMethod(
+            Type clazz,
+            string methodName,
+            Type[] methodParameters)
         {
             MethodInfo method;
             try {
                 method = clazz.GetMethod(methodName, methodParameters);
             }
-            catch (NoSuchMethodException ex) {
+            catch (Exception ex)
+            when (ex is AmbiguousMatchException || ex is ArgumentNullException)
+            {
                 throw new EPException(
                     "Failed to find method '" + methodName + "' of class '" + clazz.Name + "' with parameters " +
                     TypeHelper.GetParameterAsString(methodParameters));

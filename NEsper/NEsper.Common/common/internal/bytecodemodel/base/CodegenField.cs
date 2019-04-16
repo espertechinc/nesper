@@ -14,7 +14,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenField
     {
-        public CodegenField(string clazz, string name, Type type, Type optionalTypeParam, bool isFinal)
+        public CodegenField(
+            string clazz,
+            string name,
+            Type type,
+            Type optionalTypeParam,
+            bool isFinal)
         {
             Clazz = clazz;
             Name = name;

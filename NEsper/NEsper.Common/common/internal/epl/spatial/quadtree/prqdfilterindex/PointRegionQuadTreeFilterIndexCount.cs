@@ -20,8 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 
         private static int Count(PointRegionQuadTreeNode node)
         {
-            if (node is PointRegionQuadTreeNodeLeaf<object>)
-            {
+            if (node is PointRegionQuadTreeNodeLeaf<object>) {
                 var leaf = (PointRegionQuadTreeNodeLeaf<object>) node;
                 return CountLeaf(leaf);
             }

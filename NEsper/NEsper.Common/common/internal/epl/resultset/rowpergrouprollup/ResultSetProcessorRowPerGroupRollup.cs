@@ -25,14 +25,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
         AggregationGroupByRollupDesc GroupByRollupDesc { get; }
 
-        object GenerateGroupKeySingle(EventBean[] eventsPerStream, bool isNewData);
+        object GenerateGroupKeySingle(
+            EventBean[] eventsPerStream,
+            bool isNewData);
 
         void GenerateOutputBatchedMapUnsorted(
-            bool join, object mk, AggregationGroupByRollupLevel level, EventBean[] eventsPerStream, bool isNewData,
-            bool isSynthesize, IDictionary<object, EventBean> resultEvents);
+            bool join,
+            object mk,
+            AggregationGroupByRollupLevel level,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            IDictionary<object, EventBean> resultEvents);
 
         void GenerateOutputBatched(
-            object mk, AggregationGroupByRollupLevel level, EventBean[] eventsPerStream, bool isNewData,
-            bool isSynthesize, IList<EventBean> resultEvents, IList<object> optSortKeys);
+            object mk,
+            AggregationGroupByRollupLevel level,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            IList<EventBean> resultEvents,
+            IList<object> optSortKeys);
     }
 } // end of namespace

@@ -16,7 +16,8 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-    public class EnumCountOfForge : EnumForge, EnumEval
+    public class EnumCountOfForge : EnumForge,
+        EnumEval
     {
         public EnumCountOfForge(int numStreams)
         {
@@ -24,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return enumcoll.Count;
         }
@@ -34,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public int StreamNumSize { get; }
 
         public CodegenExpression Codegen(
-            EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return ExprDotMethod(premade.Enumcoll, "size");
         }

@@ -7,27 +7,29 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupby
 {
-	public class AggSvcGroupByReclaimAgedEvalFuncFactoryConstForge : AggSvcGroupByReclaimAgedEvalFuncFactoryForge {
-	    private readonly double valueDouble;
+    public class AggSvcGroupByReclaimAgedEvalFuncFactoryConstForge : AggSvcGroupByReclaimAgedEvalFuncFactoryForge
+    {
+        private readonly double valueDouble;
 
-	    public AggSvcGroupByReclaimAgedEvalFuncFactoryConstForge(double valueDouble) {
-	        this.valueDouble = valueDouble;
-	    }
+        public AggSvcGroupByReclaimAgedEvalFuncFactoryConstForge(double valueDouble)
+        {
+            this.valueDouble = valueDouble;
+        }
 
-	    public CodegenExpressionField Make(CodegenClassScope classScope) {
-	        return classScope.AddFieldUnshared(true, typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst),
-	                NewInstance(typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst), Constant(valueDouble)));
-	    }
-	}
+        public CodegenExpressionField Make(CodegenClassScope classScope)
+        {
+            return classScope.AddFieldUnshared(
+                true, typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst),
+                NewInstance(typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst), Constant(valueDouble)));
+        }
+    }
 } // end of namespace

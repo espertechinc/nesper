@@ -26,8 +26,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         /// <summary>Set filter version. </summary>
         /// <value>to set</value>
-        public long StmtFilterVersion
-        {
+        public long StmtFilterVersion {
             get { return _stmtFilterVersion; }
             set { _stmtFilterVersion = value; }
         }
@@ -37,15 +36,15 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <returns>false if not current</returns>
         public bool IsCurrentFilter(long filterVersion)
         {
-            if (filterVersion < _stmtFilterVersion)
-            {
+            if (filterVersion < _stmtFilterVersion) {
                 // catch-up in case of roll
-                if (filterVersion + 100000 < _stmtFilterVersion && _stmtFilterVersion != long.MaxValue)
-                {
+                if (filterVersion + 100000 < _stmtFilterVersion && _stmtFilterVersion != long.MaxValue) {
                     _stmtFilterVersion = filterVersion;
                 }
+
                 return false;
             }
+
             return true;
         }
     }

@@ -14,8 +14,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
     public class AggGroupByDesc
     {
         public AggGroupByDesc(
-            AggregationRowStateForgeDesc rowStateForgeDescs, bool isUnidirectional, bool isFireAndForget,
-            bool isOnSelect, ExprNode[] groupByNodes)
+            AggregationRowStateForgeDesc rowStateForgeDescs,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect,
+            ExprNode[] groupByNodes)
         {
             RowStateForgeDescs = rowStateForgeDescs;
             IsUnidirectional = isUnidirectional;

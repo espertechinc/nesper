@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             this.indent = indent;
         }
 
-        public void Indent(StringBuilder builder, int level)
+        public void Indent(
+            StringBuilder builder,
+            int level)
         {
             if (!indent) {
                 return;

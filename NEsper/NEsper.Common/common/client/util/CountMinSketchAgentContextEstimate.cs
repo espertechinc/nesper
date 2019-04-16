@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.client.util
         ///     Ctor.
         /// </summary>
         /// <param name="state">the state</param>
-        public CountMinSketchAgentContextEstimate(CountMinSketchState state) : base(state)
+        public CountMinSketchAgentContextEstimate(CountMinSketchState state)
+            : base(state)
         {
         }
 
@@ -27,6 +28,6 @@ namespace com.espertech.esper.common.client.util
         ///     Returns the value.
         /// </summary>
         /// <returns>value</returns>
-        public object Value { get; private set; }
+        public object Value { get; set; }
     }
 } // end of namespace

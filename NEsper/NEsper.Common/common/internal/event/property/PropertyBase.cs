@@ -41,34 +41,44 @@ namespace com.espertech.esper.common.@internal.@event.property
         public virtual bool IsDynamic => false;
 
         public abstract EventPropertyGetterSPI GetterDOM { get; }
-        public abstract Type GetPropertyType(BeanEventType eventType, BeanEventTypeFactory beanEventTypeFactory);
+
+        public abstract Type GetPropertyType(
+            BeanEventType eventType,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         public abstract GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType, BeanEventTypeFactory beanEventTypeFactory);
+            BeanEventType eventType,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         public abstract EventPropertyGetterSPI GetGetter(
-            BeanEventType eventType, EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventType eventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory);
 
         public abstract Type GetPropertyTypeMap(
-            IDictionary<string, object> optionalMapPropTypes, BeanEventTypeFactory beanEventTypeFactory);
+            IDictionary<string, object> optionalMapPropTypes,
+            BeanEventTypeFactory beanEventTypeFactory);
 
         public abstract MapEventPropertyGetter GetGetterMap(
-            IDictionary<string, object> optionalMapPropTypes, EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            IDictionary<string, object> optionalMapPropTypes,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory);
 
         public abstract ObjectArrayEventPropertyGetter GetGetterObjectArray(
-            IDictionary<string, int> indexPerProperty, IDictionary<string, object> nestableTypes,
+            IDictionary<string, int> indexPerProperty,
+            IDictionary<string, object> nestableTypes,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory);
 
         public abstract SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty);
 
         public abstract EventPropertyGetterSPI GetGetterDOM(
-            SchemaElementComplex complexProperty, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BaseXMLEventType xmlEventType, string propertyExpression);
+            SchemaElementComplex complexProperty,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BaseXMLEventType xmlEventType,
+            string propertyExpression);
 
-        public abstract void ToPropertyEPL(StringWriter writer);
+        public abstract void ToPropertyEPL(TextWriter writer);
         public abstract string[] ToPropertyArray();
     }
 } // end of namespace

@@ -27,14 +27,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 
             private readonly ExprForge inner;
 
-            public ExprForgeStreamWithInner(ExprForge inner, Type componentReturnType)
+            public ExprForgeStreamWithInner(
+                ExprForge inner,
+                Type componentReturnType)
             {
                 this.inner = inner;
                 this.componentReturnType = componentReturnType;
             }
 
             public object Evaluate(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
             }
@@ -57,11 +61,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                             typeof(EventBean[]),
                             inner.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
                     .IfRefNullReturnNull("events")
-                    .DeclareVar(arrayType, "values", CodegenExpressionBuilder.NewArrayByLength(componentReturnType, CodegenExpressionBuilder.ArrayLength(CodegenExpressionBuilder.Ref("events"))))
+                    .DeclareVar(
+                        arrayType, "values",
+                        CodegenExpressionBuilder.NewArrayByLength(
+                            componentReturnType, CodegenExpressionBuilder.ArrayLength(CodegenExpressionBuilder.Ref("events"))))
                     .ForLoopIntSimple("i", CodegenExpressionBuilder.ArrayLength(CodegenExpressionBuilder.Ref("events")))
                     .AssignArrayElement(
                         "values", CodegenExpressionBuilder.Ref("i"),
-                        CodegenExpressionBuilder.Cast(componentReturnType, CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.ArrayAtIndex(CodegenExpressionBuilder.Ref("events"), CodegenExpressionBuilder.Ref("i")))))
+                        CodegenExpressionBuilder.Cast(
+                            componentReturnType,
+                            CodegenExpressionBuilder.ExprDotUnderlying(
+                                CodegenExpressionBuilder.ArrayAtIndex(CodegenExpressionBuilder.Ref("events"), CodegenExpressionBuilder.Ref("i")))))
                     .BlockEnd()
                     .MethodReturn(CodegenExpressionBuilder.Ref("values"));
                 return CodegenExpressionBuilder.LocalMethod(methodNode);
@@ -73,7 +83,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+            public void ToEPL(
+                TextWriter writer,
+                ExprPrecedenceEnum parentPrecedence)
             {
                 writer.Write(typeof(ExprForgeStreamWithInner).GetSimpleName());
             }

@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             this.moduleVariables = moduleVariables;
         }
 
-        public void RegisterVariable(string variableName, VariableMetaData variableMetaData)
+        public void RegisterVariable(
+            string variableName,
+            VariableMetaData variableMetaData)
         {
             moduleVariables.Put(variableName, variableMetaData);
         }

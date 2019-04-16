@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <param name="lookupValueType">lookup key type</param>
         public VirtualDataWindowLookupFieldDesc(
             string propertyName,
-            VirtualDataWindowLookupOp? @operator, 
+            VirtualDataWindowLookupOp? @operator,
             Type lookupValueType)
         {
             PropertyName = propertyName;

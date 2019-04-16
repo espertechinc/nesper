@@ -8,8 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.dataflow.util;
@@ -20,66 +18,72 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 {
-	public class EventBusSourceForge : DataFlowOperatorForge {
+    public class EventBusSourceForge : DataFlowOperatorForge
+    {
+        [DataFlowOpParameter] protected EPDataFlowEventBeanCollector collector;
 
-	    [DataFlowOpParameter]
-	    protected ExprNode filter;
+        [DataFlowOpParameter] protected ExprNode filter;
 
-	    [DataFlowOpParameter]
-	    protected EPDataFlowEventBeanCollector collector;
+        private bool submitEventBean;
 
-	    private FilterSpecCompiled filterSpecCompiled;
-	    private bool submitEventBean;
+        public FilterSpecCompiled FilterSpecCompiled { get; private set; }
 
-	    public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context) {
-	        if (context.OutputPorts.Count != 1) {
-	            throw new ArgumentException("EventBusSource operator requires one output stream but produces " + context.OutputPorts.Count + " streams");
-	        }
+        public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
+        {
+            if (context.OutputPorts.Count != 1) {
+                throw new ArgumentException(
+                    "EventBusSource operator requires one output stream but produces " + context.OutputPorts.Count + " streams");
+            }
 
-	        DataFlowOpOutputPort portZero = context.OutputPorts[0];
-	        if (portZero.OptionalDeclaredType == null || portZero.OptionalDeclaredType.EventType == null) {
-	            throw new ArgumentException("EventBusSource operator requires an event type declated for the output stream");
-	        }
+            var portZero = context.OutputPorts[0];
+            if (portZero.OptionalDeclaredType == null || portZero.OptionalDeclaredType.EventType == null) {
+                throw new ArgumentException("EventBusSource operator requires an event type declated for the output stream");
+            }
 
-	        EventType eventType = portZero.OptionalDeclaredType.EventType;
-	        if (!portZero.OptionalDeclaredType.IsUnderlying) {
-	            submitEventBean = true;
-	        }
+            var eventType = portZero.OptionalDeclaredType.EventType;
+            if (!portZero.OptionalDeclaredType.IsUnderlying) {
+                submitEventBean = true;
+            }
 
-	        DataFlowParameterValidation.Validate("filter", filter, eventType, typeof(bool), context);
+            DataFlowParameterValidation.Validate("filter", filter, eventType, typeof(bool), context);
 
-	        try {
-	            IList<ExprNode> filters = Collections.GetEmptyList<object>();
-	            if (filter != null) {
-	                filters = Collections.SingletonList(filter);
-	            }
-	            StreamTypeServiceImpl streamTypeService = new StreamTypeServiceImpl(eventType, eventType.Name, true);
-	            filterSpecCompiled = FilterSpecCompiler.MakeFilterSpec(eventType, eventType.Name, filters, null,
-	                    null, null, streamTypeService, null, context.StatementRawInfo, context.Services);
-	        } catch (ExprValidationException ex) {
-	            throw new ExprValidationException("Failed to obtain filter parameters: " + ex.Message, ex);
-	        }
+            try {
+                IList<ExprNode> filters = new EmptyList<ExprNode>();
+                if (filter != null) {
+                    filters = Collections.SingletonList(filter);
+                }
 
-	        return null;
-	    }
+                var streamTypeService = new StreamTypeServiceImpl(eventType, eventType.Name, true);
+                FilterSpecCompiled = FilterSpecCompiler.MakeFilterSpec(
+                    eventType, eventType.Name, filters, null,
+                    null, null, streamTypeService, null, context.StatementRawInfo, context.Services);
+            }
+            catch (ExprValidationException ex) {
+                throw new ExprValidationException("Failed to obtain filter parameters: " + ex.Message, ex);
+            }
 
-	    public CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        SAIFFInitializeBuilder builder = new SAIFFInitializeBuilder(OP_PACKAGE_NAME + ".eventbussource.EventBusSourceFactory", this.GetType(), "eventbussource", parent, symbols, classScope);
-	        builder.Expression("filterSpecActivatable", LocalMethod(filterSpecCompiled.MakeCodegen(builder.Method, symbols, classScope)))
-	                .Constant("submitEventBean", submitEventBean);
-	        return builder.Build();
-	    }
+            return null;
+        }
 
-	    public FilterSpecCompiled FilterSpecCompiled {
-	        get => filterSpecCompiled;
-	    }
-	}
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var builder = new SAIFFInitializeBuilder(
+                OP_PACKAGE_NAME + ".eventbussource.EventBusSourceFactory", GetType(), "eventbussource", parent, symbols, classScope);
+            builder.Expression("filterSpecActivatable", 
+                    LocalMethod(
+                        FilterSpecCompiled.MakeCodegen(
+                            builder.Method(), symbols, classScope)))
+                .Constant("submitEventBean", submitEventBean);
+            return builder.Build();
+        }
+    }
 } // end of namespace

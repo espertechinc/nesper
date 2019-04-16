@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly IList<CodegenStatementIfConditionBlock> blocks = new List<CodegenStatementIfConditionBlock>();
         private CodegenBlock optionalElse;
 
-        public CodegenStatementIf(CodegenBlock parent) : base(parent)
+        public CodegenStatementIf(CodegenBlock parent)
+            : base(parent)
         {
         }
 
@@ -63,7 +64,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public override void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level,
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
             CodegenIndent indent)
         {
             var enumerator = blocks.GetEnumerator();

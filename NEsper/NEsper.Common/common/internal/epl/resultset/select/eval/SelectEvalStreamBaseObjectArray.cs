@@ -19,21 +19,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
     public abstract class SelectEvalStreamBaseObjectArray : SelectEvalStreamBase
     {
         public SelectEvalStreamBaseObjectArray(
-            SelectExprForgeContext context, EventType resultEventType,
-            IList<SelectClauseStreamCompiledSpec> namedStreams, bool usingWildcard)
+            SelectExprForgeContext context,
+            EventType resultEventType,
+            IList<SelectClauseStreamCompiledSpec> namedStreams,
+            bool usingWildcard)
             : base(context, resultEventType, namedStreams, usingWildcard)
 
         {
         }
 
         protected abstract CodegenExpression ProcessSpecificCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenExpressionRef props,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenExpressionRef props,
             CodegenClassScope codegenClassScope);
 
         public override CodegenMethod ProcessCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory,
-            CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var size = ComputeSize();
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);

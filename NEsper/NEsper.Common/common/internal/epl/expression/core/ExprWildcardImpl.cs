@@ -8,13 +8,11 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.type;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -23,33 +21,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// Expression for use within crontab to specify a wildcard.
     /// </summary>
     [Serializable]
-    public class ExprWildcardImpl : ExprNodeBase, ExprForge, ExprEvaluator, ExprWildcard
+    public class ExprWildcardImpl : ExprNodeBase,
+        ExprForge,
+        ExprEvaluator,
+        ExprWildcard
     {
         public ExprWildcardImpl()
         {
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("*");
         }
 
-        public override ExprPrecedenceEnum Precedence
-        {
+        public override ExprPrecedenceEnum Precedence {
             get => ExprPrecedenceEnum.UNARY;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get => this;
         }
 
-        public bool IsConstantResult
-        {
+        public bool IsConstantResult {
             get => true;
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             return node is ExprWildcardImpl;
         }
@@ -59,33 +59,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        public override ExprForge Forge
-        {
+        public override ExprForge Forge {
             get => this;
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => this;
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return WildcardParameter.INSTANCE;
         }
 
-        public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return EnumValue(typeof(WildcardParameter), "INSTANCE");
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => typeof(WildcardParameter);
         }
     }

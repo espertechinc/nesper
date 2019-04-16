@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         ExprForgeInstrumentable
     {
         public ExprNewStructNodeForge(
-            ExprNewStructNode parent, bool isAllConstants, LinkedHashMap<string, object> eventType)
+            ExprNewStructNode parent,
+            bool isAllConstants,
+            LinkedHashMap<string, object> eventType)
         {
             ForgeRenderable = parent;
             IsAllConstants = isAllConstants;
@@ -42,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public IDictionary<string, object> RowProperties => EventType;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -50,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprNewStructNodeForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
@@ -74,7 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateTypableSingleCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprNewStructNodeForgeEval.CodegenTypeableSingle(
@@ -82,7 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateTypableMultiCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();

@@ -16,7 +16,10 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         private int[] subpathOrCPId;
 
-        public void MgmtCreate(IntSeqKey controllerPath, object[] parentPartitionKeys, int[] subpathOrCPId)
+        public void MgmtCreate(
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys,
+            int[] subpathOrCPId)
         {
             this.subpathOrCPId = subpathOrCPId;
         }

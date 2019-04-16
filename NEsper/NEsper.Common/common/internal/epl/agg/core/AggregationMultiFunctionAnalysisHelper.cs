@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         // handle accessor aggregation (direct data window by-group access to properties)
         public static AggregationMultiFunctionAnalysisResult AnalyzeAccessAggregations(
             IList<AggregationServiceAggExpressionDesc> aggregations,
-            ImportServiceCompileTime importService, bool isFireAndForget, string statementName,
+            ImportServiceCompileTime importService,
+            bool isFireAndForget,
+            string statementName,
             ExprNode[] groupByNodes)
         {
             var currentSlot = 0;
@@ -62,8 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         private static AggregationMFIdentifier FindExisting(
-            Deque<AggregationMFIdentifier> accessProviderSlots, AggregationMultiFunctionStateKey providerKey,
-            ExprAggregateLocalGroupByDesc optionalOver, ExprNode[] groupByNodes)
+            Deque<AggregationMFIdentifier> accessProviderSlots,
+            AggregationMultiFunctionStateKey providerKey,
+            ExprAggregateLocalGroupByDesc optionalOver,
+            ExprNode[] groupByNodes)
         {
             foreach (var ident in accessProviderSlots) {
                 if (!providerKey.Equals(ident.AggregationStateKey)) {
@@ -96,7 +100,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
             internal AggregationMFIdentifier(
                 AggregationMultiFunctionStateKey aggregationStateKey,
-                ExprAggregateLocalGroupByDesc optionalLocalGroupBy, int slot)
+                ExprAggregateLocalGroupByDesc optionalLocalGroupBy,
+                int slot)
             {
                 AggregationStateKey = aggregationStateKey;
                 OptionalLocalGroupBy = optionalLocalGroupBy;

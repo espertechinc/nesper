@@ -23,18 +23,24 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         internal readonly ContextControllerInitTermSvc initTermSvc;
 
         public ContextControllerInitTermBase(
-            ContextControllerInitTermFactory factory, ContextManagerRealization realization)
+            ContextControllerInitTermFactory factory,
+            ContextManagerRealization realization)
             : base(factory, realization)
         {
             initTermSvc = ContextControllerInitTermUtil.GetService(factory);
         }
 
         public abstract void RangeNotification(
-            IntSeqKey conditionPath, ContextControllerConditionNonHA originEndpoint, EventBean optionalTriggeringEvent,
-            IDictionary<string, object> optionalTriggeringPattern, EventBean optionalTriggeringEventPattern,
+            IntSeqKey conditionPath,
+            ContextControllerConditionNonHA originEndpoint,
+            EventBean optionalTriggeringEvent,
+            IDictionary<string, object> optionalTriggeringPattern,
+            EventBean optionalTriggeringEventPattern,
             IDictionary<string, object> optionalPatternForInclusiveEval);
 
-        public override void Deactivate(IntSeqKey path, bool terminateChildContexts)
+        public override void Deactivate(
+            IntSeqKey path,
+            bool terminateChildContexts)
         {
             var initCondition = initTermSvc.MgmtDelete(path);
             if (initCondition != null) {
@@ -56,7 +62,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         protected override void VisitPartitions(
-            IntSeqKey controllerPath, BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId)
+            IntSeqKey controllerPath,
+            BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId)
         {
             initTermSvc.EndVisit(controllerPath, partKeyAndCPId);
         }
@@ -67,9 +74,11 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         internal IList<AgentInstance> InstantiateAndActivateEndCondition(
-            IntSeqKey controllerPath, EventBean optionalTriggeringEvent,
+            IntSeqKey controllerPath,
+            EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
-            IDictionary<string, object> optionalPatternForInclusiveEval, ContextControllerConditionNonHA startCondition)
+            IDictionary<string, object> optionalPatternForInclusiveEval,
+            ContextControllerConditionNonHA startCondition)
         {
             var subpathId = initTermSvc.MgmtUpdIncSubpath(controllerPath);
 

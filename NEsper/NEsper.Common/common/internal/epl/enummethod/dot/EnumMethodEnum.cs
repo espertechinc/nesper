@@ -111,7 +111,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public static readonly ISet<EnumMethodEnum> Values = new HashSet<EnumMethodEnum>();
 
 
-        private EnumMethodEnum(string nameCamel, Type implementation, DotMethodFP[] footprints)
+        private EnumMethodEnum(
+            string nameCamel,
+            Type implementation,
+            DotMethodFP[] footprints)
         {
             NameCamel = nameCamel;
             Implementation = implementation;

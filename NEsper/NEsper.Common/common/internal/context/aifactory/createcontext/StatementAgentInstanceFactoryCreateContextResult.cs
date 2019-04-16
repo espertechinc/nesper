@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
@@ -24,20 +23,32 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 {
-	public class StatementAgentInstanceFactoryCreateContextResult : StatementAgentInstanceFactoryResult {
+    public class StatementAgentInstanceFactoryCreateContextResult : StatementAgentInstanceFactoryResult
+    {
+        private readonly ContextManagerRealization contextManagerRealization;
 
-	    private readonly ContextManagerRealization contextManagerRealization;
+        public StatementAgentInstanceFactoryCreateContextResult(
+            Viewable finalView,
+            AgentInstanceStopCallback stopCallback,
+            AgentInstanceContext agentInstanceContext,
+            AggregationService optionalAggegationService,
+            IDictionary<int, SubSelectFactoryResult> subselectStrategies,
+            PriorEvalStrategy[] priorStrategies,
+            PreviousGetterStrategy[] previousGetterStrategies,
+            RowRecogPreviousStrategy regexExprPreviousEvalStrategy,
+            IDictionary<int, ExprTableEvalStrategy> tableAccessStrategies,
+            IList<StatementAgentInstancePreload> preloadList,
+            ContextManagerRealization contextManagerRealization)
+            : base(
+                finalView, stopCallback, agentInstanceContext, optionalAggegationService, subselectStrategies, priorStrategies,
+                previousGetterStrategies, regexExprPreviousEvalStrategy, tableAccessStrategies, preloadList)
 
-	    public StatementAgentInstanceFactoryCreateContextResult(Viewable finalView, AgentInstanceStopCallback stopCallback, AgentInstanceContext agentInstanceContext, AggregationService optionalAggegationService, IDictionary<int, SubSelectFactoryResult> subselectStrategies, PriorEvalStrategy[] priorStrategies, PreviousGetterStrategy[] previousGetterStrategies, RowRecogPreviousStrategy regexExprPreviousEvalStrategy, IDictionary<int, ExprTableEvalStrategy> tableAccessStrategies, IList<StatementAgentInstancePreload> preloadList, ContextManagerRealization contextManagerRealization)
+        {
+            this.contextManagerRealization = contextManagerRealization;
+        }
 
-	    	 : base(finalView, stopCallback, agentInstanceContext, optionalAggegationService, subselectStrategies, priorStrategies, previousGetterStrategies, regexExprPreviousEvalStrategy, tableAccessStrategies, preloadList)
-
-	    {
-	        this.contextManagerRealization = contextManagerRealization;
-	    }
-
-	    public ContextManagerRealization ContextManagerRealization {
-	        get => contextManagerRealization;
-	    }
-	}
+        public ContextManagerRealization ContextManagerRealization {
+            get => contextManagerRealization;
+        }
+    }
 } // end of namespace

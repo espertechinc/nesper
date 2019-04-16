@@ -9,17 +9,17 @@
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Enum for describing the type of output limit within an interval.</summary>
-	public enum OutputLimitLimitType
-	{
-	    /// <summary>
-	    /// Output first event, relative to the output batch.
-	    /// </summary>
-	    FIRST,
+    public enum OutputLimitLimitType
+    {
+        /// <summary>
+        /// Output first event, relative to the output batch.
+        /// </summary>
+        FIRST,
 
-	    /// <summary>
-	    /// Output last event, relative to the output batch.
-	    /// </summary>
-	    LAST,
+        /// <summary>
+        /// Output last event, relative to the output batch.
+        /// </summary>
+        LAST,
 
         /// <summary>
         /// The ALL keyword has been explicitly specified: Output all events,
@@ -38,9 +38,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// </summary>
         DEFAULT,
 
-	    /// <summary>
-	    /// Output a snapshot of the current state, relative to the full historical state of a statement.
-	    /// </summary>
-	    SNAPSHOT
-	}
+        /// <summary>
+        /// Output a snapshot of the current state, relative to the full historical state of a statement.
+        /// </summary>
+        SNAPSHOT
+    }
 } // End of namespace

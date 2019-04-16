@@ -21,7 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         private readonly IdentityMap exprDeclCacheCollection = new IdentityMap();
 
         public ExpressionResultCacheEntryEventBeanArrayAndCollBean GetDeclaredExpressionLastColl(
-            object node, EventBean[] eventsPerStream)
+            object node,
+            EventBean[] eventsPerStream)
         {
             var cacheRef = exprDeclCacheCollection.Get(node);
             if (cacheRef == null) {
@@ -37,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         }
 
         public void SaveDeclaredExpressionLastColl(
-            object node, EventBean[] eventsPerStream, ICollection<EventBean> result)
+            object node,
+            EventBean[] eventsPerStream,
+            ICollection<EventBean> result)
         {
             var copy = EventBeanUtility.CopyArray(eventsPerStream);
             var entry = new ExpressionResultCacheEntryEventBeanArrayAndCollBean(copy, result);

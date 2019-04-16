@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
@@ -22,88 +21,77 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-	public class ExprEvaluatorContextWTableAccess : ExprEvaluatorContext {
-	    private readonly ExprEvaluatorContext context;
-	    private readonly TableExprEvaluatorContext tableExprEvaluatorContext;
+    public class ExprEvaluatorContextWTableAccess : ExprEvaluatorContext
+    {
+        private readonly ExprEvaluatorContext context;
+        private readonly TableExprEvaluatorContext tableExprEvaluatorContext;
 
-	    public ExprEvaluatorContextWTableAccess(ExprEvaluatorContext context, TableExprEvaluatorContext tableExprEvaluatorContext) {
-	        this.context = context;
-	        this.tableExprEvaluatorContext = tableExprEvaluatorContext;
-	    }
+        public ExprEvaluatorContextWTableAccess(
+            ExprEvaluatorContext context,
+            TableExprEvaluatorContext tableExprEvaluatorContext)
+        {
+            this.context = context;
+            this.tableExprEvaluatorContext = tableExprEvaluatorContext;
+        }
 
-	    public string StatementName
-	    {
-	        get => context.StatementName;
-	    }
+        public string StatementName {
+            get => context.StatementName;
+        }
 
-	    public string RuntimeURI
-	    {
-	        get => context.RuntimeURI;
-	    }
+        public string RuntimeURI {
+            get => context.RuntimeURI;
+        }
 
-	    public int StatementId
-	    {
-	        get => context.StatementId;
-	    }
+        public int StatementId {
+            get => context.StatementId;
+        }
 
-	    public string DeploymentId
-	    {
-	        get => context.DeploymentId;
-	    }
+        public string DeploymentId {
+            get => context.DeploymentId;
+        }
 
-	    public TimeProvider TimeProvider
-	    {
-	        get => context.TimeProvider;
-	    }
+        public TimeProvider TimeProvider {
+            get => context.TimeProvider;
+        }
 
-	    public ExpressionResultCacheService ExpressionResultCacheService
-	    {
-	        get => context.ExpressionResultCacheService;
-	    }
+        public ExpressionResultCacheService ExpressionResultCacheService {
+            get => context.ExpressionResultCacheService;
+        }
 
-	    public int AgentInstanceId
-	    {
-	        get => context.AgentInstanceId;
-	    }
+        public int AgentInstanceId {
+            get => context.AgentInstanceId;
+        }
 
-	    public EventBean ContextProperties
-	    {
-	        get => context.ContextProperties;
-	    }
+        public EventBean ContextProperties {
+            get => context.ContextProperties;
+        }
 
-	    public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
-	    {
-	        get => context.AllocateAgentInstanceScriptContext;
-	    }
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext {
+            get => context.AllocateAgentInstanceScriptContext;
+        }
 
-	    public StatementAgentInstanceLock AgentInstanceLock
-	    {
-	        get => context.AgentInstanceLock;
-	    }
+        public StatementAgentInstanceLock AgentInstanceLock {
+            get => context.AgentInstanceLock;
+        }
 
-	    public TableExprEvaluatorContext TableExprEvaluatorContext
-	    {
-	        get => tableExprEvaluatorContext;
-	    }
+        public TableExprEvaluatorContext TableExprEvaluatorContext {
+            get => tableExprEvaluatorContext;
+        }
 
-	    public object UserObjectCompileTime
-	    {
-	        get => context.UserObjectCompileTime;
-	    }
+        public object UserObjectCompileTime {
+            get => context.UserObjectCompileTime;
+        }
 
-	    public EventBeanService EventBeanService
-	    {
-	        get => context.EventBeanService;
-	    }
+        public EventBeanService EventBeanService {
+            get => context.EventBeanService;
+        }
 
-	    public AuditProvider AuditProvider
-	    {
-	        get => context.AuditProvider;
-	    }
+        public AuditProvider AuditProvider {
+            get => context.AuditProvider;
+        }
 
-	    public InstrumentationCommon InstrumentationProvider
-	    {
-	        get => context.InstrumentationProvider;
-	    }
-	}
+        public InstrumentationCommon InstrumentationProvider {
+            get => context.InstrumentationProvider;
+        }
+    }
 } // end of namespace

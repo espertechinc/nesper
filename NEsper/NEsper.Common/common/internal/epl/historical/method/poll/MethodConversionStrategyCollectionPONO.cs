@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
 {
     public class MethodConversionStrategyCollectionPONO : MethodConversionStrategyCollection
     {
-        protected override EventBean GetEventBean(object value, AgentInstanceContext agentInstanceContext)
+        protected override EventBean GetEventBean(
+            object value,
+            AgentInstanceContext agentInstanceContext)
         {
             return agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedBean(value, eventType);
         }

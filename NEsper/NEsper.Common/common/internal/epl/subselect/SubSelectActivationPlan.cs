@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     public class SubSelectActivationPlan
     {
         public SubSelectActivationPlan(
-            EventType viewableType, IList<ViewFactoryForge> viewForges, ViewableActivatorForge activator,
+            EventType viewableType,
+            IList<ViewFactoryForge> viewForges,
+            ViewableActivatorForge activator,
             StreamSpecCompiled streamSpecCompiled)
         {
             ViewableType = viewableType;

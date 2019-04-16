@@ -12,6 +12,8 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     internal interface EventTypeIdResolver
     {
-        EventType GetTypeById(long eventTypeIdPublic, long eventTypeIdProtected);
+        EventType GetTypeById(
+            long eventTypeIdPublic,
+            long eventTypeIdProtected);
     }
 } // end of namespace

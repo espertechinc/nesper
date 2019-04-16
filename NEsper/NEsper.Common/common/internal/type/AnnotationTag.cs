@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.type
         private readonly string name;
         private readonly string value;
 
-        public AnnotationTag(string name, string value)
+        public AnnotationTag(
+            string name,
+            string value)
         {
             this.name = name;
             this.value = value;

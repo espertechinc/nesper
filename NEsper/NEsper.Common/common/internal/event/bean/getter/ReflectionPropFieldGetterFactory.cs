@@ -23,7 +23,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         public EventPropertyGetterSPI Make(
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, BeanEventTypeFactory beanEventTypeFactory)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             return new ReflectionPropFieldGetter(field, eventBeanTypedEventFactory, beanEventTypeFactory);
         }

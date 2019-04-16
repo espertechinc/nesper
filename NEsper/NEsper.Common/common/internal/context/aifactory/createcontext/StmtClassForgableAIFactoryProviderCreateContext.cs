@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-
 using static com.espertech.esper.common.@internal.context.aifactory.core.SAIFFInitializeSymbol;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
@@ -29,8 +28,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         private readonly ContextControllerFactoryForge[] forges;
 
         public StmtClassForgableAIFactoryProviderCreateContext(
-            string className, CodegenPackageScope packageScope, string contextName,
-            ContextControllerFactoryForge[] forges, EventType eventTypeContextProperties,
+            string className,
+            CodegenPackageScope packageScope,
+            string contextName,
+            ContextControllerFactoryForge[] forges,
+            EventType eventTypeContextProperties,
             StatementAgentInstanceFactoryCreateContextForge forge)
             : base(className, packageScope)
 
@@ -46,7 +48,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             return typeof(StatementAgentInstanceFactoryCreateContext);
         }
 
-        protected override CodegenMethod CodegenConstructorInit(CodegenMethodScope parent, CodegenClassScope classScope)
+        protected override CodegenMethod CodegenConstructorInit(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var saiffInitializeSymbol = new SAIFFInitializeSymbol();
             CodegenMethod method = parent
@@ -61,7 +65,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         }
 
         private CodegenExpression GetDefinition(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContextDefinition), GetType(), classScope);
 

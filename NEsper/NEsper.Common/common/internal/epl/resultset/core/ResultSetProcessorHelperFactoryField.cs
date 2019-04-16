@@ -7,29 +7,31 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
-	public class ResultSetProcessorHelperFactoryField : CodegenFieldSharable {
-	    public readonly static ResultSetProcessorHelperFactoryField INSTANCE = new ResultSetProcessorHelperFactoryField();
+    public class ResultSetProcessorHelperFactoryField : CodegenFieldSharable
+    {
+        public readonly static ResultSetProcessorHelperFactoryField INSTANCE = new ResultSetProcessorHelperFactoryField();
 
-	    private ResultSetProcessorHelperFactoryField() {
-	    }
+        private ResultSetProcessorHelperFactoryField()
+        {
+        }
 
-	    public Type Type() {
-	        return typeof(ResultSetProcessorHelperFactory);
-	    }
+        public Type Type()
+        {
+            return typeof(ResultSetProcessorHelperFactory);
+        }
 
-	    public CodegenExpression InitCtorScoped() {
-	        return ExprDotMethodChain(EPStatementInitServicesConstants.REF).Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY);
-	    }
-	}
+        public CodegenExpression InitCtorScoped()
+        {
+            return ExprDotMethodChain(EPStatementInitServicesConstants.REF).Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY);
+        }
+    }
 } // end of namespace

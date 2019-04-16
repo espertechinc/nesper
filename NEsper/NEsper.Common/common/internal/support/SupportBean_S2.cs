@@ -20,13 +20,18 @@ namespace com.espertech.esper.common.@internal.support
             Id = id;
         }
 
-        public SupportBean_S2(int id, String p20)
+        public SupportBean_S2(
+            int id,
+            String p20)
         {
             Id = id;
             P20 = p20;
         }
 
-        public SupportBean_S2(int id, String p20, String p21)
+        public SupportBean_S2(
+            int id,
+            String p20,
+            String p21)
         {
             Id = id;
             P20 = p20;
@@ -43,7 +48,9 @@ namespace com.espertech.esper.common.@internal.support
 
         public String P23 { get; set; }
 
-        public static Object[] MakeS2(String propOne, String[] propTwo)
+        public static Object[] MakeS2(
+            String propOne,
+            String[] propTwo)
         {
             idCounter++;
 
@@ -51,6 +58,7 @@ namespace com.espertech.esper.common.@internal.support
             for (int i = 0; i < propTwo.Length; i++) {
                 events[i] = new SupportBean_S2(idCounter, propOne, propTwo[i]);
             }
+
             return events;
         }
     }

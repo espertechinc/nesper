@@ -17,41 +17,46 @@ namespace com.espertech.esper.common.@internal.type
     /// Regular expression matcher.
     /// </summary>
     [Serializable]
-    public class StringPatternSetRegex : StringPatternSet {
-	    private readonly string patternText;
-	    private readonly Regex pattern;
+    public class StringPatternSetRegex : StringPatternSet
+    {
+        private readonly string patternText;
+        private readonly Regex pattern;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="patternText">regex to match</param>
-	    public StringPatternSetRegex(string patternText) {
-	        this.patternText = patternText;
-	        this.pattern = new Regex(patternText);
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="patternText">regex to match</param>
+        public StringPatternSetRegex(string patternText)
+        {
+            this.patternText = patternText;
+            this.pattern = new Regex(patternText);
+        }
 
-	    /// <summary>
-	    /// Match the string returning true for a match, using regular expression semantics.
-	    /// </summary>
-	    /// <param name="stringToMatch">string to match</param>
-	    /// <returns>true for match</returns>
-	    public bool Match(string stringToMatch) {
-	        return pattern.Matcher(stringToMatch).Matches();
-	    }
+        /// <summary>
+        /// Match the string returning true for a match, using regular expression semantics.
+        /// </summary>
+        /// <param name="stringToMatch">string to match</param>
+        /// <returns>true for match</returns>
+        public bool Match(string stringToMatch)
+        {
+            return pattern.Matcher(stringToMatch).Matches();
+        }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+        public override bool Equals(object o)
+        {
+            if (this == o) return true;
+            if (o == null || GetType() != o.GetType()) return false;
 
-	        StringPatternSetRegex that = (StringPatternSetRegex) o;
+            StringPatternSetRegex that = (StringPatternSetRegex) o;
 
-	        if (!patternText.Equals(that.patternText)) return false;
+            if (!patternText.Equals(that.patternText)) return false;
 
-	        return true;
-	    }
+            return true;
+        }
 
-	    public override int GetHashCode() {
-	        return patternText.GetHashCode();
-	    }
-	}
+        public override int GetHashCode()
+        {
+            return patternText.GetHashCode();
+        }
+    }
 } // end of namespace

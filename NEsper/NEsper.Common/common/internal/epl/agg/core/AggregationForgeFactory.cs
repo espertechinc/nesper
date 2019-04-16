@@ -37,15 +37,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         AggregationPortableValidation AggregationPortableValidation { get; }
 
         void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope);
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope);
 
         AggregationMultiFunctionStateKey GetAggregationStateKey(bool isMatchRecognize);
 
         AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize);
 
         AggregationAgentForge GetAggregationStateAgent(
-            ImportService importService, string statementName);
+            ImportService importService,
+            string statementName);
 
-        ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream);
+        ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream);
     }
 } // end of namespace

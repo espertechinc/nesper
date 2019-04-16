@@ -93,7 +93,8 @@ namespace com.espertech.esper.common.@internal.util
                     return CodegenExpressionBuilder.StaticMethod(typeof(BigInteger), "valueOf", CodegenExpressionBuilder.Cast(typeof(long), value));
                 }
 
-                return CodegenExpressionBuilder.StaticMethod(typeof(BigInteger), "valueOf", CodegenExpressionBuilder.ExprDotMethod(value, "longValue"));
+                return CodegenExpressionBuilder.StaticMethod(
+                    typeof(BigInteger), "valueOf", CodegenExpressionBuilder.ExprDotMethod(value, "longValue"));
             }
         }
     }

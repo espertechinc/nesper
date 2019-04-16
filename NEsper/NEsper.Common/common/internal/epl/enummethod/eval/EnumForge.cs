@@ -19,6 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         int StreamNumSize { get; }
 
         CodegenExpression Codegen(
-            EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
     }
 } // end of namespace

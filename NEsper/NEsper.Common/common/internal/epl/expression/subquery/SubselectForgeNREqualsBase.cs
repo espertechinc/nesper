@@ -20,9 +20,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         internal readonly bool isNot;
 
         public SubselectForgeNREqualsBase(
-            ExprSubselectNode subselect, ExprForge valueEval, ExprForge selectEval, bool resultWhenNoMatchingEvents,
-            bool isNot, SimpleNumberCoercer coercer) : base(
-            subselect, valueEval, selectEval, resultWhenNoMatchingEvents)
+            ExprSubselectNode subselect,
+            ExprForge valueEval,
+            ExprForge selectEval,
+            bool resultWhenNoMatchingEvents,
+            bool isNot,
+            SimpleNumberCoercer coercer)
+            : base(
+                subselect, valueEval, selectEval, resultWhenNoMatchingEvents)
         {
             this.isNot = isNot;
             this.coercer = coercer;

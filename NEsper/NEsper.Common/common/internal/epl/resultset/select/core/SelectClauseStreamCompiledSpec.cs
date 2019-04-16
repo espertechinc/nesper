@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         /// </summary>
         /// <param name="streamName">is the stream name of the stream to select</param>
         /// <param name="optionalColumnName">is the column name</param>
-        public SelectClauseStreamCompiledSpec(string streamName, string optionalColumnName)
+        public SelectClauseStreamCompiledSpec(
+            string streamName,
+            string optionalColumnName)
         {
             StreamName = streamName;
             OptionalName = optionalColumnName;
@@ -91,7 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         /// </summary>
         /// <param name="property">selected</param>
         /// <param name="propertyType">the return type</param>
-        public void SetProperty(bool property, Type propertyType)
+        public void SetProperty(
+            bool property,
+            Type propertyType)
         {
             IsProperty = property;
             PropertyType = propertyType;

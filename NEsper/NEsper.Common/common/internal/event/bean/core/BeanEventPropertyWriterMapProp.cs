@@ -8,24 +8,28 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
-	public class BeanEventPropertyWriterMapProp : BeanEventPropertyWriter {
+    public class BeanEventPropertyWriterMapProp : BeanEventPropertyWriter
+    {
+        private readonly string key;
 
-	    private readonly string key;
+        public BeanEventPropertyWriterMapProp(
+            Type clazz,
+            MethodInfo writerMethod,
+            string key)
+            : base(clazz, writerMethod)
+        {
+            this.key = key;
+        }
 
-	    public BeanEventPropertyWriterMapProp(Type clazz, MethodInfo writerMethod, string key) : base(clazz, writerMethod)
-	        {
-	        this.key = key;
-	    }
-
-	    public void Write(object value, EventBean target) {
-	        base.Invoke(new object[]{key, value}, target.Underlying);
-	    }
-	}
+        public void Write(
+            object value,
+            EventBean target)
+        {
+            Invoke(new[] {key, value}, target.Underlying);
+        }
+    }
 } // end of namespace

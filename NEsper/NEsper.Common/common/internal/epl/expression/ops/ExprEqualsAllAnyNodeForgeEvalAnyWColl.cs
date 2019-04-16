@@ -73,57 +73,45 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     continue;
                 }
 
-                if (rightResult is Array rightResultArray)
-                {
+                if (rightResult is Array rightResultArray) {
                     var arrayLength = rightResultArray.Length;
-                    if (arrayLength > 0 && leftResult == null)
-                    {
+                    if (arrayLength > 0 && leftResult == null) {
                         return null;
                     }
 
-                    for (var index = 0; index < arrayLength; index++)
-                    {
+                    for (var index = 0; index < arrayLength; index++) {
                         var item = rightResultArray.GetValue(index);
-                        if (item == null)
-                        {
+                        if (item == null) {
                             hasNullRow = true;
                             continue;
                         }
 
                         hasNonNullRow = true;
-                        if (!forge.IsMustCoerce)
-                        {
-                            if (!isNot && leftResult.Equals(item) || isNot && !leftResult.Equals(item))
-                            {
+                        if (!forge.IsMustCoerce) {
+                            if (!isNot && leftResult.Equals(item) || isNot && !leftResult.Equals(item)) {
                                 return true;
                             }
                         }
-                        else
-                        {
-                            if (!item.IsNumber())
-                            {
+                        else {
+                            if (!item.IsNumber()) {
                                 continue;
                             }
 
                             var left = forge.Coercer.CoerceBoxed(leftResult);
                             var right = forge.Coercer.CoerceBoxed(item);
-                            if (!isNot && left.Equals(right) || isNot && !left.Equals(right))
-                            {
+                            if (!isNot && left.Equals(right) || isNot && !left.Equals(right)) {
                                 return true;
                             }
                         }
                     }
                 }
-                else if (rightResult is IDictionary<object, object>)
-                {
-                    if (leftResult == null)
-                    {
+                else if (rightResult is IDictionary<object, object>) {
+                    if (leftResult == null) {
                         return null;
                     }
 
                     var coll = (IDictionary<object, object>) rightResult;
-                    if (!isNot && coll.ContainsKey(leftResult) || isNot && !coll.ContainsKey(leftResult))
-                    {
+                    if (!isNot && coll.ContainsKey(leftResult) || isNot && !coll.ContainsKey(leftResult)) {
                         return true;
                     }
 

@@ -15,6 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
     public interface TimePeriodEval
     {
         TimePeriod TimePeriodEval(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

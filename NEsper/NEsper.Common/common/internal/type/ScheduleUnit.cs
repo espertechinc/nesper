@@ -11,45 +11,50 @@ using System;
 
 namespace com.espertech.esper.common.@internal.type
 {
-	/// <summary>
-	/// Enumeration of units in a specification of schedule, which contains elements for each of the following units:
-	/// minute, hour, day of month, month, day of week and seconds.
-	/// Notice: value ranges are the same as the "crontab" standard values.
-	/// </summary>
+    /// <summary>
+    /// Enumeration of units in a specification of schedule, which contains elements for each of the following units:
+    /// minute, hour, day of month, month, day of week and seconds.
+    /// Notice: value ranges are the same as the "crontab" standard values.
+    /// </summary>
     [Serializable]
     public class ScheduleUnit
     {
         /// <summary> Second.</summary>
         public static readonly ScheduleUnit SECONDS = new ScheduleUnit(0, 59);
+
         /// <summary> Minute.</summary>
         public static readonly ScheduleUnit MINUTES = new ScheduleUnit(0, 59);
+
         /// <summary> Hour.</summary>
         public static readonly ScheduleUnit HOURS = new ScheduleUnit(0, 23);
+
         /// <summary> Day of month.</summary>
         public static readonly ScheduleUnit DAYS_OF_MONTH = new ScheduleUnit(1, 31);
+
         /// <summary> Month.</summary>
         public static readonly ScheduleUnit MONTHS = new ScheduleUnit(1, 12);
+
         /// <summary> Day of week.</summary>
         public static readonly ScheduleUnit DAYS_OF_WEEK = new ScheduleUnit(0, 6);
 
         /// <summary>
         /// Available constant values from this class
         /// </summary>
-
-        public static readonly ScheduleUnit[] Values = new ScheduleUnit[]
-        {
-        	SECONDS,
-        	MINUTES,
-        	HOURS,
-        	DAYS_OF_MONTH,
-        	MONTHS,
-        	DAYS_OF_WEEK
+        public static readonly ScheduleUnit[] Values = new ScheduleUnit[] {
+            SECONDS,
+            MINUTES,
+            HOURS,
+            DAYS_OF_MONTH,
+            MONTHS,
+            DAYS_OF_WEEK
         };
 
         private readonly int min_;
         private readonly int max_;
 
-        ScheduleUnit(int min, int max)
+        ScheduleUnit(
+            int min,
+            int max)
         {
             this.min_ = min;
             this.max_ = max;

@@ -36,7 +36,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ProcEventBeanGetCodegen(beanExpression, codegenMethodScope, codegenClassScope);

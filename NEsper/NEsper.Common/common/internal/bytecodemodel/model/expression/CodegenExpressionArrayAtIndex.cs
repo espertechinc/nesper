@@ -17,13 +17,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenExpression _expression;
         private readonly CodegenExpression _index;
 
-        public CodegenExpressionArrayAtIndex(CodegenExpression expression, CodegenExpression index)
+        public CodegenExpressionArrayAtIndex(
+            CodegenExpression expression,
+            CodegenExpression index)
         {
             this._expression = expression;
             this._index = index;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             _expression.Render(builder, imports, isInnerClass);
             builder.Append("[");

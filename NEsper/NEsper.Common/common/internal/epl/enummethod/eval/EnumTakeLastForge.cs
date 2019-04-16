@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -17,28 +16,33 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumTakeLastForge : EnumForge {
+    public class EnumTakeLastForge : EnumForge
+    {
+        internal ExprForge sizeEval;
+        internal int numStreams;
 
-	    internal ExprForge sizeEval;
-	    internal int numStreams;
+        public EnumTakeLastForge(
+            ExprForge sizeEval,
+            int numStreams)
+        {
+            this.sizeEval = sizeEval;
+            this.numStreams = numStreams;
+        }
 
-	    public EnumTakeLastForge(ExprForge sizeEval, int numStreams) {
-	        this.sizeEval = sizeEval;
-	        this.numStreams = numStreams;
-	    }
+        public int StreamNumSize {
+            get => numStreams;
+        }
 
-	    public int StreamNumSize
-	    {
-	        get => numStreams;
-	    }
+        public virtual EnumEval EnumEvaluator {
+            get => new EnumTakeLastForgeEval(sizeEval.ExprEvaluator);
+        }
 
-	    public virtual EnumEval EnumEvaluator
-	    {
-	        get => new EnumTakeLastForgeEval(sizeEval.ExprEvaluator);
-	    }
-
-	    public virtual CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumTakeLastForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public virtual CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumTakeLastForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.view.core
 
         string ViewName { get; }
 
-        void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services);
+        void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services);
 
         View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext);
     }

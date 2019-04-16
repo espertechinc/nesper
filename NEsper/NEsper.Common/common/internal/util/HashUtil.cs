@@ -8,6 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.util
 {
-    public class HashUtil {
+    public class HashUtil
+    {
     }
 }

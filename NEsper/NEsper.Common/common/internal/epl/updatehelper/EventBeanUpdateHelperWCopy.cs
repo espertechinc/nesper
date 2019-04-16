@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -15,7 +14,11 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.updatehelper
 {
-	public interface EventBeanUpdateHelperWCopy {
-	    EventBean UpdateWCopy(EventBean matchingEvent, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext);
-	}
+    public interface EventBeanUpdateHelperWCopy
+    {
+        EventBean UpdateWCopy(
+            EventBean matchingEvent,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
+    }
 } // end of namespace

@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
     public class SubordPropHashKeyForge
     {
         public SubordPropHashKeyForge(
-            QueryGraphValueEntryHashKeyedForge hashKey, int? optionalKeyStreamNum, Type coercionType)
+            QueryGraphValueEntryHashKeyedForge hashKey,
+            int? optionalKeyStreamNum,
+            Type coercionType)
         {
             HashKey = hashKey;
             OptionalKeyStreamNum = optionalKeyStreamNum;

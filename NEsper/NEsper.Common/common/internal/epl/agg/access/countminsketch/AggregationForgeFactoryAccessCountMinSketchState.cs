@@ -23,7 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         private readonly AggregationStateCountMinSketchForge stateFactory;
 
         public AggregationForgeFactoryAccessCountMinSketchState(
-            ExprAggMultiFunctionCountMinSketchNode parent, AggregationStateCountMinSketchForge stateFactory)
+            ExprAggMultiFunctionCountMinSketchNode parent,
+            AggregationStateCountMinSketchForge stateFactory)
         {
             this.parent = parent;
             this.stateFactory = stateFactory;
@@ -54,7 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         }
 
         public override AggregationAgentForge GetAggregationStateAgent(
-            ImportService importService, string statementName)
+            ImportService importService,
+            string statementName)
         {
             throw new UnsupportedOperationException("Agent not available for state-function");
         }

@@ -17,13 +17,17 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     public class SubselectAggregationPreprocessorFilteredGrouped : SubselectAggregationPreprocessorBase
     {
         public SubselectAggregationPreprocessorFilteredGrouped(
-            AggregationService aggregationService, ExprEvaluator filterEval, ExprEvaluator groupKeys) : base(
-            aggregationService, filterEval, groupKeys)
+            AggregationService aggregationService,
+            ExprEvaluator filterEval,
+            ExprEvaluator groupKeys)
+            : base(
+                aggregationService, filterEval, groupKeys)
         {
         }
 
         public override void Evaluate(
-            EventBean[] eventsPerStream, ICollection<EventBean> matchingEvents,
+            EventBean[] eventsPerStream,
+            ICollection<EventBean> matchingEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             aggregationService.ClearResults(exprEvaluatorContext);

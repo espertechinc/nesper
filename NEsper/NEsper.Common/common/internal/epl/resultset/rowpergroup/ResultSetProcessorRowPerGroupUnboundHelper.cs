@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 {
     public interface ResultSetProcessorRowPerGroupUnboundHelper : AggregationRowRemovedCallback
     {
-        void Put(object key, EventBean @event);
+        void Put(
+            object key,
+            EventBean @event);
 
         //void RemovedAggregationGroupKey(object key);
 

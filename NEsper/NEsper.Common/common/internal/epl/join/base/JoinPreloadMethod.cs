@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         /// </summary>
         /// <param name="stream">to initialize and load indexes</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
-        void PreloadFromBuffer(int stream, ExprEvaluatorContext exprEvaluatorContext);
+        void PreloadFromBuffer(
+            int stream,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     Initialize the result set process for the purpose of grouping and aggregation
@@ -37,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         /// </summary>
         /// <param name="buffer">buffer to use</param>
         /// <param name="i">stream</param>
-        void SetBuffer(BufferView buffer, int i);
+        void SetBuffer(
+            BufferView buffer,
+            int i);
 
         bool IsPreloading { get; }
     }

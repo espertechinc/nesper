@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -16,37 +15,39 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 {
-	public class NamedWindowConsumerDesc {
-	    private readonly int namedWindowConsumerId;
-	    private readonly ExprEvaluator filterEvaluator;
-	    private readonly PropertyEvaluator optPropertyEvaluator;
-	    private readonly AgentInstanceContext agentInstanceContext;
+    public class NamedWindowConsumerDesc
+    {
+        private readonly int namedWindowConsumerId;
+        private readonly ExprEvaluator filterEvaluator;
+        private readonly PropertyEvaluator optPropertyEvaluator;
+        private readonly AgentInstanceContext agentInstanceContext;
 
-	    public NamedWindowConsumerDesc(int namedWindowConsumerId, ExprEvaluator filterEvaluator, PropertyEvaluator optPropertyEvaluator, AgentInstanceContext agentInstanceContext) {
-	        this.namedWindowConsumerId = namedWindowConsumerId;
-	        this.filterEvaluator = filterEvaluator;
-	        this.optPropertyEvaluator = optPropertyEvaluator;
-	        this.agentInstanceContext = agentInstanceContext;
-	    }
+        public NamedWindowConsumerDesc(
+            int namedWindowConsumerId,
+            ExprEvaluator filterEvaluator,
+            PropertyEvaluator optPropertyEvaluator,
+            AgentInstanceContext agentInstanceContext)
+        {
+            this.namedWindowConsumerId = namedWindowConsumerId;
+            this.filterEvaluator = filterEvaluator;
+            this.optPropertyEvaluator = optPropertyEvaluator;
+            this.agentInstanceContext = agentInstanceContext;
+        }
 
-	    public int NamedWindowConsumerId
-	    {
-	        get => namedWindowConsumerId;
-	    }
+        public int NamedWindowConsumerId {
+            get => namedWindowConsumerId;
+        }
 
-	    public ExprEvaluator FilterEvaluator
-	    {
-	        get => filterEvaluator;
-	    }
+        public ExprEvaluator FilterEvaluator {
+            get => filterEvaluator;
+        }
 
-	    public PropertyEvaluator OptPropertyEvaluator
-	    {
-	        get => optPropertyEvaluator;
-	    }
+        public PropertyEvaluator OptPropertyEvaluator {
+            get => optPropertyEvaluator;
+        }
 
-	    public AgentInstanceContext AgentInstanceContext
-	    {
-	        get => agentInstanceContext;
-	    }
-	}
+        public AgentInstanceContext AgentInstanceContext {
+            get => agentInstanceContext;
+        }
+    }
 } // end of namespace

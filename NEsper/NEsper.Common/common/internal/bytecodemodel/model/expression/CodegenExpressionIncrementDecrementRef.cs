@@ -18,13 +18,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         private readonly CodegenExpressionRef _ref;
 
-        public CodegenExpressionIncrementDecrementRef(CodegenExpressionRef @ref, bool increment)
+        public CodegenExpressionIncrementDecrementRef(
+            CodegenExpressionRef @ref,
+            bool increment)
         {
             _ref = @ref;
             _increment = increment;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             _ref.Render(builder, imports, isInnerClass);
             builder.Append(_increment ? "++" : "--");

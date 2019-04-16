@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="filter">event filter</param>
         /// <param name="optionalAsName">tag name of the filtered events</param>
-        public ContextDescriptorConditionFilter(Filter filter, String optionalAsName)
+        public ContextDescriptorConditionFilter(
+            Filter filter,
+            String optionalAsName)
         {
             Filter = filter;
             OptionalAsName = optionalAsName;
@@ -38,11 +40,12 @@ namespace com.espertech.esper.common.client.soda
         /// <value>tag name</value>
         public string OptionalAsName { get; set; }
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             Filter.ToEPL(writer, formatter);
-            if (OptionalAsName != null)
-            {
+            if (OptionalAsName != null) {
                 writer.Write(" as ");
                 writer.Write(OptionalAsName);
             }

@@ -15,10 +15,10 @@ namespace com.espertech.esper.common.@internal.context.activator
     public class ViewableActivationResult
     {
         public ViewableActivationResult(
-            Viewable viewable, 
+            Viewable viewable,
             AgentInstanceStopCallback stopCallback,
             EvalRootMatchRemover optEvalRootMatchRemover,
-            bool suppressSameEventMatches, 
+            bool suppressSameEventMatches,
             bool discardPartialsOnMatch,
             EvalRootState optionalPatternRoot,
             ViewableActivationResultExtension viewableActivationResultExtension)

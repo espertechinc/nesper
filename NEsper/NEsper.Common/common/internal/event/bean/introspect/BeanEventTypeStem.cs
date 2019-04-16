@@ -18,10 +18,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
     public class BeanEventTypeStem
     {
         public BeanEventTypeStem(
-            Type clazz, ConfigurationCommonEventTypeBean optionalLegacyDef, string[] propertyNames,
+            Type clazz,
+            ConfigurationCommonEventTypeBean optionalLegacyDef,
+            string[] propertyNames,
             IDictionary<string, PropertyInfo> simpleProperties,
             IDictionary<string, PropertyStem> mappedPropertyDescriptors,
-            IDictionary<string, PropertyStem> indexedPropertyDescriptors, Type[] superTypes, ISet<Type> deepSuperTypes,
+            IDictionary<string, PropertyStem> indexedPropertyDescriptors,
+            Type[] superTypes,
+            ISet<Type> deepSuperTypes,
             PropertyResolutionStyle propertyResolutionStyle,
             IDictionary<string, IList<PropertyInfo>> simpleSmartPropertyTable,
             IDictionary<string, IList<PropertyInfo>> indexedSmartPropertyTable,

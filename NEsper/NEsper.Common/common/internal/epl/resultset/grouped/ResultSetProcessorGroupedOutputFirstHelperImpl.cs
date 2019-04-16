@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         }
 
         public OutputConditionPolled GetOrAllocate(
-            object mk, AgentInstanceContext agentInstanceContext, OutputConditionPolledFactory factory)
+            object mk,
+            AgentInstanceContext agentInstanceContext,
+            OutputConditionPolledFactory factory)
         {
             var outputStateGroup = outputState.Get(mk);
             if (outputStateGroup == null) {
@@ -40,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
             return outputState.Get(mk);
         }
 
-        public void Put(object mk, OutputConditionPolled outputStateGroup)
+        public void Put(
+            object mk,
+            OutputConditionPolled outputStateGroup)
         {
             outputState.Put(mk, outputStateGroup);
         }

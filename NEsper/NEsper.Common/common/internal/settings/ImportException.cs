@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.settings
         /// Ctor.
         /// </summary>
         /// <param name="msg">exception message</param>
-        public ImportException(string msg) : base(msg)
+        public ImportException(string msg)
+            : base(msg)
         {
         }
 
@@ -29,7 +30,10 @@ namespace com.espertech.esper.common.@internal.settings
         /// </summary>
         /// <param name="msg">exception message</param>
         /// <param name="ex">inner exception</param>
-        public ImportException(string msg, Exception ex) : base(msg, ex)
+        public ImportException(
+            string msg,
+            Exception ex)
+            : base(msg, ex)
         {
         }
     }

@@ -8,24 +8,21 @@
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public class ExprNodePropOrStreamExprDesc : ExprNodePropOrStreamDesc
+    public class ExprNodePropOrStreamExprDesc : ExprNodePropOrStreamDesc
     {
-	    public ExprNodePropOrStreamExprDesc(int streamNum, ExprNode originator)
+        public ExprNodePropOrStreamExprDesc(
+            int streamNum,
+            ExprNode originator)
         {
-	        StreamNum = streamNum;
-	        Originator = originator;
-	    }
+            StreamNum = streamNum;
+            Originator = originator;
+        }
 
-	    public int StreamNum { get; private set; }
+        public ExprNode Originator { get; }
 
-	    public ExprNode Originator { get; private set; }
+        public int StreamNum { get; }
 
-	    public string Textual
-	    {
-	        get
-	        {
-	            return "expression '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(Originator) + "' against stream " + StreamNum;
-	        }
-	    }
+        public string Textual => "expression '" + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(Originator) 
+                                                + "' against stream " + StreamNum;
     }
 } // end of namespace

@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.client.soda
     public class InsertIntoClause
     {
         /// <summary>Ctor. </summary>
-        public InsertIntoClause() {
+        public InsertIntoClause()
+        {
         }
 
         /// <summary>Creates the insert-into clause. </summary>
@@ -34,7 +35,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="streamName">the name of the stream to insert into</param>
         /// <param name="columns">is a list of column names</param>
         /// <returns>clause</returns>
-        public static InsertIntoClause Create(string streamName, params string[] columns)
+        public static InsertIntoClause Create(
+            string streamName,
+            params string[] columns)
         {
             return new InsertIntoClause(streamName, columns);
         }
@@ -44,12 +47,15 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="columns">is a list of column names</param>
         /// <param name="streamSelector">selects the stream</param>
         /// <returns>clause</returns>
-        public static InsertIntoClause Create(string streamName, string[] columns, StreamSelector streamSelector)
+        public static InsertIntoClause Create(
+            string streamName,
+            string[] columns,
+            StreamSelector streamSelector)
         {
-            if (streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH)
-            {
+            if (streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH) {
                 throw new ArgumentException("Insert into only allows istream or rstream selection, not both");
             }
+
             return new InsertIntoClause(streamName, columns, streamSelector);
         }
 
@@ -65,7 +71,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="streamName">is the stream name to insert into</param>
         /// <param name="columnNames">column names</param>
-        public InsertIntoClause(String streamName, String[] columnNames)
+        public InsertIntoClause(
+            String streamName,
+            String[] columnNames)
         {
             StreamSelector = StreamSelector.ISTREAM_ONLY;
             StreamName = streamName;
@@ -76,7 +84,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="streamName">is the stream name to insert into</param>
         /// <param name="columnNames">column names</param>
         /// <param name="streamSelector">selector for either insert stream (the default) or remove stream or both</param>
-        public InsertIntoClause(String streamName, IList<string> columnNames, StreamSelector streamSelector)
+        public InsertIntoClause(
+            String streamName,
+            IList<string> columnNames,
+            StreamSelector streamSelector)
         {
             StreamSelector = streamSelector;
             StreamName = streamName;
@@ -106,12 +117,14 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         /// <param name="formatter">for NewLine-whitespace formatting</param>
         /// <param name="isTopLevel">to indicate if this insert-into-clause is inside other clauses.</param>
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter, bool isTopLevel)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter,
+            bool isTopLevel)
         {
             formatter.BeginInsertInto(writer, isTopLevel);
             writer.Write("insert ");
-            if (StreamSelector != StreamSelector.ISTREAM_ONLY)
-            {
+            if (StreamSelector != StreamSelector.ISTREAM_ONLY) {
                 writer.Write(StreamSelector.GetEPL());
                 writer.Write(" ");
             }
@@ -119,16 +132,15 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("into ");
             writer.Write(StreamName);
 
-            if (ColumnNames.Count > 0)
-            {
+            if (ColumnNames.Count > 0) {
                 writer.Write("(");
                 String delimiter = "";
-                foreach (var name in ColumnNames)
-                {
+                foreach (var name in ColumnNames) {
                     writer.Write(delimiter);
                     writer.Write(name);
                     delimiter = ", ";
                 }
+
                 writer.Write(")");
             }
         }

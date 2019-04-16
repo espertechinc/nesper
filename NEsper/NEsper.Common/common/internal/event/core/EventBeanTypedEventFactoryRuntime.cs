@@ -26,33 +26,45 @@ namespace com.espertech.esper.common.@internal.@event.core
             this.eventTypeAvroHandler = eventTypeAvroHandler;
         }
 
-        public MappedEventBean AdapterForTypedMap(IDictionary<string, object> value, EventType eventType)
+        public MappedEventBean AdapterForTypedMap(
+            IDictionary<string, object> value,
+            EventType eventType)
         {
             return new MapEventBean(value, eventType);
         }
 
-        public ObjectArrayBackedEventBean AdapterForTypedObjectArray(object[] value, EventType eventType)
+        public ObjectArrayBackedEventBean AdapterForTypedObjectArray(
+            object[] value,
+            EventType eventType)
         {
             return new ObjectArrayEventBean(value, eventType);
         }
 
-        public EventBean AdapterForTypedBean(object value, EventType eventType)
+        public EventBean AdapterForTypedBean(
+            object value,
+            EventType eventType)
         {
             return new BeanEventBean(value, eventType);
         }
 
-        public EventBean AdapterForTypedDOM(XmlNode value, EventType eventType)
+        public EventBean AdapterForTypedDOM(
+            XmlNode value,
+            EventType eventType)
         {
             return new XMLEventBean(value, eventType);
         }
 
-        public EventBean AdapterForTypedAvro(object avroGenericDataDotRecord, EventType eventType)
+        public EventBean AdapterForTypedAvro(
+            object avroGenericDataDotRecord,
+            EventType eventType)
         {
             return eventTypeAvroHandler.AdapterForTypeAvro(avroGenericDataDotRecord, eventType);
         }
 
         public EventBean AdapterForTypedWrapper(
-            EventBean decoratedUnderlying, IDictionary<string, object> map, EventType wrapperEventType)
+            EventBean decoratedUnderlying,
+            IDictionary<string, object> map,
+            EventType wrapperEventType)
         {
             return new WrapperEventBean(decoratedUnderlying, map, wrapperEventType);
         }

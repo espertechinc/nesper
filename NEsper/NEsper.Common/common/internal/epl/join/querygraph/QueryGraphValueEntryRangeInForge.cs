@@ -19,8 +19,12 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     public class QueryGraphValueEntryRangeInForge : QueryGraphValueEntryRangeForge
     {
         public QueryGraphValueEntryRangeInForge(
-            QueryGraphRangeEnum rangeType, ExprNode exprStart, ExprNode exprEnd, bool allowRangeReversal) : base(
-            rangeType)
+            QueryGraphRangeEnum rangeType,
+            ExprNode exprStart,
+            ExprNode exprEnd,
+            bool allowRangeReversal)
+            : base(
+                rangeType)
         {
             if (!rangeType.IsRange) {
                 throw new ArgumentException("Range type expected but received " + rangeType.GetName());
@@ -49,7 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public override CodegenExpression Make(
-            Type optCoercionType, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            Type optCoercionType,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryRange), GetType(), classScope);
@@ -70,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public override CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryRangeIn), GetType(), classScope);
             method.Block

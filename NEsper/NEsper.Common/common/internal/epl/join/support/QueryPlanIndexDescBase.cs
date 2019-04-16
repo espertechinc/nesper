@@ -7,23 +7,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.support
 {
-	public abstract class QueryPlanIndexDescBase {
-	    private readonly IndexNameAndDescPair[] tables;
+    public abstract class QueryPlanIndexDescBase
+    {
+        private readonly IndexNameAndDescPair[] tables;
 
-	    protected QueryPlanIndexDescBase(IndexNameAndDescPair[] tables) {
-	        this.tables = tables;
-	    }
+        protected QueryPlanIndexDescBase(IndexNameAndDescPair[] tables)
+        {
+            this.tables = tables;
+        }
 
-	    public IndexNameAndDescPair[] Tables
-	    {
-	        get => tables;
-	    }
-	}
+        public IndexNameAndDescPair[] Tables {
+            get => tables;
+        }
+    }
 } // end of namespace

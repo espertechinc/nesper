@@ -12,19 +12,23 @@ using System.Xml.Schema;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     /// <summary>
-    /// Represents an attribute in a schema.
+    ///     Represents an attribute in a schema.
     /// </summary>
     [Serializable]
     public class SchemaItemAttribute : SchemaItem
     {
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="namespace">namespace</param>
         /// <param name="name">name</param>
         /// <param name="type">attribute type</param>
         /// <param name="typeName">attribute type name</param>
-        public SchemaItemAttribute(String @namespace, String name, XmlSchemaSimpleType type, String typeName)
+        public SchemaItemAttribute(
+            string @namespace,
+            string name,
+            XmlSchemaSimpleType type,
+            string typeName)
         {
             Name = name;
             Namespace = @namespace;
@@ -33,38 +37,38 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         /// <summary>
-        /// Returns the namespace.
+        ///     Returns the namespace.
         /// </summary>
         /// <returns>
-        /// namespace
+        ///     namespace
         /// </returns>
-        public string Namespace { get; private set; }
+        public string Namespace { get; }
 
         /// <summary>
-        /// Returns the name.
+        ///     Returns the name.
         /// </summary>
         /// <returns>
-        /// name
+        ///     name
         /// </returns>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
-        /// Returns the type.
+        ///     Returns the type.
         /// </summary>
         /// <returns>
-        /// type
+        ///     type
         /// </returns>
-        public XmlSchemaSimpleType SimpleType { get; private set; }
+        public XmlSchemaSimpleType SimpleType { get; }
 
         /// <summary>
-        /// Returns the type name.
+        ///     Returns the type name.
         /// </summary>
         /// <returns>
-        /// type name
+        ///     type name
         /// </returns>
-        public string TypeName { get; private set; }
+        public string TypeName { get; }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "Attribute " + Namespace + " " + Name;
         }

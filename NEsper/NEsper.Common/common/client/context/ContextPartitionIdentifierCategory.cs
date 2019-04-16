@@ -34,10 +34,10 @@ namespace com.espertech.esper.common.client.context
 
         public override bool CompareTo(ContextPartitionIdentifier other)
         {
-            if (!(other is ContextPartitionIdentifierCategory))
-            {
+            if (!(other is ContextPartitionIdentifierCategory)) {
                 return false;
             }
+
             return Label.Equals(((ContextPartitionIdentifierCategory) other).Label);
         }
 

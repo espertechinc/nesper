@@ -30,15 +30,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         protected abstract Type TypeOf();
 
         protected abstract void CodegenInlineSet(
-            CodegenExpressionRef @ref, CodegenMethod method, ModuleTableInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope);
 
         protected abstract void ValidateIntoTable(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory);
 
         public void ValidateIntoTableCompatible(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory)
         {
             AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
@@ -48,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, ModuleTableInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ModuleTableInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(TypeOf(), GetType(), classScope);
             method.Block

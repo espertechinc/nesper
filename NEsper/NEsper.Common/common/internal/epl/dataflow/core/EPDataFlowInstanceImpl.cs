@@ -43,9 +43,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         private IList<Thread> threads;
 
         public EPDataFlowInstanceImpl(
-            object dataFlowInstanceUserObject, string dataFlowInstanceId, OperatorStatisticsProvider statistics,
-            IDictionary<int, object> operators, IList<GraphSourceRunnable> sourceRunnables, DataflowDesc dataflowDesc,
-            AgentInstanceContext agentInstanceContext, EPDataFlowInstanceStatistics statisticsProvider,
+            object dataFlowInstanceUserObject,
+            string dataFlowInstanceId,
+            OperatorStatisticsProvider statistics,
+            IDictionary<int, object> operators,
+            IList<GraphSourceRunnable> sourceRunnables,
+            DataflowDesc dataflowDesc,
+            AgentInstanceContext agentInstanceContext,
+            EPDataFlowInstanceStatistics statisticsProvider,
             IDictionary<string, object> parametersURIs)
         {
             UserObject = dataFlowInstanceUserObject;
@@ -92,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
                 CallOperatorOpen();
 
-                GraphSourceRunnable sourceRunnable = sourceRunnables.Get(0);
+                GraphSourceRunnable sourceRunnable = sourceRunnables[0];
                 State = EPDataFlowState.RUNNING;
                 runCurrentThread = Thread.CurrentThread();
                 try {
@@ -104,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                     throw new EPDataFlowCancellationException(
                         "Data flow '" + dataFlowName + "' execution was cancelled", dataFlowName);
                 }
-                catch (Throwable t) {
+                catch (Exception t) {
                     CallOperatorClose();
                     State = EPDataFlowState.COMPLETE;
                     throw new EPDataFlowExecutionException(
@@ -306,12 +311,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                             var lf = (DataFlowOperatorLifecycle) operatorStatePair.First;
                             lf.Close(new DataFlowOpCloseContext(opNum));
                         }
-                        catch (EPException)
-                        {
+                        catch (EPException) {
                             throw;
                         }
-                        catch (Exception ex)
-                        {
+                        catch (Exception ex) {
                             Log.Error(
                                 "Exception encountered closing data flow '" + dataflowDesc.DataflowName + "': " +
                                 ex.Message, ex);

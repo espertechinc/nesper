@@ -14,6 +14,8 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
 {
     public interface MultiMatchHandler
     {
-        void Handle(ICollection<FilterHandleCallback> callbacks, EventBean theEvent);
+        void Handle(
+            ICollection<FilterHandleCallback> callbacks,
+            EventBean theEvent);
     }
 } // end of namespace

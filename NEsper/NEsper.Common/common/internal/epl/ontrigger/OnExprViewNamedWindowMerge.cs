@@ -27,16 +27,21 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly InfraOnMergeViewFactory parent;
 
         public OnExprViewNamedWindowMerge(
-            SubordWMatchExprLookupStrategy lookupStrategy, NamedWindowRootViewInstance rootView,
-            AgentInstanceContext agentInstanceContext, InfraOnMergeViewFactory parent) : base(
-            lookupStrategy, rootView, agentInstanceContext)
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            NamedWindowRootViewInstance rootView,
+            AgentInstanceContext agentInstanceContext,
+            InfraOnMergeViewFactory parent)
+            : base(
+                lookupStrategy, rootView, agentInstanceContext)
         {
             this.parent = parent;
         }
 
         public override EventType EventType => rootView.EventType;
 
-        public override void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
+        public override void HandleMatching(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
         {
             var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
             instrumentationCommon.QInfraOnAction(OnTriggerType.ON_MERGE, triggerEvents, matchingEvents);
@@ -111,8 +116,12 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         }
 
         private static void ApplyDelta(
-            OneEventCollection newData, OneEventCollection oldData, InfraOnMergeViewFactory parent,
-            NamedWindowRootViewInstance rootView, AgentInstanceContext agentInstanceContext, ViewSupport viewable)
+            OneEventCollection newData,
+            OneEventCollection oldData,
+            InfraOnMergeViewFactory parent,
+            NamedWindowRootViewInstance rootView,
+            AgentInstanceContext agentInstanceContext,
+            ViewSupport viewable)
         {
             if (!newData.IsEmpty() || oldData != null && !oldData.IsEmpty()) {
                 var metricHandle = rootView.AgentInstanceContext.StatementContext.EpStatementHandle.MetricsHandle;

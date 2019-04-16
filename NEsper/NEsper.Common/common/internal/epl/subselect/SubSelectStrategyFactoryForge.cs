@@ -25,6 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         bool HasPrevious { get; }
 
         CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
     }
 } // end of namespace

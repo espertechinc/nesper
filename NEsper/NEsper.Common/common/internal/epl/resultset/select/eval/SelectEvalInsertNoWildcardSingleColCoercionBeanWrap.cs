@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
@@ -17,17 +16,26 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalInsertNoWildcardSingleColCoercionBeanWrap : SelectEvalBaseFirstPropFromWrap {
+    public class SelectEvalInsertNoWildcardSingleColCoercionBeanWrap : SelectEvalBaseFirstPropFromWrap
+    {
+        public SelectEvalInsertNoWildcardSingleColCoercionBeanWrap(
+            SelectExprForgeContext selectExprForgeContext,
+            WrapperEventType wrapper)
+            : base(selectExprForgeContext, wrapper)
 
-	    public SelectEvalInsertNoWildcardSingleColCoercionBeanWrap(SelectExprForgeContext selectExprForgeContext, WrapperEventType wrapper)
+        {
+        }
 
-	    	 : base(selectExprForgeContext, wrapper)
-
-	    {
-	    }
-
-	    protected override CodegenExpression ProcessFirstColCodegen(Type evaluationType, CodegenExpression expression, CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return SelectEvalInsertNoWildcardSingleColCoercionMapWrap.ProcessFirstColCodegen(expression, eventBeanFactory, codegenClassScope, wrapper, "adapterForTypedBean", typeof(object));
-	    }
-	}
+        protected override CodegenExpression ProcessFirstColCodegen(
+            Type evaluationType,
+            CodegenExpression expression,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return SelectEvalInsertNoWildcardSingleColCoercionMapWrap.ProcessFirstColCodegen(
+                expression, eventBeanFactory, codegenClassScope, wrapper, "adapterForTypedBean", typeof(object));
+        }
+    }
 } // end of namespace

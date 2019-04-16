@@ -10,7 +10,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.controller.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
@@ -32,14 +31,17 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
             CodegenExpression[] init = new CodegenExpression[items.Length];
-            for (int i = 0; i < init.Length; i++)
-            {
+            for (int i = 0; i < init.Length; i++) {
                 init[i] = items[i].Make(addInitSvc);
             }
+
             return NewInstance(typeof(ContextControllerHashValidation), NewArrayWithInit(typeof(ContextControllerHashValidationItem), init));
         }
 
-        public void ValidateStatement(string contextName, StatementSpecCompiled spec, StatementCompileTimeServices compileTimeServices)
+        public void ValidateStatement(
+            string contextName,
+            StatementSpecCompiled spec,
+            StatementCompileTimeServices compileTimeServices)
         {
             ContextControllerForgeUtil.ValidateStatementKeyAndHash(items, contextName, spec, compileTimeServices);
         }

@@ -8,13 +8,11 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.core
@@ -26,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
 
         private CodegenExpressionRef optionalStateRef;
 
-        public AggregationAgentCodegenSymbols(bool allowUnderlyingReferences, bool newDataValue)
+        public AggregationAgentCodegenSymbols(
+            bool allowUnderlyingReferences,
+            bool newDataValue)
             : base(allowUnderlyingReferences, newDataValue)
 
         {
@@ -34,8 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
 
         public CodegenExpressionRef GetAddState(CodegenMethodScope scope)
         {
-            if (optionalStateRef == null)
-            {
+            if (optionalStateRef == null) {
                 optionalStateRef = REF_AGENTSTATE;
             }
 
@@ -46,8 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         public override void Provide(IDictionary<string, Type> symbols)
         {
             base.Provide(symbols);
-            if (optionalStateRef != null)
-            {
+            if (optionalStateRef != null) {
                 symbols.Put(optionalStateRef.Ref, typeof(AggregationMultiFunctionState));
             }
         }

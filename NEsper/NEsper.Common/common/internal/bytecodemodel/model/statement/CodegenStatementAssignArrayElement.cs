@@ -29,7 +29,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             this.expression = expression;
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public override void RenderStatement(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             array.Render(builder, imports, isInnerClass);
             builder.Append("[");

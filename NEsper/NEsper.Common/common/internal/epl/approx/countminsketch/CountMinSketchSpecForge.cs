@@ -9,7 +9,6 @@
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
@@ -17,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
     public class CountMinSketchSpecForge
     {
         public CountMinSketchSpecForge(
-            CountMinSketchSpecHashes hashesSpec, int? topkSpec, CountMinSketchAgentForge agent)
+            CountMinSketchSpecHashes hashesSpec,
+            int? topkSpec,
+            CountMinSketchAgentForge agent)
         {
             HashesSpec = hashesSpec;
             TopkSpec = topkSpec;
@@ -30,14 +31,16 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
         public CountMinSketchAgentForge Agent { get; set; }
 
-        public CodegenExpression CodegenMake(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenExpression CodegenMake(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(CountMinSketchSpec), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(CountMinSketchSpec), "spec", NewInstance(typeof(CountMinSketchSpec)))
-                .ExprDotMethod(Ref("spec"), "setHashesSpec", HashesSpec.CodegenMake(method, classScope))
-                .ExprDotMethod(Ref("spec"), "setTopkSpec", Constant(TopkSpec))
-                .ExprDotMethod(Ref("spec"), "setAgent", Agent.CodegenMake(method, classScope))
+                .DeclareVar(typeof(CountMinSketchSpec), "spec", NewInstance<CountMinSketchSpec>())
+                .SetProperty(Ref("spec"), "HashesSpec", HashesSpec.CodegenMake(method, classScope))
+                .SetProperty(Ref("spec"), "TopkSpec", Constant(TopkSpec))
+                .SetProperty(Ref("spec"), "Agent", Agent.CodegenMake(method, classScope))
                 .MethodReturn(Ref("spec"));
             return LocalMethod(method);
         }

@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="metricScheduleService">for scheduling a new execution</param>
         /// <param name="interval">for rescheduling the execution</param>
         public MetricExecEngine(
-            MetricEventRouter metricEventRouter, string runtimeURI, MetricScheduleService metricScheduleService,
+            MetricEventRouter metricEventRouter,
+            string runtimeURI,
+            MetricScheduleService metricScheduleService,
             long interval)
         {
             this.metricEventRouter = metricEventRouter;

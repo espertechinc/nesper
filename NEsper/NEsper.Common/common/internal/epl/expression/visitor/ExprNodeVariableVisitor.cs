@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.variable;
@@ -18,59 +17,64 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.visitor
 {
-	/// <summary>
-	/// Visitor for expression node trees that determines if the expressions within contain a variable.
-	/// </summary>
-	public class ExprNodeVariableVisitor : ExprNodeVisitor {
-	    private readonly VariableCompileTimeResolver variableCompileTimeResolver;
-	    private IDictionary<string, VariableMetaData> variableNames;
+    /// <summary>
+    /// Visitor for expression node trees that determines if the expressions within contain a variable.
+    /// </summary>
+    public class ExprNodeVariableVisitor : ExprNodeVisitor
+    {
+        private readonly VariableCompileTimeResolver variableCompileTimeResolver;
+        private IDictionary<string, VariableMetaData> variableNames;
 
-	    public ExprNodeVariableVisitor(VariableCompileTimeResolver variableCompileTimeResolver) {
-	        this.variableCompileTimeResolver = variableCompileTimeResolver;
-	    }
+        public ExprNodeVariableVisitor(VariableCompileTimeResolver variableCompileTimeResolver)
+        {
+            this.variableCompileTimeResolver = variableCompileTimeResolver;
+        }
 
-	    public bool IsVisit(ExprNode exprNode) {
-	        return true;
-	    }
+        public bool IsVisit(ExprNode exprNode)
+        {
+            return true;
+        }
 
-	    /// <summary>
-	    /// Returns true if the visitor finds a variable value.
-	    /// </summary>
-	    /// <returns>true for variable present in expression</returns>
-	    public bool IsVariables
-	    {
-	        get => variableNames != null && !variableNames.IsEmpty();
-	    }
+        /// <summary>
+        /// Returns true if the visitor finds a variable value.
+        /// </summary>
+        /// <returns>true for variable present in expression</returns>
+        public bool IsVariables {
+            get => variableNames != null && !variableNames.IsEmpty();
+        }
 
-	    public void Visit(ExprNode exprNode) {
-	        if (exprNode is ExprDotNode) {
-	            ExprDotNode exprDotNode = (ExprDotNode) exprNode;
-	            VariableMetaData metadata = exprDotNode.IsVariableOpGetName(variableCompileTimeResolver);
-	            if (metadata != null) {
-	                AddVariableName(metadata);
-	            }
-	        }
-	        if (exprNode is ExprVariableNode) {
-	            ExprVariableNode variableNode = (ExprVariableNode) exprNode;
-	            VariableMetaData metadata = variableNode.VariableMetadata;
-	            AddVariableName(metadata);
-	        }
-	    }
+        public void Visit(ExprNode exprNode)
+        {
+            if (exprNode is ExprDotNode) {
+                ExprDotNode exprDotNode = (ExprDotNode) exprNode;
+                VariableMetaData metadata = exprDotNode.IsVariableOpGetName(variableCompileTimeResolver);
+                if (metadata != null) {
+                    AddVariableName(metadata);
+                }
+            }
 
-	    public IDictionary<string, VariableMetaData> VariableNames {
-	        get { return variableNames; }
-	    }
+            if (exprNode is ExprVariableNode) {
+                ExprVariableNode variableNode = (ExprVariableNode) exprNode;
+                VariableMetaData metadata = variableNode.VariableMetadata;
+                AddVariableName(metadata);
+            }
+        }
 
-	    /// <summary>
-	    /// Returns the set of variable names encoountered.
-	    /// </summary>
-	    /// <returns>variable names</returns>
+        public IDictionary<string, VariableMetaData> VariableNames {
+            get { return variableNames; }
+        }
 
-	    private void AddVariableName(VariableMetaData meta) {
-	        if (variableNames == null) {
-	            variableNames = new LinkedHashMap<>();
-	        }
-	        variableNames.Put(meta.VariableName, meta);
-	    }
-	}
+        /// <summary>
+        /// Returns the set of variable names encoountered.
+        /// </summary>
+        /// <returns>variable names</returns>
+        private void AddVariableName(VariableMetaData meta)
+        {
+            if (variableNames == null) {
+                variableNames = new LinkedHashMap<>();
+            }
+
+            variableNames.Put(meta.VariableName, meta);
+        }
+    }
 } // end of namespace

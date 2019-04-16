@@ -17,7 +17,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
     public class XYWHRectangleMultiType : XYWHRectangle
     {
-        public XYWHRectangleMultiType(double x, double y, double w, double h, object multityped)
+        public XYWHRectangleMultiType(
+            double x,
+            double y,
+            double w,
+            double h,
+            object multityped)
             : base(x, y, w, h)
         {
             Multityped = multityped;
@@ -32,14 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
         public void AddSingleValue(object value)
         {
-            if (Multityped == null)
-            {
+            if (Multityped == null) {
                 Multityped = value;
                 return;
             }
 
-            if (Multityped is Collection collection)
-            {
+            if (Multityped is Collection collection) {
                 collection.Add(value);
                 return;
             }
@@ -53,15 +56,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         public void AddMultiType(XYWHRectangleMultiType other)
         {
             if (other.X != X || other.Y != Y) throw new ArgumentException("Coordinate mismatch");
-            if (!(other.Multityped is Collection))
-            {
+            if (!(other.Multityped is Collection)) {
                 AddSingleValue(other.Multityped);
                 return;
             }
 
             var otherCollection = (Collection) other.Multityped;
-            if (Multityped is Collection collection)
-            {
+            if (Multityped is Collection collection) {
                 collection.AddAll(otherCollection);
                 return;
             }
@@ -74,8 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
         public void CollectInto(Collection result)
         {
-            if (Multityped is Collection collection)
-            {
+            if (Multityped is Collection collection) {
                 result.AddAll(collection);
             }
 
@@ -86,8 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         public bool Remove(object value)
         {
             if (Multityped == null) return false;
-            if (Multityped.Equals(value))
-            {
+            if (Multityped.Equals(value)) {
                 Multityped = null;
                 return true;
             }

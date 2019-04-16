@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     {
         int InstanceCount { get; }
 
-        void AssignService(int serviceId, PreviousGetterStrategy previousGetterStrategy);
+        void AssignService(
+            int serviceId,
+            PreviousGetterStrategy previousGetterStrategy);
 
         void DeassignService(int serviceId);
     }

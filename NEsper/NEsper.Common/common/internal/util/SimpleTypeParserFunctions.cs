@@ -34,8 +34,7 @@ namespace com.espertech.esper.common.@internal.util
         public static byte ParseByte(string value)
         {
             value = value.Trim();
-            if (value.StartsWith("0x"))
-            {
+            if (value.StartsWith("0x")) {
                 return byte.Parse(value.Substring(2), NumberStyles.HexNumber);
             }
 
@@ -102,7 +101,9 @@ namespace com.espertech.esper.common.@internal.util
             return decimal.Parse(value);
         }
 
-        public static object ParseEnum(string value, Type type)
+        public static object ParseEnum(
+            string value,
+            Type type)
         {
             return Enum.Parse(type, value, true);
         }

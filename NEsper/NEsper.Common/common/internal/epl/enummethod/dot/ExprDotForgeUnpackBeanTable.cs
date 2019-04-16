@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,53 +18,69 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
-	public class ExprDotForgeUnpackBeanTable : ExprDotForge, ExprDotEval {
+    public class ExprDotForgeUnpackBeanTable : ExprDotForge,
+        ExprDotEval
+    {
+        private readonly EPType returnType;
+        private readonly TableMetaData tableMetadata;
 
-	    private readonly EPType returnType;
-	    private readonly TableMetaData tableMetadata;
+        public ExprDotForgeUnpackBeanTable(
+            EventType lambdaType,
+            TableMetaData tableMetadata)
+        {
+            this.tableMetadata = tableMetadata;
+            this.returnType = EPTypeHelper.SingleValue(tableMetadata.PublicEventType.UnderlyingType);
+        }
 
-	    public ExprDotForgeUnpackBeanTable(EventType lambdaType, TableMetaData tableMetadata) {
-	        this.tableMetadata = tableMetadata;
-	        this.returnType = EPTypeHelper.SingleValue(tableMetadata.PublicEventType.UnderlyingType);
-	    }
+        public object Evaluate(
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException("Table-row eval not available at compile time");
+        }
 
-	    public object Evaluate(object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        throw new UnsupportedOperationException("Table-row eval not available at compile time");
-	    }
+        public CodegenExpression Codegen(
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenExpression eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(object[]), typeof(ExprDotForgeUnpackBeanTable), codegenClassScope)
+                .AddParam(typeof(EventBean), "target");
 
-	    public CodegenExpression Codegen(CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenExpression eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(object[]), typeof(ExprDotForgeUnpackBeanTable), codegenClassScope).AddParam(typeof(EventBean), "target");
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
+            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
-	        CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-	        CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
-	        CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
+            methodNode.Block
+                .IfRefNullReturnNull("target")
+                .MethodReturn(ExprDotMethod(eventToPublic, "convertToUnd", @Ref("target"), refEPS, refIsNewData, refExprEvalCtx));
+            return LocalMethod(methodNode, inner);
+        }
 
-	        methodNode.Block
-	                .IfRefNullReturnNull("target")
-	                .MethodReturn(ExprDotMethod(eventToPublic, "convertToUnd", @Ref("target"), refEPS, refIsNewData, refExprEvalCtx));
-	        return LocalMethod(methodNode, inner);
-	    }
+        public EPType TypeInfo {
+            get => returnType;
+        }
 
-	    public EPType TypeInfo {
-	        get => returnType;
-	    }
+        public void Visit(ExprDotEvalVisitor visitor)
+        {
+            visitor.VisitUnderlyingEvent();
+        }
 
-	    public void Visit(ExprDotEvalVisitor visitor) {
-	        visitor.VisitUnderlyingEvent();
-	    }
+        public ExprDotEval DotEvaluator {
+            get => this;
+        }
 
-	    public ExprDotEval DotEvaluator {
-	        get => this;
-	    }
-
-	    public ExprDotForge DotForge {
-	        get => this;
-	    }
-	}
+        public ExprDotForge DotForge {
+            get => this;
+        }
+    }
 } // end of namespace

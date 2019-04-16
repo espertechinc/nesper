@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private CodegenExpressionField field;
 
-        public ExprSubstitutionNode(string optionalName, ClassIdentifierWArray optionalType)
+        public ExprSubstitutionNode(
+            string optionalName,
+            ClassIdentifierWArray optionalType)
         {
             OptionalName = optionalName;
             OptionalType = optionalType;
@@ -53,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return AsField(codegenClassScope);
@@ -66,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprNodeRenderable ForgeRenderable {
             get {
                 return new ProxyExprNodeRenderable {
-                    ProcToEPL = (writer, _) => writer.Write("?")
+                    ProcToEPL = (
+                        writer,
+                        _) => writer.Write("?")
                 };
             }
         }
@@ -123,17 +129,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("?");
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprSubstitutionNode)) {
                 return false;

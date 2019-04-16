@@ -8,89 +8,90 @@
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.compile
 {
     public class IndexCompileTimeKey
     {
-        private readonly string infraModuleName;
-        private readonly string infraName;
-        private readonly NameAccessModifier visibility;
-        private readonly bool namedWindow;
-        private readonly string indexName;
-        private readonly string indexModuleName;
-
-        public IndexCompileTimeKey(string infraModuleName, string infraName, NameAccessModifier visibility, bool namedWindow, string indexName, string indexModuleName)
+        public IndexCompileTimeKey(
+            string infraModuleName,
+            string infraName,
+            NameAccessModifier visibility,
+            bool namedWindow,
+            string indexName,
+            string indexModuleName)
         {
-            this.infraModuleName = infraModuleName;
-            this.infraName = infraName;
-            this.visibility = visibility;
-            this.namedWindow = namedWindow;
-            this.indexName = indexName;
-            this.indexModuleName = indexModuleName;
+            InfraModuleName = infraModuleName;
+            InfraName = infraName;
+            Visibility = visibility;
+            IsNamedWindow = namedWindow;
+            IndexName = indexName;
+            IndexModuleName = indexModuleName;
         }
 
-        public string InfraModuleName
-        {
-            get => infraModuleName;
-        }
+        public string InfraModuleName { get; }
 
-        public string InfraName
-        {
-            get => infraName;
-        }
+        public string InfraName { get; }
 
-        public NameAccessModifier Visibility
-        {
-            get => visibility;
-        }
+        public NameAccessModifier Visibility { get; }
 
-        public bool IsNamedWindow()
-        {
-            return namedWindow;
-        }
+        public bool IsNamedWindow { get; }
 
-        public string IndexName
-        {
-            get => indexName;
-        }
+        public string IndexName { get; }
 
-        public string IndexModuleName
-        {
-            get => indexModuleName;
-        }
+        public string IndexModuleName { get; }
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            return NewInstance(typeof(IndexCompileTimeKey), Constant(infraModuleName), Constant(infraName), Constant(visibility), Constant(namedWindow), Constant(indexName), Constant(indexModuleName));
+            return NewInstance(
+                typeof(IndexCompileTimeKey), Constant(InfraModuleName), Constant(InfraName), Constant(Visibility), Constant(IsNamedWindow),
+                Constant(IndexName), Constant(IndexModuleName));
         }
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            IndexCompileTimeKey that = (IndexCompileTimeKey)o;
-
-            if (namedWindow != that.namedWindow) return false;
-            if (infraModuleName != null ? !infraModuleName.Equals(that.infraModuleName) : that.infraModuleName != null)
+            if (o == null || GetType() != o.GetType()) {
                 return false;
-            if (!infraName.Equals(that.infraName)) return false;
-            if (visibility != that.visibility) return false;
-            if (!indexName.Equals(that.indexName)) return false;
-            return indexModuleName != null ? indexModuleName.Equals(that.indexModuleName) : that.indexModuleName == null;
+            }
+
+            var that = (IndexCompileTimeKey) o;
+
+            if (IsNamedWindow != that.IsNamedWindow) {
+                return false;
+            }
+
+            if (InfraModuleName != null ? !InfraModuleName.Equals(that.InfraModuleName) : that.InfraModuleName != null) {
+                return false;
+            }
+
+            if (!InfraName.Equals(that.InfraName)) {
+                return false;
+            }
+
+            if (Visibility != that.Visibility) {
+                return false;
+            }
+
+            if (!IndexName.Equals(that.IndexName)) {
+                return false;
+            }
+
+            return IndexModuleName != null ? IndexModuleName.Equals(that.IndexModuleName) : that.IndexModuleName == null;
         }
 
         public override int GetHashCode()
         {
-            int result = infraModuleName != null ? infraModuleName.GetHashCode() : 0;
-            result = 31 * result + infraName.GetHashCode();
-            result = 31 * result + visibility.GetHashCode();
-            result = 31 * result + (namedWindow ? 1 : 0);
-            result = 31 * result + indexName.GetHashCode();
-            result = 31 * result + (indexModuleName != null ? indexModuleName.GetHashCode() : 0);
+            var result = InfraModuleName != null ? InfraModuleName.GetHashCode() : 0;
+            result = 31 * result + InfraName.GetHashCode();
+            result = 31 * result + Visibility.GetHashCode();
+            result = 31 * result + (IsNamedWindow ? 1 : 0);
+            result = 31 * result + IndexName.GetHashCode();
+            result = 31 * result + (IndexModuleName != null ? IndexModuleName.GetHashCode() : 0);
             return result;
         }
     }

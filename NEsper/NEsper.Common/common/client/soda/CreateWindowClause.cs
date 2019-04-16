@@ -39,7 +39,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="windowName">is the name of the window to create</param>
         /// <param name="viewArr">is the list of data window views</param>
-        public CreateWindowClause(string windowName, View[] viewArr)
+        public CreateWindowClause(
+            string windowName,
+            View[] viewArr)
         {
             this.windowName = windowName;
             views = new List<View>();
@@ -53,7 +55,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="windowName">is the name of the window to create</param>
         /// <param name="views">is a list of data window views</param>
-        public CreateWindowClause(string windowName, IList<View> views)
+        public CreateWindowClause(
+            string windowName,
+            IList<View> views)
         {
             this.windowName = windowName;
             this.views = views;
@@ -137,7 +141,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="windowName">is the name of the named window</param>
         /// <param name="view">is a data window view</param>
         /// <returns>create window clause</returns>
-        public static CreateWindowClause Create(string windowName, View view)
+        public static CreateWindowClause Create(
+            string windowName,
+            View view)
         {
             return new CreateWindowClause(windowName, new[] {view});
         }
@@ -148,7 +154,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="windowName">is the name of the named window</param>
         /// <param name="views">is the data window views</param>
         /// <returns>create window clause</returns>
-        public static CreateWindowClause Create(string windowName, params View[] views)
+        public static CreateWindowClause Create(
+            string windowName,
+            params View[] views)
         {
             return new CreateWindowClause(windowName, views);
         }
@@ -159,7 +167,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="namespace">is the view namespace, for example "win" for most data windows</param>
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <returns>named window creation clause</returns>
-        public CreateWindowClause AddView(string @namespace, string name)
+        public CreateWindowClause AddView(
+            string @namespace,
+            string name)
         {
             views.Add(View.Create(@namespace, name));
             return this;
@@ -183,7 +193,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <param name="parameters">is a list of view parameters</param>
         /// <returns>named window creation clause</returns>
-        public CreateWindowClause AddView(string @namespace, string name, IList<Expression> parameters)
+        public CreateWindowClause AddView(
+            string @namespace,
+            string name,
+            IList<Expression> parameters)
         {
             views.Add(View.Create(@namespace, name, parameters));
             return this;
@@ -195,7 +208,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <param name="parameters">is a list of view parameters</param>
         /// <returns>named window creation clause</returns>
-        public CreateWindowClause AddView(string name, IList<Expression> parameters)
+        public CreateWindowClause AddView(
+            string name,
+            IList<Expression> parameters)
         {
             views.Add(View.Create(name, parameters));
             return this;
@@ -208,7 +223,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <param name="parameters">is a list of view parameters</param>
         /// <returns>named window creation clause</returns>
-        public CreateWindowClause AddView(string @namespace, string name, params Expression[] parameters)
+        public CreateWindowClause AddView(
+            string @namespace,
+            string name,
+            params Expression[] parameters)
         {
             views.Add(View.Create(@namespace, name, parameters));
             return this;
@@ -220,7 +238,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <param name="parameters">is a list of view parameters</param>
         /// <returns>named window creation clause</returns>
-        public CreateWindowClause AddView(string name, params Expression[] parameters)
+        public CreateWindowClause AddView(
+            string name,
+            params Expression[] parameters)
         {
             views.Add(View.Create(null, name, parameters));
             return this;
@@ -341,7 +361,7 @@ namespace com.espertech.esper.common.client.soda
         ///     To-EPL for create-table syntax.
         /// </summary>
         /// <param name="writer">to use</param>
-        public void ToEPLCreateTablePart(StringWriter writer)
+        public void ToEPLCreateTablePart(TextWriter writer)
         {
             var delimiter = "";
             writer.Write('(');

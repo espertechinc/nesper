@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 {
     public class OutputStrategyUtil
     {
-        public static void Output(bool forceUpdate, UniformPair<EventBean[]> result, UpdateDispatchView finalView)
+        public static void Output(
+            bool forceUpdate,
+            UniformPair<EventBean[]> result,
+            UpdateDispatchView finalView)
         {
             var newEvents = result != null ? result.First : null;
             var oldEvents = result != null ? result.Second : null;
@@ -37,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         /// </summary>
         /// <param name="newOldEvents">result</param>
         /// <param name="statementContext">context</param>
-        public static void IndicateEarlyReturn(StatementContext statementContext, UniformPair<EventBean[]> newOldEvents)
+        public static void IndicateEarlyReturn(
+            StatementContext statementContext,
+            UniformPair<EventBean[]> newOldEvents)
         {
             // no action
         }
@@ -51,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         /// <param name="distinct">flag</param>
         /// <returns>iterator</returns>
         public static IEnumerator<EventBean> GetIterator(
-            JoinExecutionStrategy joinExecutionStrategy, ResultSetProcessor resultSetProcessor, Viewable parentView,
+            JoinExecutionStrategy joinExecutionStrategy,
+            ResultSetProcessor resultSetProcessor,
+            Viewable parentView,
             bool distinct)
         {
             IEnumerator<EventBean> iterator;

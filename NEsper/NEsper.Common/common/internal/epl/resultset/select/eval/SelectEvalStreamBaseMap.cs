@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -25,17 +23,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         SelectExprProcessorForge
     {
         protected SelectEvalStreamBaseMap(
-            SelectExprForgeContext selectExprForgeContext, EventType resultEventType,
-            IList<SelectClauseStreamCompiledSpec> namedStreams, bool usingWildcard)
+            SelectExprForgeContext selectExprForgeContext,
+            EventType resultEventType,
+            IList<SelectClauseStreamCompiledSpec> namedStreams,
+            bool usingWildcard)
             : base(selectExprForgeContext, resultEventType, namedStreams, usingWildcard)
 
         {
         }
 
         public override CodegenMethod ProcessCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory,
-            CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var size = context.ExprForges.Length + namedStreams.Count +
                        (isUsingWildcard && context.NumStreams > 1 ? context.NumStreams : 0);
@@ -51,8 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             var block = methodNode.Block
                 .DeclareVar(typeof(IDictionary<object, object>), "props", init);
             var count = 0;
-            foreach (var forge in context.ExprForges)
-            {
+            foreach (var forge in context.ExprForges) {
                 block.Expression(
                     ExprDotMethod(
                         Ref("props"), "put", Constant(context.ColumnNames[count]),
@@ -61,11 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 count++;
             }
 
-            foreach (var element in namedStreams)
-            {
+            foreach (var element in namedStreams) {
                 var theEvent = ArrayAtIndex(refEPS, Constant(element.StreamNumber));
-                if (element.TableMetadata != null)
-                {
+                if (element.TableMetadata != null) {
                     var eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(
                         element.TableMetadata, codegenClassScope, GetType());
                     theEvent = ExprDotMethod(eventToPublic, "convert", theEvent, refEPS, refIsNewData, refExprEvalCtx);
@@ -75,10 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 count++;
             }
 
-            if (isUsingWildcard && context.NumStreams > 1)
-            {
-                for (var i = 0; i < context.NumStreams; i++)
-                {
+            if (isUsingWildcard && context.NumStreams > 1) {
+                for (var i = 0; i < context.NumStreams; i++) {
                     block.Expression(
                         ExprDotMethod(
                             Ref("props"), "put", Constant(context.ColumnNames[count]),
@@ -94,8 +92,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         }
 
         protected abstract CodegenExpression ProcessSpecificCodegen(
-            CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenExpression props,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenExpression props,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
     }
 } // end of namespace

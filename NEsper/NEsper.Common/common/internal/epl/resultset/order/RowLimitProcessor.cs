@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.compat;
@@ -23,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         private readonly VariableReader offsetVariableReader;
 
         public RowLimitProcessor(
-            VariableReader numRowsVariableReader, VariableReader offsetVariableReader, int currentRowLimit,
+            VariableReader numRowsVariableReader,
+            VariableReader offsetVariableReader,
+            int currentRowLimit,
             int currentOffset)
         {
             this.numRowsVariableReader = numRowsVariableReader;
@@ -38,38 +39,30 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
         public void DetermineCurrentLimit()
         {
-            if (numRowsVariableReader != null)
-            {
+            if (numRowsVariableReader != null) {
                 var varValue = numRowsVariableReader.Value;
-                if (varValue != null)
-                {
+                if (varValue != null) {
                     CurrentRowLimit = varValue.AsInt();
                 }
-                else
-                {
+                else {
                     CurrentRowLimit = int.MaxValue;
                 }
 
-                if (CurrentRowLimit < 0)
-                {
+                if (CurrentRowLimit < 0) {
                     CurrentRowLimit = int.MaxValue;
                 }
             }
 
-            if (offsetVariableReader != null)
-            {
+            if (offsetVariableReader != null) {
                 var varValue = offsetVariableReader.Value;
-                if (varValue != null)
-                {
+                if (varValue != null) {
                     CurrentOffset = varValue.AsInt();
                 }
-                else
-                {
+                else {
                     CurrentOffset = 0;
                 }
 
-                if (CurrentOffset < 0)
-                {
+                if (CurrentOffset < 0) {
                     CurrentOffset = 0;
                 }
             }
@@ -78,15 +71,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         public EventBean[] ApplyLimit(EventBean[] outgoingEvents)
         {
             // no offset
-            if (CurrentOffset == 0)
-            {
-                if (outgoingEvents.Length <= CurrentRowLimit)
-                {
+            if (CurrentOffset == 0) {
+                if (outgoingEvents.Length <= CurrentRowLimit) {
                     return outgoingEvents;
                 }
 
-                if (CurrentRowLimit == 0)
-                {
+                if (CurrentRowLimit == 0) {
                     return null;
                 }
 
@@ -94,26 +84,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 Array.Copy(outgoingEvents, 0, limited, 0, CurrentRowLimit);
                 return limited;
             }
-            else
-            {
+            else {
                 // with offset
                 var maxInterested = CurrentRowLimit + CurrentOffset;
-                if (CurrentRowLimit == int.MaxValue)
-                {
+                if (CurrentRowLimit == int.MaxValue) {
                     maxInterested = int.MaxValue;
                 }
 
                 // more rows then requested
-                if (outgoingEvents.Length > maxInterested)
-                {
+                if (outgoingEvents.Length > maxInterested) {
                     var limitedX = new EventBean[CurrentRowLimit];
                     Array.Copy(outgoingEvents, CurrentOffset, limitedX, 0, CurrentRowLimit);
                     return limitedX;
                 }
 
                 // less or equal rows to offset
-                if (outgoingEvents.Length <= CurrentOffset)
-                {
+                if (outgoingEvents.Length <= CurrentOffset) {
                     return null;
                 }
 
@@ -131,8 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <returns>limited</returns>
         public EventBean[] DetermineLimitAndApply(EventBean[] outgoingEvents)
         {
-            if (outgoingEvents == null)
-            {
+            if (outgoingEvents == null) {
                 return null;
             }
 
@@ -140,20 +125,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             return ApplyLimit(outgoingEvents);
         }
 
-        public EventBean[] DetermineApplyLimit2Events(EventBean first, EventBean second)
+        public EventBean[] DetermineApplyLimit2Events(
+            EventBean first,
+            EventBean second)
         {
             DetermineCurrentLimit();
-            if (CurrentRowLimit == 0)
-            {
+            if (CurrentRowLimit == 0) {
                 return null;
             }
 
-            if (CurrentRowLimit == 1)
-            {
-                return new[] { first };
+            if (CurrentRowLimit == 1) {
+                return new[] {first};
             }
 
-            return new[] { first, second };
+            return new[] {first, second};
         }
     }
 } // end of namespace

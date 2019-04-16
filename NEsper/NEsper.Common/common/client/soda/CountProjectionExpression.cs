@@ -8,76 +8,80 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
-	/// <summary>
-	/// Count of the (distinct) values returned by an expression, equivalent to "count(distinct property)"
-	/// </summary>
-	[Serializable]
-	public class CountProjectionExpression : ExpressionBase {
-	    private bool distinct;
+    /// <summary>
+    /// Count of the (distinct) values returned by an expression, equivalent to "count(distinct property)"
+    /// </summary>
+    [Serializable]
+    public class CountProjectionExpression : ExpressionBase
+    {
+        private bool distinct;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    public CountProjectionExpression() {
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        public CountProjectionExpression()
+        {
+        }
 
-	    /// <summary>
-	    /// Ctor - for use to create an expression tree, without inner expression
-	    /// </summary>
-	    /// <param name="isDistinct">true if distinct</param>
-	    public CountProjectionExpression(bool isDistinct) {
-	        this.distinct = isDistinct;
-	    }
+        /// <summary>
+        /// Ctor - for use to create an expression tree, without inner expression
+        /// </summary>
+        /// <param name="isDistinct">true if distinct</param>
+        public CountProjectionExpression(bool isDistinct)
+        {
+            this.distinct = isDistinct;
+        }
 
-	    /// <summary>
-	    /// Ctor - adds the expression to project.
-	    /// </summary>
-	    /// <param name="expression">returning values to project</param>
-	    /// <param name="isDistinct">true if distinct</param>
-	    public CountProjectionExpression(Expression expression, bool isDistinct) {
-	        this.distinct = isDistinct;
-	        this.Children.Add(expression);
-	    }
+        /// <summary>
+        /// Ctor - adds the expression to project.
+        /// </summary>
+        /// <param name="expression">returning values to project</param>
+        /// <param name="isDistinct">true if distinct</param>
+        public CountProjectionExpression(
+            Expression expression,
+            bool isDistinct)
+        {
+            this.distinct = isDistinct;
+            this.Children.Add(expression);
+        }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
 
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        ExpressionBase.RenderAggregation(writer, "count", distinct, this.Children);
-	    }
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            ExpressionBase.RenderAggregation(writer, "count", distinct, this.Children);
+        }
 
-	    /// <summary>
-	    /// Returns true if the projection considers distinct values only.
-	    /// </summary>
-	    /// <returns>true if distinct</returns>
-	    public bool IsDistinct
-	    {
-	        get => distinct;
-	    }
+        /// <summary>
+        /// Returns true if the projection considers distinct values only.
+        /// </summary>
+        /// <returns>true if distinct</returns>
+        public bool IsDistinct {
+            get => distinct;
+        }
 
-	    /// <summary>
-	    /// Returns true if the projection considers distinct values only.
-	    /// </summary>
-	    /// <returns>true if distinct</returns>
-	    public bool Distinct
-	    {
-	        get => distinct;
-	    }
+        /// <summary>
+        /// Returns true if the projection considers distinct values only.
+        /// </summary>
+        /// <returns>true if distinct</returns>
+        public bool Distinct {
+            get => distinct;
+        }
 
-	    /// <summary>
-	    /// Set the distinct flag indicating the projection considers distinct values only.
-	    /// </summary>
-	    /// <param name="distinct">true for distinct, false for not distinct</param>
-	    public void SetDistinct(bool distinct) {
-	        this.distinct = distinct;
-	    }
-	}
+        /// <summary>
+        /// Set the distinct flag indicating the projection considers distinct values only.
+        /// </summary>
+        /// <param name="distinct">true for distinct, false for not distinct</param>
+        public void SetDistinct(bool distinct)
+        {
+            this.distinct = distinct;
+        }
+    }
 } // end of namespace

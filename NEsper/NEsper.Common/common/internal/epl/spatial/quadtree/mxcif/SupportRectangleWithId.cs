@@ -10,7 +10,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 {
     public class SupportRectangleWithId
     {
-        public SupportRectangleWithId(string id, double x, double y, double w, double h)
+        public SupportRectangleWithId(
+            string id,
+            double x,
+            double y,
+            double w,
+            double h)
         {
             Id = id;
             X = x;

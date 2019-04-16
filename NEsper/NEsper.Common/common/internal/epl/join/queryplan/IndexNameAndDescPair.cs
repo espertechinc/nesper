@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -16,7 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     [Serializable]
     public class IndexNameAndDescPair
     {
-        public IndexNameAndDescPair(string tableName, string indexDesc)
+        public IndexNameAndDescPair(
+            string tableName,
+            string indexDesc)
         {
             IndexName = tableName;
             IndexDesc = indexDesc;

@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         {
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             return SINGLE_NULL_ROW_EVENT_SET;
         }

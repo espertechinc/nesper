@@ -20,8 +20,11 @@ namespace com.espertech.esper.common.@internal.filterspec
         public static readonly FilterBooleanExpressionFactoryImpl INSTANCE = new FilterBooleanExpressionFactoryImpl();
 
         public ExprNodeAdapterBase Make(
-            FilterSpecParamExprNode node, EventBean[] events, ExprEvaluatorContext exprEvaluatorContext,
-            int agentInstanceId, StatementContextFilterEvalEnv filterEvalEnv)
+            FilterSpecParamExprNode node,
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext,
+            int agentInstanceId,
+            StatementContextFilterEvalEnv filterEvalEnv)
         {
             // handle table evaluator context
             if (node.IsTableAccess) {
@@ -75,17 +78,24 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         protected ExprNodeAdapterBase GetLockableSingle(
-            FilterSpecParamExprNode factory, ExprEvaluatorContext exprEvaluatorContext,
-            VariableManagementService variableService, ImportServiceRuntime importService,
-            Attribute[] annotations, int agentInstanceId)
+            FilterSpecParamExprNode factory,
+            ExprEvaluatorContext exprEvaluatorContext,
+            VariableManagementService variableService,
+            ImportServiceRuntime importService,
+            Attribute[] annotations,
+            int agentInstanceId)
         {
             return new ExprNodeAdapterSSStmtLock(factory, exprEvaluatorContext, variableService);
         }
 
         protected ExprNodeAdapterBase GetLockableMultiStream(
-            FilterSpecParamExprNode factory, ExprEvaluatorContext exprEvaluatorContext,
-            VariableManagementService variableServiceToUse, ImportServiceRuntime importService,
-            EventBean[] events, Attribute[] annotations, int agentInstanceId)
+            FilterSpecParamExprNode factory,
+            ExprEvaluatorContext exprEvaluatorContext,
+            VariableManagementService variableServiceToUse,
+            ImportServiceRuntime importService,
+            EventBean[] events,
+            Attribute[] annotations,
+            int agentInstanceId)
         {
             return new ExprNodeAdapterMSStmtLock(factory, exprEvaluatorContext, events, variableServiceToUse);
         }

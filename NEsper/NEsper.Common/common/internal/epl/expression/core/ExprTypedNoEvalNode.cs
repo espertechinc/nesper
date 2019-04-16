@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private readonly string returnTypeName;
 
-        public ExprTypedNoEvalNode(string returnTypeName, Type returnType)
+        public ExprTypedNoEvalNode(
+            string returnTypeName,
+            Type returnType)
         {
             this.returnTypeName = returnTypeName;
             EvaluationType = returnType;
@@ -39,7 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             throw new EPException(GetType().GetSimpleName() + " cannot be evaluated");
         }
@@ -51,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprNodeRenderable ForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             throw new IllegalStateException("Typed-no-eval-expression does not allow code generation");
@@ -64,12 +71,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(returnTypeName);
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             return false;
         }

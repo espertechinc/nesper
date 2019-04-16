@@ -77,7 +77,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             return copy;
         }
 
-        public int RemoveOld(EventBean[] oldData, bool isEmpty, bool[] found)
+        public int RemoveOld(
+            EventBean[] oldData,
+            bool isEmpty,
+            bool[] found)
         {
             if (isEmpty) {
                 int countRemovedInner;
@@ -160,7 +163,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             }
         }
 
-        public RowRecogPartitionState GetState(EventBean theEvent, bool isCollect)
+        public RowRecogPartitionState GetState(
+            EventBean theEvent,
+            bool isCollect)
         {
             meta.AgentInstanceContext.InstrumentationProvider.QRegExPartition(theEvent);
 
@@ -198,7 +203,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             return state;
         }
 
-        public static object GetKeys(EventBean theEvent, RowRecogPartitionStateRepoGroupMeta meta)
+        public static object GetKeys(
+            EventBean theEvent,
+            RowRecogPartitionStateRepoGroupMeta meta)
         {
             var eventsPerStream = meta.EventsPerStream;
             eventsPerStream[0] = theEvent;

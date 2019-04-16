@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.metrics.instrumentation
@@ -32,8 +31,12 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         private readonly IList<CodegenExpression> qParams = new List<CodegenExpression>();
 
         public InstrumentationBuilderExpr(
-            Type generator, ExprForgeInstrumentable forge, string qname, Type requiredType,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type generator,
+            ExprForgeInstrumentable forge,
+            string qname,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             this.generator = generator;

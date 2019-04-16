@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -23,7 +22,6 @@ using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.historical.method.poll;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.util;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.core
@@ -57,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             var visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
             IList<ExprNode> validatedInputParameters = new List<ExprNode>();
-            foreach (var exprNode in methodStreamSpec.Expressions)
-            {
+            foreach (var exprNode in methodStreamSpec.Expressions) {
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.METHODINVJOIN, exprNode, validationContext);
                 validatedInputParameters.Add(validated);
@@ -66,22 +63,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             }
 
             // determine required streams
-            foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs)
-            {
+            foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs) {
                 subordinateStreams.Add(@ref.StreamNum);
             }
 
             // class-based evaluation
             MethodInfo targetMethod = null;
-            if (metadata.MethodProviderClass != null)
-            {
+            if (metadata.MethodProviderClass != null) {
                 // resolve actual method to use
-                ExprNodeUtilResolveExceptionHandler handler = new ProxyExprNodeUtilResolveExceptionHandler
-                {
-                    ProcHandle = e =>
-                    {
-                        if (methodStreamSpec.Expressions.Count == 0)
-                        {
+                ExprNodeUtilResolveExceptionHandler handler = new ProxyExprNodeUtilResolveExceptionHandler {
+                    ProcHandle = e => {
+                        if (methodStreamSpec.Expressions.Count == 0) {
                             return new ExprValidationException(
                                 "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: " +
                                 e.Message);
@@ -101,8 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 inputParamEvaluators = desc.ChildForges;
                 targetMethod = desc.ReflectionMethod;
             }
-            else
-            {
+            else {
                 // script-based evaluation
                 inputParamEvaluators = ExprNodeUtilityQuery.GetForges(ExprNodeUtilityQuery.ToArray(validatedInputParameters));
             }

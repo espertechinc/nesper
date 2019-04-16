@@ -38,12 +38,18 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
         private string ViewParamMessage => ViewName +
                                            " view requires a timestamp expression and a numeric or time period parameter for window size";
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             viewParameters = parameters;
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
@@ -74,7 +80,9 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block

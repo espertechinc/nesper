@@ -8,11 +8,10 @@
 
 namespace com.espertech.esper.common.client.configuration.common
 {
-	/// <summary>
-	/// Marker interface for different cache settings.
-	/// </summary>
-	public interface ConfigurationCommonCache
-	{
-	}
-
+    /// <summary>
+    /// Marker interface for different cache settings.
+    /// </summary>
+    public interface ConfigurationCommonCache
+    {
+    }
 } // end of namespace

@@ -16,7 +16,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumAllOfScalarForge : EnumForgeBaseScalar
     {
-        public EnumAllOfScalarForge(ExprForge innerExpression, int streamCountIncoming, ObjectArrayEventType type)
+        public EnumAllOfScalarForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ObjectArrayEventType type)
             : base(innerExpression, streamCountIncoming, type)
         {
         }
@@ -24,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public override EnumEval EnumEvaluator => new EnumAllOfScalarForgeEval(this, innerExpression.ExprEvaluator);
 
         public override CodegenExpression Codegen(
-            EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return EnumAllOfScalarForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
         }

@@ -148,7 +148,10 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
         }
 
         private static Pair<string, EventPropertyDescriptor> CheckIndexedOrMappedProp(
-            string propertyName, string updatedWindowOrTableName, string namedWindowAlias, EventTypeSPI eventTypeSPI)
+            string propertyName,
+            string updatedWindowOrTableName,
+            string namedWindowAlias,
+            EventTypeSPI eventTypeSPI)
         {
             EventPropertyDescriptor writableProperty = null;
 

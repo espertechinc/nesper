@@ -16,8 +16,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     public class SelectExprForgeContext
     {
         public SelectExprForgeContext(
-            ExprForge[] exprForges, string[] columnNames, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            EventType[] eventTypes, EventTypeAvroHandler eventTypeAvroHandler)
+            ExprForge[] exprForges,
+            string[] columnNames,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventType[] eventTypes,
+            EventTypeAvroHandler eventTypeAvroHandler)
         {
             ExprForges = exprForges;
             ColumnNames = columnNames;

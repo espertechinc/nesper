@@ -14,10 +14,11 @@ namespace com.espertech.esper.common.@internal.collection
     {
         private int _nextFreeIndex;
 
-        public RollingTwoValueBuffer(A[] bufferA, B[] bufferB)
+        public RollingTwoValueBuffer(
+            A[] bufferA,
+            B[] bufferB)
         {
-            if (bufferA.Length != bufferB.Length || bufferA.Length == 0)
-            {
+            if (bufferA.Length != bufferB.Length || bufferA.Length == 0) {
                 throw new ArgumentException("Minimum buffer size is 1, buffer sizes must be identical");
             }
 
@@ -30,14 +31,15 @@ namespace com.espertech.esper.common.@internal.collection
 
         public B[] BufferB { get; private set; }
 
-        public void Add(A valueA, B valueB)
+        public void Add(
+            A valueA,
+            B valueB)
         {
             BufferA[_nextFreeIndex] = valueA;
             BufferB[_nextFreeIndex] = valueB;
             _nextFreeIndex++;
 
-            if (_nextFreeIndex == BufferA.Length)
-            {
+            if (_nextFreeIndex == BufferA.Length) {
                 _nextFreeIndex = 0;
             }
         }

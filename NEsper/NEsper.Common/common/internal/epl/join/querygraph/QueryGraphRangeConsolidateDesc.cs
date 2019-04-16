@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphRangeConsolidateDesc
     {
-        public QueryGraphRangeConsolidateDesc(QueryGraphRangeEnum type, bool reverse)
+        public QueryGraphRangeConsolidateDesc(
+            QueryGraphRangeEnum type,
+            bool reverse)
         {
             Type = type;
             IsReverse = reverse;

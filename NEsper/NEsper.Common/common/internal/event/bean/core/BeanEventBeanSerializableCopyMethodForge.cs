@@ -10,13 +10,12 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     /// <summary>
-    /// Copy method for bean events utilizing serializable.
+    ///     Copy method for bean events utilizing serializable.
     /// </summary>
     public class BeanEventBeanSerializableCopyMethodForge : EventBeanCopyMethodForge
     {
@@ -29,10 +28,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
         {
-            CodegenExpressionField factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            return NewInstance(typeof(BeanEventBeanSerializableCopyMethod),
-                    Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF)),
-                    factory);
+            var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            return NewInstance(
+                typeof(BeanEventBeanSerializableCopyMethod),
+                Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF)),
+                factory);
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)

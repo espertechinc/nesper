@@ -8,7 +8,6 @@
 
 using System;
 using com.espertech.esper.common.@internal.epl.agg.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear

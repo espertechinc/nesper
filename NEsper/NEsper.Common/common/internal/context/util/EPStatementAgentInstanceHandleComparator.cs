@@ -15,15 +15,19 @@ namespace com.espertech.esper.common.@internal.context.util
     {
         public static EPStatementAgentInstanceHandleComparator INSTANCE = new EPStatementAgentInstanceHandleComparator();
 
-        public int Compare(EPStatementAgentInstanceHandle o1, EPStatementAgentInstanceHandle o2)
+        public int Compare(
+            EPStatementAgentInstanceHandle o1,
+            EPStatementAgentInstanceHandle o2)
         {
             if (o1.Priority == o2.Priority) {
                 if (o1 == o2 || o1.Equals(o2)) {
                     return 0;
                 }
+
                 if (o1.StatementId != o2.StatementId) {
                     return o1.StatementId.CompareTo(o2.StatementId);
                 }
+
                 return o1.AgentInstanceId < o2.AgentInstanceId ? -1 : 1;
             }
             else {

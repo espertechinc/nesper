@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.filter;
 using com.espertech.esper.common.@internal.filterspec;
@@ -26,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         internal readonly PatternContext patternContext;
 
         public PatternAgentInstanceContext(
-            PatternContext patternContext, 
-            AgentInstanceContext agentInstanceContext, 
+            PatternContext patternContext,
+            AgentInstanceContext agentInstanceContext,
             bool hasConsumingFilter,
             Func<FilterSpecActivatable, FilterValueSetParam[][]> contextAddendumFunction)
         {

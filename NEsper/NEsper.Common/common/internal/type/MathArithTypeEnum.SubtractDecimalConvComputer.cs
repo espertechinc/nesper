@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 decimal s1 = convOne.CoerceBoxedDecimal(d1);
                 decimal s2 = convTwo.CoerceBoxedDecimal(d2);
-                return s1.Subtract(s2);
+                return s1 - s2;
             }
 
             public CodegenExpression Codegen(
@@ -58,7 +58,8 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(ltype, "d1").AddParam(rtype, "d2").Block
                     .DeclareVar(typeof(decimal?), "s1", convOne.CoerceBoxedDecimalCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
                     .DeclareVar(typeof(decimal?), "s2", convTwo.CoerceBoxedDecimalCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
-                    .MethodReturn(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s1"), "subtract", CodegenExpressionBuilder.Ref("s2")));
+                    .MethodReturn(
+                        CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s1"), "subtract", CodegenExpressionBuilder.Ref("s2")));
                 return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
         }

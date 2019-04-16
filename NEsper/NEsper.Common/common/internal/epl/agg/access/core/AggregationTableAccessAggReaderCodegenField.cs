@@ -7,14 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.core
@@ -25,7 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         private readonly CodegenClassScope classScope;
         private readonly Type generator;
 
-        public AggregationTableAccessAggReaderCodegenField(AggregationTableAccessAggReaderForge readerForge, CodegenClassScope classScope, Type generator)
+        public AggregationTableAccessAggReaderCodegenField(
+            AggregationTableAccessAggReaderForge readerForge,
+            CodegenClassScope classScope,
+            Type generator)
         {
             this.readerForge = readerForge;
             this.classScope = classScope;
@@ -40,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         public CodegenExpression InitCtorScoped()
         {
             SAIFFInitializeSymbol symbols = new SAIFFInitializeSymbol();
-            CodegenMethod init = classScope.PackageScope.InitMethod.MakeChildWithScope(typeof(AggregationMultiFunctionTableReader), generator, symbols, classScope).AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+            CodegenMethod init = classScope.PackageScope.InitMethod
+                .MakeChildWithScope(typeof(AggregationMultiFunctionTableReader), generator, symbols, classScope).AddParam(
+                    typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
             init.Block.MethodReturn(readerForge.CodegenCreateReader(init, symbols, classScope));
             return LocalMethod(init, EPStatementInitServicesConstants.REF);
         }
@@ -50,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             if (this == o) return true;
             if (o == null || GetType() != o.GetType()) return false;
 
-            AggregationTableAccessAggReaderCodegenField that = (AggregationTableAccessAggReaderCodegenField)o;
+            AggregationTableAccessAggReaderCodegenField that = (AggregationTableAccessAggReaderCodegenField) o;
 
             return readerForge.Equals(that.readerForge);
         }

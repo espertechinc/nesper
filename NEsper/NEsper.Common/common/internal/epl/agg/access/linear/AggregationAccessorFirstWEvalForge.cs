@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         /// </summary>
         /// <param name="streamNum">stream id</param>
         /// <param name="childNode">expression</param>
-        public AggregationAccessorFirstWEvalForge(int streamNum, ExprForge childNode)
+        public AggregationAccessorFirstWEvalForge(
+            int streamNum,
+            ExprForge childNode)
         {
             StreamNum = streamNum;
             ChildNode = childNode;

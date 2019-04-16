@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             this.msec = msec;
         }
 
-        public void Evaluate(
+        public DateTimeEx Evaluate(
             DateTimeEx dateTimeEx,
             EventBean[] eventsPerStream,
             bool isNewData,
@@ -90,8 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
             block.StaticMethod(
-                typeof(CalendarWithTimeForgeOp), "ActionSetHMSMDateTimeEx", 
-                Ref("dateTime"), 
+                typeof(CalendarWithTimeForgeOp), "ActionSetHMSMDateTimeEx",
+                Ref("dateTime"),
                 Ref("hour"),
                 Ref("minute"),
                 Ref("second"),
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     Ref("dto"),
                     Ref("hour"),
                     Ref("minute"),
-                    Ref("second"), 
+                    Ref("second"),
                     Ref("msec")));
             return LocalMethod(methodNode, dto);
         }
@@ -138,8 +138,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
             block.MethodReturn(
                 StaticMethod(
-                    typeof(CalendarWithTimeForgeOp), "ActionSetHMSMDateTime", 
-                    Ref("dateTime"), 
+                    typeof(CalendarWithTimeForgeOp), "ActionSetHMSMDateTime",
+                    Ref("dateTime"),
                     Ref("hour"),
                     Ref("minute"),
                     Ref("second"),

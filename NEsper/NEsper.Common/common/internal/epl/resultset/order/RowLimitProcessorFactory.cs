@@ -22,39 +22,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         private Variable numRowsVariable;
         private Variable offsetVariable;
 
-        public Variable NumRowsVariable
-        {
+        public Variable NumRowsVariable {
             set => numRowsVariable = value;
         }
 
-        public Variable OffsetVariable
-        {
+        public Variable OffsetVariable {
             set => offsetVariable = value;
         }
 
-        public int CurrentRowLimit
-        {
+        public int CurrentRowLimit {
             set => currentRowLimit = value;
         }
 
-        public int CurrentOffset
-        {
+        public int CurrentOffset {
             set => currentOffset = value;
         }
 
         public RowLimitProcessor Instantiate(AgentInstanceContext agentInstanceContext)
         {
             VariableReader numRowsVariableReader = null;
-            if (numRowsVariable != null)
-            {
+            if (numRowsVariable != null) {
                 numRowsVariableReader = agentInstanceContext.VariableManagementService.GetReader(
                     numRowsVariable.DeploymentId, numRowsVariable.MetaData.VariableName,
                     agentInstanceContext.AgentInstanceId);
             }
 
             VariableReader offsetVariableReader = null;
-            if (offsetVariable != null)
-            {
+            if (offsetVariable != null) {
                 offsetVariableReader = agentInstanceContext.StatementContext.VariableManagementService.GetReader(
                     offsetVariable.DeploymentId, offsetVariable.MetaData.VariableName,
                     agentInstanceContext.AgentInstanceId);

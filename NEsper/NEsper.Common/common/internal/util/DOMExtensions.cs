@@ -8,43 +8,48 @@
 
 using System;
 using System.Xml;
-
 using com.espertech.esper.common.client.configuration;
 
 namespace com.espertech.esper.common.@internal.util
 {
     public static class DOMExtensions
     {
-        public static void WhenOptionalAttribute(XmlNode node, String key, Action<string> action)
+        public static void WhenOptionalAttribute(
+            XmlNode node,
+            String key,
+            Action<string> action)
         {
             var valueNode = node.Attributes.GetNamedItem(key);
-            if (valueNode != null)
-            {
+            if (valueNode != null) {
                 action.Invoke(valueNode.InnerText);
             }
         }
 
-        public static String GetOptionalAttribute(XmlNode node, String key)
+        public static String GetOptionalAttribute(
+            XmlNode node,
+            String key)
         {
             var valueNode = node.Attributes.GetNamedItem(key);
-            if (valueNode != null)
-            {
+            if (valueNode != null) {
                 return valueNode.InnerText;
             }
+
             return null;
         }
 
-        public static String GetRequiredAttribute(XmlNode node, String key)
+        public static String GetRequiredAttribute(
+            XmlNode node,
+            String key)
         {
             var valueNode = node.Attributes.GetNamedItem(key);
-            if (valueNode == null)
-            {
+            if (valueNode == null) {
                 var name = String.IsNullOrEmpty(node.Name)
                     ? node.LocalName
                     : node.Name;
                 throw new ConfigurationException(
                     "Required attribute by name '" + key + "' not found for element '" + name + "'");
             }
+
             return valueNode.InnerText;
         }
     }

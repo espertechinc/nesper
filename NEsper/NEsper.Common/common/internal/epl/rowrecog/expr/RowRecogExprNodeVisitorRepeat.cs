@@ -48,7 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
             }
         }
 
-        public void Visit(RowRecogExprNode node, RowRecogExprNode optionalParent, int level)
+        public void Visit(
+            RowRecogExprNode node,
+            RowRecogExprNode optionalParent,
+            int level)
         {
             if (node is RowRecogExprNodeAtom) {
                 var atom = (RowRecogExprNodeAtom) node;
@@ -84,7 +87,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
         public class RowRegexPermuteDesc
         {
-            public RowRegexPermuteDesc(RowRecogExprNodePermute permute, RowRecogExprNode optionalParent, int level)
+            public RowRegexPermuteDesc(
+                RowRecogExprNodePermute permute,
+                RowRecogExprNode optionalParent,
+                int level)
             {
                 Permute = permute;
                 OptionalParent = optionalParent;
@@ -100,7 +106,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
         public class RowRegexNestedDesc
         {
-            public RowRegexNestedDesc(RowRecogExprNodeNested nested, RowRecogExprNode optionalParent, int level)
+            public RowRegexNestedDesc(
+                RowRecogExprNodeNested nested,
+                RowRecogExprNode optionalParent,
+                int level)
             {
                 Nested = nested;
                 OptionalParent = optionalParent;

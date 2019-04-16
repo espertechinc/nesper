@@ -12,6 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 {
     public interface EventObserverVisitor
     {
-        void VisitObserver(MatchedEventMap beginState, int numBytes, params object[] stateFlat);
+        void VisitObserver(
+            MatchedEventMap beginState,
+            int numBytes,
+            params object[] stateFlat);
     }
 } // end of namespace

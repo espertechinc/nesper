@@ -31,19 +31,18 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly int streamNum;
 
         public JoinSetComposerPrototypeHistorical2StreamForge(
-            EventType[] streamTypes, 
-            ExprNode postJoinEvaluator, 
-            bool outerJoins, 
-            int polledNum, 
+            EventType[] streamTypes,
+            ExprNode postJoinEvaluator,
+            bool outerJoins,
+            int polledNum,
             int streamNum,
-            ExprNode outerJoinEqualsEval, 
+            ExprNode outerJoinEqualsEval,
             HistoricalIndexLookupStrategyForge historicalIndexLookupStrategy,
-            PollResultIndexingStrategyForge pollResultIndexingStrategy, 
+            PollResultIndexingStrategyForge pollResultIndexingStrategy,
             bool isAllHistoricalNoSubordinate,
             bool[] outerJoinPerStream)
             : base(streamTypes, postJoinEvaluator, outerJoins)
         {
-            
             this.polledNum = polledNum;
             this.streamNum = streamNum;
             this.outerJoinEqualsEval = outerJoinEqualsEval;
@@ -61,7 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         protected override void PopulateInline(
-            CodegenExpression impl, CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenExpression impl,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block
                 .ExprDotMethod(Ref("impl"), "setPolledNum", Constant(polledNum))

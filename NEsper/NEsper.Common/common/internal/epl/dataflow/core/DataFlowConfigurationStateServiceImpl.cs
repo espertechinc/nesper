@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.compat.collections;
 
@@ -28,12 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             savedConfigs.Put(savedConfiguration.SavedConfigurationName, savedConfiguration);
         }
 
-        public string[] SavedConfigNames
-        {
-            get
-            {
-                return savedConfigs.Keys.ToArray();
-            }
+        public string[] SavedConfigNames {
+            get { return savedConfigs.Keys.ToArray(); }
         }
 
         public EPDataFlowSavedConfiguration GetSavedConfig(string savedConfigName)

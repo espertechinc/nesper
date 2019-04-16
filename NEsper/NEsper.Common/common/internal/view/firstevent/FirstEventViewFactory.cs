@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.view.firstevent
 
         protected internal EventType eventType;
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

@@ -25,11 +25,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public DTLocalEvaluator DTEvaluator =>
-            new DTLocalDtxOpsDateEval(GetCalendarOps(calendarForges), TimeZone.Default);
+            new DTLocalDtxOpsDateEval(GetCalendarOps(calendarForges), TimeZoneInfo.Local);
 
         public CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return DTLocalDtxOpsDateEval.Codegen(
                 this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);

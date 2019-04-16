@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         internal readonly Type returnType;
 
         public DTLocalBeanIntervalNoEndTSForge(
-            EventPropertyGetterSPI getter, Type getterResultType, DTLocalForge inner, Type returnType)
+            EventPropertyGetterSPI getter,
+            Type getterResultType,
+            DTLocalForge inner,
+            Type returnType)
         {
             this.getter = getter;
             this.getterResultType = getterResultType;
@@ -33,8 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         public DTLocalEvaluator DTEvaluator => new DTLocalBeanIntervalNoEndTSEval(getter, inner.DTEvaluator);
 
         public CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             return DTLocalBeanIntervalNoEndTSEval.Codegen(
                 this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);

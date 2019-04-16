@@ -22,33 +22,45 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
         }
 
-        public MappedEventBean AdapterForTypedMap(IDictionary<string, object> value, EventType eventType)
+        public MappedEventBean AdapterForTypedMap(
+            IDictionary<string, object> value,
+            EventType eventType)
         {
             throw new UnsupportedOperationException();
         }
 
-        public ObjectArrayBackedEventBean AdapterForTypedObjectArray(object[] value, EventType eventType)
+        public ObjectArrayBackedEventBean AdapterForTypedObjectArray(
+            object[] value,
+            EventType eventType)
         {
             throw new UnsupportedOperationException();
         }
 
-        public EventBean AdapterForTypedBean(object value, EventType eventType)
+        public EventBean AdapterForTypedBean(
+            object value,
+            EventType eventType)
         {
             throw new UnsupportedOperationException();
         }
 
-        public EventBean AdapterForTypedDOM(XmlNode value, EventType eventType)
+        public EventBean AdapterForTypedDOM(
+            XmlNode value,
+            EventType eventType)
         {
             throw new UnsupportedOperationException();
         }
 
-        public EventBean AdapterForTypedAvro(object value, EventType eventType)
+        public EventBean AdapterForTypedAvro(
+            object value,
+            EventType eventType)
         {
             throw new UnsupportedOperationException();
         }
 
         public EventBean AdapterForTypedWrapper(
-            EventBean decoratedUnderlying, IDictionary<string, object> map, EventType wrapperEventType)
+            EventBean decoratedUnderlying,
+            IDictionary<string, object> map,
+            EventType wrapperEventType)
         {
             throw new UnsupportedOperationException();
         }

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -36,7 +35,6 @@ using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.module
@@ -123,7 +121,9 @@ namespace com.espertech.esper.common.@internal.context.module
 
         void ActivateVariable(string name);
 
-        void ActivateContext(string name, ContextDefinition definition);
+        void ActivateContext(
+            string name,
+            ContextDefinition definition);
 
         void ActivateExpression(string name);
 

@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.context.controller.category
     public class ContextControllerCategoryImpl : ContextControllerCategory
     {
         public ContextControllerCategoryImpl(
-            ContextManagerRealization realization, ContextControllerCategoryFactory factory)
+            ContextManagerRealization realization,
+            ContextControllerCategoryFactory factory)
             : base(realization, factory)
         {
             if (factory.FactoryEnv.IsRoot) {

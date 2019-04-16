@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.client.context
         /// <summary>Ctor. </summary>
         /// <param name="message">exception message</param>
         /// <param name="cause">inner exception</param>
-        public InvalidContextPartitionSelector(String message, Exception cause)
+        public InvalidContextPartitionSelector(
+            String message,
+            Exception cause)
             : base(message, cause)
         {
         }

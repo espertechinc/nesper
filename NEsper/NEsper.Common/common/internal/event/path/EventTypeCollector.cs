@@ -8,29 +8,53 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.path
 {
-	public interface EventTypeCollector {
-	    void RegisterMap(EventTypeMetadata metadata, LinkedHashMap<string, object> properties, string[] superTypes,
-	                     string startTimestampPropertyName, string endTimestampPropertyName);
+    public interface EventTypeCollector
+    {
+        void RegisterMap(
+            EventTypeMetadata metadata,
+            LinkedHashMap<string, object> properties,
+            string[] superTypes,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName);
 
-	    void RegisterObjectArray(EventTypeMetadata metadata, LinkedHashMap<string, object> properties, string[] superTypes,
-	                             string startTimestampPropertyName, string endTimestampPropertyName);
+        void RegisterObjectArray(
+            EventTypeMetadata metadata,
+            LinkedHashMap<string, object> properties,
+            string[] superTypes,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName);
 
-	    void RegisterWrapper(EventTypeMetadata metadata, EventType underlying, LinkedHashMap<string, object> properties);
+        void RegisterWrapper(
+            EventTypeMetadata metadata,
+            EventType underlying,
+            LinkedHashMap<string, object> properties);
 
-	    void RegisterBean(EventTypeMetadata metadata, Type clazz, string startTimestampName, string endTimestampName,
-	                      EventType[] superTypes, ISet<EventType> deepSupertypes);
+        void RegisterBean(
+            EventTypeMetadata metadata,
+            Type clazz,
+            string startTimestampName,
+            string endTimestampName,
+            EventType[] superTypes,
+            ISet<EventType> deepSupertypes);
 
-	    void RegisterXML(EventTypeMetadata metadata, string representsFragmentOfProperty, string representsOriginalTypeName);
+        void RegisterXML(
+            EventTypeMetadata metadata,
+            string representsFragmentOfProperty,
+            string representsOriginalTypeName);
 
-	    void RegisterAvro(EventTypeMetadata metadata, string schemaJson);
+        void RegisterAvro(
+            EventTypeMetadata metadata,
+            string schemaJson);
 
-	    void RegisterVariant(EventTypeMetadata metadata, EventType[] variants, bool any);
-	}
+        void RegisterVariant(
+            EventTypeMetadata metadata,
+            EventType[] variants,
+            bool any);
+    }
 } // end of namespace

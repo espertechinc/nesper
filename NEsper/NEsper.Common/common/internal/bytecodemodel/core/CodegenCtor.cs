@@ -14,13 +14,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenCtor : CodegenMethod
     {
-        public CodegenCtor(Type generator, bool includeDebugSymbols, IList<CodegenTypedParam> @params)
+        public CodegenCtor(
+            Type generator,
+            bool includeDebugSymbols,
+            IList<CodegenTypedParam> @params)
             : base(null, null, generator, CodegenSymbolProviderEmpty.INSTANCE, new CodegenScope(includeDebugSymbols))
         {
             CtorParams = @params;
         }
 
-        public CodegenCtor(Type generator, CodegenClassScope classScope, IList<CodegenTypedParam> @params)
+        public CodegenCtor(
+            Type generator,
+            CodegenClassScope classScope,
+            IList<CodegenTypedParam> @params)
             : base(null, null, generator, CodegenSymbolProviderEmpty.INSTANCE, new CodegenScope(classScope.IsDebug))
         {
             CtorParams = @params;

@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -18,21 +17,22 @@ namespace com.espertech.esper.common.client.soda
     /// Current timestamp supplies the current runtime time in an expression.
     /// </summary>
     [Serializable]
-    public class CurrentTimestampExpression : ExpressionBase {
+    public class CurrentTimestampExpression : ExpressionBase
+    {
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        public CurrentTimestampExpression()
+        {
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    public CurrentTimestampExpression() {
-	    }
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
-
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        writer.Write("current_timestamp()");
-	    }
-	}
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            writer.Write("current_timestamp()");
+        }
+    }
 } // end of namespace

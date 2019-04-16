@@ -11,7 +11,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
     /// <summary>Metrics executor executing in-thread. </summary>
     public class MetricsExecutorUnthreaded : MetricsExecutor
     {
-        public void Execute(MetricExec execution, MetricExecutionContext executionContext)
+        public void Execute(
+            MetricExec execution,
+            MetricExecutionContext executionContext)
         {
             execution.Execute(executionContext);
         }

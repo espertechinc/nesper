@@ -27,7 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     public class BindProcessorForge
     {
         public BindProcessorForge(
-            SelectExprProcessorForge synthetic, SelectClauseElementCompiled[] selectionList,
+            SelectExprProcessorForge synthetic,
+            SelectClauseElementCompiled[] selectionList,
             EventType[] typesPerStream,
             string[] streamNames,
             TableCompileTimeResolver tableService)
@@ -106,7 +107,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         public string[] ColumnNamesAssigned { get; }
 
         public CodegenMethod ProcessCodegen(
-            CodegenMethod processMethod, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenMethod processMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = processMethod.MakeChild(typeof(object[]), GetType(), codegenClassScope);
             var block = methodNode.Block

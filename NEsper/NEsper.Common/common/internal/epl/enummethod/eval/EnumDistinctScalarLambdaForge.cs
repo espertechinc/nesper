@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -18,22 +17,29 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumDistinctScalarLambdaForge : EnumForgeBase {
+    public class EnumDistinctScalarLambdaForge : EnumForgeBase
+    {
+        internal readonly ObjectArrayEventType resultEventType;
 
-	    internal readonly ObjectArrayEventType resultEventType;
+        public EnumDistinctScalarLambdaForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ObjectArrayEventType resultEventType)
+            : base(innerExpression, streamCountIncoming)
+        {
+            this.resultEventType = resultEventType;
+        }
 
-	    public EnumDistinctScalarLambdaForge(ExprForge innerExpression, int streamCountIncoming, ObjectArrayEventType resultEventType)
-	    	 : base(innerExpression, streamCountIncoming)
-	    {
-	        this.resultEventType = resultEventType;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumDistinctScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumDistinctScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumDistinctScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumDistinctScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

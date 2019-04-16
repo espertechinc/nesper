@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="eventType">the name of the type to Update</param>
         /// <param name="expression">expression returning a value to write</param>
         /// <returns>Update clause</returns>
-        public static UpdateClause Create(String eventType, Expression expression)
+        public static UpdateClause Create(
+            String eventType,
+            Expression expression)
         {
             var clause = new UpdateClause(eventType, null);
             clause.AddAssignment(expression);
@@ -43,7 +45,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="eventType">the name of the type to Update</param>
         /// <param name="optionalAsClauseStreamName">as-clause for Update, if any</param>
-        public UpdateClause(String eventType, String optionalAsClauseStreamName)
+        public UpdateClause(
+            String eventType,
+            String optionalAsClauseStreamName)
         {
             EventType = eventType;
             OptionalAsClauseStreamName = optionalAsClauseStreamName;
@@ -97,11 +101,11 @@ namespace com.espertech.esper.common.client.soda
                 writer.Write(" as ");
                 writer.Write(OptionalAsClauseStreamName);
             }
+
             writer.Write(" ");
             RenderEPLAssignments(writer, Assignments);
-    
-            if (OptionalWhereClause != null)
-            {
+
+            if (OptionalWhereClause != null) {
                 writer.Write(" where ");
                 OptionalWhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
@@ -112,12 +116,13 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to write to</param>
         /// <param name="assignments">to write</param>
-        public static void RenderEPLAssignments(TextWriter writer, IList<Assignment> assignments)
+        public static void RenderEPLAssignments(
+            TextWriter writer,
+            IList<Assignment> assignments)
         {
             writer.Write("set ");
             String delimiter = "";
-            foreach (Assignment pair in assignments)
-            {
+            foreach (Assignment pair in assignments) {
                 writer.Write(delimiter);
                 pair.Value.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";

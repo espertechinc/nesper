@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         private readonly ExprNode[] nodes;
         private readonly int granularity;
 
-        public ContextControllerHashedGetterCRC32SerializedForge(IList<ExprNode> nodes, int granularity)
+        public ContextControllerHashedGetterCRC32SerializedForge(
+            IList<ExprNode> nodes,
+            int granularity)
         {
             this.nodes = nodes.ToArray();
             this.granularity = granularity;
@@ -45,9 +47,11 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         /// <param name="granularity">granularity</param>
         /// <param name="serializers">serializers</param>
         /// <returns>hash</returns>
-        public static int SerializeAndCRC32Hash(object objectMayArray, int granularity, Serializer[] serializers)
+        public static int SerializeAndCRC32Hash(
+            object objectMayArray,
+            int granularity,
+            Serializer[] serializers)
         {
-
             byte[] bytes;
             try {
                 if (objectMayArray is object[]) {
@@ -62,10 +66,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 bytes = new byte[0];
             }
 
-            CRC32 crc = new CRC32();
-            crc.Update(bytes);
-            long value = crc.Value % granularity;
-
+            long value = ByteExtensions.GetCrc32(bytes);
             int result = (int) value;
             if (result >= 0) {
                 return result;
@@ -75,7 +76,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope parent, CodegenClassScope classScope)
+            CodegenExpression beanExpression,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             CodegenExpressionField serializers = classScope.AddFieldUnshared(
                 true, typeof(Serializer[]),

@@ -18,19 +18,26 @@ namespace com.espertech.esper.common.@internal.@event.arr
     {
         private readonly string key;
 
-        public ObjectArrayEventBeanPropertyWriterMapProp(int propertyIndex, string key)
+        public ObjectArrayEventBeanPropertyWriterMapProp(
+            int propertyIndex,
+            string key)
             : base(propertyIndex)
         {
             this.key = key;
         }
 
-        public void Write(object value, object[] array)
+        public void Write(
+            object value,
+            object[] array)
         {
             ObjectArrayWriteMapProp(value, array, index, key);
         }
 
         public CodegenExpression WriteCodegen(
-            CodegenExpression assigned, CodegenExpression und, CodegenExpression target, CodegenMethodScope parent,
+            CodegenExpression assigned,
+            CodegenExpression und,
+            CodegenExpression target,
+            CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
             return StaticMethod(
@@ -45,7 +52,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="array">underlying</param>
         /// <param name="index">index</param>
         /// <param name="key">key</param>
-        public static void ObjectArrayWriteMapProp(object value, object[] array, int index, string key)
+        public static void ObjectArrayWriteMapProp(
+            object value,
+            object[] array,
+            int index,
+            string key)
         {
             var mapEntry = (IDictionary<string, object>) array[index];
             if (mapEntry != null) {

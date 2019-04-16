@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private readonly ContextCompileTimeDescriptor contextDescriptor;
         private readonly string intoTableName;
 
-        public ExprValidationContext(StreamTypeService streamTypeService, ExprValidationContext ctx)
+        public ExprValidationContext(
+            StreamTypeService streamTypeService,
+            ExprValidationContext ctx)
             : this(
                 streamTypeService, ctx.ViewResourceDelegate, ctx.contextDescriptor,
                 ctx.IsDisablePropertyExpressionEventCollCache, ctx.IsAllowRollupFunctions,

@@ -7,13 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 
 namespace com.espertech.esper.common.@internal.epl.util
 {
-
     public static class CompileTimeResolverUtil
     {
         public static T ValidateAmbiguous<T>(
@@ -23,17 +21,14 @@ namespace com.espertech.esper.common.@internal.epl.util
             PathRegistryObjectType objectType,
             String name)
         {
-            if (path != null && preconfigured != null)
-            {
+            if (path != null && preconfigured != null) {
                 throw new EPException(
                     "The " + objectType.Name + " by name '" + name +
                     "' is ambiguous as it exists in both the path space and the preconfigured space");
             }
 
-            if (local != null)
-            {
-                if (path != null || preconfigured != null)
-                {
+            if (local != null) {
+                if (path != null || preconfigured != null) {
                     // This should not happen as any create-XXX has checked whether if it already exists; handle it anyway
                     throw new EPException(
                         "The " + objectType.Name + " by name '" + name +

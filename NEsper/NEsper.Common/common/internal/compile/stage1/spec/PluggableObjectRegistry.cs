@@ -7,13 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.collection;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public interface PluggableObjectRegistry
     {
-        Pair<Type,PluggableObjectEntry> Lookup(String nameSpace, String name);
+        Pair<Type, PluggableObjectEntry> Lookup(
+            String nameSpace,
+            String name);
     }
 }

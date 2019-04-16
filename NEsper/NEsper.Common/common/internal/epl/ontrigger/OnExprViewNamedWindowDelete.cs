@@ -22,14 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
     public class OnExprViewNamedWindowDelete : OnExprViewNameWindowBase
     {
         public OnExprViewNamedWindowDelete(
-            SubordWMatchExprLookupStrategy lookupStrategy, NamedWindowRootViewInstance rootView,
-            AgentInstanceContext agentInstanceContext) : base(lookupStrategy, rootView, agentInstanceContext)
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            NamedWindowRootViewInstance rootView,
+            AgentInstanceContext agentInstanceContext)
+            : base(lookupStrategy, rootView, agentInstanceContext)
         {
         }
 
         public override EventType EventType => rootView.EventType;
 
-        public override void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
+        public override void HandleMatching(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
                 OnTriggerType.ON_DELETE, triggerEvents, matchingEvents);

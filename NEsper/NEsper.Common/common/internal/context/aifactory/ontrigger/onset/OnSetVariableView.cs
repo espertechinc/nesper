@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
@@ -28,7 +27,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
         private readonly StatementAgentInstanceFactoryOnTriggerSet factory;
 
         public OnSetVariableView(
-            StatementAgentInstanceFactoryOnTriggerSet factory, AgentInstanceContext agentInstanceContext)
+            StatementAgentInstanceFactoryOnTriggerSet factory,
+            AgentInstanceContext agentInstanceContext)
         {
             this.factory = factory;
             this.agentInstanceContext = agentInstanceContext;
@@ -36,10 +36,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
 
         public override EventType EventType => factory.StatementEventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
-            if (newData == null || newData.Length == 0)
-            {
+            if (newData == null || newData.Length == 0) {
                 return;
             }
 
@@ -47,16 +48,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             var statementResultService = agentInstanceContext.StatementResultService;
             var produceOutputEvents = statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic;
 
-            if (produceOutputEvents)
-            {
+            if (produceOutputEvents) {
                 values = new Dictionary<string, object>();
             }
 
             eventsPerStream[0] = newData[newData.Length - 1];
             factory.VariableReadWrite.WriteVariables(eventsPerStream, values, agentInstanceContext);
 
-            if (values != null)
-            {
+            if (values != null) {
                 var newDataOut = new EventBean[1];
                 newDataOut[0] =
                     agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(

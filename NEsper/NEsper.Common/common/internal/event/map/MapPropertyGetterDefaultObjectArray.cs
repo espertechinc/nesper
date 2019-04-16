@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.@event.map
     public class MapPropertyGetterDefaultObjectArray : MapPropertyGetterDefaultBase
     {
         public MapPropertyGetterDefaultObjectArray(
-            string propertyName, EventType fragmentEventType, EventBeanTypedEventFactory eventBeanTypedEventFactory) :
+            string propertyName,
+            EventType fragmentEventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            :
             base(propertyName, fragmentEventType, eventBeanTypedEventFactory)
         {
         }
@@ -33,7 +36,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         internal override CodegenExpression HandleCreateFragmentCodegen(
-            CodegenExpression value, CodegenClassScope codegenClassScope)
+            CodegenExpression value,
+            CodegenClassScope codegenClassScope)
         {
             var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = codegenClassScope.AddFieldUnshared(

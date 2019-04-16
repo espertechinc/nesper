@@ -27,13 +27,17 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public EventType ContextEventType { get; }
 
-        public bool IsPartitionProperty(EventType fromType, string propertyName)
+        public bool IsPartitionProperty(
+            EventType fromType,
+            string propertyName)
         {
             var name = GetPartitionContextPropertyName(fromType, propertyName);
             return name != null;
         }
 
-        public string GetPartitionContextPropertyName(EventType fromType, string propertyName)
+        public string GetPartitionContextPropertyName(
+            EventType fromType,
+            string propertyName)
         {
             if (controllerValidations.Length == 1) {
                 if (controllerValidations[0] is ContextControllerKeyedValidation) {

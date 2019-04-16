@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         private readonly int _col;
 
-        public CodegenExpressionRefWCol(string @ref, int col)
+        public CodegenExpressionRefWCol(
+            string @ref,
+            int col)
             : base(@ref)
         {
             _col = col;
@@ -24,7 +26,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public override string Ref => base.Ref + _col;
 
-        public override void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public override void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             base.Render(builder, imports, isInnerClass);
             builder.Append(_col);

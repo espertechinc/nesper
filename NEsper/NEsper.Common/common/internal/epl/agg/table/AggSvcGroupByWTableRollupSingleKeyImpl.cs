@@ -19,14 +19,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
     public class AggSvcGroupByWTableRollupSingleKeyImpl : AggSvcGroupByWTableBase
     {
         public AggSvcGroupByWTableRollupSingleKeyImpl(
-            TableInstanceGrouped tableInstance, TableColumnMethodPairEval[] methodPairs,
-            AggregationMultiFunctionAgent[] accessAgents, int[] accessColumnsZeroOffset) : base(
-            tableInstance, methodPairs, accessAgents, accessColumnsZeroOffset)
+            TableInstanceGrouped tableInstance,
+            TableColumnMethodPairEval[] methodPairs,
+            AggregationMultiFunctionAgent[] accessAgents,
+            int[] accessColumnsZeroOffset)
+            : base(
+                tableInstance, methodPairs, accessAgents, accessColumnsZeroOffset)
         {
         }
 
         public override void ApplyEnterInternal(
-            EventBean[] eventsPerStream, object compositeGroupByKey, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object compositeGroupByKey,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var groupKeyPerLevel = (object[]) compositeGroupByKey;
             foreach (var groupByKey in groupKeyPerLevel) {
@@ -35,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         }
 
         public override void ApplyLeaveInternal(
-            EventBean[] eventsPerStream, object compositeGroupByKey, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object compositeGroupByKey,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var groupKeyPerLevel = (object[]) compositeGroupByKey;
             foreach (var groupByKey in groupKeyPerLevel) {

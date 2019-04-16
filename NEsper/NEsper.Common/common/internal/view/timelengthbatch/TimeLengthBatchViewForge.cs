@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -46,7 +45,10 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             set => scheduleCallbackId = value;
         }
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             var validated = ViewForgeSupport.Validate(ViewName, parameters, viewForgeEnv, streamNumber);
             var errorMessage =
@@ -69,7 +71,10 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             }
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
@@ -85,7 +90,9 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             if (scheduleCallbackId == -1) {
@@ -94,8 +101,9 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
 
             method.Block
                 .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setSize",  ExprNodeUtilityCodegen
-                    .CodegenEvaluator(sizeForge, method, GetType(), classScope))
+                .ExprDotMethod(
+                    factory, "setSize", ExprNodeUtilityCodegen
+                        .CodegenEvaluator(sizeForge, method, GetType(), classScope))
                 .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
                 .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId))
                 .ExprDotMethod(factory, "setForceUpdate", Constant(isForceUpdate))

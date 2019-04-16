@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.client.context
         /// <param name="agentInstanceId">agent instance id</param>
         /// <param name="identifier">context partition identification</param>
         /// <param name="state">variable state</param>
-        public ContextPartitionVariableState(int agentInstanceId, ContextPartitionIdentifier identifier, object state)
+        public ContextPartitionVariableState(
+            int agentInstanceId,
+            ContextPartitionIdentifier identifier,
+            object state)
         {
             AgentInstanceId = agentInstanceId;
             Identifier = identifier;

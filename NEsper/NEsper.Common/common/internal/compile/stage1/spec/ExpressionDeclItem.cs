@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public class ExpressionDeclItem
     {
-        public ExpressionDeclItem(string name, string[] parametersNames, bool alias)
+        public ExpressionDeclItem(
+            string name,
+            string[] parametersNames,
+            bool alias)
         {
             Name = name;
             ParametersNames = parametersNames;
@@ -40,7 +43,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public NameAccessModifier Visibility { get; set; } = NameAccessModifier.TRANSIENT;
 
         public CodegenExpression Make(
-            CodegenMethod parent, ModuleExpressionDeclaredInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod parent,
+            ModuleExpressionDeclaredInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ExpressionDeclItem), GetType(), classScope);
 

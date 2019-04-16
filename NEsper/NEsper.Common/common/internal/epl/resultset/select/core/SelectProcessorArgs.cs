@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     public class SelectProcessorArgs
     {
         public SelectProcessorArgs(
-            SelectClauseElementCompiled[] selectionList, 
-            GroupByRollupInfo groupByRollupInfo, 
+            SelectClauseElementCompiled[] selectionList,
+            GroupByRollupInfo groupByRollupInfo,
             bool isUsingWildcard,
             EventType optionalInsertIntoEventType,
             ForClauseSpec forClauseSpec,

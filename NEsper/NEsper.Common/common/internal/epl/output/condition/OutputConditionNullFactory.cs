@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         }
 
         public OutputCondition InstantiateOutputCondition(
-            AgentInstanceContext agentInstanceContext, OutputCallback outputCallback)
+            AgentInstanceContext agentInstanceContext,
+            OutputCallback outputCallback)
         {
             return new OutputConditionNull(outputCallback);
         }

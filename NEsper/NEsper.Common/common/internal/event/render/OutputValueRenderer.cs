@@ -6,21 +6,22 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Text;
 
 namespace com.espertech.esper.common.@internal.@event.render
 {
     /// <summary>
-    /// For rendering an output value returned by a property.
+    ///     For rendering an output value returned by a property.
     /// </summary>
     public interface OutputValueRenderer
     {
         /// <summary>
-        /// Renders the value to the buffer.
+        ///     Renders the value to the buffer.
         /// </summary>
         /// <param name="o">object to render</param>
         /// <param name="buf">buffer to populate</param>
-        void Render(Object o, StringBuilder buf);
+        void Render(
+            object o,
+            StringBuilder buf);
     }
 }

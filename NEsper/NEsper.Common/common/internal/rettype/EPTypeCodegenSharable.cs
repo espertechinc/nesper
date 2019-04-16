@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.rettype
         private readonly CodegenClassScope classScope;
         private readonly EPType epType;
 
-        public EPTypeCodegenSharable(EPType epType, CodegenClassScope classScope)
+        public EPTypeCodegenSharable(
+            EPType epType,
+            CodegenClassScope classScope)
         {
             this.epType = epType;
             this.classScope = classScope;

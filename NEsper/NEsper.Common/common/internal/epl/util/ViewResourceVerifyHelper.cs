@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.util
     public class ViewResourceVerifyHelper
     {
         public static ViewResourceDelegateDesc[] VerifyPreviousAndPriorRequirements(
-            IList<ViewFactoryForge>[] unmaterializedViewChain, ViewResourceDelegateExpr @delegate)
+            IList<ViewFactoryForge>[] unmaterializedViewChain,
+            ViewResourceDelegateExpr @delegate)
         {
             var numStreams = unmaterializedViewChain.Length;
             var perStream = new ViewResourceDelegateDesc[numStreams];

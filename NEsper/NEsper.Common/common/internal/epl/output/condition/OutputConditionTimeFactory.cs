@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
     public class OutputConditionTimeFactory : OutputConditionFactory
     {
         public OutputConditionTimeFactory(
-            bool hasVariable, TimePeriodCompute timePeriodCompute, bool isStartConditionOnCreation,
+            bool hasVariable,
+            TimePeriodCompute timePeriodCompute,
+            bool isStartConditionOnCreation,
             int scheduleCallbackId)
         {
             IsVariable = hasVariable;
@@ -36,7 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         public int ScheduleCallbackId { get; }
 
         public OutputCondition InstantiateOutputCondition(
-            AgentInstanceContext agentInstanceContext, OutputCallback outputCallback)
+            AgentInstanceContext agentInstanceContext,
+            OutputCallback outputCallback)
         {
             return new OutputConditionTime(outputCallback, agentInstanceContext, this, IsStartConditionOnCreation);
         }

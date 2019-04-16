@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.context.util
     public class AgentInstance
     {
         public AgentInstance(
-            AgentInstanceStopCallback stopCallback, AgentInstanceContext agentInstanceContext, Viewable finalView)
+            AgentInstanceStopCallback stopCallback,
+            AgentInstanceContext agentInstanceContext,
+            Viewable finalView)
         {
             StopCallback = stopCallback;
             AgentInstanceContext = agentInstanceContext;

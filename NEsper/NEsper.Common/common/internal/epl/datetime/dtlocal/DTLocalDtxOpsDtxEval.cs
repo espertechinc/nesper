@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,33 +16,48 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-	public class DTLocalDtxOpsDtxEval : DTLocalEvaluatorCalOpsCalBase , DTLocalEvaluator {
-	    public DTLocalDtxOpsDtxEval(IList<CalendarOp> calendarOps) : base(calendarOps)
-	        {
-	    }
+    public class DTLocalDtxOpsDtxEval : DTLocalEvaluatorCalOpsCalBase,
+        DTLocalEvaluator
+    {
+        public DTLocalDtxOpsDtxEval(IList<CalendarOp> calendarOps)
+            : base(calendarOps)
+        {
+        }
 
-	    public object Evaluate(object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        DateTimeEx calValue = (DateTimeEx) target;
-	        DateTimeEx cal = (DateTimeEx) calValue.Clone();
+        public object Evaluate(
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            DateTimeEx calValue = (DateTimeEx) target;
+            DateTimeEx cal = (DateTimeEx) calValue.Clone();
 
-	        DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
+            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
 
-	        return cal;
-	    }
+            return cal;
+        }
 
-	    public static CodegenExpression Codegen(DTLocalDtxOpsDtxForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(DateTimeEx), typeof(DTLocalDtxOpsDtxEval), codegenClassScope).AddParam(typeof(DateTimeEx), "target");
+        public static CodegenExpression Codegen(
+            DTLocalDtxOpsDtxForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(DateTimeEx), typeof(DTLocalDtxOpsDtxEval), codegenClassScope)
+                .AddParam(typeof(DateTimeEx), "target");
 
-	        CodegenBlock block = methodNode.Block.DeclareVar(typeof(DateTimeEx), "cal", Cast(typeof(DateTimeEx), ExprDotMethod(@Ref("target"), "clone")));
-	        EvaluateCalOpsCalendarCodegen(block, forge.calendarForges, @Ref("cal"), methodNode, exprSymbol, codegenClassScope);
-	        block.MethodReturn(@Ref("cal"));
-	        return LocalMethod(methodNode, inner);
-	    }
-	}
+            CodegenBlock block = methodNode.Block.DeclareVar(
+                typeof(DateTimeEx), "dtx", Cast(typeof(DateTimeEx), ExprDotMethod(@Ref("target"), "clone")));
+            EvaluateCalOpsCalendarCodegen(block, forge.calendarForges, @Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
+            block.MethodReturn(@Ref("dtx"));
+            return LocalMethod(methodNode, inner);
+        }
+    }
 } // end of namespace

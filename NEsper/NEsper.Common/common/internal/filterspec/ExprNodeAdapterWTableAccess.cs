@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly TableExprEvaluatorContext tableExprEvaluatorContext;
 
         public ExprNodeAdapterWTableAccess(
-            FilterSpecParamExprNode factory, ExprEvaluatorContext evaluatorContext, ExprNodeAdapterBase evalBase,
+            FilterSpecParamExprNode factory,
+            ExprEvaluatorContext evaluatorContext,
+            ExprNodeAdapterBase evalBase,
             TableExprEvaluatorContext tableExprEvaluatorContext)
             : base(factory, evaluatorContext)
 

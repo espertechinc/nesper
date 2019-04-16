@@ -16,10 +16,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// </summary>
     public interface ExprEnumerationGivenEvent
     {
-        ICollection<EventBean> EvaluateEventGetROCollectionEvents(EventBean @event, ExprEvaluatorContext context);
+        ICollection<EventBean> EvaluateEventGetROCollectionEvents(
+            EventBean @event,
+            ExprEvaluatorContext context);
 
-        ICollection<object> EvaluateEventGetROCollectionScalar(EventBean @event, ExprEvaluatorContext context);
+        ICollection<object> EvaluateEventGetROCollectionScalar(
+            EventBean @event,
+            ExprEvaluatorContext context);
 
-        EventBean EvaluateEventGetEventBean(EventBean @event, ExprEvaluatorContext context);
+        EventBean EvaluateEventGetEventBean(
+            EventBean @event,
+            ExprEvaluatorContext context);
     }
 } // end of namespace

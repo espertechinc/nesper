@@ -33,13 +33,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             set => isFirst = value;
         }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             this.statementContext = statementContext;
         }
 
         public override InfraOnExprBaseViewResult DetermineOnExprView(
-            AgentInstanceContext agentInstanceContext, IList<AgentInstanceStopCallback> stopCallbacks,
+            AgentInstanceContext agentInstanceContext,
+            IList<AgentInstanceStopCallback> stopCallbacks,
             bool isRecoveringReslient)
         {
             var processors = new ResultSetProcessor[items.Length];
@@ -63,13 +67,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             return new InfraOnExprBaseViewResult(view, null);
         }
 
-        public override View DetermineFinalOutputView(AgentInstanceContext agentInstanceContext, View onExprView)
+        public override View DetermineFinalOutputView(
+            AgentInstanceContext agentInstanceContext,
+            View onExprView)
         {
             return onExprView;
         }
 
         public override StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
         }

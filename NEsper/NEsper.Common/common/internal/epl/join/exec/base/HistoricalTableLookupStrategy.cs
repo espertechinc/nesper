@@ -41,8 +41,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         /// <param name="rootStreamNum">the query plan root stream number</param>
         /// <param name="outerJoinExprNode">an optional outer join expression</param>
         public HistoricalTableLookupStrategy(
-            HistoricalEventViewable viewable, PollResultIndexingStrategy indexingStrategy,
-            HistoricalIndexLookupStrategy lookupStrategy, int numStreams, int streamNum, int rootStreamNum,
+            HistoricalEventViewable viewable,
+            PollResultIndexingStrategy indexingStrategy,
+            HistoricalIndexLookupStrategy lookupStrategy,
+            int numStreams,
+            int streamNum,
+            int rootStreamNum,
             ExprEvaluator outerJoinExprNode)
         {
             this.viewable = viewable;
@@ -60,7 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
 
         public LookupStrategyType LookupStrategyType => LookupStrategyType.HISTORICAL;
 
-        public ISet<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext)
+        public ICollection<EventBean> Lookup(
+            EventBean theEvent,
+            Cursor cursor,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QIndexJoinLookup(this, null);
@@ -115,7 +122,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             return result;
         }
 
-        private void RecursiveFill(EventBean[] lookupEventsPerStream, Node node)
+        private void RecursiveFill(
+            EventBean[] lookupEventsPerStream,
+            Node node)
         {
             if (node == null) {
                 return;

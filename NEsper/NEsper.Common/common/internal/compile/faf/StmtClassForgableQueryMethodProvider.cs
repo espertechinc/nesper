@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using com.espertech.esper.common.client;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
+using com.espertech.esper.compat.function;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.faf
@@ -28,7 +30,9 @@ namespace com.espertech.esper.common.@internal.compile.faf
         private readonly CodegenPackageScope packageScope;
 
         public StmtClassForgableQueryMethodProvider(
-            string className, CodegenPackageScope packageScope, FAFQueryMethodForge forge)
+            string className,
+            CodegenPackageScope packageScope,
+            FAFQueryMethodForge forge)
         {
             ClassName = className;
             this.packageScope = packageScope;
@@ -37,11 +41,11 @@ namespace com.espertech.esper.common.@internal.compile.faf
 
         public CodegenClass Forge(bool includeDebugSymbols)
         {
-            var debugInformationProvider = () => {
+            var debugInformationProvider = new Supplier<string>(() => {
                 var writer = new StringWriter();
                 writer.Write("FAF query");
                 return writer.ToString();
-            };
+            });
 
             try {
                 IList<CodegenInnerClass> innerClasses = new List<CodegenInnerClass>();
@@ -73,7 +77,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 // add get-informational methods
                 var getQueryInformationals = CodegenMethod.MakeParentNode(
                     typeof(FAFQueryInformationals), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-                FAFQueryInformationals queryInformationals = FAFQueryInformationals.From(
+                var queryInformationals = FAFQueryInformationals.From(
                     packageScope.SubstitutionParamsByNumber, packageScope.SubstitutionParamsByName);
                 getQueryInformationals.Block.MethodReturn(queryInformationals.Make(getQueryInformationals, classScope));
 
@@ -96,10 +100,15 @@ namespace com.espertech.esper.common.@internal.compile.faf
                     typeof(FAFQueryMethodProvider), packageScope.PackageName, ClassName, classScope,
                     providerExplicitMembers, providerCtor, methods, innerClasses);
             }
-            catch (Throwable t) {
+            catch (EPException e)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
                 throw new EPException(
-                    "Fatal exception during code-generation for " + debugInformationProvider.Get() + " : " + t.Message,
-                    t);
+                    "Fatal exception during code-generation for " + debugInformationProvider.Invoke() + " : " + e.Message,
+                    e);
             }
         }
 

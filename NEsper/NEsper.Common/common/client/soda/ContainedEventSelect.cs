@@ -90,7 +90,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to write to</param>
         /// <param name="formatter">for newline-whitespace formatting</param>
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             if (selectClause != null) {
                 selectClause.ToEPL(writer, formatter, false, false);
@@ -121,7 +123,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to render to</param>
         /// <param name="formatter">to use</param>
         /// <param name="items">to render</param>
-        public static void ToEPL(TextWriter writer, EPStatementFormatter formatter, IList<ContainedEventSelect> items)
+        public static void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter,
+            IList<ContainedEventSelect> items)
         {
             foreach (var propertySelect in items) {
                 writer.Write('[');

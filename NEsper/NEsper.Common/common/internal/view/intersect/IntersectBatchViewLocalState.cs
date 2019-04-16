@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
 {
     public class IntersectBatchViewLocalState
     {
-        public IntersectBatchViewLocalState(EventBean[][] oldEventsPerView, EventBean[][] newEventsPerView)
+        public IntersectBatchViewLocalState(
+            EventBean[][] oldEventsPerView,
+            EventBean[][] newEventsPerView)
         {
             OldEventsPerView = oldEventsPerView;
             NewEventsPerView = newEventsPerView;

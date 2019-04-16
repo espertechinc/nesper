@@ -13,10 +13,11 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
     public interface NamedWindowConsumerManagementService
     {
         void AddConsumer(
-            string namedWindowDeploymentId, 
+            string namedWindowDeploymentId,
             string namedWindowName,
             int namedWindowConsumerId,
-            StatementContext statementContext, bool subquery);
+            StatementContext statementContext,
+            bool subquery);
 
         void DestroyConsumer(
             string namedWindowDeploymentId,

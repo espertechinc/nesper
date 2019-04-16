@@ -23,8 +23,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         private string resultSetProcessorClassName;
 
         public OnSplitItemForge(
-            ExprNode whereClause, bool isNamedWindowInsert, TableMetaData insertIntoTable,
-            ResultSetProcessorDesc resultSetProcessorDesc, PropertyEvaluatorForge propertyEvaluator)
+            ExprNode whereClause,
+            bool isNamedWindowInsert,
+            TableMetaData insertIntoTable,
+            ResultSetProcessorDesc resultSetProcessorDesc,
+            PropertyEvaluatorForge propertyEvaluator)
         {
             WhereClause = whereClause;
             IsNamedWindowInsert = isNamedWindowInsert;
@@ -48,7 +51,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         }
 
         public static CodegenExpression Make(
-            OnSplitItemForge[] items, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            OnSplitItemForge[] items,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var expressions = new CodegenExpression[items.Length];
@@ -60,7 +65,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         }
 
         private CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(OnSplitItemEval), GetType(), classScope);
             method.Block

@@ -223,7 +223,7 @@ namespace com.espertech.esper.common.@internal.type
             RelationalOpEnum op)
         {
             return Op(
-                MathArithTypeEnum.CodegenAsLong(lhs, lhsType), op.ExpressionText, 
+                MathArithTypeEnum.CodegenAsLong(lhs, lhsType), op.ExpressionText,
                 MathArithTypeEnum.CodegenAsLong(rhs, rhsType));
         }
 
@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.@internal.type
             RelationalOpEnum op)
         {
             return Op(
-                MathArithTypeEnum.CodegenAsDecimal(lhs, lhsType), op.ExpressionText, 
+                MathArithTypeEnum.CodegenAsDecimal(lhs, lhsType), op.ExpressionText,
                 MathArithTypeEnum.CodegenAsDecimal(rhs, rhsType));
         }
 
@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.type
             RelationalOpEnum op)
         {
             return Op(
-                MathArithTypeEnum.CodegenAsDouble(lhs, lhsType), op.ExpressionText, 
+                MathArithTypeEnum.CodegenAsDouble(lhs, lhsType), op.ExpressionText,
                 MathArithTypeEnum.CodegenAsDouble(rhs, rhsType));
         }
 
@@ -259,7 +259,7 @@ namespace com.espertech.esper.common.@internal.type
             RelationalOpEnum op)
         {
             return Op(
-                MathArithTypeEnum.CodegenAsFloat(lhs, lhsType), op.ExpressionText, 
+                MathArithTypeEnum.CodegenAsFloat(lhs, lhsType), op.ExpressionText,
                 MathArithTypeEnum.CodegenAsFloat(rhs, rhsType));
         }
 
@@ -282,9 +282,10 @@ namespace com.espertech.esper.common.@internal.type
             Type rhsType,
             CodegenExpressionRelational.CodegenRelational rel)
         {
-            return Relational(ExprDotMethod(
-                CodegenAsString(lhs, lhsType), "Compare",
-                CodegenAsString(rhs, rhsType)), rel, 
+            return Relational(
+                ExprDotMethod(
+                    CodegenAsString(lhs, lhsType), "Compare",
+                    CodegenAsString(rhs, rhsType)), rel,
                 Constant(0));
         }
 

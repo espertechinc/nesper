@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -33,7 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
         /// <param name="evalEveryNode">is the factory node associated to the state</param>
         public EvalEveryStateNode(
             Evaluator parentNode,
-            EvalEveryNode evalEveryNode) : base(parentNode)
+            EvalEveryNode evalEveryNode)
+            : base(parentNode)
         {
             this.evalEveryNode = evalEveryNode;
             spawnedNodes = new List<EvalStateNode>();
@@ -47,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
 
         public override bool IsObserverStateNodeNonRestarting => false;
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             AgentInstanceContext agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryEvalFalse(evalEveryNode.factoryNode);
@@ -55,8 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             fromNode.Quit();
             spawnedNodes.Remove(fromNode);
 
-            if (!restartable)
-            {
+            if (!restartable) {
                 agentInstanceContext.AuditProvider.PatternFalse(evalEveryNode.FactoryNode, this, agentInstanceContext);
                 agentInstanceContext.AuditProvider.PatternInstance(
                     false, evalEveryNode.factoryNode, agentInstanceContext);
@@ -72,12 +73,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             spawned.Start(beginState);
 
             // If the whole spawned expression already turned true, quit it again
-            if (spawnEvaluator.IsEvaluatedTrue)
-            {
+            if (spawnEvaluator.IsEvaluatedTrue) {
                 spawned.Quit();
             }
-            else
-            {
+            else {
                 spawnedNodes.Add(spawned);
                 spawned.ParentEvaluator = this;
             }
@@ -86,24 +85,24 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
         }
 
         public void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent)
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             AgentInstanceContext agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryEvaluateTrue(
                 evalEveryNode.factoryNode, matchEvent);
 
-            if (isQuitted)
-            {
+            if (isQuitted) {
                 spawnedNodes.Remove(fromNode);
             }
 
             // See explanation in EvalFilterStateNode for the type check
-            if (fromNode.IsFilterStateNode || fromNode.IsObserverStateNodeNonRestarting)
-            {
+            if (fromNode.IsFilterStateNode || fromNode.IsObserverStateNodeNonRestarting) {
                 // We do not need to newState new listeners here, since the filter state node below this node did not quit
             }
-            else
-            {
+            else {
                 // Spawn all nodes below this EVERY node
                 // During the start of a child we need to use the temporary evaluator to catch any event created during a start
                 // Such events can be raised when the "not" operator is used.
@@ -112,12 +111,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
                 spawned.Start(beginState);
 
                 // If the whole spawned expression already turned true, quit it again
-                if (spawnEvaluator.IsEvaluatedTrue)
-                {
+                if (spawnEvaluator.IsEvaluatedTrue) {
                     spawned.Quit();
                 }
-                else
-                {
+                else {
                     spawnedNodes.Add(spawned);
                     spawned.ParentEvaluator = this;
                 }
@@ -135,15 +132,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
-            if (PatternConsumptionUtil.ContainsEvent(matchEvent, beginState))
-            {
+            if (PatternConsumptionUtil.ContainsEvent(matchEvent, beginState)) {
                 Quit();
                 AgentInstanceContext agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.PatternFalse(evalEveryNode.FactoryNode, this, agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, true);
             }
-            else
-            {
+            else {
                 PatternConsumptionUtil.ChildNodeRemoveMatches(matchEvent, spawnedNodes);
             }
         }
@@ -166,12 +161,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             childState.Start(beginState);
 
             // If the spawned expression turned true already, just quit it
-            if (spawnEvaluator.IsEvaluatedTrue)
-            {
+            if (spawnEvaluator.IsEvaluatedTrue) {
                 childState.Quit();
             }
-            else
-            {
+            else {
                 childState.ParentEvaluator = this;
             }
 
@@ -185,8 +178,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             agentInstanceContext.AuditProvider.PatternInstance(false, evalEveryNode.factoryNode, agentInstanceContext);
 
             // Stop all child nodes
-            foreach (var child in spawnedNodes)
-            {
+            foreach (var child in spawnedNodes) {
                 child.Quit();
             }
 
@@ -196,8 +188,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitEvery(evalEveryNode.FactoryNode, this, beginState);
-            foreach (var spawnedNode in spawnedNodes)
-            {
+            foreach (var spawnedNode in spawnedNodes) {
                 spawnedNode.Accept(visitor);
             }
         }

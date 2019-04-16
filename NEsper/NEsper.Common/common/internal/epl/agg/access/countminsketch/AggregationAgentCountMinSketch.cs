@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -18,35 +17,49 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
-	public class AggregationAgentCountMinSketch : AggregationMultiFunctionAgent {
+    public class AggregationAgentCountMinSketch : AggregationMultiFunctionAgent
+    {
+        private ExprEvaluator stringEval;
+        private ExprEvaluator optionalFilterEval;
 
-	    private ExprEvaluator stringEval;
-	    private ExprEvaluator optionalFilterEval;
+        public void SetStringEval(ExprEvaluator stringEval)
+        {
+            this.stringEval = stringEval;
+        }
 
-	    public void SetStringEval(ExprEvaluator stringEval) {
-	        this.stringEval = stringEval;
-	    }
+        public void SetOptionalFilterEval(ExprEvaluator optionalFilterEval)
+        {
+            this.optionalFilterEval = optionalFilterEval;
+        }
 
-	    public void SetOptionalFilterEval(ExprEvaluator optionalFilterEval) {
-	        this.optionalFilterEval = optionalFilterEval;
-	    }
+        public void ApplyEnter(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
+        {
+            if (optionalFilterEval != null) {
+                Boolean pass = (Boolean) optionalFilterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if (pass == null || !pass) {
+                    return;
+                }
+            }
 
-	    public void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column) {
-	        if (optionalFilterEval != null) {
-	            Boolean pass = (Boolean) optionalFilterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-	            if (pass == null || !pass) {
-	                return;
-	            }
-	        }
-	        object value = stringEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-	        if (value == null) {
-	            return;
-	        }
-	        CountMinSketchAggState state = (CountMinSketchAggState) row.GetAccessState(column);
-	        state.Add(value);
-	    }
+            object value = stringEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            if (value == null) {
+                return;
+            }
 
-	    public void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationRow row, int column) {
-	    }
-	}
+            CountMinSketchAggState state = (CountMinSketchAggState) row.GetAccessState(column);
+            state.Add(value);
+        }
+
+        public void ApplyLeave(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationRow row,
+            int column)
+        {
+        }
+    }
 } // end of namespace

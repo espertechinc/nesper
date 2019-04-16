@@ -33,8 +33,12 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly IList<SubordPropRangeKeyForge> _rangeProps;
 
         public SubordCompositeTableLookupStrategyFactoryForge(
-            bool isNWOnTrigger, int numStreams, IList<SubordPropHashKeyForge> keyExpr, Type[] coercionKeyTypes,
-            IList<SubordPropRangeKeyForge> rangeProps, Type[] coercionRangeTypes)
+            bool isNWOnTrigger,
+            int numStreams,
+            IList<SubordPropHashKeyForge> keyExpr,
+            Type[] coercionKeyTypes,
+            IList<SubordPropRangeKeyForge> rangeProps,
+            Type[] coercionRangeTypes)
         {
             this.isNWOnTrigger = isNWOnTrigger;
             this._numStreams = numStreams;
@@ -50,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(SubordCompositeTableLookupStrategyFactory), GetType(), classScope);
 

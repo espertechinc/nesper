@@ -37,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             return true;
         }
 
-        public void Visit(ExprNode exprNode, ExprNode containerExprNode)
+        public void Visit(
+            ExprNode exprNode,
+            ExprNode containerExprNode)
         {
             var identNode = exprNode as ExprIdentNode;
             if (identNode != null) {

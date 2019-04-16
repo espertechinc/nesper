@@ -13,7 +13,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
     public interface AuditProviderDataflowSource
     {
         void DataflowSource(
-            string dataFlowName, string dataFlowInstanceId, string operatorName, int operatorNumber,
+            string dataFlowName,
+            string dataFlowInstanceId,
+            string operatorName,
+            int operatorNumber,
             AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

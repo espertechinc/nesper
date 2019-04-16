@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     {
         protected internal readonly ExprForge inner;
 
-        public ExprDotNodeForgeTransposeAsStream(ExprDotNodeImpl parent, ExprForge inner)
+        public ExprDotNodeForgeTransposeAsStream(
+            ExprDotNodeImpl parent,
+            ExprForge inner)
         {
             ForgeRenderable = parent;
             this.inner = inner;
@@ -41,7 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public override string RootPropertyName => null;
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -49,7 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprDotNodeForgeTransposeAsStreamEval.Codegen(

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -24,7 +23,6 @@ namespace com.espertech.esper.common.@internal.collection
     /// {2, 0, 1}
     /// {2, 1, 0}
     /// </summary>
-
     public class PermutationEnumerator
     {
         /// <summary>
@@ -34,8 +32,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns></returns>
         public static IEnumerable<int[]> Create(int numElements)
         {
-            if (numElements < 1)
-            {
+            if (numElements < 1) {
                 throw new ArgumentException("Invalid element number of 1");
             }
 
@@ -47,8 +44,7 @@ namespace com.espertech.esper.common.@internal.collection
             var factors = GetFactors(numElements);
             var maxNumPermutation = Faculty(numElements);
 
-            for (var currentPermutation = 0; currentPermutation < maxNumPermutation; currentPermutation++)
-            {
+            for (var currentPermutation = 0; currentPermutation < maxNumPermutation; currentPermutation++) {
                 var element = GetPermutation(numElements, currentPermutation, factors);
                 yield return element;
             }
@@ -61,8 +57,10 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="permutation">The permutation.</param>
         /// <param name="factors">factors for each index</param>
         /// <returns>permutation</returns>
-
-        public static int[] GetPermutation(int numElements, int permutation, int[] factors)
+        public static int[] GetPermutation(
+            int numElements,
+            int permutation,
+            int[] factors)
         {
             /*
             Example:
@@ -81,20 +79,20 @@ namespace com.espertech.esper.common.@internal.collection
 
             var result = new int[numElements];
             var outList = new List<Int32>();
-            for (int i = 0; i < numElements; i++)
-            {
+            for (int i = 0; i < numElements; i++) {
                 outList.Add(i);
             }
+
             int currentVal = permutation;
 
-            for (int position = 0; position < numElements - 1; position++)
-            {
+            for (int position = 0; position < numElements - 1; position++) {
                 int factor = factors[position];
                 int index = currentVal / factor;
                 result[position] = outList[index];
                 outList.RemoveAt(index);
                 currentVal -= index * factor;
             }
+
             result[numElements - 1] = outList[0];
 
             return result;
@@ -103,13 +101,11 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>Returns factors for computing the permutation.</summary>
         /// <param name="numElements">number of factors to compute</param>
         /// <returns>factors list</returns>
-
         public static int[] GetFactors(int numElements)
         {
             int[] facultyFactors = new int[numElements];
 
-            for (int i = 0; i < numElements - 1; i++)
-            {
+            for (int i = 0; i < numElements - 1; i++) {
                 facultyFactors[i] = Faculty(numElements - i - 1);
             }
 
@@ -119,19 +115,17 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>Computes faculty of Count.</summary>
         /// <param name="num">to compute faculty for</param>
         /// <returns>Count!</returns>
-
         public static int Faculty(int num)
         {
-            if (num == 0)
-            {
+            if (num == 0) {
                 return 0;
             }
 
             int fac = 1;
-            for (int i = 1; i <= num; i++)
-            {
+            for (int i = 1; i <= num; i++) {
                 fac *= i;
             }
+
             return fac;
         }
     }

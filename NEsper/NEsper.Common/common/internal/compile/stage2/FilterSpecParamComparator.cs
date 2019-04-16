@@ -58,7 +58,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
         }
 
-        public int Compare(FilterOperator param1, FilterOperator param2)
+        public int Compare(
+            FilterOperator param1,
+            FilterOperator param2)
         {
             // Within the same filter operator type sort by attribute name
             if (param1 == param2) {

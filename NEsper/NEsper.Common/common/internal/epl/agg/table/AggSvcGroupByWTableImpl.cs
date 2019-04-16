@@ -19,20 +19,27 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
     public class AggSvcGroupByWTableImpl : AggSvcGroupByWTableBase
     {
         public AggSvcGroupByWTableImpl(
-            TableInstanceGrouped table, TableColumnMethodPairEval[] methodPairs,
-            AggregationMultiFunctionAgent[] accessAgents, int[] accessColumnsZeroOffset) : base(
-            table, methodPairs, accessAgents, accessColumnsZeroOffset)
+            TableInstanceGrouped table,
+            TableColumnMethodPairEval[] methodPairs,
+            AggregationMultiFunctionAgent[] accessAgents,
+            int[] accessColumnsZeroOffset)
+            : base(
+                table, methodPairs, accessAgents, accessColumnsZeroOffset)
         {
         }
 
         public override void ApplyEnterInternal(
-            EventBean[] eventsPerStream, object groupByKey, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object groupByKey,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             ApplyEnterGroupKey(eventsPerStream, groupByKey, exprEvaluatorContext);
         }
 
         public override void ApplyLeaveInternal(
-            EventBean[] eventsPerStream, object groupByKey, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            object groupByKey,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             ApplyLeaveGroupKey(eventsPerStream, groupByKey, exprEvaluatorContext);
         }

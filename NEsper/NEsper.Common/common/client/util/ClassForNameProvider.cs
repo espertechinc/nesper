@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.client.util
         /// </summary>
         /// <param name="className">to look up</param>
         /// <returns>class</returns>
-        Type ClassForName(string className) ;
+        Type ClassForName(string className);
     }
 
     public class ClassForNameProviderConstants

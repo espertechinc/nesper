@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
             return value / 1000000d;
         }
 
-        public void Add(DateTimeEx dtx, int value)
+        public void Add(
+            DateTimeEx dtx,
+            int value)
         {
             // no action : calendar does not add microseconds
         }

@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     public class AggregationAccessorMinMaxByNonTable : AggregationAccessorMinMaxByBase,
         AggregationAccessorForge
     {
-        public AggregationAccessorMinMaxByNonTable(bool max) : base(max)
+        public AggregationAccessorMinMaxByNonTable(bool max)
+            : base(max)
         {
         }
 

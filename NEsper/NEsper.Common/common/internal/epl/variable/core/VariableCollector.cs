@@ -7,14 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
 {
-	public interface VariableCollector {
-	    void RegisterVariable(string variableName, VariableMetaData meta);
-	}
+    public interface VariableCollector
+    {
+        void RegisterVariable(
+            string variableName,
+            VariableMetaData meta);
+    }
 } // end of namespace

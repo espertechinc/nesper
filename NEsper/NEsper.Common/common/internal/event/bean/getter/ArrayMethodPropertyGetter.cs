@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -32,9 +31,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         private readonly MethodInfo method;
 
         public ArrayMethodPropertyGetter(
-            MethodInfo method, int index,
+            MethodInfo method,
+            int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BeanEventTypeFactory beanEventTypeFactory) 
+            BeanEventTypeFactory beanEventTypeFactory)
             : base(eventBeanTypedEventFactory, beanEventTypeFactory, method.ReturnType.GetElementType(), null)
         {
             this.index = index;
@@ -106,12 +106,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return ConstantTrue();
         }
 
-        public object Get(EventBean eventBean, int index)
+        public object Get(
+            EventBean eventBean,
+            int index)
         {
             return GetBeanPropInternal(eventBean.Underlying, index);
         }
 
-        private object GetBeanPropInternal(object @object, int index)
+        private object GetBeanPropInternal(
+            object @object,
+            int index)
         {
             try {
                 var value = (Array) method.Invoke(@object, null);
@@ -127,7 +131,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         protected internal static CodegenMethod GetBeanPropInternalCode(
-            CodegenMethodScope codegenMethodScope, MethodInfo method, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            MethodInfo method,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope
                 .MakeChild(

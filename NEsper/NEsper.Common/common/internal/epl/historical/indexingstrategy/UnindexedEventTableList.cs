@@ -31,13 +31,18 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         /// </summary>
         /// <param name="eventSet">is a list initializing the table</param>
         /// <param name="streamNum">stream number</param>
-        public UnindexedEventTableList(IList<EventBean> eventSet, int streamNum)
+        public UnindexedEventTableList(
+            IList<EventBean> eventSet,
+            int streamNum)
         {
             this.eventSet = eventSet;
             this.streamNum = streamNum;
         }
 
-        public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
+        public void AddRemove(
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
@@ -54,14 +59,18 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             exprEvaluatorContext.InstrumentationProvider.AIndexAddRemove();
         }
 
-        public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
                 CompatExtensions.AddAll(eventSet, events);
             }
         }
 
-        public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
                 foreach (var removeEvent in events) {
@@ -70,12 +79,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             }
         }
 
-        public void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
+        public void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             eventSet.Add(@event);
         }
 
-        public void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
+        public void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             eventSet.Remove(@event);
         }

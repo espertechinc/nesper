@@ -36,9 +36,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         }
 
         public IThreadLocal<HistoricalDataCache> DataCacheThreadLocal { get; } =
-            new FastThreadLocal<HistoricalDataCache>();
+            new FastThreadLocal<HistoricalDataCache>(() => null);
 
-        public abstract void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery);
+        public abstract void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery);
+
         public abstract HistoricalEventViewable Activate(AgentInstanceContext agentInstanceContext);
 
         public bool HasRequiredStreams {

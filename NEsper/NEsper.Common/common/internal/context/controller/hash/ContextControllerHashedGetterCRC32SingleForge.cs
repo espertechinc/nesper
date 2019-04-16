@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,53 +15,63 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
 {
-	public class ContextControllerHashedGetterCRC32SingleForge : EventPropertyValueGetterForge {
+    public class ContextControllerHashedGetterCRC32SingleForge : EventPropertyValueGetterForge
+    {
+        private readonly ExprNode eval;
+        private readonly int granularity;
 
-	    private readonly ExprNode eval;
-	    private readonly int granularity;
+        public ContextControllerHashedGetterCRC32SingleForge(
+            ExprNode eval,
+            int granularity)
+        {
+            this.eval = eval;
+            this.granularity = granularity;
+        }
 
-	    public ContextControllerHashedGetterCRC32SingleForge(ExprNode eval, int granularity) {
-	        this.eval = eval;
-	        this.granularity = granularity;
-	    }
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="code">code</param>
+        /// <param name="granularity">granularity</param>
+        /// <returns>hash</returns>
+        public static int StringToCRC32Hash(
+            string code,
+            int granularity)
+        {
+            long value;
+            if (code == null) {
+                value = 0;
+            }
+            else {
+                value = code.GetCrc32();
+            }
 
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="code">code</param>
-	    /// <param name="granularity">granularity</param>
-	    /// <returns>hash</returns>
-	    public static int StringToCRC32Hash(string code, int granularity) {
-	        long value;
-	        if (code == null) {
-	            value = 0;
-	        } else {
-	            CRC32 crc = new CRC32();
-	            crc.Update(code.Bytes);
-	            value = crc.Value % granularity;
-	        }
+            int result = (int) value;
+            if (result >= 0) {
+                return result;
+            }
 
-	        int result = (int) value;
-	        if (result >= 0) {
-	            return result;
-	        }
-	        return -result;
-	    }
+            return -result;
+        }
 
-	    public CodegenExpression EventBeanGetCodegen(CodegenExpression beanExpression, CodegenMethodScope parent, CodegenClassScope classScope) {
-	        CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope).AddParam(typeof(EventBean), "eventBean");
-	        CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope);
-	        method.Block
-	                .DeclareVar(typeof(EventBean[]), "events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")))
-	                .DeclareVar(typeof(string), "code", Cast(typeof(string), LocalMethod(methodExpr, @Ref("events"), ConstantTrue(), ConstantNull())))
-	                .MethodReturn(StaticMethod(typeof(ContextControllerHashedGetterCRC32SingleForge), "stringToCRC32Hash", @Ref("code"), Constant(granularity)));
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
+        {
+            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope).AddParam(typeof(EventBean), "eventBean");
+            CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope);
+            method.Block
+                .DeclareVar(typeof(EventBean[]), "events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")))
+                .DeclareVar(typeof(string), "code", Cast(typeof(string), LocalMethod(methodExpr, @Ref("events"), ConstantTrue(), ConstantNull())))
+                .MethodReturn(
+                    StaticMethod(typeof(ContextControllerHashedGetterCRC32SingleForge), "stringToCRC32Hash", @Ref("code"), Constant(granularity)));
 
-	        return LocalMethod(method, beanExpression);
-	    }
-	}
+            return LocalMethod(method, beanExpression);
+        }
+    }
 } // end of namespace

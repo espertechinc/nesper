@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class ContextSpecInitiatedTerminated : ContextSpec
     {
         public ContextSpecInitiatedTerminated(
-            ContextSpecCondition startCondition, ContextSpecCondition endCondition, bool overlapping,
+            ContextSpecCondition startCondition,
+            ContextSpecCondition endCondition,
+            bool overlapping,
             ExprNode[] distinctExpressions)
         {
             StartCondition = startCondition;
@@ -36,7 +38,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public ExprNode[] DistinctExpressions { get; }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailInitiatedTerminated), GetType(), classScope);
 

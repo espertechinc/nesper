@@ -23,10 +23,16 @@ namespace com.espertech.esper.common.@internal.view.util
         /// <param name="streamId">the stream number sending the events</param>
         /// <param name="newEventBuffer">buffer for new events</param>
         /// <param name="oldEventBuffer">buffer for old events</param>
-        void NewData(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer);
+        void NewData(
+            int streamId,
+            FlushedEventBuffer newEventBuffer,
+            FlushedEventBuffer oldEventBuffer);
     }
 
-    public delegate void BufferObserverDelegate(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer);
+    public delegate void BufferObserverDelegate(
+        int streamId,
+        FlushedEventBuffer newEventBuffer,
+        FlushedEventBuffer oldEventBuffer);
 
     public class ProxyBufferObserver : BufferObserver
     {
@@ -49,7 +55,10 @@ namespace com.espertech.esper.common.@internal.view.util
         /// <param name="streamId">the stream number sending the events</param>
         /// <param name="newEventBuffer">buffer for new events</param>
         /// <param name="oldEventBuffer">buffer for old events</param>
-        public void NewData(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer)
+        public void NewData(
+            int streamId,
+            FlushedEventBuffer newEventBuffer,
+            FlushedEventBuffer oldEventBuffer)
         {
             m_delegate(streamId, newEventBuffer, oldEventBuffer);
         }

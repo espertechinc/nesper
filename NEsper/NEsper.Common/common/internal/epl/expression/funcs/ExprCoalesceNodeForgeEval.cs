@@ -21,13 +21,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprCoalesceNodeForge forge;
 
-        internal ExprCoalesceNodeForgeEval(ExprCoalesceNodeForge forge, ExprEvaluator[] evaluators)
+        internal ExprCoalesceNodeForgeEval(
+            ExprCoalesceNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             this.forge = forge;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             object value;
 
@@ -49,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public static CodegenExpression Codegen(
-            ExprCoalesceNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprCoalesceNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (forge.EvaluationType == null) {

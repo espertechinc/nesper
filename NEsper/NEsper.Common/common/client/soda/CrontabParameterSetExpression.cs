@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -18,28 +17,30 @@ namespace com.espertech.esper.common.client.soda
     /// An expression for use in crontab provides all child expression as part of a parameter list.
     /// </summary>
     [Serializable]
-    public class CrontabParameterSetExpression : ExpressionBase {
+    public class CrontabParameterSetExpression : ExpressionBase
+    {
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        public CrontabParameterSetExpression()
+        {
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    public CrontabParameterSetExpression() {
-	    }
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            string delimiter = "";
+            writer.Write("[");
+            foreach (Expression expr in this.Children) {
+                writer.Write(delimiter);
+                expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                delimiter = ",";
+            }
 
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        string delimiter = "";
-	        writer.Write("[");
-	        foreach (Expression expr in this.Children) {
-	            writer.Write(delimiter);
-	            expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-	            delimiter = ",";
-	        }
-	        writer.Write("]");
-	    }
-	}
+            writer.Write("]");
+        }
+    }
 } // end of namespace

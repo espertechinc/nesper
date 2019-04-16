@@ -23,13 +23,16 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly StatementAgentInstanceLock _statementLock;
 
         public SubordIndexedTableLookupStrategyLocking(
-            SubordTableLookupStrategy inner, StatementAgentInstanceLock statementLock)
+            SubordTableLookupStrategy inner,
+            StatementAgentInstanceLock statementLock)
         {
             this._inner = inner;
             this._statementLock = statementLock;
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, null, null);
@@ -48,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             return GetType().Name + " inner " + _inner.ToQueryPlan();
         }
 
-        private ICollection<EventBean> LookupInternal(EventBean[] events, ExprEvaluatorContext context)
+        private ICollection<EventBean> LookupInternal(
+            EventBean[] events,
+            ExprEvaluatorContext context)
         {
             _statementLock.AcquireReadLock();
             try {
@@ -57,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                     return new ArrayDeque<EventBean>(result);
                 }
                 else {
-                    return Collections.GetEmptyList<object>();
+                    return new EmptyList<EventBean>();
                 }
             }
             finally {

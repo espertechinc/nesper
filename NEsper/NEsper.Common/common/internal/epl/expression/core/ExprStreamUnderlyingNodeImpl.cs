@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private int streamNum = -1;
         private Type type;
 
-        public ExprStreamUnderlyingNodeImpl(string streamName, bool isWildcard)
+        public ExprStreamUnderlyingNodeImpl(
+            string streamName,
+            bool isWildcard)
         {
             if (streamName == null && !isWildcard) {
                 throw new ArgumentException("Stream name is null");
@@ -51,7 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public bool IsConstantResult => false;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
             if (@event == null) {
@@ -68,7 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
@@ -82,7 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -148,7 +157,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public EventType EventType => eventType;
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprStreamUnderlyingNodeImpl)) {
                 return false;
@@ -172,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                    " streamNum=" + streamNum;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(StreamName);
             if (isWildcard) {

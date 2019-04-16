@@ -24,46 +24,49 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="cube">true for cube, false for rollup</param>
         /// <param name="expressions">group-by expressions as part of rollup or cube</param>
-        public GroupByClauseExpressionRollupOrCube(bool cube, IList<GroupByClauseExpression> expressions)
+        public GroupByClauseExpressionRollupOrCube(
+            bool cube,
+            IList<GroupByClauseExpression> expressions)
         {
             _cube = cube;
             _expressions = expressions;
         }
-    
+
         /// <summary>Ctor. </summary>
-        public GroupByClauseExpressionRollupOrCube() {
+        public GroupByClauseExpressionRollupOrCube()
+        {
         }
 
         /// <summary>Returns the rollup or cube group-by expressions. </summary>
         /// <value>expressions</value>
-        public IList<GroupByClauseExpression> Expressions
-        {
+        public IList<GroupByClauseExpression> Expressions {
             get { return _expressions; }
             set { _expressions = value; }
         }
 
         /// <summary>Returns true for cube, false for rollup. </summary>
         /// <value>cube</value>
-        public bool IsCube
-        {
+        public bool IsCube {
             get { return _cube; }
             set { _cube = value; }
         }
 
-        public void ToEPL(TextWriter writer) {
+        public void ToEPL(TextWriter writer)
+        {
             if (_cube) {
                 writer.Write("cube(");
             }
             else {
                 writer.Write("rollup(");
             }
+
             String delimiter = "";
-            foreach (GroupByClauseExpression child in _expressions)
-            {
+            foreach (GroupByClauseExpression child in _expressions) {
                 writer.Write(delimiter);
                 child.ToEPL(writer);
                 delimiter = ", ";
             }
+
             writer.Write(")");
         }
     }

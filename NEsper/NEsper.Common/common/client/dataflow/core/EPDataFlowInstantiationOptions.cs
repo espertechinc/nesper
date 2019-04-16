@@ -194,7 +194,9 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// </summary>
         /// <param name="name">is the uri</param>
         /// <param name="value">the value</param>
-        public void AddParameterURI(string name, object value)
+        public void AddParameterURI(
+            string name,
+            object value)
         {
             if (_parametersUrIs == null) {
                 _parametersUrIs = new Dictionary<string, object>();

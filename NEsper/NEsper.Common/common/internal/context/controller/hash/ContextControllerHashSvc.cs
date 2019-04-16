@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public interface ContextControllerHashSvc
     {
-        void MgmtCreate(IntSeqKey controllerPath, object[] parentPartitionKeys);
+        void MgmtCreate(
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys);
 
         int[] MgmtGetSubpathOrCPIdsWhenPreallocate(IntSeqKey path);
 
@@ -23,17 +25,30 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         ContextControllerFilterEntry[] MgmtGetFilters(IntSeqKey controllerPath);
 
-        void MgmtSetSubpathOrCPIdsWhenPreallocate(IntSeqKey path, int[] subpathOrCPIds);
+        void MgmtSetSubpathOrCPIdsWhenPreallocate(
+            IntSeqKey path,
+            int[] subpathOrCPIds);
 
-        void MgmtSetFilters(IntSeqKey controllerPath, ContextControllerFilterEntry[] filterEntries);
+        void MgmtSetFilters(
+            IntSeqKey controllerPath,
+            ContextControllerFilterEntry[] filterEntries);
 
-        bool HashHasSeenPartition(IntSeqKey controllerPath, int value);
+        bool HashHasSeenPartition(
+            IntSeqKey controllerPath,
+            int value);
 
-        void HashAddPartition(IntSeqKey controllerPath, int value, int subpathIdOrCPId);
+        void HashAddPartition(
+            IntSeqKey controllerPath,
+            int value,
+            int subpathIdOrCPId);
 
-        void HashVisit(IntSeqKey controllerPath, BiConsumer<int, int> hashAndCPId);
+        void HashVisit(
+            IntSeqKey controllerPath,
+            BiConsumer<int, int> hashAndCPId);
 
-        int HashGetSubpathOrCPId(IntSeqKey controllerPath, int hash);
+        int HashGetSubpathOrCPId(
+            IntSeqKey controllerPath,
+            int hash);
 
         ICollection<int> Deactivate(IntSeqKey controllerPath);
 

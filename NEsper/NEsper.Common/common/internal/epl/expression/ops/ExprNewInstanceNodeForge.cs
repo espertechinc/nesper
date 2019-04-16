@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprNewInstanceNode parent;
 
         public ExprNewInstanceNodeForge(
-            ExprNewInstanceNode parent, Type targetClass, InstanceManufacturerFactory manufacturerFactory)
+            ExprNewInstanceNode parent,
+            Type targetClass,
+            InstanceManufacturerFactory manufacturerFactory)
         {
             this.parent = parent;
             EvaluationType = targetClass;
@@ -33,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             new ExprNewInstanceNodeForgeEval(this, manufacturerFactory.MakeEvaluator());
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return manufacturerFactory.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);

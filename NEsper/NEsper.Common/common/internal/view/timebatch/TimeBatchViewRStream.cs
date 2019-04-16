@@ -67,7 +67,9 @@ namespace com.espertech.esper.common.@internal.view.timebatch
 
         public override EventType EventType => Parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
@@ -187,7 +189,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         {
             var current = agentInstanceContext.StatementContext.SchedulingService.Time;
             TimePeriodDeltaResult deltaWReference = timePeriodProvide.DeltaAddWReference(
-                current, currentReferencePoint, null, true, agentInstanceContext);
+                current, currentReferencePoint.Value, null, true, agentInstanceContext);
             long afterTime = deltaWReference.Delta;
             currentReferencePoint = deltaWReference.LastReference;
 

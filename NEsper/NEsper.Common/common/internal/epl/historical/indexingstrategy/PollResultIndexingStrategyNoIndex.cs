@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         }
 
         public EventTable[] Index(
-            IList<EventBean> pollResult, bool isActiveCache, AgentInstanceContext agentInstanceContext)
+            IList<EventBean> pollResult,
+            bool isActiveCache,
+            AgentInstanceContext agentInstanceContext)
         {
             return new EventTable[] {new UnindexedEventTableList(pollResult, -1)};
         }

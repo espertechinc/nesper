@@ -14,7 +14,8 @@ namespace com.espertech.esper.common.@internal.context.module
     public class EPModuleNamedWindowInitServicesImpl : EPModuleNamedWindowInitServices
     {
         public EPModuleNamedWindowInitServicesImpl(
-            NamedWindowCollector namedWindowCollector, EventTypeResolver eventTypeResolver)
+            NamedWindowCollector namedWindowCollector,
+            EventTypeResolver eventTypeResolver)
         {
             NamedWindowCollector = namedWindowCollector;
             EventTypeResolver = eventTypeResolver;

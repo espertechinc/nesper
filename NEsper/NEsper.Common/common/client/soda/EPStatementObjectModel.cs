@@ -215,252 +215,224 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="formatter">the formatter to use</param>
         /// <param name="writer">writer to use</param>
         /// <throws>IllegalStateException if required clauses do not exist</throws>
-        public void ToEPL(EPStatementFormatter formatter, TextWriter writer)
+        public void ToEPL(
+            EPStatementFormatter formatter,
+            TextWriter writer)
         {
             AnnotationPart.ToEPL(writer, Annotations, formatter);
             ExpressionDeclaration.ToEPL(writer, ExpressionDeclarations, formatter);
             ScriptExpression.ToEPL(writer, ScriptExpressions, formatter);
 
-            if (ContextName != null)
-            {
+            if (ContextName != null) {
                 formatter.BeginContext(writer);
                 writer.Write("context ");
                 writer.Write(ContextName);
             }
 
-            if (CreateIndex != null)
-            {
+            if (CreateIndex != null) {
                 formatter.BeginCreateIndex(writer);
                 CreateIndex.ToEPL(writer);
                 return;
             }
-            else if (CreateSchema != null)
-            {
+            else if (CreateSchema != null) {
                 formatter.BeginCreateSchema(writer);
                 CreateSchema.ToEPL(writer);
                 return;
             }
-            else if (CreateExpression != null)
-            {
+            else if (CreateExpression != null) {
                 formatter.BeginCreateExpression(writer);
                 CreateExpression.ToEPL(writer);
                 return;
             }
-            else if (CreateContext != null)
-            {
+            else if (CreateContext != null) {
                 formatter.BeginCreateContext(writer);
                 CreateContext.ToEPL(writer, formatter);
                 return;
             }
-            else if (CreateWindow != null)
-            {
+            else if (CreateWindow != null) {
                 formatter.BeginCreateWindow(writer);
                 CreateWindow.ToEPL(writer);
 
-                if (FromClause != null)
-                {
-                    var fs = (FilterStream)FromClause.Streams[0];
-                    if (fs.IsRetainUnion)
-                    {
+                if (FromClause != null) {
+                    var fs = (FilterStream) FromClause.Streams[0];
+                    if (fs.IsRetainUnion) {
                         writer.Write(" retain-union");
                     }
                 }
 
                 writer.Write(" as ");
-                if ((SelectClause == null) || (SelectClause.SelectList.IsEmpty()) && !CreateWindow.Columns.IsEmpty())
-                {
+                if ((SelectClause == null) || (SelectClause.SelectList.IsEmpty()) && !CreateWindow.Columns.IsEmpty()) {
                     CreateWindow.ToEPLCreateTablePart(writer);
                 }
-                else
-                {
+                else {
                     SelectClause.ToEPL(writer, formatter, false, false);
                     FromClause.ToEPL(writer, formatter);
                     CreateWindow.ToEPLInsertPart(writer);
                 }
+
                 return;
             }
-            else if (CreateVariable != null)
-            {
+            else if (CreateVariable != null) {
                 formatter.BeginCreateVariable(writer);
                 CreateVariable.ToEPL(writer);
                 return;
             }
-            else if (CreateTable != null)
-            {
+            else if (CreateTable != null) {
                 formatter.BeginCreateTable(writer);
                 CreateTable.ToEPL(writer);
                 return;
             }
-            else if (CreateDataFlow != null)
-            {
+            else if (CreateDataFlow != null) {
                 formatter.BeginCreateDataFlow(writer);
                 CreateDataFlow.ToEPL(writer, formatter);
                 return;
             }
 
             var displayWhereClause = true;
-            if (UpdateClause != null)
-            {
+            if (UpdateClause != null) {
                 formatter.BeginUpdate(writer);
                 UpdateClause.ToEPL(writer);
             }
-            else if (OnExpr != null)
-            {
+            else if (OnExpr != null) {
                 formatter.BeginOnTrigger(writer);
                 writer.Write("on ");
                 FromClause.Streams[0].ToEPL(writer, formatter);
 
-                if (OnExpr is OnDeleteClause)
-                {
+                if (OnExpr is OnDeleteClause) {
                     formatter.BeginOnDelete(writer);
                     writer.Write("delete from ");
-                    ((OnDeleteClause)OnExpr).ToEPL(writer);
+                    ((OnDeleteClause) OnExpr).ToEPL(writer);
                 }
-                else if (OnExpr is OnUpdateClause)
-                {
+                else if (OnExpr is OnUpdateClause) {
                     formatter.BeginOnUpdate(writer);
                     writer.Write("update ");
-                    ((OnUpdateClause)OnExpr).ToEPL(writer);
+                    ((OnUpdateClause) OnExpr).ToEPL(writer);
                 }
-                else if (OnExpr is OnSelectClause)
-                {
-                    var onSelect = (OnSelectClause)OnExpr;
-                    if (InsertInto != null)
-                    {
+                else if (OnExpr is OnSelectClause) {
+                    var onSelect = (OnSelectClause) OnExpr;
+                    if (InsertInto != null) {
                         InsertInto.ToEPL(writer, formatter, true);
                     }
+
                     SelectClause.ToEPL(writer, formatter, true, onSelect.IsDeleteAndSelect);
                     writer.Write(" from ");
                     onSelect.ToEPL(writer);
                 }
-                else if (OnExpr is OnSetClause)
-                {
-                    var onSet = (OnSetClause)OnExpr;
+                else if (OnExpr is OnSetClause) {
+                    var onSet = (OnSetClause) OnExpr;
                     onSet.ToEPL(writer, formatter);
                 }
-                else if (OnExpr is OnMergeClause)
-                {
-                    var merge = (OnMergeClause)OnExpr;
+                else if (OnExpr is OnMergeClause) {
+                    var merge = (OnMergeClause) OnExpr;
                     merge.ToEPL(writer, WhereClause, formatter);
                     displayWhereClause = false;
                 }
-                else
-                {
-                    var split = (OnInsertSplitStreamClause)OnExpr;
+                else {
+                    var split = (OnInsertSplitStreamClause) OnExpr;
                     InsertInto.ToEPL(writer, formatter, true);
                     SelectClause.ToEPL(writer, formatter, true, false);
-                    if (WhereClause != null)
-                    {
+                    if (WhereClause != null) {
                         writer.Write(" where ");
                         WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     }
+
                     split.ToEPL(writer, formatter);
                     displayWhereClause = false;
                 }
             }
-            else
-            {
-                if (IntoTableClause != null)
-                {
+            else {
+                if (IntoTableClause != null) {
                     IntoTableClause.ToEPL(writer);
                 }
 
-                if (SelectClause == null)
-                {
+                if (SelectClause == null) {
                     throw new IllegalStateException("Select-clause has not been defined");
                 }
-                if (FromClause == null)
-                {
+
+                if (FromClause == null) {
                     throw new IllegalStateException("From-clause has not been defined");
                 }
 
-                if (FireAndForgetClause is FireAndForgetUpdate)
-                {
-                    var update = (FireAndForgetUpdate)FireAndForgetClause;
+                if (FireAndForgetClause is FireAndForgetUpdate) {
+                    var update = (FireAndForgetUpdate) FireAndForgetClause;
                     writer.Write("update ");
                     FromClause.ToEPLOptions(writer, formatter, false);
                     writer.Write(" ");
                     UpdateClause.RenderEPLAssignments(writer, update.Assignments);
                 }
-                else if (FireAndForgetClause is FireAndForgetInsert)
-                {
-                    var insert = (FireAndForgetInsert)FireAndForgetClause;
+                else if (FireAndForgetClause is FireAndForgetInsert) {
+                    var insert = (FireAndForgetInsert) FireAndForgetClause;
                     InsertInto.ToEPL(writer, formatter, true);
-                    if (insert.IsUseValuesKeyword)
-                    {
+                    if (insert.IsUseValuesKeyword) {
                         writer.Write(" values (");
                         var delimiter = "";
-                        foreach (var element in SelectClause.SelectList)
-                        {
+                        foreach (var element in SelectClause.SelectList) {
                             writer.Write(delimiter);
                             element.ToEPLElement(writer);
                             delimiter = ", ";
                         }
+
                         writer.Write(")");
                     }
-                    else
-                    {
+                    else {
                         SelectClause.ToEPL(writer, formatter, true, false);
                     }
                 }
-                else if (FireAndForgetClause is FireAndForgetDelete)
-                {
+                else if (FireAndForgetClause is FireAndForgetDelete) {
                     writer.Write("delete ");
                     FromClause.ToEPLOptions(writer, formatter, true);
                 }
-                else
-                {
-                    if (InsertInto != null)
-                    {
+                else {
+                    if (InsertInto != null) {
                         InsertInto.ToEPL(writer, formatter, true);
                     }
+
                     SelectClause.ToEPL(writer, formatter, true, false);
                     FromClause.ToEPLOptions(writer, formatter, true);
                 }
             }
 
-            if (MatchRecognizeClause != null)
-            {
+            if (MatchRecognizeClause != null) {
                 MatchRecognizeClause.ToEPL(writer);
             }
-            if ((WhereClause != null) && (displayWhereClause))
-            {
+
+            if ((WhereClause != null) && (displayWhereClause)) {
                 formatter.BeginWhere(writer);
                 writer.Write("where ");
                 WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
-            if (GroupByClause != null)
-            {
+
+            if (GroupByClause != null) {
                 formatter.BeginGroupBy(writer);
                 writer.Write("group by ");
                 GroupByClause.ToEPL(writer);
             }
-            if (HavingClause != null)
-            {
+
+            if (HavingClause != null) {
                 formatter.BeginHaving(writer);
                 writer.Write("having ");
                 HavingClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
-            if (OutputLimitClause != null)
-            {
+
+            if (OutputLimitClause != null) {
                 formatter.BeginOutput(writer);
                 writer.Write("output ");
                 OutputLimitClause.ToEPL(writer);
             }
-            if (OrderByClause != null)
-            {
+
+            if (OrderByClause != null) {
                 formatter.BeginOrderBy(writer);
                 writer.Write("order by ");
                 OrderByClause.ToEPL(writer);
             }
-            if (RowLimitClause != null)
-            {
+
+            if (RowLimitClause != null) {
                 formatter.BeginLimit(writer);
                 writer.Write("limit ");
                 RowLimitClause.ToEPL(writer);
             }
-            if (ForClause != null)
-            {
+
+            if (ForClause != null) {
                 formatter.BeginFor(writer);
                 ForClause.ToEPL(writer);
             }

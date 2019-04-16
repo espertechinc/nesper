@@ -20,13 +20,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprOrNode parent;
 
-        public ExprOrNodeEval(ExprOrNode parent, ExprEvaluator[] evaluators)
+        public ExprOrNodeEval(
+            ExprOrNode parent,
+            ExprEvaluator[] evaluators)
         {
             this.parent = parent;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             bool? result = false;
             // At least one child must evaluate to true
@@ -46,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprOrNode parent, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprOrNode parent,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(typeof(bool?), typeof(ExprOrNodeEval), codegenClassScope);

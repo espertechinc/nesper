@@ -20,14 +20,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
     public class RouteResultViewHandlerAll : RouteResultViewHandlerBase
     {
         public RouteResultViewHandlerAll(
-            EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter,
-            TableInstance[] tableStateInstances, OnSplitItemEval[] items, ResultSetProcessor[] processors,
-            AgentInstanceContext agentInstanceContext) : base(
-            epStatementHandle, internalEventRouter, tableStateInstances, items, processors, agentInstanceContext)
+            EPStatementHandle epStatementHandle,
+            InternalEventRouter internalEventRouter,
+            TableInstance[] tableStateInstances,
+            OnSplitItemEval[] items,
+            ResultSetProcessor[] processors,
+            AgentInstanceContext agentInstanceContext)
+            : base(
+                epStatementHandle, internalEventRouter, tableStateInstances, items, processors, agentInstanceContext)
         {
         }
 
-        public override bool Handle(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public override bool Handle(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
             instrumentationCommon.QSplitStream(true, theEvent, items.Length);
@@ -60,7 +66,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             return isHandled;
         }
 
-        private bool ProcessAllCurrentEvent(int index, ExprEvaluatorContext exprEvaluatorContext)
+        private bool ProcessAllCurrentEvent(
+            int index,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var pass = CheckWhereClauseCurrentEvent(index, exprEvaluatorContext);
             if (!pass) {

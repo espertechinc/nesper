@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
-	public interface ResultSetProcessorOutputHelper
-	{
-	}
+    public interface ResultSetProcessorOutputHelper
+    {
+    }
 } // end of namespace

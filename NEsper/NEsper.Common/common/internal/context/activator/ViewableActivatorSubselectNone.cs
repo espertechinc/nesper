@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         public EventType EventType { get; set; }
 
         public ViewableActivationResult Activate(
-            AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isSubselect,
+            bool isRecoveringResilient)
         {
             return new ViewableActivationResult(
                 null, AgentInstanceStopCallbackNoAction.INSTANCE, null, false, false, null, null);

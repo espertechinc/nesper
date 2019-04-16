@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="assignments">assignments of values to columns</param>
         /// <param name="whereClause">optional condition or null</param>
-        public OnMergeMatchedUpdateAction(IList<Assignment> assignments, Expression whereClause) {
+        public OnMergeMatchedUpdateAction(
+            IList<Assignment> assignments,
+            Expression whereClause)
+        {
             Assignments = assignments;
             WhereClause = whereClause;
         }

@@ -23,8 +23,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprLikeNodeForgeConst : ExprLikeNodeForge
     {
         public ExprLikeNodeForgeConst(
-            ExprLikeNode parent, bool isNumericValue, LikeUtil likeUtil, CodegenExpression likeUtilInit) : base(
-            parent, isNumericValue)
+            ExprLikeNode parent,
+            bool isNumericValue,
+            LikeUtil likeUtil,
+            CodegenExpression likeUtilInit)
+            : base(
+                parent, isNumericValue)
         {
             LikeUtil = likeUtil;
             LikeUtilInit = likeUtilInit;
@@ -40,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public LikeUtil LikeUtil { get; }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = ExprLikeNodeForgeConstEval.Codegen(
@@ -49,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(

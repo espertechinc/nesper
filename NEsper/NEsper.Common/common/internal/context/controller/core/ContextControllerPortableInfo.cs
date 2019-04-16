@@ -17,6 +17,8 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         CodegenExpression Make(CodegenExpressionRef addInitSvc);
 
         void ValidateStatement(
-            string contextName, StatementSpecCompiled spec, StatementCompileTimeServices compileTimeServices);
+            string contextName,
+            StatementSpecCompiled spec,
+            StatementCompileTimeServices compileTimeServices);
     }
 } // end of namespace

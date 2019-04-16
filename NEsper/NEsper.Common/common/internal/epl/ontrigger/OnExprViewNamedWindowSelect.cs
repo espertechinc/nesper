@@ -33,9 +33,15 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly TableInstance tableInstanceInsertInto;
 
         public OnExprViewNamedWindowSelect(
-            SubordWMatchExprLookupStrategy lookupStrategy, NamedWindowRootViewInstance rootView,
-            AgentInstanceContext agentInstanceContext, InfraOnSelectViewFactory parent,
-            ResultSetProcessor resultSetProcessor, bool audit, bool isDelete, TableInstance tableInstanceInsertInto) :
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            NamedWindowRootViewInstance rootView,
+            AgentInstanceContext agentInstanceContext,
+            InfraOnSelectViewFactory parent,
+            ResultSetProcessor resultSetProcessor,
+            bool audit,
+            bool isDelete,
+            TableInstance tableInstanceInsertInto)
+            :
             base(lookupStrategy, rootView, agentInstanceContext)
         {
             this.parent = parent;
@@ -45,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             this.tableInstanceInsertInto = tableInstanceInsertInto;
         }
 
-        public override void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
+        public override void HandleMatching(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
                 OnTriggerType.ON_SELECT, triggerEvents, matchingEvents);
@@ -87,7 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             agentInstanceContext.InstrumentationProvider.AInfraOnAction();
         }
 
-        public static ISet<MultiKey<EventBean>> BuildJoinResult(EventBean[] triggerEvents, EventBean[] matchingEvents)
+        public static ISet<MultiKey<EventBean>> BuildJoinResult(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
         {
             var events = new LinkedHashSet<MultiKey<EventBean>>();
             for (var i = 0; i < triggerEvents.Length; i++) {

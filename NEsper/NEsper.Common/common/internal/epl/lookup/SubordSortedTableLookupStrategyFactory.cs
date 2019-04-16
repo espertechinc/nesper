@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         internal readonly SortedAccessStrategy strategy;
 
         public SubordSortedTableLookupStrategyFactory(
-            bool isNWOnTrigger, int numStreams, string expression, QueryGraphValueEntryRange range)
+            bool isNWOnTrigger,
+            int numStreams,
+            string expression,
+            QueryGraphValueEntryRange range)
         {
             this._expression = expression;
             strategy = SortedAccessStrategyFactory.Make(isNWOnTrigger, -1, numStreams, range);
@@ -34,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             new LookupStrategyDesc(LookupStrategyType.RANGE, new[] {_expression});
 
         public SubordTableLookupStrategy MakeStrategy(
-            EventTable[] eventTable, AgentInstanceContext agentInstanceContext, VirtualDWView vdw)
+            EventTable[] eventTable,
+            AgentInstanceContext agentInstanceContext,
+            VirtualDWView vdw)
         {
             return new SubordSortedTableLookupStrategy(this, (PropertySortedEventTable) eventTable[0]);
         }

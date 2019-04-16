@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             return "EvalAndFactoryNode children=" + ChildNodes.Count;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             PatternExpressionUtil.ToPrecedenceFreeEPL(writer, "and", ChildNodes, Precedence);
         }
@@ -49,7 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             return "and";
         }
 
-        protected override void InlineCodegen(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        protected override void InlineCodegen(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block.DeclareVar(
                 typeof(EvalFactoryNode[]), "children",
@@ -64,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, 
+            IList<FilterSpecCompiled> filters,
             IList<ScheduleHandleCallbackProvider> schedules)
         {
         }

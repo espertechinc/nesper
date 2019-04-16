@@ -35,7 +35,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Ctor.
         /// </summary>
         /// <param name="expression">pattern expression</param>
-        public PatternStream(PatternExpr expression) : this(expression, null)
+        public PatternStream(PatternExpr expression)
+            : this(expression, null)
         {
         }
 
@@ -44,7 +45,10 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="expression">pattern expression</param>
         /// <param name="optStreamName">is the pattern stream name (as-name)</param>
-        public PatternStream(PatternExpr expression, string optStreamName) : base(new List<View>(), optStreamName)
+        public PatternStream(
+            PatternExpr expression,
+            string optStreamName)
+            : base(new List<View>(), optStreamName)
         {
             this.expression = expression;
         }
@@ -55,8 +59,12 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="expression">pattern expression</param>
         /// <param name="optStreamName">is the pattern stream name (as-name)</param>
         /// <param name="annotations">annotations on pattern-level, if any</param>
-        public PatternStream(PatternExpr expression, string optStreamName, AnnotationPart[] annotations) : base(
-            new List<View>(), optStreamName)
+        public PatternStream(
+            PatternExpr expression,
+            string optStreamName,
+            AnnotationPart[] annotations)
+            : base(
+                new List<View>(), optStreamName)
         {
             this.expression = expression;
             this.annotations = annotations;
@@ -96,12 +104,16 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="expression">pattern expression</param>
         /// <param name="optStreamName">is the pattern stream name (as-name)</param>
         /// <returns>stream</returns>
-        public static PatternStream Create(PatternExpr expression, string optStreamName)
+        public static PatternStream Create(
+            PatternExpr expression,
+            string optStreamName)
         {
             return new PatternStream(expression, optStreamName);
         }
 
-        public override void ToEPLProjectedStream(TextWriter writer, EPStatementFormatter formatter)
+        public override void ToEPLProjectedStream(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             writer.Write("pattern");
             if (annotations != null) {

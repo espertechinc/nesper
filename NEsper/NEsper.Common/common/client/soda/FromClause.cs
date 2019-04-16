@@ -47,7 +47,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="streamOne">first stream in outer join</param>
         /// <param name="outerJoinQualifier">type of outer join and fields joined on</param>
         /// <param name="streamTwo">second stream in outer join</param>
-        public FromClause(Stream streamOne, OuterJoinQualifier outerJoinQualifier, Stream streamTwo)
+        public FromClause(
+            Stream streamOne,
+            OuterJoinQualifier outerJoinQualifier,
+            Stream streamTwo)
             : this(streamOne)
         {
             Add(streamTwo);
@@ -100,7 +103,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="outerJoinQualifier">qualifies the outer join</param>
         /// <param name="streamSecond">second stream in outer join</param>
         /// <returns>from clause</returns>
-        public static FromClause Create(Stream stream, OuterJoinQualifier outerJoinQualifier, Stream streamSecond)
+        public static FromClause Create(
+            Stream stream,
+            OuterJoinQualifier outerJoinQualifier,
+            Stream streamSecond)
         {
             return new FromClause(stream, outerJoinQualifier, streamSecond);
         }
@@ -148,7 +154,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">for newline-whitespace formatting</param>
-        public virtual void ToEPL(StringWriter writer, EPStatementFormatter formatter)
+        public virtual void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             ToEPLOptions(writer, formatter, true);
         }
@@ -159,7 +167,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         /// <param name="includeFrom">flag whether to add the "from" literal</param>
         /// <param name="formatter">for newline-whitespace formatting</param>
-        public virtual void ToEPLOptions(StringWriter writer, EPStatementFormatter formatter, bool includeFrom)
+        public virtual void ToEPLOptions(
+            TextWriter writer,
+            EPStatementFormatter formatter,
+            bool includeFrom)
         {
             var delimiter = "";
             if (includeFrom) {

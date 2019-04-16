@@ -26,8 +26,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         private readonly StatementInformationalsCompileTime statementInformationals;
 
         public StmtClassForgableStmtProvider(
-            string statementAIFactoryClassName, string statementProviderClassName,
-            StatementInformationalsCompileTime statementInformationals, CodegenPackageScope packageScope)
+            string statementAIFactoryClassName,
+            string statementProviderClassName,
+            StatementInformationalsCompileTime statementInformationals,
+            CodegenPackageScope packageScope)
         {
             this.statementAIFactoryClassName = statementAIFactoryClassName;
             ClassName = statementProviderClassName;

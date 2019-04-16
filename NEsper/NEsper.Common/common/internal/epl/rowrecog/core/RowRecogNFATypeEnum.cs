@@ -54,10 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     public static class RowRecogNFATypeEnumExtensions
     {
         /// <summary>
-	    /// Returns indicator if single or multiple matches.
-	    /// </summary>
-	    /// <returns>indicator</returns>
-	    public static bool IsMultipleMatches(this RowRecogNFATypeEnum value) {
+        /// Returns indicator if single or multiple matches.
+        /// </summary>
+        /// <returns>indicator</returns>
+        public static bool IsMultipleMatches(this RowRecogNFATypeEnum value)
+        {
             switch (value) {
                 case RowRecogNFATypeEnum.SINGLE:
                     return false;
@@ -84,8 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         /// <returns>indicator</returns>
         public static bool IsOptional(this RowRecogNFATypeEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case RowRecogNFATypeEnum.SINGLE:
                     return false;
                 case RowRecogNFATypeEnum.ZERO_TO_MANY:
@@ -130,15 +130,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             throw new ArgumentException();
         }
-        
+
         /// <summary>
         /// Return postfix.
         /// </summary>
         /// <returns>postfix</returns>
         public static string GetOptionalPostfix(this RowRecogNFATypeEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case RowRecogNFATypeEnum.SINGLE:
                     return "";
                 case RowRecogNFATypeEnum.ZERO_TO_MANY:
@@ -164,30 +163,31 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         /// <param name="code">to inspect</param>
         /// <param name="reluctantQuestion">null for greedy or questionmark for reluctant</param>
         /// <returns>enum</returns>
-
         public static RowRecogNFATypeEnum FromString(
-            string code, 
+            string code,
             string reluctantQuestion)
         {
-	        bool reluctant = false;
-	        if (reluctantQuestion != null) {
-	            if (!reluctantQuestion.Equals("?")) {
-	                throw new ArgumentException("Invalid code for pattern type: " + code + " reluctant '" + reluctantQuestion + "'");
-	            }
-	            reluctant = true;
-	        }
+            bool reluctant = false;
+            if (reluctantQuestion != null) {
+                if (!reluctantQuestion.Equals("?")) {
+                    throw new ArgumentException("Invalid code for pattern type: " + code + " reluctant '" + reluctantQuestion + "'");
+                }
 
-	        switch (code) {
-	            case null:
-	                return RowRecogNFATypeEnum.SINGLE;
-	            case "*":
-	                return reluctant ? RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT : RowRecogNFATypeEnum.ZERO_TO_MANY;
-	            case "+":
-	                return reluctant ? RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT : RowRecogNFATypeEnum.ONE_TO_MANY;
-	            case "?":
-	                return reluctant ? RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT : RowRecogNFATypeEnum.ONE_OPTIONAL;
-	        }
-	        throw new ArgumentException("Invalid code for pattern type: " + code);
-	    }
-	}
+                reluctant = true;
+            }
+
+            switch (code) {
+                case null:
+                    return RowRecogNFATypeEnum.SINGLE;
+                case "*":
+                    return reluctant ? RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT : RowRecogNFATypeEnum.ZERO_TO_MANY;
+                case "+":
+                    return reluctant ? RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT : RowRecogNFATypeEnum.ONE_TO_MANY;
+                case "?":
+                    return reluctant ? RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT : RowRecogNFATypeEnum.ONE_OPTIONAL;
+            }
+
+            throw new ArgumentException("Invalid code for pattern type: " + code);
+        }
+    }
 } // end of namespace

@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 {
     public class AdvancedIndexDescWExpr
     {
-        public AdvancedIndexDescWExpr(string indexTypeName, ExprNode[] indexedExpressions)
+        public AdvancedIndexDescWExpr(
+            string indexTypeName,
+            ExprNode[] indexedExpressions)
         {
             IndexTypeName = indexTypeName;
             IndexedExpressions = indexedExpressions;

@@ -37,8 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly Viewable[] streamViews;
 
         public JoinSetComposerHistoricalImpl(
-            bool allowInitIndex, IDictionary<TableLookupIndexReqKey, EventTable>[] repositories,
-            QueryStrategy[] queryStrategies, Viewable[] streamViews,
+            bool allowInitIndex,
+            IDictionary<TableLookupIndexReqKey, EventTable>[] repositories,
+            QueryStrategy[] queryStrategies,
+            Viewable[] streamViews,
             ExprEvaluatorContext staticEvalExprEvaluatorContext)
         {
             this.allowInitIndex = allowInitIndex;
@@ -65,7 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             return allowInitIndex;
         }
 
-        public void Init(EventBean[][] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public void Init(
+            EventBean[][] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!allowInitIndex) {
                 throw new IllegalStateException("Initialization by events not supported");
@@ -100,7 +104,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         public UniformPair<ISet<MultiKey<EventBean>>> Join(
-            EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QJoinCompositionHistorical();
@@ -197,7 +203,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             visitor.Visit(repositories);
         }
 
-        private void AssignThreadLocalCache(Viewable[] streamViews, HistoricalDataCacheClearableMap[] caches)
+        private void AssignThreadLocalCache(
+            Viewable[] streamViews,
+            HistoricalDataCacheClearableMap[] caches)
         {
             for (var stream = 0; stream < streamViews.Length; stream++) {
                 if (streamViews[stream] is HistoricalEventViewable) {
@@ -208,7 +216,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
         }
 
-        private void DeassignThreadLocalCache(Viewable[] streamViews, HistoricalDataCacheClearableMap[] caches)
+        private void DeassignThreadLocalCache(
+            Viewable[] streamViews,
+            HistoricalDataCacheClearableMap[] caches)
         {
             for (var stream = 0; stream < streamViews.Length; stream++) {
                 if (streamViews[stream] is HistoricalEventViewable) {

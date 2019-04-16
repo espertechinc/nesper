@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,7 +18,6 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -40,28 +38,31 @@ namespace com.espertech.esper.common.@internal.view.timetolive
         private string ViewParamMessage =>
             ViewName + " view requires a single expression supplying long-type timestamp values as a parameter";
 
-        public int ScheduleCallbackId
-        {
+        public int ScheduleCallbackId {
             set => scheduleCallbackId = value;
         }
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             viewParameters = parameters;
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
 
-            if (viewParameters.Count != 1)
-            {
+            if (viewParameters.Count != 1) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            if (validated[0].Forge.EvaluationType.GetBoxedType() != typeof(long))
-            {
+            if (validated[0].Forge.EvaluationType.GetBoxedType() != typeof(long)) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
@@ -80,7 +81,9 @@ namespace com.espertech.esper.common.@internal.view.timetolive
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block

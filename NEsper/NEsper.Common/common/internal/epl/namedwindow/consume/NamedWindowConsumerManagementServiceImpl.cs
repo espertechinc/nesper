@@ -23,13 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         public int Count => 0;
 
         public void AddConsumer(
-            string namedWindowDeploymentId, string namedWindowName, int namedWindowConsumerId,
-            StatementContext statementContext, bool subquery)
+            string namedWindowDeploymentId,
+            string namedWindowName,
+            int namedWindowConsumerId,
+            StatementContext statementContext,
+            bool subquery)
         {
         }
 
         public void DestroyConsumer(
-            string namedWindowDeploymentId, string namedWindowName, StatementContext statementContext)
+            string namedWindowDeploymentId,
+            string namedWindowName,
+            StatementContext statementContext)
         {
         }
     }

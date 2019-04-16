@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         {
         }
 
-        public AggregationPortableValidationSum(bool distinct, bool hasFilter, Type inputValueType)
+        public AggregationPortableValidationSum(
+            bool distinct,
+            bool hasFilter,
+            Type inputValueType)
             : base(distinct, hasFilter, inputValueType)
 
         {
@@ -40,13 +43,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         }
 
         protected override void CodegenInlineSetWFilterWInputType(
-            CodegenExpressionRef @ref, CodegenMethod method, ModuleTableInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
         }
 
         protected override void ValidateIntoTableWFilterWInputType(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory)
         {
         }

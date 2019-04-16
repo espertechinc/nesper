@@ -20,10 +20,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
     {
         public StatementSpecMapEnv(
             ImportServiceCompileTime importService,
-            VariableCompileTimeResolver variableCompileTimeResolver, Configuration configuration,
+            VariableCompileTimeResolver variableCompileTimeResolver,
+            Configuration configuration,
             ExprDeclaredCompileTimeResolver exprDeclaredCompileTimeResolver,
-            ContextCompileTimeResolver contextCompileTimeResolver, TableCompileTimeResolver tableCompileTimeResolver,
-            ScriptCompileTimeResolver scriptCompileTimeResolver, CompilerServices compilerServices)
+            ContextCompileTimeResolver contextCompileTimeResolver,
+            TableCompileTimeResolver tableCompileTimeResolver,
+            ScriptCompileTimeResolver scriptCompileTimeResolver,
+            CompilerServices compilerServices)
         {
             ImportService = importService;
             VariableCompileTimeResolver = variableCompileTimeResolver;

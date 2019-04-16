@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphValuePairInKWMultiIdx
     {
-        public QueryGraphValuePairInKWMultiIdx(ExprNode[] indexed, QueryGraphValueEntryInKeywordMultiIdxForge key)
+        public QueryGraphValuePairInKWMultiIdx(
+            ExprNode[] indexed,
+            QueryGraphValueEntryInKeywordMultiIdxForge key)
         {
             Indexed = indexed;
             Key = key;

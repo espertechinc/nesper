@@ -9,31 +9,31 @@
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     /// <summary>
-    /// Schema element is a simple or complex element.
+    ///     Schema element is a simple or complex element.
     /// </summary>
     public interface SchemaElement : SchemaItem
     {
         /// <summary>
-        /// Returns the namespace.
+        ///     Returns the namespace.
         /// </summary>
         /// <returns>
-        /// namespace
+        ///     namespace
         /// </returns>
         string Namespace { get; }
 
         /// <summary>
-        /// Returns the name.
+        ///     Returns the name.
         /// </summary>
         /// <returns>
-        /// name
+        ///     name
         /// </returns>
         string Name { get; }
 
         /// <summary>
-        /// Returns true for unbounded or max>1
+        ///     Returns true for unbounded or max>1
         /// </summary>
         /// <returns>
-        /// array indicator
+        ///     array indicator
         /// </returns>
         bool IsArray { get; }
     }

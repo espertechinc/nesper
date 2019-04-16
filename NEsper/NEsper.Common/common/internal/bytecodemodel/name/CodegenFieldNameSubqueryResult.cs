@@ -10,32 +10,36 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.name
 {
-	public class CodegenFieldNameSubqueryResult : CodegenFieldName {
-	    private readonly int _subqueryNumber;
+    public class CodegenFieldNameSubqueryResult : CodegenFieldName
+    {
+        private readonly int _subqueryNumber;
 
-	    public CodegenFieldNameSubqueryResult(int subqueryNumber) {
-	        this._subqueryNumber = subqueryNumber;
-	    }
+        public CodegenFieldNameSubqueryResult(int subqueryNumber)
+        {
+            this._subqueryNumber = subqueryNumber;
+        }
 
-	    public string Name {
-	        get => CodegenPackageScopeNames.SubqueryResultFuture(_subqueryNumber);
-	    }
+        public string Name {
+            get => CodegenPackageScopeNames.SubqueryResultFuture(_subqueryNumber);
+        }
 
-	    public int SubqueryNumber {
-	        get => _subqueryNumber;
-	    }
+        public int SubqueryNumber {
+            get => _subqueryNumber;
+        }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+        public override bool Equals(object o)
+        {
+            if (this == o) return true;
+            if (o == null || GetType() != o.GetType()) return false;
 
-	        CodegenFieldNameSubqueryResult that = (CodegenFieldNameSubqueryResult) o;
+            CodegenFieldNameSubqueryResult that = (CodegenFieldNameSubqueryResult) o;
 
-	        return _subqueryNumber == that._subqueryNumber;
-	    }
+            return _subqueryNumber == that._subqueryNumber;
+        }
 
-	    public override int GetHashCode() {
-	        return _subqueryNumber;
-	    }
-	}
+        public override int GetHashCode()
+        {
+            return _subqueryNumber;
+        }
+    }
 } // end of namespace

@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
     {
         internal readonly IDictionary<object, ISet<EventBean>> propertyIndex;
 
-        public PropertyHashedEventTableUnadorned(PropertyHashedEventTableFactory factory) : base(factory)
+        public PropertyHashedEventTableUnadorned(PropertyHashedEventTableFactory factory)
+            : base(factory)
         {
             propertyIndex = new Dictionary<object, ISet<EventBean>>();
         }
@@ -43,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             return propertyIndex.Get(key);
         }
 
-        public override void Add(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public override void Add(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var key = GetKey(theEvent);
 
@@ -56,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             events.Add(theEvent);
         }
 
-        public override void Remove(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public override void Remove(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var key = GetKey(theEvent);
 

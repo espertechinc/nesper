@@ -58,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="streamOrPropertyName">
         ///     is the stream name, or if not a valid stream name a possible nested property namein one of the streams.
         /// </param>
-        public ExprIdentNodeImpl(string unresolvedPropertyName, string streamOrPropertyName)
+        public ExprIdentNodeImpl(
+            string unresolvedPropertyName,
+            string streamOrPropertyName)
         {
             if (unresolvedPropertyName == null) {
                 throw new ArgumentException("Property name is null");
@@ -72,7 +74,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             this.streamOrPropertyName = streamOrPropertyName;
         }
 
-        public ExprIdentNodeImpl(EventType eventType, string propertyName, int streamNumber)
+        public ExprIdentNodeImpl(
+            EventType eventType,
+            string propertyName,
+            int streamNumber)
         {
             UnresolvedPropertyName = propertyName;
             resolvedPropertyName = propertyName;
@@ -95,14 +100,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public Type EvaluationType => evaluator.EvaluationType;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return evaluator.Codegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -205,7 +214,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprIdentNode)) {
                 return false;
@@ -339,13 +350,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                    " resolvedPropertyName=" + resolvedPropertyName;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ToPrecedenceFreeEPL(writer, streamOrPropertyName, UnresolvedPropertyName);
         }
 
         public static void ToPrecedenceFreeEPL(
-            StringWriter writer, string streamOrPropertyName, string unresolvedPropertyName)
+            TextWriter writer,
+            string streamOrPropertyName,
+            string unresolvedPropertyName)
         {
             if (streamOrPropertyName != null) {
                 writer.Write(StringValue.UnescapeDot(streamOrPropertyName));

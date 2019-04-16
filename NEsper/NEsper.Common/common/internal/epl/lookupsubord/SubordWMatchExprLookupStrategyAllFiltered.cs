@@ -17,62 +17,72 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.lookupsubord
 {
-	public class SubordWMatchExprLookupStrategyAllFiltered : SubordWMatchExprLookupStrategy {
-	    private readonly ExprEvaluator joinExpr;
-	    private readonly EventBean[] eventsPerStream;
-	    private readonly IEnumerable<EventBean> iterableEvents;
+    public class SubordWMatchExprLookupStrategyAllFiltered : SubordWMatchExprLookupStrategy
+    {
+        private readonly ExprEvaluator joinExpr;
+        private readonly EventBean[] eventsPerStream;
+        private readonly IEnumerable<EventBean> iterableEvents;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="joinExpr">is the where clause</param>
-	    /// <param name="iterable">iterable</param>
-	    public SubordWMatchExprLookupStrategyAllFiltered(ExprEvaluator joinExpr, IEnumerable<EventBean> iterable) {
-	        this.joinExpr = joinExpr;
-	        this.eventsPerStream = new EventBean[2];
-	        this.iterableEvents = iterable;
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="joinExpr">is the where clause</param>
+        /// <param name="iterable">iterable</param>
+        public SubordWMatchExprLookupStrategyAllFiltered(
+            ExprEvaluator joinExpr,
+            IEnumerable<EventBean> iterable)
+        {
+            this.joinExpr = joinExpr;
+            this.eventsPerStream = new EventBean[2];
+            this.iterableEvents = iterable;
+        }
 
-	    public EventBean[] Lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext) {
-	        exprEvaluatorContext.InstrumentationProvider.QInfraTriggeredLookup("fulltablescan_filtered");
+        public EventBean[] Lookup(
+            EventBean[] newData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            exprEvaluatorContext.InstrumentationProvider.QInfraTriggeredLookup("fulltablescan_filtered");
 
-	        ISet<EventBean> removeEvents = null;
+            ISet<EventBean> removeEvents = null;
 
-	        IEnumerator<EventBean> eventsIt = iterableEvents.GetEnumerator();
-	        while (eventsIt.MoveNext()) {
-	            eventsPerStream[0] = eventsIt.Current;
+            IEnumerator<EventBean> eventsIt = iterableEvents.GetEnumerator();
+            while (eventsIt.MoveNext()) {
+                eventsPerStream[0] = eventsIt.Current;
 
-	            foreach (EventBean aNewData in newData) {
-	                eventsPerStream[1] = aNewData;    // Stream 1 events are the originating events (on-delete events)
+                foreach (EventBean aNewData in newData) {
+                    eventsPerStream[1] = aNewData; // Stream 1 events are the originating events (on-delete events)
 
-	                var booleanResult = joinExpr.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-	                if (booleanResult != null) {
-	                    if (true.Equals(booleanResult)) {
-	                        if (removeEvents == null) {
-	                            removeEvents = new LinkedHashSet<EventBean>();
-	                        }
-	                        removeEvents.Add(eventsPerStream[0]);
-	                    }
-	                }
-	            }
-	        }
+                    var booleanResult = joinExpr.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                    if (booleanResult != null) {
+                        if (true.Equals(booleanResult)) {
+                            if (removeEvents == null) {
+                                removeEvents = new LinkedHashSet<EventBean>();
+                            }
 
-	        if (removeEvents == null) {
-	            exprEvaluatorContext.InstrumentationProvider.AInfraTriggeredLookup(null);
-	            return null;
-	        }
+                            removeEvents.Add(eventsPerStream[0]);
+                        }
+                    }
+                }
+            }
 
-	        EventBean[] result = removeEvents.ToArray();
-	        exprEvaluatorContext.InstrumentationProvider.AInfraTriggeredLookup(result);
-	        return result;
-	    }
+            if (removeEvents == null) {
+                exprEvaluatorContext.InstrumentationProvider.AInfraTriggeredLookup(null);
+                return null;
+            }
 
-	    public override string ToString() {
-	        return ToQueryPlan();
-	    }
+            EventBean[] result = removeEvents.ToArray();
+            exprEvaluatorContext.InstrumentationProvider.AInfraTriggeredLookup(result);
+            return result;
+        }
 
-	    public string ToQueryPlan() {
-	        return this.GetType().Name;
-	    }
-	}
+        public override string ToString()
+        {
+            return ToQueryPlan();
+        }
+
+        public string ToQueryPlan()
+        {
+            return this.GetType().Name;
+        }
+    }
 } // end of namespace

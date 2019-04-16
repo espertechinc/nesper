@@ -7,14 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -24,42 +22,45 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         internal readonly ExprEnumerationForge enumerationForge;
         private readonly EventType targetType;
 
-        public ExprEvalEnumerationSingleToCollForge(ExprEnumerationForge enumerationForge, EventType targetType)
+        public ExprEvalEnumerationSingleToCollForge(
+            ExprEnumerationForge enumerationForge,
+            EventType targetType)
         {
             this.enumerationForge = enumerationForge;
             this.targetType = targetType;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
         }
 
-        public CodegenExpression EvaluateCodegen(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean[]), typeof(ExprEvalEnumerationSingleToCollForge), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean[]), typeof(ExprEvalEnumerationSingleToCollForge), codegenClassScope);
 
             methodNode.Block
-                    .DeclareVar(typeof(EventBean), "event", enumerationForge.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
-                    .IfRefNullReturnNull("event")
-                    .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(1)))
-                    .AssignArrayElement(@Ref("events"), Constant(0), @Ref("event"))
-                    .MethodReturn(@Ref("events"));
+                .DeclareVar(typeof(EventBean), "event", enumerationForge.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
+                .IfRefNullReturnNull("event")
+                .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(1)))
+                .AssignArrayElement(@Ref("events"), Constant(0), @Ref("event"))
+                .MethodReturn(@Ref("events"));
             return LocalMethod(methodNode);
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => TypeHelper.GetArrayType(targetType.UnderlyingType);
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => enumerationForge.ForgeRenderable;
         }
     }

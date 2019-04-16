@@ -23,13 +23,19 @@ namespace com.espertech.esper.common.@internal.view.util
     public class ViewForgeSupport
     {
         public static object ValidateAndEvaluate(
-            string viewName, ExprNode expression, ViewForgeEnv viewForgeEnv, int streamNumber)
+            string viewName,
+            ExprNode expression,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             return ValidateAndEvaluateExpr(
                 viewName, expression, new StreamTypeServiceImpl(false), viewForgeEnv, 0, streamNumber);
         }
 
-        public static object EvaluateAssertNoProperties(string viewName, ExprNode expression, int index)
+        public static object EvaluateAssertNoProperties(
+            string viewName,
+            ExprNode expression,
+            int index)
         {
             ValidateNoProperties(viewName, expression, index);
             return expression.Forge.ExprEvaluator.Evaluate(null, false, null);
@@ -42,7 +48,10 @@ namespace com.espertech.esper.common.@internal.view.util
         /// <param name="expression">expression to check</param>
         /// <param name="index">number offset of expression in view parameters</param>
         /// <throws>ViewParameterException if assertion fails</throws>
-        public static void AssertReturnsNonConstant(string viewName, ExprNode expression, int index)
+        public static void AssertReturnsNonConstant(
+            string viewName,
+            ExprNode expression,
+            int index)
         {
             if (expression.Forge.ForgeConstantType.IsCompileTimeConstant) {
                 var message = "Invalid view parameter expression " + index + GetViewDesc(viewName) +
@@ -51,7 +60,10 @@ namespace com.espertech.esper.common.@internal.view.util
             }
         }
 
-        public static void ValidateNoProperties(string viewName, ExprNode expression, int index)
+        public static void ValidateNoProperties(
+            string viewName,
+            ExprNode expression,
+            int index)
         {
             var visitor = new ExprNodeSummaryVisitor();
             expression.Accept(visitor);
@@ -63,8 +75,12 @@ namespace com.espertech.esper.common.@internal.view.util
         }
 
         public static object ValidateAndEvaluateExpr(
-            string viewName, ExprNode expression, StreamTypeService streamTypeService, ViewForgeEnv viewForgeEnv,
-            int expressionNumber, int streamNumber)
+            string viewName,
+            ExprNode expression,
+            StreamTypeService streamTypeService,
+            ViewForgeEnv viewForgeEnv,
+            int expressionNumber,
+            int streamNumber)
         {
             var validated = ValidateExpr(
                 viewName, expression, streamTypeService, viewForgeEnv, expressionNumber, streamNumber);
@@ -86,7 +102,10 @@ namespace com.espertech.esper.common.@internal.view.util
         }
 
         public static ExprForge ValidateSizeSingleParam(
-            string viewName, IList<ExprNode> expressionParameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+            string viewName,
+            IList<ExprNode> expressionParameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             var validated = Validate(viewName, expressionParameters, viewForgeEnv, streamNumber);
             if (validated.Length != 1) {
@@ -96,7 +115,10 @@ namespace com.espertech.esper.common.@internal.view.util
             return ValidateSizeParam(viewName, validated[0], 0);
         }
 
-        public static ExprForge ValidateSizeParam(string viewName, ExprNode sizeNode, int expressionNumber)
+        public static ExprForge ValidateSizeParam(
+            string viewName,
+            ExprNode sizeNode,
+            int expressionNumber)
         {
             var forge = sizeNode.Forge;
             var returnType = sizeNode.Forge.EvaluationType.GetBoxedType();
@@ -133,8 +155,12 @@ namespace com.espertech.esper.common.@internal.view.util
         /// <returns>object result value of parameter expressions</returns>
         /// <throws>ViewParameterException if the expressions fail to validate</throws>
         public static ExprNode[] Validate(
-            string viewName, EventType eventType, IList<ExprNode> expressions, bool allowConstantResult,
-            ViewForgeEnv viewForgeEnv, int streamNumber)
+            string viewName,
+            EventType eventType,
+            IList<ExprNode> expressions,
+            bool allowConstantResult,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             IList<ExprNode> results = new List<ExprNode>();
             var expressionNumber = 0;
@@ -157,7 +183,10 @@ namespace com.espertech.esper.common.@internal.view.util
         }
 
         public static ExprNode[] Validate(
-            string viewName, IList<ExprNode> expressions, ViewForgeEnv viewForgeEnv, int streamNumber)
+            string viewName,
+            IList<ExprNode> expressions,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             var results = new ExprNode[expressions.Count];
             var expressionNumber = 0;
@@ -172,8 +201,12 @@ namespace com.espertech.esper.common.@internal.view.util
         }
 
         public static ExprNode ValidateExpr(
-            string viewName, ExprNode expression, StreamTypeService streamTypeService, ViewForgeEnv viewForgeEnv,
-            int expressionNumber, int streamNumber)
+            string viewName,
+            ExprNode expression,
+            StreamTypeService streamTypeService,
+            ViewForgeEnv viewForgeEnv,
+            int expressionNumber,
+            int streamNumber)
         {
             ExprNode validated;
             try {
@@ -196,7 +229,10 @@ namespace com.espertech.esper.common.@internal.view.util
             return validated;
         }
 
-        public static object Evaluate(ExprEvaluator evaluator, int expressionNumber, string viewName)
+        public static object Evaluate(
+            ExprEvaluator evaluator,
+            int expressionNumber,
+            string viewName)
         {
             try {
                 return evaluator.Evaluate(null, true, null);
@@ -214,7 +250,9 @@ namespace com.espertech.esper.common.@internal.view.util
             }
         }
 
-        public static void ValidateNoParameters(string viewName, IList<ExprNode> expressionParameters)
+        public static void ValidateNoParameters(
+            string viewName,
+            IList<ExprNode> expressionParameters)
         {
             if (!expressionParameters.IsEmpty()) {
                 var errorMessage = viewName + " view requires an empty parameter list";
@@ -232,7 +270,9 @@ namespace com.espertech.esper.common.@internal.view.util
             return !(size == null || size.AsInt() <= 0);
         }
 
-        private static string GetSizeValidationMsg(string viewName, object size)
+        private static string GetSizeValidationMsg(
+            string viewName,
+            object size)
         {
             return viewName + " view requires a positive integer for size but received " + size;
         }

@@ -56,7 +56,10 @@ namespace com.espertech.esper.common.client.soda
         /// is optional additional pattern sub-expression to add to the AND
         /// </param>
         /// <returns>pattern expression representing the AND relationship</returns>
-        public static PatternAndExpr And(PatternExpr first, PatternExpr second, params PatternExpr[] more)
+        public static PatternAndExpr And(
+            PatternExpr first,
+            PatternExpr second,
+            params PatternExpr[] more)
         {
             return new PatternAndExpr(first, second, more);
         }
@@ -70,7 +73,10 @@ namespace com.espertech.esper.common.client.soda
         /// is optional additional pattern sub-expression to add to the OR
         /// </param>
         /// <returns>pattern expression representing the OR relationship</returns>
-        public static PatternOrExpr Or(PatternExpr first, PatternExpr second, params PatternExpr[] more)
+        public static PatternOrExpr Or(
+            PatternExpr first,
+            PatternExpr second,
+            params PatternExpr[] more)
         {
             return new PatternOrExpr(first, second, more);
         }
@@ -97,7 +103,10 @@ namespace com.espertech.esper.common.client.soda
         /// is optional additional pattern sub-expression to add to the followed-by
         /// </param>
         /// <returns>pattern expression representing the followed-by relationship</returns>
-        public static PatternFollowedByExpr FollowedBy(PatternExpr first, PatternExpr second, params PatternExpr[] more)
+        public static PatternFollowedByExpr FollowedBy(
+            PatternExpr first,
+            PatternExpr second,
+            params PatternExpr[] more)
         {
             return new PatternFollowedByExpr(first, second, more);
         }
@@ -134,7 +143,9 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// pattern expression
         /// </returns>
-        public static PatternEveryExpr EveryFilter(String eventTypeName, String tagName)
+        public static PatternEveryExpr EveryFilter(
+            String eventTypeName,
+            String tagName)
         {
             PatternExpr filter = new PatternFilterExpr(soda.Filter.Create(eventTypeName), tagName);
             return new PatternEveryExpr(filter);
@@ -161,7 +172,9 @@ namespace com.espertech.esper.common.client.soda
         /// </param>
         /// <param name="tagName">is the tag name to assign to matching events</param>
         /// <returns>pattern expression</returns>
-        public static PatternEveryExpr EveryFilter(Filter filter, String tagName)
+        public static PatternEveryExpr EveryFilter(
+            Filter filter,
+            String tagName)
         {
             PatternExpr inner = new PatternFilterExpr(filter, tagName);
             return new PatternEveryExpr(inner);
@@ -189,7 +202,9 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// pattern expression
         /// </returns>
-        public static PatternFilterExpr Filter(String eventTypeName, String tagName)
+        public static PatternFilterExpr Filter(
+            String eventTypeName,
+            String tagName)
         {
             return new PatternFilterExpr(soda.Filter.Create(eventTypeName), tagName);
         }
@@ -214,7 +229,9 @@ namespace com.espertech.esper.common.client.soda
         /// </param>
         /// <param name="tagName">is the tag name to assign to matching events</param>
         /// <returns>pattern expression</returns>
-        public static PatternFilterExpr Filter(Filter filter, String tagName)
+        public static PatternFilterExpr Filter(
+            Filter filter,
+            String tagName)
         {
             return new PatternFilterExpr(filter, tagName);
         }
@@ -227,7 +244,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="parameters">is the guard objects optional parameters, i.e. integer 1 for 1 second</param>
         /// <param name="guarded">is the pattern sub-expression to be guarded</param>
         /// <returns>pattern guard expression</returns>
-        public static PatternGuardExpr Guard(String @namespace, String name, Expression[] parameters, PatternExpr guarded)
+        public static PatternGuardExpr Guard(
+            String @namespace,
+            String name,
+            Expression[] parameters,
+            PatternExpr guarded)
         {
             return new PatternGuardExpr(@namespace, name, parameters, guarded);
         }
@@ -239,7 +260,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">is the observer objects name, i.e. ""within"</param>
         /// <param name="parameters">is the observer objects optional parameters, i.e. integer 1 for 1 second</param>
         /// <returns>pattern observer expression</returns>
-        public static PatternObserverExpr Observer(String @namespace, String name, Expression[] parameters)
+        public static PatternObserverExpr Observer(
+            String @namespace,
+            String name,
+            Expression[] parameters)
         {
             return new PatternObserverExpr(@namespace, name, parameters);
         }
@@ -248,21 +272,25 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="seconds">is the number of seconds for the guard</param>
         /// <param name="guarded">is the sub-expression to guard</param>
         /// <returns>pattern guard</returns>
-        public static PatternGuardExpr TimerWithin(double seconds, PatternExpr guarded)
+        public static PatternGuardExpr TimerWithin(
+            double seconds,
+            PatternExpr guarded)
         {
-            return new PatternGuardExpr("timer", "within", new Expression[] { Expressions.Constant(seconds) }, guarded);
+            return new PatternGuardExpr("timer", "within", new Expression[] {Expressions.Constant(seconds)}, guarded);
         }
 
         /// <summary>While-guard expression. </summary>
         /// <param name="expression">expression to evaluate against matches</param>
         /// <param name="guarded">is the sub-expression to guard</param>
         /// <returns>pattern guard</returns>
-        public static PatternGuardExpr WhileGuard(PatternExpr guarded, Expression expression)
+        public static PatternGuardExpr WhileGuard(
+            PatternExpr guarded,
+            Expression expression)
         {
             return new PatternGuardExpr(
                 GuardEnum.WHILE_GUARD.GetNamespace(),
                 GuardEnum.WHILE_GUARD.GetName(),
-                new[] { expression }, guarded);
+                new[] {expression}, guarded);
         }
 
         /// <summary>Timer-within-max guard expression. </summary>
@@ -270,11 +298,14 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="max">the maximum number of invocations for the guard</param>
         /// <param name="guarded">is the sub-expression to guard</param>
         /// <returns>pattern guard</returns>
-        public static PatternGuardExpr TimerWithinMax(double seconds, int max, PatternExpr guarded)
+        public static PatternGuardExpr TimerWithinMax(
+            double seconds,
+            int max,
+            PatternExpr guarded)
         {
             return new PatternGuardExpr(
                 "timer", "withinmax",
-                new Expression[] { Expressions.Constant(seconds), Expressions.Constant(max) },
+                new Expression[] {Expressions.Constant(seconds), Expressions.Constant(max)},
                 guarded);
         }
 
@@ -283,7 +314,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>pattern observer</returns>
         public static PatternObserverExpr TimerInterval(double seconds)
         {
-            return new PatternObserverExpr("timer", "interval", new Expression[] { Expressions.Constant(seconds) });
+            return new PatternObserverExpr("timer", "interval", new Expression[] {Expressions.Constant(seconds)});
         }
 
         /// <summary>
@@ -308,7 +339,9 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// pattern expression
         /// </returns>
-        public static PatternNotExpr NotFilter(String name, String tagName)
+        public static PatternNotExpr NotFilter(
+            String name,
+            String tagName)
         {
             return new PatternNotExpr(new PatternFilterExpr(soda.Filter.Create(name), tagName));
         }
@@ -333,7 +366,9 @@ namespace com.espertech.esper.common.client.soda
         /// </param>
         /// <param name="tagName">is the tag name to assign to matching events</param>
         /// <returns>pattern expression</returns>
-        public static PatternNotExpr NotFilter(Filter filter, String tagName)
+        public static PatternNotExpr NotFilter(
+            Filter filter,
+            String tagName)
         {
             return new PatternNotExpr(new PatternFilterExpr(filter, tagName));
         }
@@ -357,7 +392,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="match">the pattern expression that is sought to match repeatedly</param>
         /// <param name="until">the pattern expression that ends matching (optional, can be null)</param>
         /// <returns>pattern expression</returns>
-        public static PatternMatchUntilExpr MatchUntil(Expression low, Expression high, PatternExpr match, PatternExpr until)
+        public static PatternMatchUntilExpr MatchUntil(
+            Expression low,
+            Expression high,
+            PatternExpr match,
+            PatternExpr until)
         {
             return new PatternMatchUntilExpr(low, high, match, until);
         }
@@ -372,7 +411,13 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="daysOfWeek">a single integer value supplying the days of the week to fire the timer, or null for any (wildcard) day of the week</param>
         /// <param name="seconds">a single integer value supplying the second to fire the timer, or null for any (wildcard) second</param>
         /// <returns>timer-at observer</returns>
-        public static PatternObserverExpr TimerAt(int? minutes, int? hours, int? daysOfMonth, int? month, int? daysOfWeek, int? seconds)
+        public static PatternObserverExpr TimerAt(
+            int? minutes,
+            int? hours,
+            int? daysOfMonth,
+            int? month,
+            int? daysOfWeek,
+            int? seconds)
         {
             Expression wildcard = new CrontabParameterExpression(ScheduleItemType.WILDCARD);
 

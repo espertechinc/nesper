@@ -133,17 +133,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             HasChildViews[index] = true;
         }
 
-        public void SetNamedWindowsPerStream(int streamNum, NamedWindowMetaData metadata)
+        public void SetNamedWindowsPerStream(
+            int streamNum,
+            NamedWindowMetaData metadata)
         {
             NamedWindowsPerStream[streamNum] = metadata;
         }
 
-        public void SetTablesForStream(int streamNum, TableMetaData metadata)
+        public void SetTablesForStream(
+            int streamNum,
+            TableMetaData metadata)
         {
             TablesPerStream[streamNum] = metadata;
         }
 
-        public void AddUniquenessInfo(IList<ViewFactoryForge>[] unmaterializedViewChain, Attribute[] annotations)
+        public void AddUniquenessInfo(
+            IList<ViewFactoryForge>[] unmaterializedViewChain,
+            Attribute[] annotations)
         {
             for (var i = 0; i < unmaterializedViewChain.Length; i++) {
                 var uniquenessProps = GetUniqueCandidateProperties(unmaterializedViewChain[i], annotations);
@@ -155,7 +161,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(StreamJoinAnalysisResultRuntime), GetType(), classScope);
             method.Block
@@ -175,7 +183,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             return NamedWindowsPerStream[stream] != null && NamedWindowsPerStream[stream].IsVirtualDataWindow;
         }
 
-        private CodegenExpression MakeTables(CodegenMethod method, SAIFFInitializeSymbol symbols)
+        private CodegenExpression MakeTables(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols)
         {
             var init = new CodegenExpression[TablesPerStream.Length];
             for (var i = 0; i < init.Length; i++) {
@@ -187,7 +197,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             return NewArrayWithInit(typeof(Table), init);
         }
 
-        private CodegenExpression MakeNamedWindows(CodegenMethod method, SAIFFInitializeSymbol symbols)
+        private CodegenExpression MakeNamedWindows(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols)
         {
             var init = new CodegenExpression[NamedWindowsPerStream.Length];
             for (var i = 0; i < init.Length; i++) {
@@ -200,7 +212,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             return NewArrayWithInit(typeof(NamedWindow), init);
         }
 
-        public static ISet<string> GetUniqueCandidateProperties(IList<ViewFactoryForge> forges, Attribute[] annotations)
+        public static ISet<string> GetUniqueCandidateProperties(
+            IList<ViewFactoryForge> forges,
+            Attribute[] annotations)
         {
             var disableUniqueImplicit = HintEnum.DISABLE_UNIQUE_IMPLICIT_IDX.GetHint(annotations) != null;
             if (forges == null || forges.IsEmpty()) {

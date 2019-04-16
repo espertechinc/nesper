@@ -38,7 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         private readonly int streamId;
 
         public PropertyDotScalarArrayForge(
-            string propertyName, int streamId, EventPropertyGetterSPI getter, Type componentType, Type getterReturnType)
+            string propertyName,
+            int streamId,
+            EventPropertyGetterSPI getter,
+            Type componentType,
+            Type getterReturnType)
         {
             this.propertyName = propertyName;
             this.streamId = streamId;
@@ -48,19 +52,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var eventInQuestion = eventsPerStream[streamId];
             return EvaluateEventGetROCollectionScalar(eventInQuestion, context);
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
@@ -68,7 +79,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
@@ -80,19 +92,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public Type ComponentTypeCollection { get; }
 
         public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
 
         public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             return null;
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
@@ -101,13 +116,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public ExprNodeRenderable ForgeRenderable => this;
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
-        public ICollection<object> EvaluateEventGetROCollectionScalar(EventBean @event, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateEventGetROCollectionScalar(
+            EventBean @event,
+            ExprEvaluatorContext context)
         {
             if (@event == null) {
                 return null;
@@ -116,18 +134,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return EvaluateGetInternal(@event);
         }
 
-        public ICollection<EventBean> EvaluateEventGetROCollectionEvents(EventBean @event, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateEventGetROCollectionEvents(
+            EventBean @event,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public EventBean EvaluateEventGetEventBean(EventBean @event, ExprEvaluatorContext context)
+        public EventBean EvaluateEventGetEventBean(
+            EventBean @event,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
         public CodegenExpression EvaluateEventGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope, ExprEnumerationGivenEventSymbol symbols,
+            CodegenMethodScope codegenMethodScope,
+            ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope.MakeChild(
@@ -140,26 +163,32 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope, ExprEnumerationGivenEventSymbol symbols,
+            CodegenMethodScope codegenMethodScope,
+            ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression EvaluateEventGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope, ExprEnumerationGivenEventSymbol symbols,
+            CodegenMethodScope codegenMethodScope,
+            ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(GetType().Name);
         }
 
         public CodegenExpression CodegenEvaluateEventGetROCollectionScalar(
-            CodegenExpression @event, CodegenExpression evalctx, CodegenMethodScope codegenMethodScope,
+            CodegenExpression @event,
+            CodegenExpression evalctx,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope
@@ -191,7 +220,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         private CodegenExpression CodegenEvaluateGetInternal(
-            CodegenExpression @event, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression @event,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarArrayForge), codegenClassScope)

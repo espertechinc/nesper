@@ -13,6 +13,7 @@ namespace com.espertech.esper.common.@internal.context.util
     public interface AgentInstanceFilterProxy
     {
         FilterValueSetParam[][] GetAddendumFilters(
-            FilterSpecActivatable filterSpec, AgentInstanceContext agentInstanceContext);
+            FilterSpecActivatable filterSpec,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

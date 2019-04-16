@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
@@ -27,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     /// </summary>
     public class EvalRootForgeNode : EvalForgeNodeBase
     {
-        public EvalRootForgeNode(EvalForgeNode childNode, Attribute[] annotations)
+        public EvalRootForgeNode(
+            EvalForgeNode childNode,
+            Attribute[] annotations)
         {
             AddChildNode(childNode);
             bool audit = AuditEnum.PATTERN.GetAudit(annotations) != null ||
@@ -46,14 +46,16 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         }
 
         protected override void InlineCodegen(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             CodegenMethod childMake = ChildNodes[0].MakeCodegen(method, symbols, classScope);
             method.Block
                 .ExprDotMethod(@Ref("node"), "setChildNode", LocalMethod(childMake));
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             if (!ChildNodes.IsEmpty()) {
                 ChildNodes[0].ToEPL(writer, Precedence);
@@ -65,7 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, IList<ScheduleHandleCallbackProvider> schedules)
+            IList<FilterSpecCompiled> filters,
+            IList<ScheduleHandleCallbackProvider> schedules)
         {
             // none here
         }
@@ -80,7 +83,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             return factories;
         }
 
-        private static void CollectFactoriesRecursive(EvalForgeNode factoryNode, IList<EvalForgeNode> factories)
+        private static void CollectFactoriesRecursive(
+            EvalForgeNode factoryNode,
+            IList<EvalForgeNode> factories)
         {
             factories.Add(factoryNode);
             foreach (EvalForgeNode childNode in factoryNode.ChildNodes) {

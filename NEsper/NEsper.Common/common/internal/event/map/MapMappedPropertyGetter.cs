@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// </summary>
         /// <param name="fieldName">property name</param>
         /// <param name="key">get the element at</param>
-        public MapMappedPropertyGetter(string fieldName, string key)
+        public MapMappedPropertyGetter(
+            string fieldName,
+            string key)
         {
             this.key = key;
             this.fieldName = fieldName;
@@ -48,13 +50,13 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public object Get(EventBean eventBean)
         {
-            IDictionary<string, object> data = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
+            var data = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
             return GetMap(data);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
-            IDictionary<string, object> data = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
+            var data = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
             return IsMapExistsProperty(data);
         }
 
@@ -64,7 +66,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -73,7 +76,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -82,14 +86,16 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -97,7 +103,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -105,21 +112,26 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
-        public object Get(EventBean eventBean, string mapKey)
+        public object Get(
+            EventBean eventBean,
+            string mapKey)
         {
-            IDictionary<string, object> data = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
+            var data = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
             return GetMapMappedValue(data, fieldName, mapKey);
         }
 
         public CodegenExpression EventBeanGetMappedCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope,
-            CodegenExpression beanExpression, CodegenExpression key)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            CodegenExpression beanExpression,
+            CodegenExpression key)
         {
             return StaticMethod(
                 GetType(), "getMapMappedValue", CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
@@ -134,7 +146,10 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// <param name="providedKey">key</param>
         /// <returns>value</returns>
         /// <throws>PropertyAccessException exception</throws>
-        public static object GetMapMappedValue(IDictionary<string, object> map, string fieldName, string providedKey)
+        public static object GetMapMappedValue(
+            IDictionary<string, object> map,
+            string fieldName,
+            string providedKey)
         {
             var value = map.Get(fieldName);
             return BaseNestableEventUtil.GetMappedPropertyValue(value, providedKey);
@@ -148,7 +163,10 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// <param name="key">key</param>
         /// <returns>value</returns>
         /// <throws>PropertyAccessException exception</throws>
-        public static bool IsMapExistsProperty(IDictionary<string, object> map, string fieldName, string key)
+        public static bool IsMapExistsProperty(
+            IDictionary<string, object> map,
+            string fieldName,
+            string key)
         {
             var value = map.Get(fieldName);
             return BaseNestableEventUtil.GetMappedPropertyExists(value, key);

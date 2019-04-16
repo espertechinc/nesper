@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var type = classScope.AddFieldUnshared(
                 true, typeof(EventType),

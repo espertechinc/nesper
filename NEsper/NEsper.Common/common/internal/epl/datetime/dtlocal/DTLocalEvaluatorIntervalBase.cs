@@ -13,8 +13,8 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public abstract class DTLocalEvaluatorIntervalBase
-        : DTLocalEvaluator
-        , DTLocalEvaluatorIntervalComp
+        : DTLocalEvaluator,
+            DTLocalEvaluatorIntervalComp
     {
         internal readonly IntervalOp intervalOp;
 
@@ -24,10 +24,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public abstract object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         public abstract object Evaluate(
-            object startTimestamp, object endTimestamp, EventBean[] eventsPerStream, bool isNewData,
+            object startTimestamp,
+            object endTimestamp,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
     }
 }

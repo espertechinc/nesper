@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
 
         public override bool IsFilterChildNonQuitting => false;
 
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        public override EvalNode MakeEvalNode(
+            PatternAgentInstanceContext agentInstanceContext,
+            EvalNode parentNode)
         {
             return new EvalFilterNode(agentInstanceContext, this);
         }

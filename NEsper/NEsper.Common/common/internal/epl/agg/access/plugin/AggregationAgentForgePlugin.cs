@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
@@ -24,22 +23,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         private readonly AggregationMultiFunctionAgentModeManaged mode;
         private readonly ExprForge optionalFilter;
 
-        public AggregationAgentForgePlugin(AggregationForgeFactoryAccessPlugin parent, AggregationMultiFunctionAgentModeManaged mode, ExprForge optionalFilter)
+        public AggregationAgentForgePlugin(
+            AggregationForgeFactoryAccessPlugin parent,
+            AggregationMultiFunctionAgentModeManaged mode,
+            ExprForge optionalFilter)
         {
             this.parent = parent;
             this.mode = mode;
             this.optionalFilter = optionalFilter;
         }
 
-        public ExprForge OptionalFilter
-        {
+        public ExprForge OptionalFilter {
             get => optionalFilter;
         }
 
-        public CodegenExpression Make(CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
-            InjectionStrategyClassNewInstance injectionStrategy = (InjectionStrategyClassNewInstance)mode.InjectionStrategyAggregationAgentFactory;
-            CodegenExpressionField factoryField = classScope.AddFieldUnshared(true, typeof(AggregationMultiFunctionAgentFactory), injectionStrategy.GetInitializationExpression(classScope));
+            InjectionStrategyClassNewInstance injectionStrategy = (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationAgentFactory;
+            CodegenExpressionField factoryField = classScope.AddFieldUnshared(
+                true, typeof(AggregationMultiFunctionAgentFactory), injectionStrategy.GetInitializationExpression(classScope));
             return ExprDotMethod(factoryField, "newAgent", ConstantNull());
         }
     }

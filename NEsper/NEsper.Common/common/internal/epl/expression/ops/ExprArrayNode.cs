@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var delimiter = "";
             writer.Write("{");
@@ -146,7 +146,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             writer.Write('}');
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprArrayNode)) {
                 return false;

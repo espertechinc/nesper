@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="crontabExpressions">crontab expressions returning number sets for each crontab position</param>
         /// <param name="now">indicator whethet to include "now"</param>
-        public ContextDescriptorConditionCrontab(IList<Expression> crontabExpressions, bool now)
+        public ContextDescriptorConditionCrontab(
+            IList<Expression> crontabExpressions,
+            bool now)
         {
             CrontabExpressions = crontabExpressions;
             IsNow = now;
@@ -40,25 +42,30 @@ namespace com.espertech.esper.common.client.soda
         /// <value>&quot;now&quot; indicator</value>
         public bool IsNow { get; set; }
 
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             Write(writer, CrontabExpressions, IsNow);
         }
 
-        private static void Write(TextWriter writer, IList<Expression> expressions, bool now)
+        private static void Write(
+            TextWriter writer,
+            IList<Expression> expressions,
+            bool now)
         {
-            if (now)
-            {
+            if (now) {
                 writer.Write("@now and ");
             }
+
             writer.Write("(");
             string delimiter = "";
-            foreach (Expression e in expressions)
-            {
+            foreach (Expression e in expressions) {
                 writer.Write(delimiter);
                 e.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";
             }
+
             writer.Write(")");
         }
     }

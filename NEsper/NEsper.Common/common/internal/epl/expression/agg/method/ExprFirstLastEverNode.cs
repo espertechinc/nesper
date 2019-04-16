@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         /// </summary>
         /// <param name="first">true if first</param>
         /// <param name="distinct">flag indicating unique or non-unique value aggregation</param>
-        public ExprFirstLastEverNode(bool distinct, bool first) : base(distinct)
+        public ExprFirstLastEverNode(
+            bool distinct,
+            bool first)
+            : base(distinct)
         {
             IsFirst = first;
         }
@@ -37,13 +40,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            if (positionalParams.Length > 2)
-            {
+            if (positionalParams.Length > 2) {
                 throw MakeExceptionExpectedParamNum(0, 2);
             }
 
-            if (positionalParams.Length == 2)
-            {
+            if (positionalParams.Length == 2) {
                 ValidateFilter(positionalParams[1]);
                 optionalFilter = positionalParams[1];
             }
@@ -51,12 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             Type resultType;
             var isWildcard = positionalParams.Length == 0 ||
                              positionalParams.Length > 0 && positionalParams[0] is ExprWildcard;
-            if (isWildcard)
-            {
+            if (isWildcard) {
                 resultType = validationContext.StreamTypeService.EventTypes[0].UnderlyingType;
             }
-            else
-            {
+            else {
                 resultType = positionalParams[0].Forge.EvaluationType;
             }
 
@@ -65,12 +64,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
-            if (!(node is ExprFirstLastEverNode))
-            {
+            if (!(node is ExprFirstLastEverNode)) {
                 return false;
             }
 
-            var other = (ExprFirstLastEverNode)node;
+            var other = (ExprFirstLastEverNode) node;
             return other.IsFirst == IsFirst;
         }
 

@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     {
         private readonly ExprForge[] forges;
 
-        public InstanceManufacturerFactoryFastCtor(Type targetClass, ConstructorInfo ctor, ExprForge[] forges)
+        public InstanceManufacturerFactoryFastCtor(
+            Type targetClass,
+            ConstructorInfo ctor,
+            ExprForge[] forges)
         {
             TargetClass = targetClass;
             Ctor = ctor;
@@ -36,7 +39,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         }
 
         public CodegenExpression Codegen(
-            object forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            object forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return InstanceManufacturerFastCtor.Codegen(

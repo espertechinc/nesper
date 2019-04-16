@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="expression">is the selection expression</param>
         /// <param name="optionalAsName">is the "as"-tag for the expression</param>
-        public SelectClauseExpression(Expression expression, String optionalAsName)
+        public SelectClauseExpression(
+            Expression expression,
+            String optionalAsName)
         {
             Expression = expression;
             AsName = optionalAsName;
@@ -54,12 +56,11 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPLElement(TextWriter writer)
         {
             Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (IsAnnotatedByEventFlag)
-            {
+            if (IsAnnotatedByEventFlag) {
                 writer.Write(" @eventbean");
             }
-            if (AsName != null)
-            {
+
+            if (AsName != null) {
                 writer.Write(" as ");
                 writer.Write(AsName);
             }

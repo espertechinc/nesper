@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -46,12 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 DateFormat format,
                 object input)
             {
-                try
-                {
+                try {
                     return format.Parse(input.ToString()).TimeInMillis;
                 }
-                catch (ParseException e)
-                {
+                catch (ParseException e) {
                     throw ExprCastNode.HandleParseException(format, input.ToString(), e);
                 }
             }

@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.client.soda
             string delimiter;
 
             writer.Write(" match_recognize (");
-    
+
             if (PartitionExpressions.Count > 0) {
                 delimiter = "";
                 writer.Write(" partition by ");
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.client.soda
                     delimiter = ", ";
                 }
             }
-    
+
             delimiter = "";
             writer.Write(" measures ");
             foreach (SelectClauseExpression part in Measures) {
@@ -57,27 +57,27 @@ namespace com.espertech.esper.common.client.soda
                 part.ToEPLElement(writer);
                 delimiter = ", ";
             }
-    
+
             if (IsAll) {
                 writer.Write(" all matches");
             }
-    
+
             if (SkipClause != MatchRecognizeSkipClause.PAST_LAST_ROW) {
                 writer.Write(" after match skip " + SkipClause.GetText());
             }
-    
+
             writer.Write(" pattern (");
             Pattern.WriteEPL(writer);
             writer.Write(")");
-    
-            if ((IntervalClause != null) && (IntervalClause.Expression != null)){
+
+            if ((IntervalClause != null) && (IntervalClause.Expression != null)) {
                 writer.Write(" interval ");
                 IntervalClause.Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 if (IntervalClause.IsOrTerminated) {
                     writer.Write(" or terminated");
                 }
             }
-    
+
             delimiter = "";
             if (!Defines.IsEmpty()) {
                 writer.Write(" define ");
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.client.soda
                     delimiter = ", ";
                 }
             }
-    
+
             writer.Write(")");
         }
 

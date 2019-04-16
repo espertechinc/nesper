@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
     public class ContextManagerUtil
     {
         public static IList<AgentInstance> GetAgentInstances(
-            ContextControllerStatementDesc statement, ICollection<int> agentInstanceIds)
+            ContextControllerStatementDesc statement,
+            ICollection<int> agentInstanceIds)
         {
             StatementContext statementContext = statement.Lightweight.StatementContext;
             IList<AgentInstance> instances = new List<AgentInstance>();
@@ -31,14 +32,17 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return instances;
         }
 
-        public static AgentInstance GetAgentInstance(StatementContext statementContext, int agentInstanceId)
+        public static AgentInstance GetAgentInstance(
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             var holder = statementContext.StatementCPCacheService.MakeOrGetEntryCanNull(agentInstanceId, statementContext);
             return new AgentInstance(holder.AgentInstanceStopCallback, holder.AgentInstanceContext, holder.FinalView);
         }
 
         public static IList<AgentInstance> GetAgentInstancesFiltered(
-            ContextControllerStatementDesc statement, ICollection<int> agentInstanceIds,
+            ContextControllerStatementDesc statement,
+            ICollection<int> agentInstanceIds,
             Func<AgentInstance, bool> filter)
         {
             StatementContext statementContext = statement.Lightweight.StatementContext;
@@ -76,7 +80,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         public static FilterValueSetParam[][] ComputeAddendumNonStmt(
-            object[] partitionKeys, FilterSpecActivatable filterCallback, ContextManagerRealization realization)
+            object[] partitionKeys,
+            FilterSpecActivatable filterCallback,
+            ContextManagerRealization realization)
         {
             return ComputeAddendum(
                 partitionKeys, filterCallback, false, null,
@@ -85,8 +91,11 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         private static FilterValueSetParam[][] ComputeAddendum(
-            object[] parentPartitionKeys, FilterSpecActivatable filterCallback, bool forStatement,
-            ContextControllerStatementDesc optionalStatementDesc, ContextControllerFactory[] controllerFactories,
+            object[] parentPartitionKeys,
+            FilterSpecActivatable filterCallback,
+            bool forStatement,
+            ContextControllerStatementDesc optionalStatementDesc,
+            ContextControllerFactory[] controllerFactories,
             AgentInstanceContext agentInstanceContextCreate)
         {
             var result = new FilterValueSetParam[0][];
@@ -101,7 +110,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         public static MappedEventBean BuildContextProperties(
-            int agentInstanceId, object[] allPartitionKeys, ContextDefinition contextDefinition,
+            int agentInstanceId,
+            object[] allPartitionKeys,
+            ContextDefinition contextDefinition,
             StatementContext statementContextCreate)
         {
             var props = BuildContextPropertiesMap(agentInstanceId, allPartitionKeys, contextDefinition);
@@ -110,7 +121,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         private static IDictionary<string, object> BuildContextPropertiesMap(
-            int agentInstanceId, object[] allPartitionKeys, ContextDefinition contextDefinition)
+            int agentInstanceId,
+            object[] allPartitionKeys,
+            ContextDefinition contextDefinition)
         {
             IDictionary<string, object> props = new Dictionary<string, object>();
             props.Put(ContextPropertyEventType.PROP_CTX_NAME, contextDefinition.ContextName);

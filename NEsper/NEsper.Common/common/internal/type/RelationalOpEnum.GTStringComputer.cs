@@ -16,15 +16,24 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         /// Computer for relational op compare.
         /// </summary>
-        public class GTStringComputer : Computer {
-            public bool Compare(object objOne, object objTwo) {
+        public class GTStringComputer : Computer
+        {
+            public bool Compare(
+                object objOne,
+                object objTwo)
+            {
                 string s1 = (string) objOne;
                 string s2 = (string) objTwo;
                 int result = s1.CompareTo(s2);
                 return result > 0;
             }
 
-            public CodegenExpression Codegen(CodegenExpressionRef lhs, Type lhsType, CodegenExpression rhs, Type rhsType) {
+            public CodegenExpression Codegen(
+                CodegenExpressionRef lhs,
+                Type lhsType,
+                CodegenExpression rhs,
+                Type rhsType)
+            {
                 return CodegenStringCompare(lhs, lhsType, rhs, rhsType, CodegenExpressionRelational.CodegenRelational.GT);
             }
         }

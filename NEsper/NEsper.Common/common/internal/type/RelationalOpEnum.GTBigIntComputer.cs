@@ -17,15 +17,24 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         /// Computer for relational op compare.
         /// </summary>
-        public class GTBigIntComputer : Computer {
-            public bool Compare(object objOne, object objTwo) {
+        public class GTBigIntComputer : Computer
+        {
+            public bool Compare(
+                object objOne,
+                object objTwo)
+            {
                 BigInteger s1 = (BigInteger) objOne;
                 BigInteger s2 = (BigInteger) objTwo;
                 int result = s1.CompareTo(s2);
                 return result > 0;
             }
 
-            public CodegenExpression Codegen(CodegenExpressionRef lhs, Type lhsType, CodegenExpression rhs, Type rhsType) {
+            public CodegenExpression Codegen(
+                CodegenExpressionRef lhs,
+                Type lhsType,
+                CodegenExpression rhs,
+                Type rhsType)
+            {
                 return CodegenComparable(lhs, rhs, CodegenExpressionRelational.CodegenRelational.GT);
             }
         }

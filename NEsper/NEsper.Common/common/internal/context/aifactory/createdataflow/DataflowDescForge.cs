@@ -33,9 +33,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         private readonly IDictionary<int, OperatorMetadataDescriptor> operatorMetadata;
 
         public DataflowDescForge(
-            string dataflowName, IDictionary<string, EventType> declaredTypes,
-            IDictionary<int, OperatorMetadataDescriptor> operatorMetadata, ISet<int> operatorBuildOrder,
-            IDictionary<int, DataFlowOperatorForge> operatorFactories, IList<LogicalChannel> logicalChannels,
+            string dataflowName,
+            IDictionary<string, EventType> declaredTypes,
+            IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
+            ISet<int> operatorBuildOrder,
+            IDictionary<int, DataFlowOperatorForge> operatorFactories,
+            IList<LogicalChannel> logicalChannels,
             IList<StmtForgeMethodResult> additionalForgables)
         {
             this.dataflowName = dataflowName;
@@ -48,7 +51,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(DataflowDesc), GetType(), classScope);
             method.Block
@@ -79,7 +84,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static CodegenExpression MakeOpChannels(
-            IList<LogicalChannel> logicalChannels, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            IList<LogicalChannel> logicalChannels,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(IList<object>), typeof(DataflowDescForge), classScope);
@@ -94,7 +101,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static CodegenExpression MakeOpBuildOrder(
-            ISet<int> operatorBuildOrder, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            ISet<int> operatorBuildOrder,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(LinkedHashSet<object>), typeof(DataflowDescForge), classScope);
@@ -111,8 +120,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static CodegenExpression MakeOpFactories(
-            IDictionary<int, DataFlowOperatorForge> operatorFactories, CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            IDictionary<int, DataFlowOperatorForge> operatorFactories,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(IDictionary<object, object>), typeof(DataflowDescForge), classScope);
             method.Block.DeclareVar(
@@ -130,8 +141,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static CodegenExpression MakeOpMeta(
-            IDictionary<int, OperatorMetadataDescriptor> operatorMetadata, CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(IDictionary<object, object>), typeof(DataflowDescForge), classScope);
             method.Block.DeclareVar(
@@ -149,7 +162,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static CodegenExpression MakeTypes(
-            IDictionary<string, EventType> declaredTypes, CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            IDictionary<string, EventType> declaredTypes,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(IDictionary<object, object>), typeof(DataflowDescForge), classScope);

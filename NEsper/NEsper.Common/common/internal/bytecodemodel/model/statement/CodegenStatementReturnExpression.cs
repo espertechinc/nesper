@@ -32,7 +32,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             expression.MergeClasses(classes);
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public override void RenderStatement(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("return ");
             expression.Render(builder, imports, isInnerClass);

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.core
@@ -33,13 +31,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         private readonly IDictionary<string, DBOutputTypeDesc> outputTypes;
 
         public HistoricalEventViewableDatabaseForge(
-            int streamNum, 
-            EventType eventType, 
-            string databaseName, 
-            string[] inputParameters, 
-            string preparedStatementText, 
+            int streamNum,
+            EventType eventType,
+            string databaseName,
+            string[] inputParameters,
+            string preparedStatementText,
             IDictionary<string, DBOutputTypeDesc> outputTypes)
-             : base(streamNum, eventType)
+            : base(streamNum, eventType)
         {
             this.databaseName = databaseName;
             this.inputParameters = inputParameters;
@@ -54,29 +52,29 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         {
             int count = 0;
             ExprValidationContext validationContext = new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services)
-                    .WithAllowBindingConsumption(true).Build();
+                .WithAllowBindingConsumption(true).Build();
             ExprNode[] inputParamNodes = new ExprNode[inputParameters.Length];
-            foreach (string inputParam in inputParameters)
-            {
+            foreach (string inputParam in inputParameters) {
                 ExprNode raw = FindSQLExpressionNode(streamNum, count, @base.StatementSpec.Raw.SqlParameters);
-                if (raw == null)
-                {
-                    throw new ExprValidationException("Internal error find expression for historical stream parameter " + count + " stream " + streamNum);
+                if (raw == null) {
+                    throw new ExprValidationException(
+                        "Internal error find expression for historical stream parameter " + count + " stream " + streamNum);
                 }
+
                 ExprNode evaluator = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.DATABASEPOLL, raw, validationContext);
                 inputParamNodes[count++] = evaluator;
 
                 ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
                 visitor.Visit(evaluator);
-                foreach (ExprIdentNode identNode in visitor.ExprProperties)
-                {
-                    if (identNode.StreamId == streamNum)
-                    {
+                foreach (ExprIdentNode identNode in visitor.ExprProperties) {
+                    if (identNode.StreamId == streamNum) {
                         throw new ExprValidationException("Invalid expression '" + inputParam + "' resolves to the historical data itself");
                     }
+
                     subordinateStreams.Add(identNode.StreamId);
                 }
             }
+
             this.inputParamEvaluators = ExprNodeUtilityQuery.GetForges(inputParamNodes);
         }
 
@@ -92,41 +90,43 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             CodegenClassScope classScope)
         {
             method.Block
-                    .ExprDotMethod(@ref, "setDatabaseName", Constant(databaseName))
-                    .ExprDotMethod(@ref, "setInputParameters", Constant(inputParameters))
-                    .ExprDotMethod(@ref, "setPreparedStatementText", Constant(preparedStatementText))
-                    .ExprDotMethod(@ref, "setOutputTypes", MakeOutputTypes(method, symbols, classScope));
+                .ExprDotMethod(@ref, "setDatabaseName", Constant(databaseName))
+                .ExprDotMethod(@ref, "setInputParameters", Constant(inputParameters))
+                .ExprDotMethod(@ref, "setPreparedStatementText", Constant(preparedStatementText))
+                .ExprDotMethod(@ref, "setOutputTypes", MakeOutputTypes(method, symbols, classScope));
         }
 
         private CodegenExpression MakeOutputTypes(
-            CodegenMethodScope parent, 
+            CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             CodegenMethod method = parent.MakeChild(typeof(IDictionary<object, object>), this.GetType(), classScope);
-            method.Block.DeclareVar(typeof(IDictionary<object, object>), "types", NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(outputTypes.Count))));
-            foreach (KeyValuePair<string, DBOutputTypeDesc> entry in outputTypes)
-            {
+            method.Block.DeclareVar(
+                typeof(IDictionary<object, object>), "types",
+                NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(outputTypes.Count))));
+            foreach (KeyValuePair<string, DBOutputTypeDesc> entry in outputTypes) {
                 method.Block.ExprDotMethod(@Ref("types"), "put", Constant(entry.Key), entry.Value.Make());
             }
+
             method.Block.MethodReturn(@Ref("types"));
             return LocalMethod(method);
         }
 
         private static ExprNode FindSQLExpressionNode(
-            int myStreamNumber, 
+            int myStreamNumber,
             int count,
             IDictionary<int, IList<ExprNode>> sqlParameters)
         {
-            if ((sqlParameters == null) || (sqlParameters.IsEmpty()))
-            {
+            if ((sqlParameters == null) || (sqlParameters.IsEmpty())) {
                 return null;
             }
+
             IList<ExprNode> parameters = sqlParameters.Get(myStreamNumber);
-            if ((parameters == null) || (parameters.IsEmpty()) || (parameters.Count < (count + 1)))
-            {
+            if ((parameters == null) || (parameters.IsEmpty()) || (parameters.Count < (count + 1))) {
                 return null;
             }
+
             return parameters[count];
         }
     }

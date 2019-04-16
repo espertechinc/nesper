@@ -8,9 +8,7 @@
 
 using System;
 using System.Linq;
-
 using com.espertech.esper.common.@internal.util;
-
 using XLR8.CGLib;
 
 namespace com.espertech.esper.client.scopetest
@@ -42,39 +40,40 @@ namespace com.espertech.esper.client.scopetest
             var appTypes = assemblies.SelectMany(assembly => assembly.GetTypes()).ToArray();
 
             var nunitAssertionType = TypeHelper.ResolveType("NUnit.Framework.Assert", false);
-            if (nunitAssertionType != null)
-            {
+            if (nunitAssertionType != null) {
                 var asFastClass = FastClass.Create(nunitAssertionType);
-                var asFastMethod = asFastClass?.GetMethod("Fail", new Type[] { typeof(string) });
-                if (asFastMethod != null)
-                {
+                var asFastMethod = asFastClass?.GetMethod("Fail", new Type[] {typeof(string)});
+                if (asFastMethod != null) {
                     AssertFail = message => asFastMethod.InvokeStatic(message);
                 }
             }
         }
 
-        private static string SanitizeMessage(string message, string defaultMessage)
+        private static string SanitizeMessage(
+            string message,
+            string defaultMessage)
         {
-            if (message == null)
-            {
+            if (message == null) {
                 return defaultMessage;
             }
 
             return message;
         }
 
-        public static void True(bool condition, string message = null)
+        public static void True(
+            bool condition,
+            string message = null)
         {
-            if (!condition)
-            {
+            if (!condition) {
                 AssertFail(SanitizeMessage(message, "Expected true, but received false"));
             }
         }
 
-        public static void False(bool condition, string message = null)
+        public static void False(
+            bool condition,
+            string message = null)
         {
-            if (condition)
-            {
+            if (condition) {
                 AssertFail(SanitizeMessage(message, "Expected false, but received true"));
             }
         }

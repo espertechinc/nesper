@@ -32,6 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
 
         public virtual bool IsExprRequiresMultimatchState { get; set; }
 
-        public abstract bool Matches(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext);
+        public abstract bool Matches(
+            EventBean[] eventsPerStream,
+            AgentInstanceContext agentInstanceContext);
     }
 } // end of namespace

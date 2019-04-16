@@ -8,7 +8,6 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.logging;
@@ -23,8 +22,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         private readonly string instanceId;
 
         public EPDataFlowEmitterExceptionHandler(
-            AgentInstanceContext agentInstanceContext, string dataFlowName, string instanceId, string operatorName,
-            int operatorNumber, string operatorPrettyPrint, EPDataFlowExceptionHandler optionalExceptionHandler)
+            AgentInstanceContext agentInstanceContext,
+            string dataFlowName,
+            string instanceId,
+            string operatorName,
+            int operatorNumber,
+            string operatorPrettyPrint,
+            EPDataFlowExceptionHandler optionalExceptionHandler)
         {
             this.agentInstanceContext = agentInstanceContext;
             DataFlowName = dataFlowName;
@@ -52,7 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         public string DeploymentId => agentInstanceContext.DeploymentId;
 
         public void HandleException(
-            object targetObject, MethodInfo fastMethod, TargetException ex, object[] parameters)
+            object targetObject,
+            MethodInfo fastMethod,
+            TargetException ex,
+            object[] parameters)
         {
             log.Error("Exception encountered: " + ex.InnerException?.Message, ex.InnerException);
 
@@ -64,7 +71,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         }
 
         public void HandleException(
-            object targetObject, MethodInfo fastMethod, MemberAccessException ex, object[] parameters)
+            object targetObject,
+            MethodInfo fastMethod,
+            MemberAccessException ex,
+            object[] parameters)
         {
             log.Error("Exception encountered: " + ex.Message, ex);
 
@@ -75,7 +85,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
         }
 
-        public void HandleAudit(object targetObject, object[] parameters)
+        public void HandleAudit(
+            object targetObject,
+            object[] parameters)
         {
             agentInstanceContext.AuditProvider.DataflowOp(
                 DataFlowName, instanceId, OperatorName, OperatorNumber, parameters, agentInstanceContext);

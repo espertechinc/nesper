@@ -39,7 +39,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         public void ValidateStatement(
-            string contextName, StatementSpecCompiled spec, StatementCompileTimeServices compileTimeServices)
+            string contextName,
+            StatementSpecCompiled spec,
+            StatementCompileTimeServices compileTimeServices)
         {
             ContextControllerForgeUtil.ValidateStatementKeyAndHash(
                 Items.Select(i => (Supplier<EventType>) i.Get).ToArray(),

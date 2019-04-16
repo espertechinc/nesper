@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
@@ -17,23 +16,34 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
     public class MXCIFQuadTreeFilterIndexCollect<TL, TT>
     {
         public static void CollectRange(
-            MXCIFQuadTree<object> quadTree, double x, double y, double width, double height, EventBean eventBean,
-            TT target, QuadTreeCollector<TL, TT> collector)
+            MXCIFQuadTree<object> quadTree,
+            double x,
+            double y,
+            double width,
+            double height,
+            EventBean eventBean,
+            TT target,
+            QuadTreeCollector<TL, TT> collector)
         {
             CollectRange(quadTree.Root, x, y, width, height, eventBean, target, collector);
         }
 
         private static void CollectRange(
-            MXCIFQuadTreeNode<object> node, double x, double y, double width, double height, EventBean eventBean,
-            TT target, QuadTreeCollector<TL, TT> collector)
+            MXCIFQuadTreeNode<object> node,
+            double x,
+            double y,
+            double width,
+            double height,
+            EventBean eventBean,
+            TT target,
+            QuadTreeCollector<TL, TT> collector)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf)
-            {
+            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
                 CollectNode(leaf, x, y, width, height, eventBean, target, collector);
                 return;
             }
 
-            MXCIFQuadTreeNodeBranch<object> branch = (MXCIFQuadTreeNodeBranch<object>)node;
+            MXCIFQuadTreeNodeBranch<object> branch = (MXCIFQuadTreeNodeBranch<object>) node;
             CollectNode(branch, x, y, width, height, eventBean, target, collector);
             CollectRange(branch.Nw, x, y, width, height, eventBean, target, collector);
             CollectRange(branch.Ne, x, y, width, height, eventBean, target, collector);
@@ -52,29 +62,24 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             QuadTreeCollector<TL, TT> collector)
         {
             object rectangles = node.Data;
-            if (rectangles == null)
-            {
+            if (rectangles == null) {
                 return;
             }
 
-            if (rectangles is XYWHRectangleWValue<TL>)
-            {
-                XYWHRectangleWValue<TL> rectangle = (XYWHRectangleWValue<TL>)rectangles;
+            if (rectangles is XYWHRectangleWValue<TL>) {
+                XYWHRectangleWValue<TL> rectangle = (XYWHRectangleWValue<TL>) rectangles;
                 if (BoundingBox.IntersectsBoxIncludingEnd(
-                    x, y, x + width, y + height, rectangle.X, rectangle.Y, rectangle.W, rectangle.H))
-                {
+                    x, y, x + width, y + height, rectangle.X, rectangle.Y, rectangle.W, rectangle.H)) {
                     collector.CollectInto(eventBean, rectangle.Value, target);
                 }
 
                 return;
             }
 
-            ICollection<XYWHRectangleWValue<TL>> collection = (ICollection<XYWHRectangleWValue<TL>>)rectangles;
-            foreach (XYWHRectangleWValue<TL> rectangle in collection)
-            {
+            ICollection<XYWHRectangleWValue<TL>> collection = (ICollection<XYWHRectangleWValue<TL>>) rectangles;
+            foreach (XYWHRectangleWValue<TL> rectangle in collection) {
                 if (BoundingBox.IntersectsBoxIncludingEnd(
-                    x, y, x + width, y + height, rectangle.X, rectangle.Y, rectangle.W, rectangle.H))
-                {
+                    x, y, x + width, y + height, rectangle.X, rectangle.Y, rectangle.W, rectangle.H)) {
                     collector.CollectInto(eventBean, rectangle.Value, target);
                 }
             }

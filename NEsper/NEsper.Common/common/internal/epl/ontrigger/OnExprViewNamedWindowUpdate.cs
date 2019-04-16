@@ -28,14 +28,17 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             SubordWMatchExprLookupStrategy lookupStrategy,
             NamedWindowRootViewInstance rootView,
             AgentInstanceContext agentInstanceContext,
-            InfraOnUpdateViewFactory parent) : base(lookupStrategy, rootView, agentInstanceContext)
+            InfraOnUpdateViewFactory parent)
+            : base(lookupStrategy, rootView, agentInstanceContext)
         {
             this.parent = parent;
         }
 
         public override EventType EventType => rootView.EventType;
 
-        public override void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
+        public override void HandleMatching(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
                 OnTriggerType.ON_UPDATE, triggerEvents, matchingEvents);

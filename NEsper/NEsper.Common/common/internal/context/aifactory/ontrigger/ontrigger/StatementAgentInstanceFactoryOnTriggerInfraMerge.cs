@@ -25,13 +25,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         protected override bool IsSelect => false;
 
         protected override InfraOnExprBaseViewFactory SetupFactory(
-            EventType infraEventType, NamedWindow namedWindow, Table table, StatementContext statementContext)
+            EventType infraEventType,
+            NamedWindow namedWindow,
+            Table table,
+            StatementContext statementContext)
         {
             return new InfraOnMergeViewFactory(infraEventType, mergeHelper);
         }
 
         public override StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return StatementAgentInstanceFactoryOnTriggerUtil.ObtainAgentInstanceLock(
                 this, statementContext, agentInstanceId);

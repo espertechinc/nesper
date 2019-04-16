@@ -31,7 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
         /// <param name="topNode">filter top node</param>
         /// <param name="queryGraph">model containing relationships between streams, to be written to</param>
         /// <param name="isOuterJoin">indicator for outer join</param>
-        public static void Analyze(ExprNode topNode, QueryGraphForge queryGraph, bool isOuterJoin)
+        public static void Analyze(
+            ExprNode topNode,
+            QueryGraphForge queryGraph,
+            bool isOuterJoin)
         {
             // Analyze relationships between streams. Relationships are properties in AND and EQUALS nodes of joins.
             if (topNode is ExprEqualsNode) {
@@ -69,7 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             }
         }
 
-        private static void AnalyzeInNode(ExprInNode inNode, QueryGraphForge queryGraph)
+        private static void AnalyzeInNode(
+            ExprInNode inNode,
+            QueryGraphForge queryGraph)
         {
             if (inNode.IsNotIn) {
                 return;
@@ -82,7 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             AnalyzeInNodeMultiIndex(inNode, queryGraph);
         }
 
-        private static void AnalyzeInNodeMultiIndex(ExprInNode inNode, QueryGraphForge queryGraph)
+        private static void AnalyzeInNodeMultiIndex(
+            ExprInNode inNode,
+            QueryGraphForge queryGraph)
         {
             var setExpressions = GetInNodeSetExpressions(inNode);
             if (setExpressions.Length == 0) {
@@ -148,7 +155,9 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             }
         }
 
-        private static void AnalyzeInNodeSingleIndex(ExprInNode inNode, QueryGraphForge queryGraph)
+        private static void AnalyzeInNodeSingleIndex(
+            ExprInNode inNode,
+            QueryGraphForge queryGraph)
         {
             if (!(inNode.ChildNodes[0] is ExprIdentNode)) {
                 return;
@@ -198,7 +207,9 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
         }
 
         private static void AddToList(
-            int? streamIdAllowNull, ExprNode expr, IDictionary<int, IList<ExprNode>> perStreamExpression)
+            int? streamIdAllowNull,
+            ExprNode expr,
+            IDictionary<int, IList<ExprNode>> perStreamExpression)
         {
             var perStream = perStreamExpression.Get(streamIdAllowNull);
             if (perStream == null) {
@@ -221,7 +232,9 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
         }
 
         private static void AnalyzeAffectorProvider(
-            FilterExprAnalyzerAffectorProvider provider, QueryGraphForge queryGraph, bool isOuterJoin)
+            FilterExprAnalyzerAffectorProvider provider,
+            QueryGraphForge queryGraph,
+            bool isOuterJoin)
         {
             var affector = provider.GetAffector(isOuterJoin);
             if (affector == null) {
@@ -231,7 +244,9 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             affector.Apply(queryGraph);
         }
 
-        private static void AnalyzeRelationalOpNode(ExprRelationalOpNode relNode, QueryGraphForge queryGraph)
+        private static void AnalyzeRelationalOpNode(
+            ExprRelationalOpNode relNode,
+            QueryGraphForge queryGraph)
         {
             if (relNode.ChildNodes[0] is ExprIdentNode &&
                 relNode.ChildNodes[1] is ExprIdentNode) {
@@ -276,7 +291,9 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             queryGraph.AddRelationalOp(indexedStream, indexedPropExpr, eligibility.StreamNum, exprNodeNoIdent, relop);
         }
 
-        private static void AnalyzeBetweenNode(ExprBetweenNode betweenNode, QueryGraphForge queryGraph)
+        private static void AnalyzeBetweenNode(
+            ExprBetweenNode betweenNode,
+            QueryGraphForge queryGraph)
         {
             RangeFilterAnalyzer.Apply(
                 betweenNode.ChildNodes[0], betweenNode.ChildNodes[1], betweenNode.ChildNodes[2],
@@ -290,7 +307,10 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
         /// <param name="equalsNode">node to analyze</param>
         /// <param name="queryGraph">store relationships between stream properties</param>
         /// <param name="isOuterJoin">indicator for outer join</param>
-        protected internal static void AnalyzeEqualsNode(ExprEqualsNode equalsNode, QueryGraphForge queryGraph, bool isOuterJoin)
+        protected internal static void AnalyzeEqualsNode(
+            ExprEqualsNode equalsNode,
+            QueryGraphForge queryGraph,
+            bool isOuterJoin)
         {
             if (equalsNode.ChildNodes[0] is ExprIdentNode &&
                 equalsNode.ChildNodes[1] is ExprIdentNode) {
@@ -353,7 +373,10 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
         /// <param name="andNode">node to analyze</param>
         /// <param name="queryGraph">to store relationships between stream properties</param>
         /// <param name="isOuterJoin">indicator for outer join</param>
-        protected internal static void AnalyzeAndNode(ExprAndNode andNode, QueryGraphForge queryGraph, bool isOuterJoin)
+        protected internal static void AnalyzeAndNode(
+            ExprAndNode andNode,
+            QueryGraphForge queryGraph,
+            bool isOuterJoin)
         {
             foreach (var childNode in andNode.ChildNodes) {
                 Analyze(childNode, queryGraph, isOuterJoin);

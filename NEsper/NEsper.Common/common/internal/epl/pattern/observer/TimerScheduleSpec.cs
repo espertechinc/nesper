@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         private long? optionalRemainder;
 
         public TimerScheduleSpec(
-            DateTimeEx optionalDate, long? optionalRemainder, long? optionalRepeatCount, TimePeriod optionalTimePeriod)
+            DateTimeEx optionalDate,
+            long? optionalRemainder,
+            long? optionalRepeatCount,
+            TimePeriod optionalTimePeriod)
         {
             OptionalDate = optionalDate;
             this.optionalRemainder = optionalRemainder;

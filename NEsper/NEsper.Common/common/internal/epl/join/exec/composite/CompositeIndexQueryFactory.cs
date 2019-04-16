@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 
@@ -23,22 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         {
             // construct chain
             IList<CompositeIndexQuery> queries = new List<CompositeIndexQuery>();
-            if (hashEval != null)
-            {
+            if (hashEval != null) {
                 queries.Add(new CompositeIndexQueryKeyed(isNWOnTrigger, -1, numOuterStreams, hashEval));
             }
 
-            foreach (QueryGraphValueEntryRange rangeProp in rangeEvals)
-            {
+            foreach (QueryGraphValueEntryRange rangeProp in rangeEvals) {
                 queries.Add(new CompositeIndexQueryRange(isNWOnTrigger, -1, numOuterStreams, rangeProp));
             }
 
             // Hook up as chain for remove
             CompositeIndexQuery last = null;
-            foreach (CompositeIndexQuery action in queries)
-            {
-                if (last != null)
-                {
+            foreach (CompositeIndexQuery action in queries) {
+                if (last != null) {
                     last.SetNext(action);
                 }
 
@@ -56,22 +51,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         {
             // construct chain
             IList<CompositeIndexQuery> queries = new List<CompositeIndexQuery>();
-            if (hashGetter != null)
-            {
+            if (hashGetter != null) {
                 queries.Add(new CompositeIndexQueryKeyed(false, lookupStream, -1, hashGetter));
             }
 
-            foreach (QueryGraphValueEntryRange rangeProp in rangeProps)
-            {
+            foreach (QueryGraphValueEntryRange rangeProp in rangeProps) {
                 queries.Add(new CompositeIndexQueryRange(isNWOnTrigger, lookupStream, -1, rangeProp));
             }
 
             // Hook up as chain for remove
             CompositeIndexQuery last = null;
-            foreach (CompositeIndexQuery action in queries)
-            {
-                if (last != null)
-                {
+            foreach (CompositeIndexQuery action in queries) {
+                if (last != null) {
                     last.SetNext(action);
                 }
 

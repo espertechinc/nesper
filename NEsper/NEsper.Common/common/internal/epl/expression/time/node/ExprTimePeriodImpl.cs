@@ -8,7 +8,6 @@
 
 using System.IO;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -22,7 +21,6 @@ using com.espertech.esper.common.@internal.epl.expression.variable;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -40,8 +38,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         private ExprTimePeriodForge forge;
 
         public ExprTimePeriodImpl(
-            bool hasYear, bool hasMonth, bool hasWeek, bool hasDay, bool hasHour, bool hasMinute, bool hasSecond,
-            bool hasMillisecond, bool hasMicrosecond, TimeAbacus timeAbacus)
+            bool hasYear,
+            bool hasMonth,
+            bool hasWeek,
+            bool hasDay,
+            bool hasHour,
+            bool hasMinute,
+            bool hasSecond,
+            bool hasMillisecond,
+            bool hasMicrosecond,
+            TimeAbacus timeAbacus)
         {
             HasYear = hasYear;
             HasMonth = hasMonth;
@@ -135,14 +141,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         }
 
         public CodegenExpression EvaluateGetTimePeriodCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             CheckValidated(forge);
             return forge.EvaluateGetTimePeriodCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public CodegenExpression MakeTimePeriodAnonymous(CodegenMethod method, CodegenClassScope classScope)
+        public CodegenExpression MakeTimePeriodAnonymous(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             var timeClass = NewAnonymousClass(method.Block, typeof(TimePeriodEval));
             var evalMethod = CodegenMethod.MakeParentNode(typeof(TimePeriod), GetType(), classScope).AddParam(PARAMS);
@@ -161,7 +170,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         }
 
         public CodegenExpression EvaluateAsSecondsCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             CheckValidated(forge);
@@ -179,13 +189,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             }
         }
 
-        public TimePeriod EvaluateGetTimePeriod(EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
+        public TimePeriod EvaluateGetTimePeriod(
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext context)
         {
             CheckValidated(forge);
             return forge.EvaluateGetTimePeriod(eventsPerStream, newData, context);
         }
 
-        public double EvaluateAsSeconds(EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
+        public double EvaluateAsSeconds(
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext context)
         {
             CheckValidated(forge);
             return forge.EvaluateAsSeconds(eventsPerStream, newData, context);
@@ -254,7 +270,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprTimePeriodImpl)) {
                 return false;
@@ -297,7 +315,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             return HasMicrosecond == other.HasMicrosecond;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var exprCtr = 0;
             var delimiter = "";
@@ -364,7 +382,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         }
 
         public TimePeriod TimePeriodEval(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return EvaluateGetTimePeriod(eventsPerStream, isNewData, exprEvaluatorContext);
         }

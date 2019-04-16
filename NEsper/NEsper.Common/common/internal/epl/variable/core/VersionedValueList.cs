@@ -68,8 +68,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         ///     or false if the engine should log a warning
         /// </param>
         public VersionedValueList(
-            string name, int initialVersion, T initialValue, long timestamp, long millisecondLifetimeOldVersions,
-            ILockable readLock, int highWatermark, bool errorWhenNotFound)
+            string name,
+            int initialVersion,
+            T initialValue,
+            long timestamp,
+            long millisecondLifetimeOldVersions,
+            ILockable readLock,
+            int highWatermark,
+            bool errorWhenNotFound)
         {
             Name = name;
             _readLock = readLock;
@@ -186,7 +192,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         /// <param name="value">to add</param>
         /// <param name="timestamp">the time associated with the version</param>
         /// <returns>prior value</returns>
-        public object AddValue(int version, T value, long timestamp)
+        public object AddValue(
+            int version,
+            T value,
+            long timestamp)
         {
             if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
                 Log.Debug(

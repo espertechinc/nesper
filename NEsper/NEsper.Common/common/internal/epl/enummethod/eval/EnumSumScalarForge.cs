@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     {
         private readonly ExprDotEvalSumMethodFactory sumMethodFactory;
 
-        public EnumSumScalarForge(int streamCountIncoming, ExprDotEvalSumMethodFactory sumMethodFactory)
+        public EnumSumScalarForge(
+            int streamCountIncoming,
+            ExprDotEvalSumMethodFactory sumMethodFactory)
             : base(streamCountIncoming)
         {
             this.sumMethodFactory = sumMethodFactory;
@@ -32,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public override EnumEval EnumEvaluator => this;
 
         public override CodegenExpression Codegen(
-            EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
@@ -51,8 +55,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, 
-            ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var method = sumMethodFactory.SumAggregator;
             foreach (object next in enumcoll) {

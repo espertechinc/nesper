@@ -15,9 +15,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
     {
         public TableColumnDescAgg(
             int positionInDeclaration,
-            string columnName, 
+            string columnName,
             ExprAggregateNode aggregation,
-            EventType optionalAssociatedType) : base(positionInDeclaration, columnName)
+            EventType optionalAssociatedType)
+            : base(positionInDeclaration, columnName)
         {
             Aggregation = aggregation;
             OptionalAssociatedType = optionalAssociatedType;

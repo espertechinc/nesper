@@ -31,14 +31,18 @@ namespace com.espertech.esper.common.@internal.util
         ///     to be compared must have the same number of values as this array.
         /// </param>
         /// <param name="stringTypeValues">true for each string-typed column</param>
-        public ComparatorObjectArrayCollating(bool[] isDescendingValues, bool[] stringTypeValues)
+        public ComparatorObjectArrayCollating(
+            bool[] isDescendingValues,
+            bool[] stringTypeValues)
         {
             this.isDescendingValues = isDescendingValues;
             stringTypedValue = stringTypeValues;
             collator = Collator.Instance;
         }
 
-        public int Compare(object[] firstValues, object[] secondValues)
+        public int Compare(
+            object[] firstValues,
+            object[] secondValues)
         {
             if (firstValues.Length != isDescendingValues.Length || secondValues.Length != isDescendingValues.Length) {
                 throw new ArgumentException("Incompatible size MultiKey sizes for comparison");

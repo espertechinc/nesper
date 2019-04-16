@@ -17,9 +17,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
     {
         public ResultSetProcessorDesc(
             ResultSetProcessorFactoryForge resultSetProcessorFactoryForge,
-            ResultSetProcessorType resultSetProcessorType, SelectExprProcessorForge[] selectExprProcessorForges,
-            bool join, bool hasOutputLimit, ResultSetProcessorOutputConditionType outputConditionType,
-            bool hasOutputLimitSnapshot, EventType resultEventType, bool rollup,
+            ResultSetProcessorType resultSetProcessorType,
+            SelectExprProcessorForge[] selectExprProcessorForges,
+            bool join,
+            bool hasOutputLimit,
+            ResultSetProcessorOutputConditionType outputConditionType,
+            bool hasOutputLimitSnapshot,
+            EventType resultEventType,
+            bool rollup,
             AggregationServiceForgeDesc aggregationServiceForgeDesc,
             OrderByProcessorFactoryForge orderByProcessorFactoryForge,
             SelectSubscriberDescriptor selectSubscriberDescriptor)

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
@@ -18,28 +17,43 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.mgr
 {
-	public class ContextDeployTimeResolver {
-	    public static string ResolveContextDeploymentId(string contextModuleName, NameAccessModifier contextVisibility, string contextName, string myDeploymentId, PathRegistry<string, ContextMetaData> pathContextRegistry) {
-	        bool protectedVisibility = contextVisibility == NameAccessModifier.PRIVATE;
-	        string contextDeploymentId;
-	        if (protectedVisibility) {
-	            contextDeploymentId = myDeploymentId;
-	        } else {
-	            contextDeploymentId = pathContextRegistry.GetDeploymentId(contextName, contextModuleName);
-	        }
-	        if (contextDeploymentId == null) {
-	            throw FailedToFind(contextModuleName, contextVisibility, contextName);
-	        }
-	        return contextDeploymentId;
-	    }
+    public class ContextDeployTimeResolver
+    {
+        public static string ResolveContextDeploymentId(
+            string contextModuleName,
+            NameAccessModifier contextVisibility,
+            string contextName,
+            string myDeploymentId,
+            PathRegistry<string, ContextMetaData> pathContextRegistry)
+        {
+            bool protectedVisibility = contextVisibility == NameAccessModifier.PRIVATE;
+            string contextDeploymentId;
+            if (protectedVisibility) {
+                contextDeploymentId = myDeploymentId;
+            }
+            else {
+                contextDeploymentId = pathContextRegistry.GetDeploymentId(contextName, contextModuleName);
+            }
 
-	    public static EPException FailedToFind(string contextModuleName, NameAccessModifier visibility, string contextName) {
-	        bool protectedVisibility = visibility == NameAccessModifier.PRIVATE;
-	        string message = "Failed find to context '" + contextName + "'";
-	        if (!protectedVisibility) {
-	            message += " module name '" + StringValue.UnnamedWhenNullOrEmpty(contextModuleName) + "'";
-	        }
-	        return new EPException(message);
-	    }
-	}
+            if (contextDeploymentId == null) {
+                throw FailedToFind(contextModuleName, contextVisibility, contextName);
+            }
+
+            return contextDeploymentId;
+        }
+
+        public static EPException FailedToFind(
+            string contextModuleName,
+            NameAccessModifier visibility,
+            string contextName)
+        {
+            bool protectedVisibility = visibility == NameAccessModifier.PRIVATE;
+            string message = "Failed find to context '" + contextName + "'";
+            if (!protectedVisibility) {
+                message += " module name '" + StringValue.UnnamedWhenNullOrEmpty(contextModuleName) + "'";
+            }
+
+            return new EPException(message);
+        }
+    }
 } // end of namespace

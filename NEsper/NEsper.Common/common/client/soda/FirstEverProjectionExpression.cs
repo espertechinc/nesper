@@ -8,69 +8,71 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
-	/// <summary>
-	/// Represents the "firstever" aggregation function.
-	/// </summary>
-	public class FirstEverProjectionExpression : ExpressionBase {
+    /// <summary>
+    /// Represents the "firstever" aggregation function.
+    /// </summary>
+    public class FirstEverProjectionExpression : ExpressionBase
+    {
+        private bool distinct;
 
-	    private bool distinct;
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        public FirstEverProjectionExpression()
+        {
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    public FirstEverProjectionExpression() {
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="isDistinct">true for distinct</param>
+        public FirstEverProjectionExpression(bool isDistinct)
+        {
+            this.distinct = isDistinct;
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="isDistinct">true for distinct</param>
-	    public FirstEverProjectionExpression(bool isDistinct) {
-	        this.distinct = isDistinct;
-	    }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="expression">to aggregate</param>
+        /// <param name="isDistinct">true for distinct</param>
+        public FirstEverProjectionExpression(
+            Expression expression,
+            bool isDistinct)
+        {
+            this.distinct = isDistinct;
+            this.Children.Add(expression);
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="expression">to aggregate</param>
-	    /// <param name="isDistinct">true for distinct</param>
-	    public FirstEverProjectionExpression(Expression expression, bool isDistinct) {
-	        this.distinct = isDistinct;
-	        this.Children.Add(expression);
-	    }
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            ExpressionBase.RenderAggregation(writer, "firstever", distinct, this.Children);
+        }
 
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        ExpressionBase.RenderAggregation(writer, "firstever", distinct, this.Children);
-	    }
+        /// <summary>
+        /// Returns true for distinct.
+        /// </summary>
+        /// <returns>boolean indicating distinct or not</returns>
+        public bool IsDistinct {
+            get => distinct;
+        }
 
-	    /// <summary>
-	    /// Returns true for distinct.
-	    /// </summary>
-	    /// <returns>boolean indicating distinct or not</returns>
-	    public bool IsDistinct
-	    {
-	        get => distinct;
-	    }
-
-	    /// <summary>
-	    /// Returns true for distinct.
-	    /// </summary>
-	    /// <returns>boolean indicating distinct or not</returns>
-	    public bool Distinct
-	    {
-	        get => distinct;
-	        set => distinct = value;
-	    }
-	}
+        /// <summary>
+        /// Returns true for distinct.
+        /// </summary>
+        /// <returns>boolean indicating distinct or not</returns>
+        public bool Distinct {
+            get => distinct;
+            set => distinct = value;
+        }
+    }
 } // end of namespace

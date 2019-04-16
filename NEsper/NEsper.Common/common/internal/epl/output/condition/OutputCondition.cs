@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         /// </summary>
         /// <param name="newEventsCount">number of new events incoming</param>
         /// <param name="oldEventsCount">number of old events incoming</param>
-        void UpdateOutputCondition(int newEventsCount, int oldEventsCount);
+        void UpdateOutputCondition(
+            int newEventsCount,
+            int oldEventsCount);
 
         void Terminated();
 

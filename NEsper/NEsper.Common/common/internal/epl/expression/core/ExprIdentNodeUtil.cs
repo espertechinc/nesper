@@ -18,8 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public class ExprIdentNodeUtil
     {
         public static Pair<PropertyResolutionDescriptor, string> GetTypeFromStream(
-            StreamTypeService streamTypeService, string propertyNameNestable, bool explicitPropertiesOnly,
-            bool obtainFragment, TableCompileTimeResolver tableCompileTimeResolver)
+            StreamTypeService streamTypeService,
+            string propertyNameNestable,
+            bool explicitPropertiesOnly,
+            bool obtainFragment,
+            TableCompileTimeResolver tableCompileTimeResolver)
         {
             string streamOrProp = null;
             var prop = propertyNameNestable;
@@ -36,8 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         protected internal static Pair<PropertyResolutionDescriptor, string> GetTypeFromStream(
-            StreamTypeService streamTypeService, string unresolvedPropertyName, string streamOrPropertyNameMayEscaped,
-            bool obtainFragment, TableCompileTimeResolver tableCompileTimeResolver)
+            StreamTypeService streamTypeService,
+            string unresolvedPropertyName,
+            string streamOrPropertyNameMayEscaped,
+            bool obtainFragment,
+            TableCompileTimeResolver tableCompileTimeResolver)
         {
             PropertyResolutionDescriptor propertyInfo = null;
 
@@ -136,7 +142,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         protected internal static Pair<PropertyResolutionDescriptor, string> GetTypeFromStreamExplicitProperties(
-            StreamTypeService streamTypeService, string unresolvedPropertyName, string streamOrPropertyName,
+            StreamTypeService streamTypeService,
+            string unresolvedPropertyName,
+            string streamOrPropertyName,
             bool obtainFragment)
         {
             PropertyResolutionDescriptor propertyInfo;
@@ -187,7 +195,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         private static ExprValidationPropertyException GetSuggestionExceptionSecondStep(
-            string propertyNameCandidate, StreamTypesException typeExceptionOne, StreamTypesException typeExceptionTwo)
+            string propertyNameCandidate,
+            StreamTypesException typeExceptionOne,
+            StreamTypesException typeExceptionTwo)
         {
             var suggestionOne = GetSuggestion(typeExceptionOne);
             var suggestionTwo = GetSuggestion(typeExceptionTwo);

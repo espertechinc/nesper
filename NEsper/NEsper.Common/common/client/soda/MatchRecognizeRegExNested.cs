@@ -43,7 +43,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="type">multiplicity</param>
         /// <param name="optionalRepeat">repetition</param>
-        public MatchRecognizeRegExNested(MatchRecogizePatternElementType type, MatchRecognizeRegExRepeat optionalRepeat)
+        public MatchRecognizeRegExNested(
+            MatchRecogizePatternElementType type,
+            MatchRecognizeRegExRepeat optionalRepeat)
         {
             this.type = type;
             this.optionalRepeat = optionalRepeat;

@@ -16,14 +16,18 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
     public class ContextControllerKeyedFilterEntryNoInit : ContextControllerKeyedFilterEntry
     {
         public ContextControllerKeyedFilterEntryNoInit(
-            ContextControllerKeyedImpl callback, IntSeqKey controllerPath, object[] parentPartitionKeys,
+            ContextControllerKeyedImpl callback,
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys,
             ContextControllerDetailKeyedItem item)
             : base(callback, controllerPath, item, parentPartitionKeys)
         {
             Start(item.FilterSpecActivatable);
         }
 
-        public override void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches)
+        public override void MatchFound(
+            EventBean theEvent,
+            ICollection<FilterHandleCallback> allStmtMatches)
         {
             callback.MatchFound(item, theEvent, controllerPath, item.AliasName);
         }

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -17,22 +16,29 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumMinMaxEventsForge : EnumForgeBase {
+    public class EnumMinMaxEventsForge : EnumForgeBase
+    {
+        internal readonly bool max;
 
-	    internal readonly bool max;
+        public EnumMinMaxEventsForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            bool max)
+            : base(innerExpression, streamCountIncoming)
+        {
+            this.max = max;
+        }
 
-	    public EnumMinMaxEventsForge(ExprForge innerExpression, int streamCountIncoming, bool max)
-	    	 : base(innerExpression, streamCountIncoming)
-	    {
-	        this.max = max;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumMinMaxEventsForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumMinMaxEventsForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumMinMaxEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumMinMaxEventsForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

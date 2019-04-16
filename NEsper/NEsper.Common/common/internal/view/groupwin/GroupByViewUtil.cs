@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 {
     public class GroupByViewUtil
     {
-        protected internal static View MakeSubView(GroupByView view, object groupKey)
+        protected internal static View MakeSubView(
+            GroupByView view,
+            object groupKey)
         {
             var agentInstanceContext = view.AgentInstanceContext;
             var mergeView = view.MergeView;
@@ -45,7 +47,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             return first;
         }
 
-        public static void RemoveSubview(View view, AgentInstanceStopServices services)
+        public static void RemoveSubview(
+            View view,
+            AgentInstanceStopServices services)
         {
             view.Parent = null;
             if (view is AgentInstanceStopCallback) {
@@ -55,7 +59,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             RecursiveChildRemove(view, services);
         }
 
-        private static void RecursiveChildRemove(View view, AgentInstanceStopServices services)
+        private static void RecursiveChildRemove(
+            View view,
+            AgentInstanceStopServices services)
         {
             var child = view.Child;
             if (child == null) {

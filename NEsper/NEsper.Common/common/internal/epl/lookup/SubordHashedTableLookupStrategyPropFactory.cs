@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         internal readonly ExprEvaluator Evaluator;
 
         public SubordHashedTableLookupStrategyPropFactory(
-            string[] properties, int[] keyStreamNums, ExprEvaluator evaluator)
+            string[] properties,
+            int[] keyStreamNums,
+            ExprEvaluator evaluator)
         {
             Properties = properties;
             KeyStreamNums = keyStreamNums;
@@ -39,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         public int[] KeyStreamNums { get; }
 
         public SubordTableLookupStrategy MakeStrategy(
-            EventTable[] eventTable, AgentInstanceContext agentInstanceContext, VirtualDWView vdw)
+            EventTable[] eventTable,
+            AgentInstanceContext agentInstanceContext,
+            VirtualDWView vdw)
         {
             return new SubordHashedTableLookupStrategyProp(this, (PropertyHashedEventTable) eventTable[0]);
         }

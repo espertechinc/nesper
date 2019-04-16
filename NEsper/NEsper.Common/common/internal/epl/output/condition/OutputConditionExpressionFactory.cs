@@ -42,12 +42,16 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         public int ScheduleCallbackId => scheduleCallbackId;
 
         public OutputCondition InstantiateOutputCondition(
-            AgentInstanceContext agentInstanceContext, OutputCallback outputCallback)
+            AgentInstanceContext agentInstanceContext,
+            OutputCallback outputCallback)
         {
             return new OutputConditionExpression(outputCallback, agentInstanceContext, this);
         }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             if (isUsingBuiltinProperties) {
                 BuiltinPropertiesEventType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(

@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class CreateTableColumn
     {
         public CreateTableColumn(
-            string columnName, 
+            string columnName,
             ExprNode optExpression,
             ClassIdentifierWArray optType,
             IList<AnnotationDesc> annotations,

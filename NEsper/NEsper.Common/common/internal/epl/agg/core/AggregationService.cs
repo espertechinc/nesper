@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -18,7 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     /// Service for maintaining aggregation state. Processes events entering (a window, a join etc,)
     /// and events leaving. Answers questions about current aggregation state for a given row.
     /// </summary>
-    public interface AggregationService : AggregationResultFuture, StopCallback
+    public interface AggregationService : AggregationResultFuture,
+        StopCallback
     {
         /// <summary>
         /// Apply events as entering a window (new events).
@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         /// <param name="eventsPerStream">events for each stream entering window</param>
         /// <param name="optionalGroupKeyPerRow">can be null if grouping without keys is desired, else the keys or array of keys to use for grouping, each distinct key value results in a new row of aggregation state.</param>
         /// <param name="exprEvaluatorContext">context for expression evaluatiom</param>
-        void ApplyEnter(EventBean[] eventsPerStream, Object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext);
+        void ApplyEnter(
+            EventBean[] eventsPerStream,
+            Object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Apply events as leaving a window (old events).
@@ -34,15 +37,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         /// <param name="eventsPerStream">events for each stream entering window</param>
         /// <param name="optionalGroupKeyPerRow">can be null if grouping without keys is desired, else the keys or array of keys to use for grouping, each distinct key value results in a new row of aggregation state.</param>
         /// <param name="exprEvaluatorContext">context for expression evaluatiom</param>
-        void ApplyLeave(EventBean[] eventsPerStream, Object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext);
+        void ApplyLeave(
+            EventBean[] eventsPerStream,
+            Object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext);
 
 #if INHERITED
-        /// <summary>
-        /// Set the current aggregation state row - for use when evaluation nodes are asked to evaluate.
-        /// </summary>
-        /// <param name="groupKey">single key identifying the row of aggregation states</param>
-        /// <param name="agentInstanceId">context partition id</param>
-        /// <param name="rollupLevel">The rollup level.</param>
+/// <summary>
+/// Set the current aggregation state row - for use when evaluation nodes are asked to evaluate.
+/// </summary>
+/// <param name="groupKey">single key identifying the row of aggregation states</param>
+/// <param name="agentInstanceId">context partition id</param>
+/// <param name="rollupLevel">The rollup level.</param>
         void SetCurrentAccess(Object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel);
 #endif
 

@@ -40,7 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             set => chain = value;
         }
 
-        public IEnumerator<EventBean> Lookup(EventBean lookupEvent, EventTable[] index, ExprEvaluatorContext context)
+        public IEnumerator<EventBean> Lookup(
+            EventBean lookupEvent,
+            EventTable[] index,
+            ExprEvaluatorContext context)
         {
             if (index[0] is PropertyCompositeEventTable) {
                 var idx = (PropertyCompositeEventTable) index[0];

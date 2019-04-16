@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
@@ -29,7 +28,9 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="numStreams">number of streams</param>
         /// <param name="allowDependencySame">if set to <c>true</c> [allow dependency same].</param>
-        public DependencyGraph(int numStreams, bool allowDependencySame)
+        public DependencyGraph(
+            int numStreams,
+            bool allowDependencySame)
         {
             _numStreams = numStreams;
             _allowDependencySame = allowDependencySame;
@@ -38,8 +39,7 @@ namespace com.espertech.esper.common.@internal.util
 
         /// <summary>Returns the number of streams. </summary>
         /// <value>number of streams</value>
-        public int NumStreams
-        {
+        public int NumStreams {
             get { return _numStreams; }
         }
 
@@ -48,8 +48,7 @@ namespace com.espertech.esper.common.@internal.util
             var writer = new StringWriter();
 
             int count = 0;
-            foreach (var entry in _dependencies)
-            {
+            foreach (var entry in _dependencies) {
                 count++;
                 writer.WriteLine("Record {0}: from={1} to={2}", count, entry.Key, entry.Value.Render());
             }
@@ -62,16 +61,16 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="target">the stream having dependencies on one or more other streams</param>
         /// <param name="requiredStreams">the streams that the target stream has a dependency on</param>
-        public void AddDependency(int target, ICollection<int> requiredStreams)
+        public void AddDependency(
+            int target,
+            ICollection<int> requiredStreams)
         {
-            if (requiredStreams.Contains(target))
-            {
+            if (requiredStreams.Contains(target)) {
                 throw new ArgumentException("Dependency between same streams is not allowed for stream " + target);
             }
 
             var toSet = _dependencies.Get(target);
-            if (toSet != null)
-            {
+            if (toSet != null) {
                 throw new ArgumentException("Dependencies from stream " + target + " already in collection");
             }
 
@@ -83,16 +82,16 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="target">the stream having dependencies on one or more other streams</param>
         /// <param name="from">a single required streams that the target stream has a dependency on</param>
-        public void AddDependency(int target, int from)
+        public void AddDependency(
+            int target,
+            int from)
         {
-            if (target == from && !_allowDependencySame)
-            {
+            if (target == from && !_allowDependencySame) {
                 throw new ArgumentException("Dependency between same streams is not allowed for stream " + target);
             }
 
             var toSet = _dependencies.Get(target);
-            if (toSet == null)
-            {
+            if (toSet == null) {
                 toSet = new SortedSet<int>();
                 _dependencies.Put(target, toSet);
             }
@@ -108,10 +107,10 @@ namespace com.espertech.esper.common.@internal.util
         public bool HasDependency(int stream)
         {
             var dep = _dependencies.Get(stream);
-            if (dep != null)
-            {
+            if (dep != null) {
                 return dep.IsNotEmpty();
             }
+
             return false;
         }
 
@@ -121,10 +120,10 @@ namespace com.espertech.esper.common.@internal.util
         public ICollection<int> GetDependenciesForStream(int stream)
         {
             var dep = _dependencies.Get(stream);
-            if (dep != null)
-            {
+            if (dep != null) {
                 return dep;
             }
+
             return new int[0];
         }
 
@@ -132,8 +131,7 @@ namespace com.espertech.esper.common.@internal.util
         /// Returns a map of stream number and the streams dependencies.
         /// </summary>
         /// <value>map of dependencies</value>
-        public IDictionary<int, ICollection<int>> Dependencies
-        {
+        public IDictionary<int, ICollection<int>> Dependencies {
             get { return _dependencies; }
         }
 
@@ -141,17 +139,13 @@ namespace com.espertech.esper.common.@internal.util
         /// Returns a set of stream numbers that are the root dependencies, i.e. the dependencies with the deepest graph.
         /// </summary>
         /// <value>set of stream number of streams</value>
-        public ICollection<int> RootNodes
-        {
-            get
-            {
+        public ICollection<int> RootNodes {
+            get {
                 var rootNodes = new HashSet<int>();
 
-                for (int i = 0; i < _numStreams; i++)
-                {
+                for (int i = 0; i < _numStreams; i++) {
                     bool found = _dependencies.Any(entry => entry.Value.Contains(i));
-                    if (!found)
-                    {
+                    if (!found) {
                         rootNodes.Add(i);
                     }
                 }
@@ -169,17 +163,15 @@ namespace com.espertech.esper.common.@internal.util
         {
             var rootNodes = new HashSet<int>();
 
-            for (int i = 0; i < _numStreams; i++)
-            {
-                if (ignoreList.Contains(i))
-                {
+            for (int i = 0; i < _numStreams; i++) {
+                if (ignoreList.Contains(i)) {
                     continue;
                 }
+
                 bool found = _dependencies
                     .Where(entry => entry.Value.Contains(i))
                     .Any(entry => !ignoreList.Contains(entry.Key));
-                if (!found)
-                {
+                if (!found) {
                     rootNodes.Add(i);
                 }
             }
@@ -189,45 +181,42 @@ namespace com.espertech.esper.common.@internal.util
 
         /// <summary>Returns any circular dependency as a stack of stream numbers, or null if none exist. </summary>
         /// <value>circular dependency stack</value>
-        public IEnumerable<int> FirstCircularDependency
-        {
-            get
-            {
-                for (int i = 0; i < _numStreams; i++)
-                {
+        public IEnumerable<int> FirstCircularDependency {
+            get {
+                for (int i = 0; i < _numStreams; i++) {
                     var deepDependencies = new Stack<int>();
                     deepDependencies.Push(i);
 
                     bool isCircular = RecursiveDeepDepends(deepDependencies, i);
-                    if (isCircular)
-                    {
+                    if (isCircular) {
                         return deepDependencies.Reverse();
                     }
                 }
+
                 return null;
             }
         }
 
-        private bool RecursiveDeepDepends(Stack<int> deepDependencies, int currentStream)
+        private bool RecursiveDeepDepends(
+            Stack<int> deepDependencies,
+            int currentStream)
         {
             var required = _dependencies.Get(currentStream);
-            if (required == null)
-            {
+            if (required == null) {
                 return false;
             }
 
-            foreach (int stream in required)
-            {
-                if (deepDependencies.Contains(stream))
-                {
+            foreach (int stream in required) {
+                if (deepDependencies.Contains(stream)) {
                     return true;
                 }
+
                 deepDependencies.Push(stream);
                 bool isDeep = RecursiveDeepDepends(deepDependencies, stream);
-                if (isDeep)
-                {
+                if (isDeep) {
                     return true;
                 }
+
                 deepDependencies.Pop();
             }
 
@@ -235,27 +224,29 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         /// <summary>Check if the given stream has any dependencies, direct or indirect, to any of the streams that are not in the ignore list. </summary>
-        public bool HasUnsatisfiedDependency(int navigableStream, ICollection<int> ignoreList)
+        public bool HasUnsatisfiedDependency(
+            int navigableStream,
+            ICollection<int> ignoreList)
         {
             var deepDependencies = new HashSet<int>();
             RecursivePopulateDependencies(navigableStream, deepDependencies);
 
-            foreach (int dependency in deepDependencies)
-            {
-                if (!ignoreList.Contains(dependency))
-                {
+            foreach (int dependency in deepDependencies) {
+                if (!ignoreList.Contains(dependency)) {
                     return true;
                 }
             }
+
             return false;
         }
 
-        private void RecursivePopulateDependencies(int navigableStream, ICollection<int> deepDependencies)
+        private void RecursivePopulateDependencies(
+            int navigableStream,
+            ICollection<int> deepDependencies)
         {
             var dependencies = GetDependenciesForStream(navigableStream);
             deepDependencies.AddAll(dependencies);
-            foreach (int dependency in dependencies)
-            {
+            foreach (int dependency in dependencies) {
                 RecursivePopulateDependencies(dependency, deepDependencies);
             }
         }

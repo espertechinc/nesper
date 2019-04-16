@@ -28,13 +28,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly CopyOnWriteList<Pair<Type, bool>> resultCache =
             new CopyOnWriteList<Pair<Type, bool>>();
 
-        public ExprInstanceofNodeForgeEval(ExprInstanceofNodeForge forge, ExprEvaluator evaluator)
+        public ExprInstanceofNodeForgeEval(
+            ExprInstanceofNodeForge forge,
+            ExprEvaluator evaluator)
         {
             this.forge = forge;
             this.evaluator = evaluator;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var result = evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (result == null) {
@@ -52,7 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// <param name="result">result</param>
         /// <returns>bool</returns>
         public static bool InstanceofCacheCheckOrAdd(
-            Type[] classes, CopyOnWriteList<Pair<Type, bool>> resultCache, object result)
+            Type[] classes,
+            CopyOnWriteList<Pair<Type, bool>> resultCache,
+            object result)
         {
             // return cached value
             foreach (Pair<Type, bool> pair in resultCache) {
@@ -66,7 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public static CodegenExpression Codegen(
-            ExprInstanceofNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprInstanceofNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression cache = codegenClassScope.AddFieldUnshared<CopyOnWriteList<Pair<Type, bool>>>(
@@ -88,7 +97,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         // Checks type and adds to cache
-        private static bool CheckAddType(Type[] classes, Type type, CopyOnWriteList<Pair<Type, bool>> resultCache)
+        private static bool CheckAddType(
+            Type[] classes,
+            Type type,
+            CopyOnWriteList<Pair<Type, bool>> resultCache)
         {
             lock (resultCache) {
                 // check again in synchronized block

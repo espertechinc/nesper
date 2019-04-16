@@ -19,10 +19,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
     {
         public OnTriggerWindowPlan(
             OnTriggerWindowDesc onTriggerDesc,
-            string contextName, 
+            string contextName,
             OnTriggerActivatorDesc activatorResult,
             StreamSelector optionalStreamSelector,
-            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation, 
+            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation,
             StreamSpecCompiled streamSpec)
         {
             OnTriggerDesc = onTriggerDesc;

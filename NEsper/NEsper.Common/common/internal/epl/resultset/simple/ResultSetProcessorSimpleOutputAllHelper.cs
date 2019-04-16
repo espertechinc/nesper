@@ -15,9 +15,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 {
     public interface ResultSetProcessorSimpleOutputAllHelper : ResultSetProcessorOutputHelper
     {
-        void ProcessView(EventBean[] newData, EventBean[] oldData);
+        void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData);
 
-        void ProcessJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
+        void ProcessJoin(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents);
 
         UniformPair<EventBean[]> OutputView(bool isSynthesize);
 

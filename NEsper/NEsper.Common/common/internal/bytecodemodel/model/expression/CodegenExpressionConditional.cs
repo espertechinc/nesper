@@ -19,14 +19,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenExpression _expressionTrue;
 
         public CodegenExpressionConditional(
-            CodegenExpression condition, CodegenExpression expressionTrue, CodegenExpression expressionFalse)
+            CodegenExpression condition,
+            CodegenExpression expressionTrue,
+            CodegenExpression expressionFalse)
         {
             this._condition = condition;
             this._expressionTrue = expressionTrue;
             this._expressionFalse = expressionFalse;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("(");
             _condition.Render(builder, imports, isInnerClass);

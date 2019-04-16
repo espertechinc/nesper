@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public CodegenExpression EvaluateCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             var havingMethod = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope);
@@ -49,31 +51,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         }
 
         public CodegenExpression EvaluateGetCollEventsCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbol, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbol,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression EvaluateGetCollScalarCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbol, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbol,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression EvaluateGetBeanCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression EvaluateTypableSinglerowCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression EvaluateTypableMultirowCodegen(
-            CodegenMethodScope parent, ExprSubselectEvalMatchSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ExprSubselectEvalMatchSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ConstantNull();
         }

@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         private readonly ExprPlugInSingleRowNode parent;
 
-        protected ExprPlugInSingleRowNodeForge(ExprPlugInSingleRowNode parent, bool isReturnsConstantResult)
+        protected ExprPlugInSingleRowNodeForge(
+            ExprPlugInSingleRowNode parent,
+            bool isReturnsConstantResult)
         {
             this.parent = parent;
             IsReturnsConstantResult = isReturnsConstantResult;
@@ -39,18 +41,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public abstract ExprEvaluator ExprEvaluator { get; }
 
         public abstract CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         public abstract Type EvaluationType { get; }
         public abstract ExprForgeConstantType ForgeConstantType { get; }
 
         public abstract CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         public abstract CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
 
         protected CodegenExpression[] MethodAsParams {
             get {

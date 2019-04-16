@@ -7,23 +7,25 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
 {
-	/// <summary>
-	/// A callback interface for indicating a change in variable value.
-	/// </summary>
-	public interface VariableChangeCallback {
-	    /// <summary>
-	    /// Indicate a change in variable value.
-	    /// </summary>
-	    /// <param name="newValue">new value</param>
-	    /// <param name="oldValue">old value</param>
-	    void Update(object newValue, object oldValue);
-	}
+    /// <summary>
+    /// A callback interface for indicating a change in variable value.
+    /// </summary>
+    public interface VariableChangeCallback
+    {
+        /// <summary>
+        /// Indicate a change in variable value.
+        /// </summary>
+        /// <param name="newValue">new value</param>
+        /// <param name="oldValue">old value</param>
+        void Update(
+            object newValue,
+            object oldValue);
+    }
 
     public class ProxyVariableChangeCallback : VariableChangeCallback
     {
@@ -38,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
         }
 
-        public void Update(object newValue, object oldValue)
+        public void Update(
+            object newValue,
+            object oldValue)
         {
             ProcUpdate?.Invoke(newValue, oldValue);
         }

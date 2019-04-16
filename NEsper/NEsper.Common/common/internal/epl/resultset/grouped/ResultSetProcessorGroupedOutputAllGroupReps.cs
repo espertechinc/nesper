@@ -14,7 +14,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
 {
     public interface ResultSetProcessorGroupedOutputAllGroupReps : ResultSetProcessorOutputHelper
     {
-        object Put(object mk, EventBean[] array);
+        object Put(
+            object mk,
+            EventBean[] array);
 
         void Remove(object key);
 

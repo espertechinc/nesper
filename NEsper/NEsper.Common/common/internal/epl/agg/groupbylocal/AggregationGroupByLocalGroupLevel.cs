@@ -15,7 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     public class AggregationGroupByLocalGroupLevel
     {
         public AggregationGroupByLocalGroupLevel(
-            ExprNode[] partitionExpr, IList<AggregationServiceAggExpressionDesc> expressions)
+            ExprNode[] partitionExpr,
+            IList<AggregationServiceAggExpressionDesc> expressions)
         {
             PartitionExpr = partitionExpr;
             Expressions = expressions;

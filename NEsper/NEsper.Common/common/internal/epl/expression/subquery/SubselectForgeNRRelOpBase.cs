@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge valueEval,
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
-            RelationalOpEnum.Computer computer) 
+            RelationalOpEnum.Computer computer)
             : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents)
         {
             this.computer = computer;

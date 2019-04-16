@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filterspec;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.context.util.ContextPropertyEventType;
 
@@ -34,8 +35,12 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         }
 
         public override FilterValueSetParam[][] PopulateFilterAddendum(
-            FilterSpecActivatable filterSpec, bool forStatement, int nestingLevel, object partitionKey,
-            ContextControllerStatementDesc optionalStatementDesc, AgentInstanceContext agentInstanceContextStatement)
+            FilterSpecActivatable filterSpec,
+            bool forStatement,
+            int nestingLevel,
+            object partitionKey,
+            ContextControllerStatementDesc optionalStatementDesc,
+            AgentInstanceContext agentInstanceContextStatement)
         {
             if (!forStatement) {
                 if (!EventTypeUtility.IsTypeOrSubTypeOf(
@@ -44,15 +49,17 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 }
             }
 
-            int categoryNum = (int?) partitionKey;
+            int categoryNum = partitionKey.AsInt();
             ContextControllerDetailCategoryItem item = CategorySpec.Items[categoryNum];
             return FilterSpecActivatable.EvaluateValueSet(
                 item.CompiledFilterParam, null, agentInstanceContextStatement);
         }
 
-        public override void PopulateContextProperties(IDictionary<string, object> props, object allPartitionKey)
+        public override void PopulateContextProperties(
+            IDictionary<string, object> props,
+            object allPartitionKey)
         {
-            ContextControllerDetailCategoryItem item = CategorySpec.Items[(int?) allPartitionKey];
+            ContextControllerDetailCategoryItem item = CategorySpec.Items[allPartitionKey.AsInt()];
             props.Put(PROP_CTX_LABEL, item.Name);
         }
 
@@ -64,7 +71,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         public override ContextPartitionIdentifier GetContextPartitionIdentifier(object partitionKey)
         {
-            int categoryNum = (int?) partitionKey;
+            int categoryNum = partitionKey.AsInt();
             ContextControllerDetailCategoryItem item = CategorySpec.Items[categoryNum];
             return new ContextPartitionIdentifierCategory(item.Name);
         }

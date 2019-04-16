@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public SubordTableLookupStrategy MakeStrategy(
-            EventTable[] eventTable, AgentInstanceContext agentInstanceContext, VirtualDWView vdw)
+            EventTable[] eventTable,
+            AgentInstanceContext agentInstanceContext,
+            VirtualDWView vdw)
         {
             return new SubordFullTableScanLookupStrategy((UnindexedEventTable) eventTable[0]);
         }

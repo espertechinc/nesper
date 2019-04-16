@@ -24,10 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             Factory = factory;
         }
 
-        public abstract void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
-        public abstract void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        public abstract void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
 
-        public virtual void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
+        public abstract void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public virtual void AddRemove(
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
@@ -53,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         /// <param name="events">to add</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
         /// <throws>ArgumentException if the event was already existed in the index</throws>
-        public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
                 foreach (var theEvent in events) {
@@ -68,7 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         /// <param name="events">to be removed, can be null instead of an empty array.</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
         /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
-        public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
                 foreach (var theEvent in events) {

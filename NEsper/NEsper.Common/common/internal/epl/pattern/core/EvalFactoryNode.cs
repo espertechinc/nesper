@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
         bool IsStateful { get; }
 
-        EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode);
+        EvalNode MakeEvalNode(
+            PatternAgentInstanceContext agentInstanceContext,
+            EvalNode parentNode);
 
         void Accept(EvalFactoryNodeVisitor visitor);
     }

@@ -25,6 +25,7 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 namespace com.espertech.esper.common.@internal.context.util
 {
     public class AgentInstanceUtil
@@ -62,8 +63,10 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         public static void ContextPartitionTerminate(
-            int agentInstanceId, ContextControllerStatementDesc statementDesc,
-            IDictionary<string, object> terminationProperties, bool leaveLocksAcquired,
+            int agentInstanceId,
+            ContextControllerStatementDesc statementDesc,
+            IDictionary<string, object> terminationProperties,
+            bool leaveLocksAcquired,
             IList<AgentInstance> agentInstancesLocksHeld)
         {
             StatementContext statementContext = statementDesc.Lightweight.StatementContext;
@@ -86,10 +89,12 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         public static void Stop(
-            AgentInstanceStopCallback stopCallback, AgentInstanceContext agentInstanceContext, Viewable finalView,
-            bool isStatementStop, bool leaveLocksAcquired)
+            AgentInstanceStopCallback stopCallback,
+            AgentInstanceContext agentInstanceContext,
+            Viewable finalView,
+            bool isStatementStop,
+            bool leaveLocksAcquired)
         {
-
             agentInstanceContext.InstrumentationProvider.QContextPartitionDestroy(agentInstanceContext);
 
             // obtain statement lock
@@ -134,7 +139,9 @@ namespace com.espertech.esper.common.@internal.context.util
             }
         }
 
-        public static void StopSafe(AgentInstanceStopCallback stopMethod, AgentInstanceContext agentInstanceContext)
+        public static void StopSafe(
+            AgentInstanceStopCallback stopMethod,
+            AgentInstanceContext agentInstanceContext)
         {
             AgentInstanceStopServices stopServices = new AgentInstanceStopServices(agentInstanceContext);
 
@@ -183,15 +190,20 @@ namespace com.espertech.esper.common.@internal.context.util
             };
         }
 
-        private static void HandleStopException(Exception e, AgentInstanceContext agentInstanceContext)
+        private static void HandleStopException(
+            Exception e,
+            AgentInstanceContext agentInstanceContext)
         {
             agentInstanceContext.ExceptionHandlingService.HandleException(
                 e, agentInstanceContext.EpStatementAgentInstanceHandle, ExceptionHandlerExceptionType.UNDEPLOY, null);
         }
 
         public static AgentInstance StartStatement(
-            StatementContextRuntimeServices services, int assignedContextId,
-            ContextControllerStatementDesc statementDesc, MappedEventBean contextBean, AgentInstanceFilterProxy proxy)
+            StatementContextRuntimeServices services,
+            int assignedContextId,
+            ContextControllerStatementDesc statementDesc,
+            MappedEventBean contextBean,
+            AgentInstanceFilterProxy proxy)
         {
             StatementAgentInstanceFactoryResult result = AgentInstanceUtil.Start(
                 services, statementDesc, assignedContextId, contextBean, proxy, false);
@@ -213,7 +225,7 @@ namespace com.espertech.esper.common.@internal.context.util
                 statementContext.StatementAIFactoryProvider.Factory.ObtainAgentInstanceLock(
                     statementContext, agentInstanceId);
             EPStatementAgentInstanceHandle agentInstanceHandle =
-                new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, agentInstanceId,  @lock);
+                new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, agentInstanceId, @lock);
 
             AuditProvider auditProvider = statementContext.StatementInformationals.AuditProvider;
             InstrumentationCommon instrumentationProvider =
@@ -278,7 +290,9 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         public static bool EvaluateFilterForStatement(
-            EventBean theEvent, AgentInstanceContext agentInstanceContext, FilterHandle filterHandle)
+            EventBean theEvent,
+            AgentInstanceContext agentInstanceContext,
+            FilterHandle filterHandle)
         {
             // context was created - reevaluate for the given event
             ArrayDeque<FilterHandle> callbacks = new ArrayDeque<FilterHandle>();
@@ -296,7 +310,6 @@ namespace com.espertech.esper.common.@internal.context.util
                 }
 
                 agentInstanceContext.EpStatementAgentInstanceHandle.InternalDispatch();
-
             }
             catch (EPException) {
                 throw;

@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         ExprNodeRenderable
     {
         public PropertyDotNonLambdaMappedForge(
-            int streamId, EventPropertyGetterMappedSPI mappedGetter, ExprForge paramForge, Type returnType)
+            int streamId,
+            EventPropertyGetterMappedSPI mappedGetter,
+            ExprForge paramForge,
+            Type returnType)
         {
             StreamId = streamId;
             MappedGetter = mappedGetter;
@@ -39,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return PropertyDotNonLambdaMappedForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
@@ -49,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public ExprNodeRenderable ForgeRenderable => this;
 
-        public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
         {
             writer.Write(GetType().Name);
         }

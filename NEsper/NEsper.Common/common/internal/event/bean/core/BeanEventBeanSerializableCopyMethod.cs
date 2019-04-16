@@ -32,7 +32,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <param name="beanEventType">event type</param>
         /// <param name="eventAdapterService">for creating the event object</param>
         public BeanEventBeanSerializableCopyMethod(
-            BeanEventType beanEventType, EventBeanTypedEventFactory eventAdapterService)
+            BeanEventType beanEventType,
+            EventBeanTypedEventFactory eventAdapterService)
         {
             this.beanEventType = beanEventType;
             this.eventAdapterService = eventAdapterService;

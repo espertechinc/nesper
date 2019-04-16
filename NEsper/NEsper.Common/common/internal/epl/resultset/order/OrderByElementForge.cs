@@ -15,14 +15,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         private ExprNode exprNode;
         private bool isDescending;
 
-        public OrderByElementForge(ExprNode exprNode, bool isDescending)
+        public OrderByElementForge(
+            ExprNode exprNode,
+            bool isDescending)
         {
             this.exprNode = exprNode;
             this.isDescending = isDescending;
         }
 
-        public ExprNode ExprNode
-        {
+        public ExprNode ExprNode {
             get => exprNode;
         }
 

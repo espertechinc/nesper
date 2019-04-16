@@ -38,7 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         /// <param name="oldData">old events posted by view</param>
         /// <param name="isSynthesize">set to true to indicate that synthetic events are required for an iterator result set</param>
         /// <returns>pair of new events and old events</returns>
-        UniformPair<EventBean[]> ProcessViewResult(EventBean[] newData, EventBean[] oldData, bool isSynthesize);
+        UniformPair<EventBean[]> ProcessViewResult(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isSynthesize);
 
         /// <summary>
         ///     For use by joins posting their result, process the event rows that are entered and removed (new and old events).
@@ -50,7 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         /// <param name="isSynthesize">set to true to indicate that synthetic events are required for an iterator result set</param>
         /// <returns>pair of new events and old events</returns>
         UniformPair<EventBean[]> ProcessJoinResult(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isSynthesize);
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
+            bool isSynthesize);
 
         /// <summary>
         ///     Returns the iterator implementing the group-by and aggregation and order-by logic
@@ -79,7 +84,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         /// <param name="generateSynthetic">flag to indicate whether synthetic events must be generated</param>
         /// <returns>results for dispatch</returns>
         UniformPair<EventBean[]> ProcessOutputLimitedJoin(
-            IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic);
+            IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet,
+            bool generateSynthetic);
 
         /// <summary>
         ///     Processes batched events in case of output-rate limiting.
@@ -88,19 +94,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         /// <param name="generateSynthetic">flag to indicate whether synthetic events must be generated</param>
         /// <returns>results for dispatch</returns>
         UniformPair<EventBean[]> ProcessOutputLimitedView(
-            IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic);
+            IList<UniformPair<EventBean[]>> viewEventsList,
+            bool generateSynthetic);
 
         AgentInstanceContext AgentInstanceContext { set; }
 
-        void ApplyViewResult(EventBean[] newData, EventBean[] oldData);
+        void ApplyViewResult(
+            EventBean[] newData,
+            EventBean[] oldData);
 
-        void ApplyJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
+        void ApplyJoinResult(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents);
 
         void ProcessOutputLimitedLastAllNonBufferedView(
-            EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic);
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic);
 
         void ProcessOutputLimitedLastAllNonBufferedJoin(
-            ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic);
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
+            bool isGenerateSynthetic);
 
         UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize);
 

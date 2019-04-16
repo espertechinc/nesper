@@ -27,38 +27,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// </summary>
         /// <param name="propertyIndex">property index</param>
         /// <param name="index">index to get the element at</param>
-        public ObjectArrayIndexedPropertyGetter(int propertyIndex, int index)
+        public ObjectArrayIndexedPropertyGetter(
+            int propertyIndex,
+            int index)
         {
             this.propertyIndex = propertyIndex;
             this.index = index;
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="array">array</param>
-        /// <param name="propertyIndex">prop index</param>
-        /// <param name="index">index</param>
-        /// <returns>value</returns>
-        /// <throws>PropertyAccessException exception</throws>
-        public static object GetObjectArrayIndexValue(object[] array, int propertyIndex, int index)
-        {
-            var value = array[propertyIndex];
-            return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="array">array</param>
-        /// <param name="propertyIndex">prop index</param>
-        /// <param name="index">index</param>
-        /// <returns>value</returns>
-        /// <throws>PropertyAccessException exception</throws>
-        public static bool IsObjectArrayExistsProperty(object[] array, int propertyIndex, int index)
-        {
-            var value = array[propertyIndex];
-            return BaseNestableEventUtil.IsExistsIndexedValue(value, index);
         }
 
         public object GetObjectArray(object[] array)
@@ -87,7 +61,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -95,7 +70,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
@@ -103,14 +79,16 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -118,7 +96,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
@@ -127,10 +106,45 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="array">array</param>
+        /// <param name="propertyIndex">prop index</param>
+        /// <param name="index">index</param>
+        /// <returns>value</returns>
+        /// <throws>PropertyAccessException exception</throws>
+        public static object GetObjectArrayIndexValue(
+            object[] array,
+            int propertyIndex,
+            int index)
+        {
+            var value = array[propertyIndex];
+            return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="array">array</param>
+        /// <param name="propertyIndex">prop index</param>
+        /// <param name="index">index</param>
+        /// <returns>value</returns>
+        /// <throws>PropertyAccessException exception</throws>
+        public static bool IsObjectArrayExistsProperty(
+            object[] array,
+            int propertyIndex,
+            int index)
+        {
+            var value = array[propertyIndex];
+            return BaseNestableEventUtil.IsExistsIndexedValue(value, index);
         }
     }
 } // end of namespace

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -23,24 +22,23 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         private int lookupStream;
         private SortedAccessStrategy strategy;
 
-        public int LookupStream
-        {
+        public int LookupStream {
             set => lookupStream = value;
         }
 
-        public QueryGraphValueEntryRange EvalRange
-        {
+        public QueryGraphValueEntryRange EvalRange {
             set => evalRange = value;
         }
 
-        public IEnumerator<EventBean> Lookup(EventBean lookupEvent, EventTable[] index, ExprEvaluatorContext context)
+        public IEnumerator<EventBean> Lookup(
+            EventBean lookupEvent,
+            EventTable[] index,
+            ExprEvaluatorContext context)
         {
-            if (index[0] is PropertySortedEventTable)
-            {
-                var idx = (PropertySortedEventTable)index[0];
+            if (index[0] is PropertySortedEventTable) {
+                var idx = (PropertySortedEventTable) index[0];
                 var events = strategy.Lookup(lookupEvent, idx, context);
-                if (events != null)
-                {
+                if (events != null) {
                     return events.GetEnumerator();
                 }
 

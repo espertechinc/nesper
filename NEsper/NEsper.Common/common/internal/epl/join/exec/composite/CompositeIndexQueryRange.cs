@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
@@ -27,46 +26,39 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             int numStreams,
             QueryGraphValueEntryRange rangeProp)
         {
-            if (rangeProp.Type.IsRange)
-            {
-                var rangeIn = (QueryGraphValueEntryRangeIn)rangeProp;
+            if (rangeProp.Type.IsRange) {
+                var rangeIn = (QueryGraphValueEntryRangeIn) rangeProp;
                 var start = rangeIn.ExprStart;
                 var includeStart = rangeProp.Type.IsIncludeStart;
 
                 var end = rangeIn.ExprEnd;
                 var includeEnd = rangeProp.Type.IsIncludeEnd;
 
-                if (!rangeProp.Type.IsRangeInverted())
-                {
-                    strategy = new CompositeAccessStrategyRangeNormal(isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd, rangeIn.IsAllowRangeReversal);
+                if (!rangeProp.Type.IsRangeInverted()) {
+                    strategy = new CompositeAccessStrategyRangeNormal(
+                        isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd, rangeIn.IsAllowRangeReversal);
                 }
-                else
-                {
-                    strategy = new CompositeAccessStrategyRangeInverted(isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd);
+                else {
+                    strategy = new CompositeAccessStrategyRangeInverted(
+                        isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd);
                 }
             }
-            else
-            {
-                var relOp = (QueryGraphValueEntryRangeRelOp)rangeProp;
+            else {
+                var relOp = (QueryGraphValueEntryRangeRelOp) rangeProp;
                 var key = relOp.Expression;
-                if (rangeProp.Type == QueryGraphRangeEnum.GREATER_OR_EQUAL)
-                {
+                if (rangeProp.Type == QueryGraphRangeEnum.GREATER_OR_EQUAL) {
                     strategy = new CompositeAccessStrategyGE(isNWOnTrigger, lookupStream, numStreams, key);
                 }
-                else if (rangeProp.Type == QueryGraphRangeEnum.GREATER)
-                {
+                else if (rangeProp.Type == QueryGraphRangeEnum.GREATER) {
                     strategy = new CompositeAccessStrategyGT(isNWOnTrigger, lookupStream, numStreams, key);
                 }
-                else if (rangeProp.Type == QueryGraphRangeEnum.LESS_OR_EQUAL)
-                {
+                else if (rangeProp.Type == QueryGraphRangeEnum.LESS_OR_EQUAL) {
                     strategy = new CompositeAccessStrategyLE(isNWOnTrigger, lookupStream, numStreams, key);
                 }
-                else if (rangeProp.Type == QueryGraphRangeEnum.LESS)
-                {
+                else if (rangeProp.Type == QueryGraphRangeEnum.LESS) {
                     strategy = new CompositeAccessStrategyLT(isNWOnTrigger, lookupStream, numStreams, key);
                 }
-                else
-                {
+                else {
                     throw new ArgumentException("Comparison operator " + rangeProp.Type + " not supported");
                 }
             }
@@ -136,34 +128,31 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQuery next,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            if (next == null)
-            {
-                if (result == null)
-                {
+            if (next == null) {
+                if (result == null) {
                     result = new HashSet<EventBean>();
                 }
+
                 AddResults(sortedMapOne, sortedMapTwo, result, postProcessor);
                 return result;
             }
-            else
-            {
-                if (result == null)
-                {
+            else {
+                if (result == null) {
                     result = new HashSet<EventBean>();
                 }
+
                 var map = sortedMapOne;
-                foreach (var entry in map)
-                {
+                foreach (var entry in map) {
                     next.Add(theEvent, entry.Value.AssertIndex(), result, postProcessor);
                 }
-                if (sortedMapTwo != null)
-                {
+
+                if (sortedMapTwo != null) {
                     map = sortedMapTwo;
-                    foreach (var entry in map)
-                    {
+                    foreach (var entry in map) {
                         next.Add(theEvent, entry.Value.AssertIndex(), result, postProcessor);
                     }
                 }
+
                 return result;
             }
         }
@@ -176,34 +165,31 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQuery next,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            if (next == null)
-            {
-                if (result == null)
-                {
+            if (next == null) {
+                if (result == null) {
                     result = new HashSet<EventBean>();
                 }
+
                 AddResults(sortedMapOne, sortedMapTwo, result, postProcessor);
                 return result;
             }
-            else
-            {
-                if (result == null)
-                {
+            else {
+                if (result == null) {
                     result = new HashSet<EventBean>();
                 }
+
                 var map = sortedMapOne;
-                foreach (var entry in map)
-                {
+                foreach (var entry in map) {
                     next.Add(eventsPerStream, entry.Value.AssertIndex(), result, postProcessor);
                 }
-                if (sortedMapTwo != null)
-                {
+
+                if (sortedMapTwo != null) {
                     map = sortedMapTwo;
-                    foreach (var entry in map)
-                    {
+                    foreach (var entry in map) {
                         next.Add(eventsPerStream, entry.Value.AssertIndex(), result, postProcessor);
                     }
                 }
+
                 return result;
             }
         }
@@ -215,8 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             AddResults(sortedMapOne, result, postProcessor);
-            if (sortedMapTwo != null)
-            {
+            if (sortedMapTwo != null) {
                 AddResults(sortedMapTwo, result, postProcessor);
             }
         }
@@ -226,19 +211,15 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<EventBean> result,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            var map = (IDictionary<object, ISet<EventBean>>)sortedMapOne;
+            var map = (IDictionary<object, ISet<EventBean>>) sortedMapOne;
 
-            if (postProcessor != null)
-            {
-                foreach (var entry in map)
-                {
+            if (postProcessor != null) {
+                foreach (var entry in map) {
                     postProcessor.Add(entry.Value, result);
                 }
             }
-            else
-            {
-                foreach (var entry in map)
-                {
+            else {
+                foreach (var entry in map) {
                     result.AddAll(entry.Value);
                 }
             }

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -22,23 +21,44 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class ExprDotForgeMinByMaxBy : ExprDotForgeEnumMethodBase {
+    public class ExprDotForgeMinByMaxBy : ExprDotForgeEnumMethodBase
+    {
+        public override EventType[] GetAddStreamTypes(
+            string enumMethodUsedName,
+            IList<string> goesToNames,
+            EventType inputEventType,
+            Type collectionComponentType,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            return ExprDotNodeUtility.GetSingleLambdaParamEventType(
+                enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
+        }
 
-	    public override EventType[] GetAddStreamTypes(string enumMethodUsedName, IList<string> goesToNames, EventType inputEventType, Type collectionComponentType, IList<ExprDotEvalParam> bodiesAndParameters, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
-	        return ExprDotNodeUtility.GetSingleLambdaParamEventType(enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
-	    }
+        public override EnumForge GetEnumForge(
+            StreamTypeService streamTypeService,
+            string enumMethodUsedName,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            EventType inputEventType,
+            Type collectionComponentType,
+            int numStreamsIncoming,
+            bool disablePropertyExpressionEventCollCache,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
 
-	    public override EnumForge GetEnumForge(StreamTypeService streamTypeService, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache, StatementRawInfo statementRawInfo, StatementCompileTimeServices services) {
-	        ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            bool max = this.EnumMethodEnum == EnumMethodEnum.MAXBY;
+            if (inputEventType == null) {
+                base.TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
+                return new EnumMinMaxByScalarLambdaForge(
+                    first.BodyForge, first.StreamCountIncoming, max,
+                    (ObjectArrayEventType) first.GoesToTypes[0], base.TypeInfo);
+            }
 
-	        bool max = this.EnumMethodEnum == EnumMethodEnum.MAXBY;
-	        if (inputEventType == null) {
-	            base.TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
-	            return new EnumMinMaxByScalarLambdaForge(first.BodyForge, first.StreamCountIncoming, max,
-	                    (ObjectArrayEventType) first.GoesToTypes[0], base.TypeInfo);
-	        }
-	        base.TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
-	        return new EnumMinMaxByEventsForge(first.BodyForge, first.StreamCountIncoming, max);
-	    }
-	}
+            base.TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
+            return new EnumMinMaxByEventsForge(first.BodyForge, first.StreamCountIncoming, max);
+        }
+    }
 } // end of namespace

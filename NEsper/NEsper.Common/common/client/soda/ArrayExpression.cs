@@ -8,69 +8,74 @@
 
 using System;
 using System.IO;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
-	/// <summary>
-	/// Array expression forms array results, similar to the syntax of "{element 1, element 2, ... element n}".
-	/// </summary>
-	public class ArrayExpression : ExpressionBase {
+    /// <summary>
+    /// Array expression forms array results, similar to the syntax of "{element 1, element 2, ... element n}".
+    /// </summary>
+    public class ArrayExpression : ExpressionBase
+    {
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        public ArrayExpression()
+        {
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    public ArrayExpression() {
-	    }
+        /// <summary>
+        /// Add a property to the expression.
+        /// </summary>
+        /// <param name="property">to add</param>
+        /// <returns>expression</returns>
+        public ArrayExpression Add(string property)
+        {
+            this.Children.Add(new PropertyValueExpression(property));
+            return this;
+        }
 
-	    /// <summary>
-	    /// Add a property to the expression.
-	    /// </summary>
-	    /// <param name="property">to add</param>
-	    /// <returns>expression</returns>
-	    public ArrayExpression Add(string property) {
-	        this.Children.Add(new PropertyValueExpression(property));
-	        return this;
-	    }
+        /// <summary>
+        /// Add a constant to the expression.
+        /// </summary>
+        /// <param name="object">constant to add</param>
+        /// <returns>expression</returns>
+        public ArrayExpression Add(object @object)
+        {
+            this.Children.Add(new ConstantExpression(@object));
+            return this;
+        }
 
-	    /// <summary>
-	    /// Add a constant to the expression.
-	    /// </summary>
-	    /// <param name="object">constant to add</param>
-	    /// <returns>expression</returns>
-	    public ArrayExpression Add(object @object) {
-	        this.Children.Add(new ConstantExpression(@object));
-	        return this;
-	    }
+        /// <summary>
+        /// Add an expression representing an array element to the expression.
+        /// </summary>
+        /// <param name="expression">to add</param>
+        /// <returns>expression</returns>
+        public ArrayExpression Add(Expression expression)
+        {
+            this.Children.Add(expression);
+            return this;
+        }
 
-	    /// <summary>
-	    /// Add an expression representing an array element to the expression.
-	    /// </summary>
-	    /// <param name="expression">to add</param>
-	    /// <returns>expression</returns>
-	    public ArrayExpression Add(Expression expression) {
-	        this.Children.Add(expression);
-	        return this;
-	    }
+        public override ExpressionPrecedenceEnum Precedence {
+            get => ExpressionPrecedenceEnum.UNARY;
+        }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get => ExpressionPrecedenceEnum.UNARY;
-	    }
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            writer.Write("{");
+            bool isFirst = true;
+            foreach (Expression child in this.Children) {
+                if (!isFirst) {
+                    writer.Write(",");
+                }
 
-	    public override void ToPrecedenceFreeEPL(TextWriter writer) {
-	        writer.Write("{");
-	        bool isFirst = true;
-	        foreach (Expression child in this.Children) {
-	            if (!isFirst) {
-	                writer.Write(",");
-	            }
-	            child.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-	            isFirst = false;
-	        }
-	        writer.Write("}");
-	    }
-	}
+                child.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                isFirst = false;
+            }
+
+            writer.Write("}");
+        }
+    }
 } // end of namespace

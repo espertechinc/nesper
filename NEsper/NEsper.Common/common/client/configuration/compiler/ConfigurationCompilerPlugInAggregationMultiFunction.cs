@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     [Serializable]
     public class ConfigurationCompilerPlugInAggregationMultiFunction
     {
-
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -31,7 +30,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="functionNames">the aggregation function names</param>
         /// <param name="multiFunctionForgeClassName">the factory class name</param>
         public ConfigurationCompilerPlugInAggregationMultiFunction(
-            string[] functionNames, string multiFunctionForgeClassName)
+            string[] functionNames,
+            string multiFunctionForgeClassName)
         {
             this.FunctionNames = functionNames;
             this.MultiFunctionForgeClassName = multiFunctionForgeClassName;

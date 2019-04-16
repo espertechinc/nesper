@@ -37,9 +37,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
         private IList<CompletionListener> completionListeners;
 
         public GraphSourceRunnable(
-            AgentInstanceContext agentInstanceContext, DataFlowSourceOperator graphSource, string dataFlowName,
-            string instanceId, string operatorName, int operatorNumber, string operatorPrettyPrint,
-            EPDataFlowExceptionHandler optionalExceptionHandler, bool audit)
+            AgentInstanceContext agentInstanceContext,
+            DataFlowSourceOperator graphSource,
+            string dataFlowName,
+            string instanceId,
+            string operatorName,
+            int operatorNumber,
+            string operatorPrettyPrint,
+            EPDataFlowExceptionHandler optionalExceptionHandler,
+            bool audit)
         {
             this.agentInstanceContext = agentInstanceContext;
             this.graphSource = graphSource;

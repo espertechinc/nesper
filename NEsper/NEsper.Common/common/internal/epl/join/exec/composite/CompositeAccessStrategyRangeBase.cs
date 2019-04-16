@@ -25,8 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         internal readonly ExprEvaluator start;
 
         protected CompositeAccessStrategyRangeBase(
-            bool isNWOnTrigger, int lookupStream, int numStreams, ExprEvaluator start, bool includeStart,
-            ExprEvaluator end, bool includeEnd)
+            bool isNWOnTrigger,
+            int lookupStream,
+            int numStreams,
+            ExprEvaluator start,
+            bool includeStart,
+            ExprEvaluator end,
+            bool includeEnd)
         {
             this.start = start;
             this.includeStart = includeStart;
@@ -44,19 +49,25 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             this.lookupStream = lookupStream;
         }
 
-        public object EvaluateLookupStart(EventBean theEvent, ExprEvaluatorContext context)
+        public object EvaluateLookupStart(
+            EventBean theEvent,
+            ExprEvaluatorContext context)
         {
             events[lookupStream] = theEvent;
             return start.Evaluate(events, true, context);
         }
 
-        public object EvaluateLookupEnd(EventBean theEvent, ExprEvaluatorContext context)
+        public object EvaluateLookupEnd(
+            EventBean theEvent,
+            ExprEvaluatorContext context)
         {
             events[lookupStream] = theEvent;
             return end.Evaluate(events, true, context);
         }
 
-        public object EvaluatePerStreamStart(EventBean[] eventPerStream, ExprEvaluatorContext context)
+        public object EvaluatePerStreamStart(
+            EventBean[] eventPerStream,
+            ExprEvaluatorContext context)
         {
             if (isNWOnTrigger) {
                 return start.Evaluate(eventPerStream, true, context);
@@ -66,7 +77,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             return start.Evaluate(events, true, context);
         }
 
-        public object EvaluatePerStreamEnd(EventBean[] eventPerStream, ExprEvaluatorContext context)
+        public object EvaluatePerStreamEnd(
+            EventBean[] eventPerStream,
+            ExprEvaluatorContext context)
         {
             if (isNWOnTrigger) {
                 return end.Evaluate(eventPerStream, true, context);

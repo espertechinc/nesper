@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -15,22 +14,25 @@ using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupby
 {
-	public class AggSvcGroupByReclaimAgedEvalFuncFactoryVariableForge : AggSvcGroupByReclaimAgedEvalFuncFactoryForge {
-	    private readonly VariableMetaData variableMetaData;
+    public class AggSvcGroupByReclaimAgedEvalFuncFactoryVariableForge : AggSvcGroupByReclaimAgedEvalFuncFactoryForge
+    {
+        private readonly VariableMetaData variableMetaData;
 
-	    public AggSvcGroupByReclaimAgedEvalFuncFactoryVariableForge(VariableMetaData variableMetaData) {
-	        this.variableMetaData = variableMetaData;
-	    }
+        public AggSvcGroupByReclaimAgedEvalFuncFactoryVariableForge(VariableMetaData variableMetaData)
+        {
+            this.variableMetaData = variableMetaData;
+        }
 
-	    public CodegenExpressionField Make(CodegenClassScope classScope) {
-	        CodegenExpression resolve = VariableDeployTimeResolver.MakeResolveVariable(variableMetaData, EPStatementInitServicesConstants.REF);
-	        return classScope.AddFieldUnshared(true, typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryVariable),
-	                NewInstance(typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryVariable), resolve));
-	    }
-	}
+        public CodegenExpressionField Make(CodegenClassScope classScope)
+        {
+            CodegenExpression resolve = VariableDeployTimeResolver.MakeResolveVariable(variableMetaData, EPStatementInitServicesConstants.REF);
+            return classScope.AddFieldUnshared(
+                true, typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryVariable),
+                NewInstance(typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryVariable), resolve));
+        }
+    }
 } // end of namespace

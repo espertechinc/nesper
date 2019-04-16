@@ -48,7 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         /// <param name="indexPropertyIdent">index property</param>
         /// <param name="keyPropNode">key node</param>
         /// <returns>true if added and either property did not exist, false if either already existed</returns>
-        public bool AddStrictCompare(string keyProperty, ExprIdentNode keyPropNode, ExprIdentNode indexPropertyIdent)
+        public bool AddStrictCompare(
+            string keyProperty,
+            ExprIdentNode keyPropNode,
+            ExprIdentNode indexPropertyIdent)
         {
             var value = FindIdentEntry(indexPropertyIdent);
             if (value != null && value.Entry is QueryGraphValueEntryHashKeyedForgeExpr) {
@@ -72,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public void AddRange(
-            QueryGraphRangeEnum rangeType, ExprNode propertyStart, ExprNode propertyEnd,
+            QueryGraphRangeEnum rangeType,
+            ExprNode propertyStart,
+            ExprNode propertyEnd,
             ExprIdentNode propertyValueIdent)
         {
             if (!rangeType.IsRange) {
@@ -91,7 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public void AddRelOp(
-            ExprNode propertyKey, QueryGraphRangeEnum op, ExprIdentNode propertyValueIdent, bool isBetweenOrIn)
+            ExprNode propertyKey,
+            QueryGraphRangeEnum op,
+            ExprIdentNode propertyValueIdent,
+            bool isBetweenOrIn)
         {
             // Note: Read as follows:
             // System.out.println("If I have an index on '" + propertyValue + "' I'm evaluating " + propertyKey + " and finding all values of " + propertyValue + " " + op + " then " + propertyKey);
@@ -120,7 +128,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             }
         }
 
-        public void AddUnkeyedExpr(ExprIdentNode indexedPropIdent, ExprNode exprNodeNoIdent)
+        public void AddUnkeyedExpr(
+            ExprIdentNode indexedPropIdent,
+            ExprNode exprNodeNoIdent)
         {
             Items.Add(
                 new QueryGraphValueDescForge(
@@ -128,7 +138,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                     new QueryGraphValueEntryHashKeyedForgeExpr(exprNodeNoIdent, false)));
         }
 
-        public void AddKeyedExpr(ExprIdentNode indexedPropIdent, ExprNode exprNodeNoIdent)
+        public void AddKeyedExpr(
+            ExprIdentNode indexedPropIdent,
+            ExprNode exprNodeNoIdent)
         {
             Items.Add(
                 new QueryGraphValueDescForge(
@@ -197,13 +209,17 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             return writer.ToString();
         }
 
-        public void AddInKeywordMultiIdx(ExprNode testPropExpr, ExprNode[] setProps)
+        public void AddInKeywordMultiIdx(
+            ExprNode testPropExpr,
+            ExprNode[] setProps)
         {
             Items.Add(
                 new QueryGraphValueDescForge(setProps, new QueryGraphValueEntryInKeywordMultiIdxForge(testPropExpr)));
         }
 
-        public void AddInKeywordSingleIdx(ExprNode testPropIdent, ExprNode[] setPropExpr)
+        public void AddInKeywordSingleIdx(
+            ExprNode testPropIdent,
+            ExprNode[] setPropExpr)
         {
             var indexExpressions = new ExprNode[] {testPropIdent};
             var found = FindEntry(indexExpressions);
@@ -252,7 +268,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public void AddCustom(
-            ExprNode[] indexExpressions, string operationName, int expressionPosition, ExprNode expression)
+            ExprNode[] indexExpressions,
+            string operationName,
+            int expressionPosition,
+            ExprNode expression)
         {
             // find existing custom-entry for same index expressions
             QueryGraphValueEntryCustomForge found = null;
@@ -319,7 +338,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValue), GetType(), classScope);
             method.Block.DeclareVar(typeof(IList<object>), "items", NewInstance(typeof(List<object>), Constant(Items.Count)));

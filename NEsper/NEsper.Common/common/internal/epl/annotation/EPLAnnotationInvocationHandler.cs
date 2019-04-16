@@ -9,11 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using Castle.DynamicProxy;
 
 namespace com.espertech.esper.common.@internal.epl.annotation

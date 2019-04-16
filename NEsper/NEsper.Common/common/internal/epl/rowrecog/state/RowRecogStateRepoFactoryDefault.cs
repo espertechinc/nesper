@@ -20,15 +20,21 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         }
 
         public RowRecogPartitionStateRepo MakeSingle(
-            RowRecogPreviousStrategyImpl prevGetter, AgentInstanceContext agentInstanceContext, RowRecogNFAView view,
-            bool keepScheduleState, RowRecogPartitionTerminationStateComparator terminationStateCompare)
+            RowRecogPreviousStrategyImpl prevGetter,
+            AgentInstanceContext agentInstanceContext,
+            RowRecogNFAView view,
+            bool keepScheduleState,
+            RowRecogPartitionTerminationStateComparator terminationStateCompare)
         {
             return new RowRecogPartitionStateRepoNoGroup(prevGetter, keepScheduleState, terminationStateCompare);
         }
 
         public RowRecogPartitionStateRepo MakePartitioned(
-            RowRecogPreviousStrategyImpl prevGetter, RowRecogPartitionStateRepoGroupMeta stateRepoGroupMeta,
-            AgentInstanceContext agentInstanceContext, RowRecogNFAView view, bool keepScheduleState,
+            RowRecogPreviousStrategyImpl prevGetter,
+            RowRecogPartitionStateRepoGroupMeta stateRepoGroupMeta,
+            AgentInstanceContext agentInstanceContext,
+            RowRecogNFAView view,
+            bool keepScheduleState,
             RowRecogPartitionTerminationStateComparator terminationStateCompare)
         {
             return new RowRecogPartitionStateRepoGroup(

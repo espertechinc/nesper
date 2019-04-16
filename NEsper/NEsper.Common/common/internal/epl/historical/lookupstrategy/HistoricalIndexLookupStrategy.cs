@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -29,6 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         /// <param name="index">is the table providing the cache result set, potentially indexed by index fields</param>
         /// <param name="context">context</param>
         /// <returns>full set or partial index iterator</returns>
-        IEnumerator<EventBean> Lookup(EventBean lookupEvent, EventTable[] index, ExprEvaluatorContext context);
+        IEnumerator<EventBean> Lookup(
+            EventBean lookupEvent,
+            EventTable[] index,
+            ExprEvaluatorContext context);
     }
 } // end of namespace

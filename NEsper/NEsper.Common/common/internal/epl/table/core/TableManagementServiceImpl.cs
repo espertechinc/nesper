@@ -14,8 +14,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 {
     public class TableManagementServiceImpl : TableManagementServiceBase
     {
-        public TableManagementServiceImpl(TableExprEvaluatorContext tableExprEvaluatorContext) : base(
-            tableExprEvaluatorContext)
+        public TableManagementServiceImpl(TableExprEvaluatorContext tableExprEvaluatorContext)
+            : base(
+                tableExprEvaluatorContext)
         {
         }
 
@@ -32,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             return null; // this implementation does not require serdes
         }
 
-        public override TableInstance AllocateTableInstance(Table table, AgentInstanceContext agentInstanceContext)
+        public override TableInstance AllocateTableInstance(
+            Table table,
+            AgentInstanceContext agentInstanceContext)
         {
             if (!table.MetaData.IsKeyed) {
                 return new TableInstanceUngroupedImpl(table, agentInstanceContext);

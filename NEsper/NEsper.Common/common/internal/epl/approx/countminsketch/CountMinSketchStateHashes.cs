@@ -26,7 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
     /// </summary>
     public class CountMinSketchStateHashes
     {
-        public CountMinSketchStateHashes(int depth, int width, long[][] table, long[] hash, long total)
+        public CountMinSketchStateHashes(
+            int depth,
+            int width,
+            long[][] table,
+            long[] hash,
+            long total)
         {
             Depth = depth;
             Width = width;
@@ -77,7 +82,9 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             return res;
         }
 
-        public void Add(byte[] item, long count)
+        public void Add(
+            byte[] item,
+            long count)
         {
             if (count < 0) {
                 throw new ArgumentException("Negative increments not implemented");
@@ -91,7 +98,10 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             Total += count;
         }
 
-        private int[] GetHashBuckets(byte[] b, int hashCount, int max)
+        private int[] GetHashBuckets(
+            byte[] b,
+            int hashCount,
+            int max)
         {
             var result = new int[hashCount];
             var hash1 = MurmurHash.Hash(b, 0, b.Length, 0);

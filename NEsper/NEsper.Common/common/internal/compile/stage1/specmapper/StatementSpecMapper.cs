@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
@@ -54,7 +53,6 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.epl.historical.database.core.HistoricalEventViewableDatabaseForgeFactory;
 using DataFlowOperator = com.espertech.esper.common.client.soda.DataFlowOperator;
 
@@ -62,7 +60,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 {
     using CreateTableColumnSoda = client.soda.CreateTableColumn;
     using CreateTableColumnSpec = spec.CreateTableColumn;
-
     using AnnotationAttributeSoda = client.soda.AnnotationAttribute;
 
     /// <summary>
@@ -941,7 +938,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 clause = new OutputLimitClause(
                     selector,
                     outputLimitSpec.Rate,
-                    outputLimitSpec.VariableName, 
+                    outputLimitSpec.VariableName,
                     unit);
             }
 
@@ -2983,7 +2980,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             else if (expr is ExprMinMaxAggrNode minMaxAggrNode) {
                 if (minMaxAggrNode.MinMaxTypeEnum == MinMaxTypeEnum.MIN) {
                     return new MinProjectionExpression(
-                        minMaxAggrNode.IsDistinct, 
+                        minMaxAggrNode.IsDistinct,
                         minMaxAggrNode.IsEver);
                 }
                 else {
@@ -3079,7 +3076,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is ExprSubstitutionNode substitutionNode) {
                 return new SubstitutionParameterExpression(
-                    substitutionNode.OptionalName, 
+                    substitutionNode.OptionalName,
                     substitutionNode.OptionalType == null ? null : substitutionNode.OptionalType.ToEPL());
             }
             else if (expr is ExprTimePeriod timePeriod) {
@@ -3141,8 +3138,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
                 return new CrontabParameterExpression(type);
             }
-            else if (expr is ExprAggMultiFunctionLinearAccessNode accessNode)
-            {
+            else if (expr is ExprAggMultiFunctionLinearAccessNode accessNode) {
                 AccessProjectionExpressionBase ape;
                 if (accessNode.StateType == AggregationAccessorLinearType.FIRST) {
                     ape = new FirstProjectionExpression();

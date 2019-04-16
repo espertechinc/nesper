@@ -15,27 +15,37 @@ namespace com.espertech.esper.common.client.soda
     {
         /// <summary>Precedence. </summary>
         UNARY = (11),
+
         /// <summary>Precedence. </summary>
         MULTIPLY = (10),
+
         /// <summary>Precedence. </summary>
         ADDITIVE = (9),
+
         /// <summary>Precedence. </summary>
         CONCAT = (8),
+
         /// <summary>Precedence. </summary>
         RELATIONAL_BETWEEN_IN = (7),
+
         /// <summary>Precedence. </summary>
         EQUALS = (6),
+
         /// <summary>Precedence. </summary>
         NEGATED = (5),
+
         /// <summary>Precedence. </summary>
         BITWISE = (4),
+
         /// <summary>Precedence. </summary>
         AND = (3),
+
         /// <summary>Precedence. </summary>
         OR = (2),
+
         /// <summary>Precedence. </summary>
         CASE = (1),
-    
+
         /// <summary>Precedence. </summary>
         MINIMUM = (int.MinValue)
     }

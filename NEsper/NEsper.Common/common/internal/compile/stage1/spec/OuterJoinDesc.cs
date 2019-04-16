@@ -36,8 +36,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="optAddLeftNode">additional optional left hand identifier nodes for the on-clause in a logical-and</param>
         /// <param name="optAddRightNode">additional optional right hand identifier nodes for the on-clause in a logical-and</param>
         public OuterJoinDesc(
-            OuterJoinType outerJoinType, ExprIdentNode optLeftNode, ExprIdentNode optRightNode,
-            ExprIdentNode[] optAddLeftNode, ExprIdentNode[] optAddRightNode)
+            OuterJoinType outerJoinType,
+            ExprIdentNode optLeftNode,
+            ExprIdentNode optRightNode,
+            ExprIdentNode[] optAddLeftNode,
+            ExprIdentNode[] optAddRightNode)
         {
             OuterJoinType = outerJoinType;
             OptLeftNode = optLeftNode;
@@ -77,7 +80,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public ExprIdentNode[] AdditionalRightNodes { get; }
 
         public ExprNode MakeExprNode(
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             ExprNode representativeNode = new ExprEqualsNodeImpl(false, false);
             representativeNode.AddChildNode(OptLeftNode);
@@ -126,7 +130,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         }
 
         private void TopValidate(
-            ExprNode exprNode, StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices)
+            ExprNode exprNode,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
         {
             try {
                 ExprValidationContext validationContext =

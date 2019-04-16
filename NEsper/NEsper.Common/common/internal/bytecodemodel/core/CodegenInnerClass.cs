@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     public class CodegenInnerClass
     {
         public CodegenInnerClass(
-            string className, Type interfaceImplemented, CodegenCtor ctor, IList<CodegenTypedParam> explicitMembers,
+            string className,
+            Type interfaceImplemented,
+            CodegenCtor ctor,
+            IList<CodegenTypedParam> explicitMembers,
             CodegenClassMethods methods)
         {
             ClassName = className;

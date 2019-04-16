@@ -12,7 +12,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
 {
     public class XYWHRectangleWValue<TL> : XYWHRectangle
     {
-        public XYWHRectangleWValue(double x, double y, double w, double h, TL value) : base(x, y, w, h)
+        public XYWHRectangleWValue(
+            double x,
+            double y,
+            double w,
+            double h,
+            TL value)
+            : base(x, y, w, h)
         {
             Value = value;
         }

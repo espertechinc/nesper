@@ -21,14 +21,16 @@ namespace com.espertech.esper.common.client.soda
         /// Ctor.
         /// </summary>
         /// <param name="tableName">table name</param>
-        public IntoTableClause(string tableName) {
+        public IntoTableClause(string tableName)
+        {
             this.TableName = tableName;
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
-        public IntoTableClause() {
+        public IntoTableClause()
+        {
         }
 
         /// <summary>

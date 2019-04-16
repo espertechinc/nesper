@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -19,41 +18,52 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
 {
-	public class ExprDeclaredCompileTimeResolverImpl : ExprDeclaredCompileTimeResolver {
-	    private readonly string moduleName;
-	    private readonly ISet<string> moduleUses;
-	    private readonly ExprDeclaredCompileTimeRegistry locals;
-	    private readonly PathRegistry<string, ExpressionDeclItem> path;
-	    private readonly ModuleDependenciesCompileTime moduleDependencies;
+    public class ExprDeclaredCompileTimeResolverImpl : ExprDeclaredCompileTimeResolver
+    {
+        private readonly string moduleName;
+        private readonly ISet<string> moduleUses;
+        private readonly ExprDeclaredCompileTimeRegistry locals;
+        private readonly PathRegistry<string, ExpressionDeclItem> path;
+        private readonly ModuleDependenciesCompileTime moduleDependencies;
 
-	    public ExprDeclaredCompileTimeResolverImpl(string moduleName, ISet<string> moduleUses, ExprDeclaredCompileTimeRegistry locals, PathRegistry<string, ExpressionDeclItem> path, ModuleDependenciesCompileTime moduleDependencies) {
-	        this.moduleName = moduleName;
-	        this.moduleUses = moduleUses;
-	        this.locals = locals;
-	        this.path = path;
-	        this.moduleDependencies = moduleDependencies;
-	    }
+        public ExprDeclaredCompileTimeResolverImpl(
+            string moduleName,
+            ISet<string> moduleUses,
+            ExprDeclaredCompileTimeRegistry locals,
+            PathRegistry<string, ExpressionDeclItem> path,
+            ModuleDependenciesCompileTime moduleDependencies)
+        {
+            this.moduleName = moduleName;
+            this.moduleUses = moduleUses;
+            this.locals = locals;
+            this.path = path;
+            this.moduleDependencies = moduleDependencies;
+        }
 
-	    public ExpressionDeclItem Resolve(string name) {
-	        // try self-originated protected types first
-	        ExpressionDeclItem localExpr = locals.Expressions.Get(name);
-	        if (localExpr != null) {
-	            return localExpr;
-	        }
-	        try {
-	            Pair<ExpressionDeclItem, string> expression = path.GetAnyModuleExpectSingle(name, moduleUses);
-	            if (expression != null) {
-	                if (!NameAccessModifier.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName)) {
-	                    return null;
-	                }
+        public ExpressionDeclItem Resolve(string name)
+        {
+            // try self-originated protected types first
+            ExpressionDeclItem localExpr = locals.Expressions.Get(name);
+            if (localExpr != null) {
+                return localExpr;
+            }
 
-	                moduleDependencies.AddPathExpression(name, expression.Second);
-	                return expression.First;
-	            }
-	        } catch (PathException e) {
-	            throw CompileTimeResolver.MakePathAmbiguous(PathRegistryObjectType.EXPRDECL, name, e);
-	        }
-	        return null;
-	    }
-	}
+            try {
+                var expression = path.GetAnyModuleExpectSingle(name, moduleUses);
+                if (expression != null) {
+                    if (!NameAccessModifier.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName)) {
+                        return null;
+                    }
+
+                    moduleDependencies.AddPathExpression(name, expression.Second);
+                    return expression.First;
+                }
+            }
+            catch (PathException e) {
+                throw CompileTimeResolver.MakePathAmbiguous(PathRegistryObjectType.EXPRDECL, name, e);
+            }
+
+            return null;
+        }
+    }
 } // end of namespace

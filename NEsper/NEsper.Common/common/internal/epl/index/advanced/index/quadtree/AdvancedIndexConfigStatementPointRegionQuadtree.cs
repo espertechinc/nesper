@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         {
         }
 
-        public AdvancedIndexConfigStatementPointRegionQuadtree(ExprEvaluator xEval, ExprEvaluator yEval)
+        public AdvancedIndexConfigStatementPointRegionQuadtree(
+            ExprEvaluator xEval,
+            ExprEvaluator yEval)
         {
             XEval = xEval;
             YEval = yEval;

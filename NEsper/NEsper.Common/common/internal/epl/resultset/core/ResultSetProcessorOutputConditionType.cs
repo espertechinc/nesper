@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -28,7 +27,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
     public static class ResultSetProcessorOutputConditionTypeExtensions
     {
         public static ResultSetProcessorOutputConditionType GetConditionType(
-            OutputLimitLimitType displayLimit, bool isAggregated, bool hasOrderBy, bool hasOptHint, bool isGrouped)
+            OutputLimitLimitType displayLimit,
+            bool isAggregated,
+            bool hasOrderBy,
+            bool hasOptHint,
+            bool isGrouped)
         {
             if (displayLimit == OutputLimitLimitType.SNAPSHOT) {
                 return ResultSetProcessorOutputConditionType.SNAPSHOT;
@@ -53,7 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             }
         }
 
-        public static bool GetOutputLimitOpt(Attribute[] annotations, Configuration configuration, bool hasOrderBy)
+        public static bool GetOutputLimitOpt(
+            Attribute[] annotations,
+            Configuration configuration,
+            bool hasOrderBy)
         {
             if (hasOrderBy) {
                 if (HasOptHintEnable(annotations)) {

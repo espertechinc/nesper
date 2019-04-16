@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly bool hasCollectionOrArray;
 
         public ExprEqualsAllAnyNodeForge(
-            ExprEqualsAllAnyNode parent, bool mustCoerce, SimpleNumberCoercer coercer, Type coercionTypeBoxed,
+            ExprEqualsAllAnyNode parent,
+            bool mustCoerce,
+            SimpleNumberCoercer coercer,
+            Type coercionTypeBoxed,
             bool hasCollectionOrArray)
         {
             ForgeRenderable = parent;
@@ -63,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -73,7 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (ForgeRenderable.IsAll) {

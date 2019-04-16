@@ -18,8 +18,10 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
     public class MetricExecutionContext
     {
         public MetricExecutionContext(
-            FilterService filterService, SchedulingService schedulingService,
-            EventServiceSendEventCommon epRuntimeSendEvent, StatementMetricRepository statementMetricRepository)
+            FilterService filterService,
+            SchedulingService schedulingService,
+            EventServiceSendEventCommon epRuntimeSendEvent,
+            StatementMetricRepository statementMetricRepository)
         {
             FilterService = filterService;
             SchedulingService = schedulingService;

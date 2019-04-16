@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <summary>Ctor. </summary>
         /// <param name="exprNode">is the order-by expression node</param>
         /// <param name="ascending">is true for ascending, or false for descending sort</param>
-        public OrderByItem(ExprNode exprNode, bool ascending)
+        public OrderByItem(
+            ExprNode exprNode,
+            bool ascending)
         {
             ExprNode = exprNode;
             IsDescending = ascending;
@@ -44,10 +46,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             return new OrderByItem(ExprNode, IsDescending);
         }
 
-        public static OrderByItem[] ToArray(ICollection<OrderByItem> expressions) {
+        public static OrderByItem[] ToArray(ICollection<OrderByItem> expressions)
+        {
             if (expressions.IsEmpty()) {
                 return EMPTY_ORDERBY_ARRAY;
             }
+
             return expressions.ToArray();
         }
     }

@@ -26,13 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
             return value * MULTIPLIER;
         }
 
-        public void Add(DateTimeEx dtx, int value)
+        public void Add(
+            DateTimeEx dtx,
+            int value)
         {
             dtx.AddDays(value);
         }
 
-        public bool IsMicroseconds
-        {
+        public bool IsMicroseconds {
             get => false;
         }
 

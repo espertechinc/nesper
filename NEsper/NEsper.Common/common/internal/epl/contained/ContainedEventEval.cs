@@ -13,6 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
 {
     public interface ContainedEventEval
     {
-        object GetFragment(EventBean eventBean, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext);
+        object GetFragment(
+            EventBean eventBean,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

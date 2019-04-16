@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.context.airegistry
     {
         private PriorEvalStrategy service;
 
-        public void AssignService(int serviceId, PriorEvalStrategy priorEvalStrategy)
+        public void AssignService(
+            int serviceId,
+            PriorEvalStrategy priorEvalStrategy)
         {
             service = priorEvalStrategy;
         }
@@ -29,8 +31,12 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         public int InstanceCount => service == null ? 0 : 1;
 
         public EventBean GetSubstituteEvent(
-            EventBean originalEvent, bool isNewData, int constantIndexNumber, int relativeIndex,
-            ExprEvaluatorContext exprEvaluatorContext, int streamNum)
+            EventBean originalEvent,
+            bool isNewData,
+            int constantIndexNumber,
+            int relativeIndex,
+            ExprEvaluatorContext exprEvaluatorContext,
+            int streamNum)
         {
             return service.GetSubstituteEvent(
                 originalEvent, isNewData, constantIndexNumber, relativeIndex, exprEvaluatorContext, streamNum);

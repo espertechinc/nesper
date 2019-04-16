@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -26,20 +27,26 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         private readonly string isMethodName;
 
         public DynamicSimplePropertyGetter(
-            string fieldName, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BeanEventTypeFactory beanEventTypeFactory) : base(eventBeanTypedEventFactory, beanEventTypeFactory)
+            string fieldName,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory)
         {
             getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
             isMethodName = PropertyHelper.GetIsMethodName(fieldName);
         }
 
-        internal override object Call(DynamicPropertyDescriptor descriptor, object underlying)
+        internal override object Call(
+            DynamicPropertyDescriptor descriptor,
+            object underlying)
         {
             return DynamicSimplePropertyCall(descriptor, underlying);
         }
 
         internal override CodegenExpression CallCodegen(
-            CodegenExpressionRef desc, CodegenExpressionRef @object, CodegenMethodScope parent,
+            CodegenExpressionRef desc,
+            CodegenExpressionRef @object,
+            CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(GetType(), "dynamicSimplePropertyCall", desc, @object);
@@ -51,7 +58,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         internal override CodegenExpression DetermineMethodCodegen(
-            CodegenExpressionRef clazz, CodegenMethodScope parent, CodegenClassScope codegenClassScope)
+            CodegenExpressionRef clazz,
+            CodegenMethodScope parent,
+            CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
                 GetType(), "dynamicSimplePropertyDetermineMethod", Constant(getterMethodName), Constant(isMethodName),
@@ -64,13 +73,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         /// <param name="descriptor">desc</param>
         /// <param name="underlying">underlying</param>
         /// <returns>value</returns>
-        public static object DynamicSimplePropertyCall(DynamicPropertyDescriptor descriptor, object underlying)
+        public static object DynamicSimplePropertyCall(
+            DynamicPropertyDescriptor descriptor,
+            object underlying)
         {
             try {
                 return descriptor.Method.Invoke(underlying, null);
             }
-            catch (Throwable t) {
-                throw DynamicPropertyGetterBase.HandleException(descriptor, underlying, t);
+            catch (EPException e) {
+                throw;
+            }
+            catch (Exception e) {
+                throw HandleException(descriptor, underlying, e);
             }
         }
 
@@ -82,16 +96,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         /// <param name="clazz">class</param>
         /// <returns>method or null</returns>
         public static MethodInfo DynamicSimplePropertyDetermineMethod(
-            string getterMethodName, string isMethodName, Type clazz)
+            string getterMethodName,
+            string isMethodName,
+            Type clazz)
         {
             try {
                 return clazz.GetMethod(getterMethodName);
             }
-            catch (NoSuchMethodException ex1) {
+            catch (Exception ex1) when (ex1 is AmbiguousMatchException || ex1 is ArgumentNullException) {
                 try {
                     return clazz.GetMethod(isMethodName);
                 }
-                catch (NoSuchMethodException ex2) {
+                catch (Exception ex2) when (ex2 is AmbiguousMatchException || ex2 is ArgumentNullException) {
                     return null;
                 }
             }

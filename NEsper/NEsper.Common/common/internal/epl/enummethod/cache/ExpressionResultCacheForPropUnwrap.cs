@@ -8,22 +8,26 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
-	/// <summary>
-	/// On the level of indexed event properties: Properties that are contained in EventBean instances, such as for Enumeration Methods, get wrapped only once for the same event.
-	/// The cache is keyed by property-name and EventBean reference and maintains a Collection&lt;EventBean&gt;.
-	/// <para />NOTE: ExpressionResultCacheForPropUnwrap should not be held onto since the instance returned can be reused.
-	/// </summary>
-	public interface ExpressionResultCacheForPropUnwrap {
+    /// <summary>
+    /// On the level of indexed event properties: Properties that are contained in EventBean instances, such as for Enumeration Methods, get wrapped only once for the same event.
+    /// The cache is keyed by property-name and EventBean reference and maintains a Collection&lt;EventBean&gt;.
+    /// <para />NOTE: ExpressionResultCacheForPropUnwrap should not be held onto since the instance returned can be reused.
+    /// </summary>
+    public interface ExpressionResultCacheForPropUnwrap
+    {
+        ExpressionResultCacheEntryBeanAndCollBean GetPropertyColl(
+            string propertyNameFullyQualified,
+            EventBean reference);
 
-	    ExpressionResultCacheEntryBeanAndCollBean GetPropertyColl(string propertyNameFullyQualified, EventBean reference);
-
-	    void SavePropertyColl(string propertyNameFullyQualified, EventBean reference, ICollection<EventBean> events);
-	}
+        void SavePropertyColl(
+            string propertyNameFullyQualified,
+            EventBean reference,
+            ICollection<EventBean> events);
+    }
 } // end of namespace

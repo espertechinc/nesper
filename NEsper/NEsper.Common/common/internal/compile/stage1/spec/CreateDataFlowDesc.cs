@@ -14,7 +14,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class CreateDataFlowDesc
     {
-        public CreateDataFlowDesc(String graphName, IList<GraphOperatorSpec> operators, IList<CreateSchemaDesc> schemas)
+        public CreateDataFlowDesc(
+            String graphName,
+            IList<GraphOperatorSpec> operators,
+            IList<CreateSchemaDesc> schemas)
         {
             GraphName = graphName;
             Operators = operators;

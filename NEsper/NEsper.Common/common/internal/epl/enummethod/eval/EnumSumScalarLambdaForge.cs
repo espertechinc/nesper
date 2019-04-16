@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -18,24 +17,32 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public class EnumSumScalarLambdaForge : EnumForgeBase {
+    public class EnumSumScalarLambdaForge : EnumForgeBase
+    {
+        internal readonly ExprDotEvalSumMethodFactory sumMethodFactory;
+        internal readonly ObjectArrayEventType resultEventType;
 
-	    internal readonly ExprDotEvalSumMethodFactory sumMethodFactory;
-	    internal readonly ObjectArrayEventType resultEventType;
+        public EnumSumScalarLambdaForge(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ExprDotEvalSumMethodFactory sumMethodFactory,
+            ObjectArrayEventType resultEventType)
+            : base(innerExpression, streamCountIncoming)
+        {
+            this.sumMethodFactory = sumMethodFactory;
+            this.resultEventType = resultEventType;
+        }
 
-	    public EnumSumScalarLambdaForge(ExprForge innerExpression, int streamCountIncoming, ExprDotEvalSumMethodFactory sumMethodFactory, ObjectArrayEventType resultEventType)
-	    	 : base(innerExpression, streamCountIncoming)
-	    {
-	        this.sumMethodFactory = sumMethodFactory;
-	        this.resultEventType = resultEventType;
-	    }
+        public override EnumEval EnumEvaluator {
+            get => new EnumSumScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
+        }
 
-	    public override EnumEval EnumEvaluator {
-	        get => new EnumSumScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
-	    }
-
-	    public override CodegenExpression Codegen(EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return EnumSumScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
-	    }
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return EnumSumScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+        }
+    }
 } // end of namespace

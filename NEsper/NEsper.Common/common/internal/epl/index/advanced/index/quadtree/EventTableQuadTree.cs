@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
@@ -15,6 +14,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
     public interface EventTableQuadTree : EventTable
     {
-        ICollection<EventBean> QueryRange(double x, double y, double width, double height);
+        ICollection<EventBean> QueryRange(
+            double x,
+            double y,
+            double width,
+            double height);
     }
 } // end of namespace

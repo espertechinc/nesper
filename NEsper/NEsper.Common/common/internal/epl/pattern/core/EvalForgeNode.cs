@@ -51,12 +51,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         /// </summary>
         /// <param name="writer">to use</param>
         /// <param name="parentPrecedence">precendence</param>
-        void ToEPL(StringWriter writer, PatternExpressionPrecedenceEnum parentPrecedence);
+        void ToEPL(
+            TextWriter writer,
+            PatternExpressionPrecedenceEnum parentPrecedence);
 
         CodegenMethod MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
         void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, IList<ScheduleHandleCallbackProvider> schedules);
+            IList<FilterSpecCompiled> filters,
+            IList<ScheduleHandleCallbackProvider> schedules);
     }
 } // end of namespace

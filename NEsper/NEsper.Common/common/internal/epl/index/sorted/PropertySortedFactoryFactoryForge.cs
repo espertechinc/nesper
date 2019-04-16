@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         }
 
         protected override IList<CodegenExpression> AdditionalParams(
-            CodegenMethod method, 
+            CodegenMethod method,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {

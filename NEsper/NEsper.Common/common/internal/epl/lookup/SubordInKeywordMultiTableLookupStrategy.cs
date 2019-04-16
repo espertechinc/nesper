@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -24,14 +25,17 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly PropertyHashedEventTable[] _indexes;
 
         public SubordInKeywordMultiTableLookupStrategy(
-            SubordInKeywordMultiTableLookupStrategyFactory factory, PropertyHashedEventTable[] indexes)
+            SubordInKeywordMultiTableLookupStrategyFactory factory,
+            PropertyHashedEventTable[] indexes)
         {
             this._factory = factory;
             this._indexes = indexes;
             _events = new EventBean[factory.streamCountOuter + 1];
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, null, null);

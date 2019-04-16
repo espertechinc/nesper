@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,51 +16,51 @@ using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 {
-	public class FireAndForgetProcessorNamedWindowForge : FireAndForgetProcessorForge {
-	    private readonly NamedWindowMetaData namedWindow;
+    public class FireAndForgetProcessorNamedWindowForge : FireAndForgetProcessorForge
+    {
+        private readonly NamedWindowMetaData namedWindow;
 
-	    public FireAndForgetProcessorNamedWindowForge(NamedWindowMetaData namedWindow) {
-	        this.namedWindow = namedWindow;
-	    }
-
-	    public string NamedWindowOrTableName
-	    {
-	        get => namedWindow.EventType.Name;
-	    }
-
-	    public EventType EventTypeRspInputEvents
+        public FireAndForgetProcessorNamedWindowForge(NamedWindowMetaData namedWindow)
         {
-	        get => namedWindow.EventType;
-	    }
+            this.namedWindow = namedWindow;
+        }
 
-	    public EventType EventTypePublic
-	    {
-	        get => namedWindow.EventType;
-	    }
+        public string NamedWindowOrTableName {
+            get => namedWindow.EventType.Name;
+        }
 
-	    public string ContextName
-	    {
-	        get => namedWindow.ContextName;
-	    }
+        public EventType EventTypeRspInputEvents {
+            get => namedWindow.EventType;
+        }
 
-	    public string[][] UniqueIndexes
-	    {
-	        get => EventTableIndexMetadataUtil.GetUniqueness(namedWindow.IndexMetadata, namedWindow.Uniqueness);
-	    }
+        public EventType EventTypePublic {
+            get => namedWindow.EventType;
+        }
 
-	    public CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        CodegenMethod method = parent.MakeChild(typeof(FireAndForgetProcessorNamedWindow), this.GetType(), classScope);
-	        CodegenExpressionRef nw = @Ref("nw");
-	        method.Block
-	                .DeclareVar(typeof(FireAndForgetProcessorNamedWindow), nw.Ref, NewInstance(typeof(FireAndForgetProcessorNamedWindow)))
-	                .ExprDotMethod(nw, "setNamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)))
-	                .MethodReturn(nw);
-	        return LocalMethod(method);
-	    }
-	}
+        public string ContextName {
+            get => namedWindow.ContextName;
+        }
+
+        public string[][] UniqueIndexes {
+            get => EventTableIndexMetadataUtil.GetUniqueness(namedWindow.IndexMetadata, namedWindow.Uniqueness);
+        }
+
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            CodegenMethod method = parent.MakeChild(typeof(FireAndForgetProcessorNamedWindow), this.GetType(), classScope);
+            CodegenExpressionRef nw = @Ref("nw");
+            method.Block
+                .DeclareVar(typeof(FireAndForgetProcessorNamedWindow), nw.Ref, NewInstance(typeof(FireAndForgetProcessorNamedWindow)))
+                .ExprDotMethod(nw, "setNamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)))
+                .MethodReturn(nw);
+            return LocalMethod(method);
+        }
+    }
 } // end of namespace

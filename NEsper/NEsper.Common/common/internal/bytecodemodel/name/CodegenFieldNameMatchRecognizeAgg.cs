@@ -10,28 +10,32 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.name
 {
-	public class CodegenFieldNameMatchRecognizeAgg : CodegenFieldName {
-	    private readonly int _aggregationNumber;
+    public class CodegenFieldNameMatchRecognizeAgg : CodegenFieldName
+    {
+        private readonly int _aggregationNumber;
 
-	    public CodegenFieldNameMatchRecognizeAgg(int aggregationNumber) {
-	        this._aggregationNumber = aggregationNumber;
-	    }
+        public CodegenFieldNameMatchRecognizeAgg(int aggregationNumber)
+        {
+            this._aggregationNumber = aggregationNumber;
+        }
 
-	    public string Name {
-	        get => CodegenPackageScopeNames.AggregationMatchRecognize(_aggregationNumber);
-	    }
+        public string Name {
+            get => CodegenPackageScopeNames.AggregationMatchRecognize(_aggregationNumber);
+        }
 
-	    public override bool Equals(object o) {
-	        if (this == o) return true;
-	        if (o == null || GetType() != o.GetType()) return false;
+        public override bool Equals(object o)
+        {
+            if (this == o) return true;
+            if (o == null || GetType() != o.GetType()) return false;
 
-	        CodegenFieldNameMatchRecognizeAgg that = (CodegenFieldNameMatchRecognizeAgg) o;
+            CodegenFieldNameMatchRecognizeAgg that = (CodegenFieldNameMatchRecognizeAgg) o;
 
-	        return _aggregationNumber == that._aggregationNumber;
-	    }
+            return _aggregationNumber == that._aggregationNumber;
+        }
 
-	    public override int GetHashCode() {
-	        return _aggregationNumber;
-	    }
-	}
+        public override int GetHashCode()
+        {
+            return _aggregationNumber;
+        }
+    }
 } // end of namespace

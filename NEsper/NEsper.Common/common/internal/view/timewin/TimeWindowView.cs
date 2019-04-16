@@ -184,8 +184,9 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
             var oldestTimestamp = timeWindow.OldestTimestamp;
             var currentTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
-            long scheduleTime = timePeriodProvide.DeltaAdd(oldestTimestamp, null, true, agentInstanceContext) +
-                                oldestTimestamp - currentTimestamp;
+            long scheduleTime = timePeriodProvide.DeltaAdd(
+                                    oldestTimestamp.Value, null, true, agentInstanceContext) +
+                                oldestTimestamp.Value - currentTimestamp;
             ScheduleCallback(scheduleTime);
         }
 

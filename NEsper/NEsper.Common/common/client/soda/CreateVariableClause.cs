@@ -20,28 +20,32 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Ctor.
         /// </summary>
-        public CreateVariableClause() {
+        public CreateVariableClause()
+        {
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="variableName">variable name</param>
-        public CreateVariableClause(string variableName) {
+        public CreateVariableClause(string variableName)
+        {
             VariableName = variableName;
         }
-    
+
         /// <summary>
         /// Creates a create-variable syntax for declaring a variable.
         /// </summary>
         /// <param name="variableType">is the variable type name</param>
         /// <param name="variableName">is the name of the variable</param>
         /// <returns>create-variable clause</returns>
-        public static CreateVariableClause Create(string variableType, string variableName)
+        public static CreateVariableClause Create(
+            string variableType,
+            string variableName)
         {
             return new CreateVariableClause(variableType, variableName, null, false);
         }
-    
+
         /// <summary>
         /// Creates a create-variable syntax for declaring a variable.
         /// </summary>
@@ -49,11 +53,14 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="variableName">is the name of the variable</param>
         /// <param name="expression">is the assignment expression supplying the initial value</param>
         /// <returns>create-variable clause</returns>
-        public static CreateVariableClause Create(string variableType, string variableName, Expression expression)
+        public static CreateVariableClause Create(
+            string variableType,
+            string variableName,
+            Expression expression)
         {
             return new CreateVariableClause(variableType, variableName, expression, false);
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -62,7 +69,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="optionalAssignment">is the optional assignment expression supplying the initial value, or null if theinitial value is null
         /// </param>
         /// <param name="constant">true for constant, false for regular variable</param>
-        public CreateVariableClause(string variableType, string variableName, Expression optionalAssignment, bool constant)
+        public CreateVariableClause(
+            string variableType,
+            string variableName,
+            Expression optionalAssignment,
+            bool constant)
         {
             VariableType = variableType;
             VariableName = variableName;
@@ -116,6 +127,7 @@ namespace com.espertech.esper.common.client.soda
             if (IsConstant) {
                 writer.Write(" constant");
             }
+
             writer.Write(" variable ");
             if (VariableType != null) {
                 writer.Write(VariableType);
@@ -127,11 +139,12 @@ namespace com.espertech.esper.common.client.soda
                         writer.Write("[]");
                     }
                 }
+
                 writer.Write(" ");
             }
+
             writer.Write(VariableName);
-            if (OptionalAssignment != null)
-            {
+            if (OptionalAssignment != null) {
                 writer.Write(" = ");
                 OptionalAssignment.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

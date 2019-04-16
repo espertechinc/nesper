@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.context.controller.core
     {
         public static void ValidateStatementKeyAndHash(
             Supplier<EventType>[] typeProvider,
-            string contextName, 
+            string contextName,
             StatementSpecCompiled spec,
             StatementCompileTimeServices compileTimeServices)
         {
@@ -87,7 +87,9 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             }
         }
 
-        private static string GetTypeValidationMessage(string contextName, string typeNameEx)
+        private static string GetTypeValidationMessage(
+            string contextName,
+            string typeNameEx)
         {
             return "Segmented context '" + contextName +
                    "' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type '" +

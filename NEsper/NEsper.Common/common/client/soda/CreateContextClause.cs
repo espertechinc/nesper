@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Ctor. </summary>
         /// <param name="contextName">context name</param>
         /// <param name="descriptor">context dimension descriptor</param>
-        public CreateContextClause(String contextName, ContextDescriptor descriptor)
+        public CreateContextClause(
+            String contextName,
+            ContextDescriptor descriptor)
         {
             ContextName = contextName;
             Descriptor = descriptor;
@@ -40,7 +42,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>RenderAny as EPL. </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">formatter</param>
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        public void ToEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             writer.Write("create context ");
             writer.Write(ContextName);

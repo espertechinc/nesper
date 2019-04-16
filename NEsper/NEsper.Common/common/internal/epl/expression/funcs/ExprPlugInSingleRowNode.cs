@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private ExprPlugInSingleRowNodeForge forge;
 
         public ExprPlugInSingleRowNode(
-            string functionName, Type clazz, IList<ExprChainedSpec> chainSpec, ImportSingleRowDesc config)
+            string functionName,
+            Type clazz,
+            IList<ExprChainedSpec> chainSpec,
+            ImportSingleRowDesc config)
         {
             FunctionName = functionName;
             this.clazz = clazz;
@@ -121,12 +124,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public IList<ExprNode> AdditionalNodes => ExprNodeUtilityQuery.CollectChainParameters(ChainSpec);
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ExprNodeUtilityPrint.ToExpressionString(ChainSpec, writer, false, FunctionName);
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprPlugInSingleRowNode)) {
                 return false;
@@ -225,13 +230,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprNodeUtilityQuery.AcceptChain(visitor, ChainSpec, this);
         }
 
-        public override void AcceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
+        public override void AcceptChildnodes(
+            ExprNodeVisitorWithParent visitor,
+            ExprNode parent)
         {
             base.AcceptChildnodes(visitor, parent);
             ExprNodeUtilityQuery.AcceptChain(visitor, ChainSpec, this);
         }
 
-        public override void ReplaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode)
+        public override void ReplaceUnlistedChildNode(
+            ExprNode nodeToReplace,
+            ExprNode newNode)
         {
             ExprNodeUtilityModify.ReplaceChainChildNode(nodeToReplace, newNode, ChainSpec);
         }

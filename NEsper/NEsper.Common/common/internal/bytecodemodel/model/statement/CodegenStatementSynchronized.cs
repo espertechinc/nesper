@@ -21,13 +21,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private CodegenBlock block;
         private readonly CodegenExpression expression;
 
-        public CodegenStatementSynchronized(CodegenBlock parent, CodegenExpression expression) : base(parent)
+        public CodegenStatementSynchronized(
+            CodegenBlock parent,
+            CodegenExpression expression)
+            : base(parent)
         {
             this.expression = expression;
         }
 
         public override void Render(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level,
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
             CodegenIndent indent)
         {
             builder.Append("synchronized (");

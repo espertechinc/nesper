@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
@@ -20,7 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
     public class AdvancedIndexConfigStatementMXCIFQuadtreeForge : EventAdvancedIndexConfigStatementForge
     {
         public AdvancedIndexConfigStatementMXCIFQuadtreeForge(
-            ExprForge xEval, ExprForge yEval, ExprForge widthEval, ExprForge heightEval)
+            ExprForge xEval,
+            ExprForge yEval,
+            ExprForge widthEval,
+            ExprForge heightEval)
         {
             XEval = xEval;
             YEval = yEval;
@@ -36,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         public ExprForge HeightEval { get; set; }
 
-        public CodegenExpression CodegenMake(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenExpression CodegenMake(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(AdvancedIndexConfigStatementMXCIFQuadtree), GetType(), classScope);
             Func<ExprForge, CodegenExpression> expr = forge =>

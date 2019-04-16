@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// </summary>
         /// <param name="attribute">name to use</param>
         /// <param name="value">value to set</param>
-        void SetScriptAttribute(string attribute, Object value);
+        void SetScriptAttribute(
+            string attribute,
+            Object value);
 
         /// <summary>
         ///     Return a script attribute value.

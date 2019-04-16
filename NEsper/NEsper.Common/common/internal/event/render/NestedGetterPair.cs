@@ -22,7 +22,11 @@ namespace com.espertech.esper.common.@internal.@event.render
         /// <param name="name">property name</param>
         /// <param name="metadata">the nested properties metadata</param>
         /// <param name="isArray">indicates whether this is an indexed property</param>
-        public NestedGetterPair(EventPropertyGetter getter, string name, RendererMeta metadata, bool isArray)
+        public NestedGetterPair(
+            EventPropertyGetter getter,
+            string name,
+            RendererMeta metadata,
+            bool isArray)
         {
             Getter = getter;
             Name = name;

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -67,19 +66,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         typeof(DateTimeEx), typeof(StringToDateTimeExWExprFormatComputerEval), codegenClassScope)
                     .AddParam(typeof(object), "input");
                 CodegenExpression format;
-                if (dateFormatForge.ForgeConstantType.IsConstant)
-                {
+                if (dateFormatForge.ForgeConstantType.IsConstant) {
                     format = FormatFieldExpr(typeof(DateFormat), dateFormatForge, codegenClassScope);
                 }
-                else
-                {
+                else {
                     method.Block
                         .DeclareVar(
                             typeof(object), "format",
                             dateFormatForge.EvaluateCodegen(typeof(object), method, exprSymbol, codegenClassScope))
                         .DeclareVar(
                             typeof(SimpleDateFormat), "dateFormat",
-                            CodegenExpressionBuilder.StaticMethod(typeof(ExprCastNode), "stringToSimpleDateFormatSafe", CodegenExpressionBuilder.Ref("format")));
+                            CodegenExpressionBuilder.StaticMethod(
+                                typeof(ExprCastNode), "stringToSimpleDateFormatSafe", CodegenExpressionBuilder.Ref("format")));
                     format = CodegenExpressionBuilder.Ref("dateFormat");
                 }
 

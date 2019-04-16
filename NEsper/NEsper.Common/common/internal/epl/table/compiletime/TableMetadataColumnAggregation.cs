@@ -22,8 +22,13 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         }
 
         public TableMetadataColumnAggregation(
-            string columnName, bool key, int column, AggregationPortableValidation aggregationPortableValidation,
-            string aggregationExpression, bool methodAgg, EPType optionalEnumerationType)
+            string columnName,
+            bool key,
+            int column,
+            AggregationPortableValidation aggregationPortableValidation,
+            string aggregationExpression,
+            bool methodAgg,
+            EPType optionalEnumerationType)
             : base(columnName, key)
         {
             Column = column;
@@ -44,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public EPType OptionalEnumerationType { get; private set; }
 
         protected override CodegenExpression Make(
-            CodegenMethodScope parent, ModuleTableInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ModuleTableInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(TableMetadataColumnAggregation), GetType(), classScope);
             method.Block.DeclareVar(

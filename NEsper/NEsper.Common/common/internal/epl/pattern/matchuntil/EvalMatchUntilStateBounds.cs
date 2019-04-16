@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 {
     public class EvalMatchUntilStateBounds
     {
-        public EvalMatchUntilStateBounds(int? lowerbounds, int? upperbounds)
+        public EvalMatchUntilStateBounds(
+            int? lowerbounds,
+            int? upperbounds)
         {
             Lowerbounds = lowerbounds;
             Upperbounds = upperbounds;
@@ -24,7 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
         public int? Upperbounds { get; }
 
         public static EvalMatchUntilStateBounds InitBounds(
-            EvalMatchUntilFactoryNode factoryNode, MatchedEventMap beginState, PatternAgentInstanceContext context)
+            EvalMatchUntilFactoryNode factoryNode,
+            MatchedEventMap beginState,
+            PatternAgentInstanceContext context)
         {
             int? lowerbounds = null;
             int? upperbounds = null;

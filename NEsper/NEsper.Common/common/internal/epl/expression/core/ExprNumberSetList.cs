@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -44,7 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             IList<NumberSetParameter> parameters = new List<NumberSetParameter>();
             foreach (var child in evaluators) {
@@ -78,7 +79,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
@@ -105,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprNodeRenderable ForgeRenderable => this;
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var delimiter = "";
 
@@ -120,7 +123,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             writer.Write(']');
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             return node is ExprNumberSetList;
         }
@@ -160,7 +165,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// </summary>
         /// <param name="value">value</param>
         /// <param name="parameters">params</param>
-        public static void HandleExprNumberSetListAdd(object value, IList<NumberSetParameter> parameters)
+        public static void HandleExprNumberSetListAdd(
+            object value,
+            IList<NumberSetParameter> parameters)
         {
             if (value == null) {
                 Log.Info("Null value returned for lower bounds value in list parameter, skipping parameter");

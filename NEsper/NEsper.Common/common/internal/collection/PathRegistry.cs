@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -29,20 +28,21 @@ namespace com.espertech.esper.common.@internal.collection
 
         public int Count => entities.Count;
 
-        public void Add(TK entityKey, string moduleName, TE entity, string deploymentId)
+        public void Add(
+            TK entityKey,
+            string moduleName,
+            TE entity,
+            string deploymentId)
         {
             CheckModuleNameParameter(moduleName);
             var existing = entities.Get(entityKey);
-            if (existing == null)
-            {
+            if (existing == null) {
                 existing = new PathModuleEntry<TE>();
                 entities.Put(entityKey, existing);
             }
-            else
-            {
+            else {
                 var existingDeploymentId = existing.GetDeploymentId(moduleName);
-                if (existingDeploymentId != null)
-                {
+                if (existingDeploymentId != null) {
                     throw new PathExceptionAlreadyRegistered(entityKey.ToString(), ObjectType, moduleName);
                 }
             }
@@ -50,20 +50,26 @@ namespace com.espertech.esper.common.@internal.collection
             existing.Add(moduleName, entity, deploymentId);
         }
 
-        public Pair<TE, string> GetAnyModuleExpectSingle(TK entityKey, ISet<string> moduleUses)
+        public Pair<TE, string> GetAnyModuleExpectSingle(
+            TK entityKey,
+            ISet<string> moduleUses)
         {
             var existing = entities.Get(entityKey);
             return existing?.GetAnyModuleExpectSingle(entityKey.ToString(), ObjectType, moduleUses);
         }
 
-        public TE GetWithModule(TK entityKey, string moduleName)
+        public TE GetWithModule(
+            TK entityKey,
+            string moduleName)
         {
             CheckModuleNameParameter(moduleName);
             var existing = entities.Get(entityKey);
             return existing == null ? default(TE) : existing.GetWithModule(moduleName);
         }
 
-        public string GetDeploymentId(TK entityEntity, string moduleName)
+        public string GetDeploymentId(
+            TK entityEntity,
+            string moduleName)
         {
             CheckModuleNameParameter(moduleName);
             var existing = entities.Get(entityEntity);
@@ -79,26 +85,33 @@ namespace com.espertech.esper.common.@internal.collection
             keysToRemove.ForEach(key => entities.Remove(key));
         }
 
-        public void AddDependency(TK entityKey, string moduleName, string deploymentIdDep)
+        public void AddDependency(
+            TK entityKey,
+            string moduleName,
+            string deploymentIdDep)
         {
             CheckModuleNameParameter(moduleName);
             var existing = entities.Get(entityKey);
-            if (existing == null)
-            {
+            if (existing == null) {
                 throw new ArgumentException("Failed to find " + ObjectType.Name + " '" + entityKey + "'");
             }
 
             existing.AddDependency(entityKey.ToString(), moduleName, deploymentIdDep, ObjectType);
         }
 
-        public ISet<string> GetDependencies(TK entityKey, string moduleName)
+        public ISet<string> GetDependencies(
+            TK entityKey,
+            string moduleName)
         {
             CheckModuleNameParameter(moduleName);
             var existing = entities.Get(entityKey);
             return existing?.GetDependencies(entityKey.ToString(), moduleName, ObjectType);
         }
 
-        public void RemoveDependency(TK entityKey, string moduleName, string deploymentId)
+        public void RemoveDependency(
+            TK entityKey,
+            string moduleName,
+            string deploymentId)
         {
             CheckModuleNameParameter(moduleName);
             var existing = entities.Get(entityKey);
@@ -107,31 +120,26 @@ namespace com.espertech.esper.common.@internal.collection
 
         public void Traverse(Consumer<TE> consumer)
         {
-            foreach (var entry in entities)
-            {
+            foreach (var entry in entities) {
                 entry.Value.Traverse(consumer);
             }
         }
 
         private void CheckModuleNameParameter(string moduleName)
         {
-            if (String.IsNullOrEmpty(moduleName))
-            {
+            if (String.IsNullOrEmpty(moduleName)) {
                 throw new ArgumentException("Invalid empty module name, use null or a non-empty value");
             }
         }
 
         public void MergeFrom(PathRegistry<TK, TE> other)
         {
-            if (other.ObjectType != ObjectType)
-            {
+            if (other.ObjectType != ObjectType) {
                 throw new ArgumentException("Invalid object type " + other.ObjectType + " expected " + ObjectType);
             }
 
-            foreach (var entry in other.entities)
-            {
-                if (entities.ContainsKey(entry.Key))
-                {
+            foreach (var entry in other.entities) {
+                if (entities.ContainsKey(entry.Key)) {
                     continue;
                 }
 

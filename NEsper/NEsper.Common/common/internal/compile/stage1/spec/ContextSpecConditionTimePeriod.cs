@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class ContextSpecConditionTimePeriod : ContextSpecCondition,
         ScheduleHandleCallbackProvider
     {
-        public ContextSpecConditionTimePeriod(ExprTimePeriod timePeriod, bool immediate)
+        public ContextSpecConditionTimePeriod(
+            ExprTimePeriod timePeriod,
+            bool immediate)
         {
             TimePeriod = timePeriod;
             IsImmediate = immediate;
@@ -32,7 +34,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public bool IsImmediate { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             if (ScheduleCallbackId == -1) {

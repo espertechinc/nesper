@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("throw ");
             expression.Render(builder, imports, isInnerClass);

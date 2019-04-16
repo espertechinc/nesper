@@ -28,8 +28,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         private readonly object[] parameters;
 
         public DynamicIndexedPropertyGetter(
-            string fieldName, int index, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BeanEventTypeFactory beanEventTypeFactory) : base(eventBeanTypedEventFactory, beanEventTypeFactory)
+            string fieldName,
+            int index,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory)
         {
             getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
             parameters = new object[] {index};
@@ -42,20 +45,26 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         internal override CodegenExpression DetermineMethodCodegen(
-            CodegenExpressionRef clazz, CodegenMethodScope parent, CodegenClassScope codegenClassScope)
+            CodegenExpressionRef clazz,
+            CodegenMethodScope parent,
+            CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
                 typeof(DynamicIndexedPropertyGetter), "dynamicIndexPropertyDetermineMethod", clazz,
                 Constant(getterMethodName));
         }
 
-        internal override object Call(DynamicPropertyDescriptor descriptor, object underlying)
+        internal override object Call(
+            DynamicPropertyDescriptor descriptor,
+            object underlying)
         {
             return DynamicIndexedPropertyGet(descriptor, underlying, parameters, index);
         }
 
         internal override CodegenExpression CallCodegen(
-            CodegenExpressionRef desc, CodegenExpressionRef @object, CodegenMethodScope parent,
+            CodegenExpressionRef desc,
+            CodegenExpressionRef @object,
+            CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
             var @params = codegenClassScope.AddFieldUnshared<object[]>(true, Constant(parameters));
@@ -70,18 +79,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         /// <param name="clazz">class</param>
         /// <param name="getterMethodName">method</param>
         /// <returns>null or method</returns>
-        public static MethodInfo DynamicIndexPropertyDetermineMethod(Type clazz, string getterMethodName)
+        public static MethodInfo DynamicIndexPropertyDetermineMethod(
+            Type clazz,
+            string getterMethodName)
         {
             MethodInfo method;
 
             try {
                 return clazz.GetMethod(getterMethodName, typeof(int));
             }
-            catch (NoSuchMethodException ex1) {
+            catch (Exception ex1) when (ex1 is AmbiguousMatchException || ex1 is ArgumentNullException) {
                 try {
                     method = clazz.GetMethod(getterMethodName);
                 }
-                catch (NoSuchMethodException e) {
+                catch (Exception e) when (e is AmbiguousMatchException || e is ArgumentNullException) {
                     return null;
                 }
 
@@ -102,7 +113,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         /// <param name="index">idx</param>
         /// <returns>null or method</returns>
         public static object DynamicIndexedPropertyGet(
-            DynamicPropertyDescriptor descriptor, object underlying, object[] parameters, int index)
+            DynamicPropertyDescriptor descriptor,
+            object underlying,
+            object[] parameters,
+            int index)
         {
             try {
                 if (descriptor.HasParameters) {
@@ -120,7 +134,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
                 return array.GetValue(index);
             }
-            catch (ClassCastException e) {
+            catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);
             }
         }

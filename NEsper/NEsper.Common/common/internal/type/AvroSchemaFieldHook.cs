@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.type
         private readonly string name;
         private readonly string schema;
 
-        public AvroSchemaFieldHook(string name, string schema)
+        public AvroSchemaFieldHook(
+            string name,
+            string schema)
         {
             this.name = name;
             this.schema = schema;

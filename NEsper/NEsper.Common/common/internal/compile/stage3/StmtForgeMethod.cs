@@ -7,14 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
-	public interface StmtForgeMethod {
-	    StmtForgeMethodResult Make(string packageName, string classPostfix, StatementCompileTimeServices compileTimeServices) ;
-	}
+    public interface StmtForgeMethod
+    {
+        StmtForgeMethodResult Make(
+            string packageName,
+            string classPostfix,
+            StatementCompileTimeServices compileTimeServices);
+    }
 } // end of namespace

@@ -39,12 +39,18 @@ namespace com.espertech.esper.common.@internal.view.unique
 
         public ExprNode[] CriteriaExpressions => criteriaExpressions;
 
-        public override void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber)
+        public override void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
         {
             viewParameters = parameters;
         }
 
-        public override void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv)
+        public override void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             criteriaExpressions = ViewForgeSupport.Validate(
                 ViewName, parentEventType, viewParameters, false, viewForgeEnv, streamNumber);
@@ -69,7 +75,9 @@ namespace com.espertech.esper.common.@internal.view.unique
         }
 
         internal override void Assign(
-            CodegenMethod method, CodegenExpressionRef factory, SAIFFInitializeSymbol symbols,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block

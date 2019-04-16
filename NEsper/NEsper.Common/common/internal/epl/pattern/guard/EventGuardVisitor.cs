@@ -10,6 +10,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
 {
     public interface EventGuardVisitor
     {
-        void VisitGuard(int numBytes, params object[] stateFlat);
+        void VisitGuard(
+            int numBytes,
+            params object[] stateFlat);
     }
 }

@@ -7,8 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,150 +14,261 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
+using com.espertech.esper.compat.datetime;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
-	public class CalendarWithDateForgeOp : CalendarOp {
-	    public const string METHOD_ACTIONSETYMDCALENDAR = "actionSetYMDCalendar";
+    public class CalendarWithDateForgeOp : CalendarOp
+    {
+        public const string METHOD_ACTIONSETYMDCALENDAR = "ActionSetYMDCalendar";
 
-	    private ExprEvaluator year;
-	    private ExprEvaluator month;
-	    private ExprEvaluator day;
+        private readonly ExprEvaluator day;
+        private readonly ExprEvaluator month;
+        private readonly ExprEvaluator year;
 
-	    public CalendarWithDateForgeOp(ExprEvaluator year, ExprEvaluator month, ExprEvaluator day) {
-	        this.year = year;
-	        this.month = month;
-	        this.day = day;
-	    }
+        public CalendarWithDateForgeOp(
+            ExprEvaluator year,
+            ExprEvaluator month,
+            ExprEvaluator day)
+        {
+            this.year = year;
+            this.month = month;
+            this.day = day;
+        }
 
-	    public void Evaluate(DateTimeEx dateTimeEx, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        int? yearNum = GetInt(year, eventsPerStream, isNewData, context);
-	        int? monthNum = GetInt(month, eventsPerStream, isNewData, context);
-	        int? dayNum = GetInt(day, eventsPerStream, isNewData, context);
-	        ActionSetYMDCalendar(dateTimeEx, yearNum, monthNum, dayNum);
-	    }
+        public DateTimeEx Evaluate(
+            DateTimeEx dateTimeEx,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var yearNum = GetInt(year, eventsPerStream, isNewData, context);
+            var monthNum = GetInt(month, eventsPerStream, isNewData, context);
+            var dayNum = GetInt(day, eventsPerStream, isNewData, context);
+            ActionSetYMDCalendar(dateTimeEx, yearNum, monthNum, dayNum);
+            return dateTimeEx;
+        }
 
-	    public static CodegenExpression CodegenCalendar(CalendarWithDateForge forge, CodegenExpression cal, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(void), typeof(CalendarWithDateForgeOp), codegenClassScope).AddParam(typeof(DateTimeEx), "value");
+        public DateTimeOffset Evaluate(
+            DateTimeOffset dateTimeOffset,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var yearNum = GetInt(year, eventsPerStream, isNewData, context);
+            var monthNum = GetInt(month, eventsPerStream, isNewData, context);
+            var dayNum = GetInt(day, eventsPerStream, isNewData, context);
+            return ActionSetYMDDateTimeOffset(dateTimeOffset, yearNum, monthNum, dayNum);
+        }
 
-	        CodegenBlock block = methodNode.Block;
-	        CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
-	        block.StaticMethod(typeof(CalendarWithDateForgeOp), METHOD_ACTIONSETYMDCALENDAR, @Ref("value"), @Ref("year"), @Ref("month"), @Ref("day"))
-	                .MethodEnd();
-	        return LocalMethod(methodNode, cal);
-	    }
+        public DateTime Evaluate(
+            DateTime dateTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var yearNum = GetInt(year, eventsPerStream, isNewData, context);
+            var monthNum = GetInt(month, eventsPerStream, isNewData, context);
+            var dayNum = GetInt(day, eventsPerStream, isNewData, context);
+            return ActionSetYMDDateTime(dateTime, yearNum, monthNum, dayNum);
+        }
 
-	    public DateTimeOffset Evaluate(DateTimeOffset dateTimeOffset, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        int? yearNum = GetInt(year, eventsPerStream, isNewData, context);
-	        int? monthNum = GetInt(month, eventsPerStream, isNewData, context);
-	        int? dayNum = GetInt(day, eventsPerStream, isNewData, context);
-	        return ActionSetYMDLocalDateTime(dateTimeOffset, yearNum, monthNum, dayNum);
-	    }
+        public static CodegenExpression CodegenCalendar(
+            CalendarWithDateForge forge,
+            CodegenExpression dtx,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var methodNode = codegenMethodScope
+                .MakeChild(typeof(void), typeof(CalendarWithDateForgeOp), codegenClassScope)
+                .AddParam(typeof(DateTimeEx), "value");
 
-	    public static CodegenExpression CodegenDateTimeOffset(CalendarWithDateForge forge, CodegenExpression dto, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(DateTimeOffset), typeof(CalendarWithDateForgeOp), codegenClassScope).AddParam(typeof(DateTimeOffset), "value");
+            var block = methodNode.Block;
+            CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
+            block.MethodReturn(
+                StaticMethod(
+                    typeof(CalendarWithDateForgeOp), METHOD_ACTIONSETYMDCALENDAR,
+                    Ref("value"),
+                    Ref("year"),
+                    Ref("month"),
+                    Ref("day")));
 
-	        CodegenBlock block = methodNode.Block;
-	        CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
-	        block.MethodReturn(StaticMethod(typeof(CalendarWithDateForgeOp), "actionSetYMDLocalDateTime", @Ref("value"), @Ref("year"), @Ref("month"), @Ref("day")));
-	        return LocalMethod(methodNode, dto);
-	    }
+            return LocalMethod(methodNode, dtx);
+        }
 
-	    public DateTime Evaluate(DateTime dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        int? yearNum = GetInt(year, eventsPerStream, isNewData, context);
-	        int? monthNum = GetInt(month, eventsPerStream, isNewData, context);
-	        int? dayNum = GetInt(day, eventsPerStream, isNewData, context);
-	        return ActionSetYMDZonedDateTime(dateTime, yearNum, monthNum, dayNum);
-	    }
+        public static CodegenExpression CodegenDateTimeOffset(
+            CalendarWithDateForge forge,
+            CodegenExpression dto,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var methodNode = codegenMethodScope
+                .MakeChild(typeof(DateTimeOffset), typeof(CalendarWithDateForgeOp), codegenClassScope)
+                .AddParam(typeof(DateTimeOffset), "value");
 
-	    public static CodegenExpression CodegenDateTime(CalendarWithDateForge forge, CodegenExpression dateTime, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(DateTime), typeof(CalendarWithDateForgeOp), codegenClassScope).AddParam(typeof(DateTime), "value");
+            var block = methodNode.Block;
+            CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
+            block.MethodReturn(
+                StaticMethod(
+                    typeof(CalendarWithDateForgeOp), "ActionSetYMDDateTimeOffset",
+                    Ref("value"),
+                    Ref("year"),
+                    Ref("month"),
+                    Ref("day")));
+            return LocalMethod(methodNode, dto);
+        }
 
-	        CodegenBlock block = methodNode.Block;
-	        CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
-	        block.MethodReturn(StaticMethod(typeof(CalendarWithDateForgeOp), "actionSetYMDZonedDateTime", @Ref("value"), @Ref("year"), @Ref("month"), @Ref("day")));
-	        return LocalMethod(methodNode, dateTime);
-	    }
+        public static CodegenExpression CodegenDateTime(
+            CalendarWithDateForge forge,
+            CodegenExpression dateTime,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var methodNode = codegenMethodScope
+                .MakeChild(typeof(DateTime), typeof(CalendarWithDateForgeOp), codegenClassScope)
+                .AddParam(typeof(DateTime), "value");
 
-	    protected internal static int? GetInt(ExprEvaluator expr, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        object result = expr.Evaluate(eventsPerStream, isNewData, context);
-	        if (result == null) {
-	            return null;
-	        }
-	        return (int?) result;
-	    }
+            var block = methodNode.Block;
+            CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
+            block.MethodReturn(
+                StaticMethod(
+                    typeof(CalendarWithDateForgeOp), "ActionSetYMDDateTime",
+                    Ref("value"),
+                    Ref("year"),
+                    Ref("month"),
+                    Ref("day")));
+            return LocalMethod(methodNode, dateTime);
+        }
 
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="cal">calendar</param>
-	    /// <param name="year">year</param>
-	    /// <param name="month">month</param>
-	    /// <param name="day">day</param>
-	    public static void ActionSetYMDCalendar(DateTimeEx cal, int? year, int? month, int? day) {
-	        if (year != null) {
-	            cal.Set(DateTimeEx.YEAR, year);
-	        }
-	        if (month != null) {
-	            cal.Set(DateTimeEx.MONTH, month);
-	        }
-	        if (day != null) {
-	            cal.Set(DateTimeEx.DATE, day);
-	        }
-	    }
+        protected internal static int? GetInt(
+            ExprEvaluator expr,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var result = expr.Evaluate(eventsPerStream, isNewData, context);
+            if (result == null) {
+                return null;
+            }
 
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="dto">localdatetime</param>
-	    /// <param name="year">year</param>
-	    /// <param name="month">month</param>
-	    /// <param name="day">day</param>
-	    /// <returns>dto</returns>
-	    public static DateTimeOffset ActionSetYMDLocalDateTime(DateTimeOffset dto, int? year, int? month, int? day) {
-	        if (year != null) {
-	            dto = dto.WithYear(year);
-	        }
-	        if (month != null) {
-	            dto = dto.WithMonth(month);
-	        }
-	        if (day != null) {
-	            dto = dto.WithDayOfMonth(day);
-	        }
-	        return dto;
-	    }
+            return (int?) result;
+        }
 
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="dateTime">zoneddatetime</param>
-	    /// <param name="year">year</param>
-	    /// <param name="month">month</param>
-	    /// <param name="day">day</param>
-	    /// <returns>dto</returns>
-	    public static DateTime ActionSetYMDZonedDateTime(DateTime dateTime, int? year, int? month, int? day) {
-	        if (year != null) {
-	            dateTime = dateTime.WithYear(year);
-	        }
-	        if (month != null) {
-	            dateTime = dateTime.WithMonth(month);
-	        }
-	        if (day != null) {
-	            dateTime = dateTime.WithDayOfMonth(day);
-	        }
-	        return dateTime;
-	    }
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="dtx">date-time</param>
+        /// <param name="year">year</param>
+        /// <param name="month">month</param>
+        /// <param name="day">day</param>
+        public static DateTimeEx ActionSetYMDCalendar(
+            DateTimeEx dtx,
+            int? year,
+            int? month,
+            int? day)
+        {
+            if (year != null) {
+                dtx = dtx.SetYear(year.Value);
+            }
 
-	    private static void CodegenDeclareInts(CodegenBlock block, CalendarWithDateForge forge, CodegenMethod methodNode, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        Type yearType = forge.year.EvaluationType;
-	        Type monthType = forge.month.EvaluationType;
-	        Type dayType = forge.day.EvaluationType;
-	        block.DeclareVar(typeof(int?), "year", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.year.EvaluateCodegen(yearType, methodNode, exprSymbol, codegenClassScope), yearType, methodNode, codegenClassScope))
-	                .DeclareVar(typeof(int?), "month", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.month.EvaluateCodegen(monthType, methodNode, exprSymbol, codegenClassScope), monthType, methodNode, codegenClassScope))
-	                .DeclareVar(typeof(int?), "day", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.day.EvaluateCodegen(dayType, methodNode, exprSymbol, codegenClassScope), dayType, methodNode, codegenClassScope));
-	    }
-	}
+            if (month != null) {
+                dtx = dtx.SetMonth(month.Value);
+            }
+
+            if (day != null) {
+                dtx = dtx.SetDay(month.Value);
+            }
+
+            return dtx;
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="dto">localdatetime</param>
+        /// <param name="year">year</param>
+        /// <param name="month">month</param>
+        /// <param name="day">day</param>
+        /// <returns>dto</returns>
+        public static DateTimeOffset ActionSetYMDDateTimeOffset(
+            DateTimeOffset dto,
+            int? year,
+            int? month,
+            int? day)
+        {
+            if (year != null) {
+                dto = dto.WithYear(year.Value);
+            }
+
+            if (month != null) {
+                dto = dto.WithMonth(month.Value);
+            }
+
+            if (day != null) {
+                dto = dto.WithDay(day.Value);
+            }
+
+            return dto;
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="dateTime">zoneddatetime</param>
+        /// <param name="year">year</param>
+        /// <param name="month">month</param>
+        /// <param name="day">day</param>
+        /// <returns>dto</returns>
+        public static DateTime ActionSetYMDDateTime(
+            DateTime dateTime,
+            int? year,
+            int? month,
+            int? day)
+        {
+            if (year != null) {
+                dateTime = dateTime.WithYear(year.Value);
+            }
+
+            if (month != null) {
+                dateTime = dateTime.WithMonth(month.Value);
+            }
+
+            if (day != null) {
+                dateTime = dateTime.WithDay(day.Value);
+            }
+
+            return dateTime;
+        }
+
+        private static void CodegenDeclareInts(
+            CodegenBlock block,
+            CalendarWithDateForge forge,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var yearType = forge.year.EvaluationType;
+            var monthType = forge.month.EvaluationType;
+            var dayType = forge.day.EvaluationType;
+            block.DeclareVar(
+                    typeof(int?), "year",
+                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
+                        forge.year.EvaluateCodegen(yearType, methodNode, exprSymbol, codegenClassScope),
+                        yearType, methodNode, codegenClassScope))
+                .DeclareVar(
+                    typeof(int?), "month",
+                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
+                        forge.month.EvaluateCodegen(monthType, methodNode, exprSymbol, codegenClassScope),
+                        monthType, methodNode, codegenClassScope))
+                .DeclareVar(
+                    typeof(int?), "day",
+                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
+                        forge.day.EvaluateCodegen(dayType, methodNode, exprSymbol, codegenClassScope),
+                        dayType, methodNode, codegenClassScope));
+        }
+    }
 } // end of namespace

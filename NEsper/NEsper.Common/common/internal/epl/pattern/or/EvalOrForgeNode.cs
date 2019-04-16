@@ -9,13 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.or
@@ -32,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
             return "EvalOrNode children=" + ChildNodes.Count;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             PatternExpressionUtil.ToPrecedenceFreeEPL(writer, "or", ChildNodes, Precedence);
         }
@@ -48,13 +46,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
         }
 
         protected override void InlineCodegen(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block.DeclareVar(
                 typeof(EvalFactoryNode[]), "children",
                 NewArrayByLength(typeof(EvalFactoryNode), Constant(ChildNodes.Count)));
-            for (var i = 0; i < ChildNodes.Count; i++)
-            {
+            for (var i = 0; i < ChildNodes.Count; i++) {
                 method.Block.AssignArrayElement(
                     Ref("children"), Constant(i), LocalMethod(ChildNodes[i].MakeCodegen(method, symbols, classScope)));
             }
@@ -64,7 +63,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, IList<ScheduleHandleCallbackProvider> schedules)
+            IList<FilterSpecCompiled> filters,
+            IList<ScheduleHandleCallbackProvider> schedules)
         {
         }
     }

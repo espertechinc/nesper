@@ -17,16 +17,20 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
     {
         public static ICollection<object> QueryRange(
             MXCIFQuadTree<object> quadTree,
-            double x, double y,
-            double width, double height)
+            double x,
+            double y,
+            double width,
+            double height)
         {
             return QueryNode(quadTree.Root, x, y, width, height, null);
         }
 
         private static ICollection<object> QueryNode(
             MXCIFQuadTreeNode<object> node,
-            double x, double y,
-            double width, double height,
+            double x,
+            double y,
+            double width,
+            double height,
             ICollection<object> result)
         {
             if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
@@ -44,8 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
         private static ICollection<object> Visit(
             MXCIFQuadTreeNode<object> node,
-            double x, double y,
-            double width, double height,
+            double x,
+            double y,
+            double width,
+            double height,
             ICollection<object> result)
         {
             var data = node.Data;
@@ -67,8 +73,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
         private static ICollection<object> Visit(
             XYWHRectangleMultiType rectangle,
-            double x, double y,
-            double width, double height,
+            double x,
+            double y,
+            double width,
+            double height,
             ICollection<object> result)
         {
             if (!BoundingBox.IntersectsBoxIncludingEnd(

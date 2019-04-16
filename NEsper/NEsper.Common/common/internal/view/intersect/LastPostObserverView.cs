@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.view.core;
 
@@ -35,14 +34,12 @@ namespace com.espertech.esper.common.@internal.view.intersect
         /// Set an observer.
         /// </summary>
         /// <value>to be called when results are available</value>
-        public LastPostObserver Observer
-        {
+        public LastPostObserver Observer {
             get => this.observer;
             set => this.observer = value;
         }
 
-        public override EventType EventType
-        {
+        public override EventType EventType {
             get => parent.EventType;
         }
 
@@ -51,13 +48,14 @@ namespace com.espertech.esper.common.@internal.view.intersect
             return parent.GetEnumerator();
         }
 
-        public override Viewable Parent
-        {
+        public override Viewable Parent {
             get => parent;
             set => parent = value;
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             observer?.NewData(streamId, newData, oldData);
         }

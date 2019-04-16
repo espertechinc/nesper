@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
 
@@ -26,8 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             this.propertyGetter = propertyGetter;
         }
 
-        public CompositeIndexEnterRemove Next
-        {
+        public CompositeIndexEnterRemove Next {
             get => this.next;
             set => this.next = value;
         }
@@ -36,43 +34,38 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ISet<EventBean> result,
             CompositeDictionary parent)
         {
-            if (next == null)
-            {
-                foreach (var value in parent.Values)
-                {
+            if (next == null) {
+                foreach (var value in parent.Values) {
                     result.AddAll(value.AssertCollection());
                 }
             }
-            else
-            {
-                foreach (var value in parent.Values)
-                {
+            else {
+                foreach (var value in parent.Values) {
                     next.GetAll(result, value.AssertIndex());
                 }
             }
 
-            if (nullKeys != null)
-            {
+            if (nullKeys != null) {
                 result.AddAll(nullKeys);
             }
         }
 
-        public void Enter(EventBean theEvent, CompositeDictionary parent)
+        public void Enter(
+            EventBean theEvent,
+            CompositeDictionary parent)
         {
             var sortable = propertyGetter.Get(theEvent);
-            if (sortable == null)
-            {
-                if (nullKeys == null)
-                {
+            if (sortable == null) {
+                if (nullKeys == null) {
                     nullKeys = new HashSet<EventBean>();
                 }
+
                 nullKeys.Add(theEvent);
                 return;
             }
 
             // if this is a leaf, enter event
-            if (next == null)
-            {
+            if (next == null) {
                 var eventMap = parent;
                 var entry = parent.Get(sortable);
                 if (entry == null) {
@@ -85,8 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
                 entry.Collection.Add(theEvent);
             }
-            else
-            {
+            else {
                 var innerEntry = parent.Get(sortable);
                 if (innerEntry == null) {
                     innerEntry = new CompositeIndexEntry(new SortedDictionary<object, CompositeIndexEntry>());
@@ -105,45 +97,37 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeDictionary parent)
         {
             var sortable = propertyGetter.Get(theEvent);
-            if (sortable == null)
-            {
+            if (sortable == null) {
                 nullKeys?.Remove(theEvent);
                 return;
             }
 
             // if this is a leaf, remove event
-            if (next == null)
-            {
+            if (next == null) {
                 var eventMap = parent;
                 var entry = eventMap?.Get(sortable);
-                if (entry == null)
-                {
+                if (entry == null) {
                     return;
                 }
 
                 var events = entry.AssertCollection();
-                if (!events.Remove(theEvent))
-                {
+                if (!events.Remove(theEvent)) {
                     return;
                 }
 
-                if (events.IsEmpty())
-                {
+                if (events.IsEmpty()) {
                     parent.Remove(sortable);
                 }
             }
-            else
-            {
+            else {
                 var innerEntry = parent.Get(sortable);
-                if (innerEntry == null)
-                {
+                if (innerEntry == null) {
                     return;
                 }
 
                 var innerIndex = innerEntry.AssertIndex();
                 next.Remove(theEvent, innerIndex);
-                if (innerIndex.IsEmpty())
-                {
+                if (innerIndex.IsEmpty()) {
                     parent.Remove(sortable);
                 }
             }

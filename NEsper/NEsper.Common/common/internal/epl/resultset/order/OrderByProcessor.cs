@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -32,7 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
         /// <param name="aggregationService">aggregation svc</param>
         /// <returns>an array containing the output events in sorted order</returns>
-        EventBean[] SortPlain(EventBean[] outgoingEvents, EventBean[][] generatingEvents, bool isNewData, ExprEvaluatorContext exprEvaluatorContext, AggregationService aggregationService);
+        EventBean[] SortPlain(
+            EventBean[] outgoingEvents,
+            EventBean[][] generatingEvents,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationService aggregationService);
 
         /// <summary>
         /// Sort the output events, using the provided group-by keys for
@@ -46,7 +50,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <param name="exprEvaluatorContext">context for expression evaluation</param>
         /// <param name="aggregationService">aggregation svc</param>
         /// <returns>an array containing the output events in sorted order</returns>
-        EventBean[] SortWGroupKeys(EventBean[] outgoingEvents, EventBean[][] generatingEvents, object[] groupByKeys, bool isNewData, ExprEvaluatorContext exprEvaluatorContext, AggregationService aggregationService);
+        EventBean[] SortWGroupKeys(
+            EventBean[] outgoingEvents,
+            EventBean[][] generatingEvents,
+            object[] groupByKeys,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationService aggregationService);
 
         /// <summary>
         /// Sort the output events, using the provided group-by keys for
@@ -59,7 +69,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <param name="agentInstanceContext">context for expression evaluation</param>
         /// <param name="aggregationService">aggregation svc</param>
         /// <returns>an array containing the output events in sorted order</returns>
-        EventBean[] SortRollup(EventBean[] outgoingEvents, IList<GroupByRollupKey> currentGenerators, bool newData, AgentInstanceContext agentInstanceContext, AggregationService aggregationService);
+        EventBean[] SortRollup(
+            EventBean[] outgoingEvents,
+            IList<GroupByRollupKey> currentGenerators,
+            bool newData,
+            AgentInstanceContext agentInstanceContext,
+            AggregationService aggregationService);
 
         /// <summary>
         /// Returns the sort key for a given row.
@@ -68,7 +83,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <param name="isNewData">is true for new data</param>
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
         /// <returns>sort key</returns>
-        object GetSortKey(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        object GetSortKey(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Returns the sort key for a given row for rollup.
@@ -78,7 +96,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
         /// <param name="level">rollup level</param>
         /// <returns>sort key</returns>
-        object GetSortKeyRollup(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext, AggregationGroupByRollupLevel level);
+        object GetSortKeyRollup(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationGroupByRollupLevel level);
 
         /// <summary>
         /// Sort a given array of outgoing events using the sort keys returning a sorted outgoing event array.
@@ -87,7 +109,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <param name="orderKeys">is the keys to sort by</param>
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
         /// <returns>sorted events</returns>
-        EventBean[] SortWOrderKeys(EventBean[] outgoingEvents, object[] orderKeys, ExprEvaluatorContext exprEvaluatorContext);
+        EventBean[] SortWOrderKeys(
+            EventBean[] outgoingEvents,
+            object[] orderKeys,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Sort two keys and events
@@ -97,6 +122,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         /// <param name="second">second</param>
         /// <param name="sortKeySecond">sort key seconds</param>
         /// <returns>sorted</returns>
-        EventBean[] SortTwoKeys(EventBean first, object sortKeyFirst, EventBean second, object sortKeySecond);
+        EventBean[] SortTwoKeys(
+            EventBean first,
+            object sortKeyFirst,
+            EventBean second,
+            object sortKeySecond);
     }
 } // end of namespace

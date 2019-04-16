@@ -32,8 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         private readonly DTLocalForge forge;
 
         public ExprDotDTForge(
-            IList<CalendarForge> calendarForges, TimeAbacus timeAbacus, ReformatForge reformatForge,
-            IntervalForge intervalForge, Type inputType, EventType inputEventType)
+            IList<CalendarForge> calendarForges,
+            TimeAbacus timeAbacus,
+            ReformatForge reformatForge,
+            IntervalForge intervalForge,
+            Type inputType,
+            EventType inputEventType)
         {
             if (intervalForge != null) {
                 TypeInfo = EPTypeHelper.SingleValue(typeof(bool?));
@@ -59,7 +63,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 var evaluator = forge.DTEvaluator;
                 ExprDotForge exprDotForge = this;
                 return new ProxyExprDotEval {
-                    ProcEvaluate = (target, eventsPerStream, isNewData, exprEvaluatorContext) => {
+                    ProcEvaluate = (
+                        target,
+                        eventsPerStream,
+                        isNewData,
+                        exprEvaluatorContext) => {
                         if (target == null) {
                             return null;
                         }
@@ -73,8 +81,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         }
 
         public CodegenExpression Codegen(
-            CodegenExpression inner, Type innerType, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
                     ((ClassEPType) TypeInfo).Clazz, typeof(ExprDotDTForge), codegenClassScope)
@@ -97,8 +108,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         }
 
         public DTLocalForge GetForge(
-            IList<CalendarForge> calendarForges, TimeAbacus timeAbacus, Type inputType, EventType inputEventType,
-            ReformatForge reformatForge, IntervalForge intervalForge)
+            IList<CalendarForge> calendarForges,
+            TimeAbacus timeAbacus,
+            Type inputType,
+            EventType inputEventType,
+            ReformatForge reformatForge,
+            IntervalForge intervalForge)
         {
             if (inputEventType == null) {
                 if (reformatForge != null) {

@@ -17,37 +17,46 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
-	public class CodegenStatementIfConditionBlock {
-	    private readonly CodegenExpression condition;
-	    private readonly CodegenBlock block;
+    public class CodegenStatementIfConditionBlock
+    {
+        private readonly CodegenExpression condition;
+        private readonly CodegenBlock block;
 
-	    public CodegenStatementIfConditionBlock(CodegenExpression condition, CodegenBlock block) {
-	        this.condition = condition;
-	        this.block = block;
-	    }
+        public CodegenStatementIfConditionBlock(
+            CodegenExpression condition,
+            CodegenBlock block)
+        {
+            this.condition = condition;
+            this.block = block;
+        }
 
-	    public CodegenExpression Condition
-	    {
-	        get => condition;
-	    }
+        public CodegenExpression Condition {
+            get => condition;
+        }
 
-	    public CodegenBlock Block
-	    {
-	        get => block;
-	    }
+        public CodegenBlock Block {
+            get => block;
+        }
 
-	    public void MergeClasses(ISet<Type> classes) {
-	        condition.MergeClasses(classes);
-	        block.MergeClasses(classes);
-	    }
+        public void MergeClasses(ISet<Type> classes)
+        {
+            condition.MergeClasses(classes);
+            block.MergeClasses(classes);
+        }
 
-	    public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass, int level, CodegenIndent indent) {
-	        builder.Append("if (");
-	        condition.Render(builder, imports, isInnerClass);
-	        builder.Append(") {\n");
-	        block.Render(builder, imports, isInnerClass, level + 1, indent);
-	        indent.Indent(builder, level);
-	        builder.Append("}");
-	    }
-	}
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
+        {
+            builder.Append("if (");
+            condition.Render(builder, imports, isInnerClass);
+            builder.Append(") {\n");
+            block.Render(builder, imports, isInnerClass, level + 1, indent);
+            indent.Indent(builder, level);
+            builder.Append("}");
+        }
+    }
 } // end of namespace

@@ -16,8 +16,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     public class AggregationLocalGroupByColumnForge
     {
         public AggregationLocalGroupByColumnForge(
-            bool defaultGroupLevel, ExprForge[] partitionForges, int methodOffset, bool methodAgg,
-            AggregationAccessorSlotPairForge pair, int levelNum)
+            bool defaultGroupLevel,
+            ExprForge[] partitionForges,
+            int methodOffset,
+            bool methodAgg,
+            AggregationAccessorSlotPairForge pair,
+            int levelNum)
         {
             IsDefaultGroupLevel = defaultGroupLevel;
             PartitionForges = partitionForges;

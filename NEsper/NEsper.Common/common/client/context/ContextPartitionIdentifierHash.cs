@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.client.context
         public ContextPartitionIdentifierHash()
         {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="hash">code</param>
         public ContextPartitionIdentifierHash(int hash)
@@ -30,8 +30,7 @@ namespace com.espertech.esper.common.client.context
 
         /// <summary>Returns the hash code. </summary>
         /// <value>hash code</value>
-        public int Hash
-        {
+        public int Hash {
             get { return _hash; }
             set { _hash = value; }
         }
@@ -44,8 +43,8 @@ namespace com.espertech.esper.common.client.context
         public override String ToString()
         {
             return "ContextPartitionIdentifierHash{" +
-                    "hash=" + _hash +
-                    '}';
+                   "hash=" + _hash +
+                   '}';
         }
     }
 }

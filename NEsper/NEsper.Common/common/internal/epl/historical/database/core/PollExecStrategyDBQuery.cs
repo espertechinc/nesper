@@ -66,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             connectionCache.Dispose();
         }
 
-        public IList<EventBean> Poll(object lookupValues, AgentInstanceContext agentInstanceContext)
+        public IList<EventBean> Poll(
+            object lookupValues,
+            AgentInstanceContext agentInstanceContext)
         {
             IList<EventBean> result;
             try {
@@ -242,7 +244,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             }
         }
 
-        private void SetObject(DbDriverCommand preparedStatement, int column, object value)
+        private void SetObject(
+            DbDriverCommand preparedStatement,
+            int column,
+            object value)
         {
             preparedStatement.SetObject(column, value);
         }

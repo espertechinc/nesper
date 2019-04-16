@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.resultset.core;
@@ -17,13 +16,20 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 {
-	public interface ResultSetProcessorRowPerEventOutputLastHelper :  ResultSetProcessorOutputHelper {
-	    void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic);
+    public interface ResultSetProcessorRowPerEventOutputLastHelper : ResultSetProcessorOutputHelper
+    {
+        void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic);
 
-	    void ProcessJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic);
+        void ProcessJoin(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
+            bool isGenerateSynthetic);
 
-	    UniformPair<EventBean[]> Output();
+        UniformPair<EventBean[]> Output();
 
-	    void Destroy();
-	}
+        void Destroy();
+    }
 } // end of namespace

@@ -21,14 +21,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         private readonly EventPropertyGetter getter;
         private readonly DTLocalEvaluator inner;
 
-        public DTLocalBeanIntervalNoEndTSEval(EventPropertyGetter getter, DTLocalEvaluator inner)
+        public DTLocalBeanIntervalNoEndTSEval(
+            EventPropertyGetter getter,
+            DTLocalEvaluator inner)
         {
             this.getter = getter;
             this.inner = inner;
         }
 
         public object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var timestamp = getter.Get((EventBean) target);
             if (timestamp == null) {
@@ -39,8 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalBeanIntervalNoEndTSForge forge, CodegenExpression inner, Type innerType,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            DTLocalBeanIntervalNoEndTSForge forge,
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope

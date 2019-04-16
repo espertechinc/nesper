@@ -60,7 +60,9 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
 
         public override EventType EventType => parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, lengthBatchViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(lengthBatchViewFactory, newData, oldData);

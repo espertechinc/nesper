@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly CodegenExpression assignment;
         private readonly string @ref;
 
-        public CodegenStatementAssignNamed(string @ref, CodegenExpression assignment)
+        public CodegenStatementAssignNamed(
+            string @ref,
+            CodegenExpression assignment)
         {
             this.@ref = @ref;
             if (assignment == null) {
@@ -29,7 +31,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append(@ref).Append("=");
             assignment.Render(builder, imports, isInnerClass);

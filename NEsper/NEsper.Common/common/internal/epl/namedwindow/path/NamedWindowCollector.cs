@@ -10,6 +10,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
 {
     public interface NamedWindowCollector
     {
-        void RegisterNamedWindow(string namedWindowName, NamedWindowMetaData detail);
+        void RegisterNamedWindow(
+            string namedWindowName,
+            NamedWindowMetaData detail);
     }
 } // end of namespace

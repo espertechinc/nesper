@@ -77,7 +77,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="numReferences">The num references.</param>
-        public void Add(K key, int numReferences)
+        public void Add(
+            K key,
+            int numReferences)
         {
             MutableInt value;
             if (!RefSet.TryGetValue(key, out value)) {

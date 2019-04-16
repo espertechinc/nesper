@@ -17,25 +17,27 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
     {
         public static ICollection<object> QueryRange(
             PointRegionQuadTree<object> quadTree,
-            double x, double y,
-            double width, double height)
+            double x,
+            double y,
+            double width,
+            double height)
         {
             return QueryNode(quadTree.Root, x, y, width, height, null);
         }
 
         private static ICollection<object> QueryNode(
             PointRegionQuadTreeNode node,
-            double x, double y,
-            double width, double height,
+            double x,
+            double y,
+            double width,
+            double height,
             ICollection<object> result)
         {
-            if (!node.Bb.IntersectsBoxIncludingEnd(x, y, width, height))
-            {
+            if (!node.Bb.IntersectsBoxIncludingEnd(x, y, width, height)) {
                 return result;
             }
 
-            if (node is PointRegionQuadTreeNodeLeaf<object> leaf)
-            {
+            if (node is PointRegionQuadTreeNodeLeaf<object> leaf) {
                 return Visit(leaf, x, y, width, height, result);
             }
 
@@ -49,25 +51,24 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
         private static ICollection<object> Visit(
             PointRegionQuadTreeNodeLeaf<object> node,
-            double x, double y,
-            double width, double height,
+            double x,
+            double y,
+            double width,
+            double height,
             ICollection<object> result)
         {
             object points = node.Points;
-            if (points == null)
-            {
+            if (points == null) {
                 return result;
             }
 
-            if (points is XYPointMultiType)
-            {
+            if (points is XYPointMultiType) {
                 XYPointMultiType point = (XYPointMultiType) points;
                 return Visit(point, x, y, width, height, result);
             }
 
             ICollection<XYPointMultiType> collection = (ICollection<XYPointMultiType>) points;
-            foreach (XYPointMultiType point in collection)
-            {
+            foreach (XYPointMultiType point in collection) {
                 result = Visit(point, x, y, width, height, result);
             }
 
@@ -76,17 +77,17 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
         private static ICollection<object> Visit(
             XYPointMultiType point,
-            double x, double y,
-            double width, double height,
+            double x,
+            double y,
+            double width,
+            double height,
             ICollection<object> result)
         {
-            if (!BoundingBox.ContainsPoint(x, y, width, height, point.X, point.Y))
-            {
+            if (!BoundingBox.ContainsPoint(x, y, width, height, point.X, point.Y)) {
                 return result;
             }
 
-            if (result == null)
-            {
+            if (result == null) {
                 result = new ArrayDeque<object>(4);
             }
 

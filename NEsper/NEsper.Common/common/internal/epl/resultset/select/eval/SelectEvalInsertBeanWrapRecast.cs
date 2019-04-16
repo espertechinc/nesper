@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,42 +19,56 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalInsertBeanWrapRecast : SelectExprProcessorForge {
+    public class SelectEvalInsertBeanWrapRecast : SelectExprProcessorForge
+    {
+        private readonly WrapperEventType eventType;
+        private readonly int streamNumber;
 
-	    private readonly WrapperEventType eventType;
-	    private readonly int streamNumber;
+        public SelectEvalInsertBeanWrapRecast(
+            WrapperEventType targetType,
+            int streamNumber,
+            EventType[] typesPerStream)
+        {
+            this.eventType = targetType;
+            this.streamNumber = streamNumber;
 
-	    public SelectEvalInsertBeanWrapRecast(WrapperEventType targetType, int streamNumber, EventType[] typesPerStream)
-	            {
-	        this.eventType = targetType;
-	        this.streamNumber = streamNumber;
+            EventType sourceType = typesPerStream[streamNumber];
+            Type sourceClass = sourceType.UnderlyingType;
+            Type targetClass = targetType.UnderlyingEventType.UnderlyingType;
+            if (!TypeHelper.IsSubclassOrImplementsInterface(sourceClass, targetClass)) {
+                throw SelectEvalInsertUtil.MakeEventTypeCastException(sourceType, targetType);
+            }
+        }
 
-	        EventType sourceType = typesPerStream[streamNumber];
-	        Type sourceClass = sourceType.UnderlyingType;
-	        Type targetClass = targetType.UnderlyingEventType.UnderlyingType;
-	        if (!TypeHelper.IsSubclassOrImplementsInterface(sourceClass, targetClass)) {
-	            throw SelectEvalInsertUtil.MakeEventTypeCastException(sourceType, targetType);
-	        }
-	    }
+        public EventType ResultEventType {
+            get => eventType;
+        }
 
-	    public EventType ResultEventType {
-	        get => eventType;
-	    }
-
-	    public CodegenMethod ProcessCodegen(CodegenExpression resultEventType, CodegenExpression eventBeanFactory, CodegenMethodScope codegenMethodScope, SelectExprProcessorCodegenSymbol selectSymbol, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenExpressionField memberUndType = codegenClassScope.AddFieldUnshared(true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(eventType.UnderlyingEventType, EPStatementInitServicesConstants.REF));
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
-	        CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-	        methodNode.Block
-	                .DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(refEPS, Constant(streamNumber)))
-	                .DeclareVar(typeof(EventBean), "recast", ExprDotMethod(eventBeanFactory, "adapterForTypedBean", ExprDotUnderlying(@Ref("theEvent")), memberUndType))
-	                .MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedWrapper", @Ref("recast"), StaticMethod(typeof(Collections), "emptyMap"), resultEventType));
-	        return methodNode;
-	    }
-	}
+        public CodegenMethod ProcessCodegen(
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenExpressionField memberUndType = codegenClassScope.AddFieldUnshared(
+                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(eventType.UnderlyingEventType, EPStatementInitServicesConstants.REF));
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            methodNode.Block
+                .DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(refEPS, Constant(streamNumber)))
+                .DeclareVar(
+                    typeof(EventBean), "recast",
+                    ExprDotMethod(eventBeanFactory, "adapterForTypedBean", ExprDotUnderlying(@Ref("theEvent")), memberUndType))
+                .MethodReturn(
+                    ExprDotMethod(
+                        eventBeanFactory, "adapterForTypedWrapper", @Ref("recast"), StaticMethod(typeof(Collections), "emptyMap"), resultEventType));
+            return methodNode;
+        }
+    }
 } // end of namespace

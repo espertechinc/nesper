@@ -21,18 +21,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
         public static DatetimeLongCoercer GetCoercer(Type clazz)
         {
-            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof (DateTime)))
-            {
+            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof(DateTime))) {
                 return DATETIME_LONG_COERCER_DATETIME;
             }
-            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof (DateTimeOffset)))
-            {
+
+            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof(DateTimeOffset))) {
                 return DATETIME_LONG_COERCER_DATETIME_OFFSET;
             }
-            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof (DateTimeEx)))
-            {
+
+            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof(DateTimeEx))) {
                 return DATETIME_LONG_COERCER_DTX;
             }
+
             return DATETIME_LONG_COERCER_LONG;
         }
     }

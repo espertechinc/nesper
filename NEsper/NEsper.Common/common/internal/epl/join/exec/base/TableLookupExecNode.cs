@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         /// </summary>
         /// <param name="indexedStream">stream indexed for lookup</param>
         /// <param name="lookupStrategy">strategy to use for lookup (full table/indexed)</param>
-        public TableLookupExecNode(int indexedStream, JoinExecTableLookupStrategy lookupStrategy)
+        public TableLookupExecNode(
+            int indexedStream,
+            JoinExecTableLookupStrategy lookupStrategy)
         {
             IndexedStream = indexedStream;
             this.lookupStrategy = lookupStrategy;
@@ -62,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
 
         protected void ProcessResults(
             EventBean[] prefillPath,
-            ICollection<EventBean[]> result, 
+            ICollection<EventBean[]> result,
             ISet<EventBean> joinedEvents)
         {
             // Create result row for each found event

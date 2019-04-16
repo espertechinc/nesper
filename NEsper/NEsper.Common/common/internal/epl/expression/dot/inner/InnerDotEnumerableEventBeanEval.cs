@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
@@ -17,29 +16,45 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
-	public class InnerDotEnumerableEventBeanEval : ExprDotEvalRootChildInnerEval {
+    public class InnerDotEnumerableEventBeanEval : ExprDotEvalRootChildInnerEval
+    {
+        private readonly ExprEnumerationEval rootLambdaEvaluator;
 
-	    private readonly ExprEnumerationEval rootLambdaEvaluator;
+        public InnerDotEnumerableEventBeanEval(ExprEnumerationEval rootLambdaEvaluator)
+        {
+            this.rootLambdaEvaluator = rootLambdaEvaluator;
+        }
 
-	    public InnerDotEnumerableEventBeanEval(ExprEnumerationEval rootLambdaEvaluator) {
-	        this.rootLambdaEvaluator = rootLambdaEvaluator;
-	    }
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+        }
 
-	    public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
-	    }
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+        }
 
-	    public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
-	    }
+        public ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+        }
 
-	    public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
-	    }
-
-	    public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
-	    }
-
-	}
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+        }
+    }
 } // end of namespace

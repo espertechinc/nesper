@@ -25,12 +25,16 @@ namespace com.espertech.esper.common.@internal.filterspec
             this._doubleValue = doubleValue;
         }
 
-        public CodegenExpression MakeCodegen(CodegenClassScope classScope, CodegenMethodScope parent)
+        public CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
         {
             return Constant(_doubleValue);
         }
 
-        public object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        public object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext evaluatorContext)
         {
             return _doubleValue;
         }

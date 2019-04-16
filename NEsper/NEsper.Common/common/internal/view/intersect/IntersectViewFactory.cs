@@ -51,7 +51,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
             set => intersecteds = value;
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
             foreach (var grouped in intersecteds) {
                 grouped.Init(viewFactoryContext, services);

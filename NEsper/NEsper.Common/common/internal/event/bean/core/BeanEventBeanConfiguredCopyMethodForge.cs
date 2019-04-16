@@ -7,19 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Reflection;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     /// <summary>
-    /// Copies an event for modification.
+    ///     Copies an event for modification.
     /// </summary>
     public class BeanEventBeanConfiguredCopyMethodForge : EventBeanCopyMethodForge
     {
@@ -27,11 +25,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         private readonly MethodInfo copyMethod;
 
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="beanEventType">type of bean to copy</param>
         /// <param name="copyMethod">method to copy the event</param>
-        public BeanEventBeanConfiguredCopyMethodForge(BeanEventType beanEventType, MethodInfo copyMethod)
+        public BeanEventBeanConfiguredCopyMethodForge(
+            BeanEventType beanEventType,
+            MethodInfo copyMethod)
         {
             this.beanEventType = beanEventType;
             this.copyMethod = copyMethod;
@@ -39,10 +39,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
         {
-            CodegenExpressionField factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            return NewInstance(typeof(BeanEventBeanConfiguredCopyMethod),
-                    Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF)),
-                    factory, MethodResolver.ResolveMethodCodegenExactNonStatic(copyMethod));
+            var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            return NewInstance(
+                typeof(BeanEventBeanConfiguredCopyMethod),
+                Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF)),
+                factory, MethodResolver.ResolveMethodCodegenExactNonStatic(copyMethod));
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)

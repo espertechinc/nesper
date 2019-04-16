@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
     public class TableDeployTimeResolver
     {
         public static CodegenExpressionField MakeTableEventToPublicField(
-            TableMetaData table, CodegenClassScope classScope, Type generator)
+            TableMetaData table,
+            CodegenClassScope classScope,
+            Type generator)
         {
             var symbols = new SAIFFInitializeSymbol();
             CodegenMethod tableInit = classScope.PackageScope.InitMethod
@@ -33,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 true, typeof(TableMetadataInternalEventToPublic), LocalMethod(tableInit, EPStatementInitServicesConstants.REF));
         }
 
-        public static CodegenExpression MakeResolveTable(TableMetaData table, CodegenExpression initSvc)
+        public static CodegenExpression MakeResolveTable(
+            TableMetaData table,
+            CodegenExpression initSvc)
         {
             return StaticMethod(
                 typeof(TableDeployTimeResolver), "resolveTable",

@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         private readonly Type componentType;
         private readonly string methodName;
 
-        public ExprDotStaticMethodWrapCollection(string methodName, Type componentType)
+        public ExprDotStaticMethodWrapCollection(
+            string methodName,
+            Type componentType)
         {
             this.methodName = methodName;
             this.componentType = componentType;
@@ -44,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression CodegenConvertNonNull(
-            CodegenExpression result, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression result,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return result;
         }

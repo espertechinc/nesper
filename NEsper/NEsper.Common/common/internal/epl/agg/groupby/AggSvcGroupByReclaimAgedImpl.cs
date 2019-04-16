@@ -37,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             Ref("evaluationFunctionFrequency");
 
         public static void RowCtorCodegen(
-            CodegenNamedMethods namedMethods, CodegenClassScope classScope, IList<CodegenTypedParam> rowMembers)
+            CodegenNamedMethods namedMethods,
+            CodegenClassScope classScope,
+            IList<CodegenTypedParam> rowMembers)
         {
             rowMembers.Add(new CodegenTypedParam(typeof(long), "lastUpdateTime"));
             namedMethods.AddMethod(
@@ -51,8 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         }
 
         public static void CtorCodegenReclaim(
-            CodegenCtor ctor, IList<CodegenTypedParam> explicitMembers, CodegenClassScope classScope,
-            CodegenExpression maxAgeFactory, CodegenExpression frequencyFactory)
+            CodegenCtor ctor,
+            IList<CodegenTypedParam> explicitMembers,
+            CodegenClassScope classScope,
+            CodegenExpression maxAgeFactory,
+            CodegenExpression frequencyFactory)
         {
             explicitMembers.Add(new CodegenTypedParam(typeof(long?), REF_NEXTSWEEPTIME.Ref));
             explicitMembers.Add(new CodegenTypedParam(typeof(AggregationRowRemovedCallback), REF_REMOVEDCALLBACK.Ref));
@@ -70,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         }
 
         public static void ApplyEnterCodegenSweep(
-            CodegenMethod method, CodegenClassScope classScope, AggregationClassNames classNames)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            AggregationClassNames classNames)
         {
             var timeAbacus = classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE);
             method.Block.DeclareVar(
@@ -99,7 +106,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         /// <param name="timeAbacus">abacus</param>
         /// <returns>delta</returns>
         public static long ComputeTimeReclaimAgeFreq(
-            long current, AggSvcGroupByReclaimAgedEvalFunc func, TimeAbacus timeAbacus)
+            long current,
+            AggSvcGroupByReclaimAgedEvalFunc func,
+            TimeAbacus timeAbacus)
         {
             var maxAge = func.LongValue;
             if (maxAge == null || maxAge <= 0) {
@@ -110,7 +119,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         }
 
         private static CodegenMethod SweepCodegen(
-            CodegenMethodScope parent, CodegenClassScope classScope, AggregationClassNames classNames)
+            CodegenMethodScope parent,
+            CodegenClassScope classScope,
+            AggregationClassNames classNames)
         {
             var method = parent
                 .MakeChild(typeof(void), typeof(AggSvcGroupByReclaimAgedImpl), classScope)

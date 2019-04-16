@@ -73,7 +73,9 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             return new RelativeAccessByEventNIndexGetterImpl();
         }
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
         }
 

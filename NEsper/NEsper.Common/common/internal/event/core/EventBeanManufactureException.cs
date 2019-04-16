@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// </summary>
         /// <param name="message">message</param>
         /// <param name="innerException">cause</param>
-        public EventBeanManufactureException(string message, Exception innerException)
+        public EventBeanManufactureException(
+            string message,
+            Exception innerException)
             : base(message, innerException)
         {
         }

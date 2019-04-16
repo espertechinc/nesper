@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -19,123 +18,146 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public class ExprNodeUtilityAggregation {
+    public class ExprNodeUtilityAggregation
+    {
+        /// <summary>
+        /// Returns true if all properties within the expression are witin data window'd streams.
+        /// </summary>
+        /// <param name="child">expression to interrogate</param>
+        /// <param name="streamTypeService">streams</param>
+        /// <param name="unidirectionalJoin">indicator unidirection join</param>
+        /// <returns>indicator</returns>
+        public static bool HasRemoveStreamForAggregations(
+            ExprNode child,
+            StreamTypeService streamTypeService,
+            bool unidirectionalJoin)
+        {
+            // Determine whether all streams are istream-only or irstream
+            bool[] isIStreamOnly = streamTypeService.IStreamOnly;
+            bool isAllIStream = true; // all true?
+            bool isAllIRStream = true; // all false?
+            foreach (bool anIsIStreamOnly in isIStreamOnly) {
+                if (!anIsIStreamOnly) {
+                    isAllIStream = false;
+                }
+                else {
+                    isAllIRStream = false;
+                }
+            }
 
-	    /// <summary>
-	    /// Returns true if all properties within the expression are witin data window'd streams.
-	    /// </summary>
-	    /// <param name="child">expression to interrogate</param>
-	    /// <param name="streamTypeService">streams</param>
-	    /// <param name="unidirectionalJoin">indicator unidirection join</param>
-	    /// <returns>indicator</returns>
-	    public static bool HasRemoveStreamForAggregations(ExprNode child, StreamTypeService streamTypeService, bool unidirectionalJoin) {
+            // determine if a data-window applies to this max function
+            bool hasDataWindows = true;
+            if (isAllIStream) {
+                hasDataWindows = false;
+            }
+            else if (!isAllIRStream) {
+                if (streamTypeService.EventTypes.Length > 1) {
+                    if (unidirectionalJoin) {
+                        return false;
+                    }
 
-	        // Determine whether all streams are istream-only or irstream
-	        bool[] isIStreamOnly = streamTypeService.IStreamOnly;
-	        bool isAllIStream = true;    // all true?
-	        bool isAllIRStream = true;   // all false?
-	        foreach (bool anIsIStreamOnly in isIStreamOnly) {
-	            if (!anIsIStreamOnly) {
-	                isAllIStream = false;
-	            } else {
-	                isAllIRStream = false;
-	            }
-	        }
+                    // In a join we assume that a data window is present or implicit via unidirectional
+                }
+                else {
+                    hasDataWindows = false;
+                    // get all aggregated properties to determine if any is from a windowed stream
+                    ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
+                    child.Accept(visitor);
+                    foreach (ExprIdentNode node in visitor.ExprProperties) {
+                        if (!isIStreamOnly[node.StreamId]) {
+                            hasDataWindows = true;
+                            break;
+                        }
+                    }
+                }
+            }
 
-	        // determine if a data-window applies to this max function
-	        bool hasDataWindows = true;
-	        if (isAllIStream) {
-	            hasDataWindows = false;
-	        } else if (!isAllIRStream) {
-	            if (streamTypeService.EventTypes.Length > 1) {
-	                if (unidirectionalJoin) {
-	                    return false;
-	                }
-	                // In a join we assume that a data window is present or implicit via unidirectional
-	            } else {
-	                hasDataWindows = false;
-	                // get all aggregated properties to determine if any is from a windowed stream
-	                ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
-	                child.Accept(visitor);
-	                foreach (ExprIdentNode node in visitor.ExprProperties) {
-	                    if (!isIStreamOnly[node.StreamId]) {
-	                        hasDataWindows = true;
-	                        break;
-	                    }
-	                }
-	            }
-	        }
+            return hasDataWindows;
+        }
 
-	        return hasDataWindows;
-	    }
+        public static ExprNodePropOrStreamSet GetAggregatedProperties(IList<ExprAggregateNode> aggregateNodes)
+        {
+            // Get a list of properties being aggregated in the clause.
+            ExprNodePropOrStreamSet propertiesAggregated = new ExprNodePropOrStreamSet();
+            ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
+            foreach (ExprNode selectAggExprNode in aggregateNodes) {
+                visitor.Reset();
+                selectAggExprNode.Accept(visitor);
+                IList<ExprNodePropOrStreamDesc> properties = visitor.Refs;
+                propertiesAggregated.AddAll(properties);
+            }
 
-	    public static ExprNodePropOrStreamSet GetAggregatedProperties(IList<ExprAggregateNode> aggregateNodes) {
-	        // Get a list of properties being aggregated in the clause.
-	        ExprNodePropOrStreamSet propertiesAggregated = new ExprNodePropOrStreamSet();
-	        ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
-	        foreach (ExprNode selectAggExprNode in aggregateNodes) {
-	            visitor.Reset();
-	            selectAggExprNode.Accept(visitor);
-	            IList<ExprNodePropOrStreamDesc> properties = visitor.Refs;
-	            propertiesAggregated.AddAll(properties);
-	        }
+            return propertiesAggregated;
+        }
 
-	        return propertiesAggregated;
-	    }
+        public static void AddNonAggregatedProps(
+            ExprNode exprNode,
+            ExprNodePropOrStreamSet set,
+            EventType[] types,
+            ContextPropertyRegistry contextPropertyRegistry)
+        {
+            ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(false);
+            exprNode.Accept(visitor);
+            AddNonAggregatedProps(set, visitor.Refs, types, contextPropertyRegistry);
+        }
 
-	    public static void AddNonAggregatedProps(ExprNode exprNode, ExprNodePropOrStreamSet set, EventType[] types, ContextPropertyRegistry contextPropertyRegistry) {
-	        ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(false);
-	        exprNode.Accept(visitor);
-	        AddNonAggregatedProps(set, visitor.Refs, types, contextPropertyRegistry);
-	    }
+        public static ExprNodePropOrStreamSet GetNonAggregatedProps(
+            EventType[] types,
+            IList<ExprNode> exprNodes,
+            ContextPropertyRegistry contextPropertyRegistry)
+        {
+            // Determine all event properties in the clause
+            ExprNodePropOrStreamSet nonAggProps = new ExprNodePropOrStreamSet();
+            ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(false);
+            foreach (ExprNode node in exprNodes) {
+                visitor.Reset();
+                node.Accept(visitor);
+                AddNonAggregatedProps(nonAggProps, visitor.Refs, types, contextPropertyRegistry);
+            }
 
-	    public static ExprNodePropOrStreamSet GetNonAggregatedProps(EventType[] types, IList<ExprNode> exprNodes, ContextPropertyRegistry contextPropertyRegistry) {
-	        // Determine all event properties in the clause
-	        ExprNodePropOrStreamSet nonAggProps = new ExprNodePropOrStreamSet();
-	        ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(false);
-	        foreach (ExprNode node in exprNodes) {
-	            visitor.Reset();
-	            node.Accept(visitor);
-	            AddNonAggregatedProps(nonAggProps, visitor.Refs, types, contextPropertyRegistry);
-	        }
+            return nonAggProps;
+        }
 
-	        return nonAggProps;
-	    }
+        public static ExprNodePropOrStreamSet GetGroupByPropertiesValidateHasOne(ExprNode[] groupByNodes)
+        {
+            // Get the set of properties refered to by all group-by expression nodes.
+            ExprNodePropOrStreamSet propertiesGroupBy = new ExprNodePropOrStreamSet();
+            ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
 
-	    public static ExprNodePropOrStreamSet GetGroupByPropertiesValidateHasOne(ExprNode[] groupByNodes)
-	            {
-	        // Get the set of properties refered to by all group-by expression nodes.
-	        ExprNodePropOrStreamSet propertiesGroupBy = new ExprNodePropOrStreamSet();
-	        ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
+            foreach (ExprNode groupByNode in groupByNodes) {
+                visitor.Reset();
+                groupByNode.Accept(visitor);
+                IList<ExprNodePropOrStreamDesc> propertiesNode = visitor.Refs;
+                propertiesGroupBy.AddAll(propertiesNode);
 
-	        foreach (ExprNode groupByNode in groupByNodes) {
-	            visitor.Reset();
-	            groupByNode.Accept(visitor);
-	            IList<ExprNodePropOrStreamDesc> propertiesNode = visitor.Refs;
-	            propertiesGroupBy.AddAll(propertiesNode);
+                // For each group-by expression node, require at least one property.
+                if (propertiesNode.IsEmpty()) {
+                    throw new ExprValidationException("Group-by expressions must refer to property names");
+                }
+            }
 
-	            // For each group-by expression node, require at least one property.
-	            if (propertiesNode.IsEmpty()) {
-	                throw new ExprValidationException("Group-by expressions must refer to property names");
-	            }
-	        }
+            return propertiesGroupBy;
+        }
 
-	        return propertiesGroupBy;
-	    }
-
-	    private static void AddNonAggregatedProps(ExprNodePropOrStreamSet nonAggProps, IList<ExprNodePropOrStreamDesc> refs, EventType[] types, ContextPropertyRegistry contextPropertyRegistry) {
-	        foreach (ExprNodePropOrStreamDesc pair in refs) {
-	            if (pair is ExprNodePropOrStreamPropDesc) {
-	                ExprNodePropOrStreamPropDesc propDesc = (ExprNodePropOrStreamPropDesc) pair;
-	                EventType originType = types.Length > pair.StreamNum ? types[pair.StreamNum] : null;
-	                if (originType == null || contextPropertyRegistry == null || !contextPropertyRegistry.IsPartitionProperty(originType, propDesc.PropertyName)) {
-	                    nonAggProps.Add(pair);
-	                }
-	            } else {
-	                nonAggProps.Add(pair);
-	            }
-	        }
-	    }
-
-	}
+        private static void AddNonAggregatedProps(
+            ExprNodePropOrStreamSet nonAggProps,
+            IList<ExprNodePropOrStreamDesc> refs,
+            EventType[] types,
+            ContextPropertyRegistry contextPropertyRegistry)
+        {
+            foreach (ExprNodePropOrStreamDesc pair in refs) {
+                if (pair is ExprNodePropOrStreamPropDesc) {
+                    ExprNodePropOrStreamPropDesc propDesc = (ExprNodePropOrStreamPropDesc) pair;
+                    EventType originType = types.Length > pair.StreamNum ? types[pair.StreamNum] : null;
+                    if (originType == null || contextPropertyRegistry == null ||
+                        !contextPropertyRegistry.IsPartitionProperty(originType, propDesc.PropertyName)) {
+                        nonAggProps.Add(pair);
+                    }
+                }
+                else {
+                    nonAggProps.Add(pair);
+                }
+            }
+        }
+    }
 } // end of namespace

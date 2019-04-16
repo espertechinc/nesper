@@ -50,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         }
 
         public override CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return NewInstance(typeof(TableOuterLookupNode), LookupStrategySpec.Make(parent, symbols, classScope));
         }

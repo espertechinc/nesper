@@ -118,7 +118,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         }
 
         public static ExprTableIdentNode GetTableIdentNode(
-            StreamTypeService streamTypeService, string unresolvedPropertyName, string streamOrPropertyName,
+            StreamTypeService streamTypeService,
+            string unresolvedPropertyName,
+            string streamOrPropertyName,
             TableCompileTimeResolver resolver)
         {
             var propertyPrefixed = unresolvedPropertyName;
@@ -144,7 +146,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         }
 
         public static Pair<ExprTableAccessNode, ExprDotNode> MapPropertyToTableNested(
-            TableCompileTimeResolver resolver, string stream, string subproperty)
+            TableCompileTimeResolver resolver,
+            string stream,
+            string subproperty)
         {
             TableMetaData table = resolver.Resolve(stream);
             int? indexIfIndexed = null;
@@ -215,7 +219,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         }
 
         private static StreamTableColWStreamName FindTableColumnMayByPrefixed(
-            StreamTypeService streamTypeService, string streamAndPropName, TableCompileTimeResolver resolver)
+            StreamTypeService streamTypeService,
+            string streamAndPropName,
+            TableCompileTimeResolver resolver)
         {
             var indexDot = streamAndPropName.IndexOf(".");
             if (indexDot == -1) {
@@ -243,7 +249,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         }
 
         private static StreamTableColPair FindTableColumnAcrossStreams(
-            StreamTypeService streamTypeService, string columnName, TableCompileTimeResolver resolver)
+            StreamTypeService streamTypeService,
+            string columnName,
+            TableCompileTimeResolver resolver)
         {
             StreamTableColPair found = null;
             for (var i = 0; i < streamTypeService.EventTypes.Length; i++) {
@@ -273,7 +281,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         }
 
         private static StreamTableColPair FindTableColumnForType(
-            int streamNum, EventType type, string columnName, TableCompileTimeResolver resolver)
+            int streamNum,
+            EventType type,
+            string columnName,
+            TableCompileTimeResolver resolver)
         {
             TableMetaData tableMetadata = resolver.ResolveTableFromEventType(type);
             if (tableMetadata != null) {
@@ -293,7 +304,8 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         /// <param name="resolver">resolver</param>
         /// <returns>expression null or node</returns>
         public static ExprTableAccessNode MapPropertyToTableUnnested(
-            string propertyName, TableCompileTimeResolver resolver)
+            string propertyName,
+            TableCompileTimeResolver resolver)
         {
             // try regular property
             TableMetaData table = resolver.Resolve(propertyName);
@@ -313,7 +325,8 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         }
 
         private static Pair<IndexedProperty, TableMetaData> MapPropertyToTable(
-            string propertyName, TableCompileTimeResolver resolver)
+            string propertyName,
+            TableCompileTimeResolver resolver)
         {
             try {
                 Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
@@ -338,7 +351,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public class StreamTableColPair
         {
-            public StreamTableColPair(int streamNum, TableMetadataColumn column, TableMetaData tableMetadata)
+            public StreamTableColPair(
+                int streamNum,
+                TableMetadataColumn column,
+                TableMetaData tableMetadata)
             {
                 StreamNum = streamNum;
                 Column = column;
@@ -354,7 +370,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public class StreamTableColWStreamName
         {
-            public StreamTableColWStreamName(StreamTableColPair pair, string optionalStreamName)
+            public StreamTableColWStreamName(
+                StreamTableColPair pair,
+                string optionalStreamName)
             {
                 Pair = pair;
                 OptionalStreamName = optionalStreamName;

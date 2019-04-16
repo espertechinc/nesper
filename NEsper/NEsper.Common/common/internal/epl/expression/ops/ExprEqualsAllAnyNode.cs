@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// </summary>
         /// <param name="isNotEquals">true if this is a (!=) not equals rather then equals, false if its a '=' equals</param>
         /// <param name="isAll">true if all, false for any</param>
-        public ExprEqualsAllAnyNode(bool isNotEquals, bool isAll)
+        public ExprEqualsAllAnyNode(
+            bool isNotEquals,
+            bool isAll)
         {
             IsNot = isNotEquals;
             IsAll = isAll;
@@ -77,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
 
             // collections, array or map not supported
-            if (typeOne.IsArray 
+            if (typeOne.IsArray
                 || typeOne.IsGenericCollection()
                 || typeOne.IsGenericStringDictionary()) {
                 throw new ExprValidationException(
@@ -137,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ChildNodes[0].ToEPL(writer, Precedence);
             if (IsAll) {
@@ -169,7 +171,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             writer.Write(")");
         }
 
-        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
         {
             if (!(node is ExprEqualsAllAnyNode)) {
                 return false;

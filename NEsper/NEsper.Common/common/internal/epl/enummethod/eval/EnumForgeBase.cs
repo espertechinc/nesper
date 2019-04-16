@@ -16,33 +16,37 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-	public abstract class EnumForgeBase : EnumForge {
-	    internal ExprForge innerExpression;
-	    internal int streamNumLambda;
+    public abstract class EnumForgeBase : EnumForge
+    {
+        internal ExprForge innerExpression;
+        internal int streamNumLambda;
 
-	    public EnumForgeBase(ExprForge innerExpression, int streamCountIncoming)
-	        : this(streamCountIncoming)
-	    {
-	        this.innerExpression = innerExpression;
-	    }
+        public EnumForgeBase(
+            ExprForge innerExpression,
+            int streamCountIncoming)
+            : this(streamCountIncoming)
+        {
+            this.innerExpression = innerExpression;
+        }
 
-	    public EnumForgeBase(int streamCountIncoming) {
-	        this.streamNumLambda = streamCountIncoming;
-	    }
+        public EnumForgeBase(int streamCountIncoming)
+        {
+            this.streamNumLambda = streamCountIncoming;
+        }
 
-	    public ExprForge InnerExpression
-	    {
-	        get => innerExpression;
-	    }
+        public ExprForge InnerExpression {
+            get => innerExpression;
+        }
 
-	    public int StreamNumSize
-	    {
-	        get => streamNumLambda + 1;
-	    }
+        public int StreamNumSize {
+            get => streamNumLambda + 1;
+        }
 
-	    public abstract EnumEval EnumEvaluator { get; }
+        public abstract EnumEval EnumEvaluator { get; }
 
-	    public abstract CodegenExpression Codegen(
-	        EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
-	}
+        public abstract CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
+    }
 } // end of namespace

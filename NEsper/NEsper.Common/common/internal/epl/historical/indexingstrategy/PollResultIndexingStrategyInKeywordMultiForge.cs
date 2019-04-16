@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         private readonly string[] propertyNames;
         private readonly int streamNum;
 
-        public PollResultIndexingStrategyInKeywordMultiForge(int streamNum, EventType eventType, string[] propertyNames)
+        public PollResultIndexingStrategyInKeywordMultiForge(
+            int streamNum,
+            EventType eventType,
+            string[] propertyNames)
         {
             this.streamNum = streamNum;
             this.eventType = eventType;
@@ -34,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategyInKeywordMulti), GetType(), classScope);
 

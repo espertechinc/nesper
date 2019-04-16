@@ -104,8 +104,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         }
 
         private static IList<ObjectBindingPair>[] GetOperatorConsumersPerStream(
-            int numOutputStreams, int producingOperator, IDictionary<int, object> operators,
-            IDictionary<int, OperatorMetadataDescriptor> operatorMetadata, IList<LogicalChannelBinding> bindings)
+            int numOutputStreams,
+            int producingOperator,
+            IDictionary<int, object> operators,
+            IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
+            IList<LogicalChannelBinding> bindings)
         {
             IList<LogicalChannelBinding> channelsForProducer =
                 LogicalChannelUtil.GetBindingsConsuming(producingOperator, bindings);
@@ -131,7 +134,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         }
 
         private static SignalHandler GetSignalHandler(
-            int producerNum, object target, LogicalChannelBindingMethodDesc consumingSignalBindingDesc,
+            int producerNum,
+            object target,
+            LogicalChannelBindingMethodDesc consumingSignalBindingDesc,
             ImportService importService)
         {
             if (consumingSignalBindingDesc == null) {
@@ -152,9 +157,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         }
 
         private static SubmitHandler GetSubmitHandler(
-            AgentInstanceContext agentInstanceContext, string dataflowName, string instanceId, int producerOpNum,
-            string operatorPrettyPrint, DataFlowSignalManager dataFlowSignalManager, ObjectBindingPair target,
-            EPDataFlowExceptionHandler optionalExceptionHandler, ImportService importService)
+            AgentInstanceContext agentInstanceContext,
+            string dataflowName,
+            string instanceId,
+            int producerOpNum,
+            string operatorPrettyPrint,
+            DataFlowSignalManager dataFlowSignalManager,
+            ObjectBindingPair target,
+            EPDataFlowExceptionHandler optionalExceptionHandler,
+            ImportService importService)
         {
             var signalHandler = GetSignalHandler(
                 producerOpNum, target.Target, target.Binding.ConsumingSignalBindingDesc, importService);

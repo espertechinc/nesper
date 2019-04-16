@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.view.derived;
 using com.espertech.esper.common.@internal.view.expression;
@@ -38,65 +37,66 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
-	public interface ViewFactoryService {
-	    LengthWindowViewFactory Length();
+    public interface ViewFactoryService
+    {
+        LengthWindowViewFactory Length();
 
-	    PriorEventViewFactory Prior();
+        PriorEventViewFactory Prior();
 
-	    TimeWindowViewFactory Time();
+        TimeWindowViewFactory Time();
 
-	    KeepAllViewFactory Keepall();
+        KeepAllViewFactory Keepall();
 
-	    TimeBatchViewFactory Timebatch();
+        TimeBatchViewFactory Timebatch();
 
-	    TimeLengthBatchViewFactory Timelengthbatch();
+        TimeLengthBatchViewFactory Timelengthbatch();
 
-	    LengthBatchViewFactory Lengthbatch();
+        LengthBatchViewFactory Lengthbatch();
 
-	    SortWindowViewFactory Sort();
+        SortWindowViewFactory Sort();
 
-	    RankWindowViewFactory Rank();
+        RankWindowViewFactory Rank();
 
-	    TimeAccumViewFactory Timeaccum();
+        TimeAccumViewFactory Timeaccum();
 
-	    UniqueByPropertyViewFactory Unique();
+        UniqueByPropertyViewFactory Unique();
 
-	    FirstUniqueByPropertyViewFactory Firstunique();
+        FirstUniqueByPropertyViewFactory Firstunique();
 
-	    FirstTimeViewFactory Firsttime();
+        FirstTimeViewFactory Firsttime();
 
-	    TimeOrderViewFactory Timeorder();
+        TimeOrderViewFactory Timeorder();
 
-	    ExternallyTimedBatchViewFactory Exttimebatch();
+        ExternallyTimedBatchViewFactory Exttimebatch();
 
-	    ExternallyTimedWindowViewFactory Exttime();
+        ExternallyTimedWindowViewFactory Exttime();
 
-	    LastEventViewFactory Lastevent();
+        LastEventViewFactory Lastevent();
 
-	    FirstEventViewFactory Firstevent();
+        FirstEventViewFactory Firstevent();
 
-	    FirstLengthWindowViewFactory Firstlength();
+        FirstLengthWindowViewFactory Firstlength();
 
-	    SizeViewFactory Size();
+        SizeViewFactory Size();
 
-	    UnivariateStatisticsViewFactory Uni();
+        UnivariateStatisticsViewFactory Uni();
 
-	    WeightedAverageViewFactory Weightedavg();
+        WeightedAverageViewFactory Weightedavg();
 
-	    RegressionLinestViewFactory Regression();
+        RegressionLinestViewFactory Regression();
 
-	    CorrelationViewFactory Correlation();
+        CorrelationViewFactory Correlation();
 
-	    GroupByViewFactory Group();
+        GroupByViewFactory Group();
 
-	    IntersectViewFactory Intersect();
+        IntersectViewFactory Intersect();
 
-	    UnionViewFactory Union();
+        UnionViewFactory Union();
 
-	    ExpressionBatchViewFactory Exprbatch();
+        ExpressionBatchViewFactory Exprbatch();
 
-	    ExpressionWindowViewFactory Expr();
+        ExpressionWindowViewFactory Expr();
 
-	    RowRecogNFAViewFactory RowRecog();
-	}
+        RowRecogNFAViewFactory RowRecog();
+    }
 } // end of namespace

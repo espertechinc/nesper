@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Xml;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
@@ -16,61 +15,85 @@ using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.util
 {
-	public class DOMUtil {
-	    public static void ParseRequiredBoolean(XmlElement element, string name, Consumer<Boolean> func) {
-	        string str = GetRequiredAttribute(element, name);
-	        bool b = ParseBoolean(name, str);
-	        func.Accept(b);
-	    }
+    public class DOMUtil
+    {
+        public static void ParseRequiredBoolean(
+            XmlElement element,
+            string name,
+            Consumer<bool> func)
+        {
+            var str = GetRequiredAttribute(element, name);
+            var b = ParseBoolean(name, str);
+            func.Invoke(b);
+        }
 
-	    public static void ParseOptionalBoolean(XmlElement element, string name, Consumer<Boolean> func) {
-	        string str = GetOptionalAttribute(element, name);
-	        if (str != null) {
-	            bool b = ParseBoolean(name, str);
-	            func.Accept(b);
-	        }
-	    }
+        public static void ParseOptionalBoolean(
+            XmlElement element,
+            string name,
+            Consumer<bool> func)
+        {
+            var str = GetOptionalAttribute(element, name);
+            if (str != null) {
+                var b = ParseBoolean(name, str);
+                func.Invoke(b);
+            }
+        }
 
-	    public static string GetRequiredAttribute(XmlNode node, string key) {
-	        XmlNode valueNode = node.Attributes.GetNamedItem(key);
-	        if (valueNode == null) {
-	            string name = node.LocalName;
-	            if (name == null) {
-	                name = node.NodeName;
-	            }
-	            throw new ConfigurationException("Required attribute by name '" + key + "' not found for element '" + name + "'");
-	        }
-	        return valueNode.TextContent;
-	    }
+        public static string GetRequiredAttribute(
+            XmlNode node,
+            string key)
+        {
+            var valueNode = node.Attributes.GetNamedItem(key);
+            if (valueNode == null) {
+                var name = node.LocalName;
+                if (name == null) {
+                    name = node.Name;
+                }
 
-	    public static string GetOptionalAttribute(XmlNode node, string key) {
-	        XmlNode valueNode = node.Attributes.GetNamedItem(key);
-	        if (valueNode != null) {
-	            return valueNode.TextContent;
-	        }
-	        return null;
-	    }
+                throw new ConfigurationException("Required attribute by name '" + key + "' not found for element '" + name + "'");
+            }
 
-	    public static Properties GetProperties(XmlElement element, string propElementName) {
-	        Properties properties = new Properties();
-	        DOMElementEnumerator nodeEnumerator = new DOMElementEnumerator(element.ChildNodes);
-	        while (nodeEnumerator.HasNext) {
-	            XmlElement subElement = nodeEnumerator.Next();
-	            if (subElement.NodeName.Equals(propElementName)) {
-	                string name = GetRequiredAttribute(subElement, "name");
-	                string value = GetRequiredAttribute(subElement, "value");
-	                properties.Put(name, value);
-	            }
-	        }
-	        return properties;
-	    }
+            return valueNode.InnerText;
+        }
 
-	    private static bool ParseBoolean(string name, string str) {
-	        try {
-	            return Boolean.Parse(str);
-	        } catch (Throwable t) {
-	            throw new ConfigurationException("Failed to parse value for '" + name + "' value '" + str + "' as boolean: " + t.Message, t);
-	        }
-	    }
-	}
+        public static string GetOptionalAttribute(
+            XmlNode node,
+            string key)
+        {
+            var valueNode = node.Attributes.GetNamedItem(key);
+            if (valueNode != null) {
+                return valueNode.InnerText;
+            }
+
+            return null;
+        }
+
+        public static Properties GetProperties(
+            XmlElement element,
+            string propElementName)
+        {
+            var properties = new Properties();
+            foreach (var subElement in DOMElementEnumerator.For(element.ChildNodes)) {
+                if (subElement.Name.Equals(propElementName)) {
+                    var name = GetRequiredAttribute(subElement, "name");
+                    var value = GetRequiredAttribute(subElement, "value");
+                    properties.Put(name, value);
+                }
+            }
+
+            return properties;
+        }
+
+        private static bool ParseBoolean(
+            string name,
+            string str)
+        {
+            try {
+                return bool.Parse(str);
+            }
+            catch (Exception t) {
+                throw new ConfigurationException("Failed to parse value for '" + name + "' value '" + str + "' as boolean: " + t.Message, t);
+            }
+        }
+    }
 } // end of namespace

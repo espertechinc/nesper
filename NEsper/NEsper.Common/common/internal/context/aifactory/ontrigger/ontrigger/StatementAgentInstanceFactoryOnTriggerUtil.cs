@@ -16,7 +16,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
     {
         public static StatementAgentInstanceLock ObtainAgentInstanceLock(
             StatementAgentInstanceFactoryOnTriggerInfraBase @base,
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             var namedWindow = @base.NamedWindow;
             if (namedWindow != null) {

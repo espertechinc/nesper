@@ -20,9 +20,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         ExprNode Expression { get; }
 
         void InitAccessForge(
-            int col, bool join, CodegenCtor ctor, CodegenMemberCol membersColumnized, CodegenClassScope classScope);
+            int col,
+            bool join,
+            CodegenCtor ctor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope);
 
         CodegenExpression CodegenGetAccessTableState(
-            int column, CodegenMethodScope parent, CodegenClassScope classScope);
+            int column,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope);
     }
 } // end of namespace

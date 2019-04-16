@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
@@ -21,36 +20,90 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
 {
-	public class EventTableIndexServiceImpl : EventTableIndexService {
+    public class EventTableIndexServiceImpl : EventTableIndexService
+    {
+        public readonly static EventTableIndexServiceImpl INSTANCE = new EventTableIndexServiceImpl();
 
-	    public readonly static EventTableIndexServiceImpl INSTANCE = new EventTableIndexServiceImpl();
+        public bool AllowInitIndex(bool isRecoveringResilient)
+        {
+            return true;
+        }
 
-	    public bool AllowInitIndex(bool isRecoveringResilient) {
-	        return true;
-	    }
+        public EventTableFactory CreateHashedOnly(
+            int indexedStreamNum,
+            EventType eventType,
+            string[] indexProps,
+            Type[] indexTypes,
+            bool unique,
+            string optionalIndexName,
+            EventPropertyValueGetter getter,
+            object optionalSerde,
+            bool isFireAndForget,
+            StatementContext statementContext)
+        {
+            return new PropertyHashedEventTableFactory(indexedStreamNum, indexProps, unique, optionalIndexName, getter);
+        }
 
-	    public EventTableFactory CreateHashedOnly(int indexedStreamNum, EventType eventType, string[] indexProps, Type[] indexTypes, bool unique, string optionalIndexName, EventPropertyValueGetter getter, object optionalSerde, bool isFireAndForget, StatementContext statementContext) {
-	        return new PropertyHashedEventTableFactory(indexedStreamNum, indexProps, unique, optionalIndexName, getter);
-	    }
+        public EventTableFactory CreateUnindexed(
+            int indexedStreamNum,
+            EventType eventType,
+            object optionalSerde,
+            bool isFireAndForget,
+            StatementContext statementContext)
+        {
+            return new UnindexedEventTableFactory(indexedStreamNum);
+        }
 
-	    public EventTableFactory CreateUnindexed(int indexedStreamNum, EventType eventType, object optionalSerde, bool isFireAndForget, StatementContext statementContext) {
-	        return new UnindexedEventTableFactory(indexedStreamNum);
-	    }
+        public EventTableFactory CreateSorted(
+            int indexedStreamNum,
+            EventType eventType,
+            string indexedProp,
+            Type indexType,
+            EventPropertyValueGetter getter,
+            object optionalSerde,
+            bool isFireAndForget,
+            StatementContext statementContext)
+        {
+            return new PropertySortedEventTableFactory(indexedStreamNum, indexedProp, getter, indexType);
+        }
 
-	    public EventTableFactory CreateSorted(int indexedStreamNum, EventType eventType, string indexedProp, Type indexType, EventPropertyValueGetter getter, object optionalSerde, bool isFireAndForget, StatementContext statementContext) {
-	        return new PropertySortedEventTableFactory(indexedStreamNum, indexedProp, getter, indexType);
-	    }
+        public EventTableFactory CreateComposite(
+            int indexedStreamNum,
+            EventType eventType,
+            string[] indexProps,
+            Type[] indexCoercionTypes,
+            EventPropertyValueGetter indexGetter,
+            string[] rangeProps,
+            Type[] rangeCoercionTypes,
+            EventPropertyValueGetter[] rangeGetters,
+            object optionalSerde,
+            bool isFireAndForget)
+        {
+            return new PropertyCompositeEventTableFactory(
+                indexedStreamNum, indexProps, indexCoercionTypes, indexGetter, rangeProps, rangeCoercionTypes, rangeGetters);
+        }
 
-	    public EventTableFactory CreateComposite(int indexedStreamNum, EventType eventType, string[] indexProps, Type[] indexCoercionTypes, EventPropertyValueGetter indexGetter, string[] rangeProps, Type[] rangeCoercionTypes, EventPropertyValueGetter[] rangeGetters, object optionalSerde, bool isFireAndForget) {
-	        return new PropertyCompositeEventTableFactory(indexedStreamNum, indexProps, indexCoercionTypes, indexGetter, rangeProps, rangeCoercionTypes, rangeGetters);
-	    }
+        public EventTableFactory CreateInArray(
+            int streamNum,
+            EventType eventType,
+            string[] propertyNames,
+            Type[] indexTypes,
+            bool unique,
+            EventPropertyValueGetter[] getters,
+            bool isFireAndForget,
+            StatementContext statementContext)
+        {
+            return new PropertyHashedArrayFactory(streamNum, propertyNames, unique, null, getters);
+        }
 
-	    public EventTableFactory CreateInArray(int streamNum, EventType eventType, string[] propertyNames, Type[] indexTypes, bool unique, EventPropertyValueGetter[] getters, bool isFireAndForget, StatementContext statementContext) {
-	        return new PropertyHashedArrayFactory(streamNum, propertyNames, unique, null, getters);
-	    }
-
-	    public EventTableFactory CreateCustom(string indexName, int indexedStreamNum, EventType eventType, bool unique, EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc) {
-	        return new EventTableFactoryCustomIndex(indexName, indexedStreamNum, eventType, unique, advancedIndexProvisionDesc);
-	    }
-	}
+        public EventTableFactory CreateCustom(
+            string indexName,
+            int indexedStreamNum,
+            EventType eventType,
+            bool unique,
+            EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc)
+        {
+            return new EventTableFactoryCustomIndex(indexName, indexedStreamNum, eventType, unique, advancedIndexProvisionDesc);
+        }
+    }
 } // end of namespace

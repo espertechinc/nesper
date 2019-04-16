@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     public class ExprDotNodeForgeVariable : ExprDotNodeForge
     {
         public ExprDotNodeForgeVariable(
-            ExprDotNodeImpl parent, VariableMetaData variable, ExprDotStaticMethodWrap resultWrapLambda,
+            ExprDotNodeImpl parent,
+            VariableMetaData variable,
+            ExprDotStaticMethodWrap resultWrapLambda,
             ExprDotForge[] chainForge)
         {
             ForgeRenderable = parent;
@@ -60,14 +62,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public ExprDotForge[] ChainForge { get; }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return ExprDotNodeForgeVariableEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(

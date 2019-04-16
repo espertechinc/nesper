@@ -33,8 +33,11 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         private bool isCallbackScheduled;
 
         public OutputConditionCrontab(
-            OutputCallback outputCallback, AgentInstanceContext context, bool isStartConditionOnCreation,
-            ScheduleSpec scheduleSpec) : base(outputCallback)
+            OutputCallback outputCallback,
+            AgentInstanceContext context,
+            bool isStartConditionOnCreation,
+            ScheduleSpec scheduleSpec)
+            : base(outputCallback)
         {
             this.context = context;
             this.scheduleSpec = scheduleSpec;
@@ -44,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             }
         }
 
-        public override void UpdateOutputCondition(int newEventsCount, int oldEventsCount)
+        public override void UpdateOutputCondition(
+            int newEventsCount,
+            int oldEventsCount)
         {
             if (currentReferencePoint == null) {
                 currentReferencePoint = context.StatementContext.SchedulingService.Time;

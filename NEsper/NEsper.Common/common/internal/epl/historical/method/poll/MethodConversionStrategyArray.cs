@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;
@@ -26,18 +25,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             MethodTargetStrategy origin,
             AgentInstanceContext agentInstanceContext)
         {
-            var array = (Array)invocationResult;
+            var array = (Array) invocationResult;
             var length = array.Length;
-            if (length == 0)
-            {
+            if (length == 0) {
                 return Collections.GetEmptyList<EventBean>();
             }
 
-            if (length == 1)
-            {
+            if (length == 1) {
                 var value = array.GetValue(0);
-                if (CheckNonNullArrayValue(value, origin))
-                {
+                if (CheckNonNullArrayValue(value, origin)) {
                     var @event = GetEventBean(value, agentInstanceContext);
                     return Collections.SingletonList(@event);
                 }
@@ -46,11 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             }
 
             var rowResult = new List<EventBean>(length);
-            for (var i = 0; i < length; i++)
-            {
+            for (var i = 0; i < length; i++) {
                 var value = array.GetValue(i);
-                if (CheckNonNullArrayValue(value, origin))
-                {
+                if (CheckNonNullArrayValue(value, origin)) {
                     var @event = GetEventBean(value, agentInstanceContext);
                     rowResult.Add(@event);
                 }

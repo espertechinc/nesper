@@ -36,18 +36,25 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         public int ScheduleCallbackId { get; set; } = -1;
 
         public Guard MakeGuard(
-            PatternAgentInstanceContext context, MatchedEventMap beginState, Quitable quitable, object guardState)
+            PatternAgentInstanceContext context,
+            MatchedEventMap beginState,
+            Quitable quitable,
+            object guardState)
         {
             return new TimerWithinOrMaxCountGuard(
                 ComputeTime(beginState, context), ComputeNumCountTo(beginState, context), quitable);
         }
 
-        public long ComputeTime(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public long ComputeTime(
+            MatchedEventMap beginState,
+            PatternAgentInstanceContext context)
         {
             return deltaCompute.ComputeDelta(beginState, context);
         }
 
-        public int ComputeNumCountTo(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public int ComputeNumCountTo(
+            MatchedEventMap beginState,
+            PatternAgentInstanceContext context)
         {
             var events = optionalConvertor == null ? null : optionalConvertor.Convert(beginState);
             var numCountToVal = PatternExpressionUtil.EvaluateChecked(

@@ -35,12 +35,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         internal readonly TableMetaData table;
 
         public StatementAgentInstanceFactoryOnTriggerInfraBaseForge(
-            ViewableActivatorForge activator, 
+            ViewableActivatorForge activator,
             EventType resultEventType,
             IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects,
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccesses,
-            string nonSelectRSPProviderClassName, 
-            NamedWindowMetaData namedWindow, 
+            string nonSelectRSPProviderClassName,
+            NamedWindowMetaData namedWindow,
             TableMetaData table,
             SubordinateWMatchExprQueryPlanForge queryPlanForge)
             : base(activator, resultEventType, subselects, tableAccesses)
@@ -53,11 +53,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         }
 
         protected abstract void InlineInitializeOnTriggerSpecific(
-            CodegenExpressionRef saiff, CodegenMethod method, SAIFFInitializeSymbol symbols,
+            CodegenExpressionRef saiff,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
 
         public override void InlineInitializeOnTriggerBase(
-            CodegenExpressionRef saiff, CodegenMethod method, SAIFFInitializeSymbol symbols,
+            CodegenExpressionRef saiff,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             method.Block

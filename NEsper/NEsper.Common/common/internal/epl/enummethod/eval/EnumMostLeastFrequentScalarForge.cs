@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -37,8 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             this.returnType = returnType;
         }
 
-        public override EnumEval EnumEvaluator
-        {
+        public override EnumEval EnumEvaluator {
             get => this;
         }
 
@@ -48,22 +45,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            if (enumcoll.IsEmpty())
-            {
+            if (enumcoll.IsEmpty()) {
                 return null;
             }
 
             IDictionary<object, int> items = new LinkedHashMap<object, int>();
 
-            foreach (object next in enumcoll)
-            {
+            foreach (object next in enumcoll) {
                 int? existing = items.Get(next);
-                if (existing == null)
-                {
+                if (existing == null) {
                     existing = 1;
                 }
-                else
-                {
+                else {
                     existing++;
                 }
 

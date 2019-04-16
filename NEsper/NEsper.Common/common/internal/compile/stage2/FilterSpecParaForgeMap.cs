@@ -6,9 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
@@ -17,16 +15,16 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
     /// <summary>
-    /// A two-sided map for filter parameters mapping filter expression nodes to filter parameters and
-    /// back. For use in optimizing filter expressions.
+    ///     A two-sided map for filter parameters mapping filter expression nodes to filter parameters and
+    ///     back. For use in optimizing filter expressions.
     /// </summary>
     public class FilterSpecParaForgeMap
     {
-        private IDictionary<ExprNode, FilterSpecParamForge> exprNodes;
-        private IDictionary<FilterSpecParamForge, ExprNode> specParams;
+        private readonly IDictionary<ExprNode, FilterSpecParamForge> exprNodes;
+        private readonly IDictionary<FilterSpecParamForge, ExprNode> specParams;
 
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         public FilterSpecParaForgeMap()
         {
@@ -35,11 +33,36 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         }
 
         /// <summary>
-        /// Add a node and filter param.
+        ///     Returns all expression nodes for which no filter parameter exists.
+        /// </summary>
+        /// <value>list of expression nodes</value>
+        public IList<ExprNode> UnassignedExpressions {
+            get {
+                IList<ExprNode> unassigned = new List<ExprNode>();
+                foreach (var entry in exprNodes) {
+                    if (entry.Value == null) {
+                        unassigned.Add(entry.Key);
+                    }
+                }
+
+                return unassigned;
+            }
+        }
+
+        /// <summary>
+        ///     Returns all filter parameters.
+        /// </summary>
+        /// <value>filter parameters</value>
+        public ICollection<FilterSpecParamForge> FilterParams => specParams.Keys;
+
+        /// <summary>
+        ///     Add a node and filter param.
         /// </summary>
         /// <param name="exprNode">is the node to add</param>
         /// <param name="param">is null if the expression node has not optimized form</param>
-        public void Put(ExprNode exprNode, FilterSpecParamForge param)
+        public void Put(
+            ExprNode exprNode,
+            FilterSpecParamForge param)
         {
             exprNodes.Put(exprNode, param);
             if (param != null) {
@@ -47,26 +70,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
         }
 
-        /// <summary>
-        /// Returns all expression nodes for which no filter parameter exists.
-        /// </summary>
-        /// <returns>list of expression nodes</returns>
-        public IList<ExprNode> GetUnassignedExpressions()
-        {
-            IList<ExprNode> unassigned = new List<ExprNode>();
-            foreach (KeyValuePair<ExprNode, FilterSpecParamForge> entry in exprNodes) {
-                if (entry.Value == null) {
-                    unassigned.Add(entry.Key);
-                }
-            }
-
-            return unassigned;
-        }
-
         public int CountUnassignedExpressions()
         {
-            int count = 0;
-            foreach (KeyValuePair<ExprNode, FilterSpecParamForge> entry in exprNodes) {
+            var count = 0;
+            foreach (var entry in exprNodes) {
                 if (entry.Value == null) {
                     count++;
                 }
@@ -75,31 +82,22 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return count;
         }
 
-        /// <summary>
-        /// Returns all filter parameters.
-        /// </summary>
-        /// <returns>filter parameters</returns>
-        public ICollection<FilterSpecParamForge> GetFilterParams()
-        {
-            return specParams.Keys;
-        }
-
         public void RemoveNode(ExprNode node)
         {
-            FilterSpecParamForge param = exprNodes.Remove(node);
+            FilterSpecParamForge param = exprNodes.Delete(node);
             if (param != null) {
                 specParams.Remove(param);
             }
         }
 
         /// <summary>
-        /// Removes a filter parameter and it's associated expression node
+        ///     Removes a filter parameter and it's associated expression node
         /// </summary>
         /// <param name="param">is the parameter to remove</param>
         /// <returns>expression node removed</returns>
         public ExprNode RemoveEntry(FilterSpecParamForge param)
         {
-            ExprNode exprNode = specParams.Get(param);
+            var exprNode = specParams.Get(param);
             if (exprNode == null) {
                 throw new IllegalStateException("Not found in collection param: " + param);
             }
@@ -111,12 +109,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         }
 
         /// <summary>
-        /// Remove a filter parameter leaving the expression node in place.
+        ///     Remove a filter parameter leaving the expression node in place.
         /// </summary>
         /// <param name="param">filter parameter to remove</param>
         public void RemoveValue(FilterSpecParamForge param)
         {
-            ExprNode exprNode = specParams.Get(param);
+            var exprNode = specParams.Get(param);
             if (exprNode == null) {
                 throw new IllegalStateException("Not found in collection param: " + param);
             }

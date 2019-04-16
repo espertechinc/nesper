@@ -25,8 +25,12 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExpressionScriptCompiled compiled;
             try {
                 compiled = ExpressionNodeScriptCompiler.CompileScript(
-                    dialect, descriptor.ScriptName, descriptor.Expression, descriptor.ParameterNames,
-                    descriptor.EvaluationTypes, null, descriptor.ImportService);
+                    dialect, 
+                    descriptor.ScriptName, 
+                    descriptor.Expression,
+                    descriptor.ParameterNames,
+                    descriptor.EvaluationTypes, null, 
+                    descriptor.ImportService);
             }
             catch (ExprValidationException ex) {
                 throw new EPException("Failed to compile script '" + descriptor.ScriptName + "': " + ex.Message);

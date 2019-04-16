@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             this.processor = processor;
         }
 
-        public void ProcessView(EventBean[] newData, EventBean[] oldData)
+        public void ProcessView(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             if (!processor.HasHavingClause) {
                 AddToView(newData, oldData);
@@ -65,7 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             }
         }
 
-        public void ProcessJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        public void ProcessJoin(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents)
         {
             if (!processor.HasHavingClause) {
                 AddToJoin(newEvents, oldEvents);
@@ -122,13 +126,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             // no action required
         }
 
-        private void AddToView(EventBean[] newData, EventBean[] oldData)
+        private void AddToView(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             EventBeanUtility.AddToCollection(newData, eventsNewView);
             EventBeanUtility.AddToCollection(oldData, eventsOldView);
         }
 
-        private void AddToJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        private void AddToJoin(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents)
         {
             EventBeanUtility.AddToCollection(newEvents, eventsNewJoin);
             EventBeanUtility.AddToCollection(oldEvents, eventsOldJoin);

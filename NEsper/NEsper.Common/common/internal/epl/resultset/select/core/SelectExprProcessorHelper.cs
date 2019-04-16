@@ -177,19 +177,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     // if there is insert-into specification, use that
                     if (insertIntoDesc != null) {
                         // handle insert-into, with well-defined target event-typed column, and enumeration
-                        var pair = HandleInsertIntoEnumeration(
+                        var pairInner = HandleInsertIntoEnumeration(
                             spec.ProvidedName, insertIntoTargetsPerCol[i], forge);
-                        if (pair != null) {
-                            expressionReturnTypes[i] = pair.Type;
-                            exprForges[i] = pair.Forge;
+                        if (pairInner != null) {
+                            expressionReturnTypes[i] = pairInner.Type;
+                            exprForges[i] = pairInner.Forge;
                             continue;
                         }
 
                         // handle insert-into with well-defined target event-typed column, and typable expression
-                        pair = HandleInsertIntoTypableExpression(insertIntoTargetsPerCol[i], forge, args);
-                        if (pair != null) {
-                            expressionReturnTypes[i] = pair.Type;
-                            exprForges[i] = pair.Forge;
+                        pairInner = HandleInsertIntoTypableExpression(insertIntoTargetsPerCol[i], forge, args);
+                        if (pairInner != null) {
+                            expressionReturnTypes[i] = pairInner.Type;
+                            exprForges[i] = pairInner.Forge;
                             continue;
                         }
                     }
@@ -242,25 +242,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                     columnNames = new string[selectionList.Count + namedStreams.Count + numStreamColumnsJoin];
                     columnNamesAsProvided = new string[columnNames.Length];
-                    var count = 0;
+                    var countInner = 0;
                     foreach (var aSelectionList in selectionList) {
-                        columnNames[count] = aSelectionList.AssignedName;
-                        columnNamesAsProvided[count] = aSelectionList.ProvidedName;
-                        count++;
+                        columnNames[countInner] = aSelectionList.AssignedName;
+                        columnNamesAsProvided[countInner] = aSelectionList.ProvidedName;
+                        countInner++;
                     }
 
                     foreach (var aSelectionList in namedStreams) {
-                        columnNames[count] = aSelectionList.OptionalName;
-                        columnNamesAsProvided[count] = aSelectionList.OptionalName;
-                        count++;
+                        columnNames[countInner] = aSelectionList.OptionalName;
+                        columnNamesAsProvided[countInner] = aSelectionList.OptionalName;
+                        countInner++;
                     }
 
                     // for wildcard joins, add the streams themselves
                     if (isUsingWildcard && typeService.EventTypes.Length > 1) {
                         foreach (var streamName in typeService.StreamNames) {
-                            columnNames[count] = streamName;
-                            columnNamesAsProvided[count] = streamName;
-                            count++;
+                            columnNames[countInner] = streamName;
+                            columnNamesAsProvided[countInner] = streamName;
+                            countInner++;
                         }
                     }
                 }
@@ -405,7 +405,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     var propertyType = streamSpec.PropertyType;
                                     var streamNumber = streamSpec.StreamNumber;
 
-                                    if (TypeHelper.IsBuiltinDataType(streamSpec.PropertyType)) {
+                                    if (streamSpec.PropertyType.IsBuiltinDataType()) {
                                         throw new ExprValidationException(
                                             "The property wildcard syntax cannot be used on built-in types as returned by property '" +
                                             propertyName + "'");
@@ -444,7 +444,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     if (returnType == typeof(object[]) ||
                                         TypeHelper.IsImplementsInterface(
                                             returnType, typeof(IDictionary<object, object>)) ||
-                                        TypeHelper.IsBuiltinDataType(returnType)) {
+                                        returnType.IsBuiltinDataType()) {
                                         throw new ExprValidationException(
                                             "Invalid expression return type '" + returnType.Name +
                                             "' for transpose function");
@@ -487,9 +487,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     exprForges, columnNames, null, typeService.EventTypes, args.EventTypeAvroHandler);
 
                 if (insertIntoDesc == null) {
+                    EventType resultEventType;
                     if (!selectedStreams.IsEmpty()) {
-                        EventType resultEventType;
-                        var eventTypeName = eventTypeNameGeneratorStatement.AnonymousTypeName;
+                        var eventTypeNameInner = eventTypeNameGeneratorStatement.AnonymousTypeName;
                         if (underlyingEventType != null) {
                             var table =
                                 args.TableCompileTimeResolver.ResolveTableFromEventType(underlyingEventType);
@@ -498,7 +498,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             }
 
                             var metadata = new EventTypeMetadata(
-                                eventTypeName, moduleName, EventTypeTypeClass.STATEMENTOUT,
+                                eventTypeNameInner, moduleName, EventTypeTypeClass.STATEMENTOUT,
                                 EventTypeApplicationType.WRAPPER,
                                 NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
                                 EventTypeIdPair.Unassigned());
@@ -514,7 +514,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         }
                         else {
                             var metadata = new EventTypeMetadata(
-                                eventTypeName, moduleName, EventTypeTypeClass.STATEMENTOUT,
+                                eventTypeNameInner, moduleName, EventTypeTypeClass.STATEMENTOUT,
                                 EventTypeApplicationType.MAP,
                                 NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
                                 EventTypeIdPair.Unassigned());
@@ -528,29 +528,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     }
 
                     if (isUsingWildcard) {
-                        var eventTypeName = eventTypeNameGeneratorStatement.AnonymousTypeName;
+                        var eventTypeNameInner = eventTypeNameGeneratorStatement.AnonymousTypeName;
                         var metadata = new EventTypeMetadata(
-                            eventTypeName, moduleName, EventTypeTypeClass.STATEMENTOUT,
+                            eventTypeNameInner, moduleName, EventTypeTypeClass.STATEMENTOUT,
                             EventTypeApplicationType.WRAPPER,
                             NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
                             EventTypeIdPair.Unassigned());
-                        EventType resultEventType = WrapperEventTypeUtil.MakeWrapper(
+                        EventType resultEventTypeInner = WrapperEventTypeUtil.MakeWrapper(
                             metadata, eventType, selPropertyTypes, null, beanEventTypeFactoryProtected,
                             args.EventTypeCompileTimeResolver);
-                        args.EventTypeCompileTimeRegistry.NewType(resultEventType);
+                        args.EventTypeCompileTimeRegistry.NewType(resultEventTypeInner);
                         if (singleStreamWrapper) {
-                            return new SelectEvalInsertWildcardSSWrapper(selectExprForgeContext, resultEventType);
+                            return new SelectEvalInsertWildcardSSWrapper(selectExprForgeContext, resultEventTypeInner);
                         }
 
                         if (joinWildcardProcessor == null) {
-                            return new SelectEvalWildcard(selectExprForgeContext, resultEventType);
+                            return new SelectEvalWildcard(selectExprForgeContext, resultEventTypeInner);
                         }
 
                         return new SelectEvalWildcardJoin(
-                            selectExprForgeContext, resultEventType, joinWildcardProcessor);
+                            selectExprForgeContext, resultEventTypeInner, joinWildcardProcessor);
                     }
 
-                    EventType resultEventType;
                     var representation = EventRepresentationUtil.GetRepresentation(
                         args.Annotations, args.Configuration, AssignedType.NONE);
                     var eventTypeName = eventTypeNameGeneratorStatement.AnonymousTypeName;
@@ -580,7 +579,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             eventTypeName, moduleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP,
                             NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
                             EventTypeIdPair.Unassigned());
-                        IDictionary<string, object> propertyTypes =
+                        var propertyTypes =
                             EventTypeUtility.GetPropertyTypesNonPrimitive(selPropertyTypes);
                         resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                             metadata, propertyTypes, null, null, null, null, beanEventTypeFactoryProtected,
@@ -761,7 +760,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
                                 EventTypeApplicationType.MAP, visibility, EventTypeBusModifier.NONBUS, false,
                                 EventTypeIdPair.Unassigned());
-                            IDictionary<string, object> propertyTypes =
+                            var propertyTypes =
                                 EventTypeUtility.GetPropertyTypesNonPrimitive(selPropertyTypes);
                             var proposed = BaseNestableEventUtil.MakeMapTypeCompileTime(
                                 metadata, propertyTypes, null, null, null, null, args.BeanEventTypeFactoryPrivate,
@@ -1100,14 +1099,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             else {
                                 var visibility = GetVisibility(insertIntoDesc.EventTypeName);
                                 var @out = EventRepresentationUtil.GetRepresentation(
-                                    args.Annotations, args.Configuration, CreateSchemaDesc.AssignedType.NONE);
+                                    args.Annotations, args.Configuration, AssignedType.NONE);
                                 Func<EventTypeApplicationType, EventTypeMetadata> metadata = appType =>
                                     new EventTypeMetadata(
                                         insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
                                         appType,
                                         visibility, EventTypeBusModifier.NONBUS, false,
                                         EventTypeIdPair.Unassigned());
-                                IDictionary<string, object> propertyTypes =
+                                var propertyTypes =
                                     EventTypeUtility.GetPropertyTypesNonPrimitive(selPropertyTypes);
                                 if (@out == EventUnderlyingType.MAP) {
                                     var proposed = BaseNestableEventUtil.MakeMapTypeCompileTime(
@@ -1389,7 +1388,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
 
             var typable = (ExprTypableReturnForge) forge;
-            LinkedHashMap<string, object> eventTypeExpr = typable.RowProperties;
+            var eventTypeExpr = typable.RowProperties;
             if (eventTypeExpr == null) {
                 return null;
             }
@@ -1398,7 +1397,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             var metadata = new EventTypeMetadata(
                 eventTypeName, args.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP,
                 NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
-            IDictionary<string, object> propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(eventTypeExpr);
+            var propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(eventTypeExpr);
             EventType mapType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                 metadata, propertyTypes, null, null, null, null, args.BeanEventTypeFactoryPrivate,
                 args.EventTypeCompileTimeResolver);
@@ -1438,9 +1437,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             // handle collection target - produce EventBean[]
             if (insertIntoTarget is EventMultiValuedEPType) {
                 if (eventTypeColl != null) {
-                    var enumerationCollForge =
+                    var enumerationCollForgeInner =
                         new ExprEvalEnumerationCollForge(enumeration, targetType, false);
-                    return new TypeAndForgePair(new[] {targetType}, enumerationCollForge);
+                    return new TypeAndForgePair(new[] {targetType}, enumerationCollForgeInner);
                 }
 
                 var singleToCollForge =
@@ -1499,7 +1498,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 return null;
             }
 
-            LinkedHashMap<string, object> eventTypeExpr = typable.RowProperties;
+            var eventTypeExpr = typable.RowProperties;
             if (eventTypeExpr == null) {
                 return null;
             }
@@ -1556,7 +1555,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             // handle collection
             ExprForge typableForge;
             var targetIsMultirow = insertIntoTarget is EventMultiValuedEPType;
-            if (typable.IsMultirow) {
+            if (typable.IsMultirow ?? false) {
                 if (targetIsMultirow) {
                     typableForge = new SelectExprProcessorTypableMultiForge(
                         typable, hasWideners, wideners, manufacturer, targetType, false);
@@ -1577,7 +1576,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 }
             }
 
-            object type = targetIsMultirow ? new[] {targetType} : targetType;
+            var type = targetIsMultirow ? (object) new[] {targetType} : targetType;
             return new TypeAndForgePair(type, typableForge);
         }
 

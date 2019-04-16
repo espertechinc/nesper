@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
 {
     public class TimePeriodDeltaResult
     {
-        public TimePeriodDeltaResult(long delta, long lastReference)
+        public TimePeriodDeltaResult(
+            long delta,
+            long lastReference)
         {
             Delta = delta;
             LastReference = lastReference;

@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="filterExpressions">is a list of expression nodes representing individual filter expressions</param>
         /// <param name="optionalPropertyEvalSpec">specification for a property select</param>
         public FilterSpecRaw(
-            string eventTypeName, IList<ExprNode> filterExpressions, PropertyEvalSpec optionalPropertyEvalSpec)
+            string eventTypeName,
+            IList<ExprNode> filterExpressions,
+            PropertyEvalSpec optionalPropertyEvalSpec)
         {
             EventTypeName = eventTypeName;
             FilterExpressions = filterExpressions;

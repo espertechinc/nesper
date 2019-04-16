@@ -19,7 +19,10 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         internal readonly int? subqueryNum;
 
         public EventTableFactoryFactoryBase(
-            int indexedStreamNum, int? subqueryNum, object optionalSerde, bool isFireAndForget)
+            int indexedStreamNum,
+            int? subqueryNum,
+            object optionalSerde,
+            bool isFireAndForget)
         {
             this.indexedStreamNum = indexedStreamNum;
             this.subqueryNum = subqueryNum;
@@ -27,6 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             this.isFireAndForget = isFireAndForget;
         }
 
-        public abstract EventTableFactory Create(EventType eventType, StatementContext statementContext);
+        public abstract EventTableFactory Create(
+            EventType eventType,
+            StatementContext statementContext);
     }
 } // end of namespace

@@ -85,18 +85,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
         bool IsConstantResult { get; }
 
-        double EvaluateAsSeconds(EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context);
+        double EvaluateAsSeconds(
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext context);
 
-        TimePeriod EvaluateGetTimePeriod(EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context);
+        TimePeriod EvaluateGetTimePeriod(
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext context);
 
         CodegenExpression EvaluateGetTimePeriodCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         CodegenExpression EvaluateAsSecondsCodegen(
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
-        CodegenExpression MakeTimePeriodAnonymous(CodegenMethod method, CodegenClassScope classScope);
+        CodegenExpression MakeTimePeriodAnonymous(
+            CodegenMethod method,
+            CodegenClassScope classScope);
     }
 } // end of namespace

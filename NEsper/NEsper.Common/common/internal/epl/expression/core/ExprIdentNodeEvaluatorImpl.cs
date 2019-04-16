@@ -27,7 +27,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private bool optionalEvent;
         private bool audit;
 
-        public ExprIdentNodeEvaluatorImpl(int streamNum, EventPropertyGetterSPI propertyGetter, Type returnType, ExprIdentNode identNode, EventType eventType, bool optionalEvent, bool audit)
+        public ExprIdentNodeEvaluatorImpl(
+            int streamNum,
+            EventPropertyGetterSPI propertyGetter,
+            Type returnType,
+            ExprIdentNode identNode,
+            EventType eventType,
+            bool optionalEvent,
+            bool audit)
         {
             this.streamNum = streamNum;
             this.propertyGetter = propertyGetter;
@@ -38,18 +45,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             this.audit = audit;
         }
 
-        public bool OptionalEvent
-        {
+        public bool OptionalEvent {
             set { this.optionalEvent = value; }
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean @event = eventsPerStream[streamNum];
-            if (@event == null)
-            {
+            if (@event == null) {
                 return null;
             }
+
             return propertyGetter.Get(@event);
         }
 
@@ -58,66 +67,76 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return requiredType == typeof(object) ? typeof(object) : returnType;
         }
 
-        public CodegenExpression Codegen(Type requiredType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Codegen(
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
-            if (!audit)
-            {
+            if (!audit) {
                 return CodegenGet(requiredType, parent, symbols, classScope);
             }
 
             Type targetType = GetCodegenReturnType(requiredType);
             CodegenMethod method = parent.MakeChild(targetType, this.GetType(), classScope);
             method.Block
-                    .DeclareVar(targetType, "value", CodegenGet(requiredType, method, symbols, classScope))
-                    .Expression(ExprDotMethodChain(symbols.GetAddExprEvalCtx(method)).Add("getAuditProvider").Add("property", Constant(identNode.ResolvedPropertyName), @Ref("value"), symbols.GetAddExprEvalCtx(method)))
-                    .MethodReturn(@Ref("value"));
+                .DeclareVar(targetType, "value", CodegenGet(requiredType, method, symbols, classScope))
+                .Expression(
+                    ExprDotMethodChain(symbols.GetAddExprEvalCtx(method)).Add("getAuditProvider").Add(
+                        "property", Constant(identNode.ResolvedPropertyName), @Ref("value"), symbols.GetAddExprEvalCtx(method)))
+                .MethodReturn(@Ref("value"));
             return LocalMethod(method);
         }
 
-        private CodegenExpression CodegenGet(Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+        private CodegenExpression CodegenGet(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            if (returnType == null)
-            {
+            if (returnType == null) {
                 return ConstantNull();
             }
 
             Type castTargetType = GetCodegenReturnType(requiredType);
-            bool useUnderlying = exprSymbol.IsAllowUnderlyingReferences && !identNode.ResolvedPropertyName.Contains("?") && !(eventType is WrapperEventType) && !(eventType is VariantEventType);
-            if (useUnderlying && !optionalEvent)
-            {
+            bool useUnderlying = exprSymbol.IsAllowUnderlyingReferences && !identNode.ResolvedPropertyName.Contains("?") &&
+                                 !(eventType is WrapperEventType) && !(eventType is VariantEventType);
+            if (useUnderlying && !optionalEvent) {
                 CodegenExpressionRef underlying = exprSymbol.GetAddRequiredUnderlying(codegenMethodScope, streamNum, eventType, false);
-                return CodegenLegoCast.CastSafeFromObjectType(castTargetType, propertyGetter.UnderlyingGetCodegen(underlying, codegenMethodScope, codegenClassScope));
+                return CodegenLegoCast.CastSafeFromObjectType(
+                    castTargetType, propertyGetter.UnderlyingGetCodegen(underlying, codegenMethodScope, codegenClassScope));
             }
 
             CodegenMethod method = codegenMethodScope.MakeChild(castTargetType, this.GetType(), codegenClassScope);
             CodegenBlock block = method.Block;
 
-            if (useUnderlying)
-            {
+            if (useUnderlying) {
                 CodegenExpressionRef underlying = exprSymbol.GetAddRequiredUnderlying(method, streamNum, eventType, true);
                 block.IfRefNullReturnNull(underlying)
-                        .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(castTargetType, propertyGetter.UnderlyingGetCodegen(underlying, method, codegenClassScope)));
+                    .MethodReturn(
+                        CodegenLegoCast.CastSafeFromObjectType(
+                            castTargetType, propertyGetter.UnderlyingGetCodegen(underlying, method, codegenClassScope)));
             }
-            else
-            {
+            else {
                 CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(method);
                 method.Block.DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamNum)));
-                if (optionalEvent)
-                {
+                if (optionalEvent) {
                     block.IfRefNullReturnNull("event");
                 }
-                block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(castTargetType, propertyGetter.EventBeanGetCodegen(@Ref("event"), method, codegenClassScope)));
+
+                block.MethodReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(
+                        castTargetType, propertyGetter.EventBeanGetCodegen(@Ref("event"), method, codegenClassScope)));
             }
+
             return LocalMethod(method);
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => returnType;
         }
 
-        public EventPropertyGetterSPI Getter
-        {
+        public EventPropertyGetterSPI Getter {
             get => propertyGetter;
         }
 
@@ -127,23 +146,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="eventsPerStream">each stream's events</param>
         /// <param name="isNewData">if the stream represents insert or remove stream</param>
         /// <returns>true if the property exists, false if not</returns>
-        public bool EvaluatePropertyExists(EventBean[] eventsPerStream, bool isNewData)
+        public bool EvaluatePropertyExists(
+            EventBean[] eventsPerStream,
+            bool isNewData)
         {
             EventBean theEvent = eventsPerStream[streamNum];
-            if (theEvent == null)
-            {
+            if (theEvent == null) {
                 return false;
             }
+
             return propertyGetter.IsExistsProperty(theEvent);
         }
 
-        public int StreamNum
-        {
+        public int StreamNum {
             get => streamNum;
         }
 
-        public bool IsContextEvaluated
-        {
+        public bool IsContextEvaluated {
             get => false;
         }
     }

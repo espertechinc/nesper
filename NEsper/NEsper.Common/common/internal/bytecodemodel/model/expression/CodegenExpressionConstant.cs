@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this._constant = constant;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             RenderConstant(builder, _constant, imports);
         }

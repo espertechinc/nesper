@@ -38,8 +38,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
         /// <param name="threadingService">for inbound threading</param>
         public EventSenderBean(
-            EPRuntimeEventProcessWrapped runtime, BeanEventType beanEventType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory, ThreadingCommon threadingService)
+            EPRuntimeEventProcessWrapped runtime,
+            BeanEventType beanEventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            ThreadingCommon threadingService)
         {
             this.runtime = runtime;
             this.beanEventType = beanEventType;

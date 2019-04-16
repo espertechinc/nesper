@@ -10,9 +10,10 @@ using System;
 
 namespace com.espertech.esper.common.client.annotation
 {
-	/// <summary>
-	/// Annotation that is the public access modifier
-	/// </summary>
-	public class PrivateAttribute : Attribute {
-	}
+    /// <summary>
+    /// Annotation that is the public access modifier
+    /// </summary>
+    public class PrivateAttribute : Attribute
+    {
+    }
 } // end of namespace

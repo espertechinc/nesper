@@ -31,7 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.util
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void ValidateParametersTypePredefined(
-            ExprNode[] expressions, string invocableName, string invocableCategory, EPLExpressionParamType type)
+            ExprNode[] expressions,
+            string invocableName,
+            string invocableCategory,
+            EPLExpressionParamType type)
         {
             for (var i = 0; i < expressions.Length; i++) {
                 ValidateParameterType(
@@ -40,7 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
         }
 
-        public static void ValidateTableExists(TableCompileTimeResolver tableCompileTimeResolver, string name)
+        public static void ValidateTableExists(
+            TableCompileTimeResolver tableCompileTimeResolver,
+            string name)
         {
             if (tableCompileTimeResolver.Resolve(name) != null) {
                 throw new ExprValidationException("A table by name '" + name + "' already exists");
@@ -48,8 +53,12 @@ namespace com.espertech.esper.common.@internal.epl.util
         }
 
         public static ExprNode ValidateSimpleGetSubtree(
-            ExprNodeOrigin origin, ExprNode expression, EventType optionalEventType, bool allowBindingConsumption,
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            ExprNodeOrigin origin,
+            ExprNode expression,
+            EventType optionalEventType,
+            bool allowBindingConsumption,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             ExprNodeUtilityValidate.ValidatePlainExpression(origin, expression);
 
@@ -67,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.util
         }
 
         public static QueryGraphForge ValidateFilterGetQueryGraphSafe(
-            ExprNode filterExpression, StreamTypeServiceImpl typeService, StatementRawInfo statementRawInfo,
+            ExprNode filterExpression,
+            StreamTypeServiceImpl typeService,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             ExcludePlanHint excludePlanHint = null;
@@ -87,8 +98,11 @@ namespace com.espertech.esper.common.@internal.epl.util
         }
 
         public static void ValidateFilterWQueryGraphSafe(
-            QueryGraphForge queryGraph, ExprNode filterExpression, StreamTypeServiceImpl typeService,
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            QueryGraphForge queryGraph,
+            ExprNode filterExpression,
+            StreamTypeServiceImpl typeService,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             try {
                 var validationContext = new ExprValidationContextBuilder(typeService, statementRawInfo, services)
@@ -106,7 +120,11 @@ namespace com.espertech.esper.common.@internal.epl.util
         }
 
         public static void ValidateParameterNumber(
-            string invocableName, string invocableCategory, bool isFunction, int expectedEnum, int receivedNum)
+            string invocableName,
+            string invocableCategory,
+            bool isFunction,
+            int expectedEnum,
+            int receivedNum)
         {
             if (expectedEnum != receivedNum) {
                 throw new ExprValidationException(
@@ -116,8 +134,14 @@ namespace com.espertech.esper.common.@internal.epl.util
         }
 
         public static void ValidateParameterType(
-            string invocableName, string invocableCategory, bool isFunction, EPLExpressionParamType expectedTypeEnum,
-            Type[] expectedTypeClasses, Type providedType, int parameterNum, ExprNode parameterExpression)
+            string invocableName,
+            string invocableCategory,
+            bool isFunction,
+            EPLExpressionParamType expectedTypeEnum,
+            Type[] expectedTypeClasses,
+            Type providedType,
+            int parameterNum,
+            ExprNode parameterExpression)
         {
             if (expectedTypeEnum == EPLExpressionParamType.BOOLEAN && !providedType.IsBoolean()) {
                 throw new ExprValidationException(
@@ -175,7 +199,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
 
             if (expectedTypeEnum == EPLExpressionParamType.DATETIME) {
-                if (!TypeHelper.IsDatetimeClass(providedType)) {
+                if (!TypeHelper.IsDateTime(providedType)) {
                     throw new ExprValidationException(
                         GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
                         "expected a long-typed, Date-typed or Calendar-typed result for expression parameter " +
@@ -184,14 +208,20 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
         }
 
-        public static string GetInvokablePrefix(string invocableName, string invocableType, bool isFunction)
+        public static string GetInvokablePrefix(
+            string invocableName,
+            string invocableType,
+            bool isFunction)
         {
             return "Error validating " + invocableType + " " + (isFunction ? "function '" : "method '") +
                    invocableName + "', ";
         }
 
         public static void ValidateContextName(
-            bool table, string tableOrNamedWindowName, string tableOrNamedWindowContextName, string optionalContextName,
+            bool table,
+            string tableOrNamedWindowName,
+            string tableOrNamedWindowContextName,
+            string optionalContextName,
             bool mustMatchContext)
         {
             if (tableOrNamedWindowContextName != null) {
@@ -207,7 +237,9 @@ namespace com.espertech.esper.common.@internal.epl.util
         }
 
         private static ExprValidationException GetCtxMessage(
-            bool table, string tableOrNamedWindowName, string tableOrNamedWindowContextName)
+            bool table,
+            string tableOrNamedWindowName,
+            string tableOrNamedWindowContextName)
         {
             var prefix = table ? "Table" : "Named window";
             return new ExprValidationException(
@@ -216,7 +248,8 @@ namespace com.espertech.esper.common.@internal.epl.util
         }
 
         public static void ValidateAlreadyExistsTableOrVariable(
-            string name, VariableCompileTimeResolver variableCompileTimeResolver,
+            string name,
+            VariableCompileTimeResolver variableCompileTimeResolver,
             TableCompileTimeResolver tableCompileTimeResolver,
             EventTypeCompileTimeResolver eventTypeCompileTimeResolver)
         {

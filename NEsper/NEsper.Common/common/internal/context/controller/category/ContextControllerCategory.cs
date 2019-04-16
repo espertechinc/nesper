@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         protected internal ContextControllerCategorySvc categorySvc;
 
         public ContextControllerCategory(
-            ContextManagerRealization realization, ContextControllerCategoryFactory factory) : base(realization)
+            ContextManagerRealization realization,
+            ContextControllerCategoryFactory factory)
+            : base(realization)
         {
             this.factory = factory;
         }
@@ -32,7 +34,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         public ContextControllerCategoryFactory CategoryFactory => factory;
 
         public override void Activate(
-            IntSeqKey path, object[] parentPartitionKeys, EventBean optionalTriggeringEvent,
+            IntSeqKey path,
+            object[] parentPartitionKeys,
+            EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern)
         {
             var count = 0;
@@ -49,7 +53,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             categorySvc.MgmtCreate(path, parentPartitionKeys, subpathOrCPIds);
         }
 
-        public override void Deactivate(IntSeqKey path, bool terminateChildContexts)
+        public override void Deactivate(
+            IntSeqKey path,
+            bool terminateChildContexts)
         {
             var subpathIdorCPs = categorySvc.MgmtDelete(path);
             if (subpathIdorCPs != null && terminateChildContexts) {
@@ -60,7 +66,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         }
 
         public override void VisitSelectedPartitions(
-            IntSeqKey path, ContextPartitionSelector contextPartitionSelector, ContextPartitionVisitor visitor,
+            IntSeqKey path,
+            ContextPartitionSelector contextPartitionSelector,
+            ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel)
         {
             if (contextPartitionSelector is ContextPartitionSelectorCategory) {

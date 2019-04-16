@@ -18,8 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
         internal readonly EvalMatchUntilFactoryNode factoryNode;
 
         public EvalMatchUntilNode(
-            PatternAgentInstanceContext context, EvalMatchUntilFactoryNode factoryNode, EvalNode childNodeSub,
-            EvalNode childNodeUntil) : base(context)
+            PatternAgentInstanceContext context,
+            EvalMatchUntilFactoryNode factoryNode,
+            EvalNode childNodeSub,
+            EvalNode childNodeUntil)
+            : base(context)
         {
             this.factoryNode = factoryNode;
             ChildNodeSub = childNodeSub;

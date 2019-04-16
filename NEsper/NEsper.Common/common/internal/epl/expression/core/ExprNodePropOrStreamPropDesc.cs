@@ -10,47 +10,48 @@ using System;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public class ExprNodePropOrStreamPropDesc : ExprNodePropOrStreamDesc
+    public class ExprNodePropOrStreamPropDesc : ExprNodePropOrStreamDesc
     {
-	    public ExprNodePropOrStreamPropDesc(int streamNum, string propertyName) {
-	        this.StreamNum = streamNum;
-	        this.PropertyName = propertyName;
-	        if (propertyName == null) {
-	            throw new ArgumentException("Property name is null");
-	        }
-	    }
+        public ExprNodePropOrStreamPropDesc(
+            int streamNum,
+            string propertyName)
+        {
+            this.StreamNum = streamNum;
+            this.PropertyName = propertyName;
+            if (propertyName == null) {
+                throw new ArgumentException("Property name is null");
+            }
+        }
 
-	    public string PropertyName { get; private set; }
+        public string PropertyName { get; private set; }
 
-	    public int StreamNum { get; private set; }
+        public int StreamNum { get; private set; }
 
-	    public string Textual
-	    {
-	        get { return "property '" + PropertyName + "'"; }
-	    }
+        public string Textual {
+            get { return "property '" + PropertyName + "'"; }
+        }
 
-	    protected bool Equals(ExprNodePropOrStreamPropDesc other)
-	    {
-	        return StreamNum == other.StreamNum && string.Equals(PropertyName, other.PropertyName);
-	    }
+        protected bool Equals(ExprNodePropOrStreamPropDesc other)
+        {
+            return StreamNum == other.StreamNum && string.Equals(PropertyName, other.PropertyName);
+        }
 
-	    public override bool Equals(object obj)
-	    {
-	        if (ReferenceEquals(null, obj))
-	            return false;
-	        if (ReferenceEquals(this, obj))
-	            return true;
-	        if (obj.GetType() != this.GetType())
-	            return false;
-	        return Equals((ExprNodePropOrStreamPropDesc) obj);
-	    }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
+            return Equals((ExprNodePropOrStreamPropDesc) obj);
+        }
 
-	    public override int GetHashCode()
-	    {
-	        unchecked
-	        {
-	            return ((PropertyName != null ? PropertyName.GetHashCode() : 0)*397) ^ StreamNum;
-	        }
-	    }
+        public override int GetHashCode()
+        {
+            unchecked {
+                return ((PropertyName != null ? PropertyName.GetHashCode() : 0) * 397) ^ StreamNum;
+            }
+        }
     }
 } // end of namespace

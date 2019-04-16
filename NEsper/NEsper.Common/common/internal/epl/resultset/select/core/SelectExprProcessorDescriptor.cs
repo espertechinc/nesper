@@ -11,7 +11,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     public class SelectExprProcessorDescriptor
     {
         public SelectExprProcessorDescriptor(
-            SelectSubscriberDescriptor subscriberDescriptor, SelectExprProcessorForge forge)
+            SelectSubscriberDescriptor subscriberDescriptor,
+            SelectExprProcessorForge forge)
         {
             SubscriberDescriptor = subscriberDescriptor;
             Forge = forge;

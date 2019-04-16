@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         /// Computer for relational op compare.
         /// </summary>
-        public class GTBigIntConvComputer : Computer {
+        public class GTBigIntConvComputer : Computer
+        {
             private readonly BigIntegerCoercer convOne;
             private readonly BigIntegerCoercer convTwo;
 
@@ -27,19 +28,30 @@ namespace com.espertech.esper.common.@internal.type
             /// </summary>
             /// <param name="convOne">convertor for LHS</param>
             /// <param name="convTwo">convertor for RHS</param>
-            public GTBigIntConvComputer(BigIntegerCoercer convOne, BigIntegerCoercer convTwo) {
+            public GTBigIntConvComputer(
+                BigIntegerCoercer convOne,
+                BigIntegerCoercer convTwo)
+            {
                 this.convOne = convOne;
                 this.convTwo = convTwo;
             }
 
-            public bool Compare(object objOne, object objTwo) {
+            public bool Compare(
+                object objOne,
+                object objTwo)
+            {
                 BigInteger s1 = convOne.CoerceBoxedBigInt((object) objOne);
                 BigInteger s2 = convTwo.CoerceBoxedBigInt((object) objTwo);
                 int result = s1.CompareTo(s2);
                 return result > 0;
             }
 
-            public CodegenExpression Codegen(CodegenExpressionRef lhs, Type lhsType, CodegenExpression rhs, Type rhsType) {
+            public CodegenExpression Codegen(
+                CodegenExpressionRef lhs,
+                Type lhsType,
+                CodegenExpression rhs,
+                Type rhsType)
+            {
                 return CodegenBigIntConv(lhs, lhsType, rhs, rhsType, convOne, convTwo, CodegenExpressionRelational.CodegenRelational.GT);
             }
         }

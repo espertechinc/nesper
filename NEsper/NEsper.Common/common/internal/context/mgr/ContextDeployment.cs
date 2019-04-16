@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         public int ContextCount => contexts.Count;
 
-        public void Add(ContextDefinition contextDefinition, EPStatementInitServices services)
+        public void Add(
+            ContextDefinition contextDefinition,
+            EPStatementInitServices services)
         {
             var contextName = contextDefinition.ContextName;
             var mgr = contexts.Get(contextName);
@@ -41,7 +43,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return contexts.Get(contextName);
         }
 
-        public void DestroyContext(string deploymentIdCreateContext, string contextName)
+        public void DestroyContext(
+            string deploymentIdCreateContext,
+            string contextName)
         {
             var entry = contexts.Get(contextName);
             if (entry == null) {

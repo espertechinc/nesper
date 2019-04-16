@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
@@ -58,8 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (dateTimeEx == null)
-            {
+            if (dateTimeEx == null) {
                 return null;
             }
 
@@ -167,23 +164,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var firstObj = startEval.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
-            if (firstObj == null)
-            {
+            if (firstObj == null) {
                 return null;
             }
 
             var secondObj = endEval.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
-            if (secondObj == null)
-            {
+            if (secondObj == null) {
                 return null;
             }
 
             var first = forge.startCoercer.Coerce(firstObj);
             var second = forge.secondCoercer.Coerce(secondObj);
-            if (forge.includeBoth)
-            {
-                if (first <= second)
-                {
+            if (forge.includeBoth) {
+                if (first <= second) {
                     return first <= ts && ts <= second;
                 }
 
@@ -191,35 +184,29 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             }
 
             bool includeLowEndpoint;
-            if (forge.includeLow != null)
-            {
+            if (forge.includeLow != null) {
                 includeLowEndpoint = forge.includeLow.Value;
             }
-            else
-            {
+            else {
                 var value = evalIncludeLow.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
-                if (value == null)
-                {
+                if (value == null) {
                     return null;
                 }
 
-                includeLowEndpoint = (bool)value;
+                includeLowEndpoint = (bool) value;
             }
 
             bool includeHighEndpoint;
-            if (forge.includeHigh != null)
-            {
+            if (forge.includeHigh != null) {
                 includeHighEndpoint = forge.includeHigh.Value;
             }
-            else
-            {
+            else {
                 var value = evalIncludeHigh.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
-                if (value == null)
-                {
+                if (value == null) {
                     return null;
                 }
 
-                includeHighEndpoint = (bool)value;
+                includeHighEndpoint = (bool) value;
             }
 
             return CompareTimestamps(first, ts, second, includeLowEndpoint, includeHighEndpoint);
@@ -241,32 +228,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool includeLowEndpoint,
             bool includeHighEndpoint)
         {
-            if (includeLowEndpoint)
-            {
-                if (ts < first)
-                {
+            if (includeLowEndpoint) {
+                if (ts < first) {
                     return false;
                 }
             }
-            else
-            {
-                if (ts <= first)
-                {
+            else {
+                if (ts <= first) {
                     return false;
                 }
             }
 
-            if (includeHighEndpoint)
-            {
-                if (ts > second)
-                {
+            if (includeHighEndpoint) {
+                if (ts > second) {
                     return false;
                 }
             }
-            else
-            {
-                if (ts >= second)
-                {
+            else {
+                if (ts >= second) {
                     return false;
                 }
             }
@@ -293,20 +272,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenExpression first = Ref("first");
             CodegenExpression second = Ref("second");
             CodegenExpression ts = Ref("ts");
-            if (forge.includeBoth)
-            {
+            if (forge.includeBoth) {
                 block.IfCondition(Relational(first, LE, second))
                     .BlockReturn(And(Relational(first, LE, ts), Relational(ts, LE, second)))
                     .MethodReturn(And(Relational(second, LE, ts), Relational(ts, LE, first)));
             }
-            else if (forge.includeLow != null && forge.includeHigh != null)
-            {
+            else if (forge.includeLow != null && forge.includeHigh != null) {
                 block.IfCondition(Relational(ts, forge.includeLow.Value ? LT : LE, first)).BlockReturn(ConstantFalse())
                     .IfCondition(Relational(ts, forge.includeHigh.Value ? GT : GE, second)).BlockReturn(ConstantFalse())
                     .MethodReturn(ConstantTrue());
             }
-            else
-            {
+            else {
                 CodegenBooleanEval(
                     block, "includeLowEndpoint", forge.includeLow.Value, forge.forgeIncludeLow, methodNode, exprSymbol,
                     codegenClassScope);
@@ -332,14 +308,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (preset != null)
-            {
+            if (preset != null) {
                 block.DeclareVar(typeof(bool), variable, Constant(preset));
                 return;
             }
 
-            if (forge.EvaluationType == typeof(bool))
-            {
+            if (forge.EvaluationType == typeof(bool)) {
                 block.DeclareVar(
                     typeof(bool), variable,
                     forge.EvaluateCodegen(typeof(bool), codegenMethodScope, exprSymbol, codegenClassScope));
@@ -364,8 +338,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var evaluationType = assignment.Forge.EvaluationType;
-            if (evaluationType == typeof(long))
-            {
+            if (evaluationType == typeof(long)) {
                 block.DeclareVar(
                     typeof(long), variable,
                     assignment.Forge.EvaluateCodegen(typeof(long), codegenMethodScope, exprSymbol, codegenClassScope));
@@ -376,8 +349,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             block.DeclareVar(
                 evaluationType, refname,
                 assignment.Forge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
-            if (!evaluationType.IsPrimitive)
-            {
+            if (!evaluationType.IsPrimitive) {
                 block.IfRefNullReturnNull(refname);
             }
 

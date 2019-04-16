@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 foreach (var item in queryGraphValue.Items) {
                     if (item.Entry is QueryGraphValueEntryCustomForge) {
                         if (customIndexOps.IsEmpty()) {
-                            customIndexOps = new Dictionary<>();
+                            customIndexOps = new Dictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>();
                         }
 
                         var custom = (QueryGraphValueEntryCustomForge) item.Entry;
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                         SubordPropHashKeyForge desc;
                         if (keyPropertiesJoin[i] is QueryGraphValueEntryHashKeyedForgeExpr) {
                             var keyExpr = (QueryGraphValueEntryHashKeyedForgeExpr) keyPropertiesJoin[i];
-                            var keyStreamNum = keyExpr.IsRequiresKey ? stream : null;
+                            var keyStreamNum = keyExpr.IsRequiresKey ? (int?) stream : null;
                             desc = new SubordPropHashKeyForge(keyDesc, keyStreamNum, coercionType);
                         }
                         else {

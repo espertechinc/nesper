@@ -23,16 +23,25 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             methods ?? Collections.GetEmptyMap<string, CodegenMethod>();
 
         public CodegenMethod AddMethod(
-            Type returnType, string methodName, IList<CodegenNamedParam> @params, Type generator,
-            CodegenClassScope classScope, Consumer<CodegenMethod> code)
+            Type returnType,
+            string methodName,
+            IList<CodegenNamedParam> @params,
+            Type generator,
+            CodegenClassScope classScope,
+            Consumer<CodegenMethod> code)
         {
             return AddMethodWithSymbols(
                 returnType, methodName, @params, generator, classScope, code, CodegenSymbolProviderEmpty.INSTANCE);
         }
 
         public CodegenMethod AddMethodWithSymbols(
-            Type returnType, string methodName, IList<CodegenNamedParam> @params, Type generator,
-            CodegenClassScope classScope, Consumer<CodegenMethod> code, CodegenSymbolProvider symbolProvider)
+            Type returnType,
+            string methodName,
+            IList<CodegenNamedParam> @params,
+            Type generator,
+            CodegenClassScope classScope,
+            Consumer<CodegenMethod> code,
+            CodegenSymbolProvider symbolProvider)
         {
             if (methods == null) {
                 methods = new Dictionary<string, CodegenMethod>();

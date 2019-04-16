@@ -12,6 +12,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
 {
     public interface AuditProviderProperty
     {
-        void Property(string name, object value, ExprEvaluatorContext exprEvaluatorContext);
+        void Property(
+            string name,
+            object value,
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

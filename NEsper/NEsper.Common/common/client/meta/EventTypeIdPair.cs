@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.client.meta
         /// </summary>
         /// <param name="publicId">public id</param>
         /// <param name="protectedId">protected if</param>
-        public EventTypeIdPair(long publicId, long protectedId)
+        public EventTypeIdPair(
+            long publicId,
+            long protectedId)
         {
             PublicId = publicId;
             ProtectedId = protectedId;

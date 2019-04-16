@@ -16,6 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
 
         void SubmitSignal(EPDataFlowSignal signal);
 
-        void SubmitPort(int portNumber, object @object);
+        void SubmitPort(
+            int portNumber,
+            object @object);
     }
 } // end of namespace

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
@@ -18,24 +17,32 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
-	/// <summary>
-	/// View for the on-delete statement that handles removing events from a named window.
-	/// </summary>
-	public class InfraOnDeleteViewFactory : InfraOnExprBaseViewFactory {
+    /// <summary>
+    /// View for the on-delete statement that handles removing events from a named window.
+    /// </summary>
+    public class InfraOnDeleteViewFactory : InfraOnExprBaseViewFactory
+    {
+        public InfraOnDeleteViewFactory(EventType infaEventType)
+            : base(infaEventType)
 
-	    public InfraOnDeleteViewFactory(EventType infaEventType)
+        {
+        }
 
-	    	 : base(infaEventType)
+        public override InfraOnExprBaseViewResult MakeNamedWindow(
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            NamedWindowRootViewInstance namedWindowRootViewInstance,
+            AgentInstanceContext agentInstanceContext)
+        {
+            return new InfraOnExprBaseViewResult(
+                new OnExprViewNamedWindowDelete(lookupStrategy, namedWindowRootViewInstance, agentInstanceContext), null);
+        }
 
-	    {
-	    }
-
-	    public override InfraOnExprBaseViewResult MakeNamedWindow(SubordWMatchExprLookupStrategy lookupStrategy, NamedWindowRootViewInstance namedWindowRootViewInstance, AgentInstanceContext agentInstanceContext) {
-	        return new InfraOnExprBaseViewResult(new OnExprViewNamedWindowDelete(lookupStrategy, namedWindowRootViewInstance, agentInstanceContext), null);
-	    }
-
-	    public override InfraOnExprBaseViewResult MakeTable(SubordWMatchExprLookupStrategy lookupStrategy, TableInstance tableInstance, AgentInstanceContext agentInstanceContext) {
-	        return new InfraOnExprBaseViewResult(new OnExprViewTableDelete(lookupStrategy, tableInstance, agentInstanceContext), null);
-	    }
-	}
+        public override InfraOnExprBaseViewResult MakeTable(
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableInstance tableInstance,
+            AgentInstanceContext agentInstanceContext)
+        {
+            return new InfraOnExprBaseViewResult(new OnExprViewTableDelete(lookupStrategy, tableInstance, agentInstanceContext), null);
+        }
+    }
 } // end of namespace

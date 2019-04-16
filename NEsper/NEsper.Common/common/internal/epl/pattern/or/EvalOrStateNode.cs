@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -33,7 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
         /// <param name="evalOrNode">is the factory node associated to the state</param>
         public EvalOrStateNode(
             Evaluator parentNode,
-            EvalOrNode evalOrNode) : base(parentNode)
+            EvalOrNode evalOrNode)
+            : base(parentNode)
         {
             childNodes = new EvalStateNode[evalOrNode.ChildNodes.Length];
             this.evalOrNode = evalOrNode;
@@ -50,18 +50,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
         public bool IsFilterChildNonQuitting => false;
 
         public void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent)
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             var agentInstanceContext = evalOrNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternOrEvaluateTrue(evalOrNode.factoryNode, matchEvent);
 
             // If one of the children quits, the whole or expression turns true and all subexpressions must quit
-            if (isQuitted)
-            {
-                for (var i = 0; i < childNodes.Length; i++)
-                {
-                    if (childNodes[i] == fromNode)
-                    {
+            if (isQuitted) {
+                for (var i = 0; i < childNodes.Length; i++) {
+                    if (childNodes[i] == fromNode) {
                         childNodes[i] = null;
                     }
                 }
@@ -77,31 +77,28 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
             agentInstanceContext.InstrumentationProvider.APatternOrEvaluateTrue(isQuitted);
         }
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             var agentInstanceContext = evalOrNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternOrEvalFalse(evalOrNode.factoryNode);
 
-            for (var i = 0; i < childNodes.Length; i++)
-            {
-                if (childNodes[i] == fromNode)
-                {
+            for (var i = 0; i < childNodes.Length; i++) {
+                if (childNodes[i] == fromNode) {
                     childNodes[i] = null;
                 }
             }
 
             var allEmpty = true;
-            for (var i = 0; i < childNodes.Length; i++)
-            {
-                if (childNodes[i] != null)
-                {
+            for (var i = 0; i < childNodes.Length; i++) {
+                if (childNodes[i] != null) {
                     allEmpty = false;
                     break;
                 }
             }
 
-            if (allEmpty)
-            {
+            if (allEmpty) {
                 agentInstanceContext.AuditProvider.PatternFalse(evalOrNode.FactoryNode, this, agentInstanceContext);
                 agentInstanceContext.AuditProvider.PatternInstance(false, evalOrNode.factoryNode, agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, true);
@@ -112,10 +109,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
-            foreach (var node in childNodes)
-            {
-                if (node != null)
-                {
+            foreach (var node in childNodes) {
+                if (node != null) {
                     node.RemoveMatch(matchEvent);
                 }
             }
@@ -130,8 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
             // In an "or" expression we need to create states for all child expressions/listeners,
             // since all are going to be started
             var count = 0;
-            foreach (var node in evalOrNode.ChildNodes)
-            {
+            foreach (var node in evalOrNode.ChildNodes) {
                 var childState = node.NewState(this);
                 childNodes[count++] = childState;
             }
@@ -139,11 +133,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
             // In an "or" expression we start all child listeners
             var childNodeCopy = new EvalStateNode[childNodes.Length];
             Array.Copy(childNodes, 0, childNodeCopy, 0, childNodes.Length);
-            foreach (var child in childNodeCopy)
-            {
+            foreach (var child in childNodeCopy) {
                 child.Start(beginState);
-                if (quitted)
-                {
+                if (quitted) {
                     break;
                 }
             }
@@ -165,8 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitOr(evalOrNode.FactoryNode, this);
-            foreach (var node in childNodes)
-            {
+            foreach (var node in childNodes) {
                 node?.Accept(visitor);
             }
         }
@@ -178,12 +169,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
 
         private void QuitInternal()
         {
-            foreach (var child in childNodes)
-            {
+            foreach (var child in childNodes) {
                 child?.Quit();
             }
 
-            childNodes.Fill((EvalStateNode)null);
+            childNodes.Fill((EvalStateNode) null);
             quitted = true;
         }
     }

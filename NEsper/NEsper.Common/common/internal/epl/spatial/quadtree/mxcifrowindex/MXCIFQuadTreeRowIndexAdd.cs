@@ -83,8 +83,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
         private static void AddToBranch(
             MXCIFQuadTreeNodeBranch<object> branch,
-            double x, double y,
-            double width, double height,
+            double x,
+            double y,
+            double width,
+            double height,
             object value,
             MXCIFQuadTree<object> tree,
             bool unique,
@@ -152,7 +154,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             XYWHRectangleMultiType rectangle,
             MXCIFQuadTreeNodeBranch<object> branch,
             MXCIFQuadTree<object> tree,
-            bool unique, string indexName)
+            bool unique,
+            string indexName)
         {
             var x = rectangle.X;
             var y = rectangle.Y;
@@ -277,7 +280,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             return 1;
         }
 
-        private static EPException HandleUniqueViolation(string indexName, XYWHRectangleMultiType other)
+        private static EPException HandleUniqueViolation(
+            string indexName,
+            XYWHRectangleMultiType other)
         {
             return PropertyHashedEventTableUnique.HandleUniqueIndexViolation(
                 indexName, "(" + other.X + "," + other.Y + "," + other.W + "," + other.H + ")");

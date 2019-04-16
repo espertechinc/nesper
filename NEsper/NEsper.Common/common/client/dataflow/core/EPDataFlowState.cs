@@ -9,16 +9,17 @@
 namespace com.espertech.esper.common.client.dataflow.core
 {
     /// <summary>Data flow instance states. </summary>
-    public enum EPDataFlowState {
+    public enum EPDataFlowState
+    {
         /// <summary>Start state: the state a data flow instance is in when it gets instantiated. </summary>
         INSTANTIATED,
-    
+
         /// <summary>Running means the data flow instance is currently executing. </summary>
         RUNNING,
-    
+
         /// <summary>Complete means the data flow instance completed. </summary>
         COMPLETE,
-    
+
         /// <summary>Cancelled means the data flow instance was cancelled. </summary>
         CANCELLED,
     }

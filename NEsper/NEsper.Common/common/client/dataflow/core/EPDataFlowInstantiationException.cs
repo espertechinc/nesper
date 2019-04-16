@@ -19,15 +19,17 @@ namespace com.espertech.esper.common.client.dataflow.core
             : base(message)
         {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="message">the message</param>
         /// <param name="cause">the inner exception</param>
-        public EPDataFlowInstantiationException(String message, Exception cause)
+        public EPDataFlowInstantiationException(
+            String message,
+            Exception cause)
             : base(message, cause)
         {
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="cause">the inner exception</param>
         public EPDataFlowInstantiationException(Exception cause)

@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
         }
 
-        public AggregationPortableValidationSorted(string aggFuncName, EventType containedEventType)
+        public AggregationPortableValidationSorted(
+            string aggFuncName,
+            EventType containedEventType)
         {
             AggFuncName = aggFuncName;
             ContainedEventType = containedEventType;
@@ -33,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public EventType ContainedEventType { get; set; }
 
         public void ValidateIntoTableCompatible(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory)
         {
             AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
@@ -43,7 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, ModuleTableInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            ModuleTableInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(AggregationPortableValidationSorted), GetType(), classScope);
             method.Block

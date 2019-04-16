@@ -23,20 +23,27 @@ namespace com.espertech.esper.common.@internal.@event.arr
             this.index = index;
         }
 
-        public void Write(object value, EventBean target)
+        public void Write(
+            object value,
+            EventBean target)
         {
             var arrayEvent = (ObjectArrayBackedEventBean) target;
             Write(value, arrayEvent.Properties);
         }
 
         public CodegenExpression WriteCodegen(
-            CodegenExpression assigned, CodegenExpression und, CodegenExpression target, CodegenMethodScope parent,
+            CodegenExpression assigned,
+            CodegenExpression und,
+            CodegenExpression target,
+            CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
             return Assign(ArrayAtIndex(und, Constant(index)), assigned);
         }
 
-        public void Write(object value, object[] array)
+        public void Write(
+            object value,
+            object[] array)
         {
             array[index] = value;
         }

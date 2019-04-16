@@ -25,8 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         protected ExprEvaluator[] evaluators;
 
         public SelectEvalStreamBase(
-            SelectExprForgeContext context, EventType resultEventType,
-            IList<SelectClauseStreamCompiledSpec> namedStreams, bool usingWildcard)
+            SelectExprForgeContext context,
+            EventType resultEventType,
+            IList<SelectClauseStreamCompiledSpec> namedStreams,
+            bool usingWildcard)
         {
             this.context = context;
             this.resultEventType = resultEventType;
@@ -40,9 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
         public abstract CodegenMethod ProcessCodegen(
             CodegenExpression resultEventType,
-            CodegenExpression eventBeanFactory, 
+            CodegenExpression eventBeanFactory,
             CodegenMethodScope codegenMethodScope,
-            SelectExprProcessorCodegenSymbol selectSymbol, 
+            SelectExprProcessorCodegenSymbol selectSymbol,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
     }

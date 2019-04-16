@@ -30,7 +30,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="datapoint">provides the datapoint</param>
         /// <param name="lower">provides lower boundary</param>
         /// <param name="higher">provides upper boundary</param>
-        public BetweenExpression(Expression datapoint, Expression lower, Expression higher)
+        public BetweenExpression(
+            Expression datapoint,
+            Expression lower,
+            Expression higher)
             : this(datapoint, lower, higher, true, true, false)
         {
         }
@@ -43,7 +46,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="lowEndpointIncluded">true if the low endpoint is included, false if not</param>
         /// <param name="highEndpointIncluded">true if the high endpoint is included, false if not</param>
         /// <param name="notBetween">true for not-between, false for between</param>
-        public BetweenExpression(bool lowEndpointIncluded, bool highEndpointIncluded, bool notBetween)
+        public BetweenExpression(
+            bool lowEndpointIncluded,
+            bool highEndpointIncluded,
+            bool notBetween)
         {
             IsLowEndpointIncluded = lowEndpointIncluded;
             IsHighEndpointIncluded = highEndpointIncluded;
@@ -60,8 +66,12 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="highEndpointIncluded">true if the high endpoint is included, false if not</param>
         /// <param name="notBetween">true for not-between, false for between</param>
         public BetweenExpression(
-            Expression datapoint, Expression lower, Expression higher, bool lowEndpointIncluded,
-            bool highEndpointIncluded, bool notBetween)
+            Expression datapoint,
+            Expression lower,
+            Expression higher,
+            bool lowEndpointIncluded,
+            bool highEndpointIncluded,
+            bool notBetween)
         {
             Children.Add(datapoint);
             Children.Add(lower);

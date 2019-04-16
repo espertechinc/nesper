@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContainedEventEvalEventBeanArray), GetType(), classScope);
             method.Block.MethodReturn(

@@ -15,9 +15,8 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// For use in match recognize pattern expression as a placeholder to represent its child nodes.
     /// </summary>
-
     [Serializable]
-    public class MatchRecognizeRegExPlaceholder 
+    public class MatchRecognizeRegExPlaceholder
         : MatchRecognizeRegEx
     {
         public override void WriteEPL(TextWriter writer)
@@ -25,6 +24,7 @@ namespace com.espertech.esper.common.client.soda
             if ((Children == null) || (Children.Count == 0)) {
                 return;
             }
+
             Children[0].WriteEPL(writer);
         }
     }

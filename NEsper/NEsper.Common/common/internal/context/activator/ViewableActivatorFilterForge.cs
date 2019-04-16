@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.filterspec;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.activator
@@ -27,9 +26,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         private readonly int subselectNumber;
 
         public ViewableActivatorFilterForge(
-            FilterSpecCompiled filterSpecCompiled, 
-            bool canIterate, 
-            int? streamNumFromClause, 
+            FilterSpecCompiled filterSpecCompiled,
+            bool canIterate,
+            int? streamNumFromClause,
             bool isSubSelect,
             int subselectNumber)
         {
@@ -41,7 +40,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ViewableActivatorFilter), GetType(), classScope);
 

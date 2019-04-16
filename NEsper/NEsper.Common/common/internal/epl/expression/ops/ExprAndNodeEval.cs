@@ -20,24 +20,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprAndNodeImpl parent;
 
-        public ExprAndNodeEval(ExprAndNodeImpl parent, ExprEvaluator[] evaluators)
+        public ExprAndNodeEval(
+            ExprAndNodeImpl parent,
+            ExprEvaluator[] evaluators)
         {
             this.parent = parent;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = true;
+            bool? result = true;
             foreach (var child in evaluators) {
-                var evaluated = (bool) child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var evaluated = child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (evaluated == null) {
                     result = null;
                 }
-                else {
-                    if (!evaluated) {
-                        return false;
-                    }
+                else if (false.Equals(evaluated)) {
+                    return false;
                 }
             }
 
@@ -45,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprAndNodeImpl parent, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprAndNodeImpl parent,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(typeof(bool?), typeof(ExprAndNodeEval), codegenClassScope);

@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.annotation
     /// Ensure the engine configuration for prioritized execution is set before using
     /// this annotation.
     /// </summary>
-
     public class DropAttribute : Attribute
     {
         /// <summary>

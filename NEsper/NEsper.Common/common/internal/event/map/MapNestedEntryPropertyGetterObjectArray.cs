@@ -24,8 +24,11 @@ namespace com.espertech.esper.common.@internal.@event.map
         private readonly ObjectArrayEventPropertyGetter arrayGetter;
 
         public MapNestedEntryPropertyGetterObjectArray(
-            string propertyMap, EventType fragmentType, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            ObjectArrayEventPropertyGetter arrayGetter) : base(propertyMap, fragmentType, eventBeanTypedEventFactory)
+            string propertyMap,
+            EventType fragmentType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            ObjectArrayEventPropertyGetter arrayGetter)
+            : base(propertyMap, fragmentType, eventBeanTypedEventFactory)
         {
             this.arrayGetter = arrayGetter;
         }
@@ -59,18 +62,22 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public override CodegenExpression HandleNestedValueCodegen(
-            CodegenExpression name, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            CodegenMethod method = CodegenLegoPropertyBeanOrUnd.From(
+            var method = CodegenLegoPropertyBeanOrUnd.From(
                 codegenMethodScope, codegenClassScope, typeof(object[]), arrayGetter,
                 CodegenLegoPropertyBeanOrUnd.AccessType.GET, GetType());
             return LocalMethod(method, name);
         }
 
         public override CodegenExpression HandleNestedValueFragmentCodegen(
-            CodegenExpression name, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            CodegenMethod method = CodegenLegoPropertyBeanOrUnd.From(
+            var method = CodegenLegoPropertyBeanOrUnd.From(
                 codegenMethodScope, codegenClassScope, typeof(object[]), arrayGetter,
                 CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT, GetType());
             return LocalMethod(method, name);

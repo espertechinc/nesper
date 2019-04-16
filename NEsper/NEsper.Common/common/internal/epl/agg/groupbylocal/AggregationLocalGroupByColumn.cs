@@ -10,7 +10,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 {
     public class AggregationLocalGroupByColumn
     {
-        public AggregationLocalGroupByColumn(bool defaultGroupLevel, int fieldNum, int levelNum)
+        public AggregationLocalGroupByColumn(
+            bool defaultGroupLevel,
+            int fieldNum,
+            int levelNum)
         {
             IsDefaultGroupLevel = defaultGroupLevel;
             FieldNum = fieldNum;

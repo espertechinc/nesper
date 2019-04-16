@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.xml;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.property
 {
@@ -34,7 +33,10 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// </summary>
         /// <param name="propertyName">is the property name</param>
         /// <param name="key">is the mapped access key</param>
-        public DynamicMappedProperty(string propertyName, string key) : base(propertyName)
+        public DynamicMappedProperty(
+            string propertyName,
+            string key)
+            : base(propertyName)
         {
             Key = key;
         }
@@ -51,20 +53,24 @@ namespace com.espertech.esper.common.@internal.@event.property
         }
 
         public override EventPropertyGetterSPI GetGetter(
-            BeanEventType eventType, EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventType eventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return new DynamicMappedPropertyGetter(
                 PropertyNameAtomic, Key, eventBeanTypedEventFactory, beanEventTypeFactory);
         }
 
-        public override Type GetPropertyType(BeanEventType eventType, BeanEventTypeFactory beanEventTypeFactory)
+        public override Type GetPropertyType(
+            BeanEventType eventType,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             return typeof(object);
         }
 
         public override GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType beanEventType, BeanEventTypeFactory beanEventTypeFactory)
+            BeanEventType beanEventType,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             return GenericPropertyDesc.ObjectGeneric;
         }
@@ -84,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             return new MapMappedPropertyGetter(PropertyNameAtomic, Key);
         }
 
-        public override void ToPropertyEPL(StringWriter writer)
+        public override void ToPropertyEPL(TextWriter writer)
         {
             writer.Write(PropertyNameAtomic);
             writer.Write("('");
@@ -94,8 +100,10 @@ namespace com.espertech.esper.common.@internal.@event.property
         }
 
         public override EventPropertyGetterSPI GetGetterDOM(
-            SchemaElementComplex complexProperty, EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BaseXMLEventType eventType, string propertyExpression)
+            SchemaElementComplex complexProperty,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BaseXMLEventType eventType,
+            string propertyExpression)
         {
             return new DOMMapGetter(PropertyNameAtomic, Key, null);
         }

@@ -32,7 +32,10 @@ namespace com.espertech.esper.common.@internal.context.activator
         private readonly PatternStreamSpecCompiled _spec;
 
         public ViewableActivatorPatternForge(
-            EventType eventType, PatternStreamSpecCompiled spec, PatternContext patternContext, bool isCanIterate)
+            EventType eventType,
+            PatternStreamSpecCompiled spec,
+            PatternContext patternContext,
+            bool isCanIterate)
         {
             _eventType = eventType;
             _spec = spec;
@@ -41,7 +44,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         }
 
         public CodegenExpression MakeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ViewableActivator), typeof(ViewableActivatorPatternForge), classScope);
 
@@ -73,7 +78,9 @@ namespace com.espertech.esper.common.@internal.context.activator
         }
 
         public static MapEventType MakeRegisterPatternType(
-            StatementBaseInfo @base, int stream, PatternStreamSpecCompiled patternStreamSpec,
+            StatementBaseInfo @base,
+            int stream,
+            PatternStreamSpecCompiled patternStreamSpec,
             StatementCompileTimeServices services)
         {
             var patternEventTypeName = services.EventTypeNameGeneratorStatement.GetPatternTypeName(stream);

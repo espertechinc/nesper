@@ -7,31 +7,33 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.support
 {
-	public class QueryPlanIndexDescSubquery : QueryPlanIndexDescBase {
-	    private readonly int subqueryNum;
-	    private readonly string tableLookupStrategy;
+    public class QueryPlanIndexDescSubquery : QueryPlanIndexDescBase
+    {
+        private readonly int subqueryNum;
+        private readonly string tableLookupStrategy;
 
-	    public QueryPlanIndexDescSubquery(IndexNameAndDescPair[] tables, int subqueryNum, string tableLookupStrategy) : base(tables)
-	        {
-	        this.subqueryNum = subqueryNum;
-	        this.tableLookupStrategy = tableLookupStrategy;
-	    }
+        public QueryPlanIndexDescSubquery(
+            IndexNameAndDescPair[] tables,
+            int subqueryNum,
+            string tableLookupStrategy)
+            : base(tables)
+        {
+            this.subqueryNum = subqueryNum;
+            this.tableLookupStrategy = tableLookupStrategy;
+        }
 
-	    public int SubqueryNum
-	    {
-	        get => subqueryNum;
-	    }
+        public int SubqueryNum {
+            get => subqueryNum;
+        }
 
-	    public string TableLookupStrategy
-	    {
-	        get => tableLookupStrategy;
-	    }
-	}
+        public string TableLookupStrategy {
+            get => tableLookupStrategy;
+        }
+    }
 } // end of namespace

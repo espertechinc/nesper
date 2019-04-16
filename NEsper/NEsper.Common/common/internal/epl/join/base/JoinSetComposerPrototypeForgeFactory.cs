@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
 
             // Handle a join with a database or other historical data source for 2 streams
-            var outerJoinDescs = OuterJoinDesc.ToArray();
+            var outerJoinDescs = OuterJoinDesc.ToArray(spec.Raw.OuterJoinDescList);
             if (historicalViewableDesc.IsHistorical && streamTypes.Length == 2) {
                 return MakeComposerHistorical2Stream(
                     outerJoinDescs, whereClause, streamTypes, streamNames, historicalViewableDesc, queryPlanLogging,
@@ -294,7 +294,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         private static ExprNode GetFilterExpressionInclOnClause(
-            ExprNode whereClause, OuterJoinDesc[] outerJoinDescList, StatementRawInfo rawInfo,
+            ExprNode whereClause,
+            OuterJoinDesc[] outerJoinDescList,
+            StatementRawInfo rawInfo,
             StatementCompileTimeServices services)
         {
             if (whereClause == null) { // no need to add as query planning is fully based on on-clause

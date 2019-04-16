@@ -20,9 +20,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public ExprNodeAdapterMSBase(
             FilterSpecParamExprNode factory,
-            ExprEvaluatorContext evaluatorContext, 
+            ExprEvaluatorContext evaluatorContext,
             EventBean[] prototypeArray)
-             : base(factory, evaluatorContext)
+            : base(factory, evaluatorContext)
 
         {
             this.prototypeArray = prototypeArray;
@@ -39,37 +39,35 @@ namespace com.espertech.esper.common.@internal.filterspec
             if (o == null || GetType() != o.GetType()) return false;
             if (!base.Equals(o)) return false;
 
-            ExprNodeAdapterMSBase that = (ExprNodeAdapterMSBase)o;
+            ExprNodeAdapterMSBase that = (ExprNodeAdapterMSBase) o;
 
             // Array-of-events comparison must consider array-tag holders
-            for (int i = 0; i < prototypeArray.Length; i++)
-            {
+            for (int i = 0; i < prototypeArray.Length; i++) {
                 EventBean mine = prototypeArray[i];
                 EventBean other = that.prototypeArray[i];
-                if (mine == null)
-                {
-                    if (other != null)
-                    {
+                if (mine == null) {
+                    if (other != null) {
                         return false;
                     }
+
                     continue;
                 }
-                if (mine.Equals(other))
-                {
+
+                if (mine.Equals(other)) {
                     continue;
                 }
-                if (mine.EventType.Metadata.TypeClass != EventTypeTypeClass.PATTERNDERIVED)
-                {
+
+                if (mine.EventType.Metadata.TypeClass != EventTypeTypeClass.PATTERNDERIVED) {
                     return false;
                 }
+
                 // these events holds array-matches
-                MappedEventBean mineMapped = (MappedEventBean)mine;
-                MappedEventBean otherMapped = (MappedEventBean)other;
+                MappedEventBean mineMapped = (MappedEventBean) mine;
+                MappedEventBean otherMapped = (MappedEventBean) other;
                 string propName = mineMapped.EventType.PropertyNames[0];
-                EventBean[] mineEvents = (EventBean[])mineMapped.Properties.Get(propName);
-                EventBean[] otherEvents = (EventBean[])otherMapped.Properties.Get(propName);
-                if (!CompatExtensions.AreEqual(mineEvents, otherEvents))
-                {
+                EventBean[] mineEvents = (EventBean[]) mineMapped.Properties.Get(propName);
+                EventBean[] otherEvents = (EventBean[]) otherMapped.Properties.Get(propName);
+                if (!CompatExtensions.AreEqual(mineEvents, otherEvents)) {
                     return false;
                 }
             }

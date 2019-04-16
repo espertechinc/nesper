@@ -36,10 +36,14 @@ namespace com.espertech.esper.common.@internal.@event.path
         private readonly XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory;
 
         public EventTypeCollectorImpl(
-            IDictionary<string, EventType> moduleEventTypes, BeanEventTypeFactory beanEventTypeFactory,
-            EventTypeFactory eventTypeFactory, BeanEventTypeStemService beanEventTypeStemService,
-            EventTypeNameResolver eventTypeNameResolver, XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
-            EventTypeAvroHandler eventTypeAvroHandler, EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            IDictionary<string, EventType> moduleEventTypes,
+            BeanEventTypeFactory beanEventTypeFactory,
+            EventTypeFactory eventTypeFactory,
+            BeanEventTypeStemService beanEventTypeStemService,
+            EventTypeNameResolver eventTypeNameResolver,
+            XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
+            EventTypeAvroHandler eventTypeAvroHandler,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.moduleEventTypes = moduleEventTypes;
             this.beanEventTypeFactory = beanEventTypeFactory;
@@ -52,8 +56,11 @@ namespace com.espertech.esper.common.@internal.@event.path
         }
 
         public void RegisterMap(
-            EventTypeMetadata metadata, LinkedHashMap<string, object> properties, string[] superTypes,
-            string startTimestampPropertyName, string endTimestampPropertyName)
+            EventTypeMetadata metadata,
+            LinkedHashMap<string, object> properties,
+            string[] superTypes,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName)
         {
             var eventType = eventTypeFactory.CreateMap(
                 metadata, properties, superTypes, startTimestampPropertyName, endTimestampPropertyName,
@@ -62,8 +69,11 @@ namespace com.espertech.esper.common.@internal.@event.path
         }
 
         public void RegisterObjectArray(
-            EventTypeMetadata metadata, LinkedHashMap<string, object> properties, string[] superTypes,
-            string startTimestampPropertyName, string endTimestampPropertyName)
+            EventTypeMetadata metadata,
+            LinkedHashMap<string, object> properties,
+            string[] superTypes,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName)
         {
             var eventType = eventTypeFactory.CreateObjectArray(
                 metadata, properties, superTypes, startTimestampPropertyName, endTimestampPropertyName,
@@ -72,7 +82,9 @@ namespace com.espertech.esper.common.@internal.@event.path
         }
 
         public void RegisterWrapper(
-            EventTypeMetadata metadata, EventType underlying, LinkedHashMap<string, object> properties)
+            EventTypeMetadata metadata,
+            EventType underlying,
+            LinkedHashMap<string, object> properties)
         {
             var eventType = eventTypeFactory.CreateWrapper(
                 metadata, underlying, properties, beanEventTypeFactory, eventTypeNameResolver);
@@ -80,8 +92,12 @@ namespace com.espertech.esper.common.@internal.@event.path
         }
 
         public void RegisterBean(
-            EventTypeMetadata metadata, Type clazz, string startTimestampName, string endTimestampName,
-            EventType[] superTypes, ISet<EventType> deepSuperTypes)
+            EventTypeMetadata metadata,
+            Type clazz,
+            string startTimestampName,
+            string endTimestampName,
+            EventType[] superTypes,
+            ISet<EventType> deepSuperTypes)
         {
             var stem = beanEventTypeStemService.GetCreateStem(clazz, null);
             var eventType = eventTypeFactory.CreateBeanType(
@@ -90,7 +106,9 @@ namespace com.espertech.esper.common.@internal.@event.path
         }
 
         public void RegisterXML(
-            EventTypeMetadata metadata, string representsFragmentOfProperty, string representsOriginalTypeName)
+            EventTypeMetadata metadata,
+            string representsFragmentOfProperty,
+            string representsOriginalTypeName)
         {
             var existing = xmlFragmentEventTypeFactory.GetTypeByName(metadata.Name);
             if (existing != null) {
@@ -104,7 +122,7 @@ namespace com.espertech.esper.common.@internal.@event.path
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(representsFragmentOfProperty);
-            SchemaElementComplex schemaModelRoot = SchemaUtil.FindRootElement(
+            var schemaModelRoot = SchemaUtil.FindRootElement(
                 schemaType.SchemaModel, schemaType.ConfigurationEventTypeXMLDOM.RootElementNamespace,
                 schemaType.RootElementName);
             var item = prop.GetPropertyTypeSchema(schemaModelRoot);
@@ -114,16 +132,20 @@ namespace com.espertech.esper.common.@internal.@event.path
             HandleRegister(eventType);
         }
 
-        public void RegisterAvro(EventTypeMetadata metadata, string schemaJson)
+        public void RegisterAvro(
+            EventTypeMetadata metadata,
+            string schemaJson)
         {
             EventType eventType = eventTypeAvroHandler.NewEventTypeFromJson(
                 metadata, eventBeanTypedEventFactory, schemaJson);
             HandleRegister(eventType);
         }
 
-        public void RegisterVariant(EventTypeMetadata metadata, EventType[] variants, bool any)
+        public void RegisterVariant(
+            EventTypeMetadata metadata,
+            EventType[] variants,
+            bool any)
         {
-
             var spec = new VariantSpec(
                 variants, any ? TypeVariance.ANY : TypeVariance.PREDEFINED);
             EventType eventType = eventTypeFactory.CreateVariant(metadata, spec);

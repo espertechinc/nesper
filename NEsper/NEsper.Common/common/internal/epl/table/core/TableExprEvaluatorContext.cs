@@ -48,18 +48,15 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 return;
             }
 
-            foreach (var latch in table.Values)
-            {
+            foreach (var latch in table.Values) {
                 latch.Dispose();
             }
 
             table.Clear();
         }
 
-        public int LockHeldCount
-        {
-            get
-            {
+        public int LockHeldCount {
+            get {
                 var table = _threadLocal.Value;
                 return table != null ? table.Count : 0;
             }

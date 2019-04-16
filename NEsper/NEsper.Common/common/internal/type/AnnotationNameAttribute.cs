@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.annotation;
 
 namespace com.espertech.esper.common.@internal.type
@@ -21,13 +20,11 @@ namespace com.espertech.esper.common.@internal.type
             this.name = name;
         }
 
-        public override string Value
-        {
+        public override string Value {
             get => name;
         }
 
-        public Type AnnotationType
-        {
+        public Type AnnotationType {
             get => typeof(NameAttribute);
         }
 
@@ -38,17 +35,15 @@ namespace com.espertech.esper.common.@internal.type
 
         public override bool Equals(object o)
         {
-            if (this == o)
-            {
+            if (this == o) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType())
-            {
+            if (o == null || GetType() != o.GetType()) {
                 return false;
             }
 
-            var that = (AnnotationNameAttribute)o;
+            var that = (AnnotationNameAttribute) o;
 
             return name.Equals(that.name);
         }

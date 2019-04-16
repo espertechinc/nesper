@@ -19,14 +19,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenExpression _lhs;
         private readonly bool _not;
 
-        public CodegenExpressionInstanceOf(CodegenExpression lhs, Type clazz, bool not)
+        public CodegenExpressionInstanceOf(
+            CodegenExpression lhs,
+            Type clazz,
+            bool not)
         {
             this._lhs = lhs;
             this._clazz = clazz;
             this._not = not;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             if (_not) {
                 builder.Append("!(");

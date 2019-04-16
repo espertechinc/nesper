@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -20,7 +19,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.logging;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.guard
@@ -76,7 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         }
 
         protected override void InlineCodegen(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             method.Block
                 .ExprDotMethod(
@@ -86,7 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters, IList<ScheduleHandleCallbackProvider> schedules)
+            IList<FilterSpecCompiled> filters,
+            IList<ScheduleHandleCallbackProvider> schedules)
         {
             GuardForge.CollectSchedule(schedules);
         }
@@ -98,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             return writer.ToString();
         }
 
-        public override void ToPrecedenceFreeEPL(StringWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ChildNodes[0].ToEPL(writer, Precedence);
             if (PatternGuardSpec.ObjectNamespace.Equals(GuardEnum.WHILE_GUARD.GetNamespace()) &&

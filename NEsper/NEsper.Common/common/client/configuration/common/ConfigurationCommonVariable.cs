@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.common
     [Serializable]
     public class ConfigurationCommonVariable
     {
-
         /// <summary>
         ///     Returns the variable type as a fully-qualified class name, primitive type or event type name.
         /// </summary>

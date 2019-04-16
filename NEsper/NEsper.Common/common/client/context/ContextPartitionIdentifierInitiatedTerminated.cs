@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.client.context
         /// <param name="startTime">start time</param>
         /// <param name="endTime">optional end time</param>
         public ContextPartitionIdentifierInitiatedTerminated(
-            IDictionary<string, object> properties, long startTime, long? endTime)
+            IDictionary<string, object> properties,
+            long startTime,
+            long? endTime)
         {
             Properties = properties;
             StartTime = startTime;

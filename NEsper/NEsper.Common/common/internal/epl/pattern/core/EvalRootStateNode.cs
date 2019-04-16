@@ -33,7 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         /// </summary>
         /// <param name="rootNode">root node</param>
         /// <param name="rootSingleChildNode">is the root nodes single child node</param>
-        public EvalRootStateNode(EvalRootNode rootNode, EvalNode rootSingleChildNode) : base(null)
+        public EvalRootStateNode(
+            EvalRootNode rootNode,
+            EvalNode rootSingleChildNode)
+            : base(null)
         {
             this.rootNode = rootNode;
             this.rootSingleChildNode = rootSingleChildNode;
@@ -64,7 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             Quit();
         }
 
-        public void StartRecoverable(bool startRecoverable, MatchedEventMap beginState)
+        public void StartRecoverable(
+            bool startRecoverable,
+            MatchedEventMap beginState)
         {
             Start(beginState);
         }
@@ -77,7 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         }
 
         public void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent)
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             var agentInstanceContext = rootNode.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternRootEvaluateTrue(matchEvent);
@@ -90,7 +98,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             agentInstanceContext.InstrumentationProvider.APatternRootEvaluateTrue(isQuitted);
         }
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             var agentInstanceContext = rootNode.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternRootEvalFalse();

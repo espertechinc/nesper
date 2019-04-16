@@ -51,42 +51,48 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(GetType(), "getOADynamicProp", beanExpression, Constant(propertyName));
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(GetType(), "isExistsOADynamicProp", beanExpression, Constant(propertyName));
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantFalse();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
@@ -99,16 +105,18 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="propertyName">props</param>
         /// <returns>value</returns>
         /// <throws>PropertyAccessException exception</throws>
-        public static object GetOADynamicProp(EventBean eventBean, string propertyName)
+        public static object GetOADynamicProp(
+            EventBean eventBean,
+            string propertyName)
         {
             var objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
-            int? index = objectArrayEventType.PropertiesIndexes.Get(propertyName);
+            int? index = objectArrayEventType.PropertiesIndexes[propertyName];
             if (index == null) {
                 return null;
             }
 
             var theEvent = (object[]) eventBean.Underlying;
-            return theEvent[index];
+            return theEvent[index.Value];
         }
 
         /// <summary>
@@ -117,10 +125,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
         /// <param name="eventBean">bean</param>
         /// <param name="propertyName">name</param>
         /// <returns>flag</returns>
-        public static bool IsExistsOADynamicProp(EventBean eventBean, string propertyName)
+        public static bool IsExistsOADynamicProp(
+            EventBean eventBean,
+            string propertyName)
         {
             var objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
-            int? index = objectArrayEventType.PropertiesIndexes.Get(propertyName);
+            int? index = objectArrayEventType.PropertiesIndexes[propertyName];
             return index != null;
         }
     }

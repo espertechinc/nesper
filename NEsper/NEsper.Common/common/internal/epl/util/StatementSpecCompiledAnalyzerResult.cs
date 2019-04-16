@@ -15,7 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.util
     public class StatementSpecCompiledAnalyzerResult
     {
         public StatementSpecCompiledAnalyzerResult(
-            IList<FilterSpecCompiled> filters, IList<NamedWindowConsumerStreamSpec> namedWindowConsumers)
+            IList<FilterSpecCompiled> filters,
+            IList<NamedWindowConsumerStreamSpec> namedWindowConsumers)
         {
             Filters = filters;
             NamedWindowConsumers = namedWindowConsumers;

@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             set => innerLookupStrategy = value;
         }
 
-        public IEnumerator<EventBean> Lookup(EventBean lookupEvent, EventTable[] index, ExprEvaluatorContext context)
+        public IEnumerator<EventBean> Lookup(
+            EventBean lookupEvent,
+            EventTable[] index,
+            ExprEvaluatorContext context)
         {
             if (index[0] is MultiIndexEventTable) {
                 var multiIndex = (MultiIndexEventTable) index[0];

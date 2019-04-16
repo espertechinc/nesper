@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
     public class SubordWMatchExprLookupStrategyAllUnfilteredForge : SubordWMatchExprLookupStrategyFactoryForge
     {
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return NewInstance(typeof(SubordWMatchExprLookupStrategyAllUnfilteredFactory));
         }

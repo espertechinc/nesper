@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.compat;
@@ -16,15 +15,21 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.script.compiletime
 {
-	public class ScriptCollectorCompileTime : ScriptCollector {
-	    private readonly IDictionary<NameAndParamNum, ExpressionScriptProvided> moduleScripts;
+    public class ScriptCollectorCompileTime : ScriptCollector
+    {
+        private readonly IDictionary<NameAndParamNum, ExpressionScriptProvided> moduleScripts;
 
-	    public ScriptCollectorCompileTime(IDictionary<NameAndParamNum, ExpressionScriptProvided> moduleScripts) {
-	        this.moduleScripts = moduleScripts;
-	    }
+        public ScriptCollectorCompileTime(IDictionary<NameAndParamNum, ExpressionScriptProvided> moduleScripts)
+        {
+            this.moduleScripts = moduleScripts;
+        }
 
-	    public void RegisterScript(string scriptName, int numParams, ExpressionScriptProvided meta) {
-	        moduleScripts.Put(new NameAndParamNum(scriptName, numParams), meta);
-	    }
-	}
+        public void RegisterScript(
+            string scriptName,
+            int numParams,
+            ExpressionScriptProvided meta)
+        {
+            moduleScripts.Put(new NameAndParamNum(scriptName, numParams), meta);
+        }
+    }
 } // end of namespace

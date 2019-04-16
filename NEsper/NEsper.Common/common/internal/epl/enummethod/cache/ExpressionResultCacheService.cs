@@ -16,35 +16,32 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         private readonly int _declareExprCacheSize;
         private readonly IThreadLocal<ExpressionResultCacheServiceHolder> _threadCache;
 
-        public ExpressionResultCacheService(int declareExprCacheSize, IThreadLocalManager threadLocalManager)
+        public ExpressionResultCacheService(
+            int declareExprCacheSize,
+            IThreadLocalManager threadLocalManager)
         {
             _declareExprCacheSize = declareExprCacheSize;
             _threadCache = threadLocalManager.Create<ExpressionResultCacheServiceHolder>(
                 () => new ExpressionResultCacheServiceHolder(declareExprCacheSize));
         }
 
-        public ExpressionResultCacheForPropUnwrap AllocateUnwrapProp
-        {
+        public ExpressionResultCacheForPropUnwrap AllocateUnwrapProp {
             get { return _threadCache.GetOrCreate().GetAllocateUnwrapProp(); }
         }
 
-        public ExpressionResultCacheForDeclaredExprLastValue AllocateDeclaredExprLastValue
-        {
+        public ExpressionResultCacheForDeclaredExprLastValue AllocateDeclaredExprLastValue {
             get { return _threadCache.GetOrCreate().GetAllocateDeclaredExprLastValue(); }
         }
 
-        public ExpressionResultCacheForDeclaredExprLastColl AllocateDeclaredExprLastColl
-        {
+        public ExpressionResultCacheForDeclaredExprLastColl AllocateDeclaredExprLastColl {
             get { return _threadCache.GetOrCreate().GetAllocateDeclaredExprLastColl(); }
         }
 
-        public ExpressionResultCacheForEnumerationMethod AllocateEnumerationMethod
-        {
+        public ExpressionResultCacheForEnumerationMethod AllocateEnumerationMethod {
             get { return _threadCache.GetOrCreate().GetAllocateEnumerationMethod(); }
         }
 
-        public bool IsDeclaredExprCacheEnabled
-        {
+        public bool IsDeclaredExprCacheEnabled {
             get { return _declareExprCacheSize > 0; }
         }
     }

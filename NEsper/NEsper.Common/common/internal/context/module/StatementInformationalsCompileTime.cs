@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.dataflow.core;
@@ -83,7 +82,10 @@ namespace com.espertech.esper.common.@internal.context.module
             int numFilterCallbacks,
             int numScheduleCallbacks,
             int numNamedWindowCallbacks,
-            StatementType statementType, int priority, bool preemptive, bool hasVariables,
+            StatementType statementType,
+            int priority,
+            bool preemptive,
+            bool hasVariables,
             bool writesToTables,
             bool hasTableAccess,
             Type[] selectClauseTypes,
@@ -129,7 +131,9 @@ namespace com.espertech.esper.common.@internal.context.module
             _allowSubscriber = allowSubscriber;
         }
 
-        public CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(StatementInformationalsRuntime), GetType(), classScope);
             var info = Ref("info");
@@ -214,7 +218,9 @@ namespace com.espertech.esper.common.@internal.context.module
             return Constant(types);
         }
 
-        private CodegenExpression MakeSubstitutionParamNames(CodegenMethodScope parent, CodegenClassScope classScope)
+        private CodegenExpression MakeSubstitutionParamNames(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var named = _packageScope.SubstitutionParamsByName;
             if (named.IsEmpty()) {
@@ -234,7 +240,9 @@ namespace com.espertech.esper.common.@internal.context.module
             return LocalMethod(method);
         }
 
-        private CodegenExpression MakeInstrumentationProvider(CodegenMethod method, CodegenClassScope classScope)
+        private CodegenExpression MakeInstrumentationProvider(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (!_instrumented) {
                 return ConstantNull();
@@ -275,7 +283,9 @@ namespace com.espertech.esper.common.@internal.context.module
             return anonymousClass;
         }
 
-        private CodegenExpression MakeAuditProvider(CodegenMethod method, CodegenClassScope classScope)
+        private CodegenExpression MakeAuditProvider(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (FindAnnotation(_annotations, typeof(AuditAttribute)) == null) {
                 return PublicConstValue(typeof(AuditProviderDefault), "INSTANCE");
@@ -449,7 +459,9 @@ namespace com.espertech.esper.common.@internal.context.module
         }
 
         private CodegenExpression MakeProperties(
-            IDictionary<StatementProperty, object> properties, CodegenMethodScope parent, CodegenClassScope classScope)
+            IDictionary<StatementProperty, object> properties,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             if (properties.IsEmpty()) {
                 return StaticMethod(typeof(Collections), "emptyMap");

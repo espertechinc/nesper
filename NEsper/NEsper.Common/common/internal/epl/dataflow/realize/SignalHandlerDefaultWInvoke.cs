@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         internal readonly MethodInfo method;
         internal readonly object target;
 
-        public SignalHandlerDefaultWInvoke(object target, MethodInfo method)
+        public SignalHandlerDefaultWInvoke(
+            object target,
+            MethodInfo method)
         {
             this.target = target;
             this.method = method;

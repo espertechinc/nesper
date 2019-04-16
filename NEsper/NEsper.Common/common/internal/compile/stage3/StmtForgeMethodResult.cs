@@ -6,52 +6,38 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
-	public class StmtForgeMethodResult {
+    public class StmtForgeMethodResult
+    {
+        public StmtForgeMethodResult(
+            IList<StmtClassForgable> forgables,
+            IList<FilterSpecCompiled> filtereds,
+            IList<ScheduleHandleCallbackProvider> scheduleds,
+            IList<NamedWindowConsumerStreamSpec> namedWindowConsumers,
+            IList<FilterSpecParamExprNodeForge> filterBooleanExpressions)
+        {
+            Forgables = forgables;
+            Filtereds = filtereds;
+            Scheduleds = scheduleds;
+            NamedWindowConsumers = namedWindowConsumers;
+            FilterBooleanExpressions = filterBooleanExpressions;
+        }
 
-	    private readonly IList<StmtClassForgable> forgables;
-	    private readonly IList<FilterSpecCompiled> filtereds;
-	    private readonly IList<ScheduleHandleCallbackProvider> scheduleds;
-	    private readonly IList<NamedWindowConsumerStreamSpec> namedWindowConsumers;
-	    private readonly IList<FilterSpecParamExprNodeForge> filterBooleanExpressions;
+        public IList<StmtClassForgable> Forgables { get; }
 
-	    public StmtForgeMethodResult(IList<StmtClassForgable> forgables, IList<FilterSpecCompiled> filtereds, IList<ScheduleHandleCallbackProvider> scheduleds, IList<NamedWindowConsumerStreamSpec> namedWindowConsumers, IList<FilterSpecParamExprNodeForge> filterBooleanExpressions) {
-	        this.forgables = forgables;
-	        this.filtereds = filtereds;
-	        this.scheduleds = scheduleds;
-	        this.namedWindowConsumers = namedWindowConsumers;
-	        this.filterBooleanExpressions = filterBooleanExpressions;
-	    }
+        public IList<ScheduleHandleCallbackProvider> Scheduleds { get; }
 
-	    public IList<StmtClassForgable> GetForgables() {
-	        return forgables;
-	    }
+        public IList<FilterSpecCompiled> Filtereds { get; }
 
-	    public IList<ScheduleHandleCallbackProvider> GetScheduleds() {
-	        return scheduleds;
-	    }
+        public IList<NamedWindowConsumerStreamSpec> NamedWindowConsumers { get; }
 
-	    public IList<FilterSpecCompiled> GetFiltereds() {
-	        return filtereds;
-	    }
-
-	    public IList<NamedWindowConsumerStreamSpec> GetNamedWindowConsumers() {
-	        return namedWindowConsumers;
-	    }
-
-	    public IList<FilterSpecParamExprNodeForge> GetFilterBooleanExpressions() {
-	        return filterBooleanExpressions;
-	    }
-	}
+        public IList<FilterSpecParamExprNodeForge> FilterBooleanExpressions { get; }
+    }
 } // end of namespace

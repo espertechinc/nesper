@@ -12,7 +12,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
     public class TableMetadataColumnPairAggAccess : TableMetadataColumnPairBase
     {
-        public TableMetadataColumnPairAggAccess(int dest, AggregationAccessorForge accessor)
+        public TableMetadataColumnPairAggAccess(
+            int dest,
+            AggregationAccessorForge accessor)
             : base(dest)
         {
             Accessor = accessor;

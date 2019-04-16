@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             ExpressionsTexts = CollectionUtil.STRINGARRAY_EMPTY;
         }
 
-        public LookupStrategyDesc(LookupStrategyType lookupStrategy, string[] expressionsTexts)
+        public LookupStrategyDesc(
+            LookupStrategyType lookupStrategy,
+            string[] expressionsTexts)
         {
             LookupStrategy = lookupStrategy;
             ExpressionsTexts = expressionsTexts;

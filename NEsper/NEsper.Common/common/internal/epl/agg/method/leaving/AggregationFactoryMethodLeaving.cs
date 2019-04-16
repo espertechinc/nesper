@@ -38,12 +38,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
             new AggregationPortableValidationLeaving(parent.IsDistinct, parent.OptionalFilter != null, typeof(bool));
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             forge = new AggregatorLeaving(this, col, membersColumnized);
         }
 
-        public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream)
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
         {
             return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
         }

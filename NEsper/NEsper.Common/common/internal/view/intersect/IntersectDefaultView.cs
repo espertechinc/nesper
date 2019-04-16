@@ -35,7 +35,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
         internal readonly View[] views;
 
         public IntersectDefaultView(
-            AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext, IntersectViewFactory factory,
+            AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext,
+            IntersectViewFactory factory,
             IList<View> viewList)
         {
             agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
@@ -62,7 +63,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
@@ -162,7 +165,10 @@ namespace com.espertech.esper.common.@internal.view.intersect
             throw new UnsupportedOperationException("Must visit container");
         }
 
-        public void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents)
+        public void NewData(
+            int streamId,
+            EventBean[] newEvents,
+            EventBean[] oldEvents)
         {
             var localState = factory.DefaultViewLocalStatePerThread;
 
@@ -202,7 +208,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
         }
 
         public static void VisitViewContained(
-            ViewDataVisitorContained viewDataVisitor, ViewFactory viewFactory, View[] views)
+            ViewDataVisitorContained viewDataVisitor,
+            ViewFactory viewFactory,
+            View[] views)
         {
             viewDataVisitor.VisitPrimary(viewFactory.GetType().GetSimpleName(), views.Length);
             for (var i = 0; i < views.Length; i++) {

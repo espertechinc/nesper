@@ -21,7 +21,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
         private readonly int lookupStream;
 
         protected SortedAccessStrategyRelOpBase(
-            bool isNWOnTrigger, int lookupStream, int numStreams, ExprEvaluator keyEval)
+            bool isNWOnTrigger,
+            int lookupStream,
+            int numStreams,
+            ExprEvaluator keyEval)
         {
             this.lookupStream = lookupStream;
             this.keyEval = keyEval;
@@ -34,13 +37,17 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             }
         }
 
-        public object EvaluateLookup(EventBean theEvent, ExprEvaluatorContext context)
+        public object EvaluateLookup(
+            EventBean theEvent,
+            ExprEvaluatorContext context)
         {
             events[lookupStream] = theEvent;
             return keyEval.Evaluate(events, true, context);
         }
 
-        public object EvaluatePerStream(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        public object EvaluatePerStream(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             if (isNWOnTrigger) {
                 return keyEval.Evaluate(eventsPerStream, true, context);

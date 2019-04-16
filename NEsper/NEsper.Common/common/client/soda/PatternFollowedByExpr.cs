@@ -40,12 +40,14 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="first">a first pattern expression in the followed-by relationship</param>
         /// <param name="second">a second pattern expression in the followed-by relationship</param>
         /// <param name="patternExprs">further optional pattern expressions in the followed-by relationship</param>
-        public PatternFollowedByExpr(PatternExpr first, PatternExpr second, params PatternExpr[] patternExprs)
+        public PatternFollowedByExpr(
+            PatternExpr first,
+            PatternExpr second,
+            params PatternExpr[] patternExprs)
         {
             AddChild(first);
             AddChild(second);
-            for (int i = 0; i < patternExprs.Length; i++)
-            {
+            for (int i = 0; i < patternExprs.Length; i++) {
                 AddChild(patternExprs[i]);
             }
         }
@@ -61,8 +63,7 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
+        public override PatternExprPrecedenceEnum Precedence {
             get { return PatternExprPrecedenceEnum.FOLLOWED_BY; }
         }
 
@@ -70,15 +71,16 @@ namespace com.espertech.esper.common.client.soda
         /// <value>list of max-limit or null</value>
         public IList<Expression> OptionalMaxPerSubexpression { get; set; }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer, EPStatementFormatter formatter)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            EPStatementFormatter formatter)
         {
             String delimiter = "";
             int childNum = 0;
-            foreach (PatternExpr child in Children)
-            {
+            foreach (PatternExpr child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence, formatter);
-    
+
                 delimiter = " -> ";
                 if (OptionalMaxPerSubexpression != null && OptionalMaxPerSubexpression.Count > childNum) {
                     var maxExpr = OptionalMaxPerSubexpression[childNum];
@@ -88,6 +90,7 @@ namespace com.espertech.esper.common.client.soda
                         delimiter = " -[" + inner.ToString() + "]> ";
                     }
                 }
+
                 childNum++;
             }
         }

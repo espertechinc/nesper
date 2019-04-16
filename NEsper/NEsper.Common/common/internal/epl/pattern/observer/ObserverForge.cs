@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -20,19 +19,25 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
 {
-	public interface ObserverForge {
+    public interface ObserverForge
+    {
+        /// <summary>
+        /// Sets the observer object parameters.
+        /// </summary>
+        /// <param name="observerParameters">is a list of parameters</param>
+        /// <param name="convertor">for converting partial pattern matches to event-per-stream for expressions</param>
+        /// <param name="validationContext">context</param>
+        /// <throws>ObserverParameterException thrown to indicate a parameter problem</throws>
+        void SetObserverParameters(
+            IList<ExprNode> observerParameters,
+            MatchedEventConvertorForge convertor,
+            ExprValidationContext validationContext);
 
-	    /// <summary>
-	    /// Sets the observer object parameters.
-	    /// </summary>
-	    /// <param name="observerParameters">is a list of parameters</param>
-	    /// <param name="convertor">for converting partial pattern matches to event-per-stream for expressions</param>
-	    /// <param name="validationContext">context</param>
-	    /// <throws>ObserverParameterException thrown to indicate a parameter problem</throws>
-	    void SetObserverParameters(IList<ExprNode> observerParameters, MatchedEventConvertorForge convertor, ExprValidationContext validationContext) ;
+        CodegenExpression MakeCodegen(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
-	    CodegenExpression MakeCodegen(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
-
-	    void CollectSchedule(IList<ScheduleHandleCallbackProvider> schedules);
-	}
+        void CollectSchedule(IList<ScheduleHandleCallbackProvider> schedules);
+    }
 } // end of namespace

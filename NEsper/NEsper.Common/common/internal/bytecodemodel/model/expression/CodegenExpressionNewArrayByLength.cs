@@ -9,9 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenClassUtil;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -21,13 +19,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly Type component;
         private readonly CodegenExpression expression;
 
-        public CodegenExpressionNewArrayByLength(Type component, CodegenExpression expression)
+        public CodegenExpressionNewArrayByLength(
+            Type component,
+            CodegenExpression expression)
         {
             this.component = component;
             this.expression = expression;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             int numDimensions = GetNumberOfDimensions(component);
             Type outermostType = GetComponentTypeOutermost(component);
@@ -36,8 +39,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             builder.Append("[");
             expression.Render(builder, imports, isInnerClass);
             builder.Append("]");
-            for (int i = 0; i < numDimensions; i++)
-            {
+            for (int i = 0; i < numDimensions; i++) {
                 builder.Append("[]");
             }
         }

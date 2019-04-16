@@ -24,8 +24,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public override ExecNode MakeExec(
             AgentInstanceContext agentInstanceContext,
-            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes,
-            Viewable[] streamViews, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks)
+            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream,
+            EventType[] streamTypes,
+            Viewable[] streamViews,
+            VirtualDWView[] viewExternal,
+            ILockable[] tableSecondaryIndexLocks)
         {
             return ExecNodeNoOp.INSTANCE;
         }

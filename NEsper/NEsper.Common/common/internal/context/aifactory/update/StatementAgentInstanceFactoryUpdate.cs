@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
@@ -25,13 +24,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         private IDictionary<int, SubSelectFactory> subselects;
         private InternalRoutePreprocessView viewable;
 
-        public InternalEventRouterDesc Desc
-        {
+        public InternalEventRouterDesc Desc {
             set => desc = value;
         }
 
-        public IDictionary<int, SubSelectFactory> Subselects
-        {
+        public IDictionary<int, SubSelectFactory> Subselects {
             set => subselects = value;
         }
 
@@ -50,16 +47,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         }
 
         public StatementAgentInstanceFactoryResult NewContext(
-            AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
         {
             IList<AgentInstanceStopCallback> stopCallbacks = new List<AgentInstanceStopCallback>();
             stopCallbacks.Add(
-                new ProxyAgentInstanceStopCallback
-                {
-                    ProcStop = services =>
-                    {
-                        agentInstanceContext.InternalEventRouter.RemovePreprocessing(desc.EventType, desc);
-                    }
+                new ProxyAgentInstanceStopCallback {
+                    ProcStop = services => { agentInstanceContext.InternalEventRouter.RemovePreprocessing(desc.EventType, desc); }
                 });
 
             var subselectActivations = SubSelectHelperStart.StartSubselects(
@@ -77,12 +71,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
         public StatementAgentInstanceLock ObtainAgentInstanceLock(
-            StatementContext statementContext, int agentInstanceId)
+            StatementContext statementContext,
+            int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
         }
 
-        public void Ready(StatementContext statementContext, ModuleIncidentals moduleIncidentals, bool recovery)
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
         {
             viewable = new InternalRoutePreprocessView(desc.EventType, statementContext.StatementResultService);
             desc.Annotations = statementContext.Annotations;

@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
         /// <param name="propertyType">type or null if not exists</param>
         /// <param name="getter">the getter or null if not exists</param>
         /// <param name="property">the boolean indicating whether it exists or not</param>
-        public VariantPropertyDesc(Type propertyType, EventPropertyGetterSPI getter, bool property)
+        public VariantPropertyDesc(
+            Type propertyType,
+            EventPropertyGetterSPI getter,
+            bool property)
         {
             PropertyType = propertyType;
             Getter = getter;

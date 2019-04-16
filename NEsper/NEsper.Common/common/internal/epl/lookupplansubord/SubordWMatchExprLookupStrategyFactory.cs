@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         SubordTableLookupStrategyFactory OptionalInnerStrategy { get; }
 
         SubordWMatchExprLookupStrategy Realize(
-            EventTable[] indexes, 
-            AgentInstanceContext agentInstanceContext, 
+            EventTable[] indexes,
+            AgentInstanceContext agentInstanceContext,
             IEnumerable<EventBean> scanIterable,
             VirtualDWView virtualDataWindow);
 

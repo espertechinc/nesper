@@ -11,8 +11,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     public class AggregationLocalGroupByPlanForge
     {
         public AggregationLocalGroupByPlanForge(
-            int numMethods, int numAccess, AggregationLocalGroupByColumnForge[] columns,
-            AggregationLocalGroupByLevelForge optionalLevelTop, AggregationLocalGroupByLevelForge[] allLevels)
+            int numMethods,
+            int numAccess,
+            AggregationLocalGroupByColumnForge[] columns,
+            AggregationLocalGroupByLevelForge optionalLevelTop,
+            AggregationLocalGroupByLevelForge[] allLevels)
         {
             NumMethods = numMethods;
             NumAccess = numAccess;

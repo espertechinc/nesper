@@ -19,20 +19,33 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public interface AggregationResultFuture
     {
         object GetValue(
-            int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData,
+            int column,
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
 
         ICollection<EventBean> GetCollectionOfEvents(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
-        EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        EventBean GetEventBean(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
         object GetGroupKey(int agentInstanceId);
 
         ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext);
 
         ICollection<object> GetCollectionScalar(
-            int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
 
         AggregationService GetContextPartitionAggregationService(int agentInstanceId);
 
@@ -42,6 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         /// <param name="groupKey">single key identifying the row of aggregation states</param>
         /// <param name="agentInstanceId">context partition id</param>
         /// <param name="rollupLevel">rollup level</param>
-        void SetCurrentAccess(object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel);
+        void SetCurrentAccess(
+            object groupKey,
+            int agentInstanceId,
+            AggregationGroupByRollupLevel rollupLevel);
     }
 } // end of namespace

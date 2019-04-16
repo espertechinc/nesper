@@ -20,17 +20,25 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         internal readonly IList<CalendarOp> calendarOps;
         internal readonly IntervalOp intervalOp;
 
-        internal DTLocalEvaluatorCalOpsIntervalBase(IList<CalendarOp> calendarOps, IntervalOp intervalOp)
+        internal DTLocalEvaluatorCalOpsIntervalBase(
+            IList<CalendarOp> calendarOps,
+            IntervalOp intervalOp)
         {
             this.calendarOps = calendarOps;
             this.intervalOp = intervalOp;
         }
 
         public abstract object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         public abstract object Evaluate(
-            object startTimestamp, object endTimestamp, EventBean[] eventsPerStream, bool isNewData,
+            object startTimestamp,
+            object endTimestamp,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

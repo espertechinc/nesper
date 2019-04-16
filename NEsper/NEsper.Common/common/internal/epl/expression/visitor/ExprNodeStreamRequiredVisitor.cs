@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
                 var streamRefNode = (ExprStreamRefNode) exprNode;
                 var streamRef = streamRefNode.StreamReferencedIfAny;
                 if (streamRef != null) {
-                    StreamsRequired.Add(streamRef);
+                    StreamsRequired.Add(streamRef.Value);
                 }
             }
         }

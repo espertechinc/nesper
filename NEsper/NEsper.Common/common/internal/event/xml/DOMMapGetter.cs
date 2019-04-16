@@ -6,191 +6,258 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Xml;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.xml
 {
-	/// <summary>
-	/// DOM getter for Map-property.
-	/// </summary>
-	public class DOMMapGetter : EventPropertyGetterSPI, DOMPropertyGetter {
-	    private readonly string propertyMap;
-	    private readonly string mapKey;
-	    private readonly FragmentFactorySPI fragmentFactory;
+    /// <summary>
+    ///     DOM getter for Map-property.
+    /// </summary>
+    public class DOMMapGetter : EventPropertyGetterSPI,
+        DOMPropertyGetter
+    {
+        private readonly FragmentFactorySPI fragmentFactory;
+        private readonly string mapKey;
+        private readonly string propertyMap;
 
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="node">node</param>
-	    /// <param name="propertyMap">property</param>
-	    /// <param name="mapKey">key</param>
-	    /// <returns>value</returns>
-	    public static XmlNode GetNodeValue(XmlNode node, string propertyMap, string mapKey) {
-	        XmlNodeList list = node.ChildNodes;
-	        for (int i = 0; i < list.Length; i++) {
-	            XmlNode childNode = list.Item(i);
-	            if (childNode == null) {
-	                continue;
-	            }
-	            if (childNode.NodeType != XmlNodeType.Element) {
-	                continue;
-	            }
-	            if (!(childNode.NodeName.Equals(propertyMap))) {
-	                continue;
-	            }
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="propertyName">property name</param>
+        /// <param name="mapKey">key in map</param>
+        /// <param name="fragmentFactory">for creating fragments</param>
+        public DOMMapGetter(
+            string propertyName,
+            string mapKey,
+            FragmentFactorySPI fragmentFactory)
+        {
+            propertyMap = propertyName;
+            this.mapKey = mapKey;
+            this.fragmentFactory = fragmentFactory;
+        }
 
-	            XmlNode attribute = childNode.Attributes.GetNamedItem("id");
-	            if (attribute == null) {
-	                continue;
-	            }
-	            if (!(attribute.TextContent.Equals(mapKey))) {
-	                continue;
-	            }
+        public XmlNode[] GetValueAsNodeArray(XmlNode node)
+        {
+            return null;
+        }
 
-	            return childNode;
-	        }
-	        return null;
-	    }
+        public object GetValueAsFragment(XmlNode node)
+        {
+            if (fragmentFactory == null) {
+                return null;
+            }
 
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="node">node</param>
-	    /// <param name="propertyMap">property</param>
-	    /// <param name="mapKey">key</param>
-	    /// <returns>exists flag</returns>
-	    public static bool GetNodeValueExists(XmlNode node, string propertyMap, string mapKey) {
-	        XmlNodeList list = node.ChildNodes;
-	        for (int i = 0; i < list.Length; i++) {
-	            XmlNode childNode = list.Item(i);
-	            if (childNode == null) {
-	                continue;
-	            }
-	            if (childNode.NodeType != XmlNodeType.Element) {
-	                continue;
-	            }
-	            if (!(childNode.NodeName.Equals(propertyMap))) {
-	                continue;
-	            }
+            var result = GetValueAsNode(node);
+            if (result == null) {
+                return null;
+            }
 
-	            XmlNode attribute = childNode.Attributes.GetNamedItem("id");
-	            if (attribute == null) {
-	                continue;
-	            }
-	            if (!(attribute.TextContent.Equals(mapKey))) {
-	                continue;
-	            }
+            return fragmentFactory.GetEvent(result);
+        }
 
-	            return true;
-	        }
-	        return false;
-	    }
+        public XmlNode GetValueAsNode(XmlNode node)
+        {
+            return GetNodeValue(node, propertyMap, mapKey);
+        }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="propertyName">property name</param>
-	    /// <param name="mapKey">key in map</param>
-	    /// <param name="fragmentFactory">for creating fragments</param>
-	    public DOMMapGetter(string propertyName, string mapKey, FragmentFactorySPI fragmentFactory) {
-	        this.propertyMap = propertyName;
-	        this.mapKey = mapKey;
-	        this.fragmentFactory = fragmentFactory;
-	    }
+        public CodegenExpression GetValueAsNodeCodegen(
+            CodegenExpression value,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingGetCodegen(value, codegenMethodScope, codegenClassScope);
+        }
 
-	    public XmlNode[] GetValueAsNodeArray(XmlNode node) {
-	        return null;
-	    }
+        public CodegenExpression GetValueAsNodeArrayCodegen(
+            CodegenExpression value,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public object GetValueAsFragment(XmlNode node) {
-	        if (fragmentFactory == null) {
-	            return null;
-	        }
+        public CodegenExpression GetValueAsFragmentCodegen(
+            CodegenExpression value,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return LocalMethod(GetValueAsFragmentCodegen(codegenMethodScope, codegenClassScope), value);
+        }
 
-	        XmlNode result = GetValueAsNode(node);
-	        if (result == null) {
-	            return null;
-	        }
-	        return fragmentFactory.GetEvent(result);
-	    }
+        public object Get(EventBean eventBean)
+        {
+            var result = eventBean.Underlying;
+            if (!(result is XmlNode)) {
+                return null;
+            }
 
-	    private CodegenMethod GetValueAsFragmentCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        CodegenExpressionField member = codegenClassScope.AddFieldUnshared(true, typeof(FragmentFactory), fragmentFactory.Make(codegenClassScope.PackageScope.InitMethod, codegenClassScope));
-	        return codegenMethodScope.MakeChild(typeof(object), this.GetType(), codegenClassScope).AddParam(typeof(XmlNode), "node").Block
-	                .DeclareVar(typeof(XmlNode), "result", GetValueAsNodeCodegen(@Ref("node"), codegenMethodScope, codegenClassScope))
-	                .IfRefNullReturnNull("result")
-	                .MethodReturn(ExprDotMethod(member, "getEvent", @Ref("result")));
-	    }
+            var node = (XmlNode) result;
+            return GetValueAsNode(node);
+        }
 
-	    public XmlNode GetValueAsNode(XmlNode node) {
-	        return GetNodeValue(node, propertyMap, mapKey);
-	    }
+        public bool IsExistsProperty(EventBean eventBean)
+        {
+            var result = eventBean.Underlying;
+            if (!(result is XmlNode)) {
+                return false;
+            }
 
-	    public object Get(EventBean eventBean) {
-	        object result = eventBean.Underlying;
-	        if (!(result is XmlNode)) {
-	            return null;
-	        }
-	        XmlNode node = (XmlNode) result;
-	        return GetValueAsNode(node);
-	    }
+            var node = (XmlNode) result;
+            return GetNodeValueExists(node, propertyMap, mapKey);
+        }
 
-	    public bool IsExistsProperty(EventBean eventBean) {
-	        object result = eventBean.Underlying;
-	        if (!(result is XmlNode)) {
-	            return false;
-	        }
-	        XmlNode node = (XmlNode) result;
-	        return GetNodeValueExists(node, propertyMap, mapKey);
-	    }
+        public object GetFragment(EventBean eventBean)
+        {
+            return null;
+        }
 
-	    public object GetFragment(EventBean eventBean) {
-	        return null;
-	    }
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingGetCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+        }
 
-	    public CodegenExpression EventBeanGetCodegen(CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return UnderlyingGetCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
-	    }
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingExistsCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+        }
 
-	    public CodegenExpression EventBeanExistsCodegen(CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return UnderlyingExistsCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
-	    }
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EventBeanFragmentCodegen(CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return StaticMethod(GetType(), "getNodeValue", underlyingExpression, Constant(propertyMap), Constant(mapKey));
+        }
 
-	    public CodegenExpression UnderlyingGetCodegen(CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return StaticMethod(this.GetType(), "getNodeValue", underlyingExpression, Constant(propertyMap), Constant(mapKey));
-	    }
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return StaticMethod(GetType(), "getNodeValueExists", underlyingExpression, Constant(propertyMap), Constant(mapKey));
+        }
 
-	    public CodegenExpression UnderlyingExistsCodegen(CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return StaticMethod(this.GetType(), "getNodeValueExists", underlyingExpression, Constant(propertyMap), Constant(mapKey));
-	    }
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression UnderlyingFragmentCodegen(CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="node">node</param>
+        /// <param name="propertyMap">property</param>
+        /// <param name="mapKey">key</param>
+        /// <returns>value</returns>
+        public static XmlNode GetNodeValue(
+            XmlNode node,
+            string propertyMap,
+            string mapKey)
+        {
+            var list = node.ChildNodes;
+            for (var i = 0; i < list.Count; i++) {
+                var childNode = list.Item(i);
+                if (childNode == null) {
+                    continue;
+                }
 
-	    public CodegenExpression GetValueAsNodeCodegen(CodegenExpression value, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return UnderlyingGetCodegen(value, codegenMethodScope, codegenClassScope);
-	    }
+                if (childNode.NodeType != XmlNodeType.Element) {
+                    continue;
+                }
 
-	    public CodegenExpression GetValueAsNodeArrayCodegen(CodegenExpression value, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+                if (!childNode.Name.Equals(propertyMap)) {
+                    continue;
+                }
 
-	    public CodegenExpression GetValueAsFragmentCodegen(CodegenExpression value, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
-	        return LocalMethod(GetValueAsFragmentCodegen(codegenMethodScope, codegenClassScope), value);
-	    }
-	}
+                var attribute = childNode.Attributes.GetNamedItem("id");
+                if (attribute == null) {
+                    continue;
+                }
+
+                if (!attribute.InnerText.Equals(mapKey)) {
+                    continue;
+                }
+
+                return childNode;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="node">node</param>
+        /// <param name="propertyMap">property</param>
+        /// <param name="mapKey">key</param>
+        /// <returns>exists flag</returns>
+        public static bool GetNodeValueExists(
+            XmlNode node,
+            string propertyMap,
+            string mapKey)
+        {
+            var list = node.ChildNodes;
+            for (var i = 0; i < list.Count; i++) {
+                var childNode = list.Item(i);
+                if (childNode == null) {
+                    continue;
+                }
+
+                if (childNode.NodeType != XmlNodeType.Element) {
+                    continue;
+                }
+
+                if (!childNode.Name.Equals(propertyMap)) {
+                    continue;
+                }
+
+                var attribute = childNode.Attributes.GetNamedItem("id");
+                if (attribute == null) {
+                    continue;
+                }
+
+                if (!attribute.InnerText.Equals(mapKey)) {
+                    continue;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private CodegenMethod GetValueAsFragmentCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var member = codegenClassScope.AddFieldUnshared(
+                true, typeof(FragmentFactory), fragmentFactory.Make(codegenClassScope.PackageScope.InitMethod, codegenClassScope));
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(XmlNode), "node").Block
+                .DeclareVar(typeof(XmlNode), "result", GetValueAsNodeCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
+                .IfRefNullReturnNull("result")
+                .MethodReturn(ExprDotMethod(member, "getEvent", Ref("result")));
+        }
+    }
 } // end of namespace

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -38,8 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 bool newData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                if (input.IsNumber())
-                {
+                if (input.IsNumber()) {
                     return numericTypeCaster.Cast(input);
                 }
 
@@ -56,8 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                if (inputType.IsPrimitive || inputType.IsNumeric())
-                {
+                if (inputType.IsPrimitive || inputType.IsNumeric()) {
                     return numericTypeCaster.Codegen(input, inputType, codegenMethodScope, codegenClassScope);
                 }
 

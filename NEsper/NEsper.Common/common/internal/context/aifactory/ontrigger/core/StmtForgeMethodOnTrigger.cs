@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
         }
 
         private OnTriggerActivatorDesc ActivatorFilter(
-            FilterStreamSpecCompiled filterStreamSpec, 
+            FilterStreamSpecCompiled filterStreamSpec,
             StatementCompileTimeServices services)
         {
             var triggerEventTypeName = filterStreamSpec.FilterSpecCompiled.FilterForEventTypeName;

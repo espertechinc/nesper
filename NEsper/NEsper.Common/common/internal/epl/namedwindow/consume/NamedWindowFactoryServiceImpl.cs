@@ -21,12 +21,18 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         {
         }
 
-        public NamedWindow CreateNamedWindow(NamedWindowMetaData metadata, EPStatementInitServices services)
+        public NamedWindow CreateNamedWindow(
+            NamedWindowMetaData metadata,
+            EPStatementInitServices services)
         {
             return new NamedWindowImpl(metadata, services);
         }
 
-        public NamedWindowTailView CreateNamedWindowTailView(EventType eventType, bool isParentBatchWindow, EPStatementInitServices services, string contextNameWindow)
+        public NamedWindowTailView CreateNamedWindowTailView(
+            EventType eventType,
+            bool isParentBatchWindow,
+            EPStatementInitServices services,
+            string contextNameWindow)
         {
             return new NamedWindowTailViewImpl(eventType, isParentBatchWindow, services);
         }

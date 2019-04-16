@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// </summary>
         /// <param name="namedWindowName">named window name</param>
         /// <param name="indexName">index name</param>
-        public VirtualDataWindowEventStopIndex(string namedWindowName, string indexName)
+        public VirtualDataWindowEventStopIndex(
+            string namedWindowName,
+            string indexName)
         {
             NamedWindowName = namedWindowName;
             IndexName = indexName;

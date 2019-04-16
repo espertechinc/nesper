@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.annotation
@@ -22,20 +21,18 @@ namespace com.espertech.esper.common.client.annotation
         /// <summary>
         /// List of built-in annotations.
         /// </summary>
-
-        public static readonly Type[] VALUES = new Type[]
-        {
-            typeof (AuditAttribute),
-            typeof (DescriptionAttribute),
-            typeof (DropAttribute),
-            typeof (EventRepresentationAttribute),
-            typeof (HintAttribute),
-            typeof (HookAttribute),
-            typeof (IterableUnboundAttribute),
-            typeof (NameAttribute),
-            typeof (NoLockAttribute),
-            typeof (PriorityAttribute),
-            typeof (TagAttribute)
+        public static readonly Type[] VALUES = new Type[] {
+            typeof(AuditAttribute),
+            typeof(DescriptionAttribute),
+            typeof(DropAttribute),
+            typeof(EventRepresentationAttribute),
+            typeof(HintAttribute),
+            typeof(HookAttribute),
+            typeof(IterableUnboundAttribute),
+            typeof(NameAttribute),
+            typeof(NoLockAttribute),
+            typeof(PriorityAttribute),
+            typeof(TagAttribute)
         };
 
         /// <summary>
@@ -45,8 +42,7 @@ namespace com.espertech.esper.common.client.annotation
 
         static BuiltinAnnotation()
         {
-            foreach (var clazz in VALUES)
-            {
+            foreach (var clazz in VALUES) {
                 BUILTIN.Put(clazz.Name.ToLower(), clazz);
             }
         }

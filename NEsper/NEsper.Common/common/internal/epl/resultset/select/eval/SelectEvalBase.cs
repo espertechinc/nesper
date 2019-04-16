@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.compat;
@@ -15,18 +14,21 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public abstract class SelectEvalBase {
+    public abstract class SelectEvalBase
+    {
+        internal readonly SelectExprForgeContext context;
+        internal readonly EventType resultEventType;
 
-	    internal readonly SelectExprForgeContext context;
-	    internal readonly EventType resultEventType;
+        public SelectEvalBase(
+            SelectExprForgeContext context,
+            EventType resultEventType)
+        {
+            this.context = context;
+            this.resultEventType = resultEventType;
+        }
 
-	    public SelectEvalBase(SelectExprForgeContext context, EventType resultEventType) {
-	        this.context = context;
-	        this.resultEventType = resultEventType;
-	    }
-
-	    public EventType ResultEventType {
-	        get => resultEventType;
-	    }
-	}
+        public EventType ResultEventType {
+            get => resultEventType;
+        }
+    }
 } // end of namespace

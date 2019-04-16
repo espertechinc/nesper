@@ -13,10 +13,16 @@ namespace com.espertech.esper.common.@internal.filterspec
 {
     public interface FilterSharedLookupableRepository
     {
-        void RegisterLookupable(int statementId, EventType eventType, ExprFilterSpecLookupable lookupable);
+        void RegisterLookupable(
+            int statementId,
+            EventType eventType,
+            ExprFilterSpecLookupable lookupable);
 
         void RemoveReferencesStatement(int statementId);
 
-        void ApplyLookupableFromType(EventType asEventType, EventType eventType, int statementId);
+        void ApplyLookupableFromType(
+            EventType asEventType,
+            EventType eventType,
+            int statementId);
     }
 } // end of namespace

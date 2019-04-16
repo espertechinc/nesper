@@ -90,7 +90,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="name">is the event property name</param>
         /// <param name="accessorMethod">is the accessor method name.</param>
-        public void AddMethodProperty(string name, string accessorMethod)
+        public void AddMethodProperty(
+            string name,
+            string accessorMethod)
         {
             MethodProperties.Add(new LegacyMethodPropDesc(name, accessorMethod));
         }
@@ -100,7 +102,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="name">is the event property name</param>
         /// <param name="accessorField">is the accessor field underlying the name</param>
-        public void AddFieldProperty(string name, string accessorField)
+        public void AddFieldProperty(
+            string name,
+            string accessorField)
         {
             FieldProperties.Add(new LegacyFieldPropDesc(name, accessorField));
         }
@@ -116,7 +120,9 @@ namespace com.espertech.esper.common.client.configuration.common
             /// </summary>
             /// <param name="name">is the event property name</param>
             /// <param name="accessorFieldName">is the accessor field name</param>
-            public LegacyFieldPropDesc(string name, string accessorFieldName)
+            public LegacyFieldPropDesc(
+                string name,
+                string accessorFieldName)
             {
                 Name = name;
                 AccessorFieldName = accessorFieldName;
@@ -146,7 +152,9 @@ namespace com.espertech.esper.common.client.configuration.common
             /// </summary>
             /// <param name="name">is the event property name</param>
             /// <param name="accessorMethodName">is the name of the accessor method</param>
-            public LegacyMethodPropDesc(string name, string accessorMethodName)
+            public LegacyMethodPropDesc(
+                string name,
+                string accessorMethodName)
             {
                 Name = name;
                 AccessorMethodName = accessorMethodName;

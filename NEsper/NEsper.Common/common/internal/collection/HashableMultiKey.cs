@@ -27,7 +27,8 @@ namespace com.espertech.esper.common.@internal.collection
         ///     Constructor for a single key object.
         /// </summary>
         /// <param name="key">is the single key object</param>
-        public HashableMultiKey(object key) : this(new[] {key})
+        public HashableMultiKey(object key)
+            : this(new[] {key})
         {
         }
 
@@ -36,7 +37,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="key1">is the first key object</param>
         /// <param name="key2">is the second key object</param>
-        public HashableMultiKey(object key1, object key2)
+        public HashableMultiKey(
+            object key1,
+            object key2)
             : this(new[] {key1, key2})
         {
         }
@@ -47,7 +50,10 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="key1">is the first key object</param>
         /// <param name="key2">is the second key object</param>
         /// <param name="key3">is the third key object</param>
-        public HashableMultiKey(object key1, object key2, object key3)
+        public HashableMultiKey(
+            object key1,
+            object key2,
+            object key3)
             : this(new[] {key1, key2, key3})
         {
         }
@@ -59,7 +65,11 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="key2">is the second key object</param>
         /// <param name="key3">is the third key object</param>
         /// <param name="key4">is the fourth key object</param>
-        public HashableMultiKey(object key1, object key2, object key3, object key4)
+        public HashableMultiKey(
+            object key1,
+            object key2,
+            object key3,
+            object key4)
             : this(new[] {key1, key2, key3, key4})
         {
         }

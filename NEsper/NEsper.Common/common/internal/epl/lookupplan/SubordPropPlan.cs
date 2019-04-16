@@ -26,7 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
         public SubordPropPlan(
             IDictionary<string, SubordPropHashKeyForge> hashProps,
             IDictionary<string, SubordPropRangeKeyForge> rangeProps,
-            SubordPropInKeywordSingleIndex inKeywordSingleIndex, SubordPropInKeywordMultiIndex inKeywordMultiIndex,
+            SubordPropInKeywordSingleIndex inKeywordSingleIndex,
+            SubordPropInKeywordMultiIndex inKeywordMultiIndex,
             IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> customIndexOps)
         {
             HashProps = hashProps;

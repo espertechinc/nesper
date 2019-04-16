@@ -10,7 +10,9 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public class ViewablePair
     {
-        public ViewablePair(Viewable top, Viewable last)
+        public ViewablePair(
+            Viewable top,
+            Viewable last)
         {
             Top = top;
             Last = last;

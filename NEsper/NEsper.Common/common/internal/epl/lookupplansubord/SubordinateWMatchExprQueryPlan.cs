@@ -11,7 +11,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     public class SubordinateWMatchExprQueryPlan
     {
         public SubordinateWMatchExprQueryPlan(
-            SubordWMatchExprLookupStrategyFactory factory, SubordinateQueryIndexDesc[] indexDescs)
+            SubordWMatchExprLookupStrategyFactory factory,
+            SubordinateQueryIndexDesc[] indexDescs)
         {
             Factory = factory;
             IndexDescs = indexDescs;

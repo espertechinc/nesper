@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.handthru
@@ -14,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
     /// <summary>
     ///     Method to transform an event based on the select expression.
     /// </summary>
-    public class ResultSetProcessorHandtruTransform
+    public class ResultSetProcessorHandtruTransform : TransformEventMethod
     {
         private readonly EventBean[] newData;
         private readonly ResultSetProcessor resultSetProcessor;

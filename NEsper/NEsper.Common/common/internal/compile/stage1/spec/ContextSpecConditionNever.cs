@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return PublicConstValue(typeof(ContextConditionDescriptorNever), "INSTANCE");
         }

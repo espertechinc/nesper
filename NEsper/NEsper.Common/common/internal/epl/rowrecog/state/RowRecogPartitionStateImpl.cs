@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// </summary>
         /// <param name="randomAccess">for handling "prev" functions, if any</param>
         /// <param name="optionalKeys">keys for "partition", if any</param>
-        public RowRecogPartitionStateImpl(RowRecogStateRandomAccess randomAccess, object optionalKeys)
+        public RowRecogPartitionStateImpl(
+            RowRecogStateRandomAccess randomAccess,
+            object optionalKeys)
         {
             RandomAccess = randomAccess;
             OptionalKeys = optionalKeys;
@@ -37,7 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// <param name="currentStates">existing state</param>
         public RowRecogPartitionStateImpl(
             RowRecogPreviousStrategyImpl getter,
-            IList<RowRecogNFAStateEntry> currentStates) : this(getter, currentStates, null)
+            IList<RowRecogNFAStateEntry> currentStates)
+            : this(getter, currentStates, null)
         {
         }
 
@@ -138,7 +141,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         }
 
         public static IList<RowRecogNFAStateEntry> RemoveEventFromState(
-            EventBean oldEvent, IEnumerator<RowRecogNFAStateEntry> states)
+            EventBean oldEvent,
+            IEnumerator<RowRecogNFAStateEntry> states)
         {
             IList<RowRecogNFAStateEntry> keepList = new List<RowRecogNFAStateEntry>();
             for (; states.MoveNext();) {

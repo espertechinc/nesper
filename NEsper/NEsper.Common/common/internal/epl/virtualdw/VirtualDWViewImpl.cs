@@ -55,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             get => _dataExternal;
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             _dataExternal.Update(newData, oldData);
         }
@@ -75,7 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         }
 
         public SubordTableLookupStrategy GetSubordinateLookupStrategy(
-            SubordTableLookupStrategyFactoryVDW subordTableFactory, AgentInstanceContext agentInstanceContext)
+            SubordTableLookupStrategyFactoryVDW subordTableFactory,
+            AgentInstanceContext agentInstanceContext)
         {
             Pair<IndexMultiKey, VirtualDWEventTable> tableVW = VirtualDWQueryPlanUtil.GetSubordinateQueryDesc(
                 false, subordTableFactory.IndexHashedProps, subordTableFactory.IndexBtreeProps);
@@ -113,7 +116,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         }
 
         public JoinExecTableLookupStrategy GetJoinLookupStrategy(
-            TableLookupPlan tableLookupPlan, AgentInstanceContext agentInstanceContext, EventTable[] eventTables,
+            TableLookupPlan tableLookupPlan,
+            AgentInstanceContext agentInstanceContext,
+            EventTable[] eventTables,
             int lookupStream)
         {
             VirtualDWEventTable noopTable = (VirtualDWEventTable) eventTables[0];
@@ -148,7 +153,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         }
 
         public ICollection<EventBean> GetFireAndForgetData(
-            EventTable eventTable, object[] keyValues, RangeIndexLookupValue[] rangeValues, Attribute[] annotations)
+            EventTable eventTable,
+            object[] keyValues,
+            RangeIndexLookupValue[] rangeValues,
+            Attribute[] annotations)
         {
             VirtualDWEventTable noopTable = (VirtualDWEventTable) eventTable;
             for (int i = 0; i < noopTable.BtreeAccess.Count; i++) {
@@ -204,7 +212,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             return events;
         }
 
-        public void HandleStartIndex(string indexName, QueryPlanIndexItem explicitIndexDesc)
+        public void HandleStartIndex(
+            string indexName,
+            QueryPlanIndexItem explicitIndexDesc)
         {
             try {
                 IList<VirtualDataWindowEventStartIndex.VDWCreateIndexField> fields =
@@ -230,7 +240,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             }
         }
 
-        public void HandleStopIndex(string indexName, QueryPlanIndexItem explicitIndexDesc)
+        public void HandleStopIndex(
+            string indexName,
+            QueryPlanIndexItem explicitIndexDesc)
         {
             try {
                 VirtualDataWindowEventStopIndex theEvent =

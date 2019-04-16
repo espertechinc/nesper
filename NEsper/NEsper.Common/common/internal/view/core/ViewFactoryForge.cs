@@ -16,9 +16,15 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public interface ViewFactoryForge : CodegenMakeable<SAIFFInitializeSymbol>
     {
-        void SetViewParameters(IList<ExprNode> parameters, ViewForgeEnv viewForgeEnv, int streamNumber);
+        void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber);
 
-        void Attach(EventType parentEventType, int streamNumber, ViewForgeEnv viewForgeEnv);
+        void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv);
 
         EventType EventType { get; }
 

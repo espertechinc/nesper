@@ -16,7 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     {
         public IDictionary<string, VariableMetaData> Metadata { get; } = new Dictionary<string, VariableMetaData>();
 
-        public void AddVariable(string name, VariableMetaData meta)
+        public void AddVariable(
+            string name,
+            VariableMetaData meta)
         {
             Metadata.Put(name, meta);
         }

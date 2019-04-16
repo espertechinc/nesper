@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly CodegenExpression _second;
 
         public CodegenExpressionAndOr(
-            bool isAnd, CodegenExpression first, CodegenExpression second, CodegenExpression[] optionalMore)
+            bool isAnd,
+            CodegenExpression first,
+            CodegenExpression second,
+            CodegenExpression[] optionalMore)
         {
             _isAnd = isAnd;
             _first = first;
@@ -28,7 +31,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             _optionalMore = optionalMore;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+        public void Render(
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             builder.Append("(");
             _first.Render(builder, imports, isInnerClass);

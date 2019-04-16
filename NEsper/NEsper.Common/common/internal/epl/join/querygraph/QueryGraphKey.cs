@@ -20,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         /// </summary>
         /// <param name="streamOne">from stream</param>
         /// <param name="streamTwo">to stream</param>
-        public QueryGraphKey(int streamOne, int streamTwo)
+        public QueryGraphKey(
+            int streamOne,
+            int streamTwo)
         {
             Streams = new UniformPair<int>(streamOne, streamTwo);
         }

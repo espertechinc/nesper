@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -28,7 +27,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         private readonly string tableName;
 
         public StatementAgentInstanceFactoryCreateTableForge(
-            string className, string tableName, TableAccessAnalysisResult plan)
+            string className,
+            string tableName,
+            TableAccessAnalysisResult plan)
         {
             this.className = className;
             this.tableName = tableName;
@@ -36,7 +37,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         public CodegenMethod InitializeCodegen(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             // add aggregation row+factory+serde as inner classes
             var aggregationClassNames = new AggregationClassNames();
@@ -75,7 +78,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         private CodegenExpression MakeEventToPublic(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(TableMetadataInternalEventToPublic), GetType(), classScope);
             var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,49 +16,73 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
-	public class InnerDotScalarUnpackEventEval : ExprDotEvalRootChildInnerEval {
+    public class InnerDotScalarUnpackEventEval : ExprDotEvalRootChildInnerEval
+    {
+        private ExprEvaluator rootEvaluator;
 
-	    private ExprEvaluator rootEvaluator;
+        public InnerDotScalarUnpackEventEval(ExprEvaluator rootEvaluator)
+        {
+            this.rootEvaluator = rootEvaluator;
+        }
 
-	    public InnerDotScalarUnpackEventEval(ExprEvaluator rootEvaluator) {
-	        this.rootEvaluator = rootEvaluator;
-	    }
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            object target = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            if (target is EventBean) {
+                return ((EventBean) target).Underlying;
+            }
 
-	    public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        object target = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-	        if (target is EventBean) {
-	            return ((EventBean) target).Underlying;
-	        }
-	        return target;
-	    }
+            return target;
+        }
 
-	    public static CodegenExpression CodegenEvaluate(InnerDotScalarUnpackEventForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod methodNode = codegenMethodScope.MakeChild(forge.RootForge.EvaluationType, typeof(InnerDotScalarUnpackEventEval), codegenClassScope);
+        public static CodegenExpression CodegenEvaluate(
+            InnerDotScalarUnpackEventForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                forge.RootForge.EvaluationType, typeof(InnerDotScalarUnpackEventEval), codegenClassScope);
 
-	        methodNode.Block
-	                .DeclareVar(typeof(object), "target", forge.RootForge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
-	                .IfInstanceOf("target", typeof(EventBean))
-	                .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(forge.RootForge.EvaluationType, ExprDotMethod(Cast(typeof(EventBean), @Ref("target")), "getUnderlying")))
-	                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(forge.RootForge.EvaluationType, @Ref("target")));
-	        return LocalMethod(methodNode);
-	    }
+            methodNode.Block
+                .DeclareVar(typeof(object), "target", forge.RootForge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
+                .IfInstanceOf("target", typeof(EventBean))
+                .BlockReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(
+                        forge.RootForge.EvaluationType, ExprDotMethod(Cast(typeof(EventBean), @Ref("target")), "getUnderlying")))
+                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(forge.RootForge.EvaluationType, @Ref("target")));
+            return LocalMethod(methodNode);
+        }
 
-	    public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
 
-	    public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
+        public ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
 
-	    public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return null;
-	    }
-
-	}
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
+    }
 } // end of namespace

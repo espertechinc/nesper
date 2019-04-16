@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="name">column name</param>
         /// <param name="type">type name</param>
-        public SchemaColumnDesc(string name, string type)
+        public SchemaColumnDesc(
+            string name,
+            string type)
         {
             this.name = name;
             this.type = type;

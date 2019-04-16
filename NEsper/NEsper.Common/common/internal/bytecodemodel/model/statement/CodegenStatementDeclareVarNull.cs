@@ -18,14 +18,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly Type clazz;
         private readonly string var;
 
-        public CodegenStatementDeclareVarNull(Type clazz, string var)
+        public CodegenStatementDeclareVarNull(
+            Type clazz,
+            string var)
         {
             this.clazz = clazz;
             this.var = var;
         }
 
         public override void RenderStatement(
-            StringBuilder builder, IDictionary<Type, string> imports, bool isInnerClass)
+            StringBuilder builder,
+            IDictionary<Type, string> imports,
+            bool isInnerClass)
         {
             AppendClassName(builder, clazz, null, imports);
             builder.Append(" ").Append(var).Append("=null");

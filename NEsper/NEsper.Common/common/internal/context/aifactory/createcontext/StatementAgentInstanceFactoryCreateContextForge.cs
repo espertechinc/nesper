@@ -7,37 +7,44 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 {
-	public class StatementAgentInstanceFactoryCreateContextForge : StatementAgentInstanceFactoryForge {
+    public class StatementAgentInstanceFactoryCreateContextForge : StatementAgentInstanceFactoryForge
+    {
+        private readonly string contextName;
+        private readonly EventType statementEventType;
 
-	    private readonly string contextName;
-	    private readonly EventType statementEventType;
+        public StatementAgentInstanceFactoryCreateContextForge(
+            string contextName,
+            EventType statementEventType)
+        {
+            this.contextName = contextName;
+            this.statementEventType = statementEventType;
+        }
 
-	    public StatementAgentInstanceFactoryCreateContextForge(string contextName, EventType statementEventType) {
-	        this.contextName = contextName;
-	        this.statementEventType = statementEventType;
-	    }
-
-	    public CodegenMethod InitializeCodegen(CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbol symbols) {
-	        CodegenMethod method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateContext), this.GetType(), classScope);
-	        method.Block
-	                .DeclareVar(typeof(StatementAgentInstanceFactoryCreateContext), "saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateContext)))
-	                .ExprDotMethod(@Ref("saiff"), "setContextName", Constant(contextName))
-	                .ExprDotMethod(@Ref("saiff"), "setStatementEventType", EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
-	                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", @Ref("saiff"))
-	                .MethodReturn(@Ref("saiff"));
-	        return method;
-	    }
-	}
+        public CodegenMethod InitializeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols)
+        {
+            CodegenMethod method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateContext), this.GetType(), classScope);
+            method.Block
+                .DeclareVar(
+                    typeof(StatementAgentInstanceFactoryCreateContext), "saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateContext)))
+                .ExprDotMethod(@Ref("saiff"), "setContextName", Constant(contextName))
+                .ExprDotMethod(
+                    @Ref("saiff"), "setStatementEventType", EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
+                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", @Ref("saiff"))
+                .MethodReturn(@Ref("saiff"));
+            return method;
+        }
+    }
 } // end of namespace

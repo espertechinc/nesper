@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
         {
         }
 
-        public AggregationPortableValidationLeaving(bool distinct, bool hasFilter, Type inputValueType)
+        public AggregationPortableValidationLeaving(
+            bool distinct,
+            bool hasFilter,
+            Type inputValueType)
             : base(distinct, hasFilter, inputValueType)
 
         {
@@ -32,13 +35,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
         }
 
         protected override void ValidateIntoTableWFilterWInputType(
-            string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression,
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
             AggregationForgeFactory factory)
         {
         }
 
         protected override void CodegenInlineSetWFilterWInputType(
-            CodegenExpressionRef @ref, CodegenMethod method, ModuleTableInitializeSymbol symbols,
+            CodegenExpressionRef @ref,
+            CodegenMethod method,
+            ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
         }

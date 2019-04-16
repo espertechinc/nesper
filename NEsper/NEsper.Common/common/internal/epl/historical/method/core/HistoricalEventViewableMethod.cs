@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.context.util;
@@ -18,21 +17,30 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.core
 {
-	public class HistoricalEventViewableMethod : HistoricalEventViewableBase {
+    public class HistoricalEventViewableMethod : HistoricalEventViewableBase
+    {
+        public HistoricalEventViewableMethod(
+            HistoricalEventViewableMethodFactory factory,
+            PollExecStrategy pollExecStrategy,
+            AgentInstanceContext agentInstanceContext)
+            : base(factory, pollExecStrategy, agentInstanceContext)
 
-	    public HistoricalEventViewableMethod(HistoricalEventViewableMethodFactory factory, PollExecStrategy pollExecStrategy, AgentInstanceContext agentInstanceContext)
-
-	    	 : base(factory, pollExecStrategy, agentInstanceContext)
-
-	    {
-
-	        try {
-	            ConfigurationCommonMethodRef configCache = agentInstanceContext.ImportServiceRuntime.GetConfigurationMethodRef(factory.ConfigurationName);
-	            ConfigurationCommonCache dataCacheDesc = configCache != null ? configCache.DataCacheDesc : null;
-	            this.dataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(dataCacheDesc, agentInstanceContext, factory.StreamNumber, factory.ScheduleCallbackId);
-	        } catch (Throwable t) {
-	            throw new EPException("Failed to obtain cache: " + t.Message, t);
-	        }
-	    }
-	}
+        {
+            try {
+                ConfigurationCommonMethodRef configCache =
+                    agentInstanceContext.ImportServiceRuntime.GetConfigurationMethodRef(factory.ConfigurationName);
+                ConfigurationCommonCache dataCacheDesc = configCache != null ? configCache.DataCacheDesc : null;
+                this.dataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
+                    dataCacheDesc, agentInstanceContext, factory.StreamNumber, factory.ScheduleCallbackId);
+            }
+            catch (EPException e)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new EPException("Failed to obtain cache: " + e.Message, e);
+            }
+        }
+    }
 } // end of namespace

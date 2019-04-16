@@ -18,7 +18,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
     public class CodegenStackGenerator
     {
-        public static void RecursiveBuildStack(CodegenMethod methodNode, string name, CodegenClassMethods methods)
+        public static void RecursiveBuildStack(
+            CodegenMethod methodNode,
+            string name,
+            CodegenClassMethods methods)
         {
             if (methodNode.OptionalSymbolProvider == null) {
                 throw new ArgumentException("Method node does not have symbol provider");
@@ -33,8 +36,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     methodNode.AdditionalDebugInfo);
                 CodegenMethodWGraph method = new CodegenMethodWGraph(
                     name, footprint, methodNode.Block, true, methodNode.Thrown) {
-                        IsStatic = methodNode.IsStatic
-                    };
+                    IsStatic = methodNode.IsStatic
+                };
 
                 methodNode.AssignedMethod = method;
                 methods.PublicMethods.Add(method);
@@ -46,9 +49,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
         }
 
         private static void RecursiveAdd(
-            CodegenMethod methodNode, 
+            CodegenMethod methodNode,
             IDictionary<string, Type> currentSymbols,
-            IList<CodegenMethodWGraph> privateMethods, 
+            IList<CodegenMethodWGraph> privateMethods,
             bool isStatic)
         {
             ISet<string> namesPassed = GetNamesPassed(methodNode);
@@ -103,7 +106,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             return names;
         }
 
-        private static void RecursiveGetNamesPassed(CodegenMethod node, ISet<string> names)
+        private static void RecursiveGetNamesPassed(
+            CodegenMethod node,
+            ISet<string> names)
         {
             if (node.OptionalSymbolProvider != null) {
                 return;
@@ -119,7 +124,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
         }
 
         public static void MakeSetter(
-            string className, string memberName, IList<CodegenTypedParam> members, CodegenClassMethods methods,
+            string className,
+            string memberName,
+            IList<CodegenTypedParam> members,
+            CodegenClassMethods methods,
             CodegenClassScope classScope)
         {
             members.Add(new CodegenTypedParam(className, memberName));

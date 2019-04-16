@@ -26,7 +26,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <param name="propertyName">name of property, from getter method</param>
         /// <param name="readMethod">read method to get value</param>
         /// <param name="propertyType">type of property</param>
-        public PropertyStem(string propertyName, MethodInfo readMethod, EventPropertyType propertyType)
+        public PropertyStem(
+            string propertyName,
+            MethodInfo readMethod,
+            EventPropertyType propertyType)
         {
             PropertyName = propertyName;
             ReadMethod = readMethod;
@@ -39,7 +42,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <param name="propertyName">name of property, from getter method</param>
         /// <param name="accessorField">field to get value from</param>
         /// <param name="propertyType">type of property</param>
-        public PropertyStem(string propertyName, FieldInfo accessorField, EventPropertyType propertyType)
+        public PropertyStem(
+            string propertyName,
+            FieldInfo accessorField,
+            EventPropertyType propertyType)
         {
             PropertyName = propertyName;
             AccessorField = accessorField;

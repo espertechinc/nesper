@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         internal readonly int size;
         internal AggregatorNth aggregator;
 
-        public AggregationFactoryMethodNth(ExprNthAggNode parent, Type childType, int size)
+        public AggregationFactoryMethodNth(
+            ExprNthAggNode parent,
+            Type childType,
+            int size)
         {
             this.parent = parent;
             this.childType = childType;
@@ -48,14 +51,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         public int SizeOfBuf => size + 1;
 
         public override void InitMethodForge(
-            int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope)
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             var distinctValueType = !parent.IsDistinct ? null : childType;
             aggregator = new AggregatorNth(
                 this, col, rowCtor, membersColumnized, classScope, distinctValueType, false, parent.OptionalFilter);
         }
 
-        public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream)
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
         {
             return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
         }

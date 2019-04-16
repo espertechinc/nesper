@@ -36,7 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         /// <param name="everyNode">is the factory node associated to the state</param>
         public EvalEveryDistinctStateExpireKeyNode(
             Evaluator parentNode,
-            EvalEveryDistinctNode everyNode) : base(parentNode)
+            EvalEveryDistinctNode everyNode)
+            : base(parentNode)
         {
             this.everyNode = everyNode;
             spawnedNodes = new LinkedHashMap<EvalStateNode, IDictionary<object, long>>();
@@ -50,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         public override bool IsObserverStateNodeNonRestarting => false;
 
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
+        public void EvaluateFalse(
+            EvalStateNode fromNode,
+            bool restartable)
         {
             var agentInstanceContext = everyNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryDistinctEvalFalse(everyNode.factoryNode);
@@ -70,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
                 spawned.Quit();
             }
             else {
-                spawnedNodes.Put(spawned, new LinkedHashMap<object, long?>());
+                spawnedNodes.Put(spawned, new LinkedHashMap<object, long>());
                 spawned.ParentEvaluator = this;
             }
 
@@ -78,7 +81,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         }
 
         public void EvaluateTrue(
-            MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted, EventBean optionalTriggeringEvent)
+            MatchedEventMap matchEvent,
+            EvalStateNode fromNode,
+            bool isQuitted,
+            EventBean optionalTriggeringEvent)
         {
             var agentInstanceContext = everyNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryDistinctEvaluateTrue(
@@ -95,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
                 IEnumerator<KeyValuePair<object, long>> it = keysFromNode.GetEnumerator();
                 var currentTime = everyNode.Context.AgentInstanceContext.TimeProvider.Time;
                 for (; it.MoveNext();) {
-                    KeyValuePair<object, long?> entry = it.Current;
+                    KeyValuePair<object, long> entry = it.Current;
                     if (currentTime >= entry.Value) {
                         it.Remove();
                     }
@@ -177,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
             this.beginState = beginState.ShallowCopy();
             var childState = everyNode.ChildNode.NewState(this);
-            spawnedNodes.Put(childState, new LinkedHashMap<object, long?>());
+            spawnedNodes.Put(childState, new LinkedHashMap<object, long>());
 
             // During the start of the child we need to use the temporary evaluator to catch any event created during a start.
             // Events created during the start would likely come from the "not" operator.

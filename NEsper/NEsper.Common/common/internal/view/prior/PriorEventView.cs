@@ -48,7 +48,9 @@ namespace com.espertech.esper.common.@internal.view.prior
             viewDataVisitor.VisitPrimary(buffer, "Prior");
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             buffer.Update(newData, oldData);
             child.Update(newData, oldData);

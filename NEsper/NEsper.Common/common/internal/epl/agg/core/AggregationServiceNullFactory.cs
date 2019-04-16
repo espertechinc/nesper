@@ -29,14 +29,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         public AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext, ImportServiceRuntime importService,
-            bool isSubquery, int? subqueryNumber, int[] groupId)
+            AgentInstanceContext agentInstanceContext,
+            ImportServiceRuntime importService,
+            bool isSubquery,
+            int? subqueryNumber,
+            int[] groupId)
         {
             return AggregationServiceNull.INSTANCE;
         }
 
         public void ProviderCodegen(
-            CodegenMethod method, CodegenClassScope classScope, AggregationClassNames classNames)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            AggregationClassNames classNames)
         {
             method.Block.MethodReturn(NewInstance(classNames.ServiceFactory, Ref("this")));
         }
@@ -44,48 +49,64 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public AggregationCodegenRowLevelDesc RowLevelDesc => AggregationCodegenRowLevelDesc.EMPTY;
 
         public void MakeServiceCodegen(
-            CodegenMethod method, CodegenClassScope classScope, AggregationClassNames classNames)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            AggregationClassNames classNames)
         {
             method.Block.MethodReturn(PublicConstValue(typeof(AggregationServiceNull), "INSTANCE"));
         }
 
         public void CtorCodegen(
-            CodegenCtor ctor, IList<CodegenTypedParam> explicitMembers, CodegenClassScope classScope,
+            CodegenCtor ctor,
+            IList<CodegenTypedParam> explicitMembers,
+            CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
         }
 
         public void GetValueCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(ConstantNull());
         }
 
         public void GetEventBeanCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(ConstantNull());
         }
 
         public void GetCollectionOfEventsCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(ConstantNull());
         }
 
         public void ApplyEnterCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods,
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods,
             AggregationClassNames classNames)
         {
         }
 
         public void ApplyLeaveCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods,
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods,
             AggregationClassNames classNames)
         {
         }
 
-        public void StopMethodCodegen(AggregationServiceFactoryForgeWMethodGen forge, CodegenMethod method)
+        public void StopMethodCodegen(
+            AggregationServiceFactoryForgeWMethodGen forge,
+            CodegenMethod method)
         {
         }
 
@@ -98,48 +119,68 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         public void SetCurrentAccessCodegen(
-            CodegenMethod method, CodegenClassScope classScope, AggregationClassNames classNames)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            AggregationClassNames classNames)
         {
         }
 
-        public void ClearResultsCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void ClearResultsCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
         }
 
         public void GetCollectionScalarCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(ConstantNull());
         }
 
-        public void AcceptCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void AcceptCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
         }
 
-        public void GetGroupKeysCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void GetGroupKeysCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(ConstantNull());
         }
 
-        public void GetGroupKeyCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void GetGroupKeyCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(ConstantNull());
         }
 
-        public void AcceptGroupDetailCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void AcceptGroupDetailCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
         }
 
-        public void IsGroupedCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void IsGroupedCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(ConstantFalse());
         }
 
-        public void RowWriteMethodCodegen(CodegenMethod method, int level)
+        public void RowWriteMethodCodegen(
+            CodegenMethod method,
+            int level)
         {
         }
 
-        public void RowReadMethodCodegen(CodegenMethod method, int level)
+        public void RowReadMethodCodegen(
+            CodegenMethod method,
+            int level)
         {
         }
     }

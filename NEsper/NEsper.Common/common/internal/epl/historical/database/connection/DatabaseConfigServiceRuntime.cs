@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         /// <throws>DatabaseConfigException is thrown to indicate database configuration errors</throws>
         HistoricalDataCache GetDataCache(
             string databaseName,
-            AgentInstanceContext agentInstanceContext, 
+            AgentInstanceContext agentInstanceContext,
             int streamNumber,
             int scheduleCallbackId);
 

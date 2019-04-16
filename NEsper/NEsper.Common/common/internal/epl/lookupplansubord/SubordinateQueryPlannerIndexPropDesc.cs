@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     {
         public SubordinateQueryPlannerIndexPropDesc(
             string[] hashIndexPropsProvided,
-            Type[] hashIndexCoercionType, 
+            Type[] hashIndexCoercionType,
             string[] rangeIndexPropsProvided,
             Type[] rangeIndexCoercionType,
             SubordinateQueryPlannerIndexPropListPair listPair,

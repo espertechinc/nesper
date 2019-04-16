@@ -10,7 +10,10 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public class StatementContextCPPair
     {
-        public StatementContextCPPair(int statementId, int agentInstanceId, StatementContext optionalStatementContext)
+        public StatementContextCPPair(
+            int statementId,
+            int agentInstanceId,
+            StatementContext optionalStatementContext)
         {
             StatementId = statementId;
             AgentInstanceId = agentInstanceId;
@@ -41,9 +44,8 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (AgentInstanceId*397) ^ StatementId;
+            unchecked {
+                return (AgentInstanceId * 397) ^ StatementId;
             }
         }
     }

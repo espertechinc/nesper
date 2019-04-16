@@ -54,14 +54,19 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             set => filterExprEval = value;
         }
 
-        public void Ready(StatementContext statementContext, EventType eventType)
+        public void Ready(
+            StatementContext statementContext,
+            EventType eventType)
         {
             // no action
         }
 
         public SubSelectStrategyRealization Instantiate(
-            Viewable viewableRoot, AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbackList, int subqueryNumber, bool isRecoveringResilient)
+            Viewable viewableRoot,
+            AgentInstanceContext agentInstanceContext,
+            IList<AgentInstanceStopCallback> stopCallbackList,
+            int subqueryNumber,
+            bool isRecoveringResilient)
         {
             SubselectAggregationPreprocessorBase subselectAggregationPreprocessor = null;
 

@@ -24,13 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public class DTLocalDtoOpsIntervalEval : DTLocalEvaluatorCalOpsIntervalBase
     {
-        public DTLocalDtoOpsIntervalEval(IList<CalendarOp> calendarOps, IntervalOp intervalOp)
+        public DTLocalDtoOpsIntervalEval(
+            IList<CalendarOp> calendarOps,
+            IntervalOp intervalOp)
             : base(calendarOps, intervalOp)
         {
         }
 
         public override object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var dto = (DateTimeOffset) target;
             dto = EvaluateCalOpsLDT(calendarOps, dto, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -39,8 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDtoOpsIntervalForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            DTLocalDtoOpsIntervalForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             CodegenExpression timeZoneField =
                 codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
@@ -60,7 +68,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public override object Evaluate(
-            object startTimestamp, object endTimestamp, EventBean[] eventsPerStream, bool isNewData,
+            object startTimestamp,
+            object endTimestamp,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var start = (DateTimeOffset) startTimestamp;
@@ -74,8 +85,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDtoOpsIntervalForge forge, CodegenExpressionRef start, CodegenExpressionRef end,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            DTLocalDtoOpsIntervalForge forge,
+            CodegenExpressionRef start,
+            CodegenExpressionRef end,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression timeZoneField =

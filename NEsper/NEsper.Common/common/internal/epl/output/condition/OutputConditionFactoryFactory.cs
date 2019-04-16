@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -36,71 +35,59 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            if (outputLimitSpec == null)
-            {
+            if (outputLimitSpec == null) {
                 return OutputConditionNullFactoryForge.INSTANCE;
             }
 
             // Check if a variable is present
             VariableMetaData variableMetaData = null;
-            if (outputLimitSpec.VariableName != null)
-            {
+            if (outputLimitSpec.VariableName != null) {
                 variableMetaData = services.VariableCompileTimeResolver.Resolve(outputLimitSpec.VariableName);
-                if (variableMetaData == null)
-                {
+                if (variableMetaData == null) {
                     throw new ExprValidationException(
                         "Variable named '" + outputLimitSpec.VariableName + "' has not been declared");
                 }
 
                 var message = VariableUtil.CheckVariableContextName(statementRawInfo.ContextName, variableMetaData);
-                if (message != null)
-                {
+                if (message != null) {
                     throw new ExprValidationException(message);
                 }
             }
 
-            if (outputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST && isGrouped)
-            {
+            if (outputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST && isGrouped) {
                 return OutputConditionNullFactoryForge.INSTANCE;
             }
 
-            if (outputLimitSpec.RateType == OutputLimitRateType.CRONTAB)
-            {
+            if (outputLimitSpec.RateType == OutputLimitRateType.CRONTAB) {
                 return new OutputConditionCrontabForge(
                     outputLimitSpec.CrontabAtSchedule, isStartConditionOnCreation, statementRawInfo, services);
             }
 
-            if (outputLimitSpec.RateType == OutputLimitRateType.WHEN_EXPRESSION)
-            {
+            if (outputLimitSpec.RateType == OutputLimitRateType.WHEN_EXPRESSION) {
                 return new OutputConditionExpressionForge(
                     outputLimitSpec.WhenExpressionNode, outputLimitSpec.ThenExpressions,
                     outputLimitSpec.AndAfterTerminateExpr, outputLimitSpec.AndAfterTerminateThenExpressions,
                     isStartConditionOnCreation, services);
             }
 
-            if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS)
-            {
-                if (variableMetaData != null && !variableMetaData.Type.IsNumericNonFP())
-                {
+            if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS) {
+                if (variableMetaData != null && !variableMetaData.Type.IsNumericNonFP()) {
                     throw new ArgumentException(
                         "Variable named '" + outputLimitSpec.VariableName + "' must be type integer, long or short");
                 }
 
                 var rate = -1;
-                if (outputLimitSpec.Rate != null)
-                {
+                if (outputLimitSpec.Rate != null) {
                     rate = outputLimitSpec.Rate.AsInt();
                 }
 
                 return new OutputConditionCountForge(rate, variableMetaData);
             }
 
-            if (outputLimitSpec.RateType == OutputLimitRateType.TERM)
-            {
+            if (outputLimitSpec.RateType == OutputLimitRateType.TERM) {
                 if (outputLimitSpec.AndAfterTerminateExpr == null &&
                     (outputLimitSpec.AndAfterTerminateThenExpressions == null ||
-                     outputLimitSpec.AndAfterTerminateThenExpressions.IsEmpty()))
-                {
+                     outputLimitSpec.AndAfterTerminateThenExpressions.IsEmpty())) {
                     return new OutputConditionTermFactoryForge();
                 }
 
@@ -112,13 +99,11 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                     isStartConditionOnCreation, services);
             }
 
-            if (Log.IsDebugEnabled)
-            {
+            if (Log.IsDebugEnabled) {
                 Log.Debug(".createCondition creating OutputConditionTime with interval length " + outputLimitSpec.Rate);
             }
 
-            if (variableMetaData != null && !variableMetaData.Type.IsNumeric())
-            {
+            if (variableMetaData != null && !variableMetaData.Type.IsNumeric()) {
                 throw new ArgumentException(
                     "Variable named '" + outputLimitSpec.VariableName + "' must be of numeric type");
             }

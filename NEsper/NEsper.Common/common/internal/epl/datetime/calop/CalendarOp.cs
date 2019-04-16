@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -16,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
     public interface CalendarOp
     {
-        void Evaluate(
+        DateTimeEx Evaluate(
             DateTimeEx dateTimeEx,
             EventBean[] eventsPerStream,
             bool isNewData,

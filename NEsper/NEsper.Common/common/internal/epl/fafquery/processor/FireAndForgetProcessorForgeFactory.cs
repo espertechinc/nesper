@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.compat;
@@ -15,14 +14,17 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 {
-	public class FireAndForgetProcessorForgeFactory {
-	    public static FireAndForgetProcessorForge ValidateResolveProcessor(StreamSpecCompiled streamSpec) {
-	        if (streamSpec is NamedWindowConsumerStreamSpec) {
-	            NamedWindowMetaData nwdetail = ((NamedWindowConsumerStreamSpec) streamSpec).NamedWindow;
-	            return new FireAndForgetProcessorNamedWindowForge(nwdetail);
-	        }
-	        TableQueryStreamSpec tableSpec = (TableQueryStreamSpec) streamSpec;
-	        return new FireAndForgetProcessorTableForge(tableSpec.Table);
-	    }
-	}
+    public class FireAndForgetProcessorForgeFactory
+    {
+        public static FireAndForgetProcessorForge ValidateResolveProcessor(StreamSpecCompiled streamSpec)
+        {
+            if (streamSpec is NamedWindowConsumerStreamSpec) {
+                NamedWindowMetaData nwdetail = ((NamedWindowConsumerStreamSpec) streamSpec).NamedWindow;
+                return new FireAndForgetProcessorNamedWindowForge(nwdetail);
+            }
+
+            TableQueryStreamSpec tableSpec = (TableQueryStreamSpec) streamSpec;
+            return new FireAndForgetProcessorTableForge(tableSpec.Table);
+        }
+    }
 } // end of namespace

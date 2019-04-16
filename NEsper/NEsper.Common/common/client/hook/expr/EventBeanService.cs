@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="theEvent">event underlying</param>
         /// <param name="eventTypeName">name of the Map event type</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForMap(IDictionary<string, object> theEvent, string eventTypeName);
+        EventBean AdapterForMap(
+            IDictionary<string, object> theEvent,
+            string eventTypeName);
 
         /// <summary>
         ///     Look up an event type by name,
@@ -39,7 +41,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="theEvent">event underlying</param>
         /// <param name="eventTypeName">event type name</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForBean(object theEvent, string eventTypeName);
+        EventBean AdapterForBean(
+            object theEvent,
+            string eventTypeName);
 
         /// <summary>
         ///     Construct an event bean for a given bean (Object) and given the Bean-event-type
@@ -47,7 +51,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="bean">event underlying</param>
         /// <param name="eventType">event type (Bean only)</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForTypedBean(object bean, EventType eventType);
+        EventBean AdapterForTypedBean(
+            object bean,
+            EventType eventType);
 
         /// <summary>
         ///     Construct an event bean for a given Avro GenericData.Record using the event type name to look up the Avro event
@@ -56,7 +62,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="avroGenericDataDotRecord">event underlying</param>
         /// <param name="eventTypeName">name of the Avro event type</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForAvro(object avroGenericDataDotRecord, string eventTypeName);
+        EventBean AdapterForAvro(
+            object avroGenericDataDotRecord,
+            string eventTypeName);
 
         /// <summary>
         ///     Construct an event bean for a given Avro GenericData.Record and given the Avro-event-type
@@ -64,7 +72,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="avroGenericDataDotRecord">event underlying</param>
         /// <param name="eventType">event type (Avro only)</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForTypedAvro(object avroGenericDataDotRecord, EventType eventType);
+        EventBean AdapterForTypedAvro(
+            object avroGenericDataDotRecord,
+            EventType eventType);
 
         /// <summary>
         ///     Construct an event bean for a given Map and given the Map-event-type
@@ -72,7 +82,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="properties">event underlying</param>
         /// <param name="eventType">event type (Map only)</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForTypedMap(IDictionary<string, object> properties, EventType eventType);
+        EventBean AdapterForTypedMap(
+            IDictionary<string, object> properties,
+            EventType eventType);
 
         /// <summary>
         ///     Construct an event bean for a given Object-Array using the event type name to look up the Object-Array event type
@@ -80,7 +92,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="theEvent">event underlying</param>
         /// <param name="eventTypeName">name of the Object-Array event type</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForObjectArray(object[] theEvent, string eventTypeName);
+        EventBean AdapterForObjectArray(
+            object[] theEvent,
+            string eventTypeName);
 
         /// <summary>
         ///     Construct an event bean for a given Object-Array and given the Object-Array-event-type
@@ -88,7 +102,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="props">event underlying</param>
         /// <param name="eventType">event type (Object-array only)</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForTypedObjectArray(object[] props, EventType eventType);
+        EventBean AdapterForTypedObjectArray(
+            object[] props,
+            EventType eventType);
 
         /// <summary>
         ///     Construct an event bean for a given XML-DOM using the node root node name to look up the XML-DOM event type
@@ -96,7 +112,9 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="node">event underlying</param>
         /// <param name="eventTypeName">event type name</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForDOM(XmlNode node, string eventTypeName);
+        EventBean AdapterForDOM(
+            XmlNode node,
+            string eventTypeName);
 
         /// <summary>
         ///     Construct an event bean for a given Node and given the XML-event-type
@@ -104,6 +122,8 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="node">event underlying</param>
         /// <param name="eventType">event type (XML only)</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForTypedDOM(XmlNode node, EventType eventType);
+        EventBean AdapterForTypedDOM(
+            XmlNode node,
+            EventType eventType);
     }
 } // end of namespace

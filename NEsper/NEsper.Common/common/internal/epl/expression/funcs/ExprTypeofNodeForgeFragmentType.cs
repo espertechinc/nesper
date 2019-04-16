@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly int streamId;
 
         public ExprTypeofNodeForgeFragmentType(
-            ExprTypeofNode parent, int streamId, EventPropertyGetterSPI getter, string fragmentType)
+            ExprTypeofNode parent,
+            int streamId,
+            EventPropertyGetterSPI getter,
+            string fragmentType)
         {
             this.parent = parent;
             this.streamId = streamId;
@@ -42,7 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprNodeRenderable ForgeRenderable => parent;
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var @event = eventsPerStream[streamId];
             if (@event == null) {
@@ -68,7 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public override CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
@@ -76,7 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(

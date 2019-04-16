@@ -19,8 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
 
         public static bool IsEmpty(MXCIFQuadTreeNode<object> node)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf)
-            {
+            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
                 return leaf.Data == null;
             }
 

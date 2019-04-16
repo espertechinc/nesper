@@ -11,7 +11,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.context.aifactory.update;
@@ -48,8 +47,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// Return true to indicate that there is pre-processing to take place.
         /// </summary>
         /// <returns>preprocessing indicator</returns>
-        public bool HasPreprocessing
-        {
+        public bool HasPreprocessing {
             get => hasPreprocessing;
         }
 
@@ -60,58 +58,58 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="runtimeFilterAndDispatchTimeContext">expression evaluation context</param>
         /// <param name="instrumentation">instrumentation</param>
         /// <returns>preprocessed event</returns>
-        public EventBean Preprocess(EventBean theEvent, ExprEvaluatorContext runtimeFilterAndDispatchTimeContext, InstrumentationCommon instrumentation)
+        public EventBean Preprocess(
+            EventBean theEvent,
+            ExprEvaluatorContext runtimeFilterAndDispatchTimeContext,
+            InstrumentationCommon instrumentation)
         {
             return GetPreprocessedEvent(theEvent, runtimeFilterAndDispatchTimeContext, instrumentation);
         }
 
-        public InsertIntoListener InsertIntoListener
-        {
+        public InsertIntoListener InsertIntoListener {
             set => this.insertIntoListener = value;
         }
 
-        public void Route(EventBean theEvent, AgentInstanceContext agentInstanceContext, bool addToFront)
+        public void Route(
+            EventBean theEvent,
+            AgentInstanceContext agentInstanceContext,
+            bool addToFront)
         {
-            Route(theEvent, agentInstanceContext.StatementContext.EpStatementHandle, agentInstanceContext.InternalEventRouteDest, agentInstanceContext, addToFront);
+            Route(
+                theEvent, agentInstanceContext.StatementContext.EpStatementHandle, agentInstanceContext.InternalEventRouteDest, agentInstanceContext,
+                addToFront);
         }
 
         public void Route(
-            EventBean theEvent, 
+            EventBean theEvent,
             EPStatementHandle statementHandle,
             InternalEventRouteDest routeDest,
-            ExprEvaluatorContext exprEvaluatorContext, 
+            ExprEvaluatorContext exprEvaluatorContext,
             bool addToFront)
         {
-            if (!hasPreprocessing)
-            {
-                if (insertIntoListener != null)
-                {
+            if (!hasPreprocessing) {
+                if (insertIntoListener != null) {
                     bool route = insertIntoListener.Inserted(theEvent, statementHandle);
-                    if (route)
-                    {
+                    if (route) {
                         routeDest.Route(theEvent, statementHandle, addToFront);
                     }
                 }
-                else
-                {
+                else {
                     routeDest.Route(theEvent, statementHandle, addToFront);
                 }
+
                 return;
             }
 
             EventBean preprocessed = GetPreprocessedEvent(theEvent, exprEvaluatorContext, exprEvaluatorContext.InstrumentationProvider);
-            if (preprocessed != null)
-            {
-                if (insertIntoListener != null)
-                {
+            if (preprocessed != null) {
+                if (insertIntoListener != null) {
                     bool route = insertIntoListener.Inserted(theEvent, statementHandle);
-                    if (route)
-                    {
+                    if (route) {
                         routeDest.Route(preprocessed, statementHandle, addToFront);
                     }
                 }
-                else
-                {
+                else {
                     routeDest.Route(preprocessed, statementHandle, addToFront);
                 }
             }
@@ -123,8 +121,7 @@ namespace com.espertech.esper.common.@internal.context.util
             StatementAgentInstanceLock agentInstanceLock,
             bool hasSubselect)
         {
-            lock (this)
-            {
+            lock (this) {
                 descriptors.Put(
                     internalEventRouterDesc,
                     new IRDescEntry(
@@ -138,12 +135,12 @@ namespace com.espertech.esper.common.@internal.context.util
             }
         }
 
-        public void RemovePreprocessing(EventType eventType, InternalEventRouterDesc desc)
+        public void RemovePreprocessing(
+            EventType eventType,
+            InternalEventRouterDesc desc)
         {
-            lock (this)
-            {
-                if (Log.IsInfoEnabled)
-                {
+            lock (this) {
+                if (Log.IsInfoEnabled) {
                     Log.Debug("Removing route preprocessing for type '" + eventType.Name);
                 }
 
@@ -151,32 +148,30 @@ namespace com.espertech.esper.common.@internal.context.util
                 RemovePreprocessors(eventType);
 
                 descriptors.Remove(desc);
-                if (descriptors.IsEmpty())
-                {
+                if (descriptors.IsEmpty()) {
                     hasPreprocessing = false;
                     preprocessors.Clear();
                 }
             }
         }
 
-        private EventBean GetPreprocessedEvent(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext, InstrumentationCommon instrumentation)
+        private EventBean GetPreprocessedEvent(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext,
+            InstrumentationCommon instrumentation)
         {
             NullableObject<InternalEventRouterPreprocessor> processor = preprocessors.Get(theEvent.EventType);
-            if (processor == null)
-            {
-                lock (this)
-                {
+            if (processor == null) {
+                lock (this) {
                     processor = Initialize(theEvent.EventType);
                     preprocessors.Put(theEvent.EventType, processor);
                 }
             }
 
-            if (processor.Value == null)
-            {
+            if (processor.Value == null) {
                 return theEvent;
             }
-            else
-            {
+            else {
                 return processor.Value.Process(theEvent, exprEvaluatorContext, instrumentation);
             }
         }
@@ -186,14 +181,10 @@ namespace com.espertech.esper.common.@internal.context.util
             preprocessors.Remove(eventType);
 
             // find each child type entry
-            foreach (EventType type in preprocessors.Keys)
-            {
-                if (type.DeepSuperTypes != null)
-                {
-                    foreach (var testType in type.DeepSuperTypes)
-                    {
-                        if (Equals(testType, eventType))
-                        {
+            foreach (EventType type in preprocessors.Keys) {
+                if (type.DeepSuperTypes != null) {
+                    foreach (var testType in type.DeepSuperTypes) {
+                        if (Equals(testType, eventType)) {
                             preprocessors.Remove(type);
                         }
                     }
@@ -203,21 +194,17 @@ namespace com.espertech.esper.common.@internal.context.util
 
         private NullableObject<InternalEventRouterPreprocessor> Initialize(EventType eventType)
         {
-            EventTypeSPI eventTypeSPI = (EventTypeSPI)eventType;
+            EventTypeSPI eventTypeSPI = (EventTypeSPI) eventType;
             IList<InternalEventRouterEntry> desc = new List<InternalEventRouterEntry>();
 
             // determine which ones to process for this types, and what priority and drop
             ISet<string> eventPropertiesWritten = new HashSet<string>();
-            foreach (KeyValuePair<InternalEventRouterDesc, IRDescEntry> entry in descriptors)
-            {
+            foreach (KeyValuePair<InternalEventRouterDesc, IRDescEntry> entry in descriptors) {
                 bool applicable = Equals(entry.Value.EventType, eventType);
-                if (!applicable)
-                {
-                    if (eventType.DeepSuperTypes != null)
-                    {
+                if (!applicable) {
+                    if (eventType.DeepSuperTypes != null) {
                         foreach (var testType in eventType.DeepSuperTypes) {
-                            if (Equals(testType, entry.Value.EventType))
-                            {
+                            if (Equals(testType, entry.Value.EventType)) {
                                 applicable = true;
                                 break;
                             }
@@ -225,43 +212,41 @@ namespace com.espertech.esper.common.@internal.context.util
                     }
                 }
 
-                if (!applicable)
-                {
+                if (!applicable) {
                     continue;
                 }
 
                 int priority = 0;
                 bool isDrop = false;
                 Attribute[] annotations = entry.Value.Annotations;
-                for (int i = 0; i < annotations.Length; i++)
-                {
-                    if (annotations[i] is PriorityAttribute)
-                    {
-                        priority = ((PriorityAttribute)annotations[i]).Value;
+                for (int i = 0; i < annotations.Length; i++) {
+                    if (annotations[i] is PriorityAttribute) {
+                        priority = ((PriorityAttribute) annotations[i]).Value;
                     }
-                    if (annotations[i] is DropAttribute)
-                    {
+
+                    if (annotations[i] is DropAttribute) {
                         isDrop = true;
                     }
                 }
 
                 eventPropertiesWritten.AddAll(entry.Key.Properties);
                 EventBeanWriter writer = eventTypeSPI.GetWriter(entry.Key.Properties);
-                desc.Add(new InternalEventRouterEntry(
-                    priority, isDrop, 
-                    entry.Value.OptionalWhereClauseEvaluator, 
-                    entry.Key.Assignments, writer, 
-                    entry.Value.Wideners, 
-                    entry.Value.OutputView, 
-                    entry.Value.AgentInstanceLock, 
-                    entry.Value.HasSubselect));
+                desc.Add(
+                    new InternalEventRouterEntry(
+                        priority, isDrop,
+                        entry.Value.OptionalWhereClauseEvaluator,
+                        entry.Key.Assignments, writer,
+                        entry.Value.Wideners,
+                        entry.Value.OutputView,
+                        entry.Value.AgentInstanceLock,
+                        entry.Value.HasSubselect));
             }
 
             EventBeanCopyMethodForge copyMethodForge = eventTypeSPI.GetCopyMethodForge(eventPropertiesWritten.ToArray());
-            if (copyMethodForge == null)
-            {
+            if (copyMethodForge == null) {
                 return new NullableObject<InternalEventRouterPreprocessor>(null);
             }
+
             return new NullableObject<InternalEventRouterPreprocessor>(
                 new InternalEventRouterPreprocessor(copyMethodForge.GetCopyMethod(eventBeanTypedEventFactory), desc));
         }
@@ -288,38 +273,31 @@ namespace com.espertech.esper.common.@internal.context.util
                 this.optionalWhereClauseEvaluator = optionalWhereClauseEvaluator;
             }
 
-            public ExprEvaluator OptionalWhereClauseEvaluator
-            {
+            public ExprEvaluator OptionalWhereClauseEvaluator {
                 get => optionalWhereClauseEvaluator;
             }
 
-            public EventType EventType
-            {
+            public EventType EventType {
                 get => internalEventRouterDesc.EventType;
             }
 
-            public Attribute[] Annotations
-            {
+            public Attribute[] Annotations {
                 get => internalEventRouterDesc.Annotations;
             }
 
-            public TypeWidener[] Wideners
-            {
+            public TypeWidener[] Wideners {
                 get => internalEventRouterDesc.Wideners;
             }
 
-            public InternalRoutePreprocessView OutputView
-            {
+            public InternalRoutePreprocessView OutputView {
                 get => outputView;
             }
 
-            public StatementAgentInstanceLock AgentInstanceLock
-            {
+            public StatementAgentInstanceLock AgentInstanceLock {
                 get => agentInstanceLock;
             }
 
-            public bool HasSubselect
-            {
+            public bool HasSubselect {
                 get => hasSubselect;
             }
         }

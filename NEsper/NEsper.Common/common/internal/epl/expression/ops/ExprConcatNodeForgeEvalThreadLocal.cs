@@ -21,13 +21,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly IThreadLocal<StringBuilder> _localBuffer = new SystemThreadLocal<StringBuilder>(
             () => new StringBuilder());
 
-        public ExprConcatNodeForgeEvalThreadLocal(ExprConcatNodeForge forge, ExprEvaluator[] evaluators)
+        public ExprConcatNodeForgeEvalThreadLocal(
+            ExprConcatNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             _form = forge;
             _evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var buffer = _localBuffer.GetOrCreate();
             buffer.Length = 0;

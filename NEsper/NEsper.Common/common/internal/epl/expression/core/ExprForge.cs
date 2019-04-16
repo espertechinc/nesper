@@ -41,17 +41,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprEvaluator ExprEvaluator => ProcExprEvaluator?.Invoke();
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, 
-            CodegenMethodScope codegenMethodScope, 
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
             => ProcEvaluateCodegen?.Invoke(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
 
         public Type EvaluationType
             => ProcEvaluationType?.Invoke();
+
         public ExprForgeConstantType ForgeConstantType
             => ProcForgeConstantType?.Invoke();
-        public ExprNodeRenderable ForgeRenderable 
+
+        public ExprNodeRenderable ForgeRenderable
             => ProcForgeRenderable?.Invoke();
     }
 } // end of namespace

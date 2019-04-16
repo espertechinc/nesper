@@ -17,7 +17,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
     [Serializable]
     public class SubordPropInKeywordMultiIndex
     {
-        public SubordPropInKeywordMultiIndex(String[] indexedProp, Type coercionType, ExprNode expression)
+        public SubordPropInKeywordMultiIndex(
+            String[] indexedProp,
+            Type coercionType,
+            ExprNode expression)
         {
             IndexedProp = indexedProp;
             CoercionType = coercionType;

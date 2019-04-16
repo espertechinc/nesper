@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Marker interface for an on-merge clause action item.
     /// </summary>
-    public interface OnMergeMatchedAction 
+    public interface OnMergeMatchedAction
     {
         /// <summary>
         /// RenderAny to EPL.

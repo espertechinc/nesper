@@ -19,8 +19,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         private readonly ContextConditionDescriptorFilter initCond;
 
         public ContextControllerKeyedFilterEntryWInit(
-            ContextControllerKeyedImpl callback, IntSeqKey controllerPath, 
-            ContextControllerDetailKeyedItem item, object[] parentPartitionKeys, 
+            ContextControllerKeyedImpl callback,
+            IntSeqKey controllerPath,
+            ContextControllerDetailKeyedItem item,
+            object[] parentPartitionKeys,
             ContextConditionDescriptorFilter initCond)
             : base(callback, controllerPath, item, parentPartitionKeys)
         {
@@ -28,7 +30,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             Start(initCond.FilterSpecActivatable);
         }
 
-        public override void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches)
+        public override void MatchFound(
+            EventBean theEvent,
+            ICollection<FilterHandleCallback> allStmtMatches)
         {
             callback.MatchFound(item, theEvent, controllerPath, initCond.OptionalFilterAsName);
         }

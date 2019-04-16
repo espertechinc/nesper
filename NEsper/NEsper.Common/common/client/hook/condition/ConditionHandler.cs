@@ -15,6 +15,5 @@ namespace com.espertech.esper.common.client.hook.condition
     /// Handle the engine condition as contained in the context object passed.
     /// </summary>
     /// <param name="context">the condition information</param>
-
     public delegate void ConditionHandler(ConditionHandlerContext context);
 }

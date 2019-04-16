@@ -59,9 +59,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         /// </summary>
         /// <param name="triggerEvents">is the trigger events (usually 1)</param>
         /// <param name="matchingEvents">is the matching events retrieved via lookup strategy</param>
-        public abstract void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents);
+        public abstract void HandleMatching(
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents);
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             if (newData == null) {
                 return;

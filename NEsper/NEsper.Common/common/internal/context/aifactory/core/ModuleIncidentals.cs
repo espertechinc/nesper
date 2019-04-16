@@ -18,8 +18,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
     public class ModuleIncidentals
     {
         public ModuleIncidentals(
-            IDictionary<string, NamedWindowMetaData> namedWindows, IDictionary<string, ContextMetaData> contexts,
-            IDictionary<string, VariableMetaData> variables, IDictionary<string, ExpressionDeclItem> expressions,
+            IDictionary<string, NamedWindowMetaData> namedWindows,
+            IDictionary<string, ContextMetaData> contexts,
+            IDictionary<string, VariableMetaData> variables,
+            IDictionary<string, ExpressionDeclItem> expressions,
             IDictionary<string, TableMetaData> tables)
         {
             NamedWindows = namedWindows;

@@ -22,9 +22,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     public class ExprCastNodeForge : ExprForgeInstrumentable
     {
         internal ExprCastNodeForge(
-            ExprCastNode parent, 
-            ExprCastNode.CasterParserComputerForge casterParserComputerForge, Type targetType,
-            bool isConstant, object constant)
+            ExprCastNode parent,
+            ExprCastNode.CasterParserComputerForge casterParserComputerForge,
+            Type targetType,
+            bool isConstant,
+            object constant)
         {
             ForgeRenderableCast = parent;
             CasterParserComputerForge = casterParserComputerForge;
@@ -68,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public Type EvaluationType { get; }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             if (IsConstant) {
@@ -83,7 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         }
 
         public CodegenExpression EvaluateCodegen(
-            Type requiredType, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(

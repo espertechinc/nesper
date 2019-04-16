@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 using static com.espertech.esper.common.@internal.serde.CodegenSharableSerdeEventTyped.CodegenSharableSerdeName;
@@ -34,8 +33,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         private readonly AggregationStateLinearForge forge;
 
         public AggregatorAccessLinearNonJoin(
-            AggregationStateLinearForge forge, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, ExprNode optionalFilter)
+            AggregationStateLinearForge forge,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            ExprNode optionalFilter)
             : base(optionalFilter)
 
         {
@@ -45,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         internal override void ApplyEnterFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             CodegenExpressionRef eps = symbols.GetAddEPS(method);
@@ -56,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         internal override void ApplyLeaveFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             CodegenExpressionRef eps = symbols.GetAddEPS(method);
@@ -66,13 +73,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .ExprDotMethod(events, "remove", Ref("theEvent"));
         }
 
-        public override void ClearCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void ClearCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(events, "clear");
         }
 
         public CodegenExpression GetFirstNthValueCodegen(
-            CodegenExpressionRef index, CodegenMethod parentMethod, CodegenClassScope classScope,
+            CodegenExpressionRef index,
+            CodegenMethod parentMethod,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             CodegenMethod method = parentMethod.MakeChildWithScope(
@@ -85,7 +96,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         public CodegenExpression GetLastNthValueCodegen(
-            CodegenExpressionRef index, CodegenMethod parentMethod, CodegenClassScope classScope,
+            CodegenExpressionRef index,
+            CodegenMethod parentMethod,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             CodegenMethod method = parentMethod.MakeChildWithScope(
@@ -102,7 +115,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             return LocalMethod(method, index);
         }
 
-        public CodegenExpression GetFirstValueCodegen(CodegenClassScope classScope, CodegenMethod parentMethod)
+        public CodegenExpression GetFirstValueCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod parentMethod)
         {
             CodegenMethod method = parentMethod.MakeChildWithScope(
                 typeof(EventBean), typeof(AggregatorAccessLinearNonJoin), CodegenSymbolProviderEmpty.INSTANCE,
@@ -113,7 +128,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         public CodegenExpression GetLastValueCodegen(
-            CodegenClassScope classScope, CodegenMethod parentMethod, CodegenNamedMethods namedMethods)
+            CodegenClassScope classScope,
+            CodegenMethod parentMethod,
+            CodegenNamedMethods namedMethods)
         {
             CodegenMethod method = parentMethod.MakeChildWithScope(
                 typeof(EventBean), typeof(AggregatorAccessLinearNonJoin), CodegenSymbolProviderEmpty.INSTANCE,
@@ -127,13 +144,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         public CodegenExpression IteratorCodegen(
-            CodegenClassScope classScope, CodegenMethod method, CodegenNamedMethods namedMethods)
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenNamedMethods namedMethods)
         {
             return ExprDotMethod(events, "iterator");
         }
 
         public CodegenExpression CollectionReadOnlyCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             return events;
         }
@@ -144,15 +165,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         public override void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(GetSerde(classScope), "write", RowDotRef(row, events), output, unitKey, writer);
         }
 
         public override void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenMethod method,
-            CodegenExpressionRef unitKey, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenMethod method,
+            CodegenExpressionRef unitKey,
+            CodegenClassScope classScope)
         {
             method.Block.AssignRef(
                 RowDotRef(row, events),

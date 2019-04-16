@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,7 +18,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -28,21 +26,30 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
     {
         private readonly TimeZoneInfo timeZone;
 
-        public DTLocalDtoIntervalEval(IntervalOp intervalOp, TimeZoneInfo timeZone) : base(intervalOp)
+        public DTLocalDtoIntervalEval(
+            IntervalOp intervalOp,
+            TimeZoneInfo timeZone)
+            : base(intervalOp)
         {
             this.timeZone = timeZone;
         }
 
         public override object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             long time = DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset) target);
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDtoIntervalForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            DTLocalDtoIntervalForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             CodegenExpression timeZoneField =
                 codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
@@ -62,7 +69,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public override object Evaluate(
-            object startTimestamp, object endTimestamp, EventBean[] eventsPerStream, bool isNewData,
+            object startTimestamp,
+            object endTimestamp,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             long start = DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset) startTimestamp);
@@ -71,8 +81,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDtoIntervalForge forge, CodegenExpressionRef start, CodegenExpressionRef end,
-            CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            DTLocalDtoIntervalForge forge,
+            CodegenExpressionRef start,
+            CodegenExpressionRef end,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression timeZoneField =

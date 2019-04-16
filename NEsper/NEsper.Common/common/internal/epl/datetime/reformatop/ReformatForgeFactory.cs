@@ -24,17 +24,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         public ReformatForge GetForge(
             EPType inputType,
             TimeAbacus timeAbacus,
-            DatetimeMethodEnum method,
+            DateTimeMethodEnum method,
             string methodNameUsed,
             IList<ExprNode> parameters,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (method == DatetimeMethodEnum.GET) {
+            if (method == DateTimeMethodEnum.GET) {
                 var fieldNum = CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]);
                 return new ReformatGetFieldForge(fieldNum, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.FORMAT) {
+            if (method == DateTimeMethodEnum.FORMAT) {
                 if (parameters.IsEmpty()) {
                     return FORMAT_STRING;
                 }
@@ -43,63 +43,63 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 return new ReformatFormatForge(formatterType, parameters[0].Forge, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.TODATETIMEEX) {
+            if (method == DateTimeMethodEnum.TODATETIMEEX) {
                 return new ReformatToDateTimeExForge(timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.TODATETIMEOFFSET) {
+            if (method == DateTimeMethodEnum.TODATETIMEOFFSET) {
                 return new ReformatToDateTimeOffsetForge(timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.TODATETIMEOFFSET) {
+            if (method == DateTimeMethodEnum.TODATETIMEOFFSET) {
                 return new ReformatToDateTimeForge(timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.TOMILLISEC) {
+            if (method == DateTimeMethodEnum.TOMILLISEC) {
                 return new ReformatToMillisecForge();
             }
 
-            if (method == DatetimeMethodEnum.GETDAYOFMONTH) {
+            if (method == DateTimeMethodEnum.GETDAYOFMONTH) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.DAY_OF_MONTH, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.GETMINUTEOFHOUR) {
+            if (method == DateTimeMethodEnum.GETMINUTEOFHOUR) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.MINUTE_OF_HOUR, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.GETMONTHOFYEAR) {
+            if (method == DateTimeMethodEnum.GETMONTHOFYEAR) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.MONTH_OF_YEAR, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.GETDAYOFWEEK) {
+            if (method == DateTimeMethodEnum.GETDAYOFWEEK) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.DAY_OF_WEEK, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.GETDAYOFYEAR) {
+            if (method == DateTimeMethodEnum.GETDAYOFYEAR) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.DAY_OF_YEAR, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.GETHOUROFDAY) {
+            if (method == DateTimeMethodEnum.GETHOUROFDAY) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.HOUR_OF_DAY, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.GETMILLISOFSECOND) {
+            if (method == DateTimeMethodEnum.GETMILLISOFSECOND) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.MILLIS_OF_SECOND, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.GETSECONDOFMINUTE) {
+            if (method == DateTimeMethodEnum.GETSECONDOFMINUTE) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.SECOND_OF_MINUTE, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.GETWEEKYEAR) {
+            if (method == DateTimeMethodEnum.GETWEEKYEAR) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.WEEKYEAR, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.GETYEAR) {
+            if (method == DateTimeMethodEnum.GETYEAR) {
                 return new ReformatEvalForge(DateTimeExEvalStatics.YEAR, timeAbacus);
             }
 
-            if (method == DatetimeMethodEnum.BETWEEN) {
+            if (method == DateTimeMethodEnum.BETWEEN) {
                 if (ExprNodeUtilityQuery.IsAllConstants(parameters)) {
                     return new ReformatBetweenConstantParamsForge(parameters);
                 }

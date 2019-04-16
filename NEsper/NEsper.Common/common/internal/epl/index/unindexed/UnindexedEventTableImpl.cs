@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
         ///     Ctor.
         /// </summary>
         /// <param name="streamNum">is the indexed stream's number</param>
-        public UnindexedEventTableImpl(int streamNum) : base(streamNum)
+        public UnindexedEventTableImpl(int streamNum)
+            : base(streamNum)
         {
         }
 
@@ -54,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
         }
 
         public override void AddRemove(
-            EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
@@ -71,14 +74,18 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
             exprEvaluatorContext.InstrumentationProvider.AIndexAddRemove();
         }
 
-        public override void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public override void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
                 eventSet.AddAll(events);
             }
         }
 
-        public override void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
+        public override void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
                 foreach (var removeEvent in events) {
@@ -87,12 +94,16 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
             }
         }
 
-        public override void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
+        public override void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             eventSet.Add(@event);
         }
 
-        public override void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
+        public override void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             eventSet.Remove(@event);
         }

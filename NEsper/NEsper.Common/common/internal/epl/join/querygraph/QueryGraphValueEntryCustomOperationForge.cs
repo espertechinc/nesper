@@ -21,7 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         public IDictionary<int, ExprNode> PositionalExpressions { get; } = new Dictionary<int, ExprNode>();
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryCustomOperation), GetType(), classScope);
             method.Block.DeclareVar(

@@ -43,7 +43,9 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         public string ViewName => ViewEnum.RANK_WINDOW.Name;
 
-        public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services)
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
         {
             Comparer = ExprNodeUtilityMake.GetComparatorHashableMultiKeys(
                 SortCriteriaTypes,

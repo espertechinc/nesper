@@ -27,8 +27,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
         internal CodegenExpressionRef plugin;
 
         public AggregatorPlugInMultiParam(
-            AggregationMethodFactoryPluginMethod factory, int col, CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized, CodegenClassScope classScope, AggregationFunctionModeMultiParam mode)
+            AggregationMethodFactoryPluginMethod factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            AggregationFunctionModeMultiParam mode)
         {
             this.mode = mode;
             var injectionStrategy =
@@ -41,42 +45,63 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
         }
 
         public void ApplyEvalEnterCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             Apply(true, method, symbols, forges, classScope);
         }
 
         public void ApplyEvalLeaveCodegen(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges, CodegenClassScope classScope)
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             Apply(false, method, symbols, forges, classScope);
         }
 
         public void ApplyTableEnterCodegen(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(plugin, "enter", value);
         }
 
         public void ApplyTableLeaveCodegen(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(plugin, "leave", value);
         }
 
-        public void ClearCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void ClearCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(plugin, "clear");
         }
 
-        public void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(ExprDotMethod(plugin, "getValue"));
         }
 
         public void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (mode.HasHA) {
                 method.Block.StaticMethod(mode.Serde, "write", output, RowDotRef(row, plugin));
@@ -84,8 +109,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
         }
 
         public void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (mode.HasHA) {
                 method.Block.AssignRef(RowDotRef(row, plugin), StaticMethod(mode.Serde, "read", input));
@@ -93,7 +122,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
         }
 
         private void Apply(
-            bool enter, CodegenMethod method, ExprForgeCodegenSymbol symbols, ExprForge[] forges,
+            bool enter,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
             CodegenClassScope classScope)
         {
             CodegenExpression expression;

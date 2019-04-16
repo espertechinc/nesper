@@ -18,16 +18,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class EnumForgeNoOp : EnumForgeBase,
         EnumEval
     {
-        public EnumForgeNoOp(int streamCountIncoming) : base(streamCountIncoming)
+        public EnumForgeNoOp(int streamCountIncoming)
+            : base(streamCountIncoming)
         {
         }
 
         public override EnumEval EnumEvaluator => this;
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, 
-            ICollection<object> target, 
-            bool isNewData, 
+            EventBean[] eventsLambda,
+            ICollection<object> target,
+            bool isNewData,
             ExprEvaluatorContext context)
         {
             return target;
@@ -35,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
 
         public override CodegenExpression Codegen(
-            EnumForgeCodegenParams premade, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return premade.Enumcoll;
         }

@@ -62,43 +62,54 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         /// <param name="newData">to add</param>
         /// <param name="oldData">to remove</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
-        void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext);
+        void AddRemove(
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     Add events to table.
         /// </summary>
         /// <param name="events">to add</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
-        void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
+        void Add(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     Add event to table.
         /// </summary>
         /// <param name="event">to add</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
-        void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        void Add(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     Remove events from table.
         /// </summary>
         /// <param name="events">to remove</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
-        void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
+        void Remove(
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     Remove event from table.
         /// </summary>
         /// <param name="event">to remove</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
-        void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        void Remove(
+            EventBean @event,
+            ExprEvaluatorContext exprEvaluatorContext);
 
 #if INTENDED_HIDE
-        /// <summary>
-        ///     Returns an iterator over events in the table. Not required to be implemented for all indexes.
-        ///     Full table scans and providers that have easy access to an iterator may implement.
-        /// </summary>
-        /// <returns>table iterator</returns>
-        /// <throws>UnsupportedOperationException for operation not supported for this type of index</throws>
+/// <summary>
+///     Returns an iterator over events in the table. Not required to be implemented for all indexes.
+///     Full table scans and providers that have easy access to an iterator may implement.
+/// </summary>
+/// <returns>table iterator</returns>
+/// <throws>UnsupportedOperationException for operation not supported for this type of index</throws>
         IEnumerator<EventBean> GetEnumerator();
 #endif
 

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -45,12 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             NamedWindowConsumerId = namedWindowConsumerId;
             Filter = filter;
             this.optPropertyEvaluator = optPropertyEvaluator;
-            if (optPropertyEvaluator != null)
-            {
+            if (optPropertyEvaluator != null) {
                 optPropertyContainedBuffer = new FlushedEventBuffer();
             }
-            else
-            {
+            else {
                 optPropertyContainedBuffer = null;
             }
 
@@ -71,47 +68,42 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             ConsumerCallback.Stopped(this);
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
-            if (audit)
-            {
+            if (audit) {
                 exprEvaluatorContext.AuditProvider.Stream(newData, oldData, exprEvaluatorContext, eventType.Name);
             }
 
             // if we have a filter for the named window,
-            if (Filter != null)
-            {
+            if (Filter != null) {
                 var eventPerStream = new EventBean[1];
                 newData = PassFilter(newData, true, exprEvaluatorContext, eventPerStream);
                 oldData = PassFilter(oldData, false, exprEvaluatorContext, eventPerStream);
             }
 
-            if (optPropertyEvaluator != null)
-            {
+            if (optPropertyEvaluator != null) {
                 newData = GetUnpacked(newData);
                 oldData = GetUnpacked(oldData);
             }
 
-            if (newData != null || oldData != null)
-            {
+            if (newData != null || oldData != null) {
                 Child?.Update(newData, oldData);
             }
         }
 
         private EventBean[] GetUnpacked(EventBean[] data)
         {
-            if (data == null)
-            {
+            if (data == null) {
                 return null;
             }
 
-            if (data.Length == 0)
-            {
+            if (data.Length == 0) {
                 return data;
             }
 
-            for (var i = 0; i < data.Length; i++)
-            {
+            for (var i = 0; i < data.Length; i++) {
                 var unpacked = optPropertyEvaluator.GetProperty(data[i], exprEvaluatorContext);
                 optPropertyContainedBuffer.Add(unpacked);
             }
@@ -120,33 +112,30 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         }
 
         private EventBean[] PassFilter(
-            EventBean[] eventData, bool isNewData, ExprEvaluatorContext exprEvaluatorContext,
+            EventBean[] eventData,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext,
             EventBean[] eventPerStream)
         {
-            if (eventData == null || eventData.Length == 0)
-            {
+            if (eventData == null || eventData.Length == 0) {
                 return null;
             }
 
-            if (eventData.Length == 1)
-            {
+            if (eventData.Length == 1) {
                 eventPerStream[0] = eventData[0];
                 var result = Filter.Evaluate(eventPerStream, isNewData, exprEvaluatorContext);
                 return result != null && true.Equals(result) ? eventData : null;
             }
 
             OneEventCollection filtered = null;
-            foreach (var theEvent in eventData)
-            {
+            foreach (var theEvent in eventData) {
                 eventPerStream[0] = theEvent;
                 var result = Filter.Evaluate(eventPerStream, isNewData, exprEvaluatorContext);
-                if (result == null || false.Equals(result))
-                {
+                if (result == null || false.Equals(result)) {
                     continue;
                 }
 
-                if (filtered == null)
-                {
+                if (filtered == null) {
                     filtered = new OneEventCollection();
                 }
 
@@ -156,12 +145,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             return filtered?.ToArray();
         }
 
-        public override EventType EventType
-        {
-            get
-            {
-                if (optPropertyEvaluator != null)
-                {
+        public override EventType EventType {
+            get {
+                if (optPropertyEvaluator != null) {
                     return optPropertyEvaluator.FragmentEventType;
                 }
 
@@ -171,8 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            if (Filter == null)
-            {
+            if (Filter == null) {
                 return ConsumerCallback.GetEnumerator();
             }
 

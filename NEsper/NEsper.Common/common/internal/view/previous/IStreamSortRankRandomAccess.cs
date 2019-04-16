@@ -8,17 +8,20 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.previous
 {
-	/// <summary>
-	/// Provides random access into a rank-window's data.
-	/// </summary>
-	public interface IStreamSortRankRandomAccess : RandomAccessByIndex {
-	    void Refresh(OrderedDictionary<object, object> sortedEvents, int currentSize, int maxSize);
-	}
+    /// <summary>
+    /// Provides random access into a rank-window's data.
+    /// </summary>
+    public interface IStreamSortRankRandomAccess : RandomAccessByIndex
+    {
+        void Refresh(
+            OrderedDictionary<object, object> sortedEvents,
+            int currentSize,
+            int maxSize);
+    }
 } // end of namespace

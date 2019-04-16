@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
@@ -16,23 +15,25 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
-	/// <summary>
-	/// Starts and provides the stop method for EPL statements.
-	/// </summary>
-	public class FAFQueryMethodIUDInsertInto : FAFQueryMethodIUDBase {
+    /// <summary>
+    /// Starts and provides the stop method for EPL statements.
+    /// </summary>
+    public class FAFQueryMethodIUDInsertInto : FAFQueryMethodIUDBase
+    {
+        private SelectExprProcessor insertHelper;
 
-	    private SelectExprProcessor insertHelper;
+        public void SetInsertHelper(SelectExprProcessor insertHelper)
+        {
+            this.insertHelper = insertHelper;
+        }
 
-	    public void SetInsertHelper(SelectExprProcessor insertHelper) {
-	        this.insertHelper = insertHelper;
-	    }
+        protected override EventBean[] Execute(FireAndForgetInstance fireAndForgetProcessorInstance)
+        {
+            return fireAndForgetProcessorInstance.ProcessInsert(this);
+        }
 
-	    protected override EventBean[] Execute(FireAndForgetInstance fireAndForgetProcessorInstance) {
-	        return fireAndForgetProcessorInstance.ProcessInsert(this);
-	    }
-
-	    public SelectExprProcessor InsertHelper {
-	        get => insertHelper;
-	    }
-	}
+        public SelectExprProcessor InsertHelper {
+            get => insertHelper;
+        }
+    }
 } // end of namespace

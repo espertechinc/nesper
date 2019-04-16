@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -17,33 +16,37 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.firstlength
 {
-	/// <summary>
-	/// Factory for <seealso cref="FirstLengthWindowView" />.
-	/// </summary>
-	public class FirstLengthWindowViewFactory : DataWindowViewFactory {
-	    protected ExprEvaluator size;
-	    protected EventType eventType;
+    /// <summary>
+    /// Factory for <seealso cref="FirstLengthWindowView" />.
+    /// </summary>
+    public class FirstLengthWindowViewFactory : DataWindowViewFactory
+    {
+        protected ExprEvaluator size;
+        protected EventType eventType;
 
-	    public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services) {
-	    }
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
+        {
+        }
 
-	    public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext) {
-	        int size = ViewFactoryUtil.EvaluateSizeParam(ViewName, this.size, agentInstanceViewFactoryContext.AgentInstanceContext);
-	        return new FirstLengthWindowView(agentInstanceViewFactoryContext, this, size);
-	    }
+        public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
+        {
+            int size = ViewFactoryUtil.EvaluateSizeParam(ViewName, this.size, agentInstanceViewFactoryContext.AgentInstanceContext);
+            return new FirstLengthWindowView(agentInstanceViewFactoryContext, this, size);
+        }
 
-	    public EventType EventType {
-	        get => eventType;
-	        set { this.eventType = value; }
-	    }
+        public EventType EventType {
+            get => eventType;
+            set { this.eventType = value; }
+        }
 
-	    public ExprEvaluator Size {
-	        set { this.size = value; }
-	    }
+        public ExprEvaluator Size {
+            set { this.size = value; }
+        }
 
-	    public string ViewName
-	    {
-	        get => ViewEnum.FIRST_LENGTH_WINDOW.Name;
-	    }
-	}
+        public string ViewName {
+            get => ViewEnum.FIRST_LENGTH_WINDOW.Name;
+        }
+    }
 } // end of namespace

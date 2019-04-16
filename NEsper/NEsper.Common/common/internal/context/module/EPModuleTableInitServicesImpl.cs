@@ -13,7 +13,9 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public class EPModuleTableInitServicesImpl : EPModuleTableInitServices
     {
-        public EPModuleTableInitServicesImpl(TableCollector namedWindowCollector, EventTypeResolver eventTypeResolver)
+        public EPModuleTableInitServicesImpl(
+            TableCollector namedWindowCollector,
+            EventTypeResolver eventTypeResolver)
         {
             TableCollector = namedWindowCollector;
             EventTypeResolver = eventTypeResolver;

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.@join.analyze;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
@@ -35,26 +33,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var paramFirst = GetLongValue(parameters[0]);
             var paramSecond = GetLongValue(parameters[1]);
 
-            if (paramFirst > paramSecond)
-            {
+            if (paramFirst > paramSecond) {
                 second = paramFirst;
                 first = paramSecond;
             }
-            else
-            {
+            else {
                 first = paramFirst;
                 second = paramSecond;
             }
 
-            if (parameters.Count > 2)
-            {
-                if (!GetBooleanValue(parameters[2]))
-                {
+            if (parameters.Count > 2) {
+                if (!GetBooleanValue(parameters[2])) {
                     first++;
                 }
 
-                if (!GetBooleanValue(parameters[3]))
-                {
+                if (!GetBooleanValue(parameters[3])) {
                     second--;
                 }
             }
@@ -111,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public FilterExprAnalyzerAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DatetimeMethodEnum currentMethod,
+            DateTimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {
@@ -133,8 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (dateTimeEx == null)
-            {
+            if (dateTimeEx == null) {
                 return null;
             }
 
@@ -162,8 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         private long GetLongValue(ExprNode exprNode)
         {
             var value = exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
-            if (value == null)
-            {
+            if (value == null) {
                 throw new ExprValidationException("Date-time method 'between' requires non-null parameter values");
             }
 
@@ -175,12 +166,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         private bool GetBooleanValue(ExprNode exprNode)
         {
             var value = exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
-            if (value == null)
-            {
+            if (value == null) {
                 throw new ExprValidationException("Date-time method 'between' requires non-null parameter values");
             }
 
-            return (bool)value;
+            return (bool) value;
         }
 
         public object EvaluateInternal(long ts)

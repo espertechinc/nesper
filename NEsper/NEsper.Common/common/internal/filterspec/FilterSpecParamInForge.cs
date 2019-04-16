@@ -99,8 +99,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public object GetFilterValue(
-            MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext,
-            ImportServiceRuntime importService, Attribute[] annotations)
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            ImportServiceRuntime importService,
+            Attribute[] annotations)
         {
             // If the list of values consists of all-constants and no event properties, then use cached version
             if (_inListConstantsOnly != null) {
@@ -134,7 +136,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            if (!Arrays.DeepEquals(_listOfValues.ToArray(), other._listOfValues.ToArray())) {
+            if (!CompatExtensions.DeepEquals(_listOfValues.ToArray(), other._listOfValues.ToArray())) {
                 return false;
             }
 
@@ -149,7 +151,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public override CodegenMethod MakeCodegen(
-            CodegenClassScope classScope, CodegenMethodScope parent, SAIFFInitializeSymbolWEventType symbols)
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols)
         {
             var method = parent.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
             method.Block
@@ -201,7 +205,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             return method;
         }
 
-        private object[] GetFilterValues(MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext)
+        private object[] GetFilterValues(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!_hasCollMapOrArray) {
                 var constantsX = new object[_listOfValues.Count];
@@ -235,7 +241,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             {
             }
 
-            public void Add(ICollection<object> constants, object value)
+            public void Add(
+                ICollection<object> constants,
+                object value)
             {
                 var array = (Array) value;
                 var len = array.Length;
@@ -253,7 +261,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             {
             }
 
-            public void Add(ICollection<object> constants, object value)
+            public void Add(
+                ICollection<object> constants,
+                object value)
             {
                 var map = (IDictionary<string, object>) value;
                 constants.AddAll(map.Keys);
@@ -268,7 +278,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             {
             }
 
-            public void Add(ICollection<object> constants, object value)
+            public void Add(
+                ICollection<object> constants,
+                object value)
             {
                 var coll = (ICollection<object>) value;
                 constants.AddAll(coll);
@@ -283,7 +295,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             {
             }
 
-            public void Add(ICollection<object> constants, object value)
+            public void Add(
+                ICollection<object> constants,
+                object value)
             {
                 constants.Add(value);
             }

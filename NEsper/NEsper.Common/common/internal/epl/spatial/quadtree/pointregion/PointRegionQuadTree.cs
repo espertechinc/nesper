@@ -29,7 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
     /// </summary>
     public class PointRegionQuadTree<TL>
     {
-        public PointRegionQuadTree(int leafCapacity, int maxTreeHeight, PointRegionQuadTreeNode root)
+        public PointRegionQuadTree(
+            int leafCapacity,
+            int maxTreeHeight,
+            PointRegionQuadTreeNode root)
         {
             LeafCapacity = leafCapacity;
             MaxTreeHeight = maxTreeHeight;

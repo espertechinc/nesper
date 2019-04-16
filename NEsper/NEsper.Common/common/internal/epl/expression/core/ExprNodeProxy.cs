@@ -8,9 +8,7 @@
 
 using System;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
-
 using Castle.DynamicProxy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core

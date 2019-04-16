@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.view.core;
@@ -16,36 +15,40 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.derived
 {
-	/// <summary>
-	/// Factory for <seealso cref="SizeView" /> instances.
-	/// </summary>
-	public class SizeViewFactory : ViewFactory {
-	    protected StatViewAdditionalPropsEval additionalProps;
-	    protected EventType eventType;
+    /// <summary>
+    /// Factory for <seealso cref="SizeView" /> instances.
+    /// </summary>
+    public class SizeViewFactory : ViewFactory
+    {
+        protected StatViewAdditionalPropsEval additionalProps;
+        protected EventType eventType;
 
-	    public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services) {
-	        if (eventType == null) {
-	            throw new IllegalStateException("Event type not provided");
-	        }
-	    }
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
+        {
+            if (eventType == null) {
+                throw new IllegalStateException("Event type not provided");
+            }
+        }
 
-	    public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext) {
-	        return new SizeView(this, agentInstanceViewFactoryContext.AgentInstanceContext, eventType, additionalProps);
-	    }
+        public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
+        {
+            return new SizeView(this, agentInstanceViewFactoryContext.AgentInstanceContext, eventType, additionalProps);
+        }
 
-	    public EventType EventType {
-	        get => eventType;
-	        set { this.eventType = value; }
-	    }
+        public EventType EventType {
+            get => eventType;
+            set { this.eventType = value; }
+        }
 
-	    public StatViewAdditionalPropsEval AdditionalProps {
-	        get => additionalProps;
-	        set { this.additionalProps = value; }
-	    }
+        public StatViewAdditionalPropsEval AdditionalProps {
+            get => additionalProps;
+            set { this.additionalProps = value; }
+        }
 
-	    public string ViewName
-	    {
-	        get => ViewEnum.SIZE.Name;
-	    }
-	}
+        public string ViewName {
+            get => ViewEnum.SIZE.Name;
+        }
+    }
 } // end of namespace

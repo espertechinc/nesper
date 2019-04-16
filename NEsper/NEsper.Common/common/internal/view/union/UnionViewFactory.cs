@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.view.core;
@@ -17,49 +16,56 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.union
 {
-	/// <summary>
-	/// Factory for union-views.
-	/// </summary>
-	public class UnionViewFactory : ViewFactory, DataWindowViewFactory {
-	    protected EventType eventType;
-	    protected ViewFactory[] unioned;
-	    protected bool hasAsymetric;
+    /// <summary>
+    /// Factory for union-views.
+    /// </summary>
+    public class UnionViewFactory : ViewFactory,
+        DataWindowViewFactory
+    {
+        protected EventType eventType;
+        protected ViewFactory[] unioned;
+        protected bool hasAsymetric;
 
-	    public void Init(ViewFactoryContext viewFactoryContext, EPStatementInitServices services) {
-	        foreach (ViewFactory factory in unioned) {
-	            factory.Init(viewFactoryContext, services);
-	        }
-	    }
+        public void Init(
+            ViewFactoryContext viewFactoryContext,
+            EPStatementInitServices services)
+        {
+            foreach (ViewFactory factory in unioned) {
+                factory.Init(viewFactoryContext, services);
+            }
+        }
 
-	    public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext) {
-	        IList<View> views = new List<View>();
-	        foreach (ViewFactory viewFactory in unioned) {
-	            views.Add(viewFactory.MakeView(agentInstanceViewFactoryContext));
-	        }
-	        if (hasAsymetric) {
-	            return new UnionAsymetricView(agentInstanceViewFactoryContext, this, views);
-	        }
-	        return new UnionView(agentInstanceViewFactoryContext, this, views);
-	    }
+        public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
+        {
+            IList<View> views = new List<View>();
+            foreach (ViewFactory viewFactory in unioned) {
+                views.Add(viewFactory.MakeView(agentInstanceViewFactoryContext));
+            }
 
-	    public EventType EventType {
-	        get => eventType;
-	        set { this.eventType = value; }
-	    }
+            if (hasAsymetric) {
+                return new UnionAsymetricView(agentInstanceViewFactoryContext, this, views);
+            }
 
-	    public ViewFactory[] Unioned {
-	        get => unioned;
-	        set { this.unioned = value; }
-	    }
+            return new UnionView(agentInstanceViewFactoryContext, this, views);
+        }
 
-	    public bool HasAsymetric {
-	        get => hasAsymetric;
-	        set { this.hasAsymetric = value; }
-	    }
+        public EventType EventType {
+            get => eventType;
+            set { this.eventType = value; }
+        }
 
-	    public string ViewName
-	    {
-	        get => "union";
-	    }
-	}
+        public ViewFactory[] Unioned {
+            get => unioned;
+            set { this.unioned = value; }
+        }
+
+        public bool HasAsymetric {
+            get => hasAsymetric;
+            set { this.hasAsymetric = value; }
+        }
+
+        public string ViewName {
+            get => "union";
+        }
+    }
 } // end of namespace

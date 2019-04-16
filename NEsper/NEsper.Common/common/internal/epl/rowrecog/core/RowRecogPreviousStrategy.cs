@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.state;
 using com.espertech.esper.compat;
@@ -15,7 +14,8 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 {
-	public interface RowRecogPreviousStrategy {
-	    RowRecogStateRandomAccess GetAccess(ExprEvaluatorContext exprEvaluatorContext);
-	}
+    public interface RowRecogPreviousStrategy
+    {
+        RowRecogStateRandomAccess GetAccess(ExprEvaluatorContext exprEvaluatorContext);
+    }
 } // end of namespace

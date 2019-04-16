@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.datetime.calop;
 using com.espertech.esper.common.@internal.epl.datetime.reformatop;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
@@ -24,13 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public class DTLocalDateTimeOpsReformatEval : DTLocalEvaluatorCalopReformatBase
     {
-        public DTLocalDateTimeOpsReformatEval(IList<CalendarOp> calendarOps, ReformatOp reformatOp)
+        public DTLocalDateTimeOpsReformatEval(
+            IList<CalendarOp> calendarOps,
+            ReformatOp reformatOp)
             : base(calendarOps, reformatOp)
         {
         }
 
         public override object Evaluate(
-            object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             DateTime dateTime = (DateTime) target;
             dateTime = EvaluateCalOpsZDT(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -38,8 +41,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDateTimeOpsReformatForge forge, CodegenExpression inner, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            DTLocalDateTimeOpsReformatForge forge,
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                     forge.reformatForge.ReturnType, typeof(DTLocalDateTimeOpsReformatEval), codegenClassScope)

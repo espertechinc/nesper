@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             EventBean[] eventsPerStream,
             IDictionary<object, CompositeIndexEntry> parent,
             ExprEvaluatorContext context,
-            ICollection<object> keys, 
+            ICollection<object> keys,
             CompositeIndexQueryResultPostProcessor postProcessor);
 
         void SetNext(CompositeIndexQuery next);

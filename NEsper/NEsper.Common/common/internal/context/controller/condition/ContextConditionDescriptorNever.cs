@@ -8,21 +8,23 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
 {
-	public class ContextConditionDescriptorNever : ContextConditionDescriptor {
-	    public readonly static ContextConditionDescriptorNever INSTANCE = new ContextConditionDescriptorNever();
+    public class ContextConditionDescriptorNever : ContextConditionDescriptor
+    {
+        public readonly static ContextConditionDescriptorNever INSTANCE = new ContextConditionDescriptorNever();
 
-	    private ContextConditionDescriptorNever() {
-	    }
+        private ContextConditionDescriptorNever()
+        {
+        }
 
-	    public void AddFilterSpecActivatable(IList<FilterSpecActivatable> activatables) {
-	        // none
-	    }
-	}
+        public void AddFilterSpecActivatable(IList<FilterSpecActivatable> activatables)
+        {
+            // none
+        }
+    }
 } // end of namespace
