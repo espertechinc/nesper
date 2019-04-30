@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary> Ctor.</summary>
         /// <param name="message">is the error message
         /// </param>
-        public PlaceholderParseException(String message)
+        public PlaceholderParseException(string message)
             : base(message)
         {
         }

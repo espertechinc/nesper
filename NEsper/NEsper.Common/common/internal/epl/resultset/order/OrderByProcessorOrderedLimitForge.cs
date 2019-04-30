@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenClassScope classScope)
         {
             CodegenExpressionField rowLimitFactory = classScope.AddFieldUnshared(
-                true, typeof(RowLimitProcessorFactory), rowLimitProcessorFactoryForge.Make(classScope.PackageScope.InitMethod, classScope));
+                true, typeof(RowLimitProcessorFactory), rowLimitProcessorFactoryForge.Make(classScope.NamespaceScope.InitMethod, classScope));
             method.Block.DeclareVar(
                     typeof(RowLimitProcessor), REF_ROWLIMITPROCESSOR.Ref, ExprDotMethod(rowLimitFactory, "instantiate", REF_AGENTINSTANCECONTEXT))
                 .MethodReturn(CodegenExpressionBuilder.NewInstance(CLASSNAME_ORDERBYPROCESSOR, @Ref("o"), REF_ROWLIMITPROCESSOR));

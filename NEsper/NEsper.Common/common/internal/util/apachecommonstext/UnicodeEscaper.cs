@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.util.apachecommonstext
         /// <para />Constructs a <code>UnicodeEscaper</code> for all characters.
         /// </summary>
         public UnicodeEscaper()
-            : this(0, Int32.MaxValue, true)
+            : this(0, int.MaxValue, true)
         {
         }
 
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.util.apachecommonstext
         /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
         public static UnicodeEscaper Below(int codepoint)
         {
-            return OutsideOf(codepoint, Int32.MaxValue);
+            return OutsideOf(codepoint, int.MaxValue);
         }
 
         /// <summary>

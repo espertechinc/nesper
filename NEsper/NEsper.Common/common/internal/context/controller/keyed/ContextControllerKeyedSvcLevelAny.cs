@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -17,34 +18,34 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedSvcLevelAny : ContextControllerKeyedSvc
     {
-        private readonly IDictionary<ContextControllerKeyedCompositeKey, ContextControllerKeyedSvcEntry> keys =
+        private readonly IDictionary<ContextControllerKeyedCompositeKey, ContextControllerKeyedSvcEntry> _keys =
             new Dictionary<ContextControllerKeyedCompositeKey, ContextControllerKeyedSvcEntry>();
 
-        private readonly IDictionary<IntSeqKey, MgmtInfo> mgmt = new Dictionary<IntSeqKey, MgmtInfo>();
+        private readonly IDictionary<IntSeqKey, MgmtInfo> _mgmt = new Dictionary<IntSeqKey, MgmtInfo>();
 
         public void MgmtCreate(
             IntSeqKey controllerPath,
             object[] parentPartitionKeys)
         {
-            mgmt.Put(controllerPath, new MgmtInfo(0, null, parentPartitionKeys));
+            _mgmt.Put(controllerPath, new MgmtInfo(0, null, parentPartitionKeys));
         }
 
         public void MgmtSetFilters(
             IntSeqKey controllerPath,
             ContextControllerFilterEntry[] filterEntries)
         {
-            var entry = mgmt.Get(controllerPath);
+            var entry = _mgmt.Get(controllerPath);
             entry.FilterEntries = filterEntries;
         }
 
         public object[] MgmtGetPartitionKeys(IntSeqKey controllerPath)
         {
-            return mgmt.Get(controllerPath).parentPartitionKeys;
+            return _mgmt.Get(controllerPath).parentPartitionKeys;
         }
 
         public int MgmtGetIncSubpath(IntSeqKey controllerPath)
         {
-            var entry = mgmt.Get(controllerPath);
+            var entry = _mgmt.Get(controllerPath);
             var subpathId = entry.currentSubpathId;
             entry.currentSubpathId++;
             return subpathId;
@@ -52,14 +53,14 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public ContextControllerFilterEntry[] MgmtGetFilters(IntSeqKey controllerPath)
         {
-            return mgmt.Get(controllerPath).filterEntries;
+            return _mgmt.Get(controllerPath).filterEntries;
         }
 
         public bool KeyHasSeen(
             IntSeqKey controllerPath,
             object key)
         {
-            return keys.ContainsKey(new ContextControllerKeyedCompositeKey(controllerPath, key));
+            return _keys.ContainsKey(new ContextControllerKeyedCompositeKey(controllerPath, key));
         }
 
         public void KeyAdd(
@@ -68,7 +69,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             int subpathIdOrCPId,
             ContextControllerConditionNonHA terminationCondition)
         {
-            keys.Put(
+            _keys.Put(
                 new ContextControllerKeyedCompositeKey(controllerPath, key),
                 new ContextControllerKeyedSvcEntry(subpathIdOrCPId, terminationCondition));
         }
@@ -77,13 +78,13 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             object key)
         {
-            return keys.Delete(new ContextControllerKeyedCompositeKey(controllerPath, key));
+            return _keys.Delete(new ContextControllerKeyedCompositeKey(controllerPath, key));
         }
 
         public IList<ContextControllerConditionNonHA> KeyGetTermConditions(IntSeqKey controllerPath)
         {
             IList<ContextControllerConditionNonHA> conditions = new List<ContextControllerConditionNonHA>();
-            foreach (var entry in keys) {
+            foreach (var entry in _keys) {
                 if (controllerPath.Equals(entry.Key.Path)) {
                     conditions.Add(entry.Value.TerminationCondition);
                 }
@@ -96,7 +97,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             BiConsumer<object, int> keyAndSubpathOrCPId)
         {
-            foreach (var entry in keys) {
+            foreach (var entry in _keys) {
                 if (controllerPath.Equals(entry.Key.Path)) {
                     keyAndSubpathOrCPId.Invoke(entry.Key.Key, entry.Value.SubpathOrCPId);
                 }
@@ -107,29 +108,29 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             object key)
         {
-            var entry = keys.Get(new ContextControllerKeyedCompositeKey(controllerPath, key));
+            var entry = _keys.Get(new ContextControllerKeyedCompositeKey(controllerPath, key));
             return entry == null ? -1 : entry.SubpathOrCPId;
         }
 
         public ICollection<int> Deactivate(IntSeqKey controllerPath)
         {
-            IList<int> ids = new List<int>();
-            var iterator = keys.GetEnumerator();
-            while (iterator.MoveNext()) {
-                KeyValuePair<ContextControllerKeyedCompositeKey, ContextControllerKeyedSvcEntry> entry = iterator.Next();
-                if (controllerPath.Equals(entry.Key.Path)) {
-                    ids.Add(entry.Value.SubpathOrCPId);
-                    iterator.Remove();
-                }
-            }
+            var entriesToRemove = _keys
+                .Where(entry => controllerPath.Equals(entry.Key.Path))
+                .ToList();
+
+            var ids = entriesToRemove
+                .Select(entry => entry.Value.SubpathOrCPId)
+                .ToList();
+
+            entriesToRemove.ForEach(entry => _keys.Remove(entry.Key));
 
             return ids;
         }
 
         public void Destroy()
         {
-            mgmt.Clear();
-            keys.Clear();
+            _mgmt.Clear();
+            _keys.Clear();
         }
 
         internal class MgmtInfo

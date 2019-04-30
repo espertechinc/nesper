@@ -141,14 +141,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     beanClass = methodReflection.ReturnType.GetElementType();
                 }
 
-                isCollection = TypeHelper.IsImplementsInterface(beanClass, typeof(ICollection<object>));
+                isCollection = GenericExtensions.IsGenericCollection(beanClass);
                 Type collectionClass = null;
                 if (isCollection) {
                     collectionClass = TypeHelper.GetGenericReturnType(methodReflection, true);
                     beanClass = collectionClass;
                 }
 
-                isIterator = TypeHelper.IsImplementsInterface(beanClass, typeof(IEnumerator));
+                isIterator = GenericExtensions.IsGenericEnumerator(beanClass);
                 Type iteratorClass = null;
                 if (isIterator) {
                     iteratorClass = TypeHelper.GetGenericReturnType(methodReflection, true);
@@ -157,14 +157,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
                 // If the method returns a Map, look up the map type
                 string mapTypeName = null;
-                if (TypeHelper.IsImplementsInterface(
-                        methodReflection.ReturnType, typeof(IDictionary<object, object>)) ||
-                    methodReflection.ReturnType.IsArray && TypeHelper.IsImplementsInterface(
-                        methodReflection.ReturnType.GetElementType(), typeof(IDictionary<object, object>)) ||
-                    isCollection && TypeHelper.IsImplementsInterface(
-                        collectionClass, typeof(IDictionary<object, object>)) ||
-                    isIterator && TypeHelper.IsImplementsInterface(
-                        iteratorClass, typeof(IDictionary<object, object>))) {
+                if (GenericExtensions.IsGenericDictionary(methodReflection.ReturnType) ||
+                    methodReflection.ReturnType.IsArray && 
+                    GenericExtensions.IsGenericDictionary(methodReflection.ReturnType.GetElementType()) ||
+                    isCollection && GenericExtensions.IsGenericDictionary(collectionClass) ||
+                    isIterator && GenericExtensions.IsGenericDictionary(iteratorClass)) {
                     MethodMetadataDesc metadata;
                     if (variableMetaData != null) {
                         metadata = GetCheckMetadataVariable(

@@ -18,13 +18,12 @@ using com.espertech.esper.compat.logging;
 namespace com.espertech.esper.common.@internal.context.util
 {
     /// <summary>
-    /// View for use with pre-processing statement such as "Update istream" for indicating previous and current event.
+    ///     View for use with pre-processing statement such as "Update istream" for indicating previous and current event.
     /// </summary>
     public class InternalRoutePreprocessView : ViewSupport
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly EventType _eventType;
-        private readonly StatementResultService _statementResultService;
 
         /// <summary>Ctor. </summary>
         /// <param name="eventType">the type of event to indicator</param>
@@ -34,23 +33,27 @@ namespace com.espertech.esper.common.@internal.context.util
             StatementResultService statementResultService)
         {
             _eventType = eventType;
-            _statementResultService = statementResultService;
+            StatementResultService = statementResultService;
         }
+
+        public override EventType EventType => _eventType;
+
+        /// <summary>Returns true if a subscriber or listener is attached. </summary>
+        /// <value>indicator</value>
+        public bool IsIndicate => StatementResultService.IsMakeNatural || StatementResultService.IsMakeSynthetic;
+
+        public StatementResultService StatementResultService { get; }
 
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
         {
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
+            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".Update Received Update, " +
-                    "  newData.Length==" + ((newData == null) ? 0 : newData.Length) +
-                    "  oldData.Length==" + ((oldData == null) ? 0 : oldData.Length));
+                    "  newData.Length==" + (newData == null ? 0 : newData.Length) +
+                    "  oldData.Length==" + (oldData == null ? 0 : oldData.Length));
             }
-        }
-
-        public override EventType EventType {
-            get { return _eventType; }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
@@ -58,13 +61,7 @@ namespace com.espertech.esper.common.@internal.context.util
             return CollectionUtil.NULL_EVENT_ITERATOR;
         }
 
-        /// <summary>Returns true if a subscriber or listener is attached. </summary>
-        /// <value>indicator</value>
-        public bool IsIndicate {
-            get { return (_statementResultService.IsMakeNatural || _statementResultService.IsMakeSynthetic); }
-        }
-
-        /// <summary>Indicate an modifed event and its previous version. </summary>
+        /// <summary>Indicate an modified event and its previous version. </summary>
         /// <param name="newEvent">modified event</param>
         /// <param name="oldEvent">previous version event</param>
         public void Indicate(
@@ -72,22 +69,18 @@ namespace com.espertech.esper.common.@internal.context.util
             EventBean oldEvent)
         {
             try {
-                if (_statementResultService.IsMakeNatural) {
-                    var natural = new NaturalEventBean(_eventType, new Object[] {newEvent.Underlying}, newEvent);
-                    var naturalOld = new NaturalEventBean(_eventType, new Object[] {oldEvent.Underlying}, oldEvent);
-                    UpdateChildren(new NaturalEventBean[] {natural}, new NaturalEventBean[] {naturalOld});
+                if (StatementResultService.IsMakeNatural) {
+                    var natural = new NaturalEventBean(_eventType, new[] {newEvent.Underlying}, newEvent);
+                    var naturalOld = new NaturalEventBean(_eventType, new[] {oldEvent.Underlying}, oldEvent);
+                    child.Update(new[] {natural}, new[] {naturalOld});
                 }
                 else {
-                    UpdateChildren(new EventBean[] {newEvent}, new EventBean[] {oldEvent});
+                    child.Update(new[] {newEvent}, new[] {oldEvent});
                 }
             }
             catch (Exception ex) {
                 Log.Error("Unexpected error updating child view: " + ex.Message);
             }
-        }
-
-        public StatementResultService StatementResultService {
-            get { return _statementResultService; }
         }
     }
 }

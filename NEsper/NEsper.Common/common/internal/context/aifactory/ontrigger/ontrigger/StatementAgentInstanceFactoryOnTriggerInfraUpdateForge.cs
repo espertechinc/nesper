@@ -59,12 +59,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             CodegenClassScope classScope)
         {
             if (namedWindow != null) {
-                method.Block.ExprDotMethod(
-                    saiff, "setUpdateHelperNamedWindow", updateHelperForge.MakeWCopy(method, classScope));
+                method.Block.SetProperty(saiff, "UpdateHelperNamedWindow", updateHelperForge.MakeWCopy(method, classScope));
             }
             else {
                 method.Block
-                    .ExprDotMethod(saiff, "setUpdateHelperTable", updateHelperForge.MakeNoCopy(method, classScope));
+                    .SetProperty(saiff, "UpdateHelperTable", updateHelperForge.MakeNoCopy(method, classScope));
             }
         }
     }

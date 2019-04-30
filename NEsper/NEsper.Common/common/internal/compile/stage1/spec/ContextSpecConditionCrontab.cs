@@ -55,11 +55,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .DeclareVar(
                     typeof(ContextConditionDescriptorCrontab), "condition",
                     NewInstance(typeof(ContextConditionDescriptorCrontab)))
-                .ExprDotMethod(
-                    Ref("condition"), "setEvaluators",
+                .SetProperty(Ref("condition"), "Evaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(forges, method, GetType(), classScope))
-                .ExprDotMethod(Ref("condition"), "setScheduleCallbackId", Constant(ScheduleCallbackId))
-                .ExprDotMethod(Ref("condition"), "setImmediate", Constant(IsImmediate))
+                .SetProperty(Ref("condition"), "ScheduleCallbackId", Constant(ScheduleCallbackId))
+                .SetProperty(Ref("condition"), "Immediate", Constant(IsImmediate))
                 .MethodReturn(Ref("condition"));
             return LocalMethod(method);
         }

@@ -50,20 +50,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 .DeclareVar(
                     typeof(EventAdvancedIndexProvisionRuntime), "desc",
                     NewInstance(typeof(EventAdvancedIndexProvisionRuntime)))
-                .ExprDotMethod(Ref("desc"), "setIndexExpressionTexts", Constant(indexExpressions))
-                .ExprDotMethod(Ref("desc"), "setIndexProperties", Constant(indexProperties))
-                .ExprDotMethod(
-                    Ref("desc"), "setIndexExpressionsAllProps",
+                .SetProperty(Ref("desc"), "IndexExpressionTexts", Constant(indexExpressions))
+                .SetProperty(Ref("desc"), "IndexProperties", Constant(indexProperties))
+                .SetProperty(Ref("desc"), "IndexExpressionsAllProps",
                     Constant(IsExpressionsAllPropsOnly(IndexDesc.IndexedExpressions)))
-                .ExprDotMethod(Ref("desc"), "setFactory", Factory.CodegenMake(parent, classScope))
-                .ExprDotMethod(
-                    Ref("desc"), "setParameterExpressionTexts",
+                .SetProperty(Ref("desc"), "Factory", Factory.CodegenMake(parent, classScope))
+                .SetProperty(Ref("desc"), "ParameterExpressionTexts",
                     Constant(ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(Parameters)))
-                .ExprDotMethod(
-                    Ref("desc"), "setParameterEvaluators",
+                .SetProperty(Ref("desc"), "ParameterEvaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(Parameters, parent, GetType(), classScope))
-                .ExprDotMethod(Ref("desc"), "setConfigStatement", ConfigStatement.CodegenMake(parent, classScope))
-                .ExprDotMethod(Ref("desc"), "setIndexTypeName", Constant(IndexDesc.IndexTypeName))
+                .SetProperty(Ref("desc"), "ConfigStatement", ConfigStatement.CodegenMake(parent, classScope))
+                .SetProperty(Ref("desc"), "IndexTypeName", Constant(IndexDesc.IndexTypeName))
                 .MethodReturn(Ref("desc"));
             return LocalMethod(method);
         }

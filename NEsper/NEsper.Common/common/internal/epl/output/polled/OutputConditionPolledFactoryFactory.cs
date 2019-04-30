@@ -10,16 +10,13 @@ using System;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
     /// <summary>
-    /// Factory for output condition instances that are polled/queried only.
+    ///     Factory for output condition instances that are polled/queried only.
     /// </summary>
     public class OutputConditionPolledFactoryFactory
     {
@@ -29,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             StatementCompileTimeServices compileTimeServices)
         {
             if (outputLimitSpec == null) {
-                throw new NullPointerException("Output condition requires a non-null callback");
+                throw new ArgumentNullException("Output condition requires a non-null callback");
             }
 
             // check variable use
@@ -44,25 +41,26 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             if (outputLimitSpec.RateType == OutputLimitRateType.CRONTAB) {
                 return new OutputConditionPolledCrontabFactoryForge(outputLimitSpec.CrontabAtSchedule, statementRawInfo, compileTimeServices);
             }
-            else if (outputLimitSpec.RateType == OutputLimitRateType.WHEN_EXPRESSION) {
+
+            if (outputLimitSpec.RateType == OutputLimitRateType.WHEN_EXPRESSION) {
                 return new OutputConditionPolledExpressionFactoryForge(
                     outputLimitSpec.WhenExpressionNode, outputLimitSpec.ThenExpressions, compileTimeServices);
             }
-            else if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS) {
-                int rate = -1;
+
+            if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS) {
+                var rate = -1;
                 if (outputLimitSpec.Rate != null) {
                     rate = outputLimitSpec.Rate.IntValue();
                 }
 
                 return new OutputConditionPolledCountFactoryForge(rate, variableMetaData);
             }
-            else {
-                if (variableMetaData != null && (!TypeHelper.IsNumeric(variableMetaData.Type))) {
-                    throw new ArgumentException("Variable named '" + outputLimitSpec.VariableName + "' must be of numeric type");
-                }
 
-                return new OutputConditionPolledTimeFactoryForge(outputLimitSpec.TimePeriodExpr);
+            if (variableMetaData != null && !variableMetaData.Type.IsNumeric()) {
+                throw new ArgumentException("Variable named '" + outputLimitSpec.VariableName + "' must be of numeric type");
             }
+
+            return new OutputConditionPolledTimeFactoryForge(outputLimitSpec.TimePeriodExpr);
         }
     }
 } // end of namespace

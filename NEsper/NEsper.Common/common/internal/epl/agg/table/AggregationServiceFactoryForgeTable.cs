@@ -50,11 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             CodegenMethod method = parent.MakeChild(typeof(AggregationServiceFactoryTable), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(AggregationServiceFactoryTable), "factory", NewInstance(typeof(AggregationServiceFactoryTable)))
-                .ExprDotMethod(@Ref("factory"), "setTable", TableDeployTimeResolver.MakeResolveTable(metadata, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(@Ref("factory"), "setMethodPairs", TableColumnMethodPairForge.MakeArray(methodPairs, method, symbols, classScope))
-                .ExprDotMethod(@Ref("factory"), "setAccessColumnsZeroOffset", Constant(accessColumnsZeroOffset))
-                .ExprDotMethod(@Ref("factory"), "setAccessAgents", AggregationAgentUtil.MakeArray(accessAgents, method, symbols, classScope))
-                .ExprDotMethod(@Ref("factory"), "setGroupByRollupDesc", groupByRollupDesc == null ? ConstantNull() : groupByRollupDesc.Codegen())
+                .SetProperty(Ref("factory"), "Table", TableDeployTimeResolver.MakeResolveTable(metadata, symbols.GetAddInitSvc(method)))
+                .SetProperty(Ref("factory"), "MethodPairs", TableColumnMethodPairForge.MakeArray(methodPairs, method, symbols, classScope))
+                .SetProperty(Ref("factory"), "AccessColumnsZeroOffset", Constant(accessColumnsZeroOffset))
+                .SetProperty(Ref("factory"), "AccessAgents", AggregationAgentUtil.MakeArray(accessAgents, method, symbols, classScope))
+                .SetProperty(Ref("factory"), "GroupByRollupDesc", groupByRollupDesc == null ? ConstantNull() : groupByRollupDesc.Codegen())
                 .MethodReturn(@Ref("factory"));
             return LocalMethod(method);
         }

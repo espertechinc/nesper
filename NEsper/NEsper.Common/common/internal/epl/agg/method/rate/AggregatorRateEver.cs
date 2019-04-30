@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         {
             method.Block
                 .Apply(ReadBoolean(row, hasLeave, input))
-                .AssignRef(RowDotRef(row, points), StaticMethod(GetType(), "readPoints", input));
+                .AssignRef(RowDotRef(row, points), StaticMethod(GetType(), "ReadPoints", input));
         }
 
         /// <summary>
@@ -160,12 +160,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             Deque<long> points)
         {
             output.WriteInt(points.Count);
-            foreach (long value in points) {
-                output.WriteLong(value);
+            foreach (long value in points) 
+                {
+                    output.WriteLong(value);
+                }
             }
-        }
 
-        protected void Apply(
+             protected void Apply(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
@@ -188,7 +189,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         /// <throws>IOException io error</throws>
         public static Deque<long> ReadPoints(DataInput input)
         {
-            ArrayDeque<long> points = new ArrayDeque<long>();
+            var points = new ArrayDeque<long>();
             var size = input.ReadInt();
             for (var i = 0; i < size; i++) {
                 points.Add(input.ReadLong());
@@ -215,7 +216,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
                     long first = points.First;
                     var delta = timestamp - first;
                     if (delta >= interval) {
-                        points.Remove();
+                        points.RemoveFirst();
+                        //points.Remove();
                         hasLeave = true;
                     }
                     else {

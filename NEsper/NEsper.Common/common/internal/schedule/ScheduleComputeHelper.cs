@@ -218,11 +218,11 @@ namespace com.espertech.esper.common.@internal.schedule
             DateTimeEx after,
             ScheduleCalendar result)
         {
-            ICollection<Int32> daysOfMonthSet = spec.UnitValues.Get(ScheduleUnit.DAYS_OF_MONTH);
-            ICollection<Int32> daysOfWeekSet = spec.UnitValues.Get(ScheduleUnit.DAYS_OF_WEEK);
-            ICollection<Int32> secondsSet = spec.UnitValues.Get(ScheduleUnit.SECONDS);
-            ICollection<Int32> minutesSet = spec.UnitValues.Get(ScheduleUnit.MINUTES);
-            ICollection<Int32> hoursSet = spec.UnitValues.Get(ScheduleUnit.HOURS);
+            ICollection<int> daysOfMonthSet = spec.UnitValues.Get(ScheduleUnit.DAYS_OF_MONTH);
+            ICollection<int> daysOfWeekSet = spec.UnitValues.Get(ScheduleUnit.DAYS_OF_WEEK);
+            ICollection<int> secondsSet = spec.UnitValues.Get(ScheduleUnit.SECONDS);
+            ICollection<int> minutesSet = spec.UnitValues.Get(ScheduleUnit.MINUTES);
+            ICollection<int> hoursSet = spec.UnitValues.Get(ScheduleUnit.HOURS);
 
             int dayOfMonth;
 

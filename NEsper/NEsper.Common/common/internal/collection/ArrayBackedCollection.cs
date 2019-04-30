@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
 
-        public Object[] ToArray()
+        public object[] ToArray()
         {
             throw new UnsupportedOperationException();
         }

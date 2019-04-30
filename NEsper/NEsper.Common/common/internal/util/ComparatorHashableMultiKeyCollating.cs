@@ -8,7 +8,10 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 
 namespace com.espertech.esper.common.@internal.util
@@ -20,58 +23,66 @@ namespace com.espertech.esper.common.@internal.util
     [Serializable]
     public sealed class ComparatorHashableMultiKeyCollating : IComparer<HashableMultiKey>
     {
-        private readonly bool[] isDescendingValues;
-        private readonly bool[] stringTypedValue;
-        [NonSerialized] private readonly IComparer<object> collator = null;
+        [NonSerialized] private readonly IComparer<object> _collator;
+        private readonly bool[] _isDescendingValues;
+        private readonly bool[] _stringTypedValue;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="isDescendingValues">
-        ///     each value is true if the corresponding (same index)entry in the multi-keys is to be sorted in descending order.
-        ///     The multikeys
-        ///     to be compared must have the same number of values as this array.
+        ///     each value is true if the corresponding (same index) entry in the multi-keys is
+        ///     to be sorted in descending order. The multikeys to be compared must have the same
+        ///     number of values as this array.
         /// </param>
         /// <param name="stringTypeValues">true for each string-typed column</param>
         public ComparatorHashableMultiKeyCollating(
             bool[] isDescendingValues,
             bool[] stringTypeValues)
         {
-            this.isDescendingValues = isDescendingValues;
-            stringTypedValue = stringTypeValues;
-            collator = Collator.Instance;
+            _isDescendingValues = isDescendingValues;
+            _stringTypedValue = stringTypeValues;
+            _collator = Comparers.Collating();
         }
 
         public int Compare(
             HashableMultiKey firstValues,
             HashableMultiKey secondValues)
         {
-            if (firstValues.Count != isDescendingValues.Length || secondValues.Count != isDescendingValues.Length) {
+            if (firstValues.Count != _isDescendingValues.Length ||
+                secondValues.Count != _isDescendingValues.Length)
+            {
                 throw new ArgumentException("Incompatible size MultiKey sizes for comparison");
             }
 
-            for (var i = 0; i < firstValues.Count; i++) {
+            for (var i = 0; i < firstValues.Count; i++)
+            {
                 var valueOne = firstValues.Get(i);
                 var valueTwo = secondValues.Get(i);
-                var isDescending = isDescendingValues[i];
+                var isDescending = _isDescendingValues[i];
 
-                if (!stringTypedValue[i]) {
+                if (!_stringTypedValue[i])
+                {
                     var comparisonResult = CompareValues(valueOne, valueTwo, isDescending);
-                    if (comparisonResult != 0) {
+                    if (comparisonResult != 0)
+                    {
                         return comparisonResult;
                     }
                 }
-                else {
-                    var comparisonResult = CollectionUtil.CompareValuesCollated(
-                        valueOne, valueTwo, isDescending, collator);
-                    if (comparisonResult != 0) {
+                else
+                {
+                    var comparisonResult = CompareValuesCollated(
+                        valueOne, valueTwo, isDescending, _collator);
+                    if (comparisonResult != 0)
+                    {
                         return comparisonResult;
                     }
                 }
             }
 
             // Make the comparator compatible with equals
-            if (!firstValues.Equals(secondValues)) {
+            if (!firstValues.Equals(secondValues))
+            {
                 return -1;
             }
 

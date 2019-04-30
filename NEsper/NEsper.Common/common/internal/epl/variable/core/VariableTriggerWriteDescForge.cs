@@ -53,15 +53,12 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             var method = parent.MakeChild(typeof(VariableTriggerWriteDesc), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(VariableTriggerWriteDesc), "desc", NewInstance(typeof(VariableTriggerWriteDesc)))
-                .ExprDotMethod(
-                    Ref("desc"), "setType", EventTypeUtility.ResolveTypeCodegen(Type, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("desc"), "setVariableName", Constant(VariableName))
-                .ExprDotMethod(
-                    Ref("desc"), "setWriter",
+                .SetProperty(Ref("desc"), "Type", EventTypeUtility.ResolveTypeCodegen(Type, symbols.GetAddInitSvc(method)))
+                .SetProperty(Ref("desc"), "VariableName", Constant(VariableName))
+                .SetProperty(Ref("desc"), "Writer",
                     EventTypeUtility.CodegenWriter(
                         Type, getterType, evaluationType, Writer, method, GetType(), classScope))
-                .ExprDotMethod(
-                    Ref("desc"), "setGetter",
+                .SetProperty(Ref("desc"), "Getter",
                     EventTypeUtility.CodegenGetterWCoerce(getter, getterType, null, method, GetType(), classScope))
                 .MethodReturn(Ref("desc"));
             return LocalMethod(method);

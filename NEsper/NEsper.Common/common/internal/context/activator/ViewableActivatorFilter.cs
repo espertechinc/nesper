@@ -85,8 +85,6 @@ namespace com.espertech.esper.common.@internal.context.activator
             FilterHandleCallback filterCallback;
             if (filterSpec.OptionalPropertyEvaluator == null) {
                 filterCallback = new ProxyFilterHandleCallback {
-                    ProcStatementId = () => statementId,
-
                     ProcMatchFound = (
                         theEvent,
                         allStmtMatches) => theStream.Insert(theEvent),
@@ -96,8 +94,6 @@ namespace com.espertech.esper.common.@internal.context.activator
             }
             else {
                 filterCallback = new ProxyFilterHandleCallback {
-                    ProcStatementId = () => statementId,
-
                     ProcMatchFound = (
                         theEvent,
                         allStmtMatches) => {

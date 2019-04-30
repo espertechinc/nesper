@@ -37,12 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             method.Block
                 .DeclareVar(
                     typeof(QueryGraphValueEntryCustomKey), "key", NewInstance(typeof(QueryGraphValueEntryCustomKey)))
-                .ExprDotMethod(Ref("key"), "setOperationName", Constant(OperationName))
-                .ExprDotMethod(
-                    Ref("key"), "setExprNodes",
+                .SetProperty(Ref("key"), "OperationName", Constant(OperationName))
+                .SetProperty(Ref("key"), "ExprNodes",
                     ExprNodeUtilityCodegen.CodegenEvaluators(ExprNodes, method, GetType(), classScope))
-                .ExprDotMethod(
-                    Ref("key"), "setExpressions",
+                .SetProperty(Ref("key"), "Expressions",
                     Constant(ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(ExprNodes)))
                 .MethodReturn(Ref("key"));
             return LocalMethod(method);

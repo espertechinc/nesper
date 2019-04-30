@@ -72,22 +72,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             var method = parent.MakeChild(typeof(OnSplitItemEval), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(OnSplitItemEval), "eval", NewInstance(typeof(OnSplitItemEval)))
-                .ExprDotMethod(
-                    Ref("eval"), "setWhereClause",
+                .SetProperty(Ref("eval"), "WhereClause",
                     WhereClause == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(WhereClause.Forge, method, GetType(), classScope))
-                .ExprDotMethod(Ref("eval"), "setNamedWindowInsert", Constant(IsNamedWindowInsert))
-                .ExprDotMethod(
-                    Ref("eval"), "setInsertIntoTable",
+                .SetProperty(Ref("eval"), "NamedWindowInsert", Constant(IsNamedWindowInsert))
+                .SetProperty(Ref("eval"), "InsertIntoTable",
                     InsertIntoTable == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(InsertIntoTable, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    Ref("eval"), "setRspFactoryProvider",
+                .SetProperty(Ref("eval"), "RspFactoryProvider",
                     NewInstance(resultSetProcessorClassName, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    Ref("eval"), "setPropertyEvaluator",
+                .SetProperty(Ref("eval"), "PropertyEvaluator",
                     PropertyEvaluator == null ? ConstantNull() : PropertyEvaluator.Make(method, symbols, classScope))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);

@@ -114,8 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             bool newData,
             ExprEvaluatorContext context)
         {
-            var cal = DateTimeEx.GetInstance(TimeZone);
-            var remainder = TimeAbacus.DateTimeSet(currentTime, cal);
+            var dtx = DateTimeEx.GetInstance(TimeZone);
+            var remainder = TimeAbacus.DateTimeSet(currentTime, dtx);
 
             var usec = 0;
             for (var i = 0; i < Adders.Length; i++) {
@@ -124,11 +124,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
                     usec = value;
                 }
                 else {
-                    Adders[i].Add(cal, factor * value);
+                    Adders[i].Add(dtx, factor * value);
                 }
             }
 
-            var result = TimeAbacus.DateTimeGet(cal, remainder);
+            var result = TimeAbacus.DateTimeGet(dtx, remainder);
             if (IndexMicroseconds != -1) {
                 result += factor * usec;
             }

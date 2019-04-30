@@ -12,12 +12,12 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class UuidGenerator
     {
-        public static String Generate()
+        public static string Generate()
         {
             return Guid.NewGuid().ToString();
         }
 
-        public static String GenerateNoDash()
+        public static string GenerateNoDash()
         {
             return Guid.NewGuid().ToString().Replace("-", "");
         }

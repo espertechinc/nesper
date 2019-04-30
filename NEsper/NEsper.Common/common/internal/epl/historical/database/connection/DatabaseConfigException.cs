@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         /// <summary> Ctor.</summary>
         /// <param name="msg">message
         /// </param>
-        public DatabaseConfigException(String msg)
+        public DatabaseConfigException(string msg)
             : base(msg)
         {
         }
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         /// <param name="cause">cause is the inner exception
         /// </param>
         public DatabaseConfigException(
-            String message,
+            string message,
             System.Exception cause)
             : base(message, cause)
         {

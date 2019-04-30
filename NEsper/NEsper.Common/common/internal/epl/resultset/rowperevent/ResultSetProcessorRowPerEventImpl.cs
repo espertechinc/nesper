@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 }
             }
 
-            method.Block.MethodReturn(NewInstance(typeof(ArrayEventIterator), Ref("result")));
+            method.Block.MethodReturn(NewInstance(typeof(ArrayEventEnumerator), Ref("result")));
         }
 
         public static void ClearMethodCodegen(CodegenMethod method)

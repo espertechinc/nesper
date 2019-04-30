@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.client
     {
         /// <summary>Ctor. </summary>
         /// <param name="message">supplies exception details</param>
-        public EventTypeException(String message)
+        public EventTypeException(string message)
             : base(message)
         {
         }

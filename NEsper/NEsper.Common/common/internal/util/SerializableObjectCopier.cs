@@ -30,9 +30,9 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         /// <throws>IOException if the streams returned an exception</throws>
         /// <throws>ClassNotFoundException if the de-serialize fails</throws>
-        public static Object Copy(
+        public static object Copy(
             IContainer container,
-            Object orig)
+            object orig)
         {
             // Create the formatter
             var formatter = new BinaryFormatter();

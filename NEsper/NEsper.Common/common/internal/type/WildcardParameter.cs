@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.type
             int min,
             int max)
         {
-            ICollection<int> result = new HashSet<Int32>();
+            ICollection<int> result = new HashSet<int>();
             for (int i = min; i <= max; i++) {
                 result.Add(i);
             }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.type
             return true;
         }
 
-        public String Formatted()
+        public string Formatted()
         {
             return "*";
         }

@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public DatabaseConfigServiceCompileTime DatabaseConfigServiceCompileTime { get; }
 
-        public ImportServiceCompileTime ImportServiceCompileTime { get; private set; }
+        public ImportServiceCompileTime ImportServiceCompileTime { get; set; }
 
         public ExprDeclaredCompileTimeRegistry ExprDeclaredCompileTimeRegistry { get; }
 
@@ -186,12 +186,6 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public bool IsInstrumented()
         {
             return Configuration.Compiler.ByteCode.IsInstrumented;
-        }
-
-        public void SetClasspathImportServiceCompileTime(
-            ImportServiceCompileTime importServiceCompileTime)
-        {
-            ImportServiceCompileTime = importServiceCompileTime;
         }
     }
 } // end of namespace

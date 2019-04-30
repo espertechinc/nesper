@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
                 if (forge.IsNeedsGroupByKeys) {
                     forEach.ExprDotMethod(
-                        REF_AGGREGATIONSVC, "setCurrentAccess", ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
+                        REF_AGGREGATIONSVC, "SetCurrentAccess", ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
                         ExprDotMethod(REF_EXPREVALCONTEXT, "getAgentInstanceId"), ConstantNull());
                 }
 
@@ -259,7 +259,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
                 if (forge.IsNeedsGroupByKeys) {
                     forEach.ExprDotMethod(
-                        REF_AGGREGATIONSVC, "setCurrentAccess", ExprDotMethod(Ref("rollup"), "getGroupKey"),
+                        REF_AGGREGATIONSVC, "SetCurrentAccess", ExprDotMethod(Ref("rollup"), "getGroupKey"),
                         ExprDotMethod(REF_EXPREVALCONTEXT, "getAgentInstanceId"),
                         ExprDotMethod(Ref("rollup"), "getLevel"));
                 }
@@ -331,7 +331,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
                     if (forge.IsNeedsGroupByKeys) {
                         forEach.ExprDotMethod(
-                            REF_AGGREGATIONSVC, "setCurrentAccess", ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
+                            REF_AGGREGATIONSVC, "SetCurrentAccess", ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
                             ExprDotMethod(REF_EXPREVALCONTEXT, "getAgentInstanceId", ConstantNull()));
                     }
 

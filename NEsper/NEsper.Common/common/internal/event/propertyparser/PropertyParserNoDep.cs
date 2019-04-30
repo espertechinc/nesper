@@ -9,6 +9,7 @@
 using System.Text;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.property;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.propertyparser
 {
@@ -114,7 +115,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
             var argument = property.Substring(startArg + 1, endArg);
 
             // get method
-            var splitDots = property.Split("[\\.]");
+            var splitDots = property.RegexSplit("[\\.]");
             if (splitDots.Length == 0) {
                 return null;
             }

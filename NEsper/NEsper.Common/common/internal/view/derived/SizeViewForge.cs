@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             CodegenClassScope classScope)
         {
             if (additionalProps != null) {
-                method.Block.ExprDotMethod(factory, "setAdditionalProps", additionalProps.Codegen(method, classScope));
+                method.Block.SetProperty(factory, "AdditionalProps", additionalProps.Codegen(method, classScope));
             }
         }
     }

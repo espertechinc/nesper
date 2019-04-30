@@ -260,8 +260,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             }
 
             if (aggGroupByDesc.IsReclaimAged) {
-                method.Block.ExprDotMethod(
-                    REF_CURRENTROW, "setLastUpdateTime",
+                method.Block.SetProperty(
+                    REF_CURRENTROW, "LastUpdateTime",
                     ExprDotMethodChain(REF_EXPREVALCONTEXT).Add("getTimeProvider").Add("getTime"));
             }
 

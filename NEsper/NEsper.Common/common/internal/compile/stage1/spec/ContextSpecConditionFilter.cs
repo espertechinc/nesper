@@ -41,10 +41,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .DeclareVar(
                     typeof(ContextConditionDescriptorFilter), "condition",
                     NewInstance(typeof(ContextConditionDescriptorFilter)))
-                .ExprDotMethod(
-                    Ref("condition"), "setFilterSpecActivatable",
+                .SetProperty(Ref("condition"), "FilterSpecActivatable",
                     LocalMethod(FilterSpecCompiled.MakeCodegen(method, symbols, classScope)))
-                .ExprDotMethod(Ref("condition"), "setOptionalFilterAsName", Constant(OptionalFilterAsName))
+                .SetProperty(Ref("condition"), "OptionalFilterAsName", Constant(OptionalFilterAsName))
                 .MethodReturn(Ref("condition"));
             return LocalMethod(method);
         }

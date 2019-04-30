@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 
         public StmtClassForgableAIFactoryProviderOnTrigger(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             StatementAgentInstanceFactoryOnTriggerBaseForge forge)
-            : base(className, packageScope)
+            : base(className, namespaceScope)
         {
             this.forge = forge;
         }

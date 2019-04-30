@@ -96,11 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                     typeof(TimerWithinOrMaxCountGuardFactory), "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("guardTimerWithinOrMax"))
-                .ExprDotMethod(Ref("factory"), "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(Ref("factory"), "setDeltaCompute", patternDelta)
-                .ExprDotMethod(Ref("factory"), "setOptionalConvertor", convertorExpr)
-                .ExprDotMethod(
-                    Ref("factory"), "setCountEval",
+                .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(Ref("factory"), "DeltaCompute", patternDelta)
+                .SetProperty(Ref("factory"), "OptionalConvertor", convertorExpr)
+                .SetProperty(Ref("factory"), "CountEval",
                     ExprNodeUtilityCodegen.CodegenEvaluator(numCountToExpr.Forge, method, GetType(), classScope))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

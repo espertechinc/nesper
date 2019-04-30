@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         {
             CodegenMethod childMake = ChildNodes[0].MakeCodegen(method, symbols, classScope);
             method.Block
-                .ExprDotMethod(@Ref("node"), "setChildNode", LocalMethod(childMake));
+                .SetProperty(Ref("node"), "ChildNode", LocalMethod(childMake));
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)

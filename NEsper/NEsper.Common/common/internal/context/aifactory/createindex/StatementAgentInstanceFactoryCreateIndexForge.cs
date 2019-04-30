@@ -62,17 +62,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             method.Block
                 .DeclareVar(
                     typeof(StatementAgentInstanceFactoryCreateIndex), saiff.Ref, NewInstance(typeof(StatementAgentInstanceFactoryCreateIndex)))
-                .ExprDotMethod(saiff, "setEventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(saiff, "setIndexName", Constant(indexName))
-                .ExprDotMethod(saiff, "setIndexModuleName", Constant(indexModuleName))
-                .ExprDotMethod(saiff, "setIndexMultiKey", imk.Make(method, classScope))
-                .ExprDotMethod(saiff, "setExplicitIndexDesc", explicitIndexDesc.Make(method, classScope));
+                .SetProperty(saiff, "EventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(saiff, "IndexName", Constant(indexName))
+                .SetProperty(saiff, "IndexModuleName", Constant(indexModuleName))
+                .SetProperty(saiff, "IndexMultiKey", imk.Make(method, classScope))
+                .SetProperty(saiff, "ExplicitIndexDesc", explicitIndexDesc.Make(method, classScope));
             if (namedWindow != null) {
-                method.Block.ExprDotMethod(
-                    saiff, "setNamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)));
+                method.Block.SetProperty(saiff, "NamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)));
             }
             else {
-                method.Block.ExprDotMethod(saiff, "setTable", TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)));
+                method.Block.SetProperty(saiff, "Table", TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)));
             }
 
             method.Block.MethodReturn(saiff);

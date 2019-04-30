@@ -33,8 +33,7 @@ namespace com.espertech.esper.common.@internal.context.activator
             method.Block
                 .DeclareVar(
                     typeof(ViewableActivatorDataFlow), "activator", NewInstance(typeof(ViewableActivatorDataFlow)))
-                .ExprDotMethod(
-                    Ref("activator"), "setEventType",
+                .SetProperty(Ref("activator"), "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("activator"));
             return LocalMethod(method);

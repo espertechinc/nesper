@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(@ref, "setIntervalTime", Constant(intervalTime));
+            method.Block.SetProperty(@ref, "IntervalTime", Constant(intervalTime));
         }
 
         protected override void ValidateIntoTableWFilterWInputType(

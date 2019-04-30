@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             ByteBuffer valueBuffer,
             long frequency)
         {
-            if (_lastFreqForItem.Remove(valueBuffer, out var previousUpdateFrequency)) {
+            if (_lastFreqForItem.TryRemove(valueBuffer, out var previousUpdateFrequency)) {
                 RemoveItemFromSorted(previousUpdateFrequency, valueBuffer);
             }
 

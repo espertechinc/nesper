@@ -229,7 +229,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                             buf.Append(NEWLINE);
                         }
                         else {
-                            var map = MagicMarker.GetStringDictionary(value);
+                            var map = MagicMarker.SingletonInstance.GetStringDictionary(value);
                             if (map.IsEmpty()) {
                                 buf.Append("{}");
                                 buf.Append(NEWLINE);

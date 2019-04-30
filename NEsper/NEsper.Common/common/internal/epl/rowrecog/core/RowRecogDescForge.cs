@@ -146,53 +146,46 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             method.Block
                 .DeclareVar(typeof(RowRecogDesc), desc.Ref, NewInstance(typeof(RowRecogDesc)))
-                .ExprDotMethod(desc, "setParentEventType", EventTypeUtility.ResolveTypeCodegen(_parentEventType, init))
-                .ExprDotMethod(desc, "setRowEventType", EventTypeUtility.ResolveTypeCodegen(RowEventType, init))
-                .ExprDotMethod(
-                    desc, "setCompositeEventType", EventTypeUtility.ResolveTypeCodegen(_compositeEventType, init))
-                .ExprDotMethod(
-                    desc, "setMultimatchEventType",
+                .SetProperty(desc, "ParentEventType", EventTypeUtility.ResolveTypeCodegen(_parentEventType, init))
+                .SetProperty(desc, "RowEventType", EventTypeUtility.ResolveTypeCodegen(RowEventType, init))
+                .SetProperty(desc, "CompositeEventType", EventTypeUtility.ResolveTypeCodegen(_compositeEventType, init))
+                .SetProperty(desc, "MultimatchEventType",
                     _multimatchEventType == null
                         ? ConstantNull()
                         : EventTypeUtility.ResolveTypeCodegen(_multimatchEventType, init))
-                .ExprDotMethod(desc, "setMultimatchStreamNumToVariable", Constant(_multimatchStreamNumToVariable))
-                .ExprDotMethod(desc, "setMultimatchVariableToStreamNum", Constant(_multimatchVariableToStreamNum))
-                .ExprDotMethod(
-                    desc, "setPartitionEvalMayNull",
+                .SetProperty(desc, "MultimatchStreamNumToVariable", Constant(_multimatchStreamNumToVariable))
+                .SetProperty(desc, "MultimatchVariableToStreamNum", Constant(_multimatchVariableToStreamNum))
+                .SetProperty(desc, "PartitionEvalMayNull",
                     _partitionBy == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
                             ExprNodeUtilityQuery.GetForges(_partitionBy), null, method, GetType(), classScope))
-                .ExprDotMethod(
-                    desc, "setPartitionEvalTypes",
+                .SetProperty(desc, "PartitionEvalTypes",
                     _partitionBy == null
                         ? ConstantNull()
                         : Constant(ExprNodeUtilityQuery.GetExprResultTypes(_partitionBy)))
-                .ExprDotMethod(desc, "setVariableStreams", MakeVariableStreams(method, symbols, classScope))
-                .ExprDotMethod(desc, "setHasInterval", Constant(_hasInterval))
-                .ExprDotMethod(desc, "setIterateOnly", Constant(_iterateOnly))
-                .ExprDotMethod(desc, "setUnbound", Constant(_unbound))
-                .ExprDotMethod(desc, "setOrTerminated", Constant(_orTerminated))
-                .ExprDotMethod(desc, "setCollectMultimatches", Constant(_collectMultimatches))
-                .ExprDotMethod(desc, "setDefineAsksMultimatches", Constant(_defineAsksMultimatches))
-                .ExprDotMethod(desc, "setNumEventsEventsPerStreamDefine", Constant(_numEventsEventsPerStreamDefine))
-                .ExprDotMethod(desc, "setMultimatchVariablesArray", Constant(_multimatchVariablesArray))
-                .ExprDotMethod(desc, "setStatesOrdered", MakeStates(method, symbols, classScope))
-                .ExprDotMethod(desc, "setNextStatesPerState", MakeNextStates(method, classScope))
-                .ExprDotMethod(desc, "setStartStates", Constant(startStateNums))
-                .ExprDotMethod(desc, "setAllMatches", Constant(_allMatches))
-                .ExprDotMethod(desc, "setSkip", Constant(_skip))
-                .ExprDotMethod(
-                    desc, "setColumnEvaluators",
+                .SetProperty(desc, "VariableStreams", MakeVariableStreams(method, symbols, classScope))
+                .SetProperty(desc, "HasInterval", Constant(_hasInterval))
+                .SetProperty(desc, "IterateOnly", Constant(_iterateOnly))
+                .SetProperty(desc, "Unbound", Constant(_unbound))
+                .SetProperty(desc, "OrTerminated", Constant(_orTerminated))
+                .SetProperty(desc, "CollectMultimatches", Constant(_collectMultimatches))
+                .SetProperty(desc, "DefineAsksMultimatches", Constant(_defineAsksMultimatches))
+                .SetProperty(desc, "NumEventsEventsPerStreamDefine", Constant(_numEventsEventsPerStreamDefine))
+                .SetProperty(desc, "MultimatchVariablesArray", Constant(_multimatchVariablesArray))
+                .SetProperty(desc, "StatesOrdered", MakeStates(method, symbols, classScope))
+                .SetProperty(desc, "NextStatesPerState", MakeNextStates(method, classScope))
+                .SetProperty(desc, "StartStates", Constant(startStateNums))
+                .SetProperty(desc, "AllMatches", Constant(_allMatches))
+                .SetProperty(desc, "Skip", Constant(_skip))
+                .SetProperty(desc, "ColumnEvaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(_columnEvaluators, method, GetType(), classScope))
-                .ExprDotMethod(desc, "setColumnNames", Constant(_columnNames))
-                .ExprDotMethod(
-                    desc, "setIntervalCompute",
+                .SetProperty(desc, "ColumnNames", Constant(_columnNames))
+                .SetProperty(desc, "IntervalCompute",
                     _intervalCompute == null ? ConstantNull() : _intervalCompute.MakeEvaluator(method, classScope))
-                .ExprDotMethod(desc, "setPreviousRandomAccessIndexes", Constant(_previousRandomAccessIndexes))
-                .ExprDotMethod(desc, "setAggregationServiceFactories", aggregationServiceFactories)
-                .ExprDotMethod(
-                    desc, "setAggregationResultFutureAssignables",
+                .SetProperty(desc, "PreviousRandomAccessIndexes", Constant(_previousRandomAccessIndexes))
+                .SetProperty(desc, "AggregationServiceFactories", aggregationServiceFactories)
+                .SetProperty(desc, "AggregationResultFutureAssignables",
                     _aggregationServices == null ? ConstantNull() : MakeAggAssignables(method, classScope))
                 .MethodReturn(desc);
             return LocalMethod(method);
@@ -215,7 +208,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         .AddParam(typeof(AggregationResultFuture), "future");
                     anonymousClass.AddMethod("assign", assign);
 
-                    CodegenExpression field = classScope.PackageScope.AddOrGetFieldWellKnown(
+                    CodegenExpression field = classScope.PackagNamespaceScopeGetFieldWellKnown(
                         new CodegenFieldNameMatchRecognizeAgg(i), typeof(AggregationResultFuture));
                     assign.Block.AssignRef(field, Ref("future"));
 

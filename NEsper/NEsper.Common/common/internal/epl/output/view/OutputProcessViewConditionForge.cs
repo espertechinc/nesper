@@ -84,24 +84,21 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             CodegenExpressionRef spec = @Ref("spec");
             method.Block
                 .DeclareVar(typeof(OutputProcessViewConditionSpec), spec.Ref, NewInstance(typeof(OutputProcessViewConditionSpec)))
-                .ExprDotMethod(spec, "setConditionType", EnumValue(typeof(ResultSetProcessorOutputConditionType), conditionType.GetName()))
-                .ExprDotMethod(spec, "setOutputConditionFactory", outputConditionFactoryForge.Make(method, symbols, classScope))
-                .ExprDotMethod(spec, "setStreamCount", Constant(streamCount))
-                .ExprDotMethod(spec, "setTerminable", Constant(terminable))
-                .ExprDotMethod(
-                    spec, "setSelectClauseStreamSelector", EnumValue(typeof(SelectClauseStreamSelectorEnum), selectClauseStreamSelector.GetName()))
-                .ExprDotMethod(
-                    spec, "setPostProcessFactory",
+                .SetProperty(spec, "ConditionType", EnumValue(typeof(ResultSetProcessorOutputConditionType), conditionType.GetName()))
+                .SetProperty(spec, "OutputConditionFactory", outputConditionFactoryForge.Make(method, symbols, classScope))
+                .SetProperty(spec, "StreamCount", Constant(streamCount))
+                .SetProperty(spec, "Terminable", Constant(terminable))
+                .SetProperty(spec, "SelectClauseStreamSelector", EnumValue(typeof(SelectClauseStreamSelectorEnum), selectClauseStreamSelector.GetName()))
+                .SetProperty(spec, "PostProcessFactory",
                     outputStrategyPostProcessForge == null ? ConstantNull() : outputStrategyPostProcessForge.Make(method, symbols, classScope))
-                .ExprDotMethod(spec, "setHasAfter", Constant(hasAfter))
-                .ExprDotMethod(spec, "setDistinct", Constant(isDistinct))
-                .ExprDotMethod(spec, "setResultEventType", EventTypeUtility.ResolveTypeCodegen(resultEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    spec, "setAfterTimePeriod",
+                .SetProperty(spec, "HasAfter", Constant(hasAfter))
+                .SetProperty(spec, "Distinct", Constant(isDistinct))
+                .SetProperty(spec, "ResultEventType", EventTypeUtility.ResolveTypeCodegen(resultEventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(spec, "AfterTimePeriod",
                     afterTimePeriodExpr == null ? ConstantNull() : afterTimePeriodExpr.TimePeriodComputeForge.MakeEvaluator(method, classScope))
-                .ExprDotMethod(spec, "setAfterConditionNumberOfEvents", Constant(afterNumberOfEvents))
-                .ExprDotMethod(spec, "setUnaggregatedUngrouped", Constant(unaggregatedUngrouped))
-                .ExprDotMethod(spec, "setEventTypes", EventTypeUtility.ResolveTypeArrayCodegen(eventTypes, EPStatementInitServicesConstants.REF))
+                .SetProperty(spec, "AfterConditionNumberOfEvents", Constant(afterNumberOfEvents))
+                .SetProperty(spec, "UnaggregatedUngrouped", Constant(unaggregatedUngrouped))
+                .SetProperty(spec, "EventTypes", EventTypeUtility.ResolveTypeArrayCodegen(eventTypes, EPStatementInitServicesConstants.REF))
                 .MethodReturn(NewInstance(typeof(OutputProcessViewConditionFactory), spec));
         }
 

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 
         public DotMethodFPParam[] Parameters { get; private set; }
 
-        public String ToStringFootprint(bool isLambdaApplies)
+        public string ToStringFootprint(bool isLambdaApplies)
         {
             if (Parameters.Length == 0) {
                 return "no parameters";
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
             return buf.ToString();
         }
 
-        public static String ToStringProvided(
+        public static string ToStringProvided(
             DotMethodFPProvided provided,
             bool isLambdaApplies)
         {

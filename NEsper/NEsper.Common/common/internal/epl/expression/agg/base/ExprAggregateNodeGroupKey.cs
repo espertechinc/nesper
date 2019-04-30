@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             ExprForgeCodegenSymbol symbol,
             CodegenClassScope classScope)
         {
-            CodegenExpression future = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 aggregationResultFutureMemberName, typeof(AggregationResultFuture));
             CodegenMethod method = parent.MakeChild(returnType, this.GetType(), classScope);
             CodegenExpression getGroupKey = ExprDotMethod(
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             return false;
         }
 
-        override public ExprNode Validate(ExprValidationContext validationContext)
+        public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // not required
             return null;

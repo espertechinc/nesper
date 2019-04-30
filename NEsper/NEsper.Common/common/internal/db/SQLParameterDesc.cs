@@ -37,8 +37,9 @@ namespace com.espertech.esper.common.@internal.db
 
         public override string ToString()
         {
-            return "params=" + Parameters.Render() +
-                   " builtin=" + BuiltinIdentifiers.Render();
+            return string.Format("params={0} builtin={1}",
+                CompatExtensions.RenderAny(Parameters),
+                CompatExtensions.RenderAny(BuiltinIdentifiers));
         }
     }
 } // End of namespace

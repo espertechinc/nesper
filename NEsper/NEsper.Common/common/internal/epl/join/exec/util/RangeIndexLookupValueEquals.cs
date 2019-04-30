@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.util
 {
     public class RangeIndexLookupValueEquals : RangeIndexLookupValue
     {
-        public RangeIndexLookupValueEquals(Object value)
+        public RangeIndexLookupValueEquals(object value)
             : base(value)
         {
         }

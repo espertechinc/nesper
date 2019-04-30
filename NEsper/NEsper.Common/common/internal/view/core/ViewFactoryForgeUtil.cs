@@ -381,9 +381,9 @@ namespace com.espertech.esper.common.@internal.view.core
 
             var grouped = !forges.IsEmpty() && forges[0] is GroupByViewFactoryForge;
             method.Block.DeclareVar(typeof(ViewFactoryContext), "ctx", NewInstance(typeof(ViewFactoryContext)))
-                .ExprDotMethod(Ref("ctx"), "setStreamNum", Constant(streamNum))
-                .ExprDotMethod(Ref("ctx"), "setSubqueryNumber", Constant(subqueryNum))
-                .ExprDotMethod(Ref("ctx"), "setGrouped", Constant(grouped));
+                .SetProperty(Ref("ctx"), "StreamNum", Constant(streamNum))
+                .SetProperty(Ref("ctx"), "SubqueryNumber", Constant(subqueryNum))
+                .SetProperty(Ref("ctx"), "Grouped", Constant(grouped));
             for (var i = 0; i < forges.Count; i++) {
                 var @ref = "factory_" + i;
                 method.Block.DeclareVar(typeof(ViewFactory), @ref, forges[i].Make(method, symbols, classScope))

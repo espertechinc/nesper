@@ -26,18 +26,18 @@ namespace com.espertech.esper.common.@internal.view.core
         void VisitPrimary<K>(
             ICollection<K> primary,
             bool countsEvents,
-            String viewName,
+            string viewName,
             int? count);
 
         void VisitPrimary<K, V>(
             IDictionary<K, V> currentBatch,
             bool countsEvents,
-            String viewName,
+            string viewName,
             int? count,
             int? keyCountWhenAvailable);
 
         void VisitPrimary(
             ViewUpdatedCollection buffer,
-            String viewName);
+            string viewName);
     }
 }

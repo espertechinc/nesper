@@ -18,41 +18,41 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
     public class CreateVariableView : ViewSupport,
         VariableChangeCallback
     {
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly StatementAgentInstanceFactoryCreateVariable parent;
-        private readonly VariableReader reader;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly StatementAgentInstanceFactoryCreateVariable _parent;
+        private readonly VariableReader _reader;
 
-        private CreateVariableView(
+        internal CreateVariableView(
             StatementAgentInstanceFactoryCreateVariable parent,
             AgentInstanceContext agentInstanceContext,
             VariableReader reader)
         {
-            this.parent = parent;
-            this.agentInstanceContext = agentInstanceContext;
-            this.reader = reader;
+            _parent = parent;
+            _agentInstanceContext = agentInstanceContext;
+            _reader = reader;
         }
 
-        public override EventType EventType => parent.ResultSetProcessorFactoryProvider.ResultEventType;
+        public override EventType EventType => _parent.ResultSetProcessorFactoryProvider.ResultEventType;
 
         public void Update(
             object newValue,
             object oldValue)
         {
-            var statementResultService = agentInstanceContext.StatementResultService;
+            var statementResultService = _agentInstanceContext.StatementResultService;
             if (statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic) {
-                var variableName = reader.MetaData.VariableName;
+                var variableName = _reader.MetaData.VariableName;
 
                 IDictionary<string, object> valuesOld = new Dictionary<string, object>();
                 valuesOld.Put(variableName, oldValue);
                 EventBean eventOld =
-                    agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                        valuesOld, parent.StatementEventType);
+                    _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
+                        valuesOld, _parent.StatementEventType);
 
                 IDictionary<string, object> valuesNew = new Dictionary<string, object>();
                 valuesNew.Put(variableName, newValue);
                 EventBean eventNew =
-                    agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                        valuesNew, parent.StatementEventType);
+                    _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
+                        valuesNew, _parent.StatementEventType);
 
                 EventBean[] newDataToPost = {eventNew};
                 EventBean[] oldDataToPost = {eventOld};
@@ -69,10 +69,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            var value = reader.Value;
+            var value = _reader.Value;
             IDictionary<string, object> values = new Dictionary<string, object>();
-            values.Put(reader.MetaData.VariableName, value);
-            EventBean theEvent = agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(values, EventType);
+            values.Put(_reader.MetaData.VariableName, value);
+            EventBean theEvent = _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(values, EventType);
             return EnumerationHelper.SingletonNullable(theEvent);
         }
     }

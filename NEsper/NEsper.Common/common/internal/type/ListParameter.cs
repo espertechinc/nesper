@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.type
             return ContainsPoint(_parameters, point);
         }
 
-        public String Formatted()
+        public string Formatted()
         {
             var writer = new StringWriter();
             var delimiter = "";
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.type
             return writer.ToString();
         }
 
-        public static Boolean ContainsPoint(
+        public static bool ContainsPoint(
             IList<NumberSetParameter> parameters,
             int point)
         {

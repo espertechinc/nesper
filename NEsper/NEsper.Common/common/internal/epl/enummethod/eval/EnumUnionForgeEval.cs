@@ -33,29 +33,37 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             this.evaluator = evaluator;
         }
 
+        private object EvaluateEnumMethodInternal<T>(
+            ICollection<T> other,
+            ICollection<object> enumcoll)
+        {
+            if (other == null || other.IsEmpty())
+            {
+                return enumcoll;
+            }
+
+            var result = new List<object>(enumcoll.Count + other.Count);
+            result.AddAll(enumcoll);
+            result.AddAll(other.UnwrapEnumerable<object>());
+
+            return result;
+        }
+
         public object EvaluateEnumMethod(
             EventBean[] eventsLambda,
             ICollection<object> enumcoll,
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ICollection other;
             if (forge.scalar) {
-                other = evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context);
-            }
-            else {
-                other = evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context);
-            }
-
-            if (other == null || other.IsEmpty()) {
-                return enumcoll;
+                return EvaluateEnumMethodInternal(
+                    evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context),
+                    enumcoll);
             }
 
-            List<object> result = new List<object>(enumcoll.Count + other.Count);
-            result.AddAll(enumcoll);
-            result.AddAll(other);
-
-            return result;
+            return EvaluateEnumMethodInternal(
+                evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context),
+                enumcoll);
         }
 
         public static CodegenExpression Codegen(

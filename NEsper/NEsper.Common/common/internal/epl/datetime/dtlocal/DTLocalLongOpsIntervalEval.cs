@@ -91,10 +91,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var startLong = startTimestamp.AsLong();
             var endLong = endTimestamp.AsLong();
-            var cal = DateTimeEx.GetInstance(timeZone);
-            var startRemainder = timeAbacus.DateTimeSet(startLong, cal);
-            EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            var startTime = timeAbacus.DateTimeGet(cal, startRemainder);
+            var dtx = DateTimeEx.GetInstance(timeZone);
+            var startRemainder = timeAbacus.DateTimeSet(startLong, dtx);
+            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            var startTime = timeAbacus.DateTimeGet(dtx, startRemainder);
             var endTime = startTime + (endLong - startLong);
             return intervalOp.Evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }

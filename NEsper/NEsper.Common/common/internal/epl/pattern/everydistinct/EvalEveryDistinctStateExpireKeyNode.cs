@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.pattern.every;
@@ -25,9 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         Evaluator
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        internal readonly EvalEveryDistinctNode everyNode;
-        internal readonly IDictionary<EvalStateNode, IDictionary<object, long>> spawnedNodes;
-        internal MatchedEventMap beginState;
+
+        protected internal readonly EvalEveryDistinctNode everyNode;
+        protected internal readonly IDictionary<EvalStateNode, IDictionary<object, long>> spawnedNodes;
+        protected internal MatchedEventMap beginState;
 
         /// <summary>
         ///     Constructor.
@@ -98,17 +100,22 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
             IDictionary<object, long> keysFromNode = spawnedNodes.Get(fromNode);
             if (keysFromNode != null) {
                 // Clean out old keys
-                IEnumerator<KeyValuePair<object, long>> it = keysFromNode.GetEnumerator();
+
+                var keysToRemove = new List<object>();
+                var enumerator = keysFromNode.GetEnumerator();
                 var currentTime = everyNode.Context.AgentInstanceContext.TimeProvider.Time;
-                for (; it.MoveNext();) {
-                    KeyValuePair<object, long> entry = it.Current;
+                for (; enumerator.MoveNext();) {
+                    var entry = enumerator.Current;
                     if (currentTime >= entry.Value) {
-                        it.Remove();
+                        keysToRemove.Add(entry.Key);
                     }
                     else {
                         break;
                     }
                 }
+
+                // Remove the keys
+                keysToRemove.ForEach(key => keysFromNode.Remove(key));
 
                 if (keysFromNode.ContainsKey(matchEventKey)) {
                     haveSeenThis = true;
@@ -219,7 +226,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         public override void Accept(EvalStateNodeVisitor visitor)
         {
-            visitor.VisitEveryDistinct(everyNode.FactoryNode, this, beginState, spawnedNodes.Values);
+            visitor.VisitEveryDistinct(everyNode.FactoryNode, this, beginState, spawnedNodes.Values.Unwrap<object>());
             foreach (var spawnedNode in spawnedNodes.Keys) {
                 spawnedNode.Accept(visitor);
             }

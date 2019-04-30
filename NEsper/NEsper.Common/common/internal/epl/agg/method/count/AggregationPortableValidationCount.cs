@@ -92,10 +92,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(@ref, "setEver", Constant(ever))
-                .ExprDotMethod(@ref, "setHasFilter", Constant(hasFilter))
-                .ExprDotMethod(@ref, "setCountedValueType", Constant(countedValueType))
-                .ExprDotMethod(@ref, "setIgnoreNulls", Constant(ignoreNulls));
+                .SetProperty(@ref, "Ever", Constant(ever))
+                .SetProperty(@ref, "HasFilter", Constant(hasFilter))
+                .SetProperty(@ref, "CountedValueType", Constant(countedValueType))
+                .SetProperty(@ref, "IgnoreNulls", Constant(ignoreNulls));
         }
     }
 } // end of namespace

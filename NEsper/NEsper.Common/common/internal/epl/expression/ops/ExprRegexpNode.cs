@@ -77,14 +77,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 string patternText = (string) ChildNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
                 Regex pattern;
                 try {
-                    pattern = Regex.Compile(patternText);
+                    pattern = new Regex(patternText);
                 }
                 catch (PatternSyntaxException ex) {
                     throw new ExprValidationException(
                         "Error compiling regex pattern '" + patternText + "': " + ex.Message, ex);
                 }
 
-                CodegenExpression patternInit = StaticMethod(typeof(Regex), "compile", Constant(patternText));
+                CodegenExpression patternInit = NewInstance<Regex>(Constant(patternText));
                 forge = new ExprRegexpNodeForgeConst(this, isNumericValue, pattern, patternInit);
             }
             else {

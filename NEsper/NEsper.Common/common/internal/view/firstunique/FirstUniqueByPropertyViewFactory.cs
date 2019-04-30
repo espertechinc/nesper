@@ -19,9 +19,9 @@ namespace com.espertech.esper.common.@internal.view.firstunique
     /// </summary>
     public class FirstUniqueByPropertyViewFactory : ViewFactory
     {
-        protected ExprEvaluator[] criteriaEvals;
-        protected Type[] criteriaTypes;
-        protected EventType eventType;
+        protected internal ExprEvaluator[] criteriaEvals;
+        protected internal Type[] criteriaTypes;
+        protected internal EventType eventType;
 
         public ExprEvaluator[] CriteriaEvals {
             get => criteriaEvals;

@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(@ref, "setFirst", Constant(isFirst));
+            method.Block.SetProperty(@ref, "First", Constant(isFirst));
         }
 
         protected override void ValidateIntoTableWFilterWInputType(

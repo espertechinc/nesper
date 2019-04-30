@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         public Type Type()
         {
-            return typeof(Instrumentation);
+            return typeof(void); // java.lang.instrument.Instrumentation
         }
 
         public CodegenExpression InitCtorScoped()

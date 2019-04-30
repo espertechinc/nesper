@@ -21,6 +21,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="common\internal\util\apachecommonstext\**" />
+    <EmbeddedResource Remove="common\internal\util\apachecommonstext\**" />
+    <None Remove="common\internal\util\apachecommonstext\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="common\client\util\DateTimeUtil.cs" />
   </ItemGroup>
 

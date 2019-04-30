@@ -56,12 +56,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                 .DeclareVar(
                     typeof(HistoricalIndexLookupStrategyComposite), "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategyComposite)))
-                .ExprDotMethod(Ref("strat"), "setLookupStream", Constant(lookupStream))
-                .ExprDotMethod(
-                    Ref("strat"), "setHashGetter",
+                .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
+                .SetProperty(Ref("strat"), "HashGetter",
                     ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
                         evaluators, null, method, GetType(), classScope))
-                .ExprDotMethod(Ref("strat"), "setRangeProps", Ref("rangeGetters"))
+                .SetProperty(Ref("strat"), "RangeProps", Ref("rangeGetters"))
                 .ExprDotMethod(Ref("strat"), "init")
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);

@@ -199,13 +199,13 @@ namespace com.espertech.esper.common.client.configuration.common
                 switch (subElement.Name) {
                     case "datasource-connection": {
                         var lookup = GetRequiredAttribute(subElement, "context-lookup-name");
-                        Properties properties = GetProperties(subElement, "env-property");
+                        Properties properties = DOMUtil.GetProperties(subElement, "env-property");
                         configDBRef.SetDataSourceConnection(lookup, properties);
                         break;
                     }
                     case "datasourcefactory-connection": {
                         var className = GetRequiredAttribute(subElement, "class-name");
-                        Properties properties = GetProperties(subElement, "env-property");
+                        Properties properties = DOMUtil.GetProperties(subElement, "env-property");
                         configDBRef.SetDataSourceFactory(properties, className);
                         break;
                     }
@@ -214,7 +214,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         var url = GetRequiredAttribute(subElement, "url");
                         var userName = GetRequiredAttribute(subElement, "user");
                         var password = GetRequiredAttribute(subElement, "password");
-                        Properties properties = GetProperties(subElement, "connection-arg");
+                        Properties properties = DOMUtil.GetProperties(subElement, "connection-arg");
                         configDBRef.SetDriverManagerConnection(className, url, userName, password, properties);
                         break;
                     }
@@ -257,6 +257,9 @@ namespace com.espertech.esper.common.client.configuration.common
                         configDBRef.SetMetadataOrigin(parsed);
                         break;
                     }
+#if NOT_SUPPORTED
+                    // NOTE: How does this translate in a world based on ADO.NET
+                    //        Does it translate at all?
                     case "sql-types-mapping":
                         var sqlType = GetRequiredAttribute(subElement, "sql-type");
                         var javaType = GetRequiredAttribute(subElement, "java-type");
@@ -270,6 +273,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
                         configDBRef.AddSqlTypesBinding(sqlTypeInt, javaType);
                         break;
+#endif
                     case "expiry-time-cache":
                         var maxAge = GetRequiredAttribute(subElement, "max-age-seconds");
                         var purgeInterval = GetRequiredAttribute(subElement, "purge-interval-seconds");
@@ -658,7 +662,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         break;
                     case "lru-cache":
                         var size = GetRequiredAttribute(subElement, "size");
-                        configMethodRef.LRUCache = Int32.Parse(size);
+                        configMethodRef.SetLRUCache(Int32.Parse(size));
                         break;
                 }
             }
@@ -714,7 +718,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         }
 
                         var objectvalueTypewidenerFactoryClass = GetOptionalAttribute(subElement, "objectvalue-typewidener-factory-class");
-                        if (objectvalueTypewidenerFactoryClass != null && objectvalueTypewidenerFactoryClass.Trim().Length() > 0) {
+                        if (objectvalueTypewidenerFactoryClass != null && objectvalueTypewidenerFactoryClass.Trim().Length > 0) {
                             common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass = objectvalueTypewidenerFactoryClass.Trim();
                         }
 

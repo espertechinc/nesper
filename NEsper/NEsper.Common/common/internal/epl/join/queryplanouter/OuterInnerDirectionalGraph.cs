@@ -146,10 +146,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         /// <summary> Prints out collection.</summary>
         /// <returns> textual output of keys and values
         /// </returns>
-        public virtual String Print()
+        public virtual string Print()
         {
             StringBuilder buffer = new StringBuilder();
-            String delimiter = "";
+            string delimiter = "";
 
             foreach (KeyValuePair<int, ICollection<int>> kvPair in _streamToInnerMap) {
                 ICollection<int> set = kvPair.Value;

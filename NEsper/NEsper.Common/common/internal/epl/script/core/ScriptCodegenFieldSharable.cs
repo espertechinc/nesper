@@ -7,29 +7,29 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class ScriptCodegenFieldSharable : CodegenFieldSharable
     {
-        private readonly string scriptName;
-        private readonly int parameterNumber;
-        private readonly ScriptDescriptorCompileTime scriptDescriptor;
-        private readonly CodegenClassScope classScope;
+        private readonly string _scriptName;
+        private readonly int _parameterNumber;
+        private readonly ScriptDescriptorCompileTime _scriptDescriptor;
+        private readonly CodegenClassScope _classScope;
 
         public ScriptCodegenFieldSharable(
             ScriptDescriptorCompileTime scriptDescriptor,
             CodegenClassScope classScope)
         {
-            this.scriptName = scriptDescriptor.ScriptName;
-            this.parameterNumber = scriptDescriptor.ParameterNames.Length;
-            this.scriptDescriptor = scriptDescriptor;
-            this.classScope = classScope;
+            _scriptName = scriptDescriptor.ScriptName;
+            _parameterNumber = scriptDescriptor.ParameterNames.Length;
+            _scriptDescriptor = scriptDescriptor;
+            _classScope = classScope;
         }
 
         public Type Type()
@@ -40,24 +40,36 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         public CodegenExpression InitCtorScoped()
         {
             return StaticMethod(
-                typeof(ScriptEvaluatorCompilerRuntime), "compileScriptEval", scriptDescriptor.Make(classScope.PackageScope.InitMethod, classScope));
+                typeof(ScriptEvaluatorCompilerRuntime), "compileScriptEval",
+                _scriptDescriptor.Make(_classScope.NamespaceScope.InitMethod, _classScope));
         }
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o)
+            {
+                return true;
+            }
+
+            if (o == null || GetType() != o.GetType())
+            {
+                return false;
+            }
 
             ScriptCodegenFieldSharable that = (ScriptCodegenFieldSharable) o;
 
-            if (parameterNumber != that.parameterNumber) return false;
-            return scriptName.Equals(that.scriptName);
+            if (_parameterNumber != that._parameterNumber)
+            {
+                return false;
+            }
+
+            return _scriptName.Equals(that._scriptName);
         }
 
         public override int GetHashCode()
         {
-            int result = scriptName.GetHashCode();
-            result = 31 * result + parameterNumber;
+            int result = _scriptName.GetHashCode();
+            result = 31 * result + _parameterNumber;
             return result;
         }
     }

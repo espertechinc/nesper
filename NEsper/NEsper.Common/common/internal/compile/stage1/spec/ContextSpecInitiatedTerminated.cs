@@ -48,17 +48,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .DeclareVar(
                     typeof(ContextControllerDetailInitiatedTerminated), "detail",
                     NewInstance(typeof(ContextControllerDetailInitiatedTerminated)))
-                .ExprDotMethod(Ref("detail"), "setStartCondition", StartCondition.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("detail"), "setEndCondition", EndCondition.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("detail"), "setOverlapping", Constant(IsOverlapping));
+                .SetProperty(Ref("detail"), "StartCondition", StartCondition.Make(method, symbols, classScope))
+                .SetProperty(Ref("detail"), "EndCondition", EndCondition.Make(method, symbols, classScope))
+                .SetProperty(Ref("detail"), "Overlapping", Constant(IsOverlapping));
             if (DistinctExpressions != null && DistinctExpressions.Length > 0) {
                 method.Block
-                    .ExprDotMethod(
-                        Ref("detail"), "setDistinctEval",
+                    .SetProperty(Ref("detail"), "DistinctEval",
                         ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
                             ExprNodeUtilityQuery.GetForges(DistinctExpressions), null, method, GetType(), classScope))
-                    .ExprDotMethod(
-                        Ref("detail"), "setDistinctTypes",
+                    .SetProperty(Ref("detail"), "DistinctTypes",
                         Constant(ExprNodeUtilityQuery.GetExprResultTypes(DistinctExpressions)));
             }
 

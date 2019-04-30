@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.support
 
     public class SupportEnumHelper
     {
-        public static SupportEnum GetEnumFor(String value)
+        public static SupportEnum GetEnumFor(string value)
         {
             return (SupportEnum) Enum.Parse(typeof(SupportEnum), value, false);
         }

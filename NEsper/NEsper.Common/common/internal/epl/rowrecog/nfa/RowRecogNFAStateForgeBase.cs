@@ -52,13 +52,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             var method = parent.MakeChild(EvalClass, GetType(), classScope);
             method.Block
                 .DeclareVar(EvalClass, "eval", NewInstance(EvalClass))
-                .ExprDotMethod(Ref("eval"), "setNodeNumNested", Constant(NodeNumNested))
-                .ExprDotMethod(Ref("eval"), "setVariableName", Constant(VariableName))
-                .ExprDotMethod(Ref("eval"), "setStreamNum", Constant(StreamNum))
-                .ExprDotMethod(Ref("eval"), "setMultiple", Constant(IsMultiple))
-                .ExprDotMethod(Ref("eval"), "setGreedy", Constant(IsGreedy))
-                .ExprDotMethod(Ref("eval"), "setNodeNumFlat", Constant(NodeNumFlat))
-                .ExprDotMethod(Ref("eval"), "setExprRequiresMultimatchState", Constant(exprRequiresMultimatchState));
+                .SetProperty(Ref("eval"), "NodeNumNested", Constant(NodeNumNested))
+                .SetProperty(Ref("eval"), "VariableName", Constant(VariableName))
+                .SetProperty(Ref("eval"), "StreamNum", Constant(StreamNum))
+                .SetProperty(Ref("eval"), "Multiple", Constant(IsMultiple))
+                .SetProperty(Ref("eval"), "Greedy", Constant(IsGreedy))
+                .SetProperty(Ref("eval"), "NodeNumFlat", Constant(NodeNumFlat))
+                .SetProperty(Ref("eval"), "ExprRequiresMultimatchState", Constant(exprRequiresMultimatchState));
             AssignInline(Ref("eval"), method, symbols, classScope);
             method.Block.MethodReturn(Ref("eval"));
             return LocalMethod(method);

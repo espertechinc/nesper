@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
 
             var mappedProperty = new MappedProperty(propertyName);
-            return mappedProperty.GetGetter(
+            return (EventPropertyGetterMappedSPI) mappedProperty.GetGetter(
                 this, beanEventTypeFactory.EventBeanTypedEventFactory, beanEventTypeFactory);
         }
 
@@ -182,7 +182,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
 
             var indexedProperty = new IndexedProperty(indexedPropertyName);
-            return indexedProperty.GetGetter(
+            return (EventPropertyGetterIndexedSPI) indexedProperty.GetGetter(
                 this, beanEventTypeFactory.EventBeanTypedEventFactory, beanEventTypeFactory);
         }
 

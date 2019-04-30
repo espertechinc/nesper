@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary>Serialize object to byte array. </summary>
         /// <param name="underlying">to serialize</param>
         /// <returns>byte array</returns>
-        public static byte[] ObjectToByteArr(Object underlying)
+        public static byte[] ObjectToByteArr(object underlying)
         {
             return SerializerFactory.Serialize(
                 new[] {SerializerFactory.OBJECT_SERIALIZER},
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary>Deserialize byte arry to object. </summary>
         /// <param name="bytes">to read</param>
         /// <returns>object</returns>
-        public static Object ByteArrToObject(byte[] bytes)
+        public static object ByteArrToObject(byte[] bytes)
         {
             if (bytes == null) {
                 return null;

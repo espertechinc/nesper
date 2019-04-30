@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                         if (countActivePerChild[index] >= max) {
                             evalFollowedByNode.Context.AgentInstanceContext.StatementContext.ExceptionHandlingService
                                 .HandleCondition(
-                                    new ConditionPatternSubexpressionMax(max),
+                                    new ConditionPatternSubexpressionMax(max), 
                                     evalFollowedByNode.Context.AgentInstanceContext.StatementContext);
                             return;
                         }

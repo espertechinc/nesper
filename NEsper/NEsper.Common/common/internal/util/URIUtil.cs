@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
 
                 // Match the child
-                String[] factoryPathElements = ParsePathElements(factoryUri);
+                string[] factoryPathElements = ParsePathElements(factoryUri);
                 int score = ComputeScore(childPathElements, factoryPathElements);
                 if (score > 0) {
                     result.Put(score, entry); // Partial match if score is positive
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.util
             return result.Values;
         }
 
-        private static String GetPath(Uri uri)
+        private static string GetPath(Uri uri)
         {
             try {
                 return uri.AbsolutePath;
@@ -100,11 +100,11 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        public static String[] ParsePathElements(Uri uri)
+        public static string[] ParsePathElements(Uri uri)
         {
             var path = GetPath(uri);
             if (path == null) {
-                return new String[0];
+                return new string[0];
             }
 
             while (path.StartsWith("/")) {
@@ -113,15 +113,15 @@ namespace com.espertech.esper.common.@internal.util
 
             var split = path.Split('/');
             if ((split.Length > 0) && (split[0].Length == 0)) {
-                return new String[0];
+                return new string[0];
             }
 
             return split;
         }
 
         private static int ComputeScore(
-            String[] childPathElements,
-            String[] factoryPathElements)
+            string[] childPathElements,
+            string[] factoryPathElements)
         {
             int index = 0;
 

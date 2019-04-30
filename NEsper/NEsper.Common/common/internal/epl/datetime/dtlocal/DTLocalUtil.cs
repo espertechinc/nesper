@@ -34,26 +34,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
         protected internal static void EvaluateCalOpsCalendar(
             IList<CalendarOp> calendarOps,
-            DateTimeEx cal,
+            DateTimeEx dtx,
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             foreach (CalendarOp calendarOp in calendarOps) {
-                calendarOp.Evaluate(cal, eventsPerStream, isNewData, exprEvaluatorContext);
+                calendarOp.Evaluate(dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
 
         protected internal static void EvaluateCalOpsCalendarCodegen(
             CodegenBlock block,
             IList<CalendarForge> calendarForges,
-            CodegenExpressionRef cal,
+            CodegenExpressionRef dtx,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             foreach (CalendarForge calendarForge in calendarForges) {
-                block.Expression(calendarForge.CodegenDateTimeEx(cal, codegenMethodScope, exprSymbol, codegenClassScope));
+                block.Expression(calendarForge.CodegenDateTimeEx(dtx, codegenMethodScope, exprSymbol, codegenClassScope));
             }
         }
 

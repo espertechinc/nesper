@@ -48,11 +48,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             string classPostfix,
             StatementCompileTimeServices services)
         {
-            CreateIndexDesc spec = @base.StatementSpec.Raw.CreateIndexDesc;
+            var spec = @base.StatementSpec.Raw.CreateIndexDesc;
 
-            string infraName = spec.WindowName;
-            NamedWindowMetaData namedWindow = services.NamedWindowCompileTimeResolver.Resolve(infraName);
-            TableMetaData table = services.TableCompileTimeResolver.Resolve(infraName);
+            var infraName = spec.WindowName;
+            var namedWindow = services.NamedWindowCompileTimeResolver.Resolve(infraName);
+            var table = services.TableCompileTimeResolver.Resolve(infraName);
             if (namedWindow == null && table == null) {
                 throw new ExprValidationException("A named window or table by name '" + infraName + "' does not exist");
             }
@@ -87,9 +87,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 namedWindow == null, infraName, infraContextName, @base.StatementSpec.Raw.OptionalContextName, true);
 
             // validate index
-            QueryPlanIndexItemForge explicitIndexDesc = EventTableIndexUtil.ValidateCompileExplicitIndex(
+            var explicitIndexDesc = EventTableIndexUtil.ValidateCompileExplicitIndex(
                 spec.IndexName, spec.IsUnique, spec.Columns, indexedEventType, @base.StatementRawInfo, services);
-            AdvancedIndexIndexMultiKeyPart advancedIndexDesc = explicitIndexDesc.AdvancedIndexProvisionDesc == null
+            var advancedIndexDesc = explicitIndexDesc.AdvancedIndexProvisionDesc == null
                 ? null
                 : explicitIndexDesc.AdvancedIndexProvisionDesc.IndexDesc.AdvancedIndexDescRuntime;
             var imk = new IndexMultiKey(
@@ -102,16 +102,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             services.IndexCompileTimeRegistry.NewIndex(indexKey, new IndexDetailForge(imk, explicitIndexDesc));
 
             // add index current named window information
-            if (namedWindow != null) {
+            if (namedWindow != null)
+            {
                 namedWindow.AddIndex(spec.IndexName, @base.ModuleName, imk, explicitIndexDesc.ToRuntime());
             }
             else {
                 table.AddIndex(spec.IndexName, @base.ModuleName, imk, explicitIndexDesc.ToRuntime());
             }
 
-            var packageScope = new CodegenPackageScope(packageName, null, services.IsInstrumented);
+            var packageScope = new CodegenNamespaceScope(packageName, null, services.IsInstrumented);
 
-            string aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+            var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider), classPostfix);
             var forge = new StatementAgentInstanceFactoryCreateIndexForge(
                 indexedEventType, spec.IndexName, @base.ModuleName, explicitIndexDesc, imk, namedWindow, table);
@@ -126,7 +127,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 new EmptyList<NamedWindowConsumerStreamSpec>(),
                 true,
                 selectSubscriberDescriptor, packageScope, services);
-            string statementProviderClassName =
+            var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgableStmtProvider(
                 aiFactoryProviderClassName, statementProviderClassName, informationals, packageScope);

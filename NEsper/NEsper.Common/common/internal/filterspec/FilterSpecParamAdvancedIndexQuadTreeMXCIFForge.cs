@@ -51,10 +51,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar(
                     typeof(FilterSpecParamAdvancedIndexQuadTreeMXCIF), "fpai",
                     NewInstance(typeof(FilterSpecParamAdvancedIndexQuadTreeMXCIF), Ref("lookupable"), Ref("op")))
-                .ExprDotMethod(Ref("fpai"), "setxEval", MakeAnonymous(xEval, GetType(), classScope, method))
-                .ExprDotMethod(Ref("fpai"), "setyEval", MakeAnonymous(yEval, GetType(), classScope, method))
-                .ExprDotMethod(Ref("fpai"), "setWidthEval", MakeAnonymous(widthEval, GetType(), classScope, method))
-                .ExprDotMethod(Ref("fpai"), "setHeightEval", MakeAnonymous(heightEval, GetType(), classScope, method))
+                .SetProperty(Ref("fpai"), "xEval", MakeAnonymous(xEval, GetType(), classScope, method))
+                .SetProperty(Ref("fpai"), "yEval", MakeAnonymous(yEval, GetType(), classScope, method))
+                .SetProperty(Ref("fpai"), "WidthEval", MakeAnonymous(widthEval, GetType(), classScope, method))
+                .SetProperty(Ref("fpai"), "HeightEval", MakeAnonymous(heightEval, GetType(), classScope, method))
                 .MethodReturn(Ref("fpai"));
             return method;
         }

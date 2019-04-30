@@ -11,7 +11,9 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -33,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, true);
             var selectEnv = new SelectExprProcessorCodegenSymbol();
-            CodegenSymbolProvider symbolProvider = new ProxyCodegenSymbolProvider {
+            CodegenSymbolProvider symbolProvider = new ProxyCodegenSymbolProvider
+            {
                 ProcProvide = symbols => {
                     exprSymbol.Provide(symbols);
                     selectEnv.Provide(symbols);
@@ -49,14 +52,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
             anonymousSelect.AddMethod("process", processMethod);
             processMethod.Block.Apply(
-                Instblock(classScope, "qSelectClause", REF_EPS, REF_ISNEWDATA, REF_ISSYNTHESIZE, REF_EXPREVALCONTEXT));
+                Instblock(classScope, "qSelectClause", REF_EPS, ResultSetProcessorCodegenNames.REF_ISNEWDATA, REF_ISSYNTHESIZE, REF_EXPREVALCONTEXT));
 
             var performMethod = insertHelper.ProcessCodegen(
                 resultType, eventBeanFactory, processMethod, selectEnv, exprSymbol, classScope);
             exprSymbol.DerivedSymbolsCodegen(processMethod, processMethod.Block, classScope);
             processMethod.Block
                 .DeclareVar(typeof(EventBean), "result", LocalMethod(performMethod))
-                .Apply(Instblock(classScope, "aSelectClause", REF_ISNEWDATA, Ref("result"), ConstantNull()))
+                .Apply(Instblock(classScope, "aSelectClause", ResultSetProcessorCodegenNames.REF_ISNEWDATA, Ref("result"), ConstantNull()))
                 .MethodReturn(Ref("result"));
 
             return anonymousSelect;

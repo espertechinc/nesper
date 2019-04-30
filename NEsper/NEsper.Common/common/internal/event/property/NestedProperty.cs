@@ -70,8 +70,12 @@ namespace com.espertech.esper.common.@internal.@event.property
             IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
 
             Property lastProperty = null;
-            for (var ii = 0; ii < Properties.Count; ii++) {
-                var property = Properties[ii];
+
+            var properties = Properties;
+            var propertiesCount = properties.Count;
+
+            for (var ii = 0; ii < propertiesCount; ii++) {
+                var property = properties[ii];
                 lastProperty = property;
                 EventPropertyGetter getter = property.GetGetter(
                     eventType, eventBeanTypedEventFactory, beanEventTypeFactory);
@@ -79,7 +83,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                     return null;
                 }
 
-                if (it.MoveNext()) {
+                if (ii < (propertiesCount - 1))
+                {
                     var clazz = property.GetPropertyType(eventType, beanEventTypeFactory);
                     if (clazz == null) {
                         // if the property is not valid, return null
@@ -103,7 +108,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             var finalPropertyType = lastProperty.GetPropertyTypeGeneric(eventType, beanEventTypeFactory);
             return new NestedPropertyGetter(
-                getters, eventBeanTypedEventFactory, finalPropertyType.Type, finalPropertyType.Generic,
+                getters, eventBeanTypedEventFactory, finalPropertyType.GenericType, finalPropertyType.Generic,
                 beanEventTypeFactory);
         }
 
@@ -114,8 +119,10 @@ namespace com.espertech.esper.common.@internal.@event.property
             Type result = null;
             var boxed = false;
 
-            for (var ii = 0; ii < Properties.Count; ii++) {
-                var property = Properties[ii];
+            var properties = Properties;
+            var propertiesCount = properties.Count;
+            for (var ii = 0; ii < propertiesCount; ii++) {
+                var property = properties[ii];
                 boxed |= !(property is SimpleProperty);
                 result = property.GetPropertyType(eventType, beanEventTypeFactory);
 
@@ -124,7 +131,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                     return null;
                 }
 
-                if (it.MoveNext()) {
+                if (ii < (propertiesCount - 1)) {
                     // Map cannot be used to further nest as the type cannot be determined
                     if (result == typeof(IDictionary<object, object>)) {
                         return null;
@@ -147,8 +154,10 @@ namespace com.espertech.esper.common.@internal.@event.property
         {
             GenericPropertyDesc result = null;
 
-            for (var ii = 0; ii < Properties.Count; ii++) {
-                var property = Properties[ii];
+            var properties = Properties;
+            var propertiesCount = properties.Count;
+            for (var ii = 0; ii < propertiesCount; ii++) {
+                var property = properties[ii];
                 result = property.GetPropertyTypeGeneric(eventType, beanEventTypeFactory);
 
                 if (result == null) {
@@ -156,17 +165,18 @@ namespace com.espertech.esper.common.@internal.@event.property
                     return null;
                 }
 
-                if (it.MoveNext()) {
+                if (ii < (propertiesCount - 1))
+                {
                     // Map cannot be used to further nest as the type cannot be determined
-                    if (result.Type == typeof(IDictionary<string, object>)) {
+                    if (result.GenericType == typeof(IDictionary<string, object>)) {
                         return null;
                     }
 
-                    if (result.Type.IsArray) {
+                    if (result.GenericType.IsArray) {
                         return null;
                     }
 
-                    eventType = beanEventTypeFactory.GetCreateBeanType(result.Type);
+                    eventType = beanEventTypeFactory.GetCreateBeanType(result.GenericType);
                 }
             }
 
@@ -204,15 +214,18 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             var complexElement = parentComplexProperty;
 
-            for (var ii = 0; ii < Properties.Count; ii++) {
-                var property = Properties[ii];
-                EventPropertyGetter getter = property.GetGetterDOM(
+            var properties = Properties;
+            var propertiesCount = properties.Count;
+            for (var ii = 0; ii < propertiesCount; ii++) {
+                var property = properties[ii];
+                var getter = property.GetGetterDOM(
                     complexElement, eventBeanTypedEventFactory, eventType, propertyExpression);
                 if (getter == null) {
                     return null;
                 }
 
-                if (it.MoveNext()) {
+                if (ii < (propertiesCount - 1))
+                {
                     var childSchemaItem = property.GetPropertyTypeSchema(complexElement);
                     if (childSchemaItem == null) {
                         // if the property is not valid, return null
@@ -244,11 +257,14 @@ namespace com.espertech.esper.common.@internal.@event.property
             Property lastProperty = null;
             var complexElement = parentComplexProperty;
 
-            for (var ii = 0; ii < Properties.Count; ii++) {
-                var property = Properties[ii];
+            var properties = Properties;
+            var propertiesCount = properties.Count;
+            for (var ii = 0; ii < propertiesCount; ii++) {
+                var property = properties[ii];
                 lastProperty = property;
 
-                if (it.MoveNext()) {
+                if (ii < (propertiesCount - 1))
+                {
                     var childSchemaItem = property.GetPropertyTypeSchema(complexElement);
                     if (childSchemaItem == null) {
                         // if the property is not valid, return null
@@ -286,9 +302,12 @@ namespace com.espertech.esper.common.@internal.@event.property
             var currentDictionary = optionalMapPropTypes;
 
             var count = 0;
-            for (var ii = 0; ii < Properties.Count; ii++) {
+            var properties = Properties;
+            var propertiesCount = properties.Count;
+
+            for (var ii = 0; ii < propertiesCount; ii++) {
                 count++;
-                var property = Properties[ii];
+                var property = properties[ii];
                 var theBase = (PropertyBase) property;
                 var propertyName = theBase.PropertyNameAtomic;
 
@@ -305,7 +324,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                     return null;
                 }
 
-                if (!it.MoveNext()) {
+                if (ii >= (propertiesCount - 1))
+                {
                     if (nestedType is Type) {
                         return (Type) nestedType;
                     }
@@ -384,9 +404,12 @@ namespace com.espertech.esper.common.@internal.@event.property
             var currentDictionary = optionalMapPropTypes;
 
             var count = 0;
-            for (var ii = 0; ii < Properties.Count; ii++) {
+            var properties = Properties;
+            var propertiesCount = properties.Count;
+
+            for (var ii = 0; ii < propertiesCount; ii++) {
                 count++;
-                var property = Properties[ii];
+                var property = properties[ii];
 
                 // manufacture a getter for getting the item out of the map
                 EventPropertyGetterSPI getter = property.GetGetterMap(
@@ -401,7 +424,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 var propertyName = theBase.PropertyNameAtomic;
 
                 // For the next property if there is one, check how to property type is defined
-                if (!it.MoveNext()) {
+                if (ii >= (propertiesCount - 1)) {
                     continue;
                 }
 

@@ -152,7 +152,7 @@ namespace com.espertech.esper.container
 
         private ComponentRegistration<T> WithName<T>(
             ComponentRegistration<T> componentRegistration,
-            String name)
+            string name)
             where T : class
         {
             if (string.IsNullOrEmpty(name))

@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
-            CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
 
             method.Block.ApplyTri(

@@ -17,13 +17,13 @@ namespace com.espertech.esper.common.@internal.collection
     /// </summary>
     public class ThreadWorkQueue
     {
-        private readonly IThreadLocal<DualWorkQueue<Object>> _threadQueue;
+        private readonly IThreadLocal<DualWorkQueue<object>> _threadQueue;
 
         /// <summary>
         /// Gets the thread queue.
         /// </summary>
         /// <value>The thread queue.</value>
-        public DualWorkQueue<Object> ThreadQueue {
+        public DualWorkQueue<object> ThreadQueue {
             get { return _threadQueue.GetOrCreate(); }
         }
 
@@ -38,17 +38,17 @@ namespace com.espertech.esper.common.@internal.collection
 
         /// <summary>Adds event to the end of the event queue.</summary>
         /// <param name="ev">event to add</param>
-        public void AddBack(Object ev)
+        public void AddBack(object ev)
         {
-            DualWorkQueue<Object> queue = ThreadQueue;
+            DualWorkQueue<object> queue = ThreadQueue;
             queue.BackQueue.AddLast(ev);
         }
 
         /// <summary>Adds event to the front of the queue.</summary>
         /// <param name="ev">event to add</param>
-        public void AddFront(Object ev)
+        public void AddFront(object ev)
         {
-            DualWorkQueue<Object> queue = ThreadQueue;
+            DualWorkQueue<object> queue = ThreadQueue;
             queue.FrontQueue.AddLast(ev);
         }
     }

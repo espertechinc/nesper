@@ -17,16 +17,16 @@ namespace com.espertech.esper.common.@internal.util
         bool Accepts(Type c);
 
         void SerializeAny(
-            Object value,
+            object value,
             Stream stream);
 
-        Object DeserializeAny(Stream stream);
+        object DeserializeAny(Stream stream);
     }
 
     public class StreamSerializer : Serializer
     {
-        public Action<Object, Stream> ProcSerialize { get; set; }
-        public Func<Stream, Object> ProcDeserialize { get; set; }
+        public Action<object, Stream> ProcSerialize { get; set; }
+        public Func<Stream, object> ProcDeserialize { get; set; }
 
         /// <summary>
         /// Acceptses the specified c.

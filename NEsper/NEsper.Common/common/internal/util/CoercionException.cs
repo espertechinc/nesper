@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary> Ctor.</summary>
         /// <param name="message">supplies the detailed description
         /// </param>
-        public CoercionException(String message)
+        public CoercionException(string message)
             : base(message)
         {
         }

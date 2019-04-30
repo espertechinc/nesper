@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenClassScope classScope,
             CodegenMethod method)
         {
-            var numbered = classScope.PackageScope.SubstitutionParamsByNumber;
-            var named = classScope.PackageScope.SubstitutionParamsByName;
+            var numbered = classScope.NamespaceScope.SubstitutionParamsByNumber;
+            var named = classScope.NamespaceScope.SubstitutionParamsByName;
             if (numbered.IsEmpty() && named.IsEmpty()) {
                 return;
             }

@@ -6,38 +6,37 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
-    using DataMap = IDictionary<String, Object>;
+    using DataMap = IDictionary<string, object>;
 
     /// <summary>
-    /// Utility for working with acyclic graph: determines cyclic dependency and dependency-satisfying processing order.
+    ///     Utility for working with acyclic graph: determines cyclic dependency and dependency-satisfying processing order.
     /// </summary>
     public class GraphUtil
     {
         /// <summary>
-        /// Deep-merge a map into another map returning a result map.
-        /// <para/>
-        /// Copies all values present in the original map to a new map, adding additional value present in
-        /// the second map passed in, ignoring same-key values in the second map that are present in the original.
-        /// <para/>
-        /// If the value is a Map itself, repeats the operation on the Map value.
+        ///     Deep-merge a map into another map returning a result map.
+        ///     <para />
+        ///     Copies all values present in the original map to a new map, adding additional value present in
+        ///     the second map passed in, ignoring same-key values in the second map that are present in the original.
+        ///     <para />
+        ///     If the value is a Map itself, repeats the operation on the Map value.
         /// </summary>
         /// <param name="original">nestable Map of entries to retain and not overwrite</param>
         /// <param name="additional">nestable Map of entries to add to the original</param>
         /// <returns>
-        /// merge of original and additional nestable map
+        ///     merge of original and additional nestable map
         /// </returns>
-        public static IDictionary<String, Object> MergeNestableMap(
-            IDictionary<String, Object> original,
-            IDictionary<String, Object> additional)
+        public static IDictionary<string, object> MergeNestableMap(
+            IDictionary<string, object> original,
+            IDictionary<string, object> additional)
         {
-            var result = new LinkedHashMap<String, Object>(original);
+            var result = new LinkedHashMap<string, object>(original);
 
             foreach (var additionalEntry in additional) {
                 var name = additionalEntry.Key;
@@ -45,11 +44,11 @@ namespace com.espertech.esper.common.@internal.util
 
                 var originalValue = original.Get(name);
 
-                if ((originalValue is DataMap) &&
-                    (additionalValue is DataMap)) {
+                if (originalValue is DataMap &&
+                    additionalValue is DataMap) {
                     var innerAdditional = (DataMap) additionalValue;
                     var innerOriginal = (DataMap) originalValue;
-                    Object newValue = MergeNestableMap(innerOriginal, innerAdditional);
+                    object newValue = MergeNestableMap(innerOriginal, innerAdditional);
                     result.Put(name, newValue);
                     continue;
                 }
@@ -66,16 +65,19 @@ namespace com.espertech.esper.common.@internal.util
 
         /// <summary>Check cyclic dependency and determine processing order for the given graph. </summary>
         /// <param name="graph">is represented as child nodes that have one or more parent nodes that they are dependent on</param>
-        /// <returns>set of parent and child nodes in order such that no node's dependency is not satisfiedby a prior nodein the set </returns>
+        /// <returns>
+        ///     set of parent and child nodes in order such that no node's dependency is not satisfiedby a prior nodein the
+        ///     set
+        /// </returns>
         /// <throws>GraphCircularDependencyException if a dependency has been detected</throws>
-        public static ICollection<String> GetTopDownOrder(IDictionary<String, ICollection<String>> graph)
+        public static ICollection<string> GetTopDownOrder(IDictionary<string, ICollection<string>> graph)
         {
             var circularDependency = GetFirstCircularDependency(graph);
             if (circularDependency != null) {
                 throw new GraphCircularDependencyException("Circular dependency detected between " + circularDependency.Render());
             }
 
-            var reversedGraph = new Dictionary<String, ICollection<String>>();
+            var reversedGraph = new Dictionary<string, ICollection<string>>();
 
             // Reversed the graph - build a list of children per parent
             foreach (var entry in graph) {
@@ -85,7 +87,7 @@ namespace com.espertech.esper.common.@internal.util
                 foreach (var parent in parents) {
                     var childList = reversedGraph.Get(parent);
                     if (childList == null) {
-                        childList = new FIFOHashSet<String>();
+                        childList = new FIFOHashSet<string>();
                         reversedGraph.Put(parent, childList);
                     }
 
@@ -94,13 +96,13 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             // Determine all root nodes, which are those without parent
-            var roots = new SortedSet<String>();
+            var roots = new SortedSet<string>();
             foreach (var parents in graph.Values) {
                 if (parents == null) {
                     continue;
                 }
 
-                foreach (String parent in parents) {
+                foreach (var parent in parents) {
                     // node not itself a child
                     if (!graph.ContainsKey(parent)) {
                         roots.Add(parent);
@@ -109,17 +111,17 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             // for each root, recursively add its child nodes, this becomes the default order
-            ICollection<String> graphFlattened = new FIFOHashSet<String>();
-            foreach (String root in roots) {
+            ICollection<string> graphFlattened = new FIFOHashSet<string>();
+            foreach (var root in roots) {
                 RecusiveAdd(graphFlattened, root, reversedGraph);
             }
 
             // now walk down the default order and for each node ensure all parents are created
-            ICollection<String> created = new FIFOHashSet<String>();
-            ICollection<String> removeList = new HashSet<String>();
+            ICollection<string> created = new FIFOHashSet<string>();
+            ICollection<string> removeList = new HashSet<string>();
             while (graphFlattened.IsNotEmpty()) {
                 removeList.Clear();
-                foreach (String node in graphFlattened) {
+                foreach (var node in graphFlattened) {
                     if (!RecursiveParentsCreated(node, created, graph)) {
                         continue;
                     }
@@ -136,21 +138,21 @@ namespace com.espertech.esper.common.@internal.util
 
         // Determine if all the node's parents and their parents have been added to the created set
         private static bool RecursiveParentsCreated(
-            String node,
-            ICollection<String> created,
-            IDictionary<String, ICollection<String>> graph)
+            string node,
+            ICollection<string> created,
+            IDictionary<string, ICollection<string>> graph)
         {
             var parents = graph.Get(node);
             if (parents == null) {
                 return true;
             }
 
-            foreach (String parent in parents) {
+            foreach (var parent in parents) {
                 if (!created.Contains(parent)) {
                     return false;
                 }
 
-                bool allParentsCreated = RecursiveParentsCreated(parent, created, graph);
+                var allParentsCreated = RecursiveParentsCreated(parent, created, graph);
                 if (!allParentsCreated) {
                     return false;
                 }
@@ -160,17 +162,17 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         private static void RecusiveAdd(
-            ICollection<String> graphFlattened,
-            String root,
-            IDictionary<String, ICollection<String>> reversedGraph)
+            ICollection<string> graphFlattened,
+            string root,
+            IDictionary<string, ICollection<string>> reversedGraph)
         {
             graphFlattened.Add(root);
-            ICollection<String> childNodes = reversedGraph.Get(root);
+            var childNodes = reversedGraph.Get(root);
             if (childNodes == null) {
                 return;
             }
 
-            foreach (String child in childNodes) {
+            foreach (var child in childNodes) {
                 RecusiveAdd(graphFlattened, child, reversedGraph);
             }
         }
@@ -178,13 +180,13 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary>Returns any circular dependency as a stack of stream numbers, or null if none exist. </summary>
         /// <param name="graph">the dependency graph</param>
         /// <returns>circular dependency stack</returns>
-        private static Stack<String> GetFirstCircularDependency(IDictionary<String, ICollection<String>> graph)
+        private static Stack<string> GetFirstCircularDependency(IDictionary<string, ICollection<string>> graph)
         {
-            foreach (String child in graph.Keys) {
-                Stack<String> deepDependencies = new Stack<String>();
+            foreach (var child in graph.Keys) {
+                var deepDependencies = new Stack<string>();
                 deepDependencies.Push(child);
 
-                bool isCircular = RecursiveDeepDepends(deepDependencies, child, graph);
+                var isCircular = RecursiveDeepDepends(deepDependencies, child, graph);
                 if (isCircular) {
                     return deepDependencies;
                 }
@@ -194,22 +196,22 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         private static bool RecursiveDeepDepends(
-            Stack<String> deepDependencies,
-            String currentChild,
-            IDictionary<String, ICollection<String>> graph)
+            Stack<string> deepDependencies,
+            string currentChild,
+            IDictionary<string, ICollection<string>> graph)
         {
             var required = graph.Get(currentChild);
             if (required == null) {
                 return false;
             }
 
-            foreach (String parent in required) {
+            foreach (var parent in required) {
                 if (deepDependencies.Contains(parent)) {
                     return true;
                 }
 
                 deepDependencies.Push(parent);
-                bool isDeep = RecursiveDeepDepends(deepDependencies, parent, graph);
+                var isDeep = RecursiveDeepDepends(deepDependencies, parent, graph);
                 if (isDeep) {
                     return true;
                 }

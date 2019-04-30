@@ -563,6 +563,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             TextWriter message,
             object value)
         {
+            CompatExtensions.RenderAny(value);
             TypeHelper.GetObjectValuePretty(value, message);
         }
 

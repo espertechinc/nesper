@@ -340,16 +340,6 @@ namespace com.espertech.esper.common.@internal.view.derived
             }
         }
 
-        public object Clone()
-        {
-            try {
-                return base.Clone();
-            }
-            catch (CloneNotSupportedException e) {
-                throw new EPException(e);
-            }
-        }
-
         public override string ToString()
         {
             return "datapoints=" + N +

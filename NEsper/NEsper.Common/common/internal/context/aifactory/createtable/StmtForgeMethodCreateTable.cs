@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
             // build forge list
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>(2);
-            var packageScope = new CodegenPackageScope(
+            var packageScope = new CodegenNamespaceScope(
                 packageName, statementFieldsClassName, services.IsInstrumented);
 
             var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateTable(

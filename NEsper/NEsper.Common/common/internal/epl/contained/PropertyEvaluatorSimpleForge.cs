@@ -56,16 +56,14 @@ namespace com.espertech.esper.common.@internal.epl.contained
             var method = parent.MakeChild(typeof(PropertyEvaluatorSimple), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(PropertyEvaluatorSimple), "pe", NewInstance(typeof(PropertyEvaluatorSimple)))
-                .ExprDotMethod(
-                    Ref("pe"), "setFilter",
+                .SetProperty(Ref("pe"), "Filter",
                     Filter == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(Filter, method, GetType(), classScope))
-                .ExprDotMethod(Ref("pe"), "setContainedEventEval", containedEventEval.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("pe"), "setFragmentIsIndexed", Constant(fragmentEventType.IsIndexed))
-                .ExprDotMethod(Ref("pe"), "setExpressionText", Constant(ExpressionText))
-                .ExprDotMethod(
-                    Ref("pe"), "setEventType",
+                .SetProperty(Ref("pe"), "ContainedEventEval", containedEventEval.Make(method, symbols, classScope))
+                .SetProperty(Ref("pe"), "FragmentIsIndexed", Constant(fragmentEventType.IsIndexed))
+                .SetProperty(Ref("pe"), "ExpressionText", Constant(ExpressionText))
+                .SetProperty(Ref("pe"), "EventType",
                     EventTypeUtility.ResolveTypeCodegen(fragmentEventType.FragmentType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("pe"));
             return LocalMethod(method);

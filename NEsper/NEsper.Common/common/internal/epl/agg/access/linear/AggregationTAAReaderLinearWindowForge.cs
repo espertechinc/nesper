@@ -40,9 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar(
                     typeof(AggregationTAAReaderLinearWindow), "strat",
                     NewInstance(typeof(AggregationTAAReaderLinearWindow)))
-                .ExprDotMethod(Ref("strat"), "setComponentType", Constant(ResultType.GetElementType()))
-                .ExprDotMethod(
-                    Ref("strat"), "setOptionalEvaluator",
+                .SetProperty(Ref("strat"), "ComponentType", Constant(ResultType.GetElementType()))
+                .SetProperty(Ref("strat"), "OptionalEvaluator",
                     optionalEvaluator == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(

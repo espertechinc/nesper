@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.rettype
 
         public CodegenExpression InitCtorScoped()
         {
-            return epType.Codegen(classScope.PackageScope.InitMethod, classScope, EPStatementInitServicesConstants.REF);
+            return epType.Codegen(classScope.NamespaceScope.InitMethod, classScope, EPStatementInitServicesConstants.REF);
         }
 
         public override bool Equals(object o)

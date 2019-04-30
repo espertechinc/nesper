@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.magic
         /// Creates a new instance of the object.  Assumes a default constructor.
         /// </summary>
         /// <returns></returns>
-        public Object New()
+        public object New()
         {
             return Activator.CreateInstance(_type);
         }
@@ -415,19 +415,19 @@ namespace com.espertech.esper.common.magic
             }
 
             // Start by removing the "Insert" from the front of the mutatorMethod name
-            String inferredName = mutatorMethod.Name.Substring(3);
-            String newInferredName = null;
+            string inferredName = mutatorMethod.Name.Substring(3);
+            string newInferredName = null;
             // Leave uppercase inferred names such as URL
             if (inferredName.Length >= 2) {
-                if (Char.IsUpper(inferredName[0]) &&
-                    Char.IsUpper(inferredName[1])) {
+                if (char.IsUpper(inferredName[0]) &&
+                    char.IsUpper(inferredName[1])) {
                     newInferredName = inferredName;
                 }
             }
 
             // camelCase the inferred name
             if (newInferredName == null) {
-                newInferredName = Char.ToString(Char.ToUpper(inferredName[0]));
+                newInferredName = char.ToString(char.ToUpper(inferredName[0]));
                 if (inferredName.Length > 1) {
                     newInferredName += inferredName.Substring(1);
                 }
@@ -451,19 +451,19 @@ namespace com.espertech.esper.common.magic
             }
 
             // Start by removing the "get" from the front of the accessorMethod name
-            String inferredName = accessorMethod.Name.Substring(3);
-            String newInferredName = null;
+            string inferredName = accessorMethod.Name.Substring(3);
+            string newInferredName = null;
             // Leave uppercase inferred names such as URL
             if (inferredName.Length >= 2) {
-                if (Char.IsUpper(inferredName[0]) &&
-                    Char.IsUpper(inferredName[1])) {
+                if (char.IsUpper(inferredName[0]) &&
+                    char.IsUpper(inferredName[1])) {
                     newInferredName = inferredName;
                 }
             }
 
             // camelCase the inferred name
             if (newInferredName == null) {
-                newInferredName = Char.ToString(Char.ToUpper(inferredName[0]));
+                newInferredName = char.ToString(char.ToUpper(inferredName[0]));
                 if (inferredName.Length > 1) {
                     newInferredName += inferredName.Substring(1);
                 }
@@ -740,7 +740,7 @@ namespace com.espertech.esper.common.magic
         /// <typeparam name="T"></typeparam>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static T CastTo<T>(Object value)
+        public static T CastTo<T>(object value)
         {
             if (value is T)
                 return (T) value;
@@ -750,7 +750,7 @@ namespace com.espertech.esper.common.magic
             // an array of System.Object, the conversion is basically a recursive
             // call to this method.
             if (typeof(T).IsArray) {
-                var valueArray = value as Object[];
+                var valueArray = value as object[];
                 if (valueArray == null) {
                     return default(T); // null
                 }
@@ -765,7 +765,7 @@ namespace com.espertech.esper.common.magic
                     returnArray.SetValue(subCast.Invoke(null, new[] {valueArray[ii]}), ii);
                 }
 
-                return (T) ((Object) returnArray);
+                return (T) ((object) returnArray);
             }
 
             var genericTypeCaster = CastHelper.GetCastConverter<T>();
@@ -905,7 +905,7 @@ namespace com.espertech.esper.common.magic
         /// </summary>
         /// <param name="instance">The instance.</param>
         /// <returns></returns>
-        private Object GetValue(Object instance)
+        private object GetValue(object instance)
         {
             var parentInstance = Parent.GetFunction.Invoke(instance);
             var childInstance = Child.GetFunction.Invoke(parentInstance);
@@ -918,8 +918,8 @@ namespace com.espertech.esper.common.magic
         /// <param name="instance">The instance.</param>
         /// <param name="value">The value.</param>
         private void SetValue(
-            Object instance,
-            Object value)
+            object instance,
+            object value)
         {
             var parentInstance = Parent.GetFunction.Invoke(instance);
             Child.SetFunction.Invoke(parentInstance, value);

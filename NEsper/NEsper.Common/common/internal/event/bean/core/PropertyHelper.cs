@@ -237,7 +237,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     continue;
                 }
 
-                Type[] parameterTypes = methods[i].ParameterTypes;
+                Type[] parameterTypes = methods[i].GetParameterTypes();
                 if (parameterTypes.Length != 1) {
                     continue;
                 }

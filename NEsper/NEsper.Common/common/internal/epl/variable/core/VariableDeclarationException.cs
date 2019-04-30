@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     {
         /// <summary>Ctor.</summary>
         /// <param name="msg">the exception message.</param>
-        public VariableDeclarationException(String msg)
+        public VariableDeclarationException(string msg)
             : base(msg)
         {
         }

@@ -62,9 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                     typeof(ExpressionGuardFactory), "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("guardWhile"))
-                .ExprDotMethod(Ref("factory"), "setConvertor", convertor.MakeAnonymous(method, classScope))
-                .ExprDotMethod(
-                    Ref("factory"), "setExpression",
+                .SetProperty(Ref("factory"), "Convertor", convertor.MakeAnonymous(method, classScope))
+                .SetProperty(Ref("factory"), "Expression",
                     ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, GetType(), classScope))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

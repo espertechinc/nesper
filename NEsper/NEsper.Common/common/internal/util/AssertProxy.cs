@@ -8,10 +8,9 @@
 
 using System;
 using System.Linq;
-using com.espertech.esper.common.@internal.util;
 using XLR8.CGLib;
 
-namespace com.espertech.esper.client.scopetest
+namespace com.espertech.esper.common.@internal.util
 {
     /// <summary>
     /// Internal abstraction around the assertion process.  This method can proxy its calls to NUnit, System.Diagnostics

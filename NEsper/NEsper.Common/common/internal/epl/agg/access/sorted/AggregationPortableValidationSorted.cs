@@ -56,9 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .DeclareVar(
                     typeof(AggregationPortableValidationSorted), "v",
                     NewInstance(typeof(AggregationPortableValidationSorted)))
-                .ExprDotMethod(Ref("v"), "setAggFuncName", Constant(AggFuncName))
-                .ExprDotMethod(
-                    Ref("v"), "setContainedEventType",
+                .SetProperty(Ref("v"), "AggFuncName", Constant(AggFuncName))
+                .SetProperty(Ref("v"), "ContainedEventType",
                     EventTypeUtility.ResolveTypeCodegen(ContainedEventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("v"));
             return LocalMethod(method);

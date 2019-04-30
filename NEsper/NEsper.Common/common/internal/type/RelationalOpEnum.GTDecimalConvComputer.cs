@@ -51,7 +51,12 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpression rhs,
                 Type rhsType)
             {
-                return CodegenDecimalConv(lhs, lhsType, rhs, rhsType, convOne, convTwo, CodegenExpressionRelational.CodegenRelational.GT);
+                var leftConv = convOne.CoerceBoxedDecimalCodegen(lhs, lhsType);
+                var rightConv = convTwo.CoerceBoxedDecimalCodegen(rhs, rhsType);
+                return CodegenExpressionBuilder.Relational(
+                    CodegenExpressionBuilder.ExprDotMethod(leftConv, "CompareTo", rightConv),
+                    CodegenExpressionRelational.CodegenRelational.GT,
+                    CodegenExpressionBuilder.Constant(0));
             }
         }
     }

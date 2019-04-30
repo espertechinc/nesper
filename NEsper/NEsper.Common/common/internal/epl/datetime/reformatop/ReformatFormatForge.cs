@@ -154,14 +154,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         private CodegenExpressionField CodegenFormatFieldInit(CodegenClassScope classScope)
         {
             var formatEvalCall = CodegenLegoMethodExpression.CodegenExpression(
-                formatter, classScope.PackageScope.InitMethod, classScope);
+                formatter, classScope.NamespaceScope.InitMethod, classScope);
             var formatEval = LocalMethod(formatEvalCall, ConstantNull(), ConstantTrue(), ConstantNull());
             CodegenExpression init;
             if (formatterType.FormatterType != typeof(string)) {
                 init = formatEval;
             }
             else {
-                var parse = classScope.PackageScope.InitMethod.MakeChild(
+                var parse = classScope.NamespaceScope.InitMethod.MakeChild(
                     typeof(DateFormat), GetType(), classScope);
                 parse.Block.MethodReturn(NewInstance(typeof(SimpleDateFormat), formatEval));
                 init = LocalMethod(parse);

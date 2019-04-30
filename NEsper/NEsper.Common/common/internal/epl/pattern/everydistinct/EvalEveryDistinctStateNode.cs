@@ -214,7 +214,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         public override void Accept(EvalStateNodeVisitor visitor)
         {
-            visitor.VisitEveryDistinct(everyDistinctNode.FactoryNode, this, beginState, spawnedNodes.Values);
+            visitor.VisitEveryDistinct(everyDistinctNode.FactoryNode, this, beginState, spawnedNodes.Values.Unwrap<object>());
             foreach (var spawnedNode in spawnedNodes.Keys) {
                 spawnedNode.Accept(visitor);
             }

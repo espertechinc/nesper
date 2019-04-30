@@ -28,11 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             Type generator)
         {
             var symbols = new SAIFFInitializeSymbol();
-            var variableInit = classScope.PackageScope.InitMethod
+            var variableInit = classScope.NamespaceScope.InitMethod
                 .MakeChildWithScope(typeof(Variable), generator, symbols, classScope).AddParam(
                     typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
             variableInit.Block.MethodReturn(MakeResolveVariable(variableMetaData, EPStatementInitServicesConstants.REF));
-            return classScope.PackageScope.AddFieldUnshared(
+            return classScope.NamespaceScope.AddFieldUnshared(
                 true, typeof(Variable), LocalMethod(variableInit, EPStatementInitServicesConstants.REF));
         }
 

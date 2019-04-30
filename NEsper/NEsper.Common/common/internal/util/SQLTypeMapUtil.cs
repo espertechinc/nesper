@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>Type for sql types</returns>
         public static Type SqlTypeToClass(
             int sqlType,
-            String className)
+            string className)
         {
             throw new ArgumentException("Logic path is not active");
         }

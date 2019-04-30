@@ -84,8 +84,8 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 
             method.Block
                 .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
     }
 } // end of namespace

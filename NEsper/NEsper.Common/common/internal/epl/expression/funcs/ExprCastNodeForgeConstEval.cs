@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var evaluationType = forge.EvaluationType;
-            var initMethod = codegenClassScope.PackageScope.InitMethod.MakeChildWithScope(
+            var initMethod = codegenClassScope.NamespaceScope.InitMethod.MakeChildWithScope(
                 evaluationType, typeof(ExprCastNodeForgeConstEval), CodegenSymbolProviderEmpty.INSTANCE,
                 codegenClassScope);
 

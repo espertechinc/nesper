@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             string variableName,
             int streamNum,
             bool multiple,
-            bool isGreedy,
+            bool? isGreedy,
             bool exprRequiresMultimatchState,
             ExprNode expression)
             : base(nodeNum, variableName, streamNum, multiple, isGreedy, exprRequiresMultimatchState)
@@ -65,8 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             CodegenClassScope classScope)
         {
             if (expression != null) {
-                method.Block.ExprDotMethod(
-                    eval, "setExpression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, GetType(), classScope));
+                method.Block.SetProperty(eval, "Expression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, GetType(), classScope));
             }
         }
     }

@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="columnName">is the column name</param>
         /// <returns>object</returns>
         /// <throws>SQLException if the mapping cannot be performed</throws>
-        Object GetValue(
-            Object rawObject,
-            String columnName);
+        object GetValue(
+            object rawObject,
+            string columnName);
 
         /// <summary>Returns the target data type.</summary>
         /// <returns>Data type</returns>
@@ -34,9 +34,9 @@ namespace com.espertech.esper.common.@internal.util
     /// <summary>
     /// Returns the object for the given column.
     /// </summary>
-    public delegate Object DataRetriever(
-        Object rawObject,
-        String columnName);
+    public delegate object DataRetriever(
+        object rawObject,
+        string columnName);
 
     /// <summary>
     /// Implementation of the DataTypeBinding that uses delegates
@@ -63,9 +63,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="columnName">is the column name</param>
         /// <returns>object</returns>
         /// <throws>SQLException if the mapping cannot be performed</throws>
-        public Object GetValue(
-            Object rawObject,
-            String columnName)
+        public object GetValue(
+            object rawObject,
+            string columnName)
         {
             return dataRetriever.Invoke(rawObject, columnName);
         }

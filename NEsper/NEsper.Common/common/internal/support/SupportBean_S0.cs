@@ -15,12 +15,12 @@ namespace com.espertech.esper.common.@internal.support
     {
         private static int _idCounter;
 
-        public static Object[] MakeS0(
-            String propOne,
-            String[] propTwo)
+        public static object[] MakeS0(
+            string propOne,
+            string[] propTwo)
         {
             _idCounter++;
-            var events = new Object[propTwo.Length];
+            var events = new object[propTwo.Length];
             for (int i = 0; i < propTwo.Length; i++) {
                 events[i] = new SupportBean_S0(_idCounter, propOne, propTwo[i]);
             }
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public SupportBean_S0(
             int id,
-            String p00)
+            string p00)
         {
             Id = id;
             P00 = p00;
@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.support
 
         public SupportBean_S0(
             int id,
-            String p00,
-            String p01)
+            string p00,
+            string p01)
         {
             Id = id;
             P00 = p00;
@@ -53,9 +53,9 @@ namespace com.espertech.esper.common.@internal.support
 
         public SupportBean_S0(
             int id,
-            String p00,
-            String p01,
-            String p02)
+            string p00,
+            string p01,
+            string p02)
         {
             Id = id;
             P00 = p00;
@@ -65,10 +65,10 @@ namespace com.espertech.esper.common.@internal.support
 
         public SupportBean_S0(
             int id,
-            String p00,
-            String p01,
-            String p02,
-            String p03)
+            string p00,
+            string p01,
+            string p02,
+            string p03)
         {
             Id = id;
             P00 = p00;
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public string P03 { get; set; }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "SupportBean_S0{" +
                    "id=" + Id +
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.support
                    '}';
         }
 
-        public override bool Equals(Object o)
+        public override bool Equals(object o)
         {
             if (this == o) return true;
             if (o == null || GetType() != o.GetType()) return false;

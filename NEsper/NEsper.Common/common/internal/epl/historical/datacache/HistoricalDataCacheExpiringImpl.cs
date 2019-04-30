@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -137,15 +138,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
             agentInstanceContext.AuditProvider.ScheduleFire(
                 agentInstanceContext, ScheduleObjectType.historicaldatacache, NAME_AUDITPROVIDER_SCHEDULE);
             var now = agentInstanceContext.SchedulingService.Time;
-            var it = cache.Keys.GetEnumerator();
-            var maxAgeMSec =
-                agentInstanceContext.ImportServiceRuntime.TimeAbacus.DeltaForSecondsDouble(MaxAgeSec);
-            for (; it.MoveNext();) {
-                var item = cache.Get(it.Current);
-                if (now - item.Time > maxAgeMSec) {
-                    it.Remove();
-                }
-            }
+            var maxAgeMSec = agentInstanceContext.ImportServiceRuntime.TimeAbacus.DeltaForSecondsDouble(MaxAgeSec);
+
+            cache
+                .Where(entry => now - entry.Value.Time > maxAgeMSec)
+                .ToList()
+                .ForEach(entry => cache.Remove(entry.Key));
 
             isScheduled = false;
 

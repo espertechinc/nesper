@@ -26,12 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             Type generator)
         {
             var symbols = new SAIFFInitializeSymbol();
-            CodegenMethod tableInit = classScope.PackageScope.InitMethod
+            CodegenMethod tableInit = classScope.NamespaceScope.InitMethod
                 .MakeChildWithScope(typeof(TableMetadataInternalEventToPublic), generator, symbols, classScope)
                 .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
             var tableResolve = MakeResolveTable(table, EPStatementInitServicesConstants.REF);
             tableInit.Block.MethodReturn(ExprDotMethod(tableResolve, "getEventToPublic"));
-            return classScope.PackageScope.AddFieldUnshared(
+            return classScope.NamespaceScope.AddFieldUnshared(
                 true, typeof(TableMetadataInternalEventToPublic), LocalMethod(tableInit, EPStatementInitServicesConstants.REF));
         }
 

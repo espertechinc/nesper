@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.type
             int min,
             int max);
 
-        Boolean ContainsPoint(int point);
+        bool ContainsPoint(int point);
 
-        String Formatted();
+        string Formatted();
     }
 }

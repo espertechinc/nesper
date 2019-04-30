@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 .Expression(
                     "parameterExpressions",
                     ExprNodeUtilityCodegen.CodegenEvaluators(
-                        _validatedParameterExpressions, builder.Method, GetType(), classScope))
+                        _validatedParameterExpressions, builder.Method(), GetType(), classScope))
                 .Constant("namedWindowName", _namedWindowName)
                 .Expression(
                     "compileTimeConfiguration",

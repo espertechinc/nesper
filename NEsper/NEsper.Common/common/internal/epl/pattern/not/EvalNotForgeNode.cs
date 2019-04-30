@@ -52,8 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(
-                    Ref("node"), "setChildNode", LocalMethod(ChildNodes[0].MakeCodegen(method, symbols, classScope)));
+                .SetProperty(Ref("node"), "ChildNode", LocalMethod(ChildNodes[0].MakeCodegen(method, symbols, classScope)));
         }
 
         public override void CollectSelfFilterAndSchedule(

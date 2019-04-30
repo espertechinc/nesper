@@ -53,9 +53,8 @@ namespace com.espertech.esper.common.@internal.util.apachecommonstext
         }
 
         /// <summary>
-        ///     The first translator to consume codepoints from the input is the 'winner'.
-        ///     Execution stops with the number of consumed codepoints being returned.
-        ///     {@inheritDoc}
+        ///     The first translator to consume content from the input is the 'winner'.
+        ///     Execution stops with the number of consumed content being returned.
         /// </summary>
         public override int Translate(
             string input,

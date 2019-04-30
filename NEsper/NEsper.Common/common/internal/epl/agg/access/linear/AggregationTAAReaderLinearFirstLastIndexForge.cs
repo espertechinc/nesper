@@ -46,10 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar(
                     typeof(AggregationTAAReaderLinearFirstLastIndex), "strat",
                     NewInstance(typeof(AggregationTAAReaderLinearFirstLastIndex)))
-                .ExprDotMethod(Ref("strat"), "setAccessType", Constant(accessType))
-                .ExprDotMethod(Ref("strat"), "setOptionalConstIndex", Constant(optionalConstant))
-                .ExprDotMethod(
-                    Ref("strat"), "setOptionalIndexEval",
+                .SetProperty(Ref("strat"), "AccessType", Constant(accessType))
+                .SetProperty(Ref("strat"), "OptionalConstIndex", Constant(optionalConstant))
+                .SetProperty(Ref("strat"), "OptionalIndexEval",
                     optionalIndexEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(

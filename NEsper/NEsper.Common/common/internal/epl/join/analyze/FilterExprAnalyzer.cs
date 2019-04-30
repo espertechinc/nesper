@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
                 return;
             }
 
-            var perStreamExprs = new LinkedHashMap<int, IList<ExprNode>>();
+            var perStreamExprs = new LinkedHashMap<int?, IList<ExprNode>>();
             foreach (var exprNodeSet in setExpressions) {
                 if (!(exprNodeSet is ExprIdentNode)) {
                     continue;
@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
                 return;
             }
 
-            var perStreamExprs = new LinkedHashMap<int, IList<ExprNode>>();
+            var perStreamExprs = new LinkedHashMap<int?, IList<ExprNode>>();
 
             foreach (var exprNodeSet in setExpressions) {
                 if (exprNodeSet.Forge.EvaluationType.GetBoxedType() != testIdentClass) {
@@ -209,7 +209,7 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
         private static void AddToList(
             int? streamIdAllowNull,
             ExprNode expr,
-            IDictionary<int, IList<ExprNode>> perStreamExpression)
+            IDictionary<int?, IList<ExprNode>> perStreamExpression)
         {
             var perStream = perStreamExpression.Get(streamIdAllowNull);
             if (perStream == null) {

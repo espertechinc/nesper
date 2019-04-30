@@ -36,9 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                 .DeclareVar(
                     typeof(HistoricalIndexLookupStrategyMulti), "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategyMulti)))
-                .ExprDotMethod(Ref("strat"), "setIndexUsed", Constant(indexUsed))
-                .ExprDotMethod(
-                    Ref("strat"), "setInnerLookupStrategy", innerLookupStrategy.Make(method, symbols, classScope))
+                .SetProperty(Ref("strat"), "IndexUsed", Constant(indexUsed))
+                .SetProperty(Ref("strat"), "InnerLookupStrategy", innerLookupStrategy.Make(method, symbols, classScope))
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

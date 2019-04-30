@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
         public static OnTriggerPlan HandleContextFactoryOnTrigger(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             string classPostfix,
             NamedWindowMetaData namedWindow,
             TableMetaData table,
@@ -165,15 +165,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             }
 
             forgables.Add(
-                new StmtClassForgableRSPFactoryProvider(
-                    classNameRSP, resultSetProcessor, packageScope, @base.StatementRawInfo));
+                new StmtClassForgableRSPFactoryProvider(classNameRSP, resultSetProcessor, namespaceScope, @base.StatementRawInfo));
 
             var queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
             SubordinateQueryPlannerUtil.QueryPlanLogOnExpr(
                 queryPlanLogging, QUERY_PLAN_LOG,
                 queryPlan, @base.StatementSpec.Annotations, services.ImportServiceCompileTime);
 
-            var onTrigger = new StmtClassForgableAIFactoryProviderOnTrigger(className, packageScope, forge);
+            var onTrigger = new StmtClassForgableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
             return new OnTriggerPlan(onTrigger, forgables, resultSetProcessor.SelectSubscriberDescriptor);
         }
 

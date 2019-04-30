@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -111,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
 
                     hasNonNullRow = true;
-                    var coll = rightResult.UnwrapDictionary();
+                    var coll = rightResult.UnwrapDictionary(MagicMarker.SingletonInstance);
                     if (!isNot && !coll.ContainsKey(leftResult) || isNot && coll.ContainsKey(leftResult)) {
                         return false;
                     }

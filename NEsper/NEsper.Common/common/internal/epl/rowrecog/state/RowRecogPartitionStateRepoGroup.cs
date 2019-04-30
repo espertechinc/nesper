@@ -24,13 +24,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// </summary>
         public const int INITIAL_COLLECTION_MIN = 100;
 
-        private readonly RowRecogPreviousStrategyImpl getter;
+        private readonly RowRecogPartitionStateRepoGroupMeta _meta;
+        private readonly RowRecogPreviousStrategyImpl _getter;
+        private readonly IDictionary<object, RowRecogPartitionStateImpl> _states;
+        private readonly RowRecogPartitionStateRepoScheduleStateImpl _optionalIntervalSchedules;
 
-        private readonly RowRecogPartitionStateRepoGroupMeta meta;
-        private readonly RowRecogPartitionStateRepoScheduleStateImpl optionalIntervalSchedules;
-
-        private int currentCollectionSize = INITIAL_COLLECTION_MIN;
-        private int eventSequenceNumber;
+        private int _currentCollectionSize = INITIAL_COLLECTION_MIN;
+        private int _eventSequenceNumber;
 
         public RowRecogPartitionStateRepoGroup(
             RowRecogPreviousStrategyImpl getter,
@@ -38,29 +38,31 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             bool keepScheduleState,
             RowRecogPartitionTerminationStateComparator terminationStateCompare)
         {
-            this.getter = getter;
-            this.meta = meta;
-            States = new Dictionary<object, RowRecogPartitionStateImpl>();
-            optionalIntervalSchedules = keepScheduleState
+            _getter = getter;
+            _meta = meta;
+            _states = new Dictionary<object, RowRecogPartitionStateImpl>();
+            _optionalIntervalSchedules = keepScheduleState
                 ? new RowRecogPartitionStateRepoScheduleStateImpl(terminationStateCompare)
                 : null;
         }
 
         public bool IsPartitioned => true;
 
-        public IDictionary<object, RowRecogPartitionStateImpl> States { get; }
+        public IDictionary<object, RowRecogPartitionStateImpl> States {
+            get => _states;
+        }
 
         public int IncrementAndGetEventSequenceNum()
         {
-            ++eventSequenceNumber;
-            return eventSequenceNumber;
+            ++_eventSequenceNumber;
+            return _eventSequenceNumber;
         }
 
         public int EventSequenceNum {
-            set => eventSequenceNumber = value;
+            set => _eventSequenceNumber = value;
         }
 
-        public RowRecogPartitionStateRepoScheduleState ScheduleState => optionalIntervalSchedules;
+        public RowRecogPartitionStateRepoScheduleState ScheduleState => _optionalIntervalSchedules;
 
         public void RemoveState(object partitionKey)
         {
@@ -69,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
 
         public RowRecogPartitionStateRepo CopyForIterate(bool forOutOfOrderReprocessing)
         {
-            var copy = new RowRecogPartitionStateRepoGroup(getter, meta, false, null);
+            var copy = new RowRecogPartitionStateRepoGroup(_getter, _meta, false, null);
             foreach (var entry in States) {
                 copy.States.Put(entry.Key, new RowRecogPartitionStateImpl(entry.Value.RandomAccess, entry.Key));
             }
@@ -84,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         {
             if (isEmpty) {
                 int countRemovedInner;
-                if (getter == null) {
+                if (_getter == null) {
                     // no "prev" used, clear all state
                     countRemovedInner = StateCount;
                     States.Clear();
@@ -98,10 +100,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
                 }
 
                 // clear "prev" state
-                if (getter != null) {
+                if (_getter != null) {
                     // we will need to remove event-by-event
                     for (var i = 0; i < oldData.Length; i++) {
-                        var partitionState = GetState(oldData[i], true);
+                        var partitionState = GetStateImpl(oldData[i], true);
                         if (partitionState == null) {
                             continue;
                         }
@@ -116,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             // we will need to remove event-by-event
             var countRemoved = 0;
             for (var i = 0; i < oldData.Length; i++) {
-                var partitionState = GetState(oldData[i], true);
+                var partitionState = GetStateImpl(oldData[i], true);
                 if (partitionState == null) {
                     continue;
                 }
@@ -125,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
                     countRemoved += partitionState.RemoveEventFromState(oldData[i]);
                     var cleared = partitionState.NumStates == 0;
                     if (cleared) {
-                        if (getter == null) {
+                        if (_getter == null) {
                             States.Remove(partitionState.OptionalKeys);
                         }
                     }
@@ -163,44 +165,57 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             }
         }
 
-        public RowRecogPartitionState GetState(
+        internal RowRecogPartitionStateImpl GetStateImpl(
             EventBean theEvent,
             bool isCollect)
         {
-            meta.AgentInstanceContext.InstrumentationProvider.QRegExPartition(theEvent);
+            _meta.AgentInstanceContext.InstrumentationProvider.QRegExPartition(theEvent);
 
             // collect unused states
-            if (isCollect && States.Count >= currentCollectionSize) {
+            if (isCollect && States.Count >= _currentCollectionSize)
+            {
                 IList<object> removeList = new List<object>();
-                foreach (var entry in States) {
+                foreach (var entry in States)
+                {
                     if (entry.Value.IsEmptyCurrentState &&
-                        (entry.Value.RandomAccess == null || entry.Value.RandomAccess.IsEmpty())) {
+                        (entry.Value.RandomAccess == null || entry.Value.RandomAccess.IsEmpty()))
+                    {
                         removeList.Add(entry.Key);
                     }
                 }
 
-                foreach (var removeKey in removeList) {
+                foreach (var removeKey in removeList)
+                {
                     States.Remove(removeKey);
                 }
 
-                if (removeList.Count < currentCollectionSize / 5) {
-                    currentCollectionSize *= 2;
+                if (removeList.Count < _currentCollectionSize / 5)
+                {
+                    _currentCollectionSize *= 2;
                 }
             }
 
-            var key = GetKeys(theEvent, meta);
+            var key = GetKeys(theEvent, _meta);
 
             var state = States.Get(key);
-            if (state != null) {
-                meta.AgentInstanceContext.InstrumentationProvider.ARegExPartition(true, key, state);
+            if (state != null)
+            {
+                _meta.AgentInstanceContext.InstrumentationProvider.ARegExPartition(true, key, state);
                 return state;
             }
 
-            state = new RowRecogPartitionStateImpl(getter, new List<RowRecogNFAStateEntry>(), key);
+            state = new RowRecogPartitionStateImpl(_getter, new List<RowRecogNFAStateEntry>(), key);
             States.Put(key, state);
 
-            meta.AgentInstanceContext.InstrumentationProvider.ARegExPartition(false, key, state);
+            _meta.AgentInstanceContext.InstrumentationProvider.ARegExPartition(false, key, state);
             return state;
+        }
+
+        public RowRecogPartitionState GetState(
+            EventBean theEvent,
+            bool isCollect)
+        {
+            return GetStateImpl(theEvent, isCollect);
         }
 
         public static object GetKeys(

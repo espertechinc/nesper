@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.client.module
         /// <param name="charPosStart">character position of start of segment</param>
         /// <param name="charPosEnd">character position of end of segment</param>
         public ModuleItem(
-            String expression,
+            string expression,
             bool commentOnly,
             int lineNumber,
             int charPosStart,

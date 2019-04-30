@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.util.apachecommonstext
             }
 
             try {
-                var writer = new StringWriter(input.Length * 2);
+                var writer = new StringWriter();
                 Translate(input, writer);
                 return writer.ToString();
             }

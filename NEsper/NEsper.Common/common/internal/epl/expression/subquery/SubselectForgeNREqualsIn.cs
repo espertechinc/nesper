@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
-            CodegenExpressionRef left = symbols.GetAddLeftResult(method);
+            var method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
+            var left = symbols.GetAddLeftResult(method);
             method.Block.DeclareVar(typeof(bool), "hasNullRow", ConstantFalse());
-            CodegenBlock @foreach = method.Block.ForEach(typeof(EventBean), "theEvent", symbols.GetAddMatchingEvents(method));
+            var @foreach = method.Block.ForEach(typeof(EventBean), "theEvent", symbols.GetAddMatchingEvents(method));
             {
                 @foreach.AssignArrayElement(NAME_EPS, Constant(0), @Ref("theEvent"));
                 if (filterEval != null) {
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         valueRightType, "valueRight", Cast(valueRightType, ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0)))));
                 }
 
-                CodegenBlock ifRight = @foreach.IfCondition(NotEqualsNull(@Ref("valueRight")));
+                var ifRight = @foreach.IfCondition(NotEqualsNull(@Ref("valueRight")));
                 {
                     if (coercer == null) {
                         ifRight.IfCondition(ExprDotMethod(left, "equals", @Ref("valueRight"))).BlockReturn(Constant(!isNotIn));

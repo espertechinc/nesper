@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary> Print text to the underlying writer.</summary>
         /// <param name="text">to print
         /// </param>
-        public virtual void WriteLine(String text)
+        public virtual void WriteLine(string text)
         {
             int indent = _currentIndent;
             if (indent < 0) {

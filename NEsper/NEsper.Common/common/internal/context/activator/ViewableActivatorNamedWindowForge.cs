@@ -71,22 +71,18 @@ namespace com.espertech.esper.common.@internal.context.activator
                     typeof(ViewableActivatorNamedWindow), "activator",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY).Add("createNamedWindow"))
-                .ExprDotMethod(
-                    Ref("activator"), "setNamedWindow",
+                .SetProperty(Ref("activator"), "NamedWindow",
                     NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("activator"), "setNamedWindowConsumerId", Constant(spec.NamedWindowConsumerId))
-                .ExprDotMethod(Ref("activator"), "setFilterEvaluator", filter)
-                .ExprDotMethod(
-                    Ref("activator"), "setFilterQueryGraph",
+                .SetProperty(Ref("activator"), "NamedWindowConsumerId", Constant(spec.NamedWindowConsumerId))
+                .SetProperty(Ref("activator"), "FilterEvaluator", filter)
+                .SetProperty(Ref("activator"), "FilterQueryGraph",
                     filterQueryGraph == null ? ConstantNull() : filterQueryGraph.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("activator"), "setSubquery", Constant(subquery))
-                .ExprDotMethod(
-                    Ref("activator"), "setOptPropertyEvaluator",
+                .SetProperty(Ref("activator"), "Subquery", Constant(subquery))
+                .SetProperty(Ref("activator"), "OptPropertyEvaluator",
                     optPropertyEvaluator == null
                         ? ConstantNull()
                         : optPropertyEvaluator.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    symbols.GetAddInitSvc(method), "addReadyCallback", Ref("activator")) // add ready-callback
+                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", Ref("activator")) // add ready-callback
                 .MethodReturn(Ref("activator"));
             return LocalMethod(method);
         }

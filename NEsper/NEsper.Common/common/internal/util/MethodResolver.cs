@@ -50,170 +50,170 @@ namespace com.espertech.esper.common.@internal.util
         {
             WIDENING_CONVERSIONS = new Dictionary<Type, ICollection<Type>>();
 
-            AddWideningConversion<Byte>(
-                typeof(Byte),
-                typeof(Nullable<Byte>)
+            AddWideningConversion<byte>(
+                typeof(byte),
+                typeof(Nullable<byte>)
             );
-            AddWideningConversion<SByte>(
-                typeof(Nullable<SByte>),
-                typeof(SByte)
+            AddWideningConversion<sbyte>(
+                typeof(Nullable<sbyte>),
+                typeof(sbyte)
             );
-            AddWideningConversion<Int16>(
-                typeof(Byte),
-                typeof(Int16),
-                typeof(Nullable<Byte>),
-                typeof(Nullable<Int16>),
-                typeof(Nullable<SByte>),
-                typeof(SByte)
+            AddWideningConversion<short>(
+                typeof(byte),
+                typeof(short),
+                typeof(Nullable<byte>),
+                typeof(Nullable<short>),
+                typeof(Nullable<sbyte>),
+                typeof(sbyte)
             );
-            AddWideningConversion<Int32>(
-                typeof(Byte),
-                typeof(Int16),
-                typeof(Int32),
-                typeof(Nullable<Byte>),
-                typeof(Nullable<Int16>),
-                typeof(Nullable<Int32>),
-                typeof(Nullable<SByte>),
-                typeof(Nullable<UInt16>),
-                typeof(SByte),
-                typeof(UInt16)
+            AddWideningConversion<int>(
+                typeof(byte),
+                typeof(short),
+                typeof(int),
+                typeof(Nullable<byte>),
+                typeof(Nullable<short>),
+                typeof(Nullable<int>),
+                typeof(Nullable<sbyte>),
+                typeof(Nullable<ushort>),
+                typeof(sbyte),
+                typeof(ushort)
             );
-            AddWideningConversion<Int64>(
-                typeof(Byte),
-                typeof(Int16),
-                typeof(Int32),
-                typeof(Int64),
-                typeof(Nullable<Byte>),
-                typeof(Nullable<Int16>),
-                typeof(Nullable<Int32>),
-                typeof(Nullable<Int64>),
-                typeof(Nullable<SByte>),
-                typeof(Nullable<UInt16>),
-                typeof(Nullable<UInt32>),
-                typeof(SByte),
-                typeof(UInt16),
-                typeof(UInt32)
+            AddWideningConversion<long>(
+                typeof(byte),
+                typeof(short),
+                typeof(int),
+                typeof(long),
+                typeof(Nullable<byte>),
+                typeof(Nullable<short>),
+                typeof(Nullable<int>),
+                typeof(Nullable<long>),
+                typeof(Nullable<sbyte>),
+                typeof(Nullable<ushort>),
+                typeof(Nullable<uint>),
+                typeof(sbyte),
+                typeof(ushort),
+                typeof(uint)
             );
-            AddWideningConversion<UInt16>(
-                typeof(Byte),
-                typeof(Nullable<Byte>),
-                typeof(Nullable<UInt16>),
-                typeof(UInt16)
+            AddWideningConversion<ushort>(
+                typeof(byte),
+                typeof(Nullable<byte>),
+                typeof(Nullable<ushort>),
+                typeof(ushort)
             );
-            AddWideningConversion<UInt32>(
-                typeof(Byte),
-                typeof(Nullable<Byte>),
-                typeof(Nullable<UInt16>),
-                typeof(Nullable<UInt32>),
-                typeof(UInt16),
-                typeof(UInt32)
+            AddWideningConversion<uint>(
+                typeof(byte),
+                typeof(Nullable<byte>),
+                typeof(Nullable<ushort>),
+                typeof(Nullable<uint>),
+                typeof(ushort),
+                typeof(uint)
             );
-            AddWideningConversion<UInt64>(
-                typeof(Byte),
-                typeof(Nullable<Byte>),
-                typeof(Nullable<UInt16>),
-                typeof(Nullable<UInt32>),
-                typeof(Nullable<UInt64>),
-                typeof(UInt16),
-                typeof(UInt32),
-                typeof(UInt64)
+            AddWideningConversion<ulong>(
+                typeof(byte),
+                typeof(Nullable<byte>),
+                typeof(Nullable<ushort>),
+                typeof(Nullable<uint>),
+                typeof(Nullable<ulong>),
+                typeof(ushort),
+                typeof(uint),
+                typeof(ulong)
             );
-            AddWideningConversion<Single>(
-                typeof(Byte),
-                typeof(Int16),
-                typeof(Int32),
-                typeof(Int64),
-                typeof(Nullable<Byte>),
-                typeof(Nullable<Int16>),
-                typeof(Nullable<Int32>),
-                typeof(Nullable<Int64>),
-                typeof(Nullable<SByte>),
-                typeof(Nullable<Single>),
-                typeof(Nullable<UInt16>),
-                typeof(Nullable<UInt32>),
-                typeof(Nullable<UInt64>),
-                typeof(SByte),
-                typeof(Single),
-                typeof(UInt16),
-                typeof(UInt32),
-                typeof(UInt64)
+            AddWideningConversion<float>(
+                typeof(byte),
+                typeof(short),
+                typeof(int),
+                typeof(long),
+                typeof(Nullable<byte>),
+                typeof(Nullable<short>),
+                typeof(Nullable<int>),
+                typeof(Nullable<long>),
+                typeof(Nullable<sbyte>),
+                typeof(Nullable<float>),
+                typeof(Nullable<ushort>),
+                typeof(Nullable<uint>),
+                typeof(Nullable<ulong>),
+                typeof(sbyte),
+                typeof(float),
+                typeof(ushort),
+                typeof(uint),
+                typeof(ulong)
             );
-            AddWideningConversion<Double>(
-                typeof(Byte),
-                typeof(Double),
-                typeof(Int16),
-                typeof(Int32),
-                typeof(Int64),
-                typeof(Nullable<Byte>),
-                typeof(Nullable<Double>),
-                typeof(Nullable<Int16>),
-                typeof(Nullable<Int32>),
-                typeof(Nullable<Int64>),
-                typeof(Nullable<SByte>),
-                typeof(Nullable<Single>),
-                typeof(Nullable<UInt16>),
-                typeof(Nullable<UInt32>),
-                typeof(Nullable<UInt64>),
-                typeof(SByte),
-                typeof(Single),
-                typeof(UInt16),
-                typeof(UInt32),
-                typeof(UInt64)
+            AddWideningConversion<double>(
+                typeof(byte),
+                typeof(double),
+                typeof(short),
+                typeof(int),
+                typeof(long),
+                typeof(Nullable<byte>),
+                typeof(Nullable<double>),
+                typeof(Nullable<short>),
+                typeof(Nullable<int>),
+                typeof(Nullable<long>),
+                typeof(Nullable<sbyte>),
+                typeof(Nullable<float>),
+                typeof(Nullable<ushort>),
+                typeof(Nullable<uint>),
+                typeof(Nullable<ulong>),
+                typeof(sbyte),
+                typeof(float),
+                typeof(ushort),
+                typeof(uint),
+                typeof(ulong)
             );
-            AddWideningConversion<Decimal>(
-                typeof(Decimal),
-                typeof(Nullable<Decimal>)
+            AddWideningConversion<decimal>(
+                typeof(decimal),
+                typeof(Nullable<decimal>)
             );
-            AddWideningConversion<Char>(
-                typeof(Byte),
-                typeof(Nullable<Byte>),
-                typeof(Nullable<UInt16>),
-                typeof(UInt16)
+            AddWideningConversion<char>(
+                typeof(byte),
+                typeof(Nullable<byte>),
+                typeof(Nullable<ushort>),
+                typeof(ushort)
             );
-            AddWideningConversion<Nullable<Byte>>(
-                typeof(Byte),
-                typeof(Nullable<Byte>)
+            AddWideningConversion<Nullable<byte>>(
+                typeof(byte),
+                typeof(Nullable<byte>)
             );
-            AddWideningConversion<Nullable<SByte>>(
-                typeof(Nullable<SByte>),
-                typeof(SByte)
+            AddWideningConversion<Nullable<sbyte>>(
+                typeof(Nullable<sbyte>),
+                typeof(sbyte)
             );
-            AddWideningConversion<Nullable<Int16>>(
-                typeof(Int16),
-                typeof(Nullable<Int16>)
+            AddWideningConversion<Nullable<short>>(
+                typeof(short),
+                typeof(Nullable<short>)
             );
-            AddWideningConversion<Nullable<Int64>>(
-                typeof(Int32),
-                typeof(Int64),
-                typeof(Nullable<Int64>)
+            AddWideningConversion<Nullable<long>>(
+                typeof(int),
+                typeof(long),
+                typeof(Nullable<long>)
             );
-            AddWideningConversion<Nullable<Int32>>(
-                typeof(Int32),
-                typeof(Nullable<Int32>)
+            AddWideningConversion<Nullable<int>>(
+                typeof(int),
+                typeof(Nullable<int>)
             );
-            AddWideningConversion<Nullable<UInt16>>(
-                typeof(Nullable<UInt16>),
-                typeof(UInt16)
+            AddWideningConversion<Nullable<ushort>>(
+                typeof(Nullable<ushort>),
+                typeof(ushort)
             );
-            AddWideningConversion<Nullable<UInt32>>(
-                typeof(Nullable<UInt32>),
-                typeof(UInt32)
+            AddWideningConversion<Nullable<uint>>(
+                typeof(Nullable<uint>),
+                typeof(uint)
             );
-            AddWideningConversion<Nullable<UInt64>>(
-                typeof(Nullable<UInt64>),
-                typeof(UInt64)
+            AddWideningConversion<Nullable<ulong>>(
+                typeof(Nullable<ulong>),
+                typeof(ulong)
             );
-            AddWideningConversion<Nullable<Single>>(
-                typeof(Nullable<Single>),
-                typeof(Single)
+            AddWideningConversion<Nullable<float>>(
+                typeof(Nullable<float>),
+                typeof(float)
             );
-            AddWideningConversion<Nullable<Double>>(
-                typeof(Double),
-                typeof(Nullable<Double>)
+            AddWideningConversion<Nullable<double>>(
+                typeof(double),
+                typeof(Nullable<double>)
             );
-            AddWideningConversion<Nullable<Decimal>>(
-                typeof(Decimal),
-                typeof(Nullable<Decimal>)
+            AddWideningConversion<Nullable<decimal>>(
+                typeof(decimal),
+                typeof(Nullable<decimal>)
             );
 
 
@@ -288,7 +288,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <throws>EngineNoSuchMethodException if the method could not be found</throws>
         public static MethodInfo ResolveMethod(
             Type declaringClass,
-            String methodName,
+            string methodName,
             Type[] paramTypes,
             bool allowInstance,
             bool[] allowEventBeanType,
@@ -405,7 +405,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static MethodInfo ResolveExtensionMethod(
             Type declaringClass,
-            String methodName,
+            string methodName,
             Type[] paramTypes,
             bool allowInstance,
             bool[] allowEventBeanType,
@@ -437,7 +437,7 @@ namespace com.espertech.esper.common.@internal.util
 
         private static void LogWarnBoxedToPrimitiveType(
             Type declaringClass,
-            String methodName,
+            string methodName,
             MethodInfo bestMatch,
             Type[] paramTypes)
         {
@@ -450,7 +450,7 @@ namespace com.espertech.esper.common.@internal.util
                 // if null-type parameter, or non-CLR class and boxed type matches
                 if (paramTypes[i] == null || (!declaringClass.GetType().FullName.StartsWith("System.") &&
                                               (parametersMethod[i].GetBoxedType()) == paramTypes[i])) {
-                    String paramTypeStr = paramTypes[i] == null ? "null" : paramTypes[i].Name;
+                    string paramTypeStr = paramTypes[i] == null ? "null" : paramTypes[i].Name;
                     Log.Info(
                         "Method '{0}' in class '{1}' expects primitive type '{2}' as parameter {3}, but receives a nullable (boxed) type {4}. This may cause null pointer exception at runtime if the actual value is null, please consider using boxed types for method parameters.",
                         methodName, declaringClass.Name, parametersMethod[i], i, paramTypeStr);
@@ -535,8 +535,8 @@ namespace com.espertech.esper.common.@internal.util
         private static int CompareParameterTypesAllowContext(
             Type[] declarationParameters,
             Type[] invocationParameters,
-            Boolean[] optionalAllowEventBeanType,
-            Boolean[] optionalAllowEventBeanCollType,
+            bool[] optionalAllowEventBeanType,
+            bool[] optionalAllowEventBeanCollType,
             Type[] genericParameterTypes,
             bool isVarArgs)
         {

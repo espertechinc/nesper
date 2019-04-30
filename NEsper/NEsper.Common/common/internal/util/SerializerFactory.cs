@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static byte[] Serialize(
             Serializer[] serializers,
-            Object[] objects)
+            object[] objects)
         {
             Debug.Assert(serializers.Length == objects.Length);
 
@@ -160,7 +160,17 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        public static Object[] Deserialize(
+        public static byte[] Serialize(
+            Serializer serializer,
+            object @object)
+        {
+            using (var binaryStream = new MemoryStream()) {
+                serializer.SerializeAny(@object, binaryStream);
+                return binaryStream.ToArray();
+            }
+        }
+
+        public static object[] Deserialize(
             int numObjects,
             byte[] bytes,
             Serializer[] serializers)

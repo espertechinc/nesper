@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
                 var values = Enum.GetValues(typeof(CalendarFieldEnum));
                 foreach (CalendarFieldEnum value in values) {
-                    foreach (String name in GetNames(value)) {
+                    foreach (string name in GetNames(value)) {
                         builder.Append(delimiter);
                         builder.Append(name);
                         delimiter = ",";

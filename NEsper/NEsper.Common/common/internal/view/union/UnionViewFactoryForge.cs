@@ -76,9 +76,8 @@ namespace com.espertech.esper.common.@internal.view.union
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(factory, "setHasAsymetric", Constant(hasAsymetric))
-                .ExprDotMethod(
-                    factory, "setUnioned",
+            method.Block.SetProperty(factory, "HasAsymetric", Constant(hasAsymetric))
+                .SetProperty(factory, "Unioned",
                     LocalMethod(MakeViewFactories(unioned, GetType(), method, classScope, symbols)));
         }
 

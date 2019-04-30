@@ -79,10 +79,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(
-                    Ref("node"), "setChildNode",
+                .SetProperty(Ref("node"), "ChildNode",
                     LocalMethod(ChildNodes[0].MakeCodegen(method, symbols, classScope)))
-                .ExprDotMethod(Ref("node"), "setGuardFactory", GuardForge.MakeCodegen(method, symbols, classScope));
+                .SetProperty(Ref("node"), "GuardFactory", GuardForge.MakeCodegen(method, symbols, classScope));
         }
 
         public override void CollectSelfFilterAndSchedule(

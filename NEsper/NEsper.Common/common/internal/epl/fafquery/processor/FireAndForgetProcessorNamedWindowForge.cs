@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             CodegenExpressionRef nw = @Ref("nw");
             method.Block
                 .DeclareVar(typeof(FireAndForgetProcessorNamedWindow), nw.Ref, NewInstance(typeof(FireAndForgetProcessorNamedWindow)))
-                .ExprDotMethod(nw, "setNamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)))
+                .SetProperty(nw, "NamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)))
                 .MethodReturn(nw);
             return LocalMethod(method);
         }

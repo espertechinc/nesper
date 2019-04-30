@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             method.Block
                 .DeclareVar(
                     typeof(AggregationPortableValidationCountMinSketch), "v", NewInstance(typeof(AggregationPortableValidationCountMinSketch)))
-                .ExprDotMethod(@Ref("v"), "setAcceptableValueTypes", Constant(acceptableValueTypes))
+                .SetProperty(Ref("v"), "AcceptableValueTypes", Constant(acceptableValueTypes))
                 .MethodReturn(@Ref("v"));
             return LocalMethod(method);
         }

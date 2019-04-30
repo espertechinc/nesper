@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             MethodTargetStrategy origin,
             AgentInstanceContext agentInstanceContext)
         {
-            return Collections.SingletonList(
+            return Collections.SingletonList<EventBean>(
                 agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
                     invocationResult.UnwrapStringDictionary(), eventType));
         }

@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
     public class CalendarWithMinForge : CalendarForge,
         CalendarOp
     {
-        private readonly DateTimeFieldEnum fieldName;
+        private readonly DateTimeFieldEnum _field;
 
-        public CalendarWithMinForge(DateTimeFieldEnum fieldName)
+        public CalendarWithMinForge(DateTimeFieldEnum field)
         {
-            this.fieldName = fieldName;
+            _field = field;
         }
 
         public CalendarOp EvalOp => this;
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var field = Constant(fieldName);
+            var field = Constant(_field);
             return ExprDotMethod(dateTimeEx, "set", field, ExprDotMethod(dateTimeEx, "GetActualMinimum", field));
         }
 
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenDateTimeOffsetDtxMinMax(dateTimeOffset, false, fieldName);
+            return CalendarWithMaxForge.CodegenDateTimeOffsetDtxMinMax(dateTimeOffset, false, _field);
         }
 
         public CodegenExpression CodegenDateTime(
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenDateTimeOffsetDtxMinMax(dateTime, false, fieldName);
+            return CalendarWithMaxForge.CodegenDateTimeOffsetDtxMinMax(dateTime, false, _field);
         }
 
         public DateTimeEx Evaluate(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return dateTimeEx.Set(fieldName, dateTimeEx.GetActualMinimum(fieldName));
+            return dateTimeEx.Set(_field, dateTimeEx.GetActualMinimum(_field));
         }
 
         public DateTimeOffset Evaluate(
@@ -73,8 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ValueRange range = dateTimeOffset.Range(fieldName);
-            return dateTimeOffset.With(fieldName, range.Minimum);
+            ValueRange range = dateTimeOffset.Range(_field);
+            return dateTimeOffset.With(_field, range.Minimum);
         }
 
         public DateTime Evaluate(
@@ -83,8 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ValueRange range = dateTime.Range(fieldName);
-            return dateTime.With(fieldName, range.Minimum);
+            ValueRange range = dateTime.Range(_field);
+            return dateTime.With(_field, range.Minimum);
         }
     }
 } // end of namespace

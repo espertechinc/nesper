@@ -34,7 +34,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 return true;
             }
 
-            ContextControllerDetailInitiatedTerminated spec = controller.Factory.InitTermSpec;
+            var factory = controller.InitTermFactory;
+            var spec = factory.InitTermSpec;
             if (spec.IsOverlapping) {
                 return false;
             }
@@ -87,7 +88,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             identifier.StartTime = key.StartTime;
             identifier.EndTime = key.ExpectedEndTime;
 
-            ContextConditionDescriptor start = controller.Factory.InitTermSpec.StartCondition;
+            var start = controller.InitTermFactory.InitTermSpec.StartCondition;
             if (start is ContextConditionDescriptorFilter) {
                 var filter = (ContextConditionDescriptorFilter) start;
                 if (filter.OptionalFilterAsName != null) {

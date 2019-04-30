@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="escape">is the escape character</param>
         /// <param name="ignorecase">is true to ignore the case, or false if not</param>
         public LikeUtil(
-            String pattern,
+            string pattern,
             char? escape,
             bool ignorecase)
         {
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </param>
         /// <returns> true if pattern matches, or false if not
         /// </returns>
-        public virtual bool Compare(String compareString)
+        public virtual bool Compare(string compareString)
         {
             if (_isIgnoreCase) {
                 compareString = compareString.ToUpper();
@@ -90,13 +90,13 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary> Resets the search pattern.</summary>
         /// <param name="pattern">is the new pattern to match against
         /// </param>
-        public virtual void ResetPattern(String pattern)
+        public virtual void ResetPattern(string pattern)
         {
             Normalize(pattern);
         }
 
         private bool CompareAt(
-            String s,
+            string s,
             int i,
             int j,
             int jLen)
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.util
             return true;
         }
 
-        private void Normalize(String pattern)
+        private void Normalize(string pattern)
         {
             _isNull = pattern == null;
 

@@ -6,13 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
@@ -35,15 +32,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols)
         {
-            CodegenMethod method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateContext), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateContext), GetType(), classScope);
             method.Block
                 .DeclareVar(
                     typeof(StatementAgentInstanceFactoryCreateContext), "saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateContext)))
-                .ExprDotMethod(@Ref("saiff"), "setContextName", Constant(contextName))
-                .ExprDotMethod(
-                    @Ref("saiff"), "setStatementEventType", EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", @Ref("saiff"))
-                .MethodReturn(@Ref("saiff"));
+                .SetProperty(Ref("saiff"), "ContextName", Constant(contextName))
+                .SetProperty(
+                    Ref("saiff"), "StatementEventType", EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
+                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", Ref("saiff"))
+                .MethodReturn(Ref("saiff"));
             return method;
         }
     }

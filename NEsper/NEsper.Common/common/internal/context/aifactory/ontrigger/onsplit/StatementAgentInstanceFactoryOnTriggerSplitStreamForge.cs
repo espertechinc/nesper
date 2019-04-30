@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(saiff, "setItems", OnSplitItemForge.Make(items, method, symbols, classScope))
-                .ExprDotMethod(saiff, "setFirst", Constant(first))
+                .SetProperty(saiff, "Items", OnSplitItemForge.Make(items, method, symbols, classScope))
+                .SetProperty(saiff, "First", Constant(first))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", saiff));
         }
     }

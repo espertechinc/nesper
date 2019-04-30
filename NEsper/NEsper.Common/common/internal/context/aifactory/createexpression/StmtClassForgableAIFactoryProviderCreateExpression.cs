@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
 
         public StmtClassForgableAIFactoryProviderCreateExpression(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             StatementAgentInstanceFactoryCreateExpressionForge forge)
-            : base(className, packageScope)
+            : base(className, namespaceScope)
 
         {
             this.forge = forge;
@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            SAIFFInitializeSymbol saiffInitializeSymbol = new SAIFFInitializeSymbol();
-            CodegenMethod method = parent.MakeChildWithScope(TypeOfFactory(), this.GetType(), saiffInitializeSymbol, classScope)
+            var saiffInitializeSymbol = new SAIFFInitializeSymbol();
+            var method = parent.MakeChildWithScope(TypeOfFactory(), this.GetType(), saiffInitializeSymbol, classScope)
                 .AddParam(typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
             method.Block
                 .MethodReturn(LocalMethod(forge.InitializeCodegen(method, saiffInitializeSymbol, classScope)));

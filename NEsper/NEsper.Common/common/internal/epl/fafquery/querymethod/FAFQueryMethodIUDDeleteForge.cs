@@ -53,8 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(
-                queryMethod, "setOptionalWhereClause",
+            method.Block.SetProperty(queryMethod, "OptionalWhereClause",
                 whereClause == null
                     ? ConstantNull()
                     : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, this.GetType(), classScope));

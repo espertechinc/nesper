@@ -33,14 +33,14 @@ namespace com.espertech.esper.common.@internal.support
         private long _longPrimitive;
         private short? _shortBoxed;
         private short _shortPrimitive;
-        private String _theString;
+        private string _theString;
 
         public SupportBean()
         {
         }
 
         public SupportBean(
-            String theString,
+            string theString,
             int intPrimitive)
         {
             _theString = theString;
@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.@internal.support
         public void SetTheString(string value) { _theString = value; }
 #endif
 
-        public override String ToString()
+        public override string ToString()
         {
             return string.Format(
                 "{0}({1}, {2})",
@@ -223,7 +223,7 @@ namespace com.espertech.esper.common.@internal.support
                 .ToArray();
         }
 
-        public static Object[] GetOAStringAndIntPerIndex(
+        public static object[] GetOAStringAndIntPerIndex(
             SupportBean[] beans,
             int[] indexes)
         {
@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.@internal.support
             return arr == null ? null : ToOAStringAndInt(arr);
         }
 
-        private static Object[] ToOAStringAndInt(SupportBean[] arr)
+        private static object[] ToOAStringAndInt(SupportBean[] arr)
         {
             return arr
                 .Select(v => new object[] {v.TheString, v.IntPrimitive})

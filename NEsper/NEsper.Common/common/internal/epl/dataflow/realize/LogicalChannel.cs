@@ -15,12 +15,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
     {
         public LogicalChannel(
             int channelId,
-            String consumingOpName,
+            string consumingOpName,
             int consumingOpNum,
             int consumingOpStreamNum,
-            String consumingOpStreamName,
-            String consumingOptStreamAliasName,
-            String consumingOpPrettyPrint,
+            string consumingOpStreamName,
+            string consumingOptStreamAliasName,
+            string consumingOpPrettyPrint,
             LogicalChannelProducingPortCompiled outputPort)
         {
             ChannelId = channelId;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
         public string ConsumingOpPrettyPrint { get; private set; }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "LogicalChannel{" +
                    "channelId=" + ChannelId +

@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.support
     [Serializable]
     public class SupportBean_A : SupportBeanBase
     {
-        public SupportBean_A(String id)
+        public SupportBean_A(string id)
             : base(id)
         {
         }

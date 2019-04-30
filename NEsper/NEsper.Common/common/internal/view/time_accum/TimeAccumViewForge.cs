@@ -74,8 +74,8 @@ namespace com.espertech.esper.common.@internal.view.time_accum
 
             method.Block
                 .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", @Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
+                .SetProperty(factory, "TimePeriodCompute", @Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
 
         public override string ViewName => "Time-Accumulative-Batch";

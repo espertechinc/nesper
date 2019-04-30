@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
 
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
-            var packageScope = new CodegenPackageScope(packageName, statementFieldsClassName, services.IsInstrumented);
+            var packageScope = new CodegenNamespaceScope(packageName, statementFieldsClassName, services.IsInstrumented);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider), classPostfix);

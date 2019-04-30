@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
 
         public CodegenExpression InitCtorScoped()
         {
-            SAIFFInitializeSymbol symbols = new SAIFFInitializeSymbol();
-            CodegenMethod init = classScope.PackageScope.InitMethod
+            var symbols = new SAIFFInitializeSymbol();
+            var init = classScope.NamespaceScope.InitMethod
                 .MakeChildWithScope(typeof(AggregationMultiFunctionTableReader), generator, symbols, classScope).AddParam(
                     typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
             init.Block.MethodReturn(readerForge.CodegenCreateReader(init, symbols, classScope));
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             if (this == o) return true;
             if (o == null || GetType() != o.GetType()) return false;
 
-            AggregationTableAccessAggReaderCodegenField that = (AggregationTableAccessAggReaderCodegenField) o;
+            var that = (AggregationTableAccessAggReaderCodegenField) o;
 
             return readerForge.Equals(that.readerForge);
         }

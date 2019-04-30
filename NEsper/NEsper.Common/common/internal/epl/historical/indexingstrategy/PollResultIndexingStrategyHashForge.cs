@@ -56,9 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 .DeclareVar(
                     typeof(PollResultIndexingStrategyHash), "strat",
                     NewInstance(typeof(PollResultIndexingStrategyHash)))
-                .ExprDotMethod(Ref("strat"), "setStreamNum", Constant(streamNum))
-                .ExprDotMethod(Ref("strat"), "setPropertyNames", Constant(propertyNames))
-                .ExprDotMethod(Ref("strat"), "setValueGetter", valueGetter)
+                .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
+                .SetProperty(Ref("strat"), "PropertyNames", Constant(propertyNames))
+                .SetProperty(Ref("strat"), "ValueGetter", valueGetter)
                 .ExprDotMethod(Ref("strat"), "init")
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);

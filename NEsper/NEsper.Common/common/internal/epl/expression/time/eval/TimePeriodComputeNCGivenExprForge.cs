@@ -41,10 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             CodegenMethod method = parent.MakeChild(typeof(TimePeriodComputeNCGivenExprEval), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(TimePeriodComputeNCGivenExprEval), "eval", NewInstance(typeof(TimePeriodComputeNCGivenExprEval)))
-                .ExprDotMethod(
-                    @Ref("eval"), "setSecondsEvaluator",
+                .SetProperty(Ref("eval"), "SecondsEvaluator",
                     ExprNodeUtilityCodegen.CodegenEvaluator(secondsEvaluator, method, this.GetType(), classScope))
-                .ExprDotMethod(@Ref("eval"), "setTimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
+                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
                 .MethodReturn(@Ref("eval"));
             return LocalMethod(method);
         }

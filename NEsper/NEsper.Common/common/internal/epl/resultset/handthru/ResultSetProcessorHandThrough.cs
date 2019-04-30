@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                 .DeclareVar(
                     typeof(UniformPair<EventBean>), typeof(EventBean[]), "result",
                     ExprDotMethod(Ref("this"), "processJoinResult", REF_JOINSET, StaticMethod(typeof(Collections), "emptySet"), Constant(true)))
-                .MethodReturn(NewInstance(typeof(ArrayEventIterator), Cast(typeof(EventBean[]), ExprDotMethod(Ref("result"), "getFirst"))));
+                .MethodReturn(NewInstance(typeof(ArrayEventEnumerator), Cast(typeof(EventBean[]), ExprDotMethod(Ref("result"), "getFirst"))));
         }
     }
 } // end of namespace

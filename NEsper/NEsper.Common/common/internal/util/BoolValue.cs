@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             bool rvalue;
             value = value.ToLower();
-            if (!Boolean.TryParse(value, out rvalue)) {
+            if (!bool.TryParse(value, out rvalue)) {
                 throw new ArgumentException("Boolean value '" + value + "' cannot be converted to bool");
             }
 

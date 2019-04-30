@@ -63,8 +63,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
                     .AddParam(typeof(long), "fromTime")
                     .AddParam(typeof(DateTimeEx), "dtx")
                     .Block
-                    .Expression(ExprDotMethod(@Ref("dtx"), "setTimeInMillis", @Ref("fromTime")))
-                    .MethodReturn(Constant(0))).Pass(startLong).Pass(dateTime).Call();
+                    .Expression(SetProperty(Ref("dtx"), "TimeInMillis", @Ref("fromTime")))
+                    .MethodReturn(Constant(0)))
+                .Pass(startLong)
+                .Pass(dateTime)
+                .Call();
         }
 
         public long DateTimeGet(

@@ -33,11 +33,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
 {
     public class StmtForgeMethodCreateVariable : StmtForgeMethod
     {
-        private readonly StatementBaseInfo @base;
+        private readonly StatementBaseInfo _base;
 
         public StmtForgeMethodCreateVariable(StatementBaseInfo @base)
         {
-            this.@base = @base;
+            _base = @base;
         }
 
         public StmtForgeMethodResult Make(
@@ -45,9 +45,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             string classPostfix,
             StatementCompileTimeServices services)
         {
-            StatementSpecCompiled statementSpec = @base.StatementSpec;
+            var statementSpec = _base.StatementSpec;
 
-            CreateVariableDesc createDesc = statementSpec.Raw.CreateVariableDesc;
+            var createDesc = statementSpec.Raw.CreateVariableDesc;
 
             // Check if the variable is already declared
             EPLValidationUtil.ValidateAlreadyExistsTableOrVariable(
@@ -62,8 +62,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             if (createDesc.Assignment != null) {
                 // Evaluate assignment expression
                 StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[0], new string[0], new bool[0], false, false);
-                ExprValidationContext validationContext = new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services).Build();
-                ExprNode validated = ExprNodeUtilityValidate.GetValidatedSubtree(
+                var validationContext = new ExprValidationContextBuilder(typeService, _base.StatementRawInfo, services).Build();
+                var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.VARIABLEASSIGN, createDesc.Assignment, validationContext);
                 if (validated.Forge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
                     initialValue = validated.Forge.ExprEvaluator.Evaluate(null, true, null);
@@ -73,11 +73,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 initialValueExpr = validated.Forge;
             }
 
-            string contextName = statementSpec.Raw.OptionalContextName;
+            var contextName = statementSpec.Raw.OptionalContextName;
             NameAccessModifier contextVisibility = null;
             string contextModuleName = null;
             if (contextName != null) {
-                ContextMetaData contextDetail = services.ContextCompileTimeResolver.GetContextInfo(contextName);
+                var contextDetail = services.ContextCompileTimeResolver.GetContextInfo(contextName);
                 if (contextDetail == null) {
                     throw new ExprValidationException("Failed to find context '" + contextName + "'");
                 }
@@ -87,15 +87,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             }
 
             // get visibility
-            NameAccessModifier visibility = services.ModuleVisibilityRules.GetAccessModifierVariable(@base, createDesc.VariableName);
+            var visibility = services.ModuleVisibilityRules.GetAccessModifierVariable(_base, createDesc.VariableName);
 
             // Compile metadata
-            bool compileTimeConstant = createDesc.IsConstant
+            var compileTimeConstant = createDesc.IsConstant
                                        && initialValueExpr != null
                                        && initialValueExpr.ForgeConstantType.IsCompileTimeConstant;
-            VariableMetaData metaData = VariableUtil.CompileVariable(
+            var metaData = VariableUtil.CompileVariable(
                 createDesc.VariableName,
-                @base.ModuleName,
+                _base.ModuleName,
                 visibility,
                 contextName,
                 contextVisibility,
@@ -113,52 +113,52 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             services.VariableCompileTimeRegistry.NewVariable(metaData);
 
             // Statement event type
-            IDictionary<string, object> eventTypePropertyTypes = Collections.SingletonDataMap(
+            var eventTypePropertyTypes = Collections.SingletonDataMap(
                 metaData.VariableName, metaData.Type);
-            string eventTypeName = services.EventTypeNameGeneratorStatement.AnonymousTypeName;
-            EventTypeMetadata eventTypeMetadata = new EventTypeMetadata(
-                eventTypeName, @base.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP, NameAccessModifier.TRANSIENT,
+            var eventTypeName = services.EventTypeNameGeneratorStatement.AnonymousTypeName;
+            var eventTypeMetadata = new EventTypeMetadata(
+                eventTypeName, _base.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP, NameAccessModifier.TRANSIENT,
                 EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
-            MapEventType outputEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
+            var outputEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                 eventTypeMetadata, eventTypePropertyTypes, null, null, null, null, services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(outputEventType);
 
             // Handle output format
-            StatementSpecCompiled defaultSelectAllSpec = new StatementSpecCompiled();
+            var defaultSelectAllSpec = new StatementSpecCompiled();
             defaultSelectAllSpec.SelectClauseCompiled.WithSelectExprList(new SelectClauseElementWildcard());
             defaultSelectAllSpec.Raw.SelectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(
                 new EventType[] {outputEventType}, new string[] {"trigger_stream"}, new bool[] {true}, false, false);
-            ResultSetProcessorDesc resultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
+            var resultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
                 new ResultSetSpec(defaultSelectAllSpec),
-                streamTypeService, null, new bool[1], false, @base.ContextPropertyRegistry, false, false, @base.StatementRawInfo, services);
+                streamTypeService, null, new bool[1], false, _base.ContextPropertyRegistry, false, false, _base.StatementRawInfo, services);
 
             // Code generation
-            string statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
-            string aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementAIFactoryProvider), classPostfix);
-            string classNameRSP = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(ResultSetProcessorFactoryProvider), classPostfix);
-            CodegenPackageScope packageScope = new CodegenPackageScope(
+            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+            var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementAIFactoryProvider), classPostfix);
+            var classNameRSP = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(ResultSetProcessorFactoryProvider), classPostfix);
+            var packageScope = new CodegenNamespaceScope(
                 packageName, statementFieldsClassName, services.IsInstrumented);
 
-            StatementAgentInstanceFactoryCreateVariableForge forge =
+            var forge =
                 new StatementAgentInstanceFactoryCreateVariableForge(createDesc.VariableName, initialValueExpr, classNameRSP);
-            StmtClassForgableAIFactoryProviderCreateVariable aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateVariable(
+            var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateVariable(
                 aiFactoryProviderClassName, packageScope, forge, createDesc.VariableName);
 
-            StatementInformationalsCompileTime informationals = StatementInformationalsUtil.GetInformationals(
-                @base,
+            var informationals = StatementInformationalsUtil.GetInformationals(
+                _base,
                 Collections.GetEmptyList<FilterSpecCompiled>(),
                 Collections.GetEmptyList<ScheduleHandleCallbackProvider>(),
                 Collections.GetEmptyList<NamedWindowConsumerStreamSpec>(), true,
                 resultSetProcessor.SelectSubscriberDescriptor,
                 packageScope, services);
-            string statementProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
-            StmtClassForgableStmtProvider stmtProvider = new StmtClassForgableStmtProvider(
+            var statementProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
+            var stmtProvider = new StmtClassForgableStmtProvider(
                 aiFactoryProviderClassName, statementProviderClassName, informationals, packageScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
-            forgables.Add(new StmtClassForgableRSPFactoryProvider(classNameRSP, resultSetProcessor, packageScope, @base.StatementRawInfo));
+            forgables.Add(new StmtClassForgableRSPFactoryProvider(classNameRSP, resultSetProcessor, packageScope, _base.StatementRawInfo));
             forgables.Add(aiFactoryForgable);
             forgables.Add(stmtProvider);
             forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 0));

@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.context.activator
             var method = parent.MakeChild(typeof(ViewableActivatorHistorical), GetType(), classScope);
             method.Block.DeclareVar(
                     typeof(ViewableActivatorHistorical), "hist", NewInstance(typeof(ViewableActivatorHistorical)))
-                .ExprDotMethod(Ref("hist"), "setFactory", viewableForge.Make(method, symbols, classScope))
+                .SetProperty(Ref("hist"), "Factory", viewableForge.Make(method, symbols, classScope))
                 .MethodReturn(Ref("hist"));
             return LocalMethod(method);
         }

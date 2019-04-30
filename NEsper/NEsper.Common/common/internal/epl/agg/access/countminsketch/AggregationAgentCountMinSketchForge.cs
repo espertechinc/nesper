@@ -43,10 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             CodegenMethod method = parent.MakeChild(typeof(AggregationAgentCountMinSketch), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(AggregationAgentCountMinSketch), "cms", NewInstance(typeof(AggregationAgentCountMinSketch)))
-                .ExprDotMethod(
-                    @Ref("cms"), "setStringEval", ExprNodeUtilityCodegen.CodegenEvaluator(stringEvaluator, method, this.GetType(), classScope))
-                .ExprDotMethod(
-                    @Ref("cms"), "setOptionalFilterEval",
+                .SetProperty(Ref("cms"), "StringEval", ExprNodeUtilityCodegen.CodegenEvaluator(stringEvaluator, method, this.GetType(), classScope))
+                .SetProperty(Ref("cms"), "OptionalFilterEval",
                     optionalFilterForge == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(optionalFilterForge, method, this.GetType(), classScope))

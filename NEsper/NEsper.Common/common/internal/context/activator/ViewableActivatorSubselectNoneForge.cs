@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.context.activator
             var method = parent.MakeChild(typeof(ViewableActivatorSubselectNone), GetType(), classScope);
             method.Block.DeclareVar(
                     typeof(ViewableActivatorSubselectNone), "none", NewInstance(typeof(ViewableActivatorSubselectNone)))
-                .ExprDotMethod(Ref("none"), "setEventType", type)
+                .SetProperty(Ref("none"), "EventType", type)
                 .MethodReturn(Ref("none"));
             return LocalMethod(method);
         }

@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var method = parent.MakeChild(EvaluationType, GetType(), classScope);
             var eps = symbols.GetAddEPS(method);
 
-            var strategy = classScope.PackageScope.AddOrGetFieldWellKnown(
+            var strategy = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 previousStrategyFieldName, typeof(RowRecogPreviousStrategy));
 
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(ChildNodes[0].Forge, method, classScope);

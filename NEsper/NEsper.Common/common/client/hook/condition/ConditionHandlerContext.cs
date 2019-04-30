@@ -6,50 +6,50 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.common.client.hook.condition
 {
     /// <summary>
-    /// Context provided to <see cref="ConditionHandler" /> implementations providing 
-    /// engine-condition-contextual information. 
-    /// <para/>
-    /// Statement information pertains to the statement currently being processed when 
-    /// the condition occured.
+    ///     Context provided to <see cref="ConditionHandler" /> implementations providing
+    ///     engine-condition-contextual information.
+    ///     <para />
+    ///     Statement information pertains to the statement currently being processed when
+    ///     the condition occured.
     /// </summary>
     public class ConditionHandlerContext
     {
         /// <summary>Ctor. </summary>
         /// <param name="engineURI">engine URI</param>
         /// <param name="statementName">statement name</param>
-        /// <param name="epl">statement EPL expression text</param>
+        /// <param name="deploymentId">statement deployment id</param>
         /// <param name="engineCondition">condition reported</param>
         public ConditionHandlerContext(
-            String engineURI,
-            String statementName,
-            String epl,
+            string engineURI,
+            string statementName,
+            string deploymentId,
             BaseCondition engineCondition)
         {
             EngineURI = engineURI;
             StatementName = statementName;
-            Epl = epl;
+            DeploymentId = deploymentId;
             EngineCondition = engineCondition;
         }
 
         /// <summary>Returns the engine URI. </summary>
         /// <value>engine URI</value>
-        public string EngineURI { get; private set; }
+        public string EngineURI { get; }
 
-        /// <summary>Returns the statement name, if provided, or the statement id assigned to the statement if no name was provided. </summary>
+        /// <summary>
+        ///     Returns the statement name, if provided, or the statement id assigned to the statement if no name was
+        ///     provided.
+        /// </summary>
         /// <value>statement name or id</value>
-        public string StatementName { get; private set; }
+        public string StatementName { get; }
 
-        /// <summary>Returns the expression text of the statement. </summary>
-        /// <value>statement.</value>
-        public string Epl { get; private set; }
+        /// <summary>Returns the deployment id of the statement. </summary>
+        public string DeploymentId { get; }
 
         /// <summary>Returns the condition reported. </summary>
         /// <value>condition reported</value>
-        public BaseCondition EngineCondition { get; private set; }
+        public BaseCondition EngineCondition { get; }
     }
 }

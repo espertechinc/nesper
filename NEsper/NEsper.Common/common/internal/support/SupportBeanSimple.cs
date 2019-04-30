@@ -15,14 +15,14 @@ namespace com.espertech.esper.common.@internal.support
     public class SupportBeanSimple
     {
         public SupportBeanSimple(
-            String myString,
+            string myString,
             int myInt)
         {
             MyString = myString;
             MyInt = myInt;
         }
 
-        public String MyString { get; set; }
+        public string MyString { get; set; }
 
         public int MyInt { get; set; }
     }

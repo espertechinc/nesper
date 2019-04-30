@@ -60,7 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return Collections.SingletonList(CodegenEvaluators(Expressions, method, GetType(), classScope));
+            return Collections.SingletonList(
+                ExprNodeUtilityCodegen.CodegenEvaluators(
+                    Expressions, method, GetType(), classScope));
         }
     }
 } // end of namespace

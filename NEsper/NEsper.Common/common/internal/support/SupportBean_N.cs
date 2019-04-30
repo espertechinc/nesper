@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public bool BoolBoxed { get; private set; }
 
-        public override String ToString()
+        public override string ToString()
         {
             return
                 " IntPrimitive=" + IntPrimitive +

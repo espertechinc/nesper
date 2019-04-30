@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
         public long EstimateCount(byte[] item)
         {
-            long res = Int64.MaxValue;
+            long res = long.MaxValue;
             var buckets = GetHashBuckets(item, Depth, Width);
             for (var i = 0; i < Depth; ++i) {
                 res = Math.Min(res, Table[i][buckets[i]]);

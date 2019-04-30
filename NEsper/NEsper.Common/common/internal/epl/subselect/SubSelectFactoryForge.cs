@@ -45,13 +45,12 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             var method = parent.MakeChild(typeof(SubSelectFactory), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(SubSelectFactory), "factory", NewInstance(typeof(SubSelectFactory)))
-                .ExprDotMethod(Ref("factory"), "setSubqueryNumber", Constant(subqueryNumber))
-                .ExprDotMethod(Ref("factory"), "setActivator", activator.MakeCodegen(method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("factory"), "setStrategyFactory", strategyFactoryForge.MakeCodegen(method, symbols, classScope))
-                .ExprDotMethod(Ref("factory"), "setHasAggregation", Constant(strategyFactoryForge.HasAggregation))
-                .ExprDotMethod(Ref("factory"), "setHasPrior", Constant(strategyFactoryForge.HasPrior))
-                .ExprDotMethod(Ref("factory"), "setHasPrevious", Constant(strategyFactoryForge.HasPrevious))
+                .SetProperty(Ref("factory"), "SubqueryNumber", Constant(subqueryNumber))
+                .SetProperty(Ref("factory"), "Activator", activator.MakeCodegen(method, symbols, classScope))
+                .SetProperty(Ref("factory"), "StrategyFactory", strategyFactoryForge.MakeCodegen(method, symbols, classScope))
+                .SetProperty(Ref("factory"), "HasAggregation", Constant(strategyFactoryForge.HasAggregation))
+                .SetProperty(Ref("factory"), "HasPrior", Constant(strategyFactoryForge.HasPrior))
+                .SetProperty(Ref("factory"), "HasPrevious", Constant(strategyFactoryForge.HasPrevious))
                 .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", Ref("factory"))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

@@ -23,16 +23,16 @@ namespace com.espertech.esper.common.client.soda
                 return("null");
             }
 
-            if ((constant is String) ||
-                (constant is Char))
+            if ((constant is string) ||
+                (constant is char))
             {
                 return '\"' + constant.ToString() + '\"';
             }
-            else if (constant is Int64)
+            else if (constant is long)
             {
                 return string.Format("{0}L", constant);
             }
-            else if (constant is Double)
+            else if (constant is double)
             {
                 double dvalue = (double)constant;
                 double scrubbed = Math.Floor(dvalue);
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.client.soda
                     return string.Format("{0}", dvalue);
                 }
             }
-            else if (constant is Single)
+            else if (constant is float)
             {
                 double dvalue = (float)constant;
                 double scrubbed = Math.Floor(dvalue);
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.client.soda
                     return string.Format("{0}f", dvalue);
                 }
             }
-            else if (constant is Decimal)
+            else if (constant is decimal)
             {
                 decimal dvalue = (decimal)constant;
                 decimal scrubbed = Math.Floor(dvalue);
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.client.soda
                     return string.Format("{0}m", dvalue);
                 }
             }
-            else if (constant is Boolean)
+            else if (constant is bool)
             {
                 return(constant.ToString().ToLower());
             }
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Renders a constant as an EPL. </summary>
         /// <param name="writer">to output to</param>
         /// <param name="constant">to render</param>
-        public static void RenderEPL(TextWriter writer, Object constant)
+        public static void RenderEPL(TextWriter writer, object constant)
         {
             if (constant == null)
             {
@@ -92,18 +92,18 @@ namespace com.espertech.esper.common.client.soda
                 return;
             }
 
-            if ((constant is String) ||
-                (constant is Char))
+            if ((constant is string) ||
+                (constant is char))
             {
                 writer.Write('\"');
                 writer.Write(constant.ToString());
                 writer.Write('\"');
             }
-            else if (constant is Int64)
+            else if (constant is long)
             {
                 writer.Write("{0}L", constant);
             }
-            else if (constant is Double)
+            else if (constant is double)
             {
                 double dvalue = (double)constant;
                 double scrubbed = Math.Floor(dvalue);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.client.soda
                     writer.Write("{0}", dvalue);
                 }
             }
-            else if (constant is Single)
+            else if (constant is float)
             {
                 double dvalue = (float)constant;
                 double scrubbed = Math.Floor(dvalue);
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.client.soda
                     writer.Write("{0}f", dvalue);
                 }
             } 
-            else if (constant is Decimal)
+            else if (constant is decimal)
             {
                 decimal dvalue = (decimal)constant;
                 decimal scrubbed = Math.Floor(dvalue);
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.client.soda
                     writer.Write("{0}m", dvalue);
                 }
             }
-            else if (constant is Boolean)
+            else if (constant is bool)
             {
                 writer.Write(constant.ToString().ToLower());
             }

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
 
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
@@ -63,8 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 CodegenExpression havingCall = LocalMethod(
                     havingExpr, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method), evalCtx);
 
-                forEach.ExprDotMethod(
-                        Ref("aggregationService"), "setCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull())
+                forEach.ExprDotMethod(Ref("aggregationService"), "SetCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull())
                     .DeclareVar(typeof(bool?), "pass", Cast(typeof(bool?), havingCall))
                     .IfCondition(And(NotEqualsNull(Ref("pass")), Ref("pass")))
                     .IfCondition(Ref("haveResult")).BlockReturn(ConstantNull())
@@ -73,8 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             method.Block.IfCondition(EqualsNull(Ref("groupKeyMatch"))).BlockReturn(ConstantNull())
-                .ExprDotMethod(
-                    Ref("aggregationService"), "setCurrentAccess", Ref("groupKeyMatch"), Ref("cpid"), ConstantNull());
+                .ExprDotMethod(Ref("aggregationService"), "SetCurrentAccess", Ref("groupKeyMatch"), Ref("cpid"), ConstantNull());
 
             if (subselect.SelectClause.Length == 1) {
                 var eval = CodegenLegoMethodExpression.CodegenExpression(
@@ -98,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
             var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var subselectMultirowType = classScope.AddFieldUnshared(
@@ -130,8 +128,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 CodegenExpression havingCall = LocalMethod(
                     havingExpr, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method), evalCtx);
 
-                forEach.ExprDotMethod(
-                        Ref("aggregationService"), "setCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull())
+                forEach
+                    .ExprDotMethod(Ref("aggregationService"), "SetCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull())
                     .DeclareVar(typeof(bool?), "pass", Cast(typeof(bool?), havingCall))
                     .IfCondition(And(NotEqualsNull(Ref("pass")), Ref("pass")))
                     .DeclareVar(

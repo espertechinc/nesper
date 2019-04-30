@@ -313,7 +313,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
 
             // get matching events
-            CodegenExpression future = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryResult(subselectNode.SubselectNumber), typeof(SubordTableLookupStrategy));
             var evalMatching = ExprDotMethod(future, "lookup", eps, evalCtx);
             method.Block.DeclareVar(typeof(ICollection<object>), typeof(EventBean), NAME_MATCHINGEVENTS, evalMatching);

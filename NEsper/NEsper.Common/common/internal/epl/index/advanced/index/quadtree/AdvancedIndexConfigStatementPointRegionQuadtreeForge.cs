@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 .DeclareVar(
                     typeof(AdvancedIndexConfigStatementPointRegionQuadtree), "factory",
                     NewInstance(typeof(AdvancedIndexConfigStatementPointRegionQuadtree)))
-                .ExprDotMethod(Ref("factory"), "set_XEval", expr.Invoke(XEval))
-                .ExprDotMethod(Ref("factory"), "set_YEval", expr.Invoke(YEval))
+                .SetProperty(Ref("factory"), "_XEval", expr.Invoke(XEval))
+                .SetProperty(Ref("factory"), "_YEval", expr.Invoke(YEval))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }

@@ -37,9 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            DateTimeEx cal = (DateTimeEx) ((DateTimeEx) target).Clone();
-            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            return reformatOp.Evaluate(cal, eventsPerStream, isNewData, exprEvaluatorContext);
+            DateTimeEx dtx = (DateTimeEx) ((DateTimeEx) target).Clone();
+            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            return reformatOp.Evaluate(dtx, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(

@@ -51,15 +51,15 @@ namespace com.espertech.esper.common.@internal.@event.variant
             // test if any of the supertypes of the eventtype is a variant type
             foreach (var variant in variants) {
                 // Check all the supertypes to see if one of the matches the full or delta types
-                IEnumerator<EventType> deepSupers = eventType.DeepSuperTypes;
+                var deepSupers = eventType.DeepSuperTypes;
                 if (deepSupers == null) {
                     continue;
                 }
 
                 EventType superType;
-                for (; deepSupers.HasNext;) {
-                    superType = deepSupers.Next();
-                    if (superType == variant) {
+                foreach (var nextSuperType in deepSupers) {
+                    superType = nextSuperType;
+                    if (Equals(superType, variant)) {
                         return;
                     }
                 }

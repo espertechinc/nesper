@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
-using com.espertech.esper.common.@internal.util.apachecommonstext;
+
+//using com.espertech.esper.common.@internal.util.apachecommonstext;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression

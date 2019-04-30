@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             }
             else {
                 if (assignments != null) {
-                    foreach (OnTriggerSetAssignment assignment in assignments) {
+                    foreach (var assignment in assignments) {
                         if (ContainsBuiltinProperties(assignment.Expression)) {
                             isUsingBuiltinProperties = true;
                         }
@@ -74,29 +74,30 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             CodegenClassScope classScope)
         {
             // initialize+resolve variables
-            SAIFFInitializeSymbol symbols = new SAIFFInitializeSymbol();
-            CodegenMethod variableInit = classScope.PackageScope.InitMethod
-                .MakeChildWithScope(typeof(VariableReadWritePackage), this.GetType(), symbols, classScope).AddParam(
-                    typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
-            variableInit.Block.MethodReturn(variableReadWritePackage.Make(variableInit, symbols, classScope));
-            CodegenExpressionField variableRW = classScope.PackageScope.AddFieldUnshared(
+            var symbols = new SAIFFInitializeSymbol();
+            var variableInit = classScope.NamespaceScope
+                .InitMethod
+                .MakeChildWithScope(typeof(VariableReadWritePackage), this.GetType(), symbols, classScope)
+                .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+            variableInit.Block
+                .MethodReturn(variableReadWritePackage.Make(variableInit, symbols, classScope));
+            var variableRW = classScope.NamespaceScope.AddFieldUnshared(
                 true, typeof(VariableReadWritePackage), LocalMethod(variableInit, EPStatementInitServicesConstants.REF));
 
-            CodegenMethod method = parent.MakeChild(typeof(OutputConditionPolledExpressionFactory), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(OutputConditionPolledExpressionFactory), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(OutputConditionPolledExpressionFactory), "factory", NewInstance(typeof(OutputConditionPolledExpressionFactory)))
-                .ExprDotMethod(
-                    @Ref("factory"), "setWhenExpression",
+                .SetProperty(Ref("factory"), "WhenExpression",
                     ExprNodeUtilityCodegen.CodegenEvaluator(whenExpressionNode, method, this.GetType(), classScope))
-                .ExprDotMethod(@Ref("factory"), "setVariableReadWritePackage", variableRW)
-                .ExprDotMethod(@Ref("factory"), "setUsingBuiltinProperties", Constant(isUsingBuiltinProperties))
+                .SetProperty(Ref("factory"), "VariableReadWritePackage", variableRW)
+                .SetProperty(Ref("factory"), "UsingBuiltinProperties", Constant(isUsingBuiltinProperties))
                 .MethodReturn(@Ref("factory"));
             return LocalMethod(method);
         }
 
         private bool ContainsBuiltinProperties(ExprNode expr)
         {
-            ExprNodeIdentifierVisitor propertyVisitor = new ExprNodeIdentifierVisitor(false);
+            var propertyVisitor = new ExprNodeIdentifierVisitor(false);
             expr.Accept(propertyVisitor);
             return !propertyVisitor.ExprProperties.IsEmpty();
         }

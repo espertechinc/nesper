@@ -87,9 +87,8 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
         {
             method.Block
                 .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(
-                    factory, "setTimestampEval", ExprNodeUtilityCodegen
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "TimestampEval", ExprNodeUtilityCodegen
                         .CodegenEvaluator(timestampExpression.Forge, method, GetType(), classScope));
         }
     }

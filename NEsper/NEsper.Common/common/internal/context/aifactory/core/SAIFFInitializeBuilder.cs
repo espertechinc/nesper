@@ -215,7 +215,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             string name,
             CodegenExpression expression)
         {
-            method.Block.ExprDotMethod(Ref(refName), "set" + GetBeanCap(name), expression);
+            method.Block.SetProperty(Ref(refName), GetBeanCap(name), expression);
             return this;
         }
 

@@ -37,8 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                 .DeclareVar(
                     typeof(AgregationTAAReaderCountMinSketchFreq), "strat",
                     NewInstance(typeof(AgregationTAAReaderCountMinSketchFreq)))
-                .ExprDotMethod(
-                    Ref("strat"), "setFrequencyEval",
+                .SetProperty(Ref("strat"), "FrequencyEval",
                     ExprNodeUtilityCodegen.CodegenEvaluator(frequencyEval.Forge, method, GetType(), classScope))
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);

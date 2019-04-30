@@ -39,11 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             CodegenMethod method = parent.MakeChild(typeof(TimePeriodComputeNCGivenTPNonCalEval), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(TimePeriodComputeNCGivenTPNonCalEval), "eval", NewInstance(typeof(TimePeriodComputeNCGivenTPNonCalEval)))
-                .ExprDotMethod(@Ref("eval"), "setAdders", TimePeriodAdderUtil.MakeArray(timePeriodForge.Adders, parent, classScope))
-                .ExprDotMethod(
-                    @Ref("eval"), "setEvaluators",
+                .SetProperty(Ref("eval"), "Adders", TimePeriodAdderUtil.MakeArray(timePeriodForge.Adders, parent, classScope))
+                .SetProperty(Ref("eval"), "Evaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(timePeriodForge.Forges, method, this.GetType(), classScope))
-                .ExprDotMethod(@Ref("eval"), "setTimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
+                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
                 .MethodReturn(@Ref("eval"));
             return LocalMethod(method);
         }

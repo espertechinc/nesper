@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <summary> Constructor.</summary>
         /// <param name="message">is the error message
         /// </param>
-        public ScheduleServiceException(String message)
+        public ScheduleServiceException(string message)
             : base(message)
         {
         }
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <param name="cause">is the inner exception
         /// </param>
         public ScheduleServiceException(
-            String message,
+            string message,
             System.Exception cause)
             : base(message, cause)
         {
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <param name="cause">is the inner exception
         /// </param>
         public ScheduleServiceException(System.Exception cause)
-            : base(String.Empty, cause)
+            : base(string.Empty, cause)
         {
         }
     }

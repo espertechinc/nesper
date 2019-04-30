@@ -13,8 +13,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     public interface ExprDotEvalVisitor
     {
         void VisitPropertySource();
-        void VisitEnumeration(String name);
-        void VisitMethod(String methodName);
+        void VisitEnumeration(string name);
+        void VisitMethod(string methodName);
         void VisitDateTime();
         void VisitUnderlyingEvent();
         void VisitUnderlyingEventColl();

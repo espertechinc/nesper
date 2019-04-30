@@ -18,18 +18,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
 {
     public class StmtClassForgableAIFactoryProviderCreateVariable : StmtClassForgableAIFactoryProviderBase
     {
-        private readonly StatementAgentInstanceFactoryCreateVariableForge forge;
-        private readonly string variableName;
+        private readonly StatementAgentInstanceFactoryCreateVariableForge _forge;
+        private readonly string _variableName;
 
         public StmtClassForgableAIFactoryProviderCreateVariable(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             StatementAgentInstanceFactoryCreateVariableForge forge,
             string variableName)
-            : base(className, packageScope)
+            : base(className, namespaceScope)
         {
-            this.forge = forge;
-            this.variableName = variableName;
+            _forge = forge;
+            _variableName = variableName;
         }
 
         protected override Type TypeOfFactory()
@@ -42,11 +42,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             CodegenClassScope classScope)
         {
             var saiffInitializeSymbol = new SAIFFInitializeSymbol();
-            var method = parent.MakeChildWithScope(TypeOfFactory(), this.GetType(), saiffInitializeSymbol, classScope)
+            var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
                 .AddParam(typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
             method.Block
-                .ExprDotMethod(REF_STMTINITSVC, "activateVariable", Constant(variableName))
-                .MethodReturn(LocalMethod(forge.InitializeCodegen(method, saiffInitializeSymbol, classScope)));
+                .ExprDotMethod(REF_STMTINITSVC, "activateVariable", Constant(_variableName))
+                .MethodReturn(LocalMethod(_forge.InitializeCodegen(method, saiffInitializeSymbol, classScope)));
             return method;
         }
     }

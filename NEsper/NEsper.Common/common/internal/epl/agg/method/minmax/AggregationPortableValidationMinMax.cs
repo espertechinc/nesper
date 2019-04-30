@@ -51,8 +51,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(@ref, "setUnbound", Constant(Unbound))
-                .ExprDotMethod(@ref, "setMinMax", Constant(MinMax));
+                .SetProperty(@ref, "Unbound", Constant(Unbound))
+                .SetProperty(@ref, "MinMax", Constant(MinMax));
         }
 
         protected override void ValidateIntoTableWFilterWInputType(

@@ -13,18 +13,18 @@ namespace com.espertech.esper.common.@internal.epl.annotation
     /// <summary>Represents a attribute of an annotation. </summary>
     public class AnnotationAttribute
     {
-        private readonly String _name;
+        private readonly string _name;
         private readonly Type _type;
-        private readonly Object _defaultValue;
+        private readonly object _defaultValue;
 
         /// <summary>Ctor. </summary>
         /// <param name="name">name of attribute</param>
         /// <param name="type">attribute type</param>
         /// <param name="defaultValue">default value, if any is specified</param>
         public AnnotationAttribute(
-            String name,
+            string name,
             Type type,
-            Object defaultValue)
+            object defaultValue)
         {
             _name = name;
             _type = type;

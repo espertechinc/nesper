@@ -121,24 +121,21 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             var method = parent.MakeChild(typeof(TableMetaData), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(TableMetaData), "meta", NewInstance(typeof(TableMetaData)))
-                .ExprDotMethod(Ref("meta"), "setTableName", Constant(TableName))
-                .ExprDotMethod(Ref("meta"), "setTableModuleName", Constant(TableModuleName))
-                .ExprDotMethod(Ref("meta"), "setTableVisibility", Constant(TableVisibility))
-                .ExprDotMethod(Ref("meta"), "setOptionalContextName", Constant(OptionalContextName))
-                .ExprDotMethod(Ref("meta"), "setOptionalContextVisibility", Constant(OptionalContextVisibility))
-                .ExprDotMethod(Ref("meta"), "setOptionalContextModule", Constant(OptionalContextModule))
-                .ExprDotMethod(
-                    Ref("meta"), "setInternalEventType",
+                .SetProperty(Ref("meta"), "TableName", Constant(TableName))
+                .SetProperty(Ref("meta"), "TableModuleName", Constant(TableModuleName))
+                .SetProperty(Ref("meta"), "TableVisibility", Constant(TableVisibility))
+                .SetProperty(Ref("meta"), "OptionalContextName", Constant(OptionalContextName))
+                .SetProperty(Ref("meta"), "OptionalContextVisibility", Constant(OptionalContextVisibility))
+                .SetProperty(Ref("meta"), "OptionalContextModule", Constant(OptionalContextModule))
+                .SetProperty(Ref("meta"), "InternalEventType",
                     EventTypeUtility.ResolveTypeCodegen(InternalEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    Ref("meta"), "setPublicEventType",
+                .SetProperty(Ref("meta"), "PublicEventType",
                     EventTypeUtility.ResolveTypeCodegen(PublicEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("meta"), "setKeyColumns", Constant(KeyColumns))
-                .ExprDotMethod(Ref("meta"), "setKeyTypes", Constant(KeyTypes))
-                .ExprDotMethod(Ref("meta"), "setKeyColNums", Constant(KeyColNums))
-                .ExprDotMethod(
-                    Ref("meta"), "setColumns", TableMetadataColumn.MakeColumns(Columns, method, symbols, classScope))
-                .ExprDotMethod(Ref("meta"), "setNumMethodAggs", Constant(NumMethodAggs))
+                .SetProperty(Ref("meta"), "KeyColumns", Constant(KeyColumns))
+                .SetProperty(Ref("meta"), "KeyTypes", Constant(KeyTypes))
+                .SetProperty(Ref("meta"), "KeyColNums", Constant(KeyColNums))
+                .SetProperty(Ref("meta"), "Columns", TableMetadataColumn.MakeColumns(Columns, method, symbols, classScope))
+                .SetProperty(Ref("meta"), "NumMethodAggs", Constant(NumMethodAggs))
                 .ExprDotMethod(Ref("meta"), "init")
                 .MethodReturn(Ref("meta"));
             return LocalMethod(method);

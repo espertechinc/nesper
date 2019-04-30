@@ -124,10 +124,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             // combine
             IList<FilterSpecParamForge>[] result = new IList<FilterSpecParamForge>[sizeFactorized];
-            CombinationEnumeration permutations = CombinationEnumeration.FromZeroBasedRanges(sizePerOr);
+            IEnumerable<object[]> permutations = CombinationEnumeration.FromZeroBasedRanges(sizePerOr);
             int count = 0;
-            for (; permutations.HasMoreElements;) {
-                object[] permutation = permutations.NextElement();
+            foreach (var permutation in permutations)
+            { 
                 result[count] = ComputePermutation(expressionsWithoutOr, permutation, orNodesMaps, args);
                 count++;
             }

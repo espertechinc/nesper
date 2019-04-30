@@ -6,39 +6,26 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.context.controller.condition;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public class ContextControllerInitTermSvcEntry
     {
-        private readonly int subpathIdOrCPId;
-        private readonly ContextControllerConditionNonHA terminationCondition;
-        private readonly ContextControllerInitTermPartitionKey partitionKey;
-
         public ContextControllerInitTermSvcEntry(
             int subpathIdOrCPId,
             ContextControllerConditionNonHA terminationCondition,
             ContextControllerInitTermPartitionKey partitionKey)
         {
-            this.subpathIdOrCPId = subpathIdOrCPId;
-            this.terminationCondition = terminationCondition;
-            this.partitionKey = partitionKey;
+            SubpathIdOrCPId = subpathIdOrCPId;
+            TerminationCondition = terminationCondition;
+            PartitionKey = partitionKey;
         }
 
-        public int SubpathIdOrCPId {
-            get => subpathIdOrCPId;
-        }
+        public int SubpathIdOrCPId { get; }
 
-        public ContextControllerConditionNonHA TerminationCondition {
-            get => terminationCondition;
-        }
+        public ContextControllerConditionNonHA TerminationCondition { get; }
 
-        public ContextControllerInitTermPartitionKey PartitionKey {
-            get => partitionKey;
-        }
+        public ContextControllerInitTermPartitionKey PartitionKey { get; }
     }
 } // end of namespace

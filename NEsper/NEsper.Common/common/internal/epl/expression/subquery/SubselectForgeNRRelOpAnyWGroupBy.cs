@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
 
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
@@ -62,8 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
-                forEach.ExprDotMethod(
-                    Ref("aggregationService"), "setCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull());
+                forEach.ExprDotMethod(Ref("aggregationService"), "SetCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull());
 
                 if (havingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(

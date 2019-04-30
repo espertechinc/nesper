@@ -78,8 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             method.Block
-                .ExprDotMethod(factory, "setDesc", rowRecogDescForge.Make(method, symbols, classScope))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
+                .SetProperty(factory, "Desc", rowRecogDescForge.Make(method, symbols, classScope))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
 
         public override void Accept(ViewForgeVisitor visitor)

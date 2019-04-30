@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     NewInstance(typeof(StatementAgentInstanceFactorySelect)));
 
             // stream names
-            method.Block.ExprDotMethod(Ref("saiff"), "setStreamNames", Constant(_streamNames));
+            method.Block.SetProperty(Ref("saiff"), "StreamNames", Constant(_streamNames));
 
             // activators
             method.Block.DeclareVar(
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     "activators", Constant(i), _viewableActivatorForges[i].MakeCodegen(method, symbols, classScope));
             }
 
-            method.Block.ExprDotMethod(Ref("saiff"), "setViewableActivators", Ref("activators"));
+            method.Block.SetProperty(Ref("saiff"), "ViewableActivators", Ref("activators"));
 
             // views
             method.Block.DeclareVar(
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 }
             }
 
-            method.Block.ExprDotMethod(Ref("saiff"), "setViewFactories", Ref("viewFactories"));
+            method.Block.SetProperty(Ref("saiff"), "ViewFactories", Ref("viewFactories"));
 
             // view delegate information ('prior' and 'prev')
             method.Block.DeclareVar(
@@ -118,29 +118,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     "viewResourceDelegates", Constant(i), _viewResourceDelegates[i].ToExpression());
             }
 
-            method.Block.ExprDotMethod(Ref("saiff"), "setViewResourceDelegates", Ref("viewResourceDelegates"));
+            method.Block.SetProperty(Ref("saiff"), "ViewResourceDelegates", Ref("viewResourceDelegates"));
 
             // result set processor
             method.Block.DeclareVar(
                     _resultSetProcessorProviderClassName, RSPFACTORYPROVIDER,
                     NewInstance(_resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("saiff"), "setResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
+                .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
 
             // where-clause evaluator
             if (_whereClauseForge != null) {
                 var whereEval = CodegenEvaluator(_whereClauseForge, method, GetType(), classScope);
-                method.Block.ExprDotMethod(Ref("saiff"), "setWhereClauseEvaluator", whereEval);
+                method.Block.SetProperty(Ref("saiff"), "WhereClauseEvaluator", whereEval);
                 if (classScope.IsInstrumented) {
-                    method.Block.ExprDotMethod(
-                        Ref("saiff"), "setWhereClauseEvaluatorTextForAudit",
+                    method.Block.SetProperty(
+                        Ref("saiff"), "WhereClauseEvaluatorTextForAudit",
                         Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(_whereClauseForge)));
                 }
             }
 
             // joins
             if (_joinSetComposerPrototypeForge != null) {
-                method.Block.ExprDotMethod(
-                    Ref("saiff"), "setJoinSetComposerPrototype",
+                method.Block.SetProperty(
+                    Ref("saiff"), "JoinSetComposerPrototype",
                     _joinSetComposerPrototypeForge.Make(method, symbols, classScope));
             }
 
@@ -148,28 +148,28 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.DeclareVar(
                     _outputProcessViewProviderClassName, OPVFACTORYPROVIDER,
                     NewInstance(_outputProcessViewProviderClassName, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("saiff"), "setOutputProcessViewFactoryProvider", Ref(OPVFACTORYPROVIDER));
+                .SetProperty(Ref("saiff"), "OutputProcessViewFactoryProvider", Ref(OPVFACTORYPROVIDER));
 
             // subselects
             if (!_subselects.IsEmpty()) {
-                method.Block.ExprDotMethod(
-                    Ref("saiff"), "setSubselects",
+                method.Block.SetProperty(
+                    Ref("saiff"), "Subselects",
                     SubSelectFactoryForge.CodegenInitMap(_subselects, GetType(), method, symbols, classScope));
             }
 
             // table-access
             if (!_tableAccesses.IsEmpty()) {
-                method.Block.ExprDotMethod(
-                    Ref("saiff"), "setTableAccesses",
+                method.Block.SetProperty(
+                    Ref("saiff"), "TableAccesses",
                     ExprTableEvalStrategyUtil.CodegenInitMap(_tableAccesses, GetType(), method, symbols, classScope));
             }
 
             // order-by with no output-limit
-            method.Block.ExprDotMethod(
-                Ref("saiff"), "setOrderByWithoutOutputRateLimit", Constant(_orderByWithoutOutputRateLimit));
+            method.Block.SetProperty(
+                Ref("saiff"), "OrderByWithoutOutputRateLimit", Constant(_orderByWithoutOutputRateLimit));
 
             // unidirectional join
-            method.Block.ExprDotMethod(Ref("saiff"), "setUnidirectionalJoin", Constant(_unidirectionalJoin));
+            method.Block.SetProperty(Ref("saiff"), "UnidirectionalJoin", Constant(_unidirectionalJoin));
 
             method.Block.MethodReturn(Ref("saiff"));
 

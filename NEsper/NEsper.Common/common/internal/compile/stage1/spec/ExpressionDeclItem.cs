@@ -59,9 +59,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     typeof(ExpressionDeclItem), "item",
                     NewInstance(
                         typeof(ExpressionDeclItem), Constant(Name), Constant(ParametersNames), Constant(IsAlias)))
-                .ExprDotMethod(Ref("item"), "setOptionalSodaBytes", supplierSodaBytes)
-                .ExprDotMethod(Ref("item"), "setModuleName", Constant(ModuleName))
-                .ExprDotMethod(Ref("item"), "setVisibility", Constant(Visibility))
+                .SetProperty(Ref("item"), "OptionalSodaBytes", supplierSodaBytes)
+                .SetProperty(Ref("item"), "ModuleName", Constant(ModuleName))
+                .SetProperty(Ref("item"), "Visibility", Constant(Visibility))
                 .MethodReturn(Ref("item"));
             return LocalMethod(method);
         }

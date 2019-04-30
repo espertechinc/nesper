@@ -88,9 +88,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 throw new ExprValidationException("Unknown stream specification type: " + streamSpec);
             }
 
-            var statementFieldsClassName =
-                CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
-            var packageScope = new CodegenPackageScope(packageName, statementFieldsClassName, services.IsInstrumented);
+            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+            var packageScope = new CodegenNamespaceScope(packageName, statementFieldsClassName, services.IsInstrumented);
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider), classPostfix);
 
@@ -114,7 +113,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 }
 
                 var planDesc = new OnTriggerWindowPlan(
-                    desc, contextName, activatorResult, optionalStreamSelector, subselectActivation, streamSpec);
+                    desc, contextName, activatorResult, optionalStreamSelector.Value, subselectActivation, streamSpec);
                 onTriggerPlan = OnTriggerWindowUtil.HandleContextFactoryOnTrigger(
                     aiFactoryProviderClassName, packageScope,
                     classPostfix, namedWindow, table, planDesc, @base, services);

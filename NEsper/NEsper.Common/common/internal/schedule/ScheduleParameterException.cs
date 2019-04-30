@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
         /// <summary>Constructor. </summary>
         /// <param name="message">is the error message</param>
-        public ScheduleParameterException(String message)
+        public ScheduleParameterException(string message)
             : base(message)
         {
         }
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <param name="message">is the error message</param>
         /// <param name="innerException">is the inner exception</param>
         public ScheduleParameterException(
-            String message,
+            string message,
             Exception innerException)
             : base(message, innerException)
         {
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <summary>Constructor. </summary>
         /// <param name="innerException">is the inner exception</param>
         public ScheduleParameterException(Exception innerException)
-            : base(String.Empty, innerException)
+            : base(string.Empty, innerException)
         {
         }
     }

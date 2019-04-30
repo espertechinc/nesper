@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.context.controller.core
     public class ContextControllerForgeUtil
     {
         public static void ValidateStatementKeyAndHash(
-            Supplier<EventType>[] typeProvider,
+            IEnumerable<Supplier<EventType>> typeProvider,
             string contextName,
             StatementSpecCompiled spec,
             StatementCompileTimeServices compileTimeServices)

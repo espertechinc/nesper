@@ -66,8 +66,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .DeclareVar(
                     typeof(ContextControllerDetailCategory), "detail",
                     NewInstance(typeof(ContextControllerDetailCategory)))
-                .ExprDotMethod(Ref("detail"), "setFilterSpecActivatable", Ref("filterSpec"))
-                .ExprDotMethod(Ref("detail"), "setItems", Ref("items"))
+                .SetProperty(Ref("detail"), "FilterSpecActivatable", Ref("filterSpec"))
+                .SetProperty(Ref("detail"), "Items", Ref("items"))
                 .MethodReturn(Ref("detail"));
             return LocalMethod(method);
         }

@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             CodegenExpressionRef factory,
             CodegenBlock block)
         {
-            block.ExprDotMethod(factory, "setIncludeTriggeringEvent", Constant(includeTriggeringEvent));
+            block.SetProperty(factory, "IncludeTriggeringEvent", Constant(includeTriggeringEvent));
         }
     }
 } // end of namespace

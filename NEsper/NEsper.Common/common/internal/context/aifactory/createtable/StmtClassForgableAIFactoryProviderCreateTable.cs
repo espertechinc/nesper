@@ -23,10 +23,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
         public StmtClassForgableAIFactoryProviderCreateTable(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             StatementAgentInstanceFactoryCreateTableForge forge,
             string tableName)
-            : base(className, packageScope)
+            : base(className, namespaceScope)
         {
             this.forge = forge;
             this.tableName = tableName;

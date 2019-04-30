@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
     {
         public static OnTriggerSetPlan HandleSetVariable(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             string classPostfix,
             OnTriggerActivatorDesc activatorResult,
             string optionalStreamName,
@@ -94,9 +94,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
             forgables.Add(
                 new StmtClassForgableRSPFactoryProvider(
-                    classNameRSP, resultSetProcessor, packageScope, @base.StatementRawInfo));
+                    classNameRSP, resultSetProcessor, namespaceScope, @base.StatementRawInfo));
 
-            var onTrigger = new StmtClassForgableAIFactoryProviderOnTrigger(className, packageScope, forge);
+            var onTrigger = new StmtClassForgableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
             return new OnTriggerSetPlan(onTrigger, forgables, resultSetProcessor.SelectSubscriberDescriptor);
         }
     }

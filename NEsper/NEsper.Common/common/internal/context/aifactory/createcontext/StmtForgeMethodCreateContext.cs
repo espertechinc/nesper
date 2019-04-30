@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementAIFactoryProvider), classPostfix);
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
-            var packageScope = new CodegenPackageScope(
+            var packageScope = new CodegenNamespaceScope(
                 packageName, statementFieldsClassName, services.IsInstrumented);
 
             var forge =

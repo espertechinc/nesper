@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <summary> Ctor.</summary>
         /// <param name="msg">exception message
         /// </param>
-        public DuplicatePropertyException(String msg)
+        public DuplicatePropertyException(string msg)
             : base(msg, null)
         {
         }

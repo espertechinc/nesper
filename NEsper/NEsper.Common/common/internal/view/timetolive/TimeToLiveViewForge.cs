@@ -90,12 +90,11 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 .DeclareVar(
                     typeof(TimePeriodCompute), "eval",
                     new TimePeriodComputeConstGivenDeltaForge(0).MakeEvaluator(method, classScope))
-                .ExprDotMethod(
-                    factory, "setTimestampEval",
+                .SetProperty(factory, "TimestampEval",
                     CodegenEvaluator(timestampExpression.Forge, method, typeof(TimeOrderViewForge), classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(factory, "setTimeToLive", ConstantTrue());
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(factory, "TimeToLive", ConstantTrue());
         }
     }
 } // end of namespace

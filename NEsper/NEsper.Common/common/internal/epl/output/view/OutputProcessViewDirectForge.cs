@@ -40,8 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             CodegenExpressionRef factory = @Ref("factory");
             method.Block
                 .DeclareVar(typeof(OutputProcessViewDirectFactory), factory.Ref, NewInstance(typeof(OutputProcessViewDirectFactory)))
-                .ExprDotMethod(
-                    factory, "setPostProcessFactory",
+                .SetProperty(factory, "PostProcessFactory",
                     outputStrategyPostProcessForge == null ? ConstantNull() : outputStrategyPostProcessForge.Make(method, symbols, classScope))
                 .MethodReturn(factory);
         }

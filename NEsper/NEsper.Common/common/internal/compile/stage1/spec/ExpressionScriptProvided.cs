@@ -71,15 +71,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             var method = parent.MakeChild(typeof(ExpressionScriptProvided), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(ExpressionScriptProvided), "sp", NewInstance(typeof(ExpressionScriptProvided)))
-                .ExprDotMethod(Ref("sp"), "setName", Constant(Name))
-                .ExprDotMethod(Ref("sp"), "setExpression", Constant(Expression))
-                .ExprDotMethod(Ref("sp"), "setParameterNames", Constant(ParameterNames))
-                .ExprDotMethod(Ref("sp"), "setOptionalReturnTypeName", Constant(OptionalReturnTypeName))
-                .ExprDotMethod(Ref("sp"), "setOptionalEventTypeName", Constant(OptionalEventTypeName))
-                .ExprDotMethod(Ref("sp"), "setOptionalReturnTypeIsArray", Constant(IsOptionalReturnTypeIsArray))
-                .ExprDotMethod(Ref("sp"), "setOptionalDialect", Constant(OptionalDialect))
-                .ExprDotMethod(Ref("sp"), "setModuleName", Constant(ModuleName))
-                .ExprDotMethod(Ref("sp"), "setVisibility", Constant(Visibility))
+                .SetProperty(Ref("sp"), "Name", Constant(Name))
+                .SetProperty(Ref("sp"), "Expression", Constant(Expression))
+                .SetProperty(Ref("sp"), "ParameterNames", Constant(ParameterNames))
+                .SetProperty(Ref("sp"), "OptionalReturnTypeName", Constant(OptionalReturnTypeName))
+                .SetProperty(Ref("sp"), "OptionalEventTypeName", Constant(OptionalEventTypeName))
+                .SetProperty(Ref("sp"), "OptionalReturnTypeIsArray", Constant(IsOptionalReturnTypeIsArray))
+                .SetProperty(Ref("sp"), "OptionalDialect", Constant(OptionalDialect))
+                .SetProperty(Ref("sp"), "ModuleName", Constant(ModuleName))
+                .SetProperty(Ref("sp"), "Visibility", Constant(Visibility))
                 .MethodReturn(Ref("sp"));
             return LocalMethod(method);
         }

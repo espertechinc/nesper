@@ -106,10 +106,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                     typeof(TimerAtObserverFactory), "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("observerTimerAt"))
-                .ExprDotMethod(Ref("factory"), "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(Ref("factory"), "setParameters", parametersExpr)
-                .ExprDotMethod(Ref("factory"), "setOptionalConvertor", optionalConvertorExpr)
-                .ExprDotMethod(Ref("factory"), "setSpec", specExpr)
+                .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(Ref("factory"), "Parameters", parametersExpr)
+                .SetProperty(Ref("factory"), "OptionalConvertor", optionalConvertorExpr)
+                .SetProperty(Ref("factory"), "Spec", specExpr)
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }

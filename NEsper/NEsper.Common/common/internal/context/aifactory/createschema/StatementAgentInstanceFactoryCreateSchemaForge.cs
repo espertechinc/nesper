@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             method.Block
                 .DeclareVar(
                     typeof(StatementAgentInstanceFactoryCreateSchema), "saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateSchema)))
-                .ExprDotMethod(@Ref("saiff"), "setEventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(Ref("saiff"), "EventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(@Ref("saiff"));
             return method;
         }

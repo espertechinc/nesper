@@ -95,11 +95,10 @@ namespace com.espertech.esper.common.@internal.view.timetolive
 
             method.Block
                 .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .ExprDotMethod(
-                    factory, "setTimestampEval",
+                .SetProperty(factory, "TimestampEval",
                     CodegenEvaluator(timestampExpression.Forge, method, typeof(TimeOrderViewForge), classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
     }
 } // end of namespace

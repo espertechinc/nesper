@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             var local = locals.GetModuleTypes(typeName);
             var path = ResolvePath(typeName);
             var preconfigured = ResolvePreconfigured(typeName);
-            return CompileTimeResolverCompileTimeResolverUtil.ValidateAmbiguous(
+            return CompileTimeResolverUtil.ValidateAmbiguous(
                 local, path, preconfigured, PathRegistryObjectType.EVENTTYPE, typeName);
         }
 

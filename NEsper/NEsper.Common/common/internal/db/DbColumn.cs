@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.@internal.db
 {
     public struct DbColumn
     {
-        public String Name;
+        public string Name;
         public int Ordinal;
     }
 }

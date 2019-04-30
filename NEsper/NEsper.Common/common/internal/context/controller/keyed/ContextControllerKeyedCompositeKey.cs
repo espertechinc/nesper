@@ -6,49 +6,47 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedCompositeKey
     {
-        private readonly IntSeqKey path;
-        private readonly object key;
-
         public ContextControllerKeyedCompositeKey(
             IntSeqKey path,
             object key)
         {
-            this.path = path;
-            this.key = key;
+            Path = path;
+            Key = key;
         }
 
-        public IntSeqKey Path {
-            get => path;
-        }
+        public IntSeqKey Path { get; }
 
-        public object Key {
-            get => key;
-        }
+        public object Key { get; }
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            ContextControllerKeyedCompositeKey that = (ContextControllerKeyedCompositeKey) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
 
-            if (!path.Equals(that.path)) return false;
-            return key != null ? key.Equals(that.key) : that.key == null;
+            var that = (ContextControllerKeyedCompositeKey) o;
+
+            if (!Path.Equals(that.Path)) {
+                return false;
+            }
+
+            return Key != null ? Key.Equals(that.Key) : that.Key == null;
         }
 
         public override int GetHashCode()
         {
-            int result = path.GetHashCode();
-            result = 31 * result + (key != null ? key.GetHashCode() : 0);
+            var result = Path.GetHashCode();
+            result = 31 * result + (Key != null ? Key.GetHashCode() : 0);
             return result;
         }
     }

@@ -6,32 +6,22 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.context.controller.condition;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedSvcEntry
     {
-        private readonly int subpathOrCPId;
-        private readonly ContextControllerConditionNonHA terminationCondition;
-
         public ContextControllerKeyedSvcEntry(
             int subpathOrCPId,
             ContextControllerConditionNonHA terminationCondition)
         {
-            this.subpathOrCPId = subpathOrCPId;
-            this.terminationCondition = terminationCondition;
+            SubpathOrCPId = subpathOrCPId;
+            TerminationCondition = terminationCondition;
         }
 
-        public int SubpathOrCPId {
-            get => subpathOrCPId;
-        }
+        public int SubpathOrCPId { get; }
 
-        public ContextControllerConditionNonHA TerminationCondition {
-            get => terminationCondition;
-        }
+        public ContextControllerConditionNonHA TerminationCondition { get; }
     }
 } // end of namespace

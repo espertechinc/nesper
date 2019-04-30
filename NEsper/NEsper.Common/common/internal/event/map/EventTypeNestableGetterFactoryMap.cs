@@ -36,7 +36,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            return mappedProperty.GetGetterMap(nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
+            return (EventPropertyGetterMappedSPI) mappedProperty
+                .GetGetterMap(nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
         }
 
         public EventPropertyGetterIndexedSPI GetPropertyProvidedGetterIndexed(
@@ -46,7 +47,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            return indexedProperty.GetGetterMap(nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
+            return (EventPropertyGetterIndexedSPI) indexedProperty
+                .GetGetterMap(nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
         }
 
         public EventPropertyGetterSPI GetGetterProperty(

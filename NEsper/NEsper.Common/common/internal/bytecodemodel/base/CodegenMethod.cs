@@ -243,10 +243,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         private string GetGeneratorDetail(Type generator)
         {
             var stack = new StackTrace();
-            var frames = stack.GetFrames();
             string stackString = null;
             for (var i = 1; i < 10; i++) {
-                if (frames[i].ClassName.Contains(typeof(CodegenMethod).Namespace)) {
+                var frame = stack.GetFrame(i);
+                var method = frame.GetMethod();
+                if (method.DeclaringType.Namespace.Contains(typeof(CodegenMethod).Namespace)) {
                     continue;
                 }
 
@@ -269,10 +270,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             int i,
             StackTrace stack)
         {
-            string fullClassName = stack[i].ClassName;
+            var stackFrame = stack.GetFrame(i);
+            var fullClassName = stackFrame.GetMethod().DeclaringType.FullName;
             var className = fullClassName.Substring(fullClassName.LastIndexOf(".") + 1);
-            string methodName = stack[i].MethodName;
-            int lineNumber = stack[i].LineNumber;
+            var methodName = stackFrame.GetMethod().Name;
+            var lineNumber = stackFrame.GetFileLineNumber();
             return className + "." + methodName + "():" + lineNumber;
         }
 

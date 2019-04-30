@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var cal = DateTimeEx.GetInstance(timeZone);
-            timeAbacus.DateTimeSet(target.AsLong(), cal);
-            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            return reformatOp.Evaluate(cal, eventsPerStream, isNewData, exprEvaluatorContext);
+            var dtx = DateTimeEx.GetInstance(timeZone);
+            timeAbacus.DateTimeSet(target.AsLong(), dtx);
+            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            return reformatOp.Evaluate(dtx, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(

@@ -41,16 +41,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             CodegenMethod method = parent.MakeChild(typeof(TimerScheduleSpecComputeFromExpr), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(TimerScheduleSpecComputeFromExpr), "compute", NewInstance(typeof(TimerScheduleSpecComputeFromExpr)))
-                .ExprDotMethod(
-                    @Ref("compute"), "setDate",
+                .SetProperty(Ref("compute"), "Date",
                     dateNode == null ? ConstantNull() : ExprNodeUtilityCodegen.CodegenEvaluator(dateNode.Forge, method, this.GetType(), classScope))
-                .ExprDotMethod(
-                    @Ref("compute"), "setRepetitions",
+                .SetProperty(Ref("compute"), "Repetitions",
                     repetitionsNode == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(repetitionsNode.Forge, method, this.GetType(), classScope));
             if (periodNode != null) {
-                method.Block.ExprDotMethod(@Ref("compute"), "setTimePeriod", periodNode.MakeTimePeriodAnonymous(method, classScope));
+                method.Block.SetProperty(Ref("compute"), "TimePeriod", periodNode.MakeTimePeriodAnonymous(method, classScope));
             }
 
             method.Block.MethodReturn(@Ref("compute"));

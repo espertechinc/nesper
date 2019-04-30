@@ -46,19 +46,19 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         private const string MEMBERNAME_ORDERBYFACTORY = "orderByFactory";
         private const string MEMBERNAME_RESULTEVENTTYPE = "resultEventType";
 
-        private readonly CodegenPackageScope _packageScope;
+        private readonly CodegenNamespaceScope _namespaceScope;
         private readonly ResultSetProcessorDesc _spec;
         private readonly StatementRawInfo _statementRawInfo;
 
         public StmtClassForgableRSPFactoryProvider(
             string className,
             ResultSetProcessorDesc spec,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             StatementRawInfo statementRawInfo)
         {
             ClassName = className;
             _spec = spec;
-            _packageScope = packageScope;
+            _namespaceScope = namespaceScope;
             _statementRawInfo = statementRawInfo;
         }
 
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                         typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref, false));
                 var providerCtor = new CodegenCtor(
                     typeof(StmtClassForgableRSPFactoryProvider), includeDebugSymbols, ctorParms);
-                var classScope = new CodegenClassScope(includeDebugSymbols, _packageScope, ClassName);
+                var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
                 IList<CodegenTypedParam> providerExplicitMembers = new List<CodegenTypedParam>(2);
 
                 // add event type
@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
                 // render and compile
                 return new CodegenClass(
-                    typeof(ResultSetProcessorFactoryProvider), _packageScope.PackageName, ClassName, classScope,
+                    typeof(ResultSetProcessorFactoryProvider), _namespaceScope.PackageName, ClassName, classScope,
                     providerExplicitMembers, providerCtor, methods, innerClasses);
             }
             catch (Exception t) {

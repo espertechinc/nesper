@@ -92,8 +92,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         /// <param name="nspace">namespace name</param>
         /// <param name="name">observer name</param>
         public static ObserverEnum? ForName(
-            String nspace,
-            String name)
+            string nspace,
+            string name)
         {
             foreach (var observerEnum in EnumHelper.GetValues<ObserverEnum>()) {
                 if ((observerEnum.GetNamespace() == nspace) &&

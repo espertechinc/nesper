@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
     {
         public static OnTriggerPlan HandleSplitStream(
             string aiFactoryProviderClassName,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             string classPostfix,
             OnTriggerSplitStreamDesc desc,
             StreamSpecCompiled streamSpec,
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                     typeof(ResultSetProcessorFactoryProvider), classPostfix + "_" + i);
                 forgables.Add(
                     new StmtClassForgableRSPFactoryProvider(
-                        classNameRSP, items[i].ResultSetProcessorDesc, packageScope, @base.StatementRawInfo));
+                        classNameRSP, items[i].ResultSetProcessorDesc, namespaceScope, @base.StatementRawInfo));
                 items[i].ResultSetProcessorClassName = classNameRSP;
             }
 
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 activatorResult.Activator,
                 activatorResult.ActivatorResultEventType, subselectForges, tableAccessForges, items, desc.IsFirst);
             var triggerForge = new StmtClassForgableAIFactoryProviderOnTrigger(
-                aiFactoryProviderClassName, packageScope, splitStreamForge);
+                aiFactoryProviderClassName, namespaceScope, splitStreamForge);
 
             return new OnTriggerPlan(triggerForge, forgables, new SelectSubscriberDescriptor());
         }

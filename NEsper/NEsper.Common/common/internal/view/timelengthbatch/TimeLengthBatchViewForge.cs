@@ -101,13 +101,12 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
 
             method.Block
                 .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .ExprDotMethod(
-                    factory, "setSize", ExprNodeUtilityCodegen
+                .SetProperty(factory, "Size", ExprNodeUtilityCodegen
                         .CodegenEvaluator(sizeForge, method, GetType(), classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(factory, "setForceUpdate", Constant(isForceUpdate))
-                .ExprDotMethod(factory, "setStartEager", Constant(isStartEager));
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(factory, "ForceUpdate", Constant(isForceUpdate))
+                .SetProperty(factory, "StartEager", Constant(isStartEager));
         }
     }
 } // end of namespace

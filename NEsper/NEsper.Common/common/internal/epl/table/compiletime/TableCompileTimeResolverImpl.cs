@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 }
             }
             catch (PathException e) {
-                throw CompileTimeResolver.MakePathAmbiguous(PathRegistryObjectType.TABLE, tableName, e);
+                throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.TABLE, tableName, e);
             }
 
             return null;

@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         {
             this.forge = forge;
             state = membersColumnized.AddMember(col, typeof(CountMinSketchAggState), "state");
-            spec = classScope.PackageScope.AddFieldUnshared(
+            spec = classScope.NamespaceScope.AddFieldUnshared(
                 true, typeof(CountMinSketchSpec),
-                forge.specification.CodegenMake(classScope.PackageScope.InitMethod, classScope));
+                forge.specification.CodegenMake(classScope.NamespaceScope.InitMethod, classScope));
             rowCtor.Block.AssignRef(state, ExprDotMethod(spec, "makeAggState"));
         }
 

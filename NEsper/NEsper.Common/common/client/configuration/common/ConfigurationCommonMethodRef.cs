@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.client.configuration.common
             double purgeIntervalSeconds)
         {
             DataCacheDesc = new ConfigurationCommonCacheExpiryTime(
-                maxAgeSeconds, purgeIntervalSeconds, CacheReferenceType.Default);
+                maxAgeSeconds, purgeIntervalSeconds, CacheReferenceType.DEFAULT);
         }
 
         /// <summary>

@@ -19,6 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
     /// </summary>
     public class RowRecogPartitionStateImpl : RowRecogPartitionState
     {
+        private IList<RowRecogNFAStateEntry> _currentStatesInternal = new List<RowRecogNFAStateEntry>();
+
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -80,7 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         /// </summary>
         /// <value>state to set</value>
         public IList<RowRecogNFAStateEntry> CurrentStates {
-            set => CurrentStatesForPrint = value;
+            get => _currentStatesInternal;
+            set => _currentStatesInternal = value;
         }
 
         /// <summary>
@@ -91,8 +94,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
 
         public int NumStates => CurrentStatesForPrint.Count;
 
-        public IList<RowRecogNFAStateEntry> CurrentStatesForPrint { get; private set; } =
-            new List<RowRecogNFAStateEntry>();
+        public IList<RowRecogNFAStateEntry> CurrentStatesForPrint {
+            get => _currentStatesInternal;
+            private set => _currentStatesInternal = value;
+        }
 
         public bool IsEmptyCurrentState => CurrentStatesForPrint.IsEmpty();
 

@@ -65,20 +65,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(
-                    saiff, "setNamedWindow",
+                .SetProperty(saiff, "NamedWindow",
                     namedWindow == null
                         ? ConstantNull()
                         : NamedWindowDeployTimeResolver.MakeResolveNamedWindow(
                             namedWindow, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    saiff, "setTable",
+                .SetProperty(saiff, "Table",
                     table == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(saiff, "setQueryPlan", queryPlanForge.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    saiff, "setNonSelectRSPFactoryProvider",
+                .SetProperty(saiff, "QueryPlan", queryPlanForge.Make(method, symbols, classScope))
+                .SetProperty(saiff, "NonSelectRSPFactoryProvider",
                     nonSelectRSPProviderClassName == null
                         ? ConstantNull()
                         : NewInstance(nonSelectRSPProviderClassName, symbols.GetAddInitSvc(method)))

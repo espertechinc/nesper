@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
+using com.espertech.esper.common.@internal.filtersvc;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
 {
@@ -45,10 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 
         private static int CountCallbacks(object points)
         {
-            if (points is FilterHandleSetNode)
-                return ((FilterHandleSetNode) points).FilterCallbackCount;
-            if (points is FilterParamIndexBase)
-                return ((FilterParamIndexBase) points).Count;
+            if (points is FilterHandleSize filterHandleSize) {
+                return filterHandleSize.FilterCallbackCount;
+            }
 
             return 1;
         }

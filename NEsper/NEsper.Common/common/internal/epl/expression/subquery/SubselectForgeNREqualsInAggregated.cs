@@ -43,10 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
-            CodegenExpressionRef eps = symbols.GetAddEPS(method);
-            CodegenExpressionRef evalCtx = symbols.GetAddExprEvalCtx(method);
-            CodegenExpressionRef left = symbols.GetAddLeftResult(method);
+            var method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
+            var eps = symbols.GetAddEPS(method);
+            var evalCtx = symbols.GetAddExprEvalCtx(method);
+            var left = symbols.GetAddLeftResult(method);
 
             method.Block.IfRefNullReturnNull(symbols.GetAddLeftResult(method));
             if (havingEval != null) {
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             CodegenExpression select = LocalMethod(
                 CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope), eps, ConstantTrue(), evalCtx);
-            Type rightEvalType = Boxing.GetBoxedType(selectEval.EvaluationType);
+            var rightEvalType = Boxing.GetBoxedType(selectEval.EvaluationType);
             method.Block
                 .DeclareVar(rightEvalType, "rhs", select)
                 .IfRefNullReturnNull("rhs");

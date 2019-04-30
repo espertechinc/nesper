@@ -89,14 +89,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .DeclareVar(
                     typeof(ContextControllerDetailKeyedItem), "item",
                     NewInstance(typeof(ContextControllerDetailKeyedItem)))
-                .ExprDotMethod(
-                    Ref("item"), "setGetter",
+                .SetProperty(Ref("item"), "Getter",
                     EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
                         filterSpecCompiled.FilterForEventType, getters, types, null, method, GetType(), classScope))
-                .ExprDotMethod(Ref("item"), "setLookupables", Ref("lookupables"))
-                .ExprDotMethod(Ref("item"), "setPropertyTypes", Constant(types))
-                .ExprDotMethod(Ref("item"), "setFilterSpecActivatable", Ref("activatable"))
-                .ExprDotMethod(Ref("item"), "setAliasName", Constant(AliasName))
+                .SetProperty(Ref("item"), "Lookupables", Ref("lookupables"))
+                .SetProperty(Ref("item"), "PropertyTypes", Constant(types))
+                .SetProperty(Ref("item"), "FilterSpecActivatable", Ref("activatable"))
+                .SetProperty(Ref("item"), "AliasName", Constant(AliasName))
                 .MethodReturn(Ref("item"));
             return LocalMethod(method);
         }

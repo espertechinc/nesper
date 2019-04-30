@@ -251,9 +251,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             // handle interval for the set of matches
             if (desc.HasInterval) {
-                IEnumerator<RowRecogNFAStateEntry> it = endStates.GetEnumerator();
-                for (; it.MoveNext();) {
-                    RowRecogNFAStateEntry endState = it.Current;
+                for (var ii = 0; ii < endStates.Count; ii++)
+                {
+                    var endState = endStates[ii];
                     _agentInstanceContext.InstrumentationProvider.QRegIntervalState(
                         endState, _factory.Desc.VariableStreams, _factory.Desc.MultimatchStreamNumToVariable,
                         _agentInstanceContext.StatementContext.SchedulingService.Time);
@@ -291,13 +291,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         if (_regexPartitionStateRepo.ScheduleState.ContainsKey(matchBeginTime)) {
                             ScheduleCallback(deltaUntil, endState);
                             _agentInstanceContext.InstrumentationProvider.ARegIntervalState(true);
-                            it.Remove();
+                            endStates.RemoveAt(ii--);
                         }
                         else {
                             if (deltaFromStart < deltaUntil) {
                                 ScheduleCallback(deltaUntil, endState);
                                 _agentInstanceContext.InstrumentationProvider.ARegIntervalState(true);
-                                it.Remove();
+                                endStates.RemoveAt(ii--);
                             }
                             else {
                                 _agentInstanceContext.InstrumentationProvider.ARegIntervalState(false);
@@ -334,9 +334,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
             else if (desc.Skip == MatchRecognizeSkipEnum.PAST_LAST_ROW) {
                 // handle skip for incremental mode
-                IEnumerator<RowRecogNFAStateEntry> endStateIter = endStates.GetEnumerator();
-                for (; endStateIter.MoveNext();) {
-                    RowRecogNFAStateEntry endState = endStateIter.Current;
+                for (int ii = 0 ; ii < endStates.Count ; ii++)
+                { 
+                    RowRecogNFAStateEntry endState = endStates[ii];
                     RowRecogPartitionState partitionState = _regexPartitionStateRepo.GetState(endState.PartitionKey);
                     if (partitionState == null) {
                         Log.Warn("Null partition state encountered, skipping row");
@@ -347,26 +347,27 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     for (; stateIter.MoveNext();) {
                         RowRecogNFAStateEntry currentState = stateIter.Current;
                         if (currentState.MatchBeginEventSeqNo <= endState.MatchEndEventSeqNo) {
-                            stateIter.Remove();
+                            endStates.RemoveAt(ii--);
                         }
                     }
                 }
             }
             else if (desc.Skip == MatchRecognizeSkipEnum.TO_NEXT_ROW) {
-                IEnumerator<RowRecogNFAStateEntry> endStateIter = endStates.GetEnumerator();
-                for (; endStateIter.MoveNext();) {
-                    RowRecogNFAStateEntry endState = endStateIter.Current;
+                for (int endStatesIndex = 0 ; endStatesIndex < endStates.Count ; endStatesIndex++)
+                {
+                    RowRecogNFAStateEntry endState = endStates[endStatesIndex];
                     RowRecogPartitionState partitionState = _regexPartitionStateRepo.GetState(endState.PartitionKey);
                     if (partitionState == null) {
                         Log.Warn("Null partition state encountered, skipping row");
                         continue;
                     }
 
-                    IEnumerator<RowRecogNFAStateEntry> stateIter = partitionState.CurrentStatesIterator;
-                    for (; stateIter.MoveNext();) {
-                        RowRecogNFAStateEntry currentState = stateIter.Current;
+                    var currentStates = partitionState.CurrentStates;
+                    for (var stateIndex = 0; stateIndex < currentStates.Count; stateIndex++) {
+                        RowRecogNFAStateEntry currentState = currentStates[stateIndex];
                         if (currentState.MatchBeginEventSeqNo <= endState.MatchBeginEventSeqNo) {
-                            stateIter.Remove();
+                            currentStates.RemoveAt(stateIndex);
+                            stateIndex--;
                         }
                     }
                 }
@@ -688,11 +689,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
                 if (value is IList<RowRecogNFAStateEntry>) {
                     IList<RowRecogNFAStateEntry> endStatesUnranked = (IList<RowRecogNFAStateEntry>) value;
-                    IEnumerator<RowRecogNFAStateEntry> it = endStatesUnranked.GetEnumerator();
-                    for (; it.MoveNext();) {
-                        RowRecogNFAStateEntry endState = it.Current;
+                    for (int ii = 0 ; ii < endStatesUnranked.Count ; ii++) {
+                        RowRecogNFAStateEntry endState = endStatesUnranked[ii];
                         if (endState.MatchBeginEventSeqNo <= skipPastRow) {
-                            it.Remove();
+                            endStatesUnranked.RemoveAt(ii);
+                            ii--;
                         }
                     }
                 }

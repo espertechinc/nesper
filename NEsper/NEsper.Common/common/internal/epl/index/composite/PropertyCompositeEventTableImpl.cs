@@ -35,16 +35,16 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         /// <summary>
         /// Index table (sorted and/or keyed, always nested).
         /// </summary>
-        internal readonly IDictionary<object, object> index;
+        internal readonly IDictionary<object, CompositeIndexEntry> index;
 
         public PropertyCompositeEventTableImpl(PropertyCompositeEventTableFactory factory)
             : base(factory)
         {
             if (factory.HashGetter != null) {
-                index = new Dictionary<object, object>();
+                index = new Dictionary<object, CompositeIndexEntry>();
             }
             else {
-                index = new OrderedDictionary<object, object>();
+                index = new OrderedDictionary<object, CompositeIndexEntry>();
             }
         }
 

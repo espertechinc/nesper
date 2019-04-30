@@ -6,7 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -27,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordInKeywordSingleTableLookupStrategyFactory factory,
             PropertyHashedEventTable index)
         {
-            this._factory = factory;
-            this._index = index;
+            _factory = factory;
+            _index = index;
             _events = new EventBean[factory.streamCountOuter + 1];
         }
 
@@ -39,16 +41,15 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);
                 Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
-                ISet<EventBean> result = InKeywordTableLookupUtil.SingleIndexLookup(
+                var resultActivated = InKeywordTableLookupUtil.SingleIndexLookup(
                     _factory.evaluators, _events, context, _index);
-                context.InstrumentationProvider.AIndexSubordLookup(result, null);
-                return result;
+                context.InstrumentationProvider.AIndexSubordLookup(resultActivated, null);
+                return resultActivated;
             }
 
             Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
-            ISet<EventBean> result = InKeywordTableLookupUtil.SingleIndexLookup(
+            return InKeywordTableLookupUtil.SingleIndexLookup(
                 _factory.evaluators, _events, context, _index);
-            return result;
         }
 
         public LookupStrategyDesc StrategyDesc => _factory.LookupStrategyDesc;

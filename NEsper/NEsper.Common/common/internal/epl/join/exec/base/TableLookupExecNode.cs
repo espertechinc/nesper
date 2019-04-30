@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         protected void ProcessResults(
             EventBean[] prefillPath,
             ICollection<EventBean[]> result,
-            ISet<EventBean> joinedEvents)
+            ICollection<EventBean> joinedEvents)
         {
             // Create result row for each found event
             foreach (var joinedEvent in joinedEvents) {

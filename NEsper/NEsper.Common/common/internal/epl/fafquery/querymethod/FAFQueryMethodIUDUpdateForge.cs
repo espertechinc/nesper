@@ -104,19 +104,18 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(
-                queryMethod, "setOptionalWhereClause",
+            method.Block.SetProperty(queryMethod, "OptionalWhereClause",
                 whereClause == null
                     ? ConstantNull()
                     : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, this.GetType(), classScope));
             if (processor is FireAndForgetProcessorNamedWindowForge) {
-                method.Block.ExprDotMethod(queryMethod, "setUpdateHelperNamedWindow", updateHelper.MakeWCopy(method, classScope));
+                method.Block.SetProperty(queryMethod, "UpdateHelperNamedWindow", updateHelper.MakeWCopy(method, classScope));
             }
             else {
                 FireAndForgetProcessorTableForge table = (FireAndForgetProcessorTableForge) processor;
                 method.Block
-                    .ExprDotMethod(queryMethod, "setUpdateHelperTable", updateHelper.MakeNoCopy(method, classScope))
-                    .ExprDotMethod(queryMethod, "setTable", TableDeployTimeResolver.MakeResolveTable(table.Table, symbols.GetAddInitSvc(method)));
+                    .SetProperty(queryMethod, "UpdateHelperTable", updateHelper.MakeNoCopy(method, classScope))
+                    .SetProperty(queryMethod, "Table", TableDeployTimeResolver.MakeResolveTable(table.Table, symbols.GetAddInitSvc(method)));
             }
         }
     }

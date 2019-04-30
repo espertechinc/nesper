@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             var ff = codegenClassScope.AddFieldUnshared(
                 true, typeof(FragmentFactory),
-                fragmentFactory.Make(codegenClassScope.PackageScope.InitMethod, codegenClassScope));
+                fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             if (!isArray) {
                 return StaticMethod(
                     GetType(), "getValueAsNodeFragment", underlyingExpression, Constant(propertyName), ff);

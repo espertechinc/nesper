@@ -581,9 +581,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             return true;
         }
 
-        private CodegenExpression GetterField(CodegenClassScope classScope)
-        {
-            return classScope.PackageScope.AddOrGetFieldWellKnown(
+        private CodegenExpression GetterField(CodegenClassScope classScope) {
+            return classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 previousStrategyFieldName, typeof(PreviousGetterStrategy));
         }
 

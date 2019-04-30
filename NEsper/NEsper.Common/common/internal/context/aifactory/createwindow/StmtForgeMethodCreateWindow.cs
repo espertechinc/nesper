@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             VerifyDataWindowViewFactoryChain(viewForges);
             var optionalUniqueKeyProps =
                 StreamJoinAnalysisResultCompileTime.GetUniqueCandidateProperties(viewForges, @base.StatementSpec.Annotations);
-            string[] uniqueKeyProArray = optionalUniqueKeyProps == null ? null : optionalUniqueKeyProps.ToArray();
+            var uniqueKeyProArray = optionalUniqueKeyProps == null ? null : optionalUniqueKeyProps.ToArray();
 
             NamedWindowMetaData insertFromNamedWindow = null;
             ExprNode insertFromFilter = null;
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>(2);
 
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
-            var packageScope = new CodegenPackageScope(packageName, statementFieldsClassName, services.IsInstrumented);
+            var packageScope = new CodegenNamespaceScope(packageName, statementFieldsClassName, services.IsInstrumented);
             forgables.Add(new StmtClassForgableRSPFactoryProvider(classNameRSP, resultSetProcessor, packageScope, @base.StatementRawInfo));
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementAIFactoryProvider), classPostfix);

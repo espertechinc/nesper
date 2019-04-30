@@ -25,16 +25,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
     public class StatementAgentInstanceFactoryCreateVariable : StatementAgentInstanceFactory,
         StatementReadyCallback
     {
-        private ExprEvaluator variableInitialValueExpr;
+        private ExprEvaluator _variableInitialValueExpr;
 
-        private string variableName;
+        private string _variableName;
 
         public string VariableName {
-            set => variableName = value;
+            set => _variableName = value;
         }
 
         public ExprEvaluator VariableInitialValueExpr {
-            set => variableInitialValueExpr = value;
+            set => _variableInitialValueExpr = value;
         }
 
         public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider { get; set; }
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
         public void StatementDestroy(StatementContext statementContext)
         {
             statementContext.VariableManagementService.RemoveVariableIfFound(
-                statementContext.DeploymentId, variableName);
+                statementContext.DeploymentId, _variableName);
         }
 
         public void StatementDestroyPreconditions(StatementContext statementContext)
@@ -68,13 +68,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             // for create-variable with contexts we allocate on new-context
             if (agentInstanceContext.ContextProperties != null) {
                 NullableObject<object> initialValue = null;
-                if (variableInitialValueExpr != null) {
+                if (_variableInitialValueExpr != null) {
                     initialValue = new NullableObject<object>(
-                        variableInitialValueExpr.Evaluate(null, true, agentInstanceContext));
+                        _variableInitialValueExpr.Evaluate(null, true, agentInstanceContext));
                 }
 
                 agentInstanceContext.VariableManagementService.AllocateVariableState(
-                    agentInstanceContext.DeploymentId, variableName, agentInstanceContext.AgentInstanceId,
+                    agentInstanceContext.DeploymentId, _variableName, agentInstanceContext.AgentInstanceId,
                     isRecoveringResilient, initialValue, agentInstanceContext.EventBeanTypedEventFactory);
             }
 
@@ -82,21 +82,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 new ProxyAgentInstanceStopCallback {
                     ProcStop = services => {
                         services.AgentInstanceContext.VariableManagementService.DeallocateVariableState(
-                            services.AgentInstanceContext.DeploymentId, variableName,
+                            services.AgentInstanceContext.DeploymentId, _variableName,
                             agentInstanceContext.AgentInstanceId);
                     }
                 });
 
             // register callback for listener-updates
-            var reader = variableService.GetReader(deploymentId, variableName, agentInstanceContext.AgentInstanceId);
+            var reader = variableService.GetReader(deploymentId, _variableName, agentInstanceContext.AgentInstanceId);
             var createVariableView = new CreateVariableView(this, agentInstanceContext, reader);
             variableService.RegisterCallback(
-                deploymentId, variableName, agentInstanceContext.AgentInstanceId, createVariableView);
+                deploymentId, _variableName, agentInstanceContext.AgentInstanceId, createVariableView);
             stopCallbacks.Add(
                 new ProxyAgentInstanceStopCallback {
                     ProcStop = services => {
                         services.AgentInstanceContext.VariableManagementService.UnregisterCallback(
-                            deploymentId, variableName, agentInstanceId, createVariableView);
+                            deploymentId, _variableName, agentInstanceId, createVariableView);
                     }
                 });
 
@@ -125,18 +125,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             ModuleIncidentals moduleIncidentals,
             bool recovery)
         {
-            var meta = moduleIncidentals.Variables.Get(variableName);
+            var meta = moduleIncidentals.Variables.Get(_variableName);
             if (meta == null) {
-                throw new UnsupportedOperationException("Missing variable information '" + variableName + "'");
+                throw new UnsupportedOperationException("Missing variable information '" + _variableName + "'");
             }
 
             // evaluate initial value
-            if (meta.ValueWhenAvailable == null && variableInitialValueExpr != null &&
+            if (meta.ValueWhenAvailable == null && _variableInitialValueExpr != null &&
                 meta.OptionalContextName == null && !recovery) {
-                var initialValue = variableInitialValueExpr.Evaluate(
+                var initialValue = _variableInitialValueExpr.Evaluate(
                     null, true, new ExprEvaluatorContextStatement(statementContext, false));
                 var svc = statementContext.VariableManagementService;
-                svc.CheckAndWrite(statementContext.DeploymentId, variableName, DEFAULT_AGENT_INSTANCE_ID, initialValue);
+                svc.CheckAndWrite(statementContext.DeploymentId, _variableName, DEFAULT_AGENT_INSTANCE_ID, initialValue);
                 svc.Commit();
                 svc.SetLocalVersion();
             }

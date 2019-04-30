@@ -152,17 +152,14 @@ namespace com.espertech.esper.common.@internal.view.expression
 
             method.Block
                 .DeclareVar(evalClass.ClassName, "eval", NewInstance(evalClass.ClassName))
-                .ExprDotMethod(
-                    factory, "setBuiltinMapType",
+                .SetProperty(factory, "BuiltinMapType",
                     EventTypeUtility.ResolveTypeCodegen(builtinType, EPStatementInitServicesConstants.REF))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(
-                    factory, "setAggregationServiceFactory", MakeAggregationService(classScope, method, symbols))
-                .ExprDotMethod(factory, "setAggregationResultFutureAssignable", Ref("eval"))
-                .ExprDotMethod(factory, "setExpiryEval", Ref("eval"));
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(factory, "AggregationServiceFactory", MakeAggregationService(classScope, method, symbols))
+                .SetProperty(factory, "AggregationResultFutureAssignable", Ref("eval"))
+                .SetProperty(factory, "ExpiryEval", Ref("eval"));
             if (variableNames != null && !variableNames.IsEmpty()) {
-                method.Block.ExprDotMethod(
-                    factory, "setVariables",
+                method.Block.SetProperty(factory, "Variables",
                     VariableDeployTimeResolver.MakeResolveVariables(
                         variableNames.Values, symbols.GetAddInitSvc(method)));
             }
@@ -201,7 +198,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             var assignMethod = CodegenMethod
                 .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(AggregationResultFuture), "future");
-            CodegenExpression field = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression field = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameViewAgg(streamNumber), typeof(AggregationResultFuture));
             assignMethod.Block.AssignRef(field, Ref("future"));
 

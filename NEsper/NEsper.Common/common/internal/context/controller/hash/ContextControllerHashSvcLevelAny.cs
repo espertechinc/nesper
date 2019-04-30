@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.compat.collections;
@@ -16,13 +18,13 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public class ContextControllerHashSvcLevelAny : ContextControllerHashSvc
     {
-        private readonly IDictionary<IntSeqKey, MgmtInfo> mgmt = new Dictionary<IntSeqKey, MgmtInfo>();
-        private readonly IDictionary<IntSeqKey, int> optionalHashes;
+        private readonly IDictionary<IntSeqKey, MgmtInfo> _mgmt = new Dictionary<IntSeqKey, MgmtInfo>();
+        private readonly IDictionary<IntSeqKey, int> _optionalHashes;
 
         internal ContextControllerHashSvcLevelAny(bool preallocate)
         {
             if (!preallocate) {
-                optionalHashes = new Dictionary<IntSeqKey, int>();
+                _optionalHashes = new Dictionary<IntSeqKey, int>();
             }
         }
 
@@ -30,43 +32,43 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             IntSeqKey controllerPath,
             object[] parentPartitionKeys)
         {
-            mgmt.Put(controllerPath, new MgmtInfo(null, parentPartitionKeys));
+            _mgmt.Put(controllerPath, new MgmtInfo(null, parentPartitionKeys));
         }
 
         public int[] MgmtGetSubpathOrCPIdsWhenPreallocate(IntSeqKey path)
         {
-            return mgmt.Get(path).SubpathOrCPIdsPreallocate;
+            return _mgmt.Get(path).SubpathOrCPIdsPreallocate;
         }
 
         public void MgmtSetSubpathOrCPIdsWhenPreallocate(
             IntSeqKey path,
             int[] subpathOrCPIds)
         {
-            mgmt.Get(path).SubpathOrCPIdsPreallocate = subpathOrCPIds;
+            _mgmt.Get(path).SubpathOrCPIdsPreallocate = subpathOrCPIds;
         }
 
         public void MgmtSetFilters(
             IntSeqKey controllerPath,
             ContextControllerFilterEntry[] filterEntries)
         {
-            mgmt.Get(controllerPath).FilterEntries = filterEntries;
+            _mgmt.Get(controllerPath).FilterEntries = filterEntries;
         }
 
         public object[] MgmtGetParentPartitionKeys(IntSeqKey controllerPath)
         {
-            return mgmt.Get(controllerPath).ParentPartitionKeys;
+            return _mgmt.Get(controllerPath).ParentPartitionKeys;
         }
 
         public ContextControllerFilterEntry[] MgmtGetFilters(IntSeqKey controllerPath)
         {
-            return mgmt.Get(controllerPath).FilterEntries;
+            return _mgmt.Get(controllerPath).FilterEntries;
         }
 
         public bool HashHasSeenPartition(
             IntSeqKey controllerPath,
             int value)
         {
-            return optionalHashes.ContainsKey(controllerPath.AddToEnd(value));
+            return _optionalHashes.ContainsKey(controllerPath.AddToEnd(value));
         }
 
         public void HashAddPartition(
@@ -74,15 +76,15 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             int value,
             int subpathIdOrCPId)
         {
-            optionalHashes.Put(controllerPath.AddToEnd(value), subpathIdOrCPId);
+            _optionalHashes.Put(controllerPath.AddToEnd(value), subpathIdOrCPId);
         }
 
         public void HashVisit(
             IntSeqKey controllerPath,
             BiConsumer<int, int> hashAndCPId)
         {
-            if (optionalHashes == null) {
-                var mgmtInfo = mgmt.Get(controllerPath);
+            if (_optionalHashes == null) {
+                var mgmtInfo = _mgmt.Get(controllerPath);
                 if (mgmtInfo == null || mgmtInfo.SubpathOrCPIdsPreallocate == null) {
                     return;
                 }
@@ -95,7 +97,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 return;
             }
 
-            foreach (var entry in optionalHashes) {
+            foreach (var entry in _optionalHashes) {
                 if (controllerPath.IsParentTo(entry.Key)) {
                     hashAndCPId.Invoke(entry.Key.Last, entry.Value);
                 }
@@ -106,12 +108,12 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             IntSeqKey controllerPath,
             int hash)
         {
-            if (optionalHashes == null) {
-                var mgmtInfo = mgmt.Get(controllerPath);
+            if (_optionalHashes == null) {
+                var mgmtInfo = _mgmt.Get(controllerPath);
                 return mgmtInfo.SubpathOrCPIdsPreallocate[hash];
             }
 
-            if (optionalHashes.TryGetValue(controllerPath.AddToEnd(hash), out var found)) {
+            if (_optionalHashes.TryGetValue(controllerPath.AddToEnd(hash), out var found)) {
                 return found;
             }
 
@@ -120,37 +122,37 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public ICollection<int> Deactivate(IntSeqKey controllerPath)
         {
-            var mgmtInfo = mgmt.Delete(controllerPath);
+            var mgmtInfo = _mgmt.Delete(controllerPath);
 
-            if (optionalHashes == null) {
+            if (_optionalHashes == null) {
                 return MgmtInfoToIds(mgmtInfo);
             }
 
-            var it = optionalHashes.GetEnumerator();
-            IList<int> result = new List<int>();
-            while (it.MoveNext()) {
-                var entry = it.Current;
-                if (controllerPath.IsParentTo(entry.Key)) {
-                    result.Add(entry.Value);
-                    it.Remove();
-                }
-            }
+            var result = new List<int>();
+            var entries = _optionalHashes
+                .Where(entry => controllerPath.IsParentTo(entry.Key))
+                .ToList();
+
+            entries.ForEach(entry => {
+                result.Add(entry.Value);
+                _optionalHashes.Remove(entry.Key);
+            });
 
             return result;
         }
 
         public void Destroy()
         {
-            mgmt.Clear();
-            if (optionalHashes != null) {
-                optionalHashes.Clear();
+            _mgmt.Clear();
+            if (_optionalHashes != null) {
+                _optionalHashes.Clear();
             }
         }
 
         private ICollection<int> MgmtInfoToIds(MgmtInfo mgmtInfo)
         {
             var subpathOrCPIdsPreallocate = mgmtInfo.SubpathOrCPIdsPreallocate;
-            IList<int> ids = new List<int>(subpathOrCPIdsPreallocate.Length);
+            var ids = new List<int>(subpathOrCPIdsPreallocate.Length);
             foreach (var id in subpathOrCPIdsPreallocate) {
                 ids.Add(id);
             }

@@ -59,14 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
             base.MakeSettersInline(Ref("col"), method.Block);
             method.Block
-                .ExprDotMethod(Ref("col"), "setColumn", Constant(Column))
-                .ExprDotMethod(
-                    Ref("col"), "setAggregationPortableValidation",
+                .SetProperty(Ref("col"), "Column", Constant(Column))
+                .SetProperty(Ref("col"), "AggregationPortableValidation",
                     AggregationPortableValidation.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("col"), "setAggregationExpression", Constant(AggregationExpression))
-                .ExprDotMethod(Ref("col"), "setMethodAgg", Constant(IsMethodAgg))
-                .ExprDotMethod(
-                    Ref("col"), "setOptionalEnumerationType",
+                .SetProperty(Ref("col"), "AggregationExpression", Constant(AggregationExpression))
+                .SetProperty(Ref("col"), "MethodAgg", Constant(IsMethodAgg))
+                .SetProperty(Ref("col"), "OptionalEnumerationType",
                     OptionalEnumerationType == null
                         ? ConstantNull()
                         : OptionalEnumerationType.Codegen(method, classScope, symbols.GetAddInitSvc(method)))

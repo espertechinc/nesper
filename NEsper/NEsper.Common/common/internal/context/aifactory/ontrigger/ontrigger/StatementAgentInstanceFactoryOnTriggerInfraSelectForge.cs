@@ -72,15 +72,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(
-                    saiff, "setResultSetProcessorFactoryProvider",
+                .SetProperty(saiff, "ResultSetProcessorFactoryProvider",
                     NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(saiff, "setInsertInto", Constant(insertInto))
-                .ExprDotMethod(saiff, "setAddToFront", Constant(addToFront))
-                .ExprDotMethod(saiff, "setSelectAndDelete", Constant(selectAndDelete))
-                .ExprDotMethod(saiff, "setDistinct", Constant(distinct))
-                .ExprDotMethod(
-                    saiff, "setOptionalInsertIntoTable",
+                .SetProperty(saiff, "InsertInto", Constant(insertInto))
+                .SetProperty(saiff, "AddToFront", Constant(addToFront))
+                .SetProperty(saiff, "SelectAndDelete", Constant(selectAndDelete))
+                .SetProperty(saiff, "Distinct", Constant(distinct))
+                .SetProperty(saiff, "OptionalInsertIntoTable",
                     optionalInsertIntoTable == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(

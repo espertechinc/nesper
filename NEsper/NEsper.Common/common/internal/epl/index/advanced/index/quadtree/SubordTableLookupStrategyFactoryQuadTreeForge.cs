@@ -63,13 +63,13 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 .DeclareVar(
                     typeof(SubordTableLookupStrategyFactoryQuadTree), "sts",
                     NewInstance(typeof(SubordTableLookupStrategyFactoryQuadTree)))
-                .ExprDotMethod(Ref("sts"), "setX", toExpr.Invoke(x))
-                .ExprDotMethod(Ref("sts"), "setY", toExpr.Invoke(y))
-                .ExprDotMethod(Ref("sts"), "setWidth", toExpr.Invoke(width))
-                .ExprDotMethod(Ref("sts"), "setHeight", toExpr.Invoke(height))
-                .ExprDotMethod(Ref("sts"), "setNWOnTrigger", Constant(isNWOnTrigger))
-                .ExprDotMethod(Ref("sts"), "setStreamCountOuter", Constant(streamCountOuter))
-                .ExprDotMethod(Ref("sts"), "setLookupExpressions", Constant(LookupStrategyDesc.ExpressionsTexts))
+                .SetProperty(Ref("sts"), "X", toExpr.Invoke(x))
+                .SetProperty(Ref("sts"), "Y", toExpr.Invoke(y))
+                .SetProperty(Ref("sts"), "Width", toExpr.Invoke(width))
+                .SetProperty(Ref("sts"), "Height", toExpr.Invoke(height))
+                .SetProperty(Ref("sts"), "NWOnTrigger", Constant(isNWOnTrigger))
+                .SetProperty(Ref("sts"), "StreamCountOuter", Constant(streamCountOuter))
+                .SetProperty(Ref("sts"), "LookupExpressions", Constant(LookupStrategyDesc.ExpressionsTexts))
                 .MethodReturn(Ref("sts"));
             return LocalMethod(methodNode);
         }

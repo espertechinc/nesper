@@ -7,13 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.context.aifactory.core.SAIFFInitializeSymbol;
 
@@ -21,37 +20,32 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
     public class StmtClassForgableAIFactoryProviderCreateNW : StmtClassForgableAIFactoryProviderBase
     {
-        private readonly StatementAgentInstanceFactoryCreateNWForge forge;
-
-        private readonly string namedWindowName;
+        private readonly StatementAgentInstanceFactoryCreateNWForge _forge;
+        private readonly string _namedWindowName;
 
         public StmtClassForgableAIFactoryProviderCreateNW(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             StatementAgentInstanceFactoryCreateNWForge forge,
             string namedWindowName)
-            : base(className, packageScope)
-
+            : base(className, namespaceScope)
         {
-            this.forge = forge;
-            this.namedWindowName = namedWindowName;
+            _forge = forge;
+            _namedWindowName = namedWindowName;
         }
 
-        protected override Type TypeOfFactory()
-        {
-            return typeof(StatementAgentInstanceFactoryCreateNW);
-        }
+        protected override Type TypeOfFactory() => typeof(StatementAgentInstanceFactoryCreateNW);
 
         protected override CodegenMethod CodegenConstructorInit(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            SAIFFInitializeSymbol saiffInitializeSymbol = new SAIFFInitializeSymbol();
-            CodegenMethod method = parent.MakeChildWithScope(TypeOfFactory(), this.GetType(), saiffInitializeSymbol, classScope)
+            var saiffInitializeSymbol = new SAIFFInitializeSymbol();
+            var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
                 .AddParam(typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
             method.Block
-                .ExprDotMethod(REF_STMTINITSVC, "activateNamedWindow", Constant(namedWindowName))
-                .MethodReturn(LocalMethod(forge.InitializeCodegen(method, saiffInitializeSymbol, classScope)));
+                .ExprDotMethod(REF_STMTINITSVC, "activateNamedWindow", Constant(_namedWindowName))
+                .MethodReturn(LocalMethod(_forge.InitializeCodegen(method, saiffInitializeSymbol, classScope)));
             return method;
         }
     }

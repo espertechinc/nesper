@@ -64,26 +64,22 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             method.Block
                 .DeclareVar(
                     typeof(ExprTableEvalStrategyFactory), "factory", NewInstance(typeof(ExprTableEvalStrategyFactory)))
-                .ExprDotMethod(@Ref("factory"), "setStrategyEnum", Constant(strategyEnum))
-                .ExprDotMethod(
-                    @Ref("factory"), "setTable",
+                .SetProperty(Ref("factory"), "StrategyEnum", Constant(strategyEnum))
+                .SetProperty(Ref("factory"), "Table",
                     TableDeployTimeResolver.MakeResolveTable(tableMeta, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    @Ref("factory"), "setGroupKeyEval",
+                .SetProperty(Ref("factory"), "GroupKeyEval",
                     optionalGroupKeys == null || optionalGroupKeys.Length == 0
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
                             optionalGroupKeys, tableMeta.KeyTypes, method, this.GetType(), classScope))
-                .ExprDotMethod(@Ref("factory"), "setAggColumnNum", Constant(aggColumnNum))
-                .ExprDotMethod(@Ref("factory"), "setPropertyIndex", Constant(propertyIndex))
-                .ExprDotMethod(
-                    @Ref("factory"), "setOptionalEnumEval",
+                .SetProperty(Ref("factory"), "AggColumnNum", Constant(aggColumnNum))
+                .SetProperty(Ref("factory"), "PropertyIndex", Constant(propertyIndex))
+                .SetProperty(Ref("factory"), "OptionalEnumEval",
                     optionalEnumEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenExprEnumEval(
                             optionalEnumEval, method, symbols, classScope, this.GetType()))
-                .ExprDotMethod(
-                    @Ref("factory"), "setAccessAggReader",
+                .SetProperty(Ref("factory"), "AccessAggReader",
                     accessAggStrategy == null
                         ? ConstantNull()
                         : accessAggStrategy.CodegenCreateReader(method, symbols, classScope))

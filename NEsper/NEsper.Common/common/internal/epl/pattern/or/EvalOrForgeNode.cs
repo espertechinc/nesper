@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
             }
 
             method.Block
-                .ExprDotMethod(Ref("node"), "setChildren", Ref("children"));
+                .SetProperty(Ref("node"), "Children", Ref("children"));
         }
 
         public override void CollectSelfFilterAndSchedule(

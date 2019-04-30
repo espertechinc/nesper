@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                 if (timePeriod.IsConstantResult) {
                     var delta = classScope.AddFieldUnshared<TimePeriodCompute>(
                         true, timePeriod.TimePeriodComputeForge.MakeEvaluator(
-                            classScope.PackageScope.InitMethod, classScope));
+                            classScope.NamespaceScope.InitMethod, classScope));
                     computeDelta.Block.MethodReturn(
                         ExprDotMethod(
                             delta, "deltaAdd", time, ConstantNull(), ConstantTrue(),
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                 else {
                     var delta = classScope.AddFieldUnshared<TimePeriodCompute>(
                         true, timePeriod.TimePeriodComputeForge.MakeEvaluator(
-                            classScope.PackageScope.InitMethod, classScope));
+                            classScope.NamespaceScope.InitMethod, classScope));
                     computeDelta.Block
                         .DeclareVar(
                             typeof(EventBean[]), "events",

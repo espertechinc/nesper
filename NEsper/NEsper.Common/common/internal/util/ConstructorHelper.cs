@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class ConstructorHelper
     {
-        private static Type[] EMPTY_OBJECT_ARRAY_TYPE = new[] {typeof(Object[])};
+        private static Type[] EMPTY_OBJECT_ARRAY_TYPE = new[] {typeof(object[])};
 
         /// <summary>
         /// Find and invoke constructor matching the argument number and types returning an instance of given class.
@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <throws>NoSuchMethodException thrown when the constructor is not found</throws>
         /// <throws>TargetInvocationException thrown when the ctor throws and exception</throws>
         /// <throws>InstantiationException thrown when the class cannot be loaded</throws>
-        public static Object InvokeConstructor(
+        public static object InvokeConstructor(
             Type type,
-            Object[] arguments)
+            object[] arguments)
         {
             Type[] parameterTypes = new Type[arguments.Length];
             for (int i = 0; i < arguments.Length; i++) {
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.util
                 throw new MissingMethodException();
             }
 
-            return ctor.Invoke(new Object[] {arguments});
+            return ctor.Invoke(new object[] {arguments});
         }
 
         private static ConstructorInfo FindMatchingConstructor(

@@ -1605,7 +1605,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static object Parse(
             Type clazz,
-            String text)
+            string text)
         {
             var classBoxed = clazz.GetBoxedType();
 

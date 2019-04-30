@@ -51,9 +51,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             method.Block
                 .DeclareVar(
                     typeof(ContextControllerDetailHash), "detail", NewInstance(typeof(ContextControllerDetailHash)))
-                .ExprDotMethod(Ref("detail"), "setItems", Ref("items"))
-                .ExprDotMethod(Ref("detail"), "setGranularity", Constant(Granularity))
-                .ExprDotMethod(Ref("detail"), "setPreallocate", Constant(IsPreallocate))
+                .SetProperty(Ref("detail"), "Items", Ref("items"))
+                .SetProperty(Ref("detail"), "Granularity", Constant(Granularity))
+                .SetProperty(Ref("detail"), "Preallocate", Constant(IsPreallocate))
                 .MethodReturn(Ref("detail"));
             return LocalMethod(method);
         }

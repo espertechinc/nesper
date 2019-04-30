@@ -54,10 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
             CodegenMethod method = parent.MakeChild(typeof(PropertyEvaluatorAccumulative), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(PropertyEvaluatorAccumulative), "pe", NewInstance(typeof(PropertyEvaluatorAccumulative)))
-                .ExprDotMethod(@Ref("pe"), "setContainedEventEvals", MakeContained(containedEventEvals, method, symbols, classScope))
-                .ExprDotMethod(@Ref("pe"), "setWhereClauses", MakeWhere(whereClauses, method, symbols, classScope))
-                .ExprDotMethod(@Ref("pe"), "setPropertyNames", Constant(propertyNames.ToArray()))
-                .ExprDotMethod(@Ref("pe"), "setFragmentEventTypeIsIndexed", Constant(fragmentEventTypeIsIndexed))
+                .SetProperty(Ref("pe"), "ContainedEventEvals", MakeContained(containedEventEvals, method, symbols, classScope))
+                .SetProperty(Ref("pe"), "WhereClauses", MakeWhere(whereClauses, method, symbols, classScope))
+                .SetProperty(Ref("pe"), "PropertyNames", Constant(propertyNames.ToArray()))
+                .SetProperty(Ref("pe"), "FragmentEventTypeIsIndexed", Constant(fragmentEventTypeIsIndexed))
                 .MethodReturn(@Ref("pe"));
             return LocalMethod(method);
         }

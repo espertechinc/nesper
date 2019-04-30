@@ -16,6 +16,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>Returns true for a match, false for no-match. </summary>
         /// <param name="stringToMatch">value to match</param>
         /// <returns>match result</returns>
-        bool Match(String stringToMatch);
+        bool Match(string stringToMatch);
     }
 }

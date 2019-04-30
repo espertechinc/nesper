@@ -55,18 +55,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             var method = parent.MakeChild(typeof(PatternContext), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(PatternContext), "ctx", NewInstance(typeof(PatternContext)))
-                .ExprDotMethod(
-                    Ref("ctx"), "setMatchedEventMapMeta",
+                .SetProperty(Ref("ctx"), "MatchedEventMapMeta",
                     LocalMethod(MatchedEventMapMeta.MakeCodegen(classScope, method, symbols)));
             if (StreamNumber != 0) {
-                method.Block.ExprDotMethod(Ref("ctx"), "setStreamNumber", Constant(StreamNumber));
+                method.Block.SetProperty(Ref("ctx"), "StreamNumber", Constant(StreamNumber));
             }
 
             if (IsContextDeclaration) {
                 method.Block
-                    .ExprDotMethod(Ref("ctx"), "setContextDeclaration", Constant(IsContextDeclaration))
-                    .ExprDotMethod(Ref("ctx"), "setNestingLevel", Constant(NestingLevel))
-                    .ExprDotMethod(Ref("ctx"), "setStartCondition", Constant(IsStartCondition));
+                    .SetProperty(Ref("ctx"), "ContextDeclaration", Constant(IsContextDeclaration))
+                    .SetProperty(Ref("ctx"), "NestingLevel", Constant(NestingLevel))
+                    .SetProperty(Ref("ctx"), "StartCondition", Constant(IsStartCondition));
             }
 
             method.Block.MethodReturn(Ref("ctx"));

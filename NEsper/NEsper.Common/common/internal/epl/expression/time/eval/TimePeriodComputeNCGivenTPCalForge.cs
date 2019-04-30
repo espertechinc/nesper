@@ -39,12 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             var method = parent.MakeChild(typeof(TimePeriodComputeNCGivenTPCalForgeEval), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(TimePeriodComputeNCGivenTPCalForgeEval), "eval", NewInstance(typeof(TimePeriodComputeNCGivenTPCalForgeEval)))
-                .ExprDotMethod(Ref("eval"), "setAdders", TimePeriodAdderUtil.MakeArray(timePeriodForge.Adders, parent, classScope))
-                .ExprDotMethod(
-                    Ref("eval"), "setEvaluators", ExprNodeUtilityCodegen.CodegenEvaluators(timePeriodForge.Forges, method, GetType(), classScope))
-                .ExprDotMethod(Ref("eval"), "setTimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
-                .ExprDotMethod(Ref("eval"), "setTimeZone", classScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
-                .ExprDotMethod(Ref("eval"), "setIndexMicroseconds", Constant(indexMicroseconds))
+                .SetProperty(Ref("eval"), "Adders", TimePeriodAdderUtil.MakeArray(timePeriodForge.Adders, parent, classScope))
+                .SetProperty(Ref("eval"), "Evaluators", ExprNodeUtilityCodegen.CodegenEvaluators(timePeriodForge.Forges, method, GetType(), classScope))
+                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
+                .SetProperty(Ref("eval"), "TimeZone", classScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
+                .SetProperty(Ref("eval"), "IndexMicroseconds", Constant(indexMicroseconds))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);
         }

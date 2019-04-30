@@ -151,11 +151,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                     typeof(TimerScheduleObserverFactory), "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("observerTimerSchedule"))
-                .ExprDotMethod(Ref("factory"), "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(Ref("factory"), "setAllConstant", Constant(allConstantResult))
-                .ExprDotMethod(Ref("factory"), "setScheduleComputer", scheduleComputer.Make(method, classScope))
-                .ExprDotMethod(
-                    Ref("factory"), "setOptionalConvertor",
+                .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(Ref("factory"), "AllConstant", Constant(allConstantResult))
+                .SetProperty(Ref("factory"), "ScheduleComputer", scheduleComputer.Make(method, classScope))
+                .SetProperty(Ref("factory"), "OptionalConvertor",
                     convertor == null ? null : convertor.MakeAnonymous(method, classScope))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

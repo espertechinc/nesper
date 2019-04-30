@@ -58,17 +58,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             var method = parent.MakeChild(typeof(DataflowDesc), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(DataflowDesc), "df", NewInstance(typeof(DataflowDesc)))
-                .ExprDotMethod(Ref("df"), "setDataflowName", Constant(dataflowName))
-                .ExprDotMethod(Ref("df"), "setDeclaredTypes", MakeTypes(declaredTypes, method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("df"), "setOperatorMetadata", MakeOpMeta(operatorMetadata, method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("df"), "setOperatorBuildOrder",
+                .SetProperty(Ref("df"), "DataflowName", Constant(dataflowName))
+                .SetProperty(Ref("df"), "DeclaredTypes", MakeTypes(declaredTypes, method, symbols, classScope))
+                .SetProperty(Ref("df"), "OperatorMetadata", MakeOpMeta(operatorMetadata, method, symbols, classScope))
+                .SetProperty(Ref("df"), "OperatorBuildOrder",
                     MakeOpBuildOrder(operatorBuildOrder, method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("df"), "setOperatorFactories", MakeOpFactories(operatorFactories, method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("df"), "setLogicalChannels", MakeOpChannels(logicalChannels, method, symbols, classScope))
+                .SetProperty(Ref("df"), "OperatorFactories", MakeOpFactories(operatorFactories, method, symbols, classScope))
+                .SetProperty(Ref("df"), "LogicalChannels", MakeOpChannels(logicalChannels, method, symbols, classScope))
                 .MethodReturn(Ref("df"));
             return LocalMethod(method);
         }

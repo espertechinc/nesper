@@ -40,9 +40,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
                 .DeclareVar(
                     typeof(StatementAgentInstanceFactoryCreateExpression), "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryCreateExpression)))
-                .ExprDotMethod(
-                    @Ref("saiff"), "setStatementEventType", EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(@Ref("saiff"), "setExpressionName", Constant(expressionName))
+                .SetProperty(Ref("saiff"), "StatementEventType", EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(Ref("saiff"), "ExpressionName", Constant(expressionName))
                 .MethodReturn(@Ref("saiff"));
             return method;
         }

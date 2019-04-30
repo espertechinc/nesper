@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
     {
         public static void WhenOptionalAttribute(
             XmlNode node,
-            String key,
+            string key,
             Action<string> action)
         {
             var valueNode = node.Attributes.GetNamedItem(key);
@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        public static String GetOptionalAttribute(
+        public static string GetOptionalAttribute(
             XmlNode node,
-            String key)
+            string key)
         {
             var valueNode = node.Attributes.GetNamedItem(key);
             if (valueNode != null) {
@@ -37,13 +37,13 @@ namespace com.espertech.esper.common.@internal.util
             return null;
         }
 
-        public static String GetRequiredAttribute(
+        public static string GetRequiredAttribute(
             XmlNode node,
-            String key)
+            string key)
         {
             var valueNode = node.Attributes.GetNamedItem(key);
             if (valueNode == null) {
-                var name = String.IsNullOrEmpty(node.Name)
+                var name = string.IsNullOrEmpty(node.Name)
                     ? node.LocalName
                     : node.Name;
                 throw new ConfigurationException(

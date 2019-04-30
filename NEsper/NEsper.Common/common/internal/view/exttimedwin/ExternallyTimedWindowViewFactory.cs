@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
     public class ExternallyTimedWindowViewFactory : DataWindowViewFactory,
         DataWindowViewWithPrevious
     {
-        protected EventType eventType;
-        protected TimePeriodCompute timePeriodCompute;
-        protected ExprEvaluator timestampEval;
+        protected internal EventType eventType;
+        protected internal TimePeriodCompute timePeriodCompute;
+        protected internal ExprEvaluator timestampEval;
 
         public ExprEvaluator TimestampEval {
             get => timestampEval;

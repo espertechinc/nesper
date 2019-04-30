@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// pattern expression
         /// </returns>
-        public static PatternEveryExpr EveryFilter(String eventTypeName)
+        public static PatternEveryExpr EveryFilter(string eventTypeName)
         {
             PatternExpr filter = new PatternFilterExpr(soda.Filter.Create(eventTypeName));
             return new PatternEveryExpr(filter);
@@ -144,8 +144,8 @@ namespace com.espertech.esper.common.client.soda
         /// pattern expression
         /// </returns>
         public static PatternEveryExpr EveryFilter(
-            String eventTypeName,
-            String tagName)
+            string eventTypeName,
+            string tagName)
         {
             PatternExpr filter = new PatternFilterExpr(soda.Filter.Create(eventTypeName), tagName);
             return new PatternEveryExpr(filter);
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>pattern expression</returns>
         public static PatternEveryExpr EveryFilter(
             Filter filter,
-            String tagName)
+            string tagName)
         {
             PatternExpr inner = new PatternFilterExpr(filter, tagName);
             return new PatternEveryExpr(inner);
@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// pattern expression
         /// </returns>
-        public static PatternFilterExpr Filter(String eventTypeName)
+        public static PatternFilterExpr Filter(string eventTypeName)
         {
             return new PatternFilterExpr(soda.Filter.Create(eventTypeName));
         }
@@ -203,8 +203,8 @@ namespace com.espertech.esper.common.client.soda
         /// pattern expression
         /// </returns>
         public static PatternFilterExpr Filter(
-            String eventTypeName,
-            String tagName)
+            string eventTypeName,
+            string tagName)
         {
             return new PatternFilterExpr(soda.Filter.Create(eventTypeName), tagName);
         }
@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>pattern expression</returns>
         public static PatternFilterExpr Filter(
             Filter filter,
-            String tagName)
+            string tagName)
         {
             return new PatternFilterExpr(filter, tagName);
         }
@@ -245,8 +245,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="guarded">is the pattern sub-expression to be guarded</param>
         /// <returns>pattern guard expression</returns>
         public static PatternGuardExpr Guard(
-            String @namespace,
-            String name,
+            string @namespace,
+            string name,
             Expression[] parameters,
             PatternExpr guarded)
         {
@@ -261,8 +261,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="parameters">is the observer objects optional parameters, i.e. integer 1 for 1 second</param>
         /// <returns>pattern observer expression</returns>
         public static PatternObserverExpr Observer(
-            String @namespace,
-            String name,
+            string @namespace,
+            string name,
             Expression[] parameters)
         {
             return new PatternObserverExpr(@namespace, name, parameters);
@@ -325,7 +325,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// pattern expression
         /// </returns>
-        public static PatternNotExpr NotFilter(String eventTypeName)
+        public static PatternNotExpr NotFilter(string eventTypeName)
         {
             return new PatternNotExpr(new PatternFilterExpr(soda.Filter.Create(eventTypeName)));
         }
@@ -340,8 +340,8 @@ namespace com.espertech.esper.common.client.soda
         /// pattern expression
         /// </returns>
         public static PatternNotExpr NotFilter(
-            String name,
-            String tagName)
+            string name,
+            string tagName)
         {
             return new PatternNotExpr(new PatternFilterExpr(soda.Filter.Create(name), tagName));
         }
@@ -368,7 +368,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>pattern expression</returns>
         public static PatternNotExpr NotFilter(
             Filter filter,
-            String tagName)
+            string tagName)
         {
             return new PatternNotExpr(new PatternFilterExpr(filter, tagName));
         }

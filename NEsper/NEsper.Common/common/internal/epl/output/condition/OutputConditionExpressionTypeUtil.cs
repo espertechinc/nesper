@@ -13,11 +13,11 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 {
     public class OutputConditionExpressionTypeUtil
     {
-        public readonly static LinkedHashMap<String, Object> TYPEINFO;
+        public readonly static LinkedHashMap<string, object> TYPEINFO;
 
         static OutputConditionExpressionTypeUtil()
         {
-            TYPEINFO = new LinkedHashMap<String, Object>();
+            TYPEINFO = new LinkedHashMap<string, object>();
             TYPEINFO.Put("count_insert", typeof(int));
             TYPEINFO.Put("count_remove", typeof(int));
             TYPEINFO.Put("count_insert_total", typeof(int));
@@ -25,10 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             TYPEINFO.Put("last_output_timestamp", typeof(long));
         }
 
-        public static object[] OAPrototype => new Object[TYPEINFO.Count];
+        public static object[] OAPrototype => new object[TYPEINFO.Count];
 
         public static void Populate(
-            Object[] builtinProperties,
+            object[] builtinProperties,
             int totalNewEventsCount,
             int totalOldEventsCount,
             int totalNewEventsSum,

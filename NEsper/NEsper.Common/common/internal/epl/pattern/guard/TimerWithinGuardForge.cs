@@ -76,8 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                     typeof(TimerWithinGuardFactory), "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("guardTimerWithin"))
-                .ExprDotMethod(Ref("factory"), "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(Ref("factory"), "setDeltaCompute", patternDelta)
+                .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(Ref("factory"), "DeltaCompute", patternDelta)
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }

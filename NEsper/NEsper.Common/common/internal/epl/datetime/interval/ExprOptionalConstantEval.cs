@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool isNewData,
                 ExprEvaluatorContext context)
             {
-                return Int64.MaxValue;
+                return long.MaxValue;
             }
         }
     }

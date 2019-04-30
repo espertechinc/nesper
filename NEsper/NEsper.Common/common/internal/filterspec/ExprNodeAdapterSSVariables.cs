@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     {
         internal readonly VariableManagementService variableService;
 
-        private ExprNodeAdapterSSVariables(
+        internal ExprNodeAdapterSSVariables(
             FilterSpecParamExprNode factory,
             ExprEvaluatorContext evaluatorContext,
             VariableManagementService variableService)

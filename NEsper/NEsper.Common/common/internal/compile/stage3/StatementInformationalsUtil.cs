@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             IList<NamedWindowConsumerStreamSpec> namedWindowConsumers,
             bool allowContext,
             SelectSubscriberDescriptor selectSubscriberDescriptor,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             StatementCompileTimeServices services)
         {
             var specCompiled = @base.StatementSpec;
@@ -102,16 +102,35 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             bool allowSubscriber = services.Configuration.Compiler.ByteCode.IsAllowSubscriber;
 
             return new StatementInformationalsCompileTime(
-                @base.StatementName, alwaysSynthesizeOutputEvents,
-                contextName, contextModuleName, contextVisibility, canSelfJoin, hasSubquery,
-                needDedup, specCompiled.Annotations, stateless, @base.UserObjectCompileTime,
-                filterSpecCompileds.Count, schedules.Count, namedWindowConsumers.Count,
+                @base.StatementName, 
+                alwaysSynthesizeOutputEvents,
+                contextName, 
+                contextModuleName, 
+                contextVisibility, 
+                canSelfJoin, 
+                hasSubquery,
+                needDedup, 
+                specCompiled.Annotations, 
+                stateless, 
+                @base.UserObjectCompileTime,
+                filterSpecCompileds.Count, 
+                schedules.Count, 
+                namedWindowConsumers.Count,
                 @base.StatementRawInfo.StatementType,
-                annotationData.Priority, annotationData.IsPremptive, hasVariables, writesToTables, hasTableAccess,
-                selectSubscriberDescriptor.SelectClauseTypes, selectSubscriberDescriptor.SelectClauseColumnNames,
-                selectSubscriberDescriptor.IsForClauseDelivery, selectSubscriberDescriptor.GroupDelivery, properties,
-                @base.StatementSpec.Raw.MatchRecognizeSpec != null, services.IsInstrumented,
-                packageScope, insertIntoLatchName, allowSubscriber);
+                annotationData.Priority, 
+                annotationData.IsPremptive, 
+                hasVariables, 
+                writesToTables, 
+                hasTableAccess,
+                selectSubscriberDescriptor.SelectClauseTypes, 
+                selectSubscriberDescriptor.SelectClauseColumnNames,
+                selectSubscriberDescriptor.IsForClauseDelivery, 
+                selectSubscriberDescriptor.GroupDelivery, properties,
+                @base.StatementSpec.Raw.MatchRecognizeSpec != null,
+                services.IsInstrumented,
+                namespaceScope, 
+                insertIntoLatchName, 
+                allowSubscriber);
         }
 
         private static bool IsNeedDedup(IList<FilterSpecCompiled> filterSpecCompileds)

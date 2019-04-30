@@ -64,8 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             CodegenClassScope classScope)
         {
             if (expression != null) {
-                method.Block.ExprDotMethod(
-                    eval, "setExpression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, GetType(), classScope));
+                method.Block.SetProperty(eval, "Expression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, GetType(), classScope));
             }
         }
     }

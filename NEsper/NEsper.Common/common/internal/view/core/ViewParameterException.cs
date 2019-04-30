@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.view.core
 
         /// <summary>Ctor.</summary>
         /// <param name="message">validation error message</param>
-        public ViewParameterException(String message)
+        public ViewParameterException(string message)
             : base(message)
         {
         }

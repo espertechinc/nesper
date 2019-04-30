@@ -8,6 +8,7 @@
 
 using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
@@ -52,11 +53,11 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
             method.Block
                 .DeclareVar(typeof(ExprFilterSpecLookupable), "lookupable", LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()));
+                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             var inner = NewAnonymousClass(
                 method.Block, typeof(FilterSpecParam),
-                CompatExtensions.AsList(Ref("lookupable"), Ref("op")));
+                CompatExtensions.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope).AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             inner.AddMethod("getFilterValue", getFilterValue);
             getFilterValue.Block.MethodReturn(Constant(_filterConstant));

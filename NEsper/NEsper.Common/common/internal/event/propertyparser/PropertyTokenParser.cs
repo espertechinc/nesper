@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
                 ident = ProcessIdent(lookahead.sequence);
             }
             else {
-                ident = ProcessIdent(UnescapeBacktickForProperty(lookahead.sequence));
+                ident = ProcessIdent(PropertyParser.UnescapeBacktickForProperty(lookahead.sequence));
             }
 
             NextToken();
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
 
         private void NextToken()
         {
-            tokens.Pop();
+            tokens.RemoveFirst(); // Pop();
             if (tokens.IsEmpty()) {
                 lookahead = new Token(TokenType.END, "");
             }

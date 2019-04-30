@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
             get { return _numStreams; }
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             var writer = new StringWriter();
 

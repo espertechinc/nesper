@@ -82,11 +82,10 @@ namespace com.espertech.esper.common.@internal.view.derived
             CodegenClassScope classScope)
         {
             if (additionalProps != null) {
-                method.Block.ExprDotMethod(factory, "setAdditionalProps", additionalProps.Codegen(method, classScope));
+                method.Block.SetProperty(factory, "AdditionalProps", additionalProps.Codegen(method, classScope));
             }
 
-            method.Block.ExprDotMethod(
-                factory, "setFieldEval", CodegenEvaluator(fieldExpression.Forge, method, GetType(), classScope));
+            method.Block.SetProperty(factory, "FieldEval", CodegenEvaluator(fieldExpression.Forge, method, GetType(), classScope));
         }
     }
 } // end of namespace

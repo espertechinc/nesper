@@ -853,7 +853,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenStackGenerator.RecursiveBuildStack(
                 applyLeaveMethod, "applyLeave", innerMethods);
             CodegenStackGenerator.RecursiveBuildStack(
-                setCurrentAccessMethod, "setCurrentAccess", innerMethods);
+                setCurrentAccessMethod, "SetCurrentAccess", innerMethods);
             CodegenStackGenerator.RecursiveBuildStack(
                 clearResultsMethod, "clearResults", innerMethods);
             CodegenStackGenerator.RecursiveBuildStack(

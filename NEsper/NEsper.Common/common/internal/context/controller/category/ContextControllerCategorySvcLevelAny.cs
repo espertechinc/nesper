@@ -38,8 +38,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         public int[] MgmtDelete(IntSeqKey controllerPath)
         {
-            ContextControllerCategorySvcLevelAnyEntry entry = mgmt.Remove(controllerPath);
-            return entry == null ? null : entry.SubpathOrCPids;
+            return mgmt.TryRemove(controllerPath, out ContextControllerCategorySvcLevelAnyEntry entry) ? entry.SubpathOrCPids : null;
         }
 
         public void Destroy()

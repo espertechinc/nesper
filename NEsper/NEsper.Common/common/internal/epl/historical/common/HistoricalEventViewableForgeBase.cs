@@ -49,13 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             var method = parent.MakeChild(TypeOfImplementation(), GetType(), classScope);
             var @ref = Ref("hist");
             method.Block.DeclareVar(TypeOfImplementation(), @ref.Ref, NewInstance(TypeOfImplementation()))
-                .ExprDotMethod(@ref, "setStreamNumber", Constant(streamNum))
-                .ExprDotMethod(
-                    @ref, "setEventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(@ref, "setHasRequiredStreams", Constant(!subordinateStreams.IsEmpty()))
-                .ExprDotMethod(@ref, "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(
-                    @ref, "setEvaluator",
+                .SetProperty(@ref, "StreamNumber", Constant(streamNum))
+                .SetProperty(@ref, "EventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(@ref, "HasRequiredStreams", Constant(!subordinateStreams.IsEmpty()))
+                .SetProperty(@ref, "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(@ref, "Evaluator",
                     ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
                         inputParamEvaluators, null, method, GetType(), classScope));
             CodegenSetter(@ref, method, symbols, classScope);

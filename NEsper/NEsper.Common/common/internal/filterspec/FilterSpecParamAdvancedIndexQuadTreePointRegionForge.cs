@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar(
                     typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion), "fpai",
                     NewInstance(typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion), Ref("lookupable"), Ref("op")))
-                .ExprDotMethod(Ref("fpai"), "setxEval", MakeAnonymous(xEval, GetType(), classScope, method))
-                .ExprDotMethod(Ref("fpai"), "setyEval", MakeAnonymous(yEval, GetType(), classScope, method))
+                .SetProperty(Ref("fpai"), "xEval", MakeAnonymous(xEval, GetType(), classScope, method))
+                .SetProperty(Ref("fpai"), "yEval", MakeAnonymous(yEval, GetType(), classScope, method))
                 .MethodReturn(Ref("fpai"));
             return method;
         }

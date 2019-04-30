@@ -32,16 +32,16 @@ namespace com.espertech.esper.common.@internal.epl.script.core
     {
         public const string CONTEXT_BINDING_NAME = "epl";
 
-        private readonly string defaultDialect;
-        private EventType eventTypeCollection;
-        private ScriptDescriptorCompileTime scriptDescriptor;
+        private readonly string _defaultDialect;
+        private EventType _eventTypeCollection;
+        private ScriptDescriptorCompileTime _scriptDescriptor;
 
         public ExprNodeScript(
             string defaultDialect,
             ExpressionScriptProvided script,
             IList<ExprNode> parameters)
         {
-            this.defaultDialect = defaultDialect;
+            _defaultDialect = defaultDialect;
             Script = script;
             Parameters = parameters;
         }
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public Type ComponentTypeCollection {
             get {
-                var returnType = scriptDescriptor.ReturnType;
+                var returnType = _scriptDescriptor.ReturnType;
                 if (returnType.IsArray) {
                     return returnType.GetElementType();
                 }
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return eventTypeCollection;
+            return _eventTypeCollection;
         }
 
         public EventType GetEventTypeSingle(
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             }
         }
 
-        public Type EvaluationType => scriptDescriptor.ReturnType;
+        public Type EvaluationType => _scriptDescriptor.ReturnType;
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
@@ -192,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
             // Compile script
             var parameterTypes = ExprNodeUtilityQuery.GetExprResultTypes(forges);
-            var dialect = Script.OptionalDialect == null ? defaultDialect : Script.OptionalDialect;
+            var dialect = Script.OptionalDialect == null ? _defaultDialect : Script.OptionalDialect;
             var compiled = ExpressionNodeScriptCompiler.CompileScript(
                 dialect, Script.Name, Script.Expression, Script.ParameterNames, parameterTypes, Script.CompiledBuf,
                 validationContext.ImportService);
@@ -234,10 +234,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 returnType = typeof(object);
             }
 
-            eventTypeCollection = null;
+            _eventTypeCollection = null;
             if (Script.OptionalEventTypeName != null) {
                 if (returnType.IsArray && returnType.GetElementType() == typeof(EventBean)) {
-                    eventTypeCollection = EventTypeUtility.RequireEventType(
+                    _eventTypeCollection = EventTypeUtility.RequireEventType(
                         "Script", Script.Name, Script.OptionalEventTypeName,
                         validationContext.StatementCompileTimeService.EventTypeCompileTimeResolver);
                 }
@@ -246,9 +246,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 }
             }
 
-            scriptDescriptor = new ScriptDescriptorCompileTime(
+            _scriptDescriptor = new ScriptDescriptorCompileTime(
                 Script.OptionalDialect, Script.Name, Script.Expression,
-                Script.ParameterNames, forges, returnType, defaultDialect);
+                Script.ParameterNames, forges, returnType, _defaultDialect);
             return null;
         }
 
@@ -286,8 +286,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public CodegenExpressionField GetField(CodegenClassScope codegenClassScope)
         {
-            return codegenClassScope.PackageScope.AddOrGetFieldSharable(
-                new ScriptCodegenFieldSharable(scriptDescriptor, codegenClassScope));
+            return codegenClassScope.NamespaceScope.AddOrGetFieldSharable(
+                new ScriptCodegenFieldSharable(_scriptDescriptor, codegenClassScope));
         }
 
         private Type GetDeclaredReturnType(

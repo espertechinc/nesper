@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(saiff, "setMergeHelper", mergeHelperForge.Make(method, symbols, classScope));
+                .SetProperty(saiff, "MergeHelper", mergeHelperForge.Make(method, symbols, classScope));
         }
     }
 } // end of namespace

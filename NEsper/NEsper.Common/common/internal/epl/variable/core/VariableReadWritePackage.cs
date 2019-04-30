@@ -24,13 +24,13 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     {
         private VariableTriggerSetDesc[] assignments;
 
-        private IDictionary<EventTypeSPI, EventBeanCopyMethod> copyMethods;
+        private IDictionary<EventType, EventBeanCopyMethod> copyMethods;
         private bool[] mustCoerce;
         private VariableReader[] readersForGlobalVars;
         private Variable[] variables;
         private VariableTriggerWriteDesc[] writers;
 
-        public IDictionary<EventTypeSPI, EventBeanCopyMethod> CopyMethods {
+        public IDictionary<EventType, EventBeanCopyMethod> CopyMethods {
             set => copyMethods = value;
         }
 

@@ -112,24 +112,21 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             }
 
             method.Block
-                .ExprDotMethod(node, "setChildren", Ref("children"))
-                .ExprDotMethod(
-                    node, "setLowerBounds",
+                .SetProperty(node, "Children", Ref("children"))
+                .SetProperty(node, "LowerBounds",
                     LowerBounds == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(LowerBounds.Forge, method, GetType(), classScope))
-                .ExprDotMethod(
-                    node, "setUpperBounds",
+                .SetProperty(node, "UpperBounds",
                     UpperBounds == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(UpperBounds.Forge, method, GetType(), classScope))
-                .ExprDotMethod(
-                    node, "setSingleBound",
+                .SetProperty(node, "SingleBound",
                     SingleBound == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(SingleBound.Forge, method, GetType(), classScope))
-                .ExprDotMethod(node, "setTagsArrayed", Constant(TagsArrayed))
-                .ExprDotMethod(node, "setOptionalConvertor", converterExpression);
+                .SetProperty(node, "TagsArrayed", Constant(TagsArrayed))
+                .SetProperty(node, "OptionalConvertor", converterExpression);
         }
 
         public override void CollectSelfFilterAndSchedule(

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.util
         /// Ctor.
         /// </summary>
         /// <param name="message">supplies the detailed description</param>
-        public TypeInstantiationException(String message)
+        public TypeInstantiationException(string message)
             : base(message)
         {
         }
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="message">supplies the detailed description</param>
         /// <param name="cause">the exception cause</param>
         public TypeInstantiationException(
-            String message,
+            string message,
             Exception cause)
             : base(message, cause)
         {

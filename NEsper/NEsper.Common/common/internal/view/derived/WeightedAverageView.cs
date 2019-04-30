@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                         double point = pointnum.AsDouble();
                         double weight = weightnum.AsDouble();
 
-                        if (Double.IsNaN(sumXtimesW.AsDouble())) {
+                        if (double.IsNaN(sumXtimesW.AsDouble())) {
                             sumXtimesW = point * weight;
                             sumW = weight;
                         }

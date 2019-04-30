@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var es = '\\';
             if (optionalEscapeEval != null) {
                 var escapeString = (string) optionalEscapeEval.Evaluate(eventsPerStream, isNewData, context);
-                if (escapeString != null && !escapeString.IsEmpty()) {
+                if (!string.IsNullOrEmpty(escapeString)) {
                     es = escapeString[0];
                 }
             }

@@ -51,15 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             CodegenMethod method = parent.MakeChild(typeof(OperatorMetadataDescriptor), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(OperatorMetadataDescriptor), "op", NewInstance(typeof(OperatorMetadataDescriptor)))
-                .ExprDotMethod(@Ref("op"), "setForgeClass", Constant(forgeClass))
-                .ExprDotMethod(@Ref("op"), "setOperatorPrettyPrint", Constant(operatorPrettyPrint))
-                .ExprDotMethod(
-                    @Ref("op"), "setOperatorAnnotations",
+                .SetProperty(Ref("op"), "ForgeClass", Constant(forgeClass))
+                .SetProperty(Ref("op"), "OperatorPrettyPrint", Constant(operatorPrettyPrint))
+                .SetProperty(Ref("op"), "OperatorAnnotations",
                     operatorAnnotations == null
                         ? ConstantNull()
                         : LocalMethod(MakeAnnotations(typeof(Attribute[]), operatorAnnotations, method, classScope)))
-                .ExprDotMethod(@Ref("op"), "setNumOutputPorts", Constant(numOutputPorts))
-                .ExprDotMethod(@Ref("op"), "setOperatorName", Constant(operatorName))
+                .SetProperty(Ref("op"), "NumOutputPorts", Constant(numOutputPorts))
+                .SetProperty(Ref("op"), "OperatorName", Constant(operatorName))
                 .MethodReturn(@Ref("op"));
             return LocalMethod(method);
         }

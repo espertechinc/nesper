@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         private void AddVariableName(VariableMetaData meta)
         {
             if (variableNames == null) {
-                variableNames = new LinkedHashMap<>();
+                variableNames = new LinkedHashMap<string, VariableMetaData>();
             }
 
             variableNames.Put(meta.VariableName, meta);

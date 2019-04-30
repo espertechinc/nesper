@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
             methodNode.Block
                 .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
-                .Expression(ExprDotMethod(Ref("dtx"), "setTimeInMillis", ExprDotMethod(Ref("d"), "getTime")))
+                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", ExprDotMethod(Ref("d"), "getTime")))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethod(methodNode, inner);
         }
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
             methodNode.Block
                 .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
-                .Expression(ExprDotMethod(Ref("dtx"), "setTimeInMillis", ExprDotMethod(Ref("d"), "getTime")))
+                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", ExprDotMethod(Ref("d"), "getTime")))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethod(methodNode, inner);
         }

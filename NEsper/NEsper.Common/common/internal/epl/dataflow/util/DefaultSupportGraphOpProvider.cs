@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         public object Provide(EPDataFlowOperatorProviderContext context)
         {
             foreach (object op in ops) {
-                if (context.OperatorName.Equals(op.GetType().GetSimpleName())) {
+                if (context.OperatorName.Equals(op.GetType().Name)) {
                     return op;
                 }
             }

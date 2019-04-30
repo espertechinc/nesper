@@ -46,16 +46,20 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         public IList<StmtClassForgable> MakeForgables(
             string queryMethodProviderClassName,
             string classPostfix,
-            CodegenPackageScope packageScope)
+            CodegenNamespaceScope namespaceScope)
         {
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
 
-            // generate RSP
+            //namespaceScopeP
             forgables.Add(
-                new StmtClassForgableRSPFactoryProvider(classNameResultSetProcessor, desc.ResultSetProcessor, packageScope, statementRawInfo));
+                new StmtClassForgableRSPFactoryProvider(
+                    classNameResultSetProcessor, 
+                    desc.ResultSetProcessor, 
+                    namespaceScope,
+                    statementRawInfo));
 
             // generate faf-select
-            forgables.Add(new StmtClassForgableQueryMethodProvider(queryMethodProviderClassName, packageScope, this));
+            forgables.Add(new StmtClassForgableQueryMethodProvider(queryMethodProviderClassName, namespaceScope, this));
 
             return forgables;
         }
@@ -68,29 +72,24 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             CodegenExpressionRef select = @Ref("select");
             method.Block
                 .DeclareVar(typeof(FAFQueryMethodSelect), select.Ref, NewInstance(typeof(FAFQueryMethodSelect)))
-                .ExprDotMethod(
-                    select, "setAnnotations", LocalMethod(AnnotationUtil.MakeAnnotations(typeof(Attribute[]), desc.Annotations, method, classScope)))
-                .ExprDotMethod(select, "setProcessors", FireAndForgetProcessorForge.MakeArray(desc.Processors, method, symbols, classScope))
+                .SetProperty(select, "Annotations", LocalMethod(AnnotationUtil.MakeAnnotations(typeof(Attribute[]), desc.Annotations, method, classScope)))
+                .SetProperty(select, "Processors", FireAndForgetProcessorForge.MakeArray(desc.Processors, method, symbols, classScope))
                 .DeclareVar(
                     classNameResultSetProcessor, "rsp",
                     CodegenExpressionBuilder.NewInstance(classNameResultSetProcessor, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(select, "setResultSetProcessorFactoryProvider", @Ref("rsp"))
-                .ExprDotMethod(select, "setQueryGraph", desc.QueryGraph.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    select, "setWhereClause",
+                .SetProperty(select, "ResultSetProcessorFactoryProvider", @Ref("rsp"))
+                .SetProperty(select, "QueryGraph", desc.QueryGraph.Make(method, symbols, classScope))
+                .SetProperty(select, "WhereClause",
                     desc.WhereClause == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(desc.WhereClause.Forge, method, this.GetType(), classScope))
-                .ExprDotMethod(
-                    select, "setJoinSetComposerPrototype", desc.Joins == null ? ConstantNull() : desc.Joins.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    select, "setConsumerFilters", ExprNodeUtilityCodegen.CodegenEvaluators(desc.ConsumerFilters, method, this.GetType(), classScope))
-                .ExprDotMethod(select, "setContextName", Constant(desc.ContextName))
-                .ExprDotMethod(
-                    select, "setTableAccesses",
+                .SetProperty(select, "JoinSetComposerPrototype", desc.Joins == null ? ConstantNull() : desc.Joins.Make(method, symbols, classScope))
+                .SetProperty(select, "ConsumerFilters", ExprNodeUtilityCodegen.CodegenEvaluators(desc.ConsumerFilters, method, this.GetType(), classScope))
+                .SetProperty(select, "ContextName", Constant(desc.ContextName))
+                .SetProperty(select, "TableAccesses",
                     ExprTableEvalStrategyUtil.CodegenInitMap(desc.TableAccessForges, this.GetType(), method, symbols, classScope))
-                .ExprDotMethod(select, "setHasTableAccess", Constant(desc.HasTableAccess))
-                .ExprDotMethod(select, "setDistinct", Constant(desc.IsDistinct))
+                .SetProperty(select, "HasTableAccess", Constant(desc.HasTableAccess))
+                .SetProperty(select, "Distinct", Constant(desc.IsDistinct))
                 .MethodReturn(select);
         }
     }

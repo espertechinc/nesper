@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class ScriptDescriptorCompileTime
     {
-        private readonly string defaultDialect;
+        private readonly string _defaultDialect;
 
         public ScriptDescriptorCompileTime(
             string optionalDialect,
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ParameterNames = parameterNames;
             Parameters = parameters;
             ReturnType = returnType;
-            this.defaultDialect = defaultDialect;
+            _defaultDialect = defaultDialect;
         }
 
         public string OptionalDialect { get; }
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 .SetProperty(Ref("sd"), "ParameterNames", Constant(ParameterNames))
                 .SetProperty(Ref("sd"), "EvaluationTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(Parameters)))
                 .SetProperty(Ref("sd"), "Parameters", ExprNodeUtilityCodegen.CodegenEvaluators(Parameters, method, GetType(), classScope))
-                .SetProperty(Ref("sd"), "DefaultDialect", Constant(defaultDialect))
+                .SetProperty(Ref("sd"), "DefaultDialect", Constant(_defaultDialect))
                 .SetProperty(
                     Ref("sd"), "ClasspathImportService",
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF).Add(EPStatementInitServicesConstants.GETCLASSPATHIMPORTSERVICERUNTIME))

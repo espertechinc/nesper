@@ -36,11 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             DateTimeEx calValue = (DateTimeEx) target;
-            DateTimeEx cal = (DateTimeEx) calValue.Clone();
+            DateTimeEx dtx = (DateTimeEx) calValue.Clone();
 
-            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
+            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
 
-            return cal;
+            return dtx;
         }
 
         public static CodegenExpression Codegen(

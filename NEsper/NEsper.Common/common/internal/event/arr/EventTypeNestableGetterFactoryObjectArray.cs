@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            return mappedProperty.GetGetterObjectArray(
+            return (EventPropertyGetterMappedSPI) mappedProperty.GetGetterObjectArray(
                 PropertiesIndex, nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
         }
 
@@ -233,7 +233,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            return indexedProperty.GetGetterObjectArray(
+            return (EventPropertyGetterIndexedSPI) indexedProperty.GetGetterObjectArray(
                 PropertiesIndex, nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
         }
 

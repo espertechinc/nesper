@@ -49,12 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
 
-            CodegenMethod method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
-            CodegenExpressionRef evalCtx = symbols.GetAddExprEvalCtx(method);
-            CodegenExpressionRef left = symbols.GetAddLeftResult(method);
+            var method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
+            var evalCtx = symbols.GetAddExprEvalCtx(method);
+            var left = symbols.GetAddLeftResult(method);
 
             method.Block
                 .DeclareVar(typeof(int), "cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
@@ -64,10 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(@Ref("aggregationService"), "getGroupKeys", evalCtx))
                 .DeclareVar(typeof(bool), "hasNullRow", ConstantFalse());
 
-            CodegenBlock forEach = method.Block.ForEach(typeof(object), "groupKey", @Ref("groupKeys"));
+            var forEach = method.Block.ForEach(typeof(object), "groupKey", @Ref("groupKeys"));
             {
                 forEach.IfCondition(EqualsNull(left)).BlockReturn(ConstantNull())
-                    .ExprDotMethod(@Ref("aggregationService"), "setCurrentAccess", @Ref("groupKey"), @Ref("cpid"), ConstantNull());
+                    .ExprDotMethod(Ref("aggregationService"), "SetCurrentAccess", @Ref("groupKey"), @Ref("cpid"), ConstantNull());
 
                 if (havingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     forEach.DeclareVar(valueRightType, "valueRight", ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
                 }
 
-                CodegenBlock ifRightNotNull = forEach.IfCondition(EqualsNull(@Ref("valueRight")))
+                var ifRightNotNull = forEach.IfCondition(EqualsNull(@Ref("valueRight")))
                     .AssignRef("hasNullRow", ConstantTrue())
                     .IfElse();
                 {

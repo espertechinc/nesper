@@ -23,14 +23,14 @@ namespace com.espertech.esper.common.@internal.collection
     /// </summary>
     public class RefCountedMap<K, V>
     {
-        private readonly IDictionary<K, Pair<V, Int32>> _refMap;
+        private readonly IDictionary<K, Pair<V, int>> _refMap;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public RefCountedMap()
         {
-            _refMap = new Dictionary<K, Pair<V, Int32>>();
+            _refMap = new Dictionary<K, Pair<V, int>>();
         }
 
 
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <value></value>
         public virtual V this[K key] {
             get {
-                Pair<V, Int32> refValue = null;
+                Pair<V, int> refValue = null;
                 if (!_refMap.TryGetValue(key, out refValue)) {
                     return default(V);
                 }
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.collection
                     throw new IllegalStateException("Value value already in collection");
                 }
 
-                Pair<V, Int32> refValue = new Pair<V, Int32>(value, 1);
+                Pair<V, int> refValue = new Pair<V, int>(value, 1);
                 _refMap[key] = refValue;
 
                 //return val;
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </param>
         public void Reference(K key)
         {
-            Pair<V, Int32> refValue;
+            Pair<V, int> refValue;
             if (!_refMap.TryGetValue(key, out refValue)) {
                 throw new IllegalStateException("Value value not found in collection");
             }
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </returns>
         public virtual bool Dereference(K key)
         {
-            Pair<V, Int32> refValue;
+            Pair<V, int> refValue;
             if (!_refMap.TryGetValue(key, out refValue)) {
                 throw new IllegalStateException("Value value not found in collection");
             }

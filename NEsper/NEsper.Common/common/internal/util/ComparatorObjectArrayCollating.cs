@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 
 namespace com.espertech.esper.common.@internal.util
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             this.isDescendingValues = isDescendingValues;
             stringTypedValue = stringTypeValues;
-            collator = Collator.Instance;
+            collator = Comparers.Collating();
         }
 
         public int Compare(

@@ -57,15 +57,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             var method = parent.MakeChild(TypeOfSubclass(), GetType(), classScope);
             method.Block
                 .DeclareVar(TypeOfSubclass(), "saiff", NewInstance(TypeOfSubclass()))
-                .ExprDotMethod(Ref("saiff"), "setActivator", activator.MakeCodegen(method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("saiff"), "setResultEventType",
+                .SetProperty(Ref("saiff"), "Activator", activator.MakeCodegen(method, symbols, classScope))
+                .SetProperty(Ref("saiff"), "ResultEventType",
                     EventTypeUtility.ResolveTypeCodegen(resultEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    Ref("saiff"), "setSubselects",
+                .SetProperty(Ref("saiff"), "Subselects",
                     SubSelectFactoryForge.CodegenInitMap(subselects, GetType(), method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("saiff"), "setTableAccesses",
+                .SetProperty(Ref("saiff"), "TableAccesses",
                     ExprTableEvalStrategyUtil.CodegenInitMap(tableAccesses, GetType(), method, symbols, classScope));
             InlineInitializeOnTriggerBase(Ref("saiff"), method, symbols, classScope);
             method.Block.MethodReturn(Ref("saiff"));

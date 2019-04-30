@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             CodegenClassScope classScope)
         {
             var anonymousSelect = SelectExprProcessorUtil.MakeAnonymous(insertHelper, method, symbols.GetAddInitSvc(method), classScope);
-            method.Block.ExprDotMethod(queryMethod, "setInsertHelper", anonymousSelect);
+            method.Block.SetProperty(queryMethod, "InsertHelper", anonymousSelect);
         }
 
         private static StatementSpecCompiled AssociatedFromClause(

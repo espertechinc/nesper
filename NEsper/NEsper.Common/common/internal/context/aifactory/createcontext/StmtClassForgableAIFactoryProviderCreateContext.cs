@@ -29,12 +29,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
         public StmtClassForgableAIFactoryProviderCreateContext(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             string contextName,
             ContextControllerFactoryForge[] forges,
             EventType eventTypeContextProperties,
             StatementAgentInstanceFactoryCreateContextForge forge)
-            : base(className, packageScope)
+            : base(className, namespaceScope)
 
         {
             this.contextName = contextName;
@@ -84,10 +84,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             }
 
             method.Block.DeclareVar(typeof(ContextDefinition), "def", NewInstance(typeof(ContextDefinition)))
-                .ExprDotMethod(Ref("def"), "setContextName", Constant(contextName))
-                .ExprDotMethod(Ref("def"), "setControllerFactories", Ref("controllers"))
-                .ExprDotMethod(
-                    Ref("def"), "setEventTypeContextProperties",
+                .SetProperty(Ref("def"), "ContextName", Constant(contextName))
+                .SetProperty(Ref("def"), "ControllerFactories", Ref("controllers"))
+                .SetProperty(Ref("def"), "EventTypeContextProperties",
                     EventTypeUtility.ResolveTypeCodegen(eventTypeContextProperties, EPStatementInitServicesConstants.REF))
                 .MethodReturn(Ref("def"));
             return LocalMethod(method);

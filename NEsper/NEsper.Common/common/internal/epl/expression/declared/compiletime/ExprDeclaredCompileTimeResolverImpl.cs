@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 }
             }
             catch (PathException e) {
-                throw CompileTimeResolver.MakePathAmbiguous(PathRegistryObjectType.EXPRDECL, name, e);
+                throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.EXPRDECL, name, e);
             }
 
             return null;

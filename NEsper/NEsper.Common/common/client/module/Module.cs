@@ -35,12 +35,12 @@ namespace com.espertech.esper.common.client.module
         /// <param name="items">EPL statements</param>
         /// <param name="moduleText">text of module</param>
         public Module(
-            String name,
-            String uri,
-            ICollection<String> uses,
-            ICollection<String> imports,
+            string name,
+            string uri,
+            ICollection<string> uses,
+            ICollection<string> imports,
             IList<ModuleItem> items,
-            String moduleText)
+            string moduleText)
         {
             Name = name;
             Uri = uri;
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.client.module
         /// <value>text</value>
         public string ModuleText { get; set; }
 
-        public override String ToString()
+        public override string ToString()
         {
             var buf = new StringBuilder();
             if (Name == null) {

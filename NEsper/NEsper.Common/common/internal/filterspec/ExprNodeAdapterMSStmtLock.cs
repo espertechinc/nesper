@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         public const long LOCK_BACKOFF_MSEC = 10;
         private readonly VariableManagementService _variableService;
 
-        private ExprNodeAdapterMSStmtLock(
+        internal ExprNodeAdapterMSStmtLock(
             FilterSpecParamExprNode factory,
             ExprEvaluatorContext evaluatorContext,
             EventBean[] prototype,

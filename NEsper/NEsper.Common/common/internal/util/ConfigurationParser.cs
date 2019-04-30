@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static XmlDocument GetDocument(
             Stream stream,
-            String resourceName)
+            string resourceName)
         {
             XmlDocument document;
 

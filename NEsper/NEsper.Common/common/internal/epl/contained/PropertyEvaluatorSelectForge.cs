@@ -43,12 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 selectExprProcessor.Forge, method, symbols.GetAddInitSvc(method), classScope);
             method.Block
                 .DeclareVar(typeof(PropertyEvaluatorSelect), "pe", NewInstance(typeof(PropertyEvaluatorSelect)))
-                .ExprDotMethod(
-                    Ref("pe"), "setResultEventType",
+                .SetProperty(Ref("pe"), "ResultEventType",
                     EventTypeUtility.ResolveTypeCodegen(
                         selectExprProcessor.Forge.ResultEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("pe"), "setAccumulative", accumulative.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("pe"), "setSelectExprProcessor", processor)
+                .SetProperty(Ref("pe"), "Accumulative", accumulative.Make(method, symbols, classScope))
+                .SetProperty(Ref("pe"), "SelectExprProcessor", processor)
                 .MethodReturn(Ref("pe"));
             return LocalMethod(method);
         }

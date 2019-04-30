@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
         /// Precedence.
         /// </summary>
         public static readonly RowRecogExprNodePrecedenceEnum MINIMUM =
-            new RowRecogExprNodePrecedenceEnum(Int32.MinValue);
+            new RowRecogExprNodePrecedenceEnum(int.MinValue);
 
         private RowRecogExprNodePrecedenceEnum(int level)
         {

@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     {
         private readonly VariableManagementService _variableService;
 
-        ExprNodeAdapterMSNoTL(
+        internal ExprNodeAdapterMSNoTL(
             FilterSpecParamExprNode factory,
             ExprEvaluatorContext evaluatorContext,
             EventBean[] prototype,

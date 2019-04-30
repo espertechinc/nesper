@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ///     NOTE: Code-generation-invoked method, method name and parameter order matters
             /// </summary>
             /// <param name="input">input</param>
-            /// <returns>cal</returns>
+            /// <returns>dtx</returns>
             public static DateTimeEx StringToCalendarWStaticISOParse(string input)
             {
                 try {

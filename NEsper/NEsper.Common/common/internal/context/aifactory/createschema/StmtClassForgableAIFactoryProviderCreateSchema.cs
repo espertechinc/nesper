@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
 
         public StmtClassForgableAIFactoryProviderCreateSchema(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             StatementAgentInstanceFactoryCreateSchemaForge forge)
-            : base(className, packageScope)
+            : base(className, namespaceScope)
 
         {
             this.forge = forge;

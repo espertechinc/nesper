@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             /// <param name="format">format</param>
             /// <param name="input">input</param>
             /// <param name="timeZone">time zone</param>
-            /// <returns>cal</returns>
+            /// <returns>dtx</returns>
             public static DateTimeEx StringToDtxWStaticFormatParse(
                 DateFormat format,
                 object input,

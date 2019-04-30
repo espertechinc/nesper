@@ -170,21 +170,17 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
 
             method.Block
-                .ExprDotMethod(factory, "setReclaimAged", Constant(isReclaimAged))
-                .ExprDotMethod(factory, "setReclaimMaxAge", Constant(reclaimMaxAge))
-                .ExprDotMethod(factory, "setReclaimFrequency", Constant(reclaimFrequency))
-                .ExprDotMethod(factory, "setPropertyNames", Constant(propertyNames))
-                .ExprDotMethod(
-                    factory, "setCriteriaEvals", CodegenEvaluators(criteriaExpressions, method, GetType(), classScope))
-                .ExprDotMethod(
-                    factory, "setCriteriaTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)))
-                .ExprDotMethod(
-                    factory, "setGroupeds",
+                .SetProperty(factory, "ReclaimAged", Constant(isReclaimAged))
+                .SetProperty(factory, "ReclaimMaxAge", Constant(reclaimMaxAge))
+                .SetProperty(factory, "ReclaimFrequency", Constant(reclaimFrequency))
+                .SetProperty(factory, "PropertyNames", Constant(propertyNames))
+                .SetProperty(factory, "CriteriaEvals", CodegenEvaluators(criteriaExpressions, method, GetType(), classScope))
+                .SetProperty(factory, "CriteriaTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)))
+                .SetProperty(factory, "Groupeds",
                     LocalMethod(MakeViewFactories(groupeds, GetType(), method, classScope, symbols)))
-                .ExprDotMethod(
-                    factory, "setEventType",
+                .SetProperty(factory, "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF))
-                .ExprDotMethod(factory, "setAddingProperties", Constant(addingProperties));
+                .SetProperty(factory, "AddingProperties", Constant(addingProperties));
         }
 
         public override void Accept(ViewForgeVisitor visitor)

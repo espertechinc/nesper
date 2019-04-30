@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
         {
             if (expression.Visibility == NameAccessModifier.TRANSIENT) {
                 // for private expression that cache key is simply an Object shared by the name of the expression (fields are per-statement already so its safe)
-                return classScope.PackageScope.AddOrGetFieldSharable(new ExprDeclaredCacheKeyLocalCodegenField(expression.Name));
+                return classScope.NamespaceScope.AddOrGetFieldSharable(new ExprDeclaredCacheKeyLocalCodegenField(expression.Name));
             }
 
             // global expressions need a cache key that derives from the deployment id of the expression and the expression name
-            CodegenMethod keyInit = classScope.PackageScope.InitMethod.MakeChild(typeof(ExprDeclaredCacheKeyGlobal), generator, classScope).AddParam(
+            CodegenMethod keyInit = classScope.NamespaceScope.InitMethod.MakeChild(typeof(ExprDeclaredCacheKeyGlobal), generator, classScope).AddParam(
                 typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
             keyInit.Block.DeclareVar(
                     typeof(string), "deploymentId", StaticMethod(
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
                         Constant(expression.Name), Constant(expression.Visibility), Constant(expression.ModuleName),
                         EPStatementInitServicesConstants.REF))
                 .MethodReturn(NewInstance(typeof(ExprDeclaredCacheKeyGlobal), @Ref("deploymentId"), Constant(expression.Name)));
-            return classScope.PackageScope.AddFieldUnshared(
+            return classScope.NamespaceScope.AddFieldUnshared(
                 true, typeof(ExprDeclaredCacheKeyGlobal), LocalMethod(keyInit, EPStatementInitServicesConstants.REF));
         }
 

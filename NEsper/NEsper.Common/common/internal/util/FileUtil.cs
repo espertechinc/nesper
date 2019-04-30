@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class FileUtil
     {
-        public static string ReadTextFile(String file)
+        public static string ReadTextFile(string file)
         {
             return File.ReadAllText(file);
         }

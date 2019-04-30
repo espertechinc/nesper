@@ -38,9 +38,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                 .DeclareVar(
                     typeof(StatementAgentInstanceFactoryUpdate), "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryUpdate)))
-                .ExprDotMethod(Ref("saiff"), "setDesc", forge.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("saiff"), "setSubselects",
+                .SetProperty(Ref("saiff"), "Desc", forge.Make(method, symbols, classScope))
+                .SetProperty(Ref("saiff"), "Subselects",
                     SubSelectFactoryForge.CodegenInitMap(subselects, GetType(), method, symbols, classScope))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("saiff")))
                 .MethodReturn(Ref("saiff"));

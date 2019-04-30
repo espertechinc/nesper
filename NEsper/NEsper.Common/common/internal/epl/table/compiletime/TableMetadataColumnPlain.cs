@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 typeof(TableMetadataColumnPlain), "col", NewInstance(typeof(TableMetadataColumnPlain)));
             base.MakeSettersInline(Ref("col"), method.Block);
             method.Block
-                .ExprDotMethod(Ref("col"), "setIndexPlain", Constant(IndexPlain))
+                .SetProperty(Ref("col"), "IndexPlain", Constant(IndexPlain))
                 .MethodReturn(Ref("col"));
             return LocalMethod(method);
         }

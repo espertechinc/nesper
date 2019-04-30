@@ -13,7 +13,9 @@ using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.common.client.hook.exception;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.settings
@@ -47,18 +49,27 @@ namespace com.espertech.esper.common.@internal.settings
 
         public void HandleCondition(
             BaseCondition condition,
-            EPStatementHandle handle)
+            StatementContext statement)
         {
             if (UnhandledCondition == null) {
-                Log.Info(
-                    "Condition encountered processing statement '{0}' statement text '{1}' : {2}", handle.StatementName,
-                    handle.EPL, condition);
+                var message = "Condition encountered processing deployment id '" 
+                              + statement.DeploymentId + "' statement '" 
+                              + statement.StatementName + "'";
+                
+                var epl = (string) statement.StatementInformationals.Properties.Get(StatementProperty.EPL);
+                if (epl != null) {
+                    message += " statement text '" + epl + "'";
+                }
+
+                message += " :" + condition.ToString();
+
+                Log.Info(message);
                 return;
             }
 
             UnhandledCondition(
                 new ConditionHandlerContext(
-                    EngineURI, handle.StatementName, handle.EPL, condition));
+                    EngineURI, statement.StatementName, statement.DeploymentId, condition));
         }
 
         public void HandleException(

@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <param name="args">parameters</param>
         /// <exception cref="ScheduleParameterException">if the parameters are invalid</exception>
         /// <returns>crontab schedule</returns>
-        public static ScheduleSpec ComputeValues(Object[] args)
+        public static ScheduleSpec ComputeValues(object[] args)
         {
             if (args.Length <= 4 || args.Length >= 8) {
                 throw new ScheduleParameterException(GetExpressionCountException(args.Length));
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.schedule
             return "Invalid number of crontab parameters, expecting between 5 and 7 parameters, received " + length;
         }
 
-        private static CronParameter GetOptionalSpecialOp(Object unitParameter)
+        private static CronParameter GetOptionalSpecialOp(object unitParameter)
         {
             if (!(unitParameter is CronParameter)) {
                 return null;
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.schedule
         }
 
         private static ICollection<int> ComputeValues(
-            Object unitParameter,
+            object unitParameter,
             ScheduleUnit unit)
         {
             ICollection<int> result;

@@ -12,6 +12,7 @@ using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -130,12 +131,12 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(FilterSpecParamExprNode), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(ExprFilterSpecLookupable), "lookupable", LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()));
+                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             // getFilterValue-FilterSpecParamExprNode code
             var param = NewAnonymousClass(
                 method.Block, typeof(FilterSpecParamExprNode),
-                CompatExtensions.AsList(Ref("lookupable"), Ref("op")));
+                CompatExtensions.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
             param.AddMethod("getFilterValue", getFilterValue);
 
@@ -186,19 +187,16 @@ namespace com.espertech.esper.common.@internal.filterspec
             // setter calls
             method.Block
                 .DeclareVar(typeof(FilterSpecParamExprNode), "node", param)
-                .ExprDotMethod(
-                    Ref("node"), "setExprText",
+                .SetProperty(Ref("node"), "ExprText",
                     Constant(StringValue.StringDelimitedTo60Char(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ExprNode))))
-                .ExprDotMethod(Ref("node"), "setExprNode", evaluator)
-                .ExprDotMethod(Ref("node"), "setHasVariable", Constant(_hasVariable))
-                .ExprDotMethod(Ref("node"), "setHasFilterStreamSubquery", Constant(_hasFilterStreamSubquery))
-                .ExprDotMethod(Ref("node"), "setFilterBoolExprId", Constant(FilterBoolExprId))
-                .ExprDotMethod(Ref("node"), "setHasTableAccess", Constant(_hasTableAccess))
-                .ExprDotMethod(
-                    Ref("node"), "setFilterBooleanExpressionFactory",
+                .SetProperty(Ref("node"), "ExprNode", evaluator)
+                .SetProperty(Ref("node"), "HasVariable", Constant(_hasVariable))
+                .SetProperty(Ref("node"), "HasFilterStreamSubquery", Constant(_hasFilterStreamSubquery))
+                .SetProperty(Ref("node"), "FilterBoolExprId", Constant(FilterBoolExprId))
+                .SetProperty(Ref("node"), "HasTableAccess", Constant(_hasTableAccess))
+                .SetProperty(Ref("node"), "FilterBooleanExpressionFactory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETFILTERBOOLEANEXPRESSIONFACTORY))
-                .ExprDotMethod(
-                    Ref("node"), "setUseLargeThreadingProfile",
+                .SetProperty(Ref("node"), "UseLargeThreadingProfile",
                     Constant(_compileTimeServices.Configuration.Common.Execution.ThreadingProfile == ThreadingProfile.LARGE));
 
             if (_taggedEventTypes != null && !_taggedEventTypes.IsEmpty() || _arrayEventTypes != null && !_arrayEventTypes.IsEmpty()) {
@@ -221,7 +219,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                     // note: we leave index zero at null as that is the current event itself
                 }
 
-                method.Block.ExprDotMethod(Ref("node"), "setEventTypesProvidedBy", Ref("providedTypes"));
+                method.Block.SetProperty(Ref("node"), "EventTypesProvidedBy", Ref("providedTypes"));
             }
 
             // register boolean expression so it can be found

@@ -18,29 +18,29 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
-    public class CodegenPackageScope
+    public class CodegenNamespaceScope
     {
         // Well-named fields
-        private readonly LinkedHashMap<CodegenFieldName, CodegenField> fieldsNamed =
+        private readonly IDictionary<CodegenFieldName, CodegenField> _fieldsNamed =
             new LinkedHashMap<CodegenFieldName, CodegenField>();
 
         // Shared fields
-        private readonly LinkedHashMap<CodegenFieldSharable, CodegenField> fieldsShared =
+        private readonly IDictionary<CodegenFieldSharable, CodegenField> _fieldsShared =
             new LinkedHashMap<CodegenFieldSharable, CodegenField>();
 
         // Unshared fields
-        private readonly LinkedHashMap<CodegenField, CodegenExpression> fieldsUnshared =
+        private readonly IDictionary<CodegenField, CodegenExpression> _fieldsUnshared =
             new LinkedHashMap<CodegenField, CodegenExpression>();
 
-        private int currentMemberNumber;
-        private int currentSubstitutionParamNumber;
+        private int _currentMemberNumber;
+        private int _currentSubstitutionParamNumber;
 
-        private readonly LinkedHashMap<string, CodegenSubstitutionParamEntry> substitutionParamsByName =
+        private readonly IDictionary<string, CodegenSubstitutionParamEntry> _substitutionParamsByName =
             new LinkedHashMap<string, CodegenSubstitutionParamEntry>();
 
         // Substitution parameters
 
-        public CodegenPackageScope(
+        public CodegenNamespaceScope(
             string packageName,
             string fieldsClassNameOptional,
             bool instrumented)
@@ -48,28 +48,29 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             PackageName = packageName;
             FieldsClassNameOptional = fieldsClassNameOptional;
             IsInstrumented = instrumented;
+            InitMethod = CodegenMethod
+                .MakeParentNode(
+                    typeof(void),
+                    typeof(CodegenNamespaceScope),
+                    new CodegenClassScope(true, this, null))
+                .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref)
+                .WithStatic(true);
         }
 
         public string PackageName { get; }
 
-        public CodegenMethod InitMethod { get; } = CodegenMethod
-            .MakeParentNode(
-                typeof(void),
-                typeof(CodegenPackageScope),
-                new CodegenClassScope(true, this, null))
-            .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref)
-            .SetStatic(true);
+        public CodegenMethod InitMethod { get; }
 
-        public IDictionary<CodegenFieldName, CodegenField> FieldsNamed => fieldsNamed;
+        public IDictionary<CodegenFieldName, CodegenField> FieldsNamed => _fieldsNamed;
 
-        public IDictionary<CodegenField, CodegenExpression> FieldsUnshared => fieldsUnshared;
+        public IDictionary<CodegenField, CodegenExpression> FieldsUnshared => _fieldsUnshared;
 
         public string FieldsClassNameOptional { get; }
 
         public IList<CodegenSubstitutionParamEntry> SubstitutionParamsByNumber { get; } =
             new List<CodegenSubstitutionParamEntry>();
 
-        public IDictionary<string, CodegenSubstitutionParamEntry> SubstitutionParamsByName => substitutionParamsByName;
+        public IDictionary<string, CodegenSubstitutionParamEntry> SubstitutionParamsByName => _substitutionParamsByName;
 
         public bool IsInstrumented { get; }
 
@@ -94,13 +95,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenExpressionField AddOrGetFieldSharable(CodegenFieldSharable sharable)
         {
-            var member = fieldsShared.Get(sharable);
+            var member = _fieldsShared.Get(sharable);
             if (member != null) {
                 return Field(member);
             }
 
             member = AddFieldUnsharedInternal(true, sharable.Type(), sharable.InitCtorScoped());
-            fieldsShared.Put(sharable, member);
+            _fieldsShared.Put(sharable, member);
             return Field(member);
         }
 
@@ -108,7 +109,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenFieldName fieldName,
             Type type)
         {
-            var existing = fieldsNamed.Get(fieldName);
+            var existing = _fieldsNamed.Get(fieldName);
             if (existing != null) {
                 if (existing.Type != type) {
                     throw new IllegalStateException(
@@ -120,7 +121,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             var field = new CodegenField(FieldsClassNameOptional, fieldName.Name, type, null, false);
-            fieldsNamed.Put(fieldName, field);
+            _fieldsNamed.Put(fieldName, field);
             return Field(field);
         }
 
@@ -129,10 +130,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             Type type,
             CodegenExpression initCtorScoped)
         {
-            var memberNumber = currentMemberNumber++;
+            var memberNumber = _currentMemberNumber++;
             var name = CodegenPackageScopeNames.AnyField(memberNumber);
             var member = new CodegenField(FieldsClassNameOptional, name, type, null, isFinal);
-            fieldsUnshared.Put(member, initCtorScoped);
+            _fieldsUnshared.Put(member, initCtorScoped);
             return member;
         }
 
@@ -142,7 +143,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             var mixed = false;
             if (name == null) {
-                if (!substitutionParamsByName.IsEmpty()) {
+                if (!_substitutionParamsByName.IsEmpty()) {
                     mixed = true;
                 }
             }
@@ -155,7 +156,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             if (name != null) {
-                var entry = substitutionParamsByName.Get(name);
+                var entry = _substitutionParamsByName.Get(name);
                 if (entry != null && !TypeHelper.IsSubclassOrImplementsInterface(type, entry.Type)) {
                     throw new ArgumentException(
                         "Substitution parameter '" + name + "' of type '" + entry.Type + "' cannot be assigned type '" +
@@ -165,18 +166,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
             CodegenField member;
             if (name == null) {
-                var assigned = ++currentSubstitutionParamNumber;
+                var assigned = ++_currentSubstitutionParamNumber;
                 var fieldName = CodegenPackageScopeNames.AnySubstitutionParam(assigned);
                 member = new CodegenField(FieldsClassNameOptional, fieldName, type, null, false);
                 SubstitutionParamsByNumber.Add(new CodegenSubstitutionParamEntry(member, name, type));
             }
             else {
-                var existing = substitutionParamsByName.Get(name);
+                var existing = _substitutionParamsByName.Get(name);
                 if (existing == null) {
-                    var assigned = ++currentSubstitutionParamNumber;
+                    var assigned = ++_currentSubstitutionParamNumber;
                     var fieldName = CodegenPackageScopeNames.AnySubstitutionParam(assigned);
                     member = new CodegenField(FieldsClassNameOptional, fieldName, type, null, false);
-                    substitutionParamsByName.Put(name, new CodegenSubstitutionParamEntry(member, name, type));
+                    _substitutionParamsByName.Put(name, new CodegenSubstitutionParamEntry(member, name, type));
                 }
                 else {
                     member = existing.Field;

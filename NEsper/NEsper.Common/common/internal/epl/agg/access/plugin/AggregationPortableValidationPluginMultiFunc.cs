@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
                 .DeclareVar(
                     typeof(AggregationPortableValidationPluginMultiFunc), "portable",
                     NewInstance(typeof(AggregationPortableValidationPluginMultiFunc)))
-                .ExprDotMethod(Ref("portable"), "setAggregationFunctionName", Constant(AggregationFunctionName))
+                .SetProperty(Ref("portable"), "AggregationFunctionName", Constant(AggregationFunctionName))
                 .MethodReturn(Ref("portable"));
             return LocalMethod(method);
         }

@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             Date dateValue = (Date) target;
             var dtx = DateTimeEx.GetInstance(timeZone);
-            dtx.TimeInMillis = dateValue.Time;
+            dtx.SetUtcMillis(dateValue.Time);
 
             EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
 
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenExpression timeZoneField = codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var block = methodNode.Block
                 .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
-                .Expression(ExprDotMethod(Ref("dtx"), "setTimeInMillis", ExprDotMethod(Ref("target"), "getTime")));
+                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", ExprDotMethod(Ref("target"), "getTime")));
             EvaluateCalOpsCalendarCodegen(block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
             block.MethodReturn(ExprDotMethod(Ref("dtx"), "getTime"));
             return LocalMethod(methodNode, inner);

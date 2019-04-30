@@ -120,10 +120,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         public IList<StmtClassForgable> MakeForgables(
             string queryMethodProviderClassName,
             string classPostfix,
-            CodegenPackageScope packageScope)
+            CodegenNamespaceScope namespaceScope)
         {
             return Collections.SingletonList<StmtClassForgable>(
-                new StmtClassForgableQueryMethodProvider(queryMethodProviderClassName, packageScope, this));
+                new StmtClassForgableQueryMethodProvider(queryMethodProviderClassName, namespaceScope, this));
         }
 
         public void MakeMethod(
@@ -134,18 +134,15 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             CodegenExpressionRef queryMethod = @Ref("qm");
             method.Block
                 .DeclareVar(TypeOfMethod(), queryMethod.Ref, NewInstance(TypeOfMethod()))
-                .ExprDotMethod(
-                    queryMethod, "setAnnotations",
+                .SetProperty(queryMethod, "Annotations",
                     annotations == null ? ConstantNull() : LocalMethod(MakeAnnotations(typeof(Attribute[]), annotations, method, classScope)))
-                .ExprDotMethod(queryMethod, "setProcessor", processor.Make(method, symbols, classScope))
-                .ExprDotMethod(queryMethod, "setQueryGraph", queryGraph == null ? ConstantNull() : queryGraph.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    queryMethod, "setInternalEventRouteDest",
+                .SetProperty(queryMethod, "Processor", processor.Make(method, symbols, classScope))
+                .SetProperty(queryMethod, "QueryGraph", queryGraph == null ? ConstantNull() : queryGraph.Make(method, symbols, classScope))
+                .SetProperty(queryMethod, "InternalEventRouteDest",
                     ExprDotMethod(symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.GETINTERNALEVENTROUTEDEST))
-                .ExprDotMethod(
-                    queryMethod, "setTableAccesses",
+                .SetProperty(queryMethod, "TableAccesses",
                     ExprTableEvalStrategyUtil.CodegenInitMap(tableAccessForges, this.GetType(), method, symbols, classScope))
-                .ExprDotMethod(queryMethod, "setHasTableAccess", Constant(hasTableAccess));
+                .SetProperty(queryMethod, "HasTableAccess", Constant(hasTableAccess));
             MakeInlineSpecificSetter(queryMethod, method, symbols, classScope);
             method.Block.MethodReturn(queryMethod);
         }

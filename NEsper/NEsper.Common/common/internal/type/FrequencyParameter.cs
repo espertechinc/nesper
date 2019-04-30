@@ -63,11 +63,11 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="min">lower end of range</param>
         /// <param name="max">upper end of range</param>
         /// <returns>set of integer</returns>
-        public ICollection<Int32> GetValuesInRange(
+        public ICollection<int> GetValuesInRange(
             int min,
             int max)
         {
-            ICollection<Int32> values = new HashSet<Int32>();
+            ICollection<int> values = new HashSet<int>();
             int start = min - min % _frequency;
 
             do {
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.type
             return point % _frequency == 0;
         }
 
-        public String Formatted()
+        public string Formatted()
         {
             return "*/" + _frequency;
         }

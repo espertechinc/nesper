@@ -127,30 +127,25 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 .DeclareVar(
                     typeof(SubSelectStrategyFactoryIndexShare), "s",
                     NewInstance(typeof(SubSelectStrategyFactoryIndexShare)))
-                .ExprDotMethod(
-                    Ref("s"), "setTable",
+                .SetProperty(Ref("s"), "Table",
                     table == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    Ref("s"), "setNamedWindow",
+                .SetProperty(Ref("s"), "NamedWindow",
                     namedWindow == null
                         ? ConstantNull()
                         : NamedWindowDeployTimeResolver.MakeResolveNamedWindow(
                             namedWindow, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    Ref("s"), "setAggregationServiceFactory",
+                .SetProperty(Ref("s"), "AggregationServiceFactory",
                     SubSelectStrategyFactoryLocalViewPreloadedForge.MakeAggregationService(
                         subqueryNumber, aggregationServiceForgeDesc, classScope, method, symbols))
-                .ExprDotMethod(
-                    Ref("s"), "setFilterExprEval",
+                .SetProperty(Ref("s"), "FilterExprEval",
                     filterExprEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
                             filterExprEval, method, GetType(), classScope))
-                .ExprDotMethod(Ref("s"), "setGroupKeyEval", groupKeyEval)
-                .ExprDotMethod(
-                    Ref("s"), "setQueryPlan",
+                .SetProperty(Ref("s"), "GroupKeyEval", groupKeyEval)
+                .SetProperty(Ref("s"), "QueryPlan",
                     queryPlan == null ? ConstantNull() : queryPlan.Make(method, symbols, classScope))
                 .MethodReturn(Ref("s"));
             return LocalMethod(method);

@@ -162,9 +162,9 @@ namespace com.espertech.esper.common.@internal.@event.map
                         return ((BeanEventPropertyGetter) getter).IsBeanExistsProperty(result);
                     }
 
-                    if (result is IDictionary<object, object> && getter is MapEventPropertyGetter) {
+                    if (result is IDictionary<string, object> && getter is MapEventPropertyGetter) {
                         return ((MapEventPropertyGetter) getter).IsMapExistsProperty(
-                            (IDictionary<object, object>) result);
+                            (IDictionary<string, object>) result);
                     }
 
                     if (result is EventBean) {
@@ -177,8 +177,8 @@ namespace com.espertech.esper.common.@internal.@event.map
                 if (getter is BeanEventPropertyGetter) {
                     result = ((BeanEventPropertyGetter) getter).GetBeanProp(result);
                 }
-                else if (result is IDictionary<object, object> && getter is MapEventPropertyGetter) {
-                    result = ((MapEventPropertyGetter) getter).GetMap((IDictionary<object, object>) result);
+                else if (result is IDictionary<string, object> && getter is MapEventPropertyGetter) {
+                    result = ((MapEventPropertyGetter) getter).GetMap((IDictionary<string, object>) result);
                 }
                 else if (result is EventBean) {
                     result = getter.Get((EventBean) result);
@@ -266,8 +266,8 @@ namespace com.espertech.esper.common.@internal.@event.map
                 else if (getter is BeanEventPropertyGetter) {
                     result = ((BeanEventPropertyGetter) getter).GetBeanProp(result);
                 }
-                else if (result is IDictionary<object, object> && getter is MapEventPropertyGetter) {
-                    result = ((MapEventPropertyGetter) getter).GetMap((IDictionary<object, object>) result);
+                else if (result is IDictionary<string, object> && getter is MapEventPropertyGetter) {
+                    result = ((MapEventPropertyGetter) getter).GetMap((IDictionary<string, object>) result);
                 }
                 else {
                     return null;

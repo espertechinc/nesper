@@ -13,66 +13,66 @@ using com.espertech.esper.common.client.util;
 namespace com.espertech.esper.common.client.configuration.common
 {
     /// <summary>
-    /// Event representation metadata.
+    ///     Event representation metadata.
     /// </summary>
     [Serializable]
     public class ConfigurationCommonEventTypeMeta
     {
+        private AvroSettingsConfig _avroSettings;
         private PropertyResolutionStyle _classPropertyResolutionStyle;
         private AccessorStyle _defaultAccessorStyle;
         private EventUnderlyingType _defaultEventRepresentation;
-        private ConfigurationCommonEventTypeMeta.AvroSettingsConfig _avroSettings;
 
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         public ConfigurationCommonEventTypeMeta()
         {
-            this._classPropertyResolutionStyle = PropertyResolutionStyle.DEFAULT;
-            this._defaultAccessorStyle = AccessorStyle.NATIVE;
-            this._defaultEventRepresentation = EventUnderlyingType.Default;
-            this._avroSettings = new AvroSettingsConfig();
+            _classPropertyResolutionStyle = PropertyResolutionStyle.DEFAULT;
+            _defaultAccessorStyle = AccessorStyle.NATIVE;
+            _defaultEventRepresentation = EventUnderlyingType.GetDefault();
+            _avroSettings = new AvroSettingsConfig();
         }
 
         /// <summary>
-        /// Returns the default accessor style, JavaBean unless changed.
+        ///     Returns the default accessor style, JavaBean unless changed.
         /// </summary>
         /// <value>style enum</value>
         public AccessorStyle DefaultAccessorStyle {
             get => _defaultAccessorStyle;
-            set => this._defaultAccessorStyle = value;
+            set => _defaultAccessorStyle = value;
         }
 
         /// <summary>
-        /// Sets the property resolution style to use for resolving property names
-        /// of Java classes.
+        ///     Sets the property resolution style to use for resolving property names
+        ///     of Java classes.
         /// </summary>
         /// <value>style of property resolution</value>
         public PropertyResolutionStyle ClassPropertyResolutionStyle {
-            set => this._classPropertyResolutionStyle = value;
+            set => _classPropertyResolutionStyle = value;
             get => _classPropertyResolutionStyle;
         }
 
         /// <summary>
-        /// Returns the default event representation.
+        ///     Returns the default event representation.
         /// </summary>
         /// <value>setting</value>
         public EventUnderlyingType DefaultEventRepresentation {
             get => _defaultEventRepresentation;
-            set => this._defaultEventRepresentation = value;
+            set => _defaultEventRepresentation = value;
         }
 
         /// <summary>
-        /// Returns the Avro settings.
+        ///     Returns the Avro settings.
         /// </summary>
         /// <value>avro settings</value>
         public AvroSettingsConfig AvroSettings {
             get => _avroSettings;
-            set => this._avroSettings = value;
+            set => _avroSettings = value;
         }
 
         /// <summary>
-        /// Avro settings.
+        ///     Avro settings.
         /// </summary>
         [Serializable]
         public class AvroSettingsConfig
@@ -80,52 +80,55 @@ namespace com.espertech.esper.common.client.configuration.common
             private bool _enableAvro = true;
             private bool _enableNativeString = true;
             private bool _enableSchemaDefaultNonNull = true;
-            private string _typeRepresentationMapperClass;
             private string _objectValueTypeWidenerFactoryClass;
+            private string _typeRepresentationMapperClass;
 
             /// <summary>
-            /// Returns the indicator whether Avro support is enabled when available (true by default).
+            ///     Returns the indicator whether Avro support is enabled when available (true by default).
             /// </summary>
             /// <value>indicator</value>
             public bool IsEnableAvro {
                 get => _enableAvro;
-                set => this._enableAvro = value;
+                set => _enableAvro = value;
             }
 
             /// <summary>
-            /// Returns indicator whether for String-type values to use the "avro.java.string=String" (true by default)
+            ///     Returns indicator whether for String-type values to use the "avro.java.string=String" (true by default)
             /// </summary>
             /// <value>indicator</value>
             public bool IsEnableNativeString {
                 get => _enableNativeString;
-                set => this._enableNativeString = value;
+                set => _enableNativeString = value;
             }
 
             /// <summary>
-            /// Returns indicator whether generated schemas should assume non-null values (true by default)
+            ///     Returns indicator whether generated schemas should assume non-null values (true by default)
             /// </summary>
             /// <value>indicator</value>
             public bool IsEnableSchemaDefaultNonNull {
                 get => _enableSchemaDefaultNonNull;
-                set => this._enableSchemaDefaultNonNull = value;
+                set => _enableSchemaDefaultNonNull = value;
             }
 
             /// <summary>
-            /// Returns class name of mapping provider that maps types to an Avro schema; a mapper should implement <seealso cref="TypeRepresentationMapper" />(null by default, using default mapping)
+            ///     Returns class name of mapping provider that maps types to an Avro schema; a mapper should implement
+            ///     <seealso cref="TypeRepresentationMapper" />(null by default, using default mapping)
             /// </summary>
             /// <value>class name</value>
             public string TypeRepresentationMapperClass {
                 get => _typeRepresentationMapperClass;
-                set => this._typeRepresentationMapperClass = value;
+                set => _typeRepresentationMapperClass = value;
             }
 
             /// <summary>
-            /// Returns the class name of widening provider that widens, coerces or transforms object values to an Avro field value or record; a widener should implement <seealso cref="ObjectValueTypeWidenerFactory" />(null by default, using default widening)
+            ///     Returns the class name of widening provider that widens, coerces or transforms object values to an
+            ///     Avro field value or record; a widener should implement <seealso cref="ObjectValueTypeWidenerFactory" />
+            ///     (null by default, using default widening)
             /// </summary>
             /// <value>class name</value>
             public string ObjectValueTypeWidenerFactoryClass {
                 get => _objectValueTypeWidenerFactoryClass;
-                set => this._objectValueTypeWidenerFactoryClass = value;
+                set => _objectValueTypeWidenerFactoryClass = value;
             }
         }
     }

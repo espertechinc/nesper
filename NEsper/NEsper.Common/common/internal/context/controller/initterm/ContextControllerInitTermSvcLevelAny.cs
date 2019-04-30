@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.compat;
@@ -92,15 +93,16 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public ICollection<ContextControllerInitTermSvcEntry> EndDeleteByParentPath(IntSeqKey controllerPath)
         {
-            IList<ContextControllerInitTermSvcEntry> entries = new List<ContextControllerInitTermSvcEntry>();
-            var it = endConditions.GetEnumerator();
-            while (it.MoveNext()) {
-                var entry = it.Current;
-                if (controllerPath.IsParentTo(entry.Key)) {
-                    entries.Add(entry.Value);
-                    it.Remove();
-                }
-            }
+            var entries = new List<ContextControllerInitTermSvcEntry>();
+
+            endConditions
+                .Where(entry => controllerPath.IsParentTo(entry.Key))
+                .ToList()
+                .ForEach(
+                    entry => {
+                        entries.Add(entry.Value);
+                        endConditions.Remove(entry.Key);
+                    });
 
             return entries;
         }

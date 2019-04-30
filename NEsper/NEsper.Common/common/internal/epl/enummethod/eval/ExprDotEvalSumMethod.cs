@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public interface ExprDotEvalSumMethod
     {
-        void Enter(Object o);
+        void Enter(object o);
         object Value { get; }
     }
 }

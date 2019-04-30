@@ -52,13 +52,13 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
 
             IList<ExprEvaluator> filters = new List<ExprEvaluator>();
             foreach (string hint in hints) {
-                if (hint.Trim().IsEmpty()) {
+                if (string.IsNullOrWhiteSpace(hint)) {
                     continue;
                 }
 
                 ExprForge forge = ExcludePlanHintExprUtil.ToExpression(hint, rawInfo, services);
                 if (Boxing.GetBoxedType(forge.EvaluationType) != typeof(bool?)) {
-                    throw new ExprValidationException("Expression provided for hint " + HintEnum.EXCLUDE_PLAN.Value + " must return a boolean value");
+                    throw new ExprValidationException("Expression provided for hint " + HintEnum.EXCLUDE_PLAN + " must return a boolean value");
                 }
 
                 filters.Add(forge.ExprEvaluator);

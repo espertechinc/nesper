@@ -136,11 +136,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(
-                    Ref("node"), "setFilterSpec", LocalMethod(filterSpec.MakeCodegen(method, symbols, classScope)))
-                .ExprDotMethod(Ref("node"), "setEventAsName", Constant(EventAsName))
-                .ExprDotMethod(Ref("node"), "setConsumptionLevel", Constant(ConsumptionLevel))
-                .ExprDotMethod(Ref("node"), "setEventAsTagNumber", Constant(EventAsTagNumber));
+                .SetProperty(Ref("node"), "FilterSpec", LocalMethod(filterSpec.MakeCodegen(method, symbols, classScope)))
+                .SetProperty(Ref("node"), "EventAsName", Constant(EventAsName))
+                .SetProperty(Ref("node"), "ConsumptionLevel", Constant(ConsumptionLevel))
+                .SetProperty(Ref("node"), "EventAsTagNumber", Constant(EventAsTagNumber));
         }
 
         public override void CollectSelfFilterAndSchedule(

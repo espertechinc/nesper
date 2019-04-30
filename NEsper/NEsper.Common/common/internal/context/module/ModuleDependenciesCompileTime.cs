@@ -126,16 +126,16 @@ namespace com.espertech.esper.common.@internal.context.module
             var method = parent.MakeChild(typeof(ModuleDependenciesRuntime), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(ModuleDependenciesRuntime), "md", NewInstance(typeof(ModuleDependenciesRuntime)))
-                .ExprDotMethod(Ref("md"), "setPathEventTypes", NameAndModule.MakeArray(pathEventTypes))
-                .ExprDotMethod(Ref("md"), "setPathNamedWindows", NameAndModule.MakeArray(pathNamedWindows))
-                .ExprDotMethod(Ref("md"), "setPathTables", NameAndModule.MakeArray(pathTables))
-                .ExprDotMethod(Ref("md"), "setPathVariables", NameAndModule.MakeArray(pathVariables))
-                .ExprDotMethod(Ref("md"), "setPathContexts", NameAndModule.MakeArray(pathContexts))
-                .ExprDotMethod(Ref("md"), "setPathExpressions", NameAndModule.MakeArray(pathExpressions))
-                .ExprDotMethod(Ref("md"), "setPathIndexes", ModuleIndexMeta.MakeArray(pathIndexes))
-                .ExprDotMethod(Ref("md"), "setPathScripts", NameParamNumAndModule.MakeArray(pathScripts))
-                .ExprDotMethod(Ref("md"), "setPublicEventTypes", Constant(publicEventTypes.ToArray()))
-                .ExprDotMethod(Ref("md"), "setPublicVariables", Constant(publicVariables.ToArray()))
+                .SetProperty(Ref("md"), "PathEventTypes", NameAndModule.MakeArray(pathEventTypes))
+                .SetProperty(Ref("md"), "PathNamedWindows", NameAndModule.MakeArray(pathNamedWindows))
+                .SetProperty(Ref("md"), "PathTables", NameAndModule.MakeArray(pathTables))
+                .SetProperty(Ref("md"), "PathVariables", NameAndModule.MakeArray(pathVariables))
+                .SetProperty(Ref("md"), "PathContexts", NameAndModule.MakeArray(pathContexts))
+                .SetProperty(Ref("md"), "PathExpressions", NameAndModule.MakeArray(pathExpressions))
+                .SetProperty(Ref("md"), "PathIndexes", ModuleIndexMeta.MakeArray(pathIndexes))
+                .SetProperty(Ref("md"), "PathScripts", NameParamNumAndModule.MakeArray(pathScripts))
+                .SetProperty(Ref("md"), "PublicEventTypes", Constant(publicEventTypes.ToArray()))
+                .SetProperty(Ref("md"), "PublicVariables", Constant(publicVariables.ToArray()))
                 .MethodReturn(Ref("md"));
             return LocalMethod(method);
         }

@@ -22,11 +22,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
         }
 
         public static CodegenExpression AddCodegenCalendar(
-            CodegenExpression cal,
+            CodegenExpression dtx,
             CodegenExpression value,
             int unit)
         {
-            return ExprDotMethod(cal, "add", Constant(unit), value);
+            return ExprDotMethod(dtx, "add", Constant(unit), value);
         }
 
         public static CodegenExpression MakeArray(

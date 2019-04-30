@@ -7,37 +7,38 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.client.hook.condition
 {
     /// <summary>
-    /// Indicates that on the engine level the match-recognize has reached the configured engine-wide limit at runtime.
+    ///     Indicates that on the engine level the match-recognize has reached the configured engine-wide limit at runtime.
     /// </summary>
     public class ConditionMatchRecognizeStatesMax : BaseCondition
     {
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="max">limit reached</param>
         /// <param name="counts">the number of state counts per statement</param>
         public ConditionMatchRecognizeStatesMax(
             long max,
-            IDictionary<string, long> counts)
+            IDictionary<DeploymentIdNamePair, long> counts)
         {
             Max = max;
             Counts = counts;
         }
 
         /// <summary>
-        /// Returns the limit reached.
+        ///     Returns the limit reached.
         /// </summary>
         /// <value>limit</value>
-        public long Max { get; private set; }
+        public long Max { get; }
 
         /// <summary>
-        /// Returns the per-statement count.
+        ///     Returns the per-statement count.
         /// </summary>
         /// <value>count</value>
-        public IDictionary<string, long> Counts { get; private set; }
+        public IDictionary<DeploymentIdNamePair, long> Counts { get; }
     }
 } // end of namespace

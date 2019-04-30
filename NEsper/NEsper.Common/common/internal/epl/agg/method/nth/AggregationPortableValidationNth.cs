@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(@ref, "setSize", Constant(size));
+            method.Block.SetProperty(@ref, "Size", Constant(size));
         }
 
         protected override void ValidateIntoTableWFilterWInputType(

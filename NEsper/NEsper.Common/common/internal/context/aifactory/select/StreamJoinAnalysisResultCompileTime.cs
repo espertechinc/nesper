@@ -169,11 +169,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block
                 .DeclareVar(
                     typeof(StreamJoinAnalysisResultRuntime), "ar", NewInstance(typeof(StreamJoinAnalysisResultRuntime)))
-                .ExprDotMethod(Ref("ar"), "setPureSelfJoin", Constant(IsPureSelfJoin))
-                .ExprDotMethod(Ref("ar"), "setUnidirectional", Constant(UnidirectionalInd))
-                .ExprDotMethod(Ref("ar"), "setUnidirectionalNonDriving", Constant(unidirectionalNonDriving))
-                .ExprDotMethod(Ref("ar"), "setNamedWindows", MakeNamedWindows(method, symbols))
-                .ExprDotMethod(Ref("ar"), "setTables", MakeTables(method, symbols))
+                .SetProperty(Ref("ar"), "PureSelfJoin", Constant(IsPureSelfJoin))
+                .SetProperty(Ref("ar"), "Unidirectional", Constant(UnidirectionalInd))
+                .SetProperty(Ref("ar"), "UnidirectionalNonDriving", Constant(unidirectionalNonDriving))
+                .SetProperty(Ref("ar"), "NamedWindows", MakeNamedWindows(method, symbols))
+                .SetProperty(Ref("ar"), "Tables", MakeTables(method, symbols))
                 .MethodReturn(Ref("ar"));
             return LocalMethod(method);
         }

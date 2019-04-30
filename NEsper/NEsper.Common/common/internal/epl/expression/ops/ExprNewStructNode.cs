@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            var eventType = new LinkedHashMap<object, object>();
+            var eventType = new LinkedHashMap<string, object>();
 
             var isAllConstants = false;
             for (var i = 0; i < ColumnNames.Length; i++) {

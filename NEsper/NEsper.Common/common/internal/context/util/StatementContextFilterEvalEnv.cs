@@ -15,38 +15,24 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public class StatementContextFilterEvalEnv
     {
-        private readonly ImportServiceRuntime _importServiceRuntime;
-        private readonly Attribute[] annotations;
-        private readonly VariableManagementService variableManagementService;
-        private readonly TableExprEvaluatorContext tableExprEvaluatorContext;
-
         public StatementContextFilterEvalEnv(
             ImportServiceRuntime importServiceRuntime,
             Attribute[] annotations,
             VariableManagementService variableManagementService,
             TableExprEvaluatorContext tableExprEvaluatorContext)
         {
-            this._importServiceRuntime = importServiceRuntime;
-            this.annotations = annotations;
-            this.variableManagementService = variableManagementService;
-            this.tableExprEvaluatorContext = tableExprEvaluatorContext;
+            ImportServiceRuntime = importServiceRuntime;
+            Annotations = annotations;
+            VariableManagementService = variableManagementService;
+            TableExprEvaluatorContext = tableExprEvaluatorContext;
         }
 
-        public ImportServiceRuntime ImportServiceRuntime {
-            get => _importServiceRuntime;
-        }
+        public ImportServiceRuntime ImportServiceRuntime { get; }
 
-        public Attribute[] GetAnnotations()
-        {
-            return annotations;
-        }
+        public Attribute[] Annotations { get; }
 
-        public TableExprEvaluatorContext TableExprEvaluatorContext {
-            get => tableExprEvaluatorContext;
-        }
+        public TableExprEvaluatorContext TableExprEvaluatorContext { get; }
 
-        public VariableManagementService VariableManagementService {
-            get => variableManagementService;
-        }
+        public VariableManagementService VariableManagementService { get; }
     }
 } // end of namespace

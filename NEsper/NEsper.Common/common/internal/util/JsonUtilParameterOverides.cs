@@ -12,6 +12,6 @@ namespace com.espertech.esper.common.@internal.util
 {
     public interface JsonUtilParameterOverides
     {
-        Object GetValue(String parameterName);
+        object GetValue(string parameterName);
     }
 }

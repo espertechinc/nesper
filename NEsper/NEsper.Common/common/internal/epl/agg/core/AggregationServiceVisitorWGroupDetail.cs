@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         void VisitGrouped(int numGroups);
 
         void VisitGroup(
-            Object groupKey,
+            object groupKey,
             params object[] state);
     }
 }

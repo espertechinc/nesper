@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     [Serializable]
     public sealed class ObjectComparator
-        : IComparer<Object>
+        : IComparer<object>
     {
         private readonly bool _isDescendingValue;
 
@@ -28,10 +28,10 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         public int Compare(
-            Object firstValue,
-            Object secondValue)
+            object firstValue,
+            object secondValue)
         {
-            return MultiKeyComparator.CompareValues(firstValue, secondValue, _isDescendingValue);
+            return CollectionUtil.CompareValues(firstValue, secondValue, _isDescendingValue);
         }
     }
 }

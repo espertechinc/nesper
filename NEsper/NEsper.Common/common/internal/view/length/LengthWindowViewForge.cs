@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.length
         {
             CodegenExpressionNewAnonymousClass sizeEval = ExprNodeUtilityCodegen
                 .CodegenEvaluator(sizeForge, method, this.GetType(), classScope);
-            method.Block.ExprDotMethod(factory, "setSize", sizeEval);
+            method.Block.SetProperty(factory, "Size", sizeEval);
         }
     }
 } // end of namespace

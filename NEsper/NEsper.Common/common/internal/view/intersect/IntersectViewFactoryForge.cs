@@ -87,10 +87,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(factory, "setBatchViewIndex", Constant(batchViewIndex))
-                .ExprDotMethod(factory, "setHasAsymetric", Constant(hasAsymetric))
-                .ExprDotMethod(
-                    factory, "setIntersecteds", LocalMethod(
+                .SetProperty(factory, "BatchViewIndex", Constant(batchViewIndex))
+                .SetProperty(factory, "HasAsymetric", Constant(hasAsymetric))
+                .SetProperty(factory, "Intersecteds", LocalMethod(
                         MakeViewFactories(intersected, this.GetType(), method, classScope, symbols)));
         }
 

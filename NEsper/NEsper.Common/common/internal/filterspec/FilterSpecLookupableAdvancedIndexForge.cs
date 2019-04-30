@@ -72,12 +72,12 @@ namespace com.espertech.esper.common.@internal.filterspec
                     typeof(FilterSpecLookupableAdvancedIndex), "lookupable", NewInstance(
                         typeof(FilterSpecLookupableAdvancedIndex),
                         Constant(expression), ConstantNull(), EnumValue(returnType, "class")))
-                .ExprDotMethod(Ref("lookupable"), "setQuadTreeConfig", QuadTreeConfig.Make())
-                .ExprDotMethod(Ref("lookupable"), "setX", toEval.Invoke(x))
-                .ExprDotMethod(Ref("lookupable"), "setY", toEval.Invoke(y))
-                .ExprDotMethod(Ref("lookupable"), "setWidth", toEval.Invoke(width))
-                .ExprDotMethod(Ref("lookupable"), "setHeight", toEval.Invoke(height))
-                .ExprDotMethod(Ref("lookupable"), "setIndexType", Constant(IndexType))
+                .SetProperty(Ref("lookupable"), "QuadTreeConfig", QuadTreeConfig.Make())
+                .SetProperty(Ref("lookupable"), "X", toEval.Invoke(x))
+                .SetProperty(Ref("lookupable"), "Y", toEval.Invoke(y))
+                .SetProperty(Ref("lookupable"), "Width", toEval.Invoke(width))
+                .SetProperty(Ref("lookupable"), "Height", toEval.Invoke(height))
+                .SetProperty(Ref("lookupable"), "IndexType", Constant(IndexType))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY).Add(

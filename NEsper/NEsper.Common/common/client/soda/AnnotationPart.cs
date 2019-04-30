@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.client.soda
             if (Attributes.Count == 1) {
                 if (Attributes[0].Name == null || Attributes[0].Name.Equals("value")) {
                     writer.Write("(");
-                    ToEPL(writer, Attributes[0].DefaultValue);
+                    ToEPL(writer, Attributes[0].Value);
                     writer.Write(")");
                     return;
                 }
@@ -149,14 +149,14 @@ namespace com.espertech.esper.common.client.soda
             var delimiter = "";
             writer.Write("(");
             foreach (var attribute in Attributes) {
-                if (attribute.DefaultValue == null) {
+                if (attribute.Value == null) {
                     return;
                 }
 
                 writer.Write(delimiter);
                 writer.Write(attribute.Name);
                 writer.Write("=");
-                ToEPL(writer, attribute.DefaultValue);
+                ToEPL(writer, attribute.Value);
                 delimiter = ",";
             }
 

@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 .DeclareVar(
                     typeof(QueryGraphValueEntryCustomOperation), "op",
                     NewInstance(typeof(QueryGraphValueEntryCustomOperation)))
-                .ExprDotMethod(Ref("op"), "setPositionalExpressions", Ref("map"))
+                .SetProperty(Ref("op"), "PositionalExpressions", Ref("map"))
                 .MethodReturn(Ref("op"));
             return LocalMethod(method);
         }

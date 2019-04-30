@@ -61,17 +61,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 .DeclareVar(
                     typeof(StatementAgentInstanceFactoryCreateTable), "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryCreateTable)))
-                .ExprDotMethod(Ref("saiff"), "setTableName", Constant(tableName))
-                .ExprDotMethod(
-                    Ref("saiff"), "setPublicEventType",
+                .SetProperty(Ref("saiff"), "TableName", Constant(tableName))
+                .SetProperty(Ref("saiff"), "PublicEventType",
                     EventTypeUtility.ResolveTypeCodegen(plan.PublicEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("saiff"), "setEventToPublic", MakeEventToPublic(method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("saiff"), "setAggregationRowFactory",
+                .SetProperty(Ref("saiff"), "EventToPublic", MakeEventToPublic(method, symbols, classScope))
+                .SetProperty(Ref("saiff"), "AggregationRowFactory",
                     NewInstance(aggregationClassNames.RowFactoryTop, Ref("this")))
-                .ExprDotMethod(
-                    Ref("saiff"), "setAggregationSerde", NewInstance(aggregationClassNames.RowSerdeTop, Ref("this")))
-                .ExprDotMethod(Ref("saiff"), "setPrimaryKeyGetter", primaryKeyGetter)
+                .SetProperty(Ref("saiff"), "AggregationSerde", NewInstance(aggregationClassNames.RowSerdeTop, Ref("this")))
+                .SetProperty(Ref("saiff"), "PrimaryKeyGetter", primaryKeyGetter)
                 .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", Ref("saiff"))
                 .MethodReturn(Ref("saiff"));
             return method;

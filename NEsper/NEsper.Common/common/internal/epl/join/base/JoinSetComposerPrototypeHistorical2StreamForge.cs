@@ -66,20 +66,17 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(Ref("impl"), "setPolledNum", Constant(polledNum))
-                .ExprDotMethod(Ref("impl"), "setStreamNum", Constant(streamNum))
-                .ExprDotMethod(
-                    Ref("impl"), "setOuterJoinEqualsEval",
+                .SetProperty(Ref("impl"), "PolledNum", Constant(polledNum))
+                .SetProperty(Ref("impl"), "StreamNum", Constant(streamNum))
+                .SetProperty(Ref("impl"), "OuterJoinEqualsEval",
                     outerJoinEqualsEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
                             outerJoinEqualsEval.Forge, method, GetType(), classScope))
-                .ExprDotMethod(
-                    Ref("impl"), "setLookupStrategy", historicalIndexLookupStrategy.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("impl"), "setIndexingStrategy", pollResultIndexingStrategy.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("impl"), "setAllHistoricalNoSubordinate", Constant(isAllHistoricalNoSubordinate))
-                .ExprDotMethod(Ref("impl"), "setOuterJoinPerStream", Constant(outerJoinPerStream));
+                .SetProperty(Ref("impl"), "LookupStrategy", historicalIndexLookupStrategy.Make(method, symbols, classScope))
+                .SetProperty(Ref("impl"), "IndexingStrategy", pollResultIndexingStrategy.Make(method, symbols, classScope))
+                .SetProperty(Ref("impl"), "AllHistoricalNoSubordinate", Constant(isAllHistoricalNoSubordinate))
+                .SetProperty(Ref("impl"), "OuterJoinPerStream", Constant(outerJoinPerStream));
         }
     }
 } // end of namespace

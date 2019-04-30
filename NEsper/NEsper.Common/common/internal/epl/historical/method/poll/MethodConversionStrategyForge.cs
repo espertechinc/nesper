@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             CodegenMethod method = parent.MakeChild(implementation, this.GetType(), classScope);
             method.Block
                 .DeclareVar(implementation, "conv", NewInstance(implementation))
-                .ExprDotMethod(@Ref("conv"), "setEventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(Ref("conv"), "EventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(@Ref("conv"));
             return LocalMethod(method);
         }

@@ -14,18 +14,16 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class AnnotationEventRepresentation : EventRepresentationAttribute
     {
-        private readonly EventUnderlyingType value;
+        private readonly EventUnderlyingType _value;
 
         public AnnotationEventRepresentation(EventUnderlyingType value)
         {
-            this.value = value;
+            _value = value;
         }
 
-        public override EventUnderlyingType Value {
-            get { return value; }
-        }
+        public override EventUnderlyingType Value => _value;
 
-        public T AnnotationType<T>() where T : Attribute
+        public Type AnnotationType()
         {
             return typeof(EventRepresentationAttribute);
         }

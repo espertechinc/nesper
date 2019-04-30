@@ -127,9 +127,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 return ConstantNull();
             }
 
-            var svc = codegenClassScope.PackageScope.AddOrGetFieldSharable(
+            var svc = codegenClassScope.NamespaceScope.AddOrGetFieldSharable(
                 EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var type = codegenClassScope.PackageScope.AddFieldUnshared(
+            var type = codegenClassScope.NamespaceScope.AddFieldUnshared(
                 true, typeof(BeanEventType),
                 Cast(
                     typeof(BeanEventType),

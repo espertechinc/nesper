@@ -63,25 +63,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 .DeclareVar(typeof(StatementAgentInstanceFactoryCreateNW), "saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateNW)));
 
             method.Block
-                .ExprDotMethod(@Ref("saiff"), "setActivator", activator.MakeCodegen(method, symbols, classScope))
-                .ExprDotMethod(@Ref("saiff"), "setNamedWindowName", Constant(namedWindowName))
-                .ExprDotMethod(
-                    @Ref("saiff"), "setViewFactories", ViewFactoryForgeUtil.CodegenForgesWInit(views, 0, null, method, symbols, classScope))
-                .ExprDotMethod(
-                    @Ref("saiff"), "setInsertFromNamedWindow",
+                .SetProperty(Ref("saiff"), "Activator", activator.MakeCodegen(method, symbols, classScope))
+                .SetProperty(Ref("saiff"), "NamedWindowName", Constant(namedWindowName))
+                .SetProperty(Ref("saiff"), "ViewFactories", ViewFactoryForgeUtil.CodegenForgesWInit(views, 0, null, method, symbols, classScope))
+                .SetProperty(Ref("saiff"), "InsertFromNamedWindow",
                     insertFromNamedWindow == null
                         ? ConstantNull()
                         : NamedWindowDeployTimeResolver.MakeResolveNamedWindow(insertFromNamedWindow, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    @Ref("saiff"), "setInsertFromFilter",
+                .SetProperty(Ref("saiff"), "InsertFromFilter",
                     insertFromFilter == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(insertFromFilter.Forge, method, this.GetType(), classScope))
-                .ExprDotMethod(
-                    @Ref("saiff"), "setAsEventType",
+                .SetProperty(Ref("saiff"), "AsEventType",
                     asEventType == null ? ConstantNull() : EventTypeUtility.ResolveTypeCodegen(asEventType, EPStatementInitServicesConstants.REF))
-                .ExprDotMethod(
-                    @Ref("saiff"), "setResultSetProcessorFactoryProvider",
+                .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider",
                     CodegenExpressionBuilder.NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)))
                 .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", @Ref("saiff"));
 

@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.client.variable
     {
         /// <summary>Ctor. </summary>
         /// <param name="message">supplies exception details</param>
-        public VariableConstantValueException(String message)
+        public VariableConstantValueException(string message)
             : base(message)
         {
         }

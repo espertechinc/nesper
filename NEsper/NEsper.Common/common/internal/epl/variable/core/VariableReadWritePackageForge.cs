@@ -200,13 +200,12 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             var @ref = Ref("rw");
             method.Block
                 .DeclareVar(typeof(VariableReadWritePackage), @ref.Ref, NewInstance(typeof(VariableReadWritePackage)))
-                .ExprDotMethod(@ref, "setCopyMethods", MakeCopyMethods(copyMethods, method, symbols, classScope))
-                .ExprDotMethod(@ref, "setAssignments", MakeAssignments(assignments, method, symbols, classScope))
-                .ExprDotMethod(@ref, "setVariables", MakeVariables(variables, method, symbols, classScope))
-                .ExprDotMethod(@ref, "setWriters", MakeWriters(writers, method, symbols, classScope))
-                .ExprDotMethod(
-                    @ref, "setReadersForGlobalVars", MakeReadersForGlobalVars(variables, method, symbols, classScope))
-                .ExprDotMethod(@ref, "setMustCoerce", Constant(mustCoerce))
+                .SetProperty(@ref, "CopyMethods", MakeCopyMethods(copyMethods, method, symbols, classScope))
+                .SetProperty(@ref, "Assignments", MakeAssignments(assignments, method, symbols, classScope))
+                .SetProperty(@ref, "Variables", MakeVariables(variables, method, symbols, classScope))
+                .SetProperty(@ref, "Writers", MakeWriters(writers, method, symbols, classScope))
+                .SetProperty(@ref, "ReadersForGlobalVars", MakeReadersForGlobalVars(variables, method, symbols, classScope))
+                .SetProperty(@ref, "MustCoerce", Constant(mustCoerce))
                 .MethodReturn(@ref);
             return LocalMethod(method);
         }

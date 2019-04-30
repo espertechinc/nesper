@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             method.Block
                 .DeclareVar(
                     typeof(QueryGraphValueEntryCustom), "custom", NewInstance(typeof(QueryGraphValueEntryCustom)))
-                .ExprDotMethod(Ref("custom"), "setOperations", map)
+                .SetProperty(Ref("custom"), "Operations", map)
                 .MethodReturn(Ref("custom"));
             return LocalMethod(method);
         }

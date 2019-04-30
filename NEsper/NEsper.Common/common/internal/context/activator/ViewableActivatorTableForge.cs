@@ -37,11 +37,9 @@ namespace com.espertech.esper.common.@internal.context.activator
             var method = parent.MakeChild(typeof(ViewableActivatorTable), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(ViewableActivatorTable), "va", NewInstance(typeof(ViewableActivatorTable)))
-                .ExprDotMethod(
-                    Ref("va"), "setTable",
+                .SetProperty(Ref("va"), "Table",
                     TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    Ref("va"), "setFilterEval",
+                .SetProperty(Ref("va"), "FilterEval",
                     optionalFilterExpression == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(

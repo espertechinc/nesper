@@ -37,11 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
 
-            CodegenMethod method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
-            CodegenExpressionRef evalCtx = symbols.GetAddExprEvalCtx(method);
+            var method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
+            var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
                 .DeclareVar(typeof(int), "cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
@@ -49,8 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     typeof(ICollection<object>), "groupKeys", ExprDotMethod(aggService, "getGroupKeys", evalCtx))
                 .IfCondition(Not(EqualsIdentity(ExprDotMethod(@Ref("groupKeys"), "size"), Constant(1))))
                 .BlockReturn(ConstantNull())
-                .ExprDotMethod(
-                    aggService, "setCurrentAccess", ExprDotMethodChain(@Ref("groupKeys")).Add("iterator").Add("next"),
+                .ExprDotMethod(aggService, "SetCurrentAccess", ExprDotMethodChain(@Ref("groupKeys")).Add("iterator").Add("next"),
                     @Ref("cpid"), ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                 .AssignArrayElement(
@@ -59,13 +58,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         typeof(EventBeanUtility), "getNonemptyFirstEvent", symbols.GetAddMatchingEvents(method)));
 
             if (subselect.SelectClause.Length == 1) {
-                CodegenMethod eval = CodegenLegoMethodExpression.CodegenExpression(
+                var eval = CodegenLegoMethodExpression.CodegenExpression(
                     subselect.SelectClause[0].Forge, method, classScope);
                 method.Block.MethodReturn(
                     LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)));
             }
             else {
-                CodegenMethod methodSelect = ExprNodeUtilityCodegen.CodegenMapSelect(
+                var methodSelect = ExprNodeUtilityCodegen.CodegenMapSelect(
                     subselect.SelectClause, subselect.SelectAsNames, this.GetType(), method, classScope);
                 CodegenExpression select = LocalMethod(
                     methodSelect, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method));
@@ -80,14 +79,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
+            var aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
 
-            CodegenMethod method = parent.MakeChild(typeof(ICollection<object>), this.GetType(), classScope);
-            CodegenExpressionRef evalCtx = symbols.GetAddExprEvalCtx(method);
-            CodegenExpressionField eventBeanSvc =
+            var method = parent.MakeChild(typeof(ICollection<object>), this.GetType(), classScope);
+            var evalCtx = symbols.GetAddExprEvalCtx(method);
+            var eventBeanSvc =
                 classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            CodegenExpressionField typeMember = classScope.AddFieldUnshared(
+            var typeMember = classScope.AddFieldUnshared(
                 true, typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(
                     subselect.subselectMultirowType, EPStatementInitServicesConstants.REF));
@@ -105,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     typeof(ICollection<object>), "events",
                     NewInstance(typeof(ArrayDeque<object>), ExprDotMethod(@Ref("groupKeys"), "size")))
                 .ForEach(typeof(object), "groupKey", @Ref("groupKeys"))
-                .ExprDotMethod(aggService, "setCurrentAccess", @Ref("groupKey"), @Ref("cpid"), ConstantNull())
+                .ExprDotMethod(aggService, "SetCurrentAccess", @Ref("groupKey"), @Ref("cpid"), ConstantNull())
                 .DeclareVar(
                     typeof(IDictionary<object, object>), "row",
                     LocalMethod(

@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             return bindings.Where(binding => binding.LogicalChannel.OutputPort.ProducingOpNum == producerOpNum).ToList();
         }
 
-        public static String PrintChannels(IList<LogicalChannel> channels)
+        public static string PrintChannels(IList<LogicalChannel> channels)
         {
             var writer = new StringWriter();
             writer.Write("\n");
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
         public static List<LogicalChannelProducingPortCompiled> GetOutputPortByStreamName(
             ICollection<int> incomingOpNums,
-            String[] inputStreamNames,
+            string[] inputStreamNames,
             IDictionary<int, IList<LogicalChannelProducingPortCompiled>> compiledOutputPorts)
         {
             var ports = new List<LogicalChannelProducingPortCompiled>();

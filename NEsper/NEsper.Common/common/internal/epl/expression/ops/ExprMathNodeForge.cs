@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .Qparam(Constant(parent.MathArithTypeEnum.ExpressionText)).Build();
         }
 
-        private MathArithTypeEnum.Computer ArithTypeEnumComputer {
+        internal MathArithTypeEnum.Computer ArithTypeEnumComputer {
             get { return arithTypeEnumComputer; }
         }
 

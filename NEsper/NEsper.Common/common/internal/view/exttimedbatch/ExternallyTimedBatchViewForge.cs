@@ -102,10 +102,9 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
         {
             method.Block
                 .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setOptionalReferencePoint", Constant(optionalReferencePoint))
-                .ExprDotMethod(
-                    factory, "setTimestampEval",
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "OptionalReferencePoint", Constant(optionalReferencePoint))
+                .SetProperty(factory, "TimestampEval",
                     CodegenEvaluator(timestampExpression.Forge, method, GetType(), classScope));
         }
     }

@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             method.Block
                 .DeclareVar(
                     typeof(EventBean[]), "result", LocalMethod(select, Constant(true), ConstantTrue(), ConstantTrue()))
-                .MethodReturn(NewInstance(typeof(ArrayEventIterator), Ref("result")));
+                .MethodReturn(NewInstance(typeof(ArrayEventEnumerator), Ref("result")));
         }
 
         public static void ClearCodegen(CodegenMethod method)

@@ -53,9 +53,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(saiff, "setVariableReadWrite", variableReadWrite.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    saiff, "setResultSetProcessorFactoryProvider",
+                .SetProperty(saiff, "VariableReadWrite", variableReadWrite.Make(method, symbols, classScope))
+                .SetProperty(saiff, "ResultSetProcessorFactoryProvider",
                     NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)));
         }
     }

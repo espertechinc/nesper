@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(@ref, "setFunctionName", Constant(functionName));
+            method.Block.SetProperty(@ref, "FunctionName", Constant(functionName));
         }
 
         protected override void ValidateIntoTable(

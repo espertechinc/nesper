@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.view.unique
             if (newData != null && newData.Length == 1 && (oldData == null || oldData.Length == 0)) {
                 // Shortcut
                 var key = GetUniqueKey(newData[0]);
-                EventBean lastValue = mostRecentEvents.Put(key, newData[0]);
+                var lastValue = mostRecentEvents.Push(key, newData[0]);
                 if (child != null) {
                     var oldDataToPost = lastValue == null ? null : new[] {lastValue};
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newData, oldDataToPost);

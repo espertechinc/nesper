@@ -6,10 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,8 +18,8 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
@@ -53,22 +53,27 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             Serializer[] serializers)
         {
             byte[] bytes;
-            try {
-                if (objectMayArray is object[]) {
+            try
+            {
+                if (objectMayArray is object[])
+                {
                     bytes = SerializerFactory.Serialize(serializers, (object[]) objectMayArray);
                 }
-                else {
+                else
+                {
                     bytes = SerializerFactory.Serialize(serializers[0], objectMayArray);
                 }
             }
-            catch (IOException e) {
+            catch (IOException e)
+            {
                 Log.Error("Exception serializing parameters for computing consistent hash: " + e.Message, e);
                 bytes = new byte[0];
             }
 
             long value = ByteExtensions.GetCrc32(bytes);
             int result = (int) value;
-            if (result >= 0) {
+            if (result >= 0)
+            {
                 return result;
             }
 
@@ -97,20 +102,24 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 .MakeChildWithScope(typeof(object), typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
             CodegenExpression[] expressions = new CodegenExpression[nodes.Length];
-            for (int i = 0; i < nodes.Length; i++) {
+            for (int i = 0; i < nodes.Length; i++)
+            {
                 expressions[i] = nodes[i].Forge.EvaluateCodegen(
                     nodes[i].Forge.EvaluationType, exprMethod, exprSymbol, classScope);
             }
 
             exprSymbol.DerivedSymbolsCodegen(method, exprMethod.Block, classScope);
 
-            if (nodes.Length == 1) {
+            if (nodes.Length == 1)
+            {
                 exprMethod.Block.MethodReturn(expressions[0]);
             }
-            else {
+            else
+            {
                 exprMethod.Block.DeclareVar(
                     typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(nodes.Length)));
-                for (int i = 0; i < nodes.Length; i++) {
+                for (int i = 0; i < nodes.Length; i++)
+                {
                     CodegenExpression result = expressions[i];
                     exprMethod.Block.AssignArrayElement("values", Constant(i), result);
                 }

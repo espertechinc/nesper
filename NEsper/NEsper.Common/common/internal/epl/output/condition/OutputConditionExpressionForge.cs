@@ -113,34 +113,29 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY)
                         .Add("makeOutputConditionExpression"))
-                .ExprDotMethod(
-                    Ref("factory"), "setWhenExpressionNodeEval",
+                .SetProperty(Ref("factory"), "WhenExpressionNodeEval",
                     ExprNodeUtilityCodegen.CodegenEvaluator(
                         whenExpressionNodeEval.Forge, method, GetType(), classScope))
-                .ExprDotMethod(
-                    Ref("factory"), "setAndWhenTerminatedExpressionNodeEval",
+                .SetProperty(Ref("factory"), "AndWhenTerminatedExpressionNodeEval",
                     andWhenTerminatedExpressionNodeEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
                             andWhenTerminatedExpressionNodeEval.Forge, method, GetType(), classScope))
-                .ExprDotMethod(Ref("factory"), "setUsingBuiltinProperties", Constant(isUsingBuiltinProperties))
-                .ExprDotMethod(
-                    Ref("factory"), "setVariableReadWritePackage",
+                .SetProperty(Ref("factory"), "UsingBuiltinProperties", Constant(isUsingBuiltinProperties))
+                .SetProperty(Ref("factory"), "VariableReadWritePackage",
                     variableReadWritePackage == null
                         ? ConstantNull()
                         : variableReadWritePackage.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("factory"), "setVariableReadWritePackageAfterTerminated",
+                .SetProperty(Ref("factory"), "VariableReadWritePackageAfterTerminated",
                     variableReadWritePackageAfterTerminated == null
                         ? ConstantNull()
                         : variableReadWritePackageAfterTerminated.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("factory"), "setVariables",
+                .SetProperty(Ref("factory"), "Variables",
                     variableNames == null
                         ? ConstantNull()
                         : VariableDeployTimeResolver.MakeResolveVariables(
                             variableNames.Values, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("factory"), "setScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("factory")))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

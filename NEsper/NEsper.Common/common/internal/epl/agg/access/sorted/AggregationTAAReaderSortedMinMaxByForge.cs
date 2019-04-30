@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenMethod method = parent.MakeChild(typeof(AggregationTAAReaderSortedMinMaxBy), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(AggregationTAAReaderSortedMinMaxBy), "strat", NewInstance(typeof(AggregationTAAReaderSortedMinMaxBy)))
-                .ExprDotMethod(@Ref("strat"), "setMax", Constant(max))
+                .SetProperty(Ref("strat"), "Max", Constant(max))
                 .MethodReturn(@Ref("strat"));
             return LocalMethod(method);
         }

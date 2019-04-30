@@ -350,28 +350,28 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 viewResourceDelegateDesc, whereClauseForge, joinForge, outputProcessViewProviderClassName,
                 subselectForges, tableAccessForges, orderByWithoutOutputLimit, joinAnalysisResult.IsUnidirectional);
 
-            var packageScope = new CodegenPackageScope(packageName, statementFieldsClassName, services.IsInstrumented);
+            var namespaceScope = new CodegenNamespaceScope(packageName, statementFieldsClassName, services.IsInstrumented);
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
 
             forgables.Add(
                 new StmtClassForgableRSPFactoryProvider(
-                    resultSetProcessorProviderClassName, resultSetProcessorDesc, packageScope, @base.StatementRawInfo));
+                    resultSetProcessorProviderClassName, resultSetProcessorDesc, namespaceScope, @base.StatementRawInfo));
             forgables.Add(
                 new StmtClassForgableOPVFactoryProvider(
-                    outputProcessViewProviderClassName, outputProcessViewFactoryForge, packageScope, numStreams,
+                    outputProcessViewProviderClassName, outputProcessViewFactoryForge, namespaceScope, numStreams,
                     @base.StatementRawInfo));
             forgables.Add(
-                new StmtClassForgableAIFactoryProviderSelect(statementAIFactoryProviderClassName, packageScope, forge));
+                new StmtClassForgableAIFactoryProviderSelect(statementAIFactoryProviderClassName, namespaceScope, forge));
             forgables.Add(
-                new StmtClassForgableStmtFields(packageScope.FieldsClassNameOptional, packageScope, numStreams));
+                new StmtClassForgableStmtFields(namespaceScope.FieldsClassNameOptional, namespaceScope, numStreams));
 
             if (!dataflowOperator) {
                 var informationals = StatementInformationalsUtil.GetInformationals(
                     @base, filterSpecCompileds, scheduleHandleCallbackProviders, namedWindowConsumers, true,
-                    resultSetProcessorDesc.SelectSubscriberDescriptor, packageScope, services);
+                    resultSetProcessorDesc.SelectSubscriberDescriptor, namespaceScope, services);
                 forgables.Add(
                     new StmtClassForgableStmtProvider(
-                        statementAIFactoryProviderClassName, statementProviderClassName, informationals, packageScope));
+                        statementAIFactoryProviderClassName, statementProviderClassName, informationals, namespaceScope));
             }
 
             var forgableResult = new StmtForgeMethodResult(

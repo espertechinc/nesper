@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .DeclareVar(
                     typeof(ExprFilterSpecLookupable), "lookupable",
                     LocalMethod(methodLookupableMake, Ref("eventType"), symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("item"), "setFilterSpecActivatable", LocalMethod(FilterSpecCompiled.MakeCodegen(method, symbols, classScope)))
-                .ExprDotMethod(Ref("item"), "setLookupable", Ref("lookupable"))
+                .SetProperty(Ref("item"), "FilterSpecActivatable", LocalMethod(FilterSpecCompiled.MakeCodegen(method, symbols, classScope)))
+                .SetProperty(Ref("item"), "Lookupable", Ref("lookupable"))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
                         .Add("registerLookupable", Ref("eventType"), Ref("lookupable")))

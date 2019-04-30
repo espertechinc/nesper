@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.type
         public static bool Evaluate(
             bool defaultValue,
             IEnumerable<Pair<StringPatternSet, bool>> patterns,
-            String literal)
+            string literal)
         {
             bool result = defaultValue;
 

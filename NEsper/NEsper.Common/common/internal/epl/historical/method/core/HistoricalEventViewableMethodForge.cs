@@ -119,9 +119,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 ? metadata.MethodProviderClass.Name
                 : methodStreamSpec.MethodName;
             method.Block
-                .ExprDotMethod(@ref, "setConfigurationName", Constant(configName))
-                .ExprDotMethod(@ref, "setTargetStrategy", target.Make(method, symbols, classScope))
-                .ExprDotMethod(@ref, "setConversionStrategy", conversion.Make(method, symbols, classScope));
+                .SetProperty(@ref, "ConfigurationName", Constant(configName))
+                .SetProperty(@ref, "TargetStrategy", target.Make(method, symbols, classScope))
+                .SetProperty(@ref, "ConversionStrategy", conversion.Make(method, symbols, classScope));
         }
     }
 } // end of namespace

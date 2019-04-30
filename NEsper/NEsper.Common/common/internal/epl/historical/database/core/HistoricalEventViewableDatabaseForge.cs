@@ -90,10 +90,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(@ref, "setDatabaseName", Constant(databaseName))
-                .ExprDotMethod(@ref, "setInputParameters", Constant(inputParameters))
-                .ExprDotMethod(@ref, "setPreparedStatementText", Constant(preparedStatementText))
-                .ExprDotMethod(@ref, "setOutputTypes", MakeOutputTypes(method, symbols, classScope));
+                .SetProperty(@ref, "DatabaseName", Constant(databaseName))
+                .SetProperty(@ref, "InputParameters", Constant(inputParameters))
+                .SetProperty(@ref, "PreparedStatementText", Constant(preparedStatementText))
+                .SetProperty(@ref, "OutputTypes", MakeOutputTypes(method, symbols, classScope));
         }
 
         private CodegenExpression MakeOutputTypes(

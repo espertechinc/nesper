@@ -81,10 +81,8 @@ namespace com.espertech.esper.common.@internal.view.unique
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(
-                    factory, "setCriteriaEvals", CodegenEvaluators(criteriaExpressions, method, GetType(), classScope))
-                .ExprDotMethod(
-                    factory, "setCriteriaTypes",
+                .SetProperty(factory, "CriteriaEvals", CodegenEvaluators(criteriaExpressions, method, GetType(), classScope))
+                .SetProperty(factory, "CriteriaTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)));
         }
     }

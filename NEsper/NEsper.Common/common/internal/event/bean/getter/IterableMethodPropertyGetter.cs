@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -124,15 +125,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             object value,
             int index)
         {
-            if (!(value is Iterable)) {
+            if (!(value is IEnumerable)) {
                 return null;
             }
 
-            IEnumerator it = ((Iterable) value).GetEnumerator();
+            IEnumerator @enum = ((IEnumerable) value).GetEnumerator();
 
             if (index == 0) {
-                if (it.MoveNext()) {
-                    return it.Current;
+                if (@enum.MoveNext()) {
+                    return @enum.Current;
                 }
 
                 return null;
@@ -140,15 +141,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
             var count = 0;
             while (true) {
-                if (!it.MoveNext()) {
+                if (!@enum.MoveNext()) {
                     return null;
                 }
 
                 if (count < index) {
-                    it.Current;
+                    @enum.Current;
                 }
                 else {
-                    return it.Current;
+                    return @enum.Current;
                 }
 
                 count++;

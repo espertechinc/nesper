@@ -98,15 +98,13 @@ namespace com.espertech.esper.common.@internal.view.sort
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(factory, "setSize", CodegenEvaluator(sizeForge, method, GetType(), classScope))
-                .ExprDotMethod(
-                    factory, "setSortCriteriaEvaluators",
+                .SetProperty(factory, "Size", CodegenEvaluator(sizeForge, method, GetType(), classScope))
+                .SetProperty(factory, "SortCriteriaEvaluators",
                     CodegenEvaluators(sortCriteriaExpressions, method, GetType(), classScope))
-                .ExprDotMethod(
-                    factory, "setSortCriteriaTypes",
+                .SetProperty(factory, "SortCriteriaTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions)))
-                .ExprDotMethod(factory, "setIsDescendingValues", Constant(isDescendingValues))
-                .ExprDotMethod(factory, "setUseCollatorSort", Constant(useCollatorSort));
+                .SetProperty(factory, "IsDescendingValues", Constant(isDescendingValues))
+                .SetProperty(factory, "UseCollatorSort", Constant(useCollatorSort));
         }
     }
 } // end of namespace

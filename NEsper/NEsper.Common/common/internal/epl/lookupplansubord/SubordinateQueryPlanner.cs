@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             CoercionDesc hashKeyCoercionTypes = null;
             IList<SubordPropRangeKeyForge> rangeKeys = Collections.GetEmptyList<SubordPropRangeKeyForge>();
             CoercionDesc rangeKeyCoercionTypes = null;
-            ExprNode[] inKeywordSingleIdxKeys = null;
+            IList<ExprNode> inKeywordSingleIdxKeys = null;
             ExprNode inKeywordMultiIdxKey = null;
 
             SubordinateQueryIndexDescForge[] indexDescs;

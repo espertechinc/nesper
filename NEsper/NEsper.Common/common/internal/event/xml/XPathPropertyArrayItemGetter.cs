@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             var member = codegenClassScope.AddFieldUnshared(
                 true, typeof(FragmentFactory),
-                fragmentFactory.Make(codegenClassScope.PackageScope.InitMethod, codegenClassScope));
+                fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node").Block
                 .DeclareVar(

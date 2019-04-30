@@ -329,7 +329,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         internal CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
         {
-            return codegenClassScope.PackageScope.AddOrGetFieldWellKnown(
+            return codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
                 aggregationResultFutureMemberName, typeof(AggregationResultFuture));
         }
     }

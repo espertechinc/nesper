@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
 
         public string ToQueryPlan()
         {
-            return this.GetType().GetSimpleName() +
+            return this.GetType().Name +
                    " streamNum=" + organization.StreamNum +
                    " indexName=" + organization.IndexName;
         }

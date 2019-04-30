@@ -52,8 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(Ref("v"), "setInputValueType", Constant(inputValueType))
-                .ExprDotMethod(Ref("v"), "setHasFilter", Constant(hasFilter));
+                .SetProperty(Ref("v"), "InputValueType", Constant(inputValueType))
+                .SetProperty(Ref("v"), "HasFilter", Constant(hasFilter));
             CodegenInlineSetWFilterWInputType(@ref, method, symbols, classScope);
         }
 

@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.context.module
         private readonly string _optionalContextModuleName;
         private readonly string _optionalContextName;
         private readonly NameAccessModifier _optionalContextVisibility;
-        private readonly CodegenPackageScope _packageScope;
+        private readonly CodegenNamespaceScope _namespaceScope;
         private readonly bool _preemptive;
         private readonly int _priority;
         private readonly IDictionary<StatementProperty, object> _properties;
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.context.module
             IDictionary<StatementProperty, object> properties,
             bool hasMatchRecognize,
             bool instrumented,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             string insertIntoLatchName,
             bool allowSubscriber)
         {
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.context.module
             _properties = properties;
             _hasMatchRecognize = hasMatchRecognize;
             _instrumented = instrumented;
-            _packageScope = packageScope;
+            _namespaceScope = namespaceScope;
             _insertIntoLatchName = insertIntoLatchName;
             _allowSubscriber = allowSubscriber;
         }
@@ -141,57 +141,57 @@ namespace com.espertech.esper.common.@internal.context.module
                 .DeclareVar(
                     typeof(StatementInformationalsRuntime), info.Ref,
                     NewInstance(typeof(StatementInformationalsRuntime)))
-                .ExprDotMethod(info, "setStatementNameCompileTime", Constant(_statementNameCompileTime))
-                .ExprDotMethod(info, "setAlwaysSynthesizeOutputEvents", Constant(_alwaysSynthesizeOutputEvents))
-                .ExprDotMethod(info, "setOptionalContextName", Constant(_optionalContextName))
-                .ExprDotMethod(info, "setOptionalContextModuleName", Constant(_optionalContextModuleName))
-                .ExprDotMethod(info, "setOptionalContextVisibility", Constant(_optionalContextVisibility))
-                .ExprDotMethod(info, "setCanSelfJoin", Constant(_canSelfJoin))
-                .ExprDotMethod(info, "setHasSubquery", Constant(_hasSubquery))
-                .ExprDotMethod(info, "setNeedDedup", Constant(_needDedup))
-                .ExprDotMethod(info, "setStateless", Constant(_stateless))
-                .ExprDotMethod(
-                    info, "setAnnotations",
+                .SetProperty(info, "StatementNameCompileTime", Constant(_statementNameCompileTime))
+                .SetProperty(info, "AlwaysSynthesizeOutputEvents", Constant(_alwaysSynthesizeOutputEvents))
+                .SetProperty(info, "OptionalContextName", Constant(_optionalContextName))
+                .SetProperty(info, "OptionalContextModuleName", Constant(_optionalContextModuleName))
+                .SetProperty(info, "OptionalContextVisibility", Constant(_optionalContextVisibility))
+                .SetProperty(info, "CanSelfJoin", Constant(_canSelfJoin))
+                .SetProperty(info, "HasSubquery", Constant(_hasSubquery))
+                .SetProperty(info, "NeedDedup", Constant(_needDedup))
+                .SetProperty(info, "Stateless", Constant(_stateless))
+                .SetProperty(
+                    info, "Annotations",
                     _annotations == null
                         ? ConstantNull()
                         : LocalMethod(MakeAnnotations(typeof(Attribute[]), _annotations, method, classScope)))
-                .ExprDotMethod(
-                    info, "setUserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_userObjectCompileTime))
-                .ExprDotMethod(info, "setNumFilterCallbacks", Constant(_numFilterCallbacks))
-                .ExprDotMethod(info, "setNumScheduleCallbacks", Constant(_numScheduleCallbacks))
-                .ExprDotMethod(info, "setNumNamedWindowCallbacks", Constant(_numNamedWindowCallbacks))
-                .ExprDotMethod(info, "setStatementType", Constant(_statementType))
-                .ExprDotMethod(info, "setPriority", Constant(_priority))
-                .ExprDotMethod(info, "setPreemptive", Constant(_preemptive))
-                .ExprDotMethod(info, "setHasVariables", Constant(_hasVariables))
-                .ExprDotMethod(info, "setWritesToTables", Constant(_writesToTables))
-                .ExprDotMethod(info, "setHasTableAccess", Constant(_hasTableAccess))
-                .ExprDotMethod(info, "setSelectClauseTypes", Constant(_selectClauseTypes))
-                .ExprDotMethod(info, "setSelectClauseColumnNames", Constant(_selectClauseColumnNames))
-                .ExprDotMethod(info, "setForClauseDelivery", Constant(_forClauseDelivery))
-                .ExprDotMethod(
-                    info, "setGroupDeliveryEval",
+                .SetProperty(
+                    info, "UserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_userObjectCompileTime))
+                .SetProperty(info, "NumFilterCallbacks", Constant(_numFilterCallbacks))
+                .SetProperty(info, "NumScheduleCallbacks", Constant(_numScheduleCallbacks))
+                .SetProperty(info, "NumNamedWindowCallbacks", Constant(_numNamedWindowCallbacks))
+                .SetProperty(info, "StatementType", Constant(_statementType))
+                .SetProperty(info, "Priority", Constant(_priority))
+                .SetProperty(info, "Preemptive", Constant(_preemptive))
+                .SetProperty(info, "HasVariables", Constant(_hasVariables))
+                .SetProperty(info, "WritesToTables", Constant(_writesToTables))
+                .SetProperty(info, "HasTableAccess", Constant(_hasTableAccess))
+                .SetProperty(info, "SelectClauseTypes", Constant(_selectClauseTypes))
+                .SetProperty(info, "SelectClauseColumnNames", Constant(_selectClauseColumnNames))
+                .SetProperty(info, "ForClauseDelivery", Constant(_forClauseDelivery))
+                .SetProperty(
+                    info, "GroupDeliveryEval",
                     _groupDelivery == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
                             ExprNodeUtilityQuery.GetForges(_groupDelivery), null, method, GetType(), classScope))
-                .ExprDotMethod(info, "setProperties", MakeProperties(_properties, method, classScope))
-                .ExprDotMethod(info, "setHasMatchRecognize", Constant(_hasMatchRecognize))
-                .ExprDotMethod(info, "setAuditProvider", MakeAuditProvider(method, classScope))
-                .ExprDotMethod(info, "setInstrumented", Constant(_instrumented))
-                .ExprDotMethod(info, "setInstrumentationProvider", MakeInstrumentationProvider(method, classScope))
-                .ExprDotMethod(info, "setSubstitutionParamTypes", MakeSubstitutionParamTypes())
-                .ExprDotMethod(info, "setSubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
-                .ExprDotMethod(info, "setInsertIntoLatchName", Constant(_insertIntoLatchName))
-                .ExprDotMethod(info, "setAllowSubscriber", Constant(_allowSubscriber))
+                .SetProperty(info, "Properties", MakeProperties(_properties, method, classScope))
+                .SetProperty(info, "HasMatchRecognize", Constant(_hasMatchRecognize))
+                .SetProperty(info, "AuditProvider", MakeAuditProvider(method, classScope))
+                .SetProperty(info, "Instrumented", Constant(_instrumented))
+                .SetProperty(info, "InstrumentationProvider", MakeInstrumentationProvider(method, classScope))
+                .SetProperty(info, "SubstitutionParamTypes", MakeSubstitutionParamTypes())
+                .SetProperty(info, "SubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
+                .SetProperty(info, "InsertIntoLatchName", Constant(_insertIntoLatchName))
+                .SetProperty(info, "AllowSubscriber", Constant(_allowSubscriber))
                 .MethodReturn(info);
             return LocalMethod(method);
         }
 
         private CodegenExpression MakeSubstitutionParamTypes()
         {
-            var numbered = _packageScope.SubstitutionParamsByNumber;
-            var named = _packageScope.SubstitutionParamsByName;
+            var numbered = _namespaceScope.SubstitutionParamsByNumber;
+            var named = _namespaceScope.SubstitutionParamsByName;
             if (numbered.IsEmpty() && named.IsEmpty()) {
                 return ConstantNull();
             }
@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            var named = _packageScope.SubstitutionParamsByName;
+            var named = _namespaceScope.SubstitutionParamsByName;
             if (named.IsEmpty()) {
                 return ConstantNull();
             }

@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
 
         IEnumerator<RowRecogNFAStateEntry> CurrentStatesIterator { get; }
 
-        IList<RowRecogNFAStateEntry> CurrentStates { set; }
+        IList<RowRecogNFAStateEntry> CurrentStates { get; set; }
 
         object OptionalKeys { get; }
 

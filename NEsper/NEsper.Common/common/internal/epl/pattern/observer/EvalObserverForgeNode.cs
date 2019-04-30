@@ -72,8 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(
-                    Ref("node"), "setObserverFactory", observerForge.MakeCodegen(method, symbols, classScope));
+                .SetProperty(Ref("node"), "ObserverFactory", observerForge.MakeCodegen(method, symbols, classScope));
         }
 
         public override void CollectSelfFilterAndSchedule(

@@ -58,11 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(
-                eval, "setExpression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, this.GetType(), classScope));
+            method.Block.SetProperty(eval, "Expression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, this.GetType(), classScope));
             if (classScope.IsInstrumented) {
-                method.Block.ExprDotMethod(
-                    eval, "setExpressionTextForAudit", Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression)));
+                method.Block.SetProperty(eval, "ExpressionTextForAudit", Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression)));
             }
         }
     }

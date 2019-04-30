@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 
     public static class DotMethodTypeEnumExtensions
     {
-        public static String GetTypeName(this DotMethodTypeEnum value)
+        public static string GetTypeName(this DotMethodTypeEnum value)
         {
             switch (value) {
                 case DotMethodTypeEnum.ENUM:

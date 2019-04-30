@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                     typeof(ContextControllerInitTermFactory), "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY)
                         .Add("initTermFactory"))
-                .ExprDotMethod(@Ref("factory"), "setInitTermSpec", detail.MakeCodegen(method, symbols, classScope))
+                .SetProperty(Ref("factory"), "InitTermSpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(@Ref("factory"));
             return method;
         }

@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
             VariableMetaData path = ResolvePath(variableName);
             VariableMetaData preconfigured = ResolvePreconfigured(variableName);
 
-            return CompileTimeResolver.ValidateAmbiguous(local, path, preconfigured, PathRegistryObjectType.VARIABLE, variableName);
+            return CompileTimeResolverUtil.ValidateAmbiguous(local, path, preconfigured, PathRegistryObjectType.VARIABLE, variableName);
         }
 
         private VariableMetaData ResolvePreconfigured(string variableName)
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
                 return pair.First;
             }
             catch (PathException e) {
-                throw CompileTimeResolver.MakePathAmbiguous(PathRegistryObjectType.VARIABLE, variableName, e);
+                throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.VARIABLE, variableName, e);
             }
         }
     }

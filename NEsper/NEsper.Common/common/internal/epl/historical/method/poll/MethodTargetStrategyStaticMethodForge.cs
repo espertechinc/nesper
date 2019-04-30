@@ -38,9 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             CodegenMethod method = parent.MakeChild(typeof(MethodTargetStrategyStaticMethod), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(MethodTargetStrategyStaticMethod), "target", NewInstance(typeof(MethodTargetStrategyStaticMethod)))
-                .ExprDotMethod(@Ref("target"), "setClazz", Constant(clazz))
-                .ExprDotMethod(@Ref("target"), "setMethodName", Constant(reflectionMethod.Name))
-                .ExprDotMethod(@Ref("target"), "setMethodParameters", Constant(reflectionMethod.ParameterTypes))
+                .SetProperty(Ref("target"), "Clazz", Constant(clazz))
+                .SetProperty(Ref("target"), "MethodName", Constant(reflectionMethod.Name))
+                .SetProperty(Ref("target"), "MethodParameters", Constant(reflectionMethod.GetParameterTypes()))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", @Ref("target")))
                 .MethodReturn(@Ref("target"));
             return LocalMethod(method);

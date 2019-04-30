@@ -55,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar(
                     typeof(AggregationPortableValidationLinear), "v",
                     NewInstance(typeof(AggregationPortableValidationLinear)))
-                .ExprDotMethod(
-                    Ref("v"), "setContainedEventType",
+                .SetProperty(Ref("v"), "ContainedEventType",
                     EventTypeUtility.ResolveTypeCodegen(ContainedEventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("v"));
             return LocalMethod(method);

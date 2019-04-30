@@ -93,12 +93,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                     TypeOfFactory(), "node",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add(NameOfFactory()))
-                .ExprDotMethod(Ref("node"), "setFactoryNodeId", Constant(factoryNodeId));
+                .SetProperty(Ref("node"), "FactoryNodeId", Constant(factoryNodeId));
             if (audit || classScope.IsInstrumented) {
                 var writer = new StringWriter();
                 ToEPL(writer, PatternExpressionPrecedenceEnum.MINIMUM);
                 var expressionText = writer.ToString();
-                method.Block.ExprDotMethod(Ref("node"), "setTextForAudit", Constant(expressionText));
+                method.Block.SetProperty(Ref("node"), "TextForAudit", Constant(expressionText));
             }
 
             InlineCodegen(method, symbols, classScope);

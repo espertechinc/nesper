@@ -6,15 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.epl.datetime.interval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
@@ -22,11 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
     public class IntervalDeltaExprMSecConstForge : IntervalDeltaExprForge,
         IntervalDeltaExprEvaluator
     {
-        private readonly long msec;
+        private readonly long _msec;
 
         public IntervalDeltaExprMSecConstForge(long msec)
         {
-            this.msec = msec;
+            _msec = msec;
         }
 
         public long Evaluate(
@@ -35,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return msec;
+            return _msec;
         }
 
         public IntervalDeltaExprEvaluator MakeEvaluator()
@@ -49,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return Constant(msec);
+            return Constant(_msec);
         }
     }
 } // end of namespace

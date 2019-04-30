@@ -80,12 +80,12 @@ namespace com.espertech.esper.common.@internal.view.derived
             CodegenClassScope classScope)
         {
             if (additionalProps != null) {
-                method.Block.ExprDotMethod(factory, "setAdditionalProps", additionalProps.Codegen(method, classScope));
+                method.Block.SetProperty(factory, "AdditionalProps", additionalProps.Codegen(method, classScope));
             }
 
             method.Block
-                .ExprDotMethod(factory, "setExpressionXEval", CodegenEvaluator(expressionX.Forge, method, this.GetType(), classScope))
-                .ExprDotMethod(factory, "setExpressionYEval", CodegenEvaluator(expressionY.Forge, method, this.GetType(), classScope));
+                .SetProperty(factory, "ExpressionXEval", CodegenEvaluator(expressionX.Forge, method, this.GetType(), classScope))
+                .SetProperty(factory, "ExpressionYEval", CodegenEvaluator(expressionY.Forge, method, this.GetType(), classScope));
         }
 
         public override string ViewName {

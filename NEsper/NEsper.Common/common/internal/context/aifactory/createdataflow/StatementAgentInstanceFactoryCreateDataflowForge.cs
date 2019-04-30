@@ -38,10 +38,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 .DeclareVar(
                     typeof(StatementAgentInstanceFactoryCreateDataflow), "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryCreateDataflow)))
-                .ExprDotMethod(
-                    Ref("saiff"), "setEventType",
+                .SetProperty(Ref("saiff"), "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("saiff"), "setDataflow", dataflowForge.Make(method, symbols, classScope))
+                .SetProperty(Ref("saiff"), "Dataflow", dataflowForge.Make(method, symbols, classScope))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("saiff")))
                 .MethodReturn(Ref("saiff"));
             return method;

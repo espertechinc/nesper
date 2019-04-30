@@ -46,12 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var longValue = (long?) target;
-            var cal = DateTimeEx.GetInstance(timeZone);
-            var remainder = timeAbacus.DateTimeSet(longValue.Value, cal);
+            var dtx = DateTimeEx.GetInstance(timeZone);
+            var remainder = timeAbacus.DateTimeSet(longValue.Value, dtx);
 
-            EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
+            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
 
-            return timeAbacus.DateTimeGet(cal, remainder);
+            return timeAbacus.DateTimeGet(dtx, remainder);
         }
 
         public static CodegenExpression Codegen(

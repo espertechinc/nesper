@@ -45,8 +45,7 @@ namespace com.espertech.esper.common.@internal.view.core
                     TypeOfFactory(), factory.Ref,
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETVIEWFACTORYSERVICE).Add(FactoryMethod()))
-                .ExprDotMethod(
-                    factory, "setEventType",
+                .SetProperty(factory, "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF));
 
             Assign(method, factory, symbols, classScope);

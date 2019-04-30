@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             var parserMember = codegenClassScope.AddFieldUnshared(
                 true, typeof(SimpleTypeParser),
-                SimpleTypeParserFactory.CodegenSimpleParser(parser, codegenClassScope.PackageScope.InitMethod, GetType(), codegenClassScope));
+                SimpleTypeParserFactory.CodegenSimpleParser(parser, codegenClassScope.NamespaceScope.InitMethod, GetType(), codegenClassScope));
             var inner = getter.UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
             return StaticMethod(GetType(), "getParseTextValue", inner, parserMember);
         }

@@ -54,19 +54,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             var method = parent.MakeChild(typeof(InternalEventRouterDesc), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(InternalEventRouterDesc), "ire", NewInstance(typeof(InternalEventRouterDesc)))
-                .ExprDotMethod(Ref("ire"), "setWideners", MakeWideners(wideners, method, classScope))
-                .ExprDotMethod(
-                    Ref("ire"), "setEventType",
+                .SetProperty(Ref("ire"), "Wideners", MakeWideners(wideners, method, classScope))
+                .SetProperty(Ref("ire"), "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
-                    Ref("ire"), "setOptionalWhereClauseEval",
+                .SetProperty(Ref("ire"), "OptionalWhereClauseEval",
                     optionalWhereClause == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
                             optionalWhereClause.Forge, method, GetType(), classScope))
-                .ExprDotMethod(Ref("ire"), "setProperties", Constant(properties))
-                .ExprDotMethod(
-                    Ref("ire"), "setAssignments",
+                .SetProperty(Ref("ire"), "Properties", Constant(properties))
+                .SetProperty(Ref("ire"), "Assignments",
                     ExprNodeUtilityCodegen.CodegenEvaluators(assignments, method, GetType(), classScope))
                 .MethodReturn(Ref("ire"));
             return LocalMethod(method);

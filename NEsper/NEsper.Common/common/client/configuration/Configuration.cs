@@ -148,9 +148,9 @@ namespace com.espertech.esper.common.client.configuration
                 Log.Debug("configuring from file: " + configFile.Name);
             }
 
-            FileInputStream inputStream = null;
+            Stream inputStream = null;
             try {
-                inputStream = new FileInputStream(configFile);
+                inputStream = File.OpenRead(configFile.ToString());
                 ConfigurationParser.DoConfigure(this, inputStream, configFile.ToString());
             }
             catch (FileNotFoundException fnfe) {
@@ -206,7 +206,7 @@ namespace com.espertech.esper.common.client.configuration
         {
             string stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
 
-            InputStream stream = null;
+            Stream stream = null;
             ClassLoader classLoader = Thread.CurrentThread().ContextClassLoader;
             if (classLoader != null) {
                 stream = classLoader.GetResourceAsStream(stripped);

@@ -27,15 +27,15 @@ namespace com.espertech.esper.common.@internal.compile.faf
         private const string MEMBERNAME_QUERYMETHOD = "queryMethod";
 
         private readonly FAFQueryMethodForge forge;
-        private readonly CodegenPackageScope packageScope;
+        private readonly CodegenNamespaceScope _namespaceScope;
 
         public StmtClassForgableQueryMethodProvider(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             FAFQueryMethodForge forge)
         {
             ClassName = className;
-            this.packageScope = packageScope;
+            this._namespaceScope = namespaceScope;
             this.forge = forge;
         }
 
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 ctorParms.Add(
                     new CodegenTypedParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref, false));
                 var providerCtor = new CodegenCtor(GetType(), includeDebugSymbols, ctorParms);
-                var classScope = new CodegenClassScope(includeDebugSymbols, packageScope, ClassName);
+                var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
 
                 // add query method member
                 IList<CodegenTypedParam> providerExplicitMembers = new List<CodegenTypedParam>(2);
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 var makeMethod = providerCtor.MakeChildWithScope(typeof(FAFQueryMethod), GetType(), symbols, classScope)
                     .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
                 providerCtor.Block
-                    .StaticMethod(packageScope.FieldsClassNameOptional, "init", EPStatementInitServicesConstants.REF)
+                    .StaticMethod(_namespaceScope.FieldsClassNameOptional, "Init", EPStatementInitServicesConstants.REF)
                     .AssignRef(MEMBERNAME_QUERYMETHOD, LocalMethod(makeMethod, EPStatementInitServicesConstants.REF));
                 forge.MakeMethod(makeMethod, symbols, classScope);
 
@@ -78,14 +78,15 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 var getQueryInformationals = CodegenMethod.MakeParentNode(
                     typeof(FAFQueryInformationals), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
                 var queryInformationals = FAFQueryInformationals.From(
-                    packageScope.SubstitutionParamsByNumber, packageScope.SubstitutionParamsByName);
+                    _namespaceScope.SubstitutionParamsByNumber,
+                    _namespaceScope.SubstitutionParamsByName);
                 getQueryInformationals.Block.MethodReturn(queryInformationals.Make(getQueryInformationals, classScope));
 
                 // add get-statement-fields method
                 var getSubstitutionFieldSetter = CodegenMethod.MakeParentNode(
                     typeof(FAFQueryMethodAssignerSetter), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
                 StmtClassForgableStmtFields.MakeSubstitutionSetter(
-                    packageScope, getSubstitutionFieldSetter, classScope);
+                    _namespaceScope, getSubstitutionFieldSetter, classScope);
 
                 // make provider methods
                 var methods = new CodegenClassMethods();
@@ -97,7 +98,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
 
                 // render and compile
                 return new CodegenClass(
-                    typeof(FAFQueryMethodProvider), packageScope.PackageName, ClassName, classScope,
+                    typeof(FAFQueryMethodProvider), _namespaceScope.PackageName, ClassName, classScope,
                     providerExplicitMembers, providerCtor, methods, innerClasses);
             }
             catch (EPException e)

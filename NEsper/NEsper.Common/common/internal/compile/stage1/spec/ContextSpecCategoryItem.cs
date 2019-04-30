@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.category;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -37,18 +38,20 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             CodegenMethodScope parent)
         {
             CodegenMethod method = parent.MakeChild(typeof(ContextControllerDetailCategoryItem), GetType(), classScope)
-                .AddParam(typeof(EventType), REF_EVENTTYPE.Ref)
-                .AddParam(typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
+                .AddParam(typeof(EventType), SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref)
+                .AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
 
             var makeFilter = FilterSpecParamForge.MakeParamArrayArrayCodegen(CompiledFilterParam, classScope, method);
             method.Block
                 .DeclareVar(
-                    typeof(FilterSpecParam[][]), "params", LocalMethod(makeFilter, REF_EVENTTYPE, REF_STMTINITSVC))
+                    typeof(FilterSpecParam[][]), "params", LocalMethod(makeFilter, 
+                        SAIFFInitializeSymbolWEventType.REF_EVENTTYPE, 
+                        SAIFFInitializeSymbol.REF_STMTINITSVC))
                 .DeclareVar(
                     typeof(ContextControllerDetailCategoryItem), "item",
                     NewInstance(typeof(ContextControllerDetailCategoryItem)))
-                .ExprDotMethod(Ref("item"), "setCompiledFilterParam", Ref("params"))
-                .ExprDotMethod(Ref("item"), "setName", Constant(Name))
+                .SetProperty(Ref("item"), "CompiledFilterParam", Ref("params"))
+                .SetProperty(Ref("item"), "Name", Constant(Name))
                 .MethodReturn(Ref("item"));
             return method;
         }

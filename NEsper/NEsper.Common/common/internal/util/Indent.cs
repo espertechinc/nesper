@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </param>
         /// <returns> the formatted string
         /// </returns>
-        public static String CreateIndent(int numChars)
+        public static string CreateIndent(int numChars)
         {
             if (numChars < 0) {
                 throw new ArgumentException("Number of characters less then zero");
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.util
                 buf[ii] = ' ';
             }
 
-            return (new String(buf));
+            return (new string(buf));
         }
     }
 }

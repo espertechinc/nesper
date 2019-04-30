@@ -256,7 +256,7 @@ namespace com.espertech.esper.common.@internal.schedule
             var spec = Ref("spec");
             method.Block.DeclareVar(typeof(ScheduleSpec), spec.Ref, NewInstance(typeof(ScheduleSpec)));
             if (_optionalTimeZone != null) {
-                method.Block.ExprDotMethod(spec, "setOptionalTimeZone", Constant(_optionalTimeZone));
+                method.Block.SetProperty(spec, "OptionalTimeZone", Constant(_optionalTimeZone));
             }
 
             foreach (var unit in UnitValues.Keys) {
@@ -275,11 +275,11 @@ namespace com.espertech.esper.common.@internal.schedule
             }
 
             if (OptionalDayOfWeekOperator != null) {
-                method.Block.ExprDotMethod(spec, "setOptionalDayOfWeekOperator", OptionalDayOfWeekOperator.Make());
+                method.Block.SetProperty(spec, "OptionalDayOfWeekOperator", OptionalDayOfWeekOperator.Make());
             }
 
             if (OptionalDayOfMonthOperator != null) {
-                method.Block.ExprDotMethod(spec, "setOptionalDayOfMonthOperator", OptionalDayOfMonthOperator.Make());
+                method.Block.SetProperty(spec, "OptionalDayOfMonthOperator", OptionalDayOfMonthOperator.Make());
             }
 
             method.Block.MethodReturn(spec);

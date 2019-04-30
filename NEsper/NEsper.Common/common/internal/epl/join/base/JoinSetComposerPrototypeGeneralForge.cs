@@ -59,17 +59,15 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(Ref("impl"), "setQueryPlan", queryPlan.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("impl"), "setStreamJoinAnalysisResult",
+                .SetProperty(Ref("impl"), "QueryPlan", queryPlan.Make(method, symbols, classScope))
+                .SetProperty(Ref("impl"), "StreamJoinAnalysisResult",
                     streamJoinAnalysisResult.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("impl"), "setStreamNames", Constant(streamNames))
-                .ExprDotMethod(Ref("impl"), "setJoinRemoveStream", Constant(joinRemoveStream))
-                .ExprDotMethod(
-                    Ref("impl"), "setEventTableIndexService",
+                .SetProperty(Ref("impl"), "StreamNames", Constant(streamNames))
+                .SetProperty(Ref("impl"), "JoinRemoveStream", Constant(joinRemoveStream))
+                .SetProperty(Ref("impl"), "EventTableIndexService",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETEVENTTABLEINDEXSERVICE))
-                .ExprDotMethod(Ref("impl"), "setHasHistorical", Constant(hasHistorical));
+                .SetProperty(Ref("impl"), "HasHistorical", Constant(hasHistorical));
         }
     }
 } // end of namespace

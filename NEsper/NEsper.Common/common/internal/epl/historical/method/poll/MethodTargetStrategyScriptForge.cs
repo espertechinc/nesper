@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             CodegenMethod method = parent.MakeChild(typeof(MethodTargetStrategyScript), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(MethodTargetStrategyScript), "target", NewInstance(typeof(MethodTargetStrategyScript)))
-                .ExprDotMethod(@Ref("target"), "setScriptEvaluator", script.GetField(classScope))
+                .SetProperty(Ref("target"), "ScriptEvaluator", script.GetField(classScope))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", @Ref("target")))
                 .MethodReturn(@Ref("target"));
             return LocalMethod(method);

@@ -81,15 +81,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             var method = parent.MakeChild(typeof(HistoricalDataPlanNode), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(HistoricalDataPlanNode), "node", NewInstance(typeof(HistoricalDataPlanNode)))
-                .ExprDotMethod(Ref("node"), "setStreamNum", Constant(StreamNum))
-                .ExprDotMethod(Ref("node"), "setNumStreams", Constant(NumStreams))
-                .ExprDotMethod(
-                    Ref("node"), "setIndexingStrategy", pollResultIndexingStrategy.Make(method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("node"), "setLookupStrategy", historicalIndexLookupStrategy.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("node"), "setRootStreamNum", Constant(RootStreamNum))
-                .ExprDotMethod(
-                    Ref("node"), "setOuterJoinExprEval",
+                .SetProperty(Ref("node"), "StreamNum", Constant(StreamNum))
+                .SetProperty(Ref("node"), "NumStreams", Constant(NumStreams))
+                .SetProperty(Ref("node"), "IndexingStrategy", pollResultIndexingStrategy.Make(method, symbols, classScope))
+                .SetProperty(Ref("node"), "LookupStrategy", historicalIndexLookupStrategy.Make(method, symbols, classScope))
+                .SetProperty(Ref("node"), "RootStreamNum", Constant(RootStreamNum))
+                .SetProperty(Ref("node"), "OuterJoinExprEval",
                     outerJoinExprEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(outerJoinExprEval, method, GetType(), classScope))

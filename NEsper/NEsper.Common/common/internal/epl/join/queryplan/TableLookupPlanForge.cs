@@ -96,15 +96,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 var ranges = keyDesc.Ranges.ToArray();
                 var rangeResults = QueryGraphValueEntryRangeForge.GetRangeResultTypes(ranges);
                 method.Block
-                    .ExprDotMethod(
-                        Ref("plan"), "setVirtualDWHashEvals",
+                    .SetProperty(Ref("plan"), "VirtualDWHashEvals",
                         ExprNodeUtilityCodegen.CodegenEvaluators(hashes, method, GetType(), classScope))
-                    .ExprDotMethod(
-                        Ref("plan"), "setVirtualDWHashTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(hashes)))
-                    .ExprDotMethod(
-                        Ref("plan"), "setVirtualDWRangeEvals",
+                    .SetProperty(Ref("plan"), "VirtualDWHashTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(hashes)))
+                    .SetProperty(Ref("plan"), "VirtualDWRangeEvals",
                         QueryGraphValueEntryRangeForge.MakeArray(ranges, method, symbols, classScope))
-                    .ExprDotMethod(Ref("plan"), "setVirtualDWRangeTypes", Constant(rangeResults));
+                    .SetProperty(Ref("plan"), "VirtualDWRangeTypes", Constant(rangeResults));
             }
 
             method.Block.MethodReturn(Ref("plan"));

@@ -55,12 +55,11 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
             method.Block
                 .DeclareVar(Implementation(), "impl", NewInstance(Implementation()))
-                .ExprDotMethod(@Ref("impl"), "setStreamTypes", EventTypeUtility.ResolveTypeArrayCodegen(streamTypes, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(@Ref("impl"), "setOuterJoins", Constant(outerJoins));
+                .SetProperty(Ref("impl"), "StreamTypes", EventTypeUtility.ResolveTypeArrayCodegen(streamTypes, symbols.GetAddInitSvc(method)))
+                .SetProperty(Ref("impl"), "OuterJoins", Constant(outerJoins));
 
             if (postJoinEvaluator != null) {
-                method.Block.ExprDotMethod(
-                    @Ref("impl"), "setPostJoinFilterEvaluator",
+                method.Block.SetProperty(Ref("impl"), "PostJoinFilterEvaluator",
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(postJoinEvaluator.Forge, method, this.GetType(), classScope));
             }
 

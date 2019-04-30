@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.hook.condition
     {
         /// <summary>Ctor. </summary>
         /// <param name="engineURI">engine URI</param>
-        public ConditionHandlerFactoryContext(String engineURI)
+        public ConditionHandlerFactoryContext(string engineURI)
         {
             EngineURI = engineURI;
         }

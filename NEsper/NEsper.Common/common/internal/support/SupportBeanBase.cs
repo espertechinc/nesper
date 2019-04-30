@@ -13,14 +13,14 @@ namespace com.espertech.esper.common.@internal.support
 {
     public class SupportBeanBase : SupportMarkerInterface
     {
-        public SupportBeanBase(String id)
+        public SupportBeanBase(string id)
         {
             Id = id;
         }
 
         public string Id { get; set; }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "id=" + Id;
         }

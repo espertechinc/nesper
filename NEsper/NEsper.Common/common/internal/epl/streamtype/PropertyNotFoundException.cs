@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <param name="messageWithoutDetail">The message without detail.</param>
         /// <param name="msgGen">The MSG gen.</param>
         public PropertyNotFoundException(
-            String messageWithoutDetail,
+            string messageWithoutDetail,
             StreamTypesExceptionSuggestionGen msgGen)
             : base(messageWithoutDetail, msgGen)
         {

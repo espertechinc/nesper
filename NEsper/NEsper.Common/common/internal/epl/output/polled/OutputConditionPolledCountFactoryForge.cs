@@ -52,8 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             CodegenMethod method = parent.MakeChild(typeof(OutputConditionPolledCountFactory), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(OutputConditionPolledCountFactory), "factory", NewInstance(typeof(OutputConditionPolledCountFactory)))
-                .ExprDotMethod(@Ref("factory"), "setEventRate", Constant(eventRate))
-                .ExprDotMethod(@Ref("factory"), "setVariable", variableExpression)
+                .SetProperty(Ref("factory"), "EventRate", Constant(eventRate))
+                .SetProperty(Ref("factory"), "Variable", variableExpression)
                 .MethodReturn(@Ref("factory"));
             return LocalMethod(method);
         }

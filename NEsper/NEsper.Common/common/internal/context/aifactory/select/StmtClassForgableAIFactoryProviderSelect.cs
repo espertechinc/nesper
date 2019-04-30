@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
         public StmtClassForgableAIFactoryProviderSelect(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             StatementAgentInstanceFactoryForge forge)
-            : base(className, packageScope)
+            : base(className, namespaceScope)
         {
             this.forge = forge;
         }

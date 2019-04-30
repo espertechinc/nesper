@@ -50,9 +50,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .DeclareVar(
                     typeof(TimePeriodCompute), "eval",
                     TimePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
-                .ExprDotMethod(Ref("condition"), "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(Ref("condition"), "setScheduleCallbackId", Constant(ScheduleCallbackId))
-                .ExprDotMethod(Ref("condition"), "setImmediate", Constant(IsImmediate))
+                .SetProperty(Ref("condition"), "TimePeriodCompute", Ref("eval"))
+                .SetProperty(Ref("condition"), "ScheduleCallbackId", Constant(ScheduleCallbackId))
+                .SetProperty(Ref("condition"), "Immediate", Constant(IsImmediate))
                 .MethodReturn(Ref("condition"));
             return LocalMethod(method);
         }

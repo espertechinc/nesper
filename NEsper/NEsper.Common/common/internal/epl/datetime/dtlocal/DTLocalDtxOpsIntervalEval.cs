@@ -41,9 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var cal = ((DateTimeEx) target).Clone();
-            EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            var time = cal.TimeInMillis;
+            var dtx = ((DateTimeEx) target).Clone();
+            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            var time = dtx.TimeInMillis;
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -77,10 +77,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var startLong = ((DateTimeEx) startTimestamp).TimeInMillis;
             var endLong = ((DateTimeEx) endTimestamp).TimeInMillis;
-            var cal = DateTimeEx.GetInstance(timeZone);
-            cal.TimeInMillis = startLong;
-            EvaluateCalOpsCalendar(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            var startTime = cal.TimeInMillis;
+            var dtx = DateTimeEx.GetInstance(timeZone);
+            dtx.SetUtcMillis(startLong);
+            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            var startTime = dtx.TimeInMillis;
             var endTime = startTime + (endLong - startLong);
             return intervalOp.Evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .DeclareVar(typeof(long), "startLong", ExprDotMethod(Ref("startTimestamp"), "getTimeInMillis"))
                 .DeclareVar(typeof(long), "endLong", ExprDotMethod(Ref("endTimestamp"), "getTimeInMillis"))
                 .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
-                .Expression(ExprDotMethod(Ref("dtx"), "setTimeInMillis", Ref("startLong")));
+                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", Ref("startLong")));
             EvaluateCalOpsCalendarCodegen(
                 block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
             block.DeclareVar(typeof(long), "startTime", ExprDotMethod(Ref("dtx"), "getTimeInMillis"))

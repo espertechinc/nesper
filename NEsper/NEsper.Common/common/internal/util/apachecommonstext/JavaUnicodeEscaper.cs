@@ -1,18 +1,13 @@
-using System;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
 
 namespace com.espertech.esper.common.@internal.util.apachecommonstext
 {
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
-    // http://esper.codehaus.org                                                          /
-    // ---------------------------------------------------------------------------------- /
-    // The software in this package is published under the terms of the GPL license       /
-    // a copy of which has been included with this distribution in the license.txt file.  /
-    ///////////////////////////////////////////////////////////////////////////////////////
-
-
     /// <summary>
     /// Translates codepoints to their Unicode escaped value suitable for Java source.
     /// </summary>
@@ -36,7 +31,7 @@ namespace com.espertech.esper.common.@internal.util.apachecommonstext
         /// <returns>the newly created {@code UnicodeEscaper} instance</returns>
         public static JavaUnicodeEscaper Below(int codepoint)
         {
-            return OutsideOf(codepoint, Int32.MaxValue);
+            return OutsideOf(codepoint, int.MaxValue);
         }
 
         /// <summary>

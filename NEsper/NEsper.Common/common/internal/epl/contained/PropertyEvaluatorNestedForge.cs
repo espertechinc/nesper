@@ -54,18 +54,15 @@ namespace com.espertech.esper.common.@internal.epl.contained
             var method = parent.MakeChild(typeof(PropertyEvaluatorNested), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(PropertyEvaluatorNested), "pe", NewInstance(typeof(PropertyEvaluatorNested)))
-                .ExprDotMethod(
-                    Ref("pe"), "setResultEventType",
+                .SetProperty(Ref("pe"), "ResultEventType",
                     EventTypeUtility.ResolveTypeCodegen(
                         fragmentEventTypes[fragmentEventTypes.Length - 1].FragmentType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("pe"), "setExpressionTexts", Constant(expressionTexts))
-                .ExprDotMethod(
-                    Ref("pe"), "setWhereClauses",
+                .SetProperty(Ref("pe"), "ExpressionTexts", Constant(expressionTexts))
+                .SetProperty(Ref("pe"), "WhereClauses",
                     PropertyEvaluatorAccumulativeForge.MakeWhere(whereClauses, method, symbols, classScope))
-                .ExprDotMethod(
-                    Ref("pe"), "setContainedEventEvals",
+                .SetProperty(Ref("pe"), "ContainedEventEvals",
                     PropertyEvaluatorAccumulativeForge.MakeContained(containedEventEvals, method, symbols, classScope))
-                .ExprDotMethod(Ref("pe"), "setFragmentEventTypeIsIndexed", Constant(fragmentEventTypesIsIndexed))
+                .SetProperty(Ref("pe"), "FragmentEventTypeIsIndexed", Constant(fragmentEventTypesIsIndexed))
                 .MethodReturn(Ref("pe"));
             return LocalMethod(method);
         }

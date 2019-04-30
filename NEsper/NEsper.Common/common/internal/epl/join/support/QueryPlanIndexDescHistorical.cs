@@ -13,8 +13,8 @@ namespace com.espertech.esper.common.@internal.epl.join.support
     public class QueryPlanIndexDescHistorical
     {
         public QueryPlanIndexDescHistorical(
-            String strategyName,
-            String indexName)
+            string strategyName,
+            string indexName)
         {
             StrategyName = strategyName;
             IndexName = indexName;

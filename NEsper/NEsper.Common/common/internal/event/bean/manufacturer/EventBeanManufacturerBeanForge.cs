@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var init = codegenClassScope.PackageScope.InitMethod;
+            var init = codegenClassScope.NamespaceScope.InitMethod;
 
             var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var beanType = codegenClassScope.AddFieldUnshared(

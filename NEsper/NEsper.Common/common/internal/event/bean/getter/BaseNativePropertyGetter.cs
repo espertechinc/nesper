@@ -27,13 +27,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     /// </summary>
     public abstract class BaseNativePropertyGetter : EventPropertyGetterSPI
     {
-        private readonly BeanEventTypeFactory beanEventTypeFactory;
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly Type fragmentClassType;
-        private readonly bool isArray;
-        private readonly bool isIterable;
-        private volatile BeanEventType fragmentEventType;
-        private bool isFragmentable;
+        private readonly BeanEventTypeFactory _beanEventTypeFactory;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly Type _fragmentClassType;
+        private readonly bool _isArray;
+        private readonly bool _isIterable;
+        private volatile BeanEventType _fragmentEventType;
+        private bool _isFragmentable;
 
         public BaseNativePropertyGetter(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -41,25 +41,25 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             Type returnType,
             Type genericType)
         {
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.beanEventTypeFactory = beanEventTypeFactory;
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _beanEventTypeFactory = beanEventTypeFactory;
             if (returnType.IsArray) {
-                fragmentClassType = returnType.GetElementType();
-                isArray = true;
-                isIterable = false;
+                _fragmentClassType = returnType.GetElementType();
+                _isArray = true;
+                _isIterable = false;
             }
-            else if (returnType.IsImplementsInterface(typeof(Iterable))) {
-                fragmentClassType = genericType;
-                isArray = false;
-                isIterable = true;
+            else if (returnType.IsGenericEnumerable()) {
+                _fragmentClassType = genericType;
+                _isArray = false;
+                _isIterable = true;
             }
             else {
-                fragmentClassType = returnType;
-                isArray = false;
-                isIterable = false;
+                _fragmentClassType = returnType;
+                _isArray = false;
+                _isIterable = false;
             }
 
-            isFragmentable = true;
+            _isFragmentable = true;
         }
 
         public abstract Type TargetType { get; }
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public object GetFragment(EventBean eventBean)
         {
             DetermineFragmentable();
-            if (!isFragmentable) {
+            if (!_isFragmentable) {
                 return null;
             }
 
@@ -78,15 +78,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return null;
             }
 
-            if (isArray) {
-                return ToFragmentArray((object[]) @object, fragmentEventType, eventBeanTypedEventFactory);
+            if (_isArray) {
+                return ToFragmentArray((object[]) @object, _fragmentEventType, _eventBeanTypedEventFactory);
             }
 
-            if (isIterable) {
-                return ToFragmentIterable(@object, fragmentEventType, eventBeanTypedEventFactory);
+            if (_isIterable) {
+                return ToFragmentIterable(@object, _fragmentEventType, _eventBeanTypedEventFactory);
             }
 
-            return eventBeanTypedEventFactory.AdapterForTypedBean(@object, fragmentEventType);
+            return _eventBeanTypedEventFactory.AdapterForTypedBean(@object, _fragmentEventType);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             DetermineFragmentable();
-            if (!isFragmentable) {
+            if (!_isFragmentable) {
                 return ConstantNull();
             }
 
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             DetermineFragmentable();
-            if (!isFragmentable) {
+            if (!_isFragmentable) {
                 return ConstantNull();
             }
 
@@ -258,24 +258,24 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             BeanEventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            if (!(@object is Iterable)) {
+            if (!(@object is IEnumerable<EventBean> enumerable)) {
                 return null;
             }
 
-            IEnumerator<EventBean> iterator = ((IEnumerator<EventBean>) @object).GetEnumerator();
-            if (!iterator.HasNext) {
+            var enumerator = enumerable.GetEnumerator();
+            if (!enumerator.MoveNext()) {
                 return new EventBean[0];
             }
 
             var events = new ArrayDeque<EventBean>();
-            while (iterator.HasNext) {
-                object next = iterator.Next();
+            do {
+                object next = enumerator.Current;
                 if (next == null) {
                     continue;
                 }
 
                 events.Add(eventBeanTypedEventFactory.AdapterForTypedBean(next, fragmentEventType));
-            }
+            } while (enumerator.MoveNext());
 
             return events.ToArray();
         }
@@ -289,7 +289,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 false,
                 Cast(
                     typeof(BeanEventType),
-                    EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF)));
+                    EventTypeUtility.ResolveTypeCodegen(_fragmentEventType, EPStatementInitServicesConstants.REF)));
 
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(TargetType, "underlying").Block
@@ -298,29 +298,29 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     UnderlyingGetCodegen(Ref("underlying"), codegenMethodScope, codegenClassScope))
                 .IfRefNullReturnNull("object");
 
-            if (isArray) {
+            if (_isArray) {
                 return block.MethodReturn(
                     StaticMethod(
-                        typeof(BaseNativePropertyGetter), "toFragmentArray", Cast(typeof(object[]), Ref("object")),
+                        typeof(BaseNativePropertyGetter), "ToFragmentArray", Cast(typeof(object[]), Ref("object")),
                         mtype, msvc));
             }
 
-            if (isIterable) {
+            if (_isIterable) {
                 return block.MethodReturn(
-                    StaticMethod(typeof(BaseNativePropertyGetter), "toFragmentIterable", Ref("object"), mtype, msvc));
+                    StaticMethod(typeof(BaseNativePropertyGetter), "ToFragmentIterable", Ref("object"), mtype, msvc));
             }
 
-            return block.MethodReturn(ExprDotMethod(msvc, "adapterForTypedBean", Ref("object"), mtype));
+            return block.MethodReturn(ExprDotMethod(msvc, "AdapterForTypedObject", Ref("object"), mtype));
         }
 
         private void DetermineFragmentable()
         {
-            if (fragmentEventType == null) {
-                if (fragmentClassType.IsFragmentableType()) {
-                    fragmentEventType = beanEventTypeFactory.GetCreateBeanType(fragmentClassType);
+            if (_fragmentEventType == null) {
+                if (_fragmentClassType.IsFragmentableType()) {
+                    _fragmentEventType = _beanEventTypeFactory.GetCreateBeanType(_fragmentClassType);
                 }
                 else {
-                    isFragmentable = false;
+                    _isFragmentable = false;
                 }
             }
         }

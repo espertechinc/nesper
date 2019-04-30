@@ -50,6 +50,10 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public abstract void Destroy();
 
+        public ContextControllerInitTermFactory InitTermFactory {
+            get => factory;
+        }
+
         public ContextControllerFactory Factory {
             get => factory;
         }

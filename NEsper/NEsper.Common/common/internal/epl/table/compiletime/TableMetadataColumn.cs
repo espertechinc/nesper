@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             CodegenExpressionRef col,
             CodegenBlock block)
         {
-            block.ExprDotMethod(col, "setKey", Constant(IsKey))
-                .ExprDotMethod(col, "setColumnName", Constant(ColumnName));
+            block.SetProperty(col, "Key", Constant(IsKey))
+                .SetProperty(col, "ColumnName", Constant(ColumnName));
         }
 
         public static CodegenExpression MakeColumns(

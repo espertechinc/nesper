@@ -13,11 +13,11 @@ namespace com.espertech.esper.common.@internal.view.core
     public interface ViewDataVisitorContained
     {
         void VisitPrimary(
-            String viewName,
+            string viewName,
             int numContained);
 
         void VisitContained(
-            Object containedKey,
+            object containedKey,
             View containedView);
     }
 }

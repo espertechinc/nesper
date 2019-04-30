@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
     public class CodegenMakeableUtil
     {
-        public static CodegenExpression MakeArray<T>(
+        public static CodegenExpression MakeArray<TK>(
             string name,
             Type clazz,
-            CodegenMakeable<T>[] forges,
+            CodegenMakeable<TK>[] forges,
             Type generator,
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
-            CodegenClassScope classScope)
-            where T : CodegenSymbolProvider
+            CodegenClassScope classScope) 
+            where TK : CodegenSymbolProvider
         {
             var arrayType = TypeHelper.GetArrayType(clazz);
             if (forges == null || forges.Length == 0) {
@@ -46,20 +46,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             return LocalMethod(method);
         }
 
-        public static CodegenExpression MakeMap<K, V>(
+        public static CodegenExpression MakeMap<TK>(
             string name,
             Type clazzKey,
             Type clazzValue,
-            IDictionary<CodegenMakeable<K>, CodegenMakeable<V>> map,
+            IDictionary<CodegenMakeable<TK>, CodegenMakeable<TK>> map,
             Type generator,
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
-            CodegenClassScope classScope)
-            where K : CodegenSymbolProvider
-            where V : CodegenSymbolProvider
+            CodegenClassScope classScope) 
+            where TK : CodegenSymbolProvider
         {
             if (map.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "emptyMap");
+                return StaticMethod(typeof(Collections), "GetEmptyDataMap");
             }
 
             var method = parent.MakeChild(typeof(IDictionary<string, object>), generator, classScope);
@@ -75,7 +74,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
             if (map.Count == 1) {
                 method.Block.MethodReturn(
-                    StaticMethod(typeof(Collections), "singletonMap", Ref("key0"), Ref("value0")));
+                    StaticMethod(typeof(Collections), "SingletonDataMap", Ref("key0"), Ref("value0")));
             }
             else {
                 method.Block.DeclareVar(

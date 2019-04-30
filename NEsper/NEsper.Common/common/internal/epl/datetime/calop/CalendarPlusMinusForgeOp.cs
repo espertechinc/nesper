@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
         public static CodegenExpression CodegenCalendar(
             CalendarPlusMinusForge forge,
-            CodegenExpression cal,
+            CodegenExpression dtx,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
@@ -89,12 +89,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
                     evaluationType);
                 return StaticMethod(
-                    typeof(CalendarPlusMinusForgeOp), "actionCalendarPlusMinusNumber", cal, Constant(forge.factor),
+                    typeof(CalendarPlusMinusForgeOp), "actionCalendarPlusMinusNumber", dtx, Constant(forge.factor),
                     longDuration);
             }
 
             return StaticMethod(
-                typeof(CalendarPlusMinusForgeOp), "actionCalendarPlusMinusTimePeriod", cal, Constant(forge.factor),
+                typeof(CalendarPlusMinusForgeOp), "actionCalendarPlusMinusTimePeriod", dtx, Constant(forge.factor),
                 forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
         }
 
@@ -221,12 +221,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         }
 
         public static void ActionSafeOverflow(
-            DateTimeEx cal,
+            DateTimeEx dtx,
             int factor,
             TimePeriod tp)
         {
             if (Math.Abs(factor) == 1) {
-                ActionCalendarPlusMinusTimePeriod(cal, factor, tp);
+                ActionCalendarPlusMinusTimePeriod(dtx, factor, tp);
                 return;
             }
 
@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 return;
             }
 
-            ActionHandleOverflow(cal, factor, tp, max.Value);
+            ActionHandleOverflow(dtx, factor, tp, max.Value);
         }
 
         /// <summary>
@@ -389,7 +389,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         }
 
         private static void ActionHandleOverflow(
-            DateTimeEx cal,
+            DateTimeEx dtx,
             int factor,
             TimePeriod tp,
             int max)
@@ -398,12 +398,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 // overflow
                 var first = factor / 2;
                 var second = factor - first * 2 + first;
-                ActionHandleOverflow(cal, first, tp, max);
-                ActionHandleOverflow(cal, second, tp, max);
+                ActionHandleOverflow(dtx, first, tp, max);
+                ActionHandleOverflow(dtx, second, tp, max);
             }
             else {
                 // no overflow
-                ActionCalendarPlusMinusTimePeriod(cal, factor, tp);
+                ActionCalendarPlusMinusTimePeriod(dtx, factor, tp);
             }
         }
     }

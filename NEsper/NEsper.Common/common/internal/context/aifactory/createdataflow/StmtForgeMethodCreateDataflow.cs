@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             var dataflowForge = BuildForge(createDataFlowDesc, codegenEnv, @base, services);
 
-            var packageScope = new CodegenPackageScope(
+            var packageScope = new CodegenNamespaceScope(
                 packageName, statementFieldsClassName, services.IsInstrumented);
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider), classPostfix);
@@ -123,7 +123,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             // add additional forgeables
             foreach (StmtForgeMethodResult additional in dataflowForge.GetAdditionalForgables()) {
-                forgables.AddAll(0, additional.Forgables);
+                foreach (var v in Enumerable.Reverse(additional.Forgables)) {
+                    forgables.Insert(0, v);
+                }
                 scheduleds.AddAll(additional.Scheduleds);
             }
 

@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return block.MethodReturn(ConstantNull());
         }
 
-        private bool IsExistsProperty(IDictionary<object, object> map)
+        private bool IsExistsProperty(IDictionary<string, object> map)
         {
             var value = map.Get(propertyMap);
             if (value == null || !(value is IDictionary<string, object>)) {

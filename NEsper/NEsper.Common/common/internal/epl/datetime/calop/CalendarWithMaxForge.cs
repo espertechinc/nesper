@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
         public CalendarWithMaxForge(DateTimeFieldEnum field)
         {
-            this._field = field;
+            _field = field;
         }
 
         public CalendarOp EvalOp => this;
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             return ExprDotMethod(
                 dateTimeEx, "SetFieldValue", Constant(_field),
-                ExprDotMethod(dateTimeEx, "getActualMaximum", Constant(_field)));
+                ExprDotMethod(dateTimeEx, "GetActualMaximum", Constant(_field)));
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool max,
             DateTimeFieldEnum field)
         {
-            var fieldExpr = EnumValue(field); 
+            var fieldExpr = EnumValue(field);
             var valueRange = ExprDotMethod(val, "range", fieldExpr);
             return ExprDotMethod(val, "with", fieldExpr, ExprDotMethod(valueRange, max ? "GetMaximum" : "GetMinimum"));
         }

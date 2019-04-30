@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.type
 
     public static class OuterJoinTypeExtensions
     {
-        public static String GetText(this OuterJoinType joinType)
+        public static string GetText(this OuterJoinType joinType)
         {
             switch (joinType) {
                 case OuterJoinType.LEFT:

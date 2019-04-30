@@ -22,17 +22,18 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class StmtClassForgableStmtFields : StmtClassForgable
     {
-        private readonly int numStreams;
-        private readonly CodegenPackageScope packageScope;
+        private readonly string _className;
+        private readonly int _numStreams;
+        private readonly CodegenNamespaceScope _namespaceScope;
 
         public StmtClassForgableStmtFields(
             string className,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             int numStreams)
         {
-            ClassName = className;
-            this.packageScope = packageScope;
-            this.numStreams = numStreams;
+            _className = className;
+            _namespaceScope = namespaceScope;
+            _numStreams = numStreams;
         }
 
         public CodegenClass Forge(bool includeDebugSymbols)
@@ -43,7 +44,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             GenerateNamedMembers(members);
 
             // numbered members
-            foreach (KeyValuePair<CodegenField, CodegenExpression> entry in packageScope.FieldsUnshared) {
+            foreach (var entry in _namespaceScope.FieldsUnshared) {
                 var field = entry.Key;
                 members.Add(
                     new CodegenTypedParam(field.Type, field.Name)
@@ -56,21 +57,23 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // ctor
             var ctor = new CodegenCtor(GetType(), includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
-            var classScope = new CodegenClassScope(includeDebugSymbols, packageScope, ClassName);
+            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
 
-            // init method
-            var initMethod = packageScope.InitMethod;
-            foreach (KeyValuePair<CodegenField, CodegenExpression> entry in packageScope.FieldsUnshared) {
+            //_namespaceScope
+            var initMethod = _namespaceScope.InitMethod;
+            foreach (var entry in _namespaceScope.FieldsUnshared) {
                 initMethod.Block.AssignRef(entry.Key.Name, entry.Value);
             }
 
             // assignment methods
-            CodegenMethod assignMethod =
-                CodegenMethod.MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                    .AddParam(typeof(StatementAIFactoryAssignments), "assignments").WithStatic(true);
-            CodegenMethod unassignMethod = CodegenMethod.MakeParentNode(
-                typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope).WithStatic(true);
-            GenerateAssignAndUnassign(numStreams, assignMethod, unassignMethod, packageScope.FieldsNamed);
+            CodegenMethod assignMethod = CodegenMethod
+                .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .AddParam(typeof(StatementAIFactoryAssignments), "assignments")
+                .WithStatic(true);
+            CodegenMethod unassignMethod = CodegenMethod
+                .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .WithStatic(true);
+            GenerateAssignAndUnassign(_numStreams, assignMethod, unassignMethod, _namespaceScope.FieldsNamed);
 
             // build methods
             var methods = new CodegenClassMethods();
@@ -79,18 +82,18 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "unassign", methods);
 
             return new CodegenClass(
-                typeof(StatementFields), packageScope.PackageName, ClassName, classScope, members, ctor, methods,
+                typeof(StatementFields), _namespaceScope.PackageName, ClassName, classScope, members, ctor, methods,
                 Collections.GetEmptyList<CodegenInnerClass>());
         }
 
-        public string ClassName { get; }
+        public string ClassName => _className;
 
         public StmtClassForgableType ForgableType => StmtClassForgableType.FIELDS;
 
         private void GenerateSubstitutionParamMembers(IList<CodegenTypedParam> members)
         {
-            IList<CodegenSubstitutionParamEntry> numbered = packageScope.SubstitutionParamsByNumber;
-            IDictionary<string, CodegenSubstitutionParamEntry> named = packageScope.SubstitutionParamsByName;
+            IList<CodegenSubstitutionParamEntry> numbered = _namespaceScope.SubstitutionParamsByNumber;
+            IDictionary<string, CodegenSubstitutionParamEntry> named = _namespaceScope.SubstitutionParamsByName;
 
             if (numbered.IsEmpty() && named.IsEmpty()) {
                 return;
@@ -110,13 +113,13 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             for (var i = 0; i < fields.Count; i++) {
                 string name = fields[i].Field.Name;
-                members.Add(new CodegenTypedParam(fields[i].Type, name).WithStatic(true).WithFinal(false));
+                members.Add(new CodegenTypedParam(fields[i].Type, name).WithStatic(true).WithFinal(true));
             }
         }
 
         private void GenerateNamedMembers(IList<CodegenTypedParam> fields)
         {
-            foreach (KeyValuePair<CodegenFieldName, CodegenField> entry in packageScope.FieldsNamed) {
+            foreach (KeyValuePair<CodegenFieldName, CodegenField> entry in _namespaceScope.FieldsNamed) {
                 fields.Add(new CodegenTypedParam(entry.Value.Type, entry.Key.Name).WithFinal(false).WithStatic(true));
             }
         }
@@ -205,8 +208,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 }
 
                 if (name is CodegenFieldNameMatchRecognizeAgg) {
-                    Generate(
-                        ConstantNull(), name, assign, unassign, true); // we assign null as the view can assign a value
+                    Generate(ConstantNull(), name, assign, unassign, true); // we assign null as the view can assign a value
                     continue;
                 }
 
@@ -215,7 +217,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         }
 
         public static void MakeSubstitutionSetter(
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope packageScope,
             CodegenMethod method,
             CodegenClassScope classScope)
         {
@@ -223,8 +225,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             method.Block.MethodReturn(assignerSetterClass);
 
             var assignMethod = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtFields), classScope).AddParam(
-                    typeof(StatementAIFactoryAssignments), "assignments");
+                .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtFields), classScope)
+                .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
             assignerSetterClass.AddMethod("assign", assignMethod);
             assignMethod.Block.StaticMethod(packageScope.FieldsClassNameOptional, "assign", Ref("assignments"));
 

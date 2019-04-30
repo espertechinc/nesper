@@ -33,9 +33,9 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             ImportService importService)
         {
             // Add object-array in dependency order such that supertypes are added before subtypes
-            ISet<string> dependentObjectArrayOrder;
+            ICollection<string> dependentObjectArrayOrder;
             try {
-                IDictionary<string, ISet<string>> typesReferences = ToTypesReferences(objectArrayTypeConfigurations);
+                var typesReferences = ToTypesReferences(objectArrayTypeConfigurations);
                 dependentObjectArrayOrder = GraphUtil.GetTopDownOrder(typesReferences);
             }
             catch (GraphCircularDependencyException e) {
@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 throw new ConfigurationException("A null value has been provided for the type");
             }
 
-            Type clazz = TypeHelper.GetClassForSimpleName(type, importService.ClassForNameProvider);
+            var clazz = TypeHelper.GetTypeForSimpleName(type, importService.ClassForNameProvider);
             if (clazz == null) {
                 return null;
             }

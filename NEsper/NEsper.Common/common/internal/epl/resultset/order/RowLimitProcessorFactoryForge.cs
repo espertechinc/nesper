@@ -111,10 +111,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenMethod method = parent.MakeChild(typeof(RowLimitProcessorFactory), this.GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(RowLimitProcessorFactory), "factory", NewInstance(typeof(RowLimitProcessorFactory)))
-                .ExprDotMethod(@Ref("factory"), "setNumRowsVariable", numRowsVariable)
-                .ExprDotMethod(@Ref("factory"), "setOffsetVariable", offsetVariable)
-                .ExprDotMethod(@Ref("factory"), "setCurrentRowLimit", Constant(currentRowLimit))
-                .ExprDotMethod(@Ref("factory"), "setCurrentOffset", Constant(currentOffset))
+                .SetProperty(Ref("factory"), "NumRowsVariable", numRowsVariable)
+                .SetProperty(Ref("factory"), "OffsetVariable", offsetVariable)
+                .SetProperty(Ref("factory"), "CurrentRowLimit", Constant(currentRowLimit))
+                .SetProperty(Ref("factory"), "CurrentOffset", Constant(currentOffset))
                 .MethodReturn(@Ref("factory"));
             return LocalMethod(method);
         }

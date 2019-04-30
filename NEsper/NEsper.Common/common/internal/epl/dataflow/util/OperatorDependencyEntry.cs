@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public ICollection<int> Outgoing { get; private set; }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "OperatorDependencyEntry{" +
                    "incoming=" + Incoming.Render() +

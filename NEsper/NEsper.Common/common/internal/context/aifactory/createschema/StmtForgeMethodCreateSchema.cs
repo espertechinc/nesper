@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             EPLValidationUtil.ValidateTableExists(services.TableCompileTimeResolver, spec.SchemaName);
             var eventType = HandleCreateSchema(spec, services);
 
-            var packageScope = new CodegenPackageScope(packageName, null, services.IsInstrumented);
+            var packageScope = new CodegenNamespaceScope(packageName, null, services.IsInstrumented);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementAIFactoryProvider), classPostfix);
             var forge = new StatementAgentInstanceFactoryCreateSchemaForge(eventType);

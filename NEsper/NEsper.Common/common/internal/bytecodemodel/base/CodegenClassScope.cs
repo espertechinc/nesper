@@ -19,21 +19,21 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
     {
         public CodegenClassScope(
             bool debug,
-            CodegenPackageScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             string outermostClassName)
             : base(debug)
         {
-            PackageScope = packageScope;
+            NamespaceScope = namespaceScope;
             OutermostClassName = outermostClassName;
         }
 
-        public CodegenPackageScope PackageScope { get; }
+        public CodegenNamespaceScope NamespaceScope { get; }
 
         public string OutermostClassName { get; }
 
         public IList<CodegenInnerClass> AdditionalInnerClasses { get; } = new List<CodegenInnerClass>();
 
-        public bool IsInstrumented => PackageScope.IsInstrumented;
+        public bool IsInstrumented => NamespaceScope.IsInstrumented;
 
         public CodegenExpressionField AddFieldUnshared<T>(
             bool isFinal,
@@ -47,19 +47,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             Type type,
             CodegenExpression assignScopedPackageInitMethod)
         {
-            return PackageScope.AddFieldUnshared(isFinal, type, assignScopedPackageInitMethod);
+            return NamespaceScope.AddFieldUnshared(isFinal, type, assignScopedPackageInitMethod);
         }
 
         public CodegenExpressionField AddOrGetFieldSharable(CodegenFieldSharable sharable)
         {
-            return PackageScope.AddOrGetFieldSharable(sharable);
+            return NamespaceScope.AddOrGetFieldSharable(sharable);
         }
 
         public CodegenExpressionField AddOrGetFieldWellKnown(
             CodegenFieldName fieldName,
             Type type)
         {
-            return PackageScope.AddOrGetFieldWellKnown(fieldName, type);
+            return NamespaceScope.AddOrGetFieldWellKnown(fieldName, type);
         }
 
         public void AddInnerClass(CodegenInnerClass innerClass)
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string name,
             Type type)
         {
-            return PackageScope.AddSubstitutionParameter(name, type);
+            return NamespaceScope.AddSubstitutionParameter(name, type);
         }
     }
 } // end of namespace

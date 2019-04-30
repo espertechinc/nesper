@@ -235,19 +235,17 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                         var valueString = value.ToString().Trim();
 
                         // find case-sensitive exact match first
-                        foreach (object constant in annotationAttribute.AnnotationType.EnumConstants) {
-                            var e = (Enum) constant;
+                        foreach (Enum e in Enum.GetValues(annotationAttribute.AnnotationType)) {
                             if (e.GetName() == valueString) {
-                                return constant;
+                                return e;
                             }
                         }
 
                         // find case-insensitive match
                         var valueUppercase = valueString.ToUpperInvariant();
-                        foreach (object constant in annotationAttribute.AnnotationType.EnumConstants) {
-                            var e = (Enum) constant;
+                        foreach (Enum e in Enum.GetValues(annotationAttribute.AnnotationType)) {
                             if (e.GetName().ToUpperInvariant() == valueUppercase) {
-                                return constant;
+                                return e;
                             }
                         }
 
@@ -329,7 +327,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         {
             var props = new List<AnnotationAttribute>();
             var methods = annotationClass.GetMethods();
-            if (methods == null) {
+            if (methods.Length == 0) {
                 return Collections.GetEmptyList<AnnotationAttribute>();
             }
 
@@ -352,15 +350,10 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     continue;
                 }
 
-                props.Add(
-                    new AnnotationAttribute(
-                        method.Name, method.ReturnType, method.DefaultValue));
+                props.Add(new AnnotationAttribute(method.Name, method.ReturnType, null)); // TBD: method.DefaultValue
             }
 
-            props.Sort(
-                (
-                    o1,
-                    o2) => o1.Name.CompareTo(o2.Name));
+            props.Sort((o1, o2) => o1.Name.CompareTo(o2.Name));
             return props;
         }
 

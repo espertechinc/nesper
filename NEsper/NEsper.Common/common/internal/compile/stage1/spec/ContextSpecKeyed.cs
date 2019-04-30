@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             method.Block
                 .DeclareVar(
                     typeof(ContextControllerDetailKeyed), "detail", NewInstance(typeof(ContextControllerDetailKeyed)))
-                .ExprDotMethod(Ref("detail"), "setItems", Ref("items"));
+                .SetProperty(Ref("detail"), "Items", Ref("items"));
 
             if (OptionalInit != null && !OptionalInit.IsEmpty()) {
                 method.Block.DeclareVar(
@@ -67,12 +67,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                             OptionalInit[i].Make(method, symbols, classScope)));
                 }
 
-                method.Block.ExprDotMethod(Ref("detail"), "setOptionalInit", Ref("init"));
+                method.Block.SetProperty(Ref("detail"), "OptionalInit", Ref("init"));
             }
 
             if (OptionalTermination != null) {
-                method.Block.ExprDotMethod(
-                    Ref("detail"), "setOptionalTermination", OptionalTermination.Make(method, symbols, classScope));
+                method.Block.SetProperty(Ref("detail"), "OptionalTermination", OptionalTermination.Make(method, symbols, classScope));
             }
 
             method.Block.Expression(

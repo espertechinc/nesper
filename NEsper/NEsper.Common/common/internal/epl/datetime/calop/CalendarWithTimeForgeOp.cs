@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var minNum = CalendarWithDateForgeOp.GetInt(min, eventsPerStream, isNewData, context);
             var secNum = CalendarWithDateForgeOp.GetInt(sec, eventsPerStream, isNewData, context);
             var msecNum = CalendarWithDateForgeOp.GetInt(msec, eventsPerStream, isNewData, context);
-            ActionSetHMSMDateTimeEx(dateTimeEx, hourNum, minNum, secNum, msecNum);
+            return ActionSetHMSMDateTimeEx(dateTimeEx, hourNum, minNum, secNum, msecNum);
         }
 
         public DateTimeOffset Evaluate(
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
         public static CodegenExpression CodegenCalendar(
             CalendarWithTimeForge forge,
-            CodegenExpression cal,
+            CodegenExpression dtx,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 Ref("minute"),
                 Ref("second"),
                 Ref("msec"));
-            return LocalMethod(methodNode, cal);
+            return LocalMethod(methodNode, dtx);
         }
 
         public static CodegenExpression CodegenDateTimeOffset(
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         /// <param name="minute">min</param>
         /// <param name="second">sec</param>
         /// <param name="msec">msec</param>
-        public static void ActionSetHMSMDateTimeEx(
+        public static DateTimeEx ActionSetHMSMDateTimeEx(
             DateTimeEx dateTime,
             int? hour,
             int? minute,
@@ -177,6 +177,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             if (msec != null) {
                 dateTime.SetMillis(msec.Value);
             }
+
+            return dateTime;
         }
 
         /// <summary>

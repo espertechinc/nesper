@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 {
     public sealed class ExprNodeAdapterSSPlain : ExprNodeAdapterBase
     {
-        private ExprNodeAdapterSSPlain(
+        internal ExprNodeAdapterSSPlain(
             FilterSpecParamExprNode factory,
             ExprEvaluatorContext evaluatorContext)
             : base(factory, evaluatorContext)

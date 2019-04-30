@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprNewStructNodeForge(
             ExprNewStructNode parent,
             bool isAllConstants,
-            LinkedHashMap<string, object> eventType)
+            IDictionary<string, object> eventType)
         {
             ForgeRenderable = parent;
             IsAllConstants = isAllConstants;
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public bool IsAllConstants { get; }
 
-        public LinkedHashMap<string, object> EventType { get; }
+        public IDictionary<string, object> EventType { get; }
 
         ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
 

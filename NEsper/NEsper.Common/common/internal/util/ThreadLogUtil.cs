@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="objects">to write</param>
         public static void Trace(
             string text,
-            params Object[] objects)
+            params object[] objects)
         {
             if (!ENABLED_TRACE) {
                 return;
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="objects">to write</param>
         public static void Info(
             string text,
-            params Object[] objects)
+            params object[] objects)
         {
             if (!ENABLED_INFO) {
                 return;
@@ -87,37 +87,37 @@ namespace com.espertech.esper.common.@internal.util
             Write(lockAction + " " + GetLockInfo(@lock));
         }
 
-        private static String GetLockInfo(Object lockObj)
+        private static string GetLockInfo(object lockObj)
         {
-            String lockid = String.Format("Lock@{0:X8}", Marshal.GetIUnknownForObject(lockObj).ToInt64());
+            string lockid = string.Format("Lock@{0:X8}", Marshal.GetIUnknownForObject(lockObj).ToInt64());
             return "lock " + lockid;
             //return "lock " + lockid + " held=" + lockObj.HoldCount + " isHeldMe=" + lockObj.IsHeldByCurrentThread() +
             //        " hasQueueThreads=" + lockObj.HasQueuedThreads();
         }
 
-        private static String GetLockInfo(IReaderWriterLock @lockObj)
+        private static string GetLockInfo(IReaderWriterLock @lockObj)
         {
-            String lockid = String.Format("RWLock@{0:X}", lockObj.GetHashCode());
+            string lockid = string.Format("RWLock@{0:X}", lockObj.GetHashCode());
             return lockid +
                    //" readLockCount=" + lockObj.ReadLockCount +
                    " isWriteLocked=" + lockObj.IsWriterLockHeld;
         }
 
         private static void Write(
-            String text,
-            params Object[] objects)
+            string text,
+            params object[] objects)
         {
             StringBuilder buf = new StringBuilder();
             buf.Append(text);
             buf.Append(' ');
-            foreach (Object obj in objects) {
-                if ((obj is String) || (obj is ValueType)) {
+            foreach (object obj in objects) {
+                if ((obj is string) || (obj is ValueType)) {
                     buf.Append(obj.ToString());
                 }
                 else {
                     buf.Append(obj.GetType().FullName);
                     buf.Append('@');
-                    buf.Append(String.Format("{0:X2}", obj.GetHashCode()));
+                    buf.Append(string.Format("{0:X2}", obj.GetHashCode()));
                 }
 
                 buf.Append(' ');
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.util
             Write(buf.ToString());
         }
 
-        private static void Write(String text)
+        private static void Write(string text)
         {
             Log.Info(".write Thread " + Thread.CurrentThread.ManagedThreadId + " " + text);
         }

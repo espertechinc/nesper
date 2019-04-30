@@ -44,9 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                 .DeclareVar(
                     typeof(HistoricalIndexLookupStrategyInKeywordSingle), "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategyInKeywordSingle)))
-                .ExprDotMethod(Ref("strat"), "setLookupStream", Constant(lookupStream))
-                .ExprDotMethod(
-                    Ref("strat"), "setEvaluators",
+                .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
+                .SetProperty(Ref("strat"), "Evaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(evaluators, method, GetType(), classScope))
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);

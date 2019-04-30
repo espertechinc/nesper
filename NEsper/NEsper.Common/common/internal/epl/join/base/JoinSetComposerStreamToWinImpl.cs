@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -44,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             bool[] selfJoinRepositoryResets)
         {
             this.allowInitIndex = allowInitIndex;
-            this.repositories = JoinSetComposerUtil.ToArray();
+            this.repositories = this.repositories; //.ToArray();
             this.streamNumber = streamNumber;
             this.queryStrategy = queryStrategy;
 

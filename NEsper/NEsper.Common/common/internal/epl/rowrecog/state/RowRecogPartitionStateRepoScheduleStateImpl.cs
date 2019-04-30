@@ -34,21 +34,21 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             long matchBeginTime,
             RowRecogNFAStateEntry state)
         {
-            object value = schedule.Get(matchBeginTime);
+            var value = schedule.Get(matchBeginTime);
             if (value == null) {
                 schedule.Put(matchBeginTime, state);
                 return true;
             }
 
             if (value is RowRecogNFAStateEntry) {
-                RowRecogNFAStateEntry valueEntry = (RowRecogNFAStateEntry) value;
+                var valueEntry = (RowRecogNFAStateEntry) value;
                 IList<RowRecogNFAStateEntry> list = new List<RowRecogNFAStateEntry>();
                 list.Add(valueEntry);
                 list.Add(state);
                 schedule.Put(matchBeginTime, list);
             }
             else {
-                IList<RowRecogNFAStateEntry> list = (IList<RowRecogNFAStateEntry>) value;
+                var list = (IList<RowRecogNFAStateEntry>) value;
                 list.Add(state);
             }
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             long matchBeginTime,
             IList<RowRecogNFAStateEntry> foundStates)
         {
-            object found = schedule.Delete(matchBeginTime);
+            var found = schedule.Delete(matchBeginTime);
             if (found == null) {
                 return;
             }
@@ -92,13 +92,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             RowRecogNFAStateEntry state,
             IList<RowRecogNFAStateEntry> foundStates)
         {
-            object entry = schedule.Get(matchBeginTime);
+            var entry = schedule.Get(matchBeginTime);
             if (entry == null) {
                 return false;
             }
 
             if (entry is RowRecogNFAStateEntry) {
-                RowRecogNFAStateEntry single = (RowRecogNFAStateEntry) entry;
+                var single = (RowRecogNFAStateEntry) entry;
                 if (terminationStateCompare.CompareTerminationStateToEndState(state, single)) {
                     schedule.Remove(matchBeginTime);
                     foundStates.Add(single);
@@ -108,15 +108,16 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
                 return false;
             }
 
-            IList<RowRecogNFAStateEntry> entries = (IList<RowRecogNFAStateEntry>) entry;
-            IEnumerator<RowRecogNFAStateEntry> it = entries.GetEnumerator();
-            bool removed = false;
-            for (; it.MoveNext();) {
-                RowRecogNFAStateEntry endState = it.Current;
+            var entries = (IList<RowRecogNFAStateEntry>) entry;
+            var removed = false;
+
+            for (var ii = 0 ; ii < entries.Count ; ii++) {
+                var endState = entries[ii];
                 if (terminationStateCompare.CompareTerminationStateToEndState(state, endState)) {
-                    it.Remove();
+                    entries.RemoveAt(ii);
                     foundStates.Add(endState);
                     removed = true;
+                    ii--;
                 }
             }
 

@@ -245,7 +245,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         typeof(KeyValuePair<object, object>), "entry",
                         ExprDotMethod(Ref("keysAndEvents"), "entrySet"));
                     forEach.ExprDotMethod(
-                            REF_AGGREGATIONSVC, "setCurrentAccess", ExprDotMethod(Ref("entry"), "getKey"),
+                            REF_AGGREGATIONSVC, "SetCurrentAccess", ExprDotMethod(Ref("entry"), "getKey"),
                             Ref("cpid"), ConstantNull())
                         .AssignArrayElement(
                             ExprForgeCodegenNames.REF_EPS, Constant(0),
@@ -306,7 +306,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         typeof(KeyValuePair<object, object>), "entry",
                         ExprDotMethod(Ref("keysAndEvents"), "entrySet"));
                     forLoop.ExprDotMethod(
-                            REF_AGGREGATIONSVC, "setCurrentAccess", ExprDotMethod(Ref("entry"), "getKey"),
+                            REF_AGGREGATIONSVC, "SetCurrentAccess", ExprDotMethod(Ref("entry"), "getKey"),
                             ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull())
                         .AssignArrayElement(
                             "eventsPerStream", Constant(0),
@@ -380,7 +380,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         {
             Consumer<CodegenMethod> code = method => {
                 method.Block.ExprDotMethod(
-                    REF_AGGREGATIONSVC, "setCurrentAccess", Ref("mk"),
+                    REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("mk"),
                     ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull());
 
                 if (forge.OptionalHavingNode != null) {
@@ -426,7 +426,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.ExprDotMethod(
-                    REF_AGGREGATIONSVC, "setCurrentAccess", Ref("mk"),
+                    REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("mk"),
                     ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull());
 
                 if (forge.OptionalHavingNode != null) {
@@ -482,7 +482,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         typeof(KeyValuePair<object, object>), "entry",
                         ExprDotMethod(Ref("keysAndEvents"), "entrySet"));
                     forEach.ExprDotMethod(
-                            REF_AGGREGATIONSVC, "setCurrentAccess", ExprDotMethod(Ref("entry"), "getKey"),
+                            REF_AGGREGATIONSVC, "SetCurrentAccess", ExprDotMethod(Ref("entry"), "getKey"),
                             Ref("cpid"), ConstantNull())
                         .DeclareVar(
                             typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS,
@@ -686,7 +686,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             typeof(object), "groupKey",
                             LocalMethod(generateGroupKeyViewSingle, Ref("eventsPerStream"), ConstantTrue()))
                         .ExprDotMethod(
-                            REF_AGGREGATIONSVC, "setCurrentAccess", Ref("groupKey"),
+                            REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("groupKey"),
                             ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull());
 
                     if (forge.OptionalHavingNode != null) {
@@ -742,7 +742,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 .DeclareVar(
                     typeof(EventBean[]), "selectNewEvents",
                     LocalMethod(generateOutputEventsJoin, Ref("keysAndEvents"), ConstantTrue(), ConstantTrue()))
-                .MethodReturn(NewInstance(typeof(ArrayEventIterator), Ref("selectNewEvents")));
+                .MethodReturn(NewInstance(typeof(ArrayEventEnumerator), Ref("selectNewEvents")));
         }
 
         public static void ClearMethodCodegen(CodegenMethod method)
@@ -1070,7 +1070,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
             var outputFactory = classScope.AddFieldUnshared(
                 true, typeof(OutputConditionPolledFactory),
-                forge.OptionalOutputFirstConditionFactory.Make(classScope.PackageScope.InitMethod, classScope));
+                forge.OptionalOutputFirstConditionFactory.Make(classScope.NamespaceScope.InitMethod, classScope));
             var groupKeyTypes = Constant(forge.GroupKeyTypes);
             instance.AddMember(NAME_OUTPUTFIRSTHELPER, typeof(ResultSetProcessorGroupedOutputFirstHelper));
             instance.ServiceCtor.Block.AssignRef(
@@ -1201,7 +1201,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             forloop.DeclareVar(
                                     typeof(object), "mk", ArrayAtIndex(Ref("newDataMultiKey"), Ref("count")))
                                 .ExprDotMethod(
-                                    REF_AGGREGATIONSVC, "setCurrentAccess", Ref("mk"),
+                                    REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("mk"),
                                     ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull())
                                 .DeclareVar(
                                     typeof(EventBean[]), "eventsPerStream",
@@ -1247,7 +1247,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             forloop.DeclareVar(
                                     typeof(object), "mk", ArrayAtIndex(Ref("oldDataMultiKey"), Ref("count")))
                                 .ExprDotMethod(
-                                    REF_AGGREGATIONSVC, "setCurrentAccess", Ref("mk"),
+                                    REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("mk"),
                                     ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull())
                                 .DeclareVar(
                                     typeof(EventBean[]), "eventsPerStream",
@@ -1578,7 +1578,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
             var outputFactory = classScope.AddFieldUnshared(
                 true, typeof(OutputConditionPolledFactory),
-                forge.OptionalOutputFirstConditionFactory.Make(classScope.PackageScope.InitMethod, classScope));
+                forge.OptionalOutputFirstConditionFactory.Make(classScope.NamespaceScope.InitMethod, classScope));
             var groupKeyTypes = Constant(forge.GroupKeyTypes);
             instance.AddMember(NAME_OUTPUTFIRSTHELPER, typeof(ResultSetProcessorGroupedOutputFirstHelper));
             instance.ServiceCtor.Block.AssignRef(
@@ -1709,7 +1709,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                 .AssignArrayElement(
                                     "eventsPerStreamOneStream", Constant(0), ArrayAtIndex(Ref("newData"), Ref("i")))
                                 .ExprDotMethod(
-                                    REF_AGGREGATIONSVC, "setCurrentAccess", Ref("mk"),
+                                    REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("mk"),
                                     ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull())
                                 .IfCondition(
                                     Not(
@@ -1751,7 +1751,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                 .AssignArrayElement(
                                     "eventsPerStreamOneStream", Constant(0), ArrayAtIndex(Ref("oldData"), Ref("i")))
                                 .ExprDotMethod(
-                                    REF_AGGREGATIONSVC, "setCurrentAccess", Ref("mk"),
+                                    REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("mk"),
                                     ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull())
                                 .IfCondition(
                                     Not(
@@ -1966,7 +1966,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.ExprDotMethod(
-                    REF_AGGREGATIONSVC, "setCurrentAccess", Ref("groupKey"),
+                    REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("groupKey"),
                     ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull());
                 if (optionalHavingNode != null) {
                     methodNode.Block
@@ -2033,7 +2033,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
                 if (forge.IsSorting) {
                     methodNode.Block.ExprDotMethod(
-                            REF_AGGREGATIONSVC, "setCurrentAccess", Ref("newGroupKey"),
+                            REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("newGroupKey"),
                             ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull())
                         .DeclareVar(
                             typeof(object), "newSortKey",
@@ -2041,7 +2041,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                 REF_ORDERBYPROCESSOR, "getSortKey", REF_NEWDATA, ConstantTrue(),
                                 REF_AGENTINSTANCECONTEXT))
                         .ExprDotMethod(
-                            REF_AGGREGATIONSVC, "setCurrentAccess", Ref("newGroupKey"),
+                            REF_AGGREGATIONSVC, "SetCurrentAccess", Ref("newGroupKey"),
                             ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"), ConstantNull())
                         .DeclareVar(
                             typeof(object), "oldSortKey",

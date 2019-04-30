@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             var eps = exprSymbol.GetAddEPS(method);
 
             // see ExprPriorEvalStrategyBase
-            CodegenExpression future = codegenClassScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression future = codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
                 priorStrategyFieldName, typeof(PriorEvalStrategy));
             method.Block
                 .DeclareVar(typeof(EventBean), "originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))

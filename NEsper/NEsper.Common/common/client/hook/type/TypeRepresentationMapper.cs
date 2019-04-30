@@ -20,6 +20,6 @@ namespace com.espertech.esper.common.client.hook.type
         /// </summary>
         /// <param name="context">type and contextual information</param>
         /// <returns>schema</returns>
-        Object Map(TypeRepresentationMapperContext context);
+        object Map(TypeRepresentationMapperContext context);
     }
 } // end of namespace

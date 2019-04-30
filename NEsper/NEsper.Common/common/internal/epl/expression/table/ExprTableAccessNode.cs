@@ -238,7 +238,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             var newData = symbols.GetAddIsNewData(method);
             CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
 
-            var future = classScope.PackageScope.AddOrGetFieldWellKnown(
+            var future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameTableAccess(accessNode.TableAccessNumber), typeof(ExprTableEvalStrategy));
             var evaluation = ExprDotMethod(future, evaluationType.MethodName, eps, newData, evalCtx);
             if (resultType != typeof(object)) {

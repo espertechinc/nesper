@@ -45,8 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             method.Block
                 .DeclareVar(
                     typeof(FireAndForgetProcessorTable), nw.Ref, NewInstance(typeof(FireAndForgetProcessorTable)))
-                .ExprDotMethod(
-                    nw, "setTable", TableDeployTimeResolver.MakeResolveTable(Table, symbols.GetAddInitSvc(method)))
+                .SetProperty(nw, "Table", TableDeployTimeResolver.MakeResolveTable(Table, symbols.GetAddInitSvc(method)))
                 .MethodReturn(nw);
             return LocalMethod(method);
         }

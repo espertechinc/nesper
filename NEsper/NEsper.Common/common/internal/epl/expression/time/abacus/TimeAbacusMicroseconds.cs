@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
                 .AddParam(typeof(DateTimeEx), "dtx")
                 .Block
                 .DeclareVar(typeof(long), "millis", Op(Ref("fromTime"), "/", Constant(1000)))
-                .Expression(ExprDotMethod(Ref("dtx"), "setTimeInMillis", Ref("millis")))
+                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", Ref("millis")))
                 .MethodReturn(Op(Ref("fromTime"), "-", Op(Ref("millis"), "*", Constant(1000))));
             return LocalMethodBuild(method).Pass(startLong).Pass(dateTime).Call();
         }

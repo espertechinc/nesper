@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             EventBean arriving,
             int windowSize)
         {
-            ExpressionViewOAFieldEnum.Populate(
+            ExpressionViewOAFieldEnumExtensions.Populate(
                 builtinEventProps.Properties, windowSize, oldestEventTimestamp, newestEventTimestamp, this, 0,
                 oldestEvent, newestEvent);
             eventsPerStream[0] = arriving;

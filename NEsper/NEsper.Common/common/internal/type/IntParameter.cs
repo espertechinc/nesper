@@ -63,11 +63,11 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="min">lower end of range</param>
         /// <param name="max">upper end of range</param>
         /// <returns>set of integer</returns>
-        public ICollection<Int32> GetValuesInRange(
+        public ICollection<int> GetValuesInRange(
             int min,
             int max)
         {
-            ICollection<Int32> values = new HashSet<Int32>();
+            ICollection<int> values = new HashSet<int>();
 
             if ((IntValue >= min) && (IntValue <= max)) {
                 values.Add(IntValue);
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.type
             return IntValue == point;
         }
 
-        public String Formatted()
+        public string Formatted()
         {
             return IntValue.ToString();
         }

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.PackageScope.AddOrGetFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
 
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
@@ -56,8 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
-                forEach.ExprDotMethod(
-                    Ref("aggregationService"), "setCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull());
+                forEach.ExprDotMethod(Ref("aggregationService"), "SetCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull());
                 CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                     forEach, havingEval.EvaluationType,
                     havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
