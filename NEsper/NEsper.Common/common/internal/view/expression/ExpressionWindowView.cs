@@ -70,12 +70,12 @@ namespace com.espertech.esper.common.@internal.view.expression
             }
 
             if (oldData != null) {
-                var it = window.GetEnumerator();
-                for (; it.MoveNext();) {
-                    var pair = it.Current;
+                var enumerator = window.GetEnumerator();
+                for (; enumerator.MoveNext();) {
+                    ExpressionWindowTimestampEventPair pair = enumerator.Current;
                     foreach (var anOldData in oldData) {
                         if (pair.TheEvent == anOldData) {
-                            it.Remove();
+                            enumerator.Remove();
                             break;
                         }
                     }
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             ExpressionWindowTimestampEventPair newest,
             int numExpired)
         {
-            ExpressionViewOAFieldEnum.Populate(
+            ExpressionViewOAFieldEnumExtensions.Populate(
                 builtinEventProps.Properties, window.Count, first.Timestamp, newest.Timestamp,
                 this, numExpired, first.TheEvent, newest.TheEvent);
             eventsPerStream[0] = first.TheEvent;

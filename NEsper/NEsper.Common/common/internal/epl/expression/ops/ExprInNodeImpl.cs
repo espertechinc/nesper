@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // Check if we need to coerce
             bool mustCoerce = false;
-            Coercer coercer = null;
+            SimpleNumberCoercer coercer = null;
             if (TypeHelper.IsNumeric(coercionType)) {
                 foreach (Type compareType in comparedTypes) {
                     if (coercionType != Boxing.GetBoxedType(compareType)) {
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
 
                 if (mustCoerce) {
-                    coercer = CoercerFactory.GetCoercer(null, Boxing.GetBoxedType(coercionType));
+                    coercer = SimpleNumberCoercerFactory.GetCoercer(null, Boxing.GetBoxedType(coercionType));
                 }
             }
 

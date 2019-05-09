@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             get => this;
         }
 
-        public ExprNodeRenderable ForgeRenderable {
+        public ExprNodeRenderable ExprForgeRenderable {
             get => this;
         }
 

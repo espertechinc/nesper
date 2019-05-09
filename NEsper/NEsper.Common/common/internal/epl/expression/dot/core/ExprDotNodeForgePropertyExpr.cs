@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprForge ExprForge { get; }
 
-        public override ExprNodeRenderable ForgeRenderable => Parent;
+        public override ExprNodeRenderable ExprForgeRenderable => Parent;
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,

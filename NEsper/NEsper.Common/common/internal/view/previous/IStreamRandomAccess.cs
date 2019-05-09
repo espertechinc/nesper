@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.view.previous
         public IStreamRandomAccess(RandomAccessByIndexObserver updateObserver)
         {
             this.updateObserver = updateObserver;
-            this.arrayList = new List<EventBean>();
+            arrayList = new List<EventBean>();
         }
 
         public void Update(

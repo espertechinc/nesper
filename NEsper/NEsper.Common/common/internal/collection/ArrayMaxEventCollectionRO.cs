@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.collection
     /// </summary>
     public class ArrayMaxEventCollectionRO : ICollection<EventBean>
     {
-        private readonly EventBean[] events;
+        private readonly EventBean[] _events;
 
         /// <summary>
         ///     Ctor.
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.collection
             EventBean[] events,
             int maxNumEvents)
         {
-            this.events = events;
+            _events = events;
             Count = maxNumEvents;
         }
 
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public IEnumerator<EventBean> GetEnumerator()
         {
-            return new ArrayMaxEventIterator(events, Count);
+            return new ArrayEventEnumerator(_events, Count);
         }
 
         public void Clear()

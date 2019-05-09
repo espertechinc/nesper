@@ -129,10 +129,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                     return indexedResult;
                 }
 
-                var deque = new ArrayDeque<EventBean>(Math.Min(indexedResult.Count, 16));
+                var dequeX = new ArrayDeque<EventBean>(Math.Min(indexedResult.Count, 16));
                 ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
-                    indexedResult.GetEnumerator(), filterExpr, agentInstanceContext, deque);
-                return deque;
+                    indexedResult.GetEnumerator(), filterExpr, agentInstanceContext, dequeX);
+                return dequeX;
             }
 
             // fall back to window operator if snapshot doesn't resolve successfully

@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
             foreach (var subselectEvent in matchingEvents) {
                 events[0] = subselectEvent;
-                var pass = (bool) filterEval.Evaluate(events, true, exprEvaluatorContext);
-                if (pass != null && pass) {
+                var pass = filterEval.Evaluate(events, true, exprEvaluatorContext);
+                if (pass != null && true.Equals(pass)) {
                     var groupKey = GenerateGroupKey(events, true, exprEvaluatorContext);
                     aggregationService.ApplyEnter(events, groupKey, exprEvaluatorContext);
                 }

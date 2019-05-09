@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                     _parameterValues[i] = ViewForgeSupport.EvaluateAssertNoProperties(
                         ViewName, _validatedParameterExpressions[i], i);
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     // expected
                 }
             }
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                         parentEventType, _parameterValues, _validatedParameterExpressions, _namedWindowName, viewForgeEnv,
                         _customConfigs));
             }
-            catch (EPException ex) {
+            catch (EPException) {
                 throw;
             }
             catch (Exception ex) {

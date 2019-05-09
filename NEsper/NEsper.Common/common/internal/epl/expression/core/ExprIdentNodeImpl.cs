@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public Type EvaluationType => evaluator.EvaluationType;
 

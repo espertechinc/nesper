@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             try {
                 result = Execute(resources.Second, lookupValues);
             }
-            catch (EPException ex) {
+            catch (EPException) {
                 connectionCache.DoneWith(resources);
                 throw;
             }

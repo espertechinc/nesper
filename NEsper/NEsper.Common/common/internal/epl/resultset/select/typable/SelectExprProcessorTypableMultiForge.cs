@@ -114,8 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             }
         }
 
-        public ExprNodeRenderable ForgeRenderable {
-            get => typable.ForgeRenderable;
+        public ExprNodeRenderable ExprForgeRenderable {
+            get => typable.ExprForgeRenderable;
         }
 
         public ExprForgeConstantType ForgeConstantType {

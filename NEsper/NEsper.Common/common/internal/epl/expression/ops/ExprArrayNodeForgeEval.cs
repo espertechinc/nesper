@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            if (_forge.ForgeRenderable.ChildNodes.Length == 0) {
+            if (_forge.ForgeRenderableArray.ChildNodes.Length == 0) {
                 return Collections.GetEmptyList<object>();
             }
 
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var result = child.Evaluate(eventsPerStream, isNewData, context);
                 if (result != null) {
                     if (_forge.IsMustCoerce) {
-                        object coercedResult = _forge.Coercer.CoerceBoxed(result);
+                        var coercedResult = _forge.Coercer.CoerceBoxed(result);
                         resultList.Add(coercedResult);
                     }
                     else {
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var result = child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (result != null) {
                     if (_forge.IsMustCoerce) {
-                        object coercedResult = _forge.Coercer.CoerceBoxed(result);
+                        var coercedResult = _forge.Coercer.CoerceBoxed(result);
                         array.SetValue(coercedResult, index);
                     }
                     else {
@@ -108,14 +108,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var forgeRenderable = forge.ForgeRenderableArray;
             var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType, typeof(ExprArrayNodeForgeEval), codegenClassScope);
             var block = methodNode.Block
                 .DeclareVar(
                     forge.EvaluationType, "array",
-                    NewArrayByLength(forge.ArrayReturnType, Constant(forge.ForgeRenderable.ChildNodes.Length)));
-            for (var i = 0; i < forge.ForgeRenderable.ChildNodes.Length; i++) {
-                var child = forge.ForgeRenderable.ChildNodes[i].Forge;
+                    NewArrayByLength(forge.ArrayReturnType, Constant(forgeRenderable.ChildNodes.Length)));
+            for (var i = 0; i < forgeRenderable.ChildNodes.Length; i++) {
+                var child = forgeRenderable.ChildNodes[i].Forge;
                 var childType = child.EvaluationType;
                 var refname = "r" + i;
                 block.DeclareVar(
@@ -152,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var children = forge.ForgeRenderable.ChildNodes;
+            var children = forge.ForgeRenderableArray.ChildNodes;
             if (children.Length == 0) {
                 return StaticMethod(typeof(Collections), "emptyList");
             }

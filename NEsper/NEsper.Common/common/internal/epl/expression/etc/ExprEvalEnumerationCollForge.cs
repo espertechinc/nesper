@@ -82,8 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             }
         }
 
-        public ExprNodeRenderable ForgeRenderable {
-            get => enumerationForge.ForgeRenderable;
+        public ExprNodeRenderable ExprForgeRenderable {
+            get => enumerationForge.EnumForgeRenderable;
         }
 
         public ExprForgeConstantType ForgeConstantType {

@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             try {
                 return Build(packageName, classPostfix, services);
             }
-            catch (ExprValidationException ex) {
+            catch (ExprValidationException) {
                 throw;
             }
             catch (Exception t) {

@@ -6,11 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 {
@@ -18,7 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
     {
         public static FireAndForgetProcessorForge ValidateResolveProcessor(StreamSpecCompiled streamSpec)
         {
-            if (streamSpec is NamedWindowConsumerStreamSpec) {
+            if (streamSpec is NamedWindowConsumerStreamSpec)
+            {
                 NamedWindowMetaData nwdetail = ((NamedWindowConsumerStreamSpec) streamSpec).NamedWindow;
                 return new FireAndForgetProcessorNamedWindowForge(nwdetail);
             }

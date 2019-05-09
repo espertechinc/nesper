@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
             public Type EvaluationType => typeof(bool?);
 
-            public ExprNodeRenderable ForgeRenderable => parent;
+            public ExprNodeRenderable ExprForgeRenderable => parent;
         }
 
         public sealed class RectangleIntersectsRectangleEvaluator : ExprEvaluator

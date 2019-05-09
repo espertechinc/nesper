@@ -52,7 +52,6 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
 
             FilterHandleCallback filterCallback = new ProxyFilterHandleCallback() {
-                ProcStatementId = () => agentInstanceContext.StatementContext.StatementId,
                 ProcMatchFound = (
                     theEvent,
                     allStmtMatches) => FilterMatchFound(theEvent),

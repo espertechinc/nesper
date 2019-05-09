@@ -17,18 +17,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCastNodeForgeNonConstEval : ExprEvaluator
     {
-        private readonly ExprCastNode.CasterParserComputer casterParserComputer;
-        private readonly ExprEvaluator evaluator;
-        private readonly ExprCastNodeForge forge;
+        private readonly ExprCastNode.CasterParserComputer _casterParserComputer;
+        private readonly ExprEvaluator _evaluator;
+        private readonly ExprCastNodeForge _forge;
 
         public ExprCastNodeForgeNonConstEval(
             ExprCastNodeForge forge,
             ExprEvaluator evaluator,
             ExprCastNode.CasterParserComputer casterParserComputer)
         {
-            this.forge = forge;
-            this.evaluator = evaluator;
-            this.casterParserComputer = casterParserComputer;
+            _forge = forge;
+            _evaluator = evaluator;
+            _casterParserComputer = casterParserComputer;
         }
 
         public object Evaluate(
@@ -36,9 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var result = evaluator.Evaluate(eventsPerStream, isNewData, context);
+            var result = _evaluator.Evaluate(eventsPerStream, isNewData, context);
             if (result != null) {
-                result = casterParserComputer.Compute(result, eventsPerStream, isNewData, context);
+                result = _casterParserComputer.Compute(result, eventsPerStream, isNewData, context);
             }
 
             return result;
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return ConstantNull();
             }
 
-            var child = forge.ForgeRenderable.ChildNodes[0];
+            var child = forge.ForgeRenderableCast.ChildNodes[0];
             var childType = child.Forge.EvaluationType;
             if (childType == null) {
                 return ConstantNull();

@@ -21,16 +21,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprInstanceofNode parent,
             Type[] classes)
         {
-            ForgeRenderableInstance = parent;
+            ForgeRenderableInstanceOf = parent;
             Classes = classes;
         }
 
-        public ExprNodeRenderable ForgeRenderable => ForgeRenderableInstance;
+        public ExprNodeRenderable ExprForgeRenderable => ForgeRenderableInstanceOf;
 
-        public ExprInstanceofNode ForgeRenderableInstance { get; }
+        public ExprInstanceofNode ForgeRenderableInstanceOf { get; }
 
         public ExprEvaluator ExprEvaluator => new ExprInstanceofNodeForgeEval(
-            this, ForgeRenderableInstance.ChildNodes[0].Forge.ExprEvaluator);
+            this, ForgeRenderableInstanceOf.ChildNodes[0].Forge.ExprEvaluator);
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 

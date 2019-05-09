@@ -1,32 +1,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Threading;
 
 namespace com.espertech.esper.common.client.metric
 {
     /// <summary>
-    /// Reports statement-level instrumentation values.
+    ///     Reports statement-level instrumentation values.
     /// </summary>
     public class StatementMetric : MetricEvent
     {
 #if DEBUG_STATEMENT_METRIC
         private readonly Guid _id = Guid.NewGuid();
 #endif
-        /// <summary>
-        /// Gets or sets engine timestamp.
-        /// </summary>
-        public long Timestamp { get; set; }
-
-        /// <summary>Returns statement name. </summary>
-        /// <returns>statement name</returns>
-        public String StatementName { get; private set; }
 
         private long _cpuTime;
         private long _wallTime;
@@ -39,10 +30,12 @@ namespace com.espertech.esper.common.client.metric
         /// <param name="engineURI">engine URI</param>
         /// <param name="statementName">statement name</param>
         public StatementMetric(
-            String engineURI,
-            String statementName)
-            : base(engineURI)
+            string runtimeURI,
+            string deploymentId,
+            string statementName)
+            : base(runtimeURI)
         {
+            DeploymentId = deploymentId;
             StatementName = statementName;
             _wallTime = 0L;
             _cpuTime = 0L;
@@ -50,6 +43,17 @@ namespace com.espertech.esper.common.client.metric
             _numOutputRStream = 0L;
             _numInput = 0L;
         }
+
+        public string DeploymentId { get; }
+
+        /// <summary>
+        ///     Gets or sets engine timestamp.
+        /// </summary>
+        public long Timestamp { get; set; }
+
+        /// <summary>Returns statement name. </summary>
+        /// <returns>statement name</returns>
+        public string StatementName { get; }
 
         public double CpuTime => Interlocked.Read(ref _cpuTime);
 

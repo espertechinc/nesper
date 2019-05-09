@@ -1054,7 +1054,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 try {
                                     clazz = importService.ResolveClass(insertIntoDesc.EventTypeName, false);
                                 }
-                                catch (ImportException e) {
+                                catch (ImportException) {
                                     Log.Debug(
                                         "Target stream name '" + insertIntoDesc.EventTypeName +
                                         "' is not resolved as a class name");

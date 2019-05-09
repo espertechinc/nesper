@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.client.configuration.common
                             TimeUnit timeUnit = EnumHelper.Parse<TimeUnit>(valueText);
                             common.TimeSource.TimeUnit = timeUnit;
                         }
-                        catch (EPException e) {
+                        catch (EPException) {
                             throw;
                         }
                         catch (Exception e) {
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.client.configuration.common
                 catch (EPException) {
                     throw;
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     throw new ConfigurationException("Invalid enumeration value for type-variance attribute '" + typeVar + "'");
                 }
             }

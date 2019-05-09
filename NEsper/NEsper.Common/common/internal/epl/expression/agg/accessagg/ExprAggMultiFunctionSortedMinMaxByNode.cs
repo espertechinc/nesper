@@ -50,6 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             this.sortedwin = sortedwin;
         }
 
+        public ExprNodeRenderable EnumForgeRenderable => ForgeRenderableLocal;
+        
         private Pair<ExprNode[], bool[]> CriteriaExpressions {
             get {
                 // determine ordering ascending/descending and build criteria expression without "asc" marker

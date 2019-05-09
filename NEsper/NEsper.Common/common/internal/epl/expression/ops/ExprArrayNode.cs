@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                 }
             }
-            catch (CoercionException ex) {
+            catch (CoercionException) {
                 // expected, such as mixing String and int values, or Java classes (not boxed) and primitives
                 // use Object[] in such cases
             }

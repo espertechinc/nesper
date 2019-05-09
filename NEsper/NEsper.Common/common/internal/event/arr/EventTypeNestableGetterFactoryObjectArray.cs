@@ -248,8 +248,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         private int GetAssertIndex(string propertyName)
         {
-            var index = PropertiesIndex.Get(propertyName);
-            if (index == null) {
+            if (!PropertiesIndex.TryGetValue(propertyName, out var index))
+            { 
                 throw new PropertyAccessException(
                     "Property '" + propertyName + "' could not be found as a property of type '" + eventTypeName + "'");
             }

@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             for (var i = 0; i < writeMethodsReflection.Length; i++) {
                 method.Block.AssignRef("value", ArrayAtIndex(Ref("properties"), Constant(i)));
 
-                Type targetType = writeMethodsReflection[i].ParameterTypes[0];
+                Type targetType = writeMethodsReflection[i].GetParameters()[0].ParameterType;
                 CodegenExpression value;
                 if (targetType.IsPrimitive) {
                     var caster = SimpleTypeCasterFactory.GetCaster(typeof(object), targetType);

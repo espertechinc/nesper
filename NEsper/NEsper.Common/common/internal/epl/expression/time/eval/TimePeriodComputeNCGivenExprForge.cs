@@ -6,45 +6,41 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
 {
     public class TimePeriodComputeNCGivenExprForge : TimePeriodComputeForge
     {
-        private readonly ExprForge secondsEvaluator;
-        private readonly TimeAbacus timeAbacus;
+        private readonly ExprForge _secondsEvaluator;
+        private readonly TimeAbacus _timeAbacus;
 
         public TimePeriodComputeNCGivenExprForge(
             ExprForge secondsEvaluator,
             TimeAbacus timeAbacus)
         {
-            this.secondsEvaluator = secondsEvaluator;
-            this.timeAbacus = timeAbacus;
+            _secondsEvaluator = secondsEvaluator;
+            _timeAbacus = timeAbacus;
         }
 
-        public TimePeriodCompute Evaluator {
-            get => new TimePeriodComputeNCGivenExprEval(secondsEvaluator.ExprEvaluator, timeAbacus);
-        }
+        public TimePeriodCompute Evaluator => new TimePeriodComputeNCGivenExprEval(_secondsEvaluator.ExprEvaluator, _timeAbacus);
 
         public CodegenExpression MakeEvaluator(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(TimePeriodComputeNCGivenExprEval), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(TimePeriodComputeNCGivenExprEval), GetType(), classScope);
             method.Block
                 .DeclareVar(typeof(TimePeriodComputeNCGivenExprEval), "eval", NewInstance(typeof(TimePeriodComputeNCGivenExprEval)))
-                .SetProperty(Ref("eval"), "SecondsEvaluator",
-                    ExprNodeUtilityCodegen.CodegenEvaluator(secondsEvaluator, method, this.GetType(), classScope))
+                .SetProperty(
+                    Ref("eval"), "SecondsEvaluator",
+                    ExprNodeUtilityCodegen.CodegenEvaluator(_secondsEvaluator, method, GetType(), classScope))
                 .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
-                .MethodReturn(@Ref("eval"));
+                .MethodReturn(Ref("eval"));
             return LocalMethod(method);
         }
     }

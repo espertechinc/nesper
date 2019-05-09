@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var block = methodNode.Block
                 .DeclareVar(
                     typeof(object), "result",
-                    forge.ForgeRenderable.ChildNodes[0].Forge.EvaluateCodegen(
+                    forge.ForgeRenderableInstanceOf.ChildNodes[0].Forge.EvaluateCodegen(
                         typeof(object), methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnFalse("result");
             block.MethodReturn(

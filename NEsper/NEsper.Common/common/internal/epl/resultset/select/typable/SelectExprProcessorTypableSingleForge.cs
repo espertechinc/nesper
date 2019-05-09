@@ -116,10 +116,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             TextWriter writer,
             ExprPrecedenceEnum parentPrecedence)
         {
-            typable.ForgeRenderable.ToEPL(writer, parentPrecedence);
+            typable.ExprForgeRenderable.ToEPL(writer, parentPrecedence);
         }
 
-        public ExprNodeRenderable ForgeRenderable {
+        public ExprNodeRenderable ExprForgeRenderable {
             get => this;
         }
 

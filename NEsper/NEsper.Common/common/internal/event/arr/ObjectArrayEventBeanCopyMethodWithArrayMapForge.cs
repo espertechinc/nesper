@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             ISet<int> arrayIndexesToCopy = new HashSet<int>();
             foreach (var prop in arrayPropertiesToCopy) {
-                var index = propertiesIndexes.Get(prop);
-                if (index != null) {
+                if (propertiesIndexes.TryGetValue(prop, out var index))
+                { 
                     arrayIndexesToCopy.Add(index);
                 }
             }

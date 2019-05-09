@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return null;
         }
 
-        public ExprNodeRenderable ForgeRenderable {
+        public ExprNodeRenderable ExprForgeRenderable {
             get {
                 return new ProxyExprNodeRenderable {
                     ProcToEPL = (

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
@@ -45,7 +46,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 iterables.Add(dataView);
             }
 
-            return new IterablesListIterator(iterables.GetEnumerator());
+            return iterables.SelectMany(parentEnum => parentEnum).GetEnumerator();
         }
 
         public void RemoveParentView(View parentView)

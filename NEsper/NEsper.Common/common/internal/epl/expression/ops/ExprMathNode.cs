@@ -129,9 +129,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            ChildNodes[0].ToEPL(writer, base.Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence);
             writer.Write(MathArithTypeEnum.ExpressionText);
-            ChildNodes[1].ToEPL(writer, base.Precedence);
+            ChildNodes[1].ToEPL(writer, Precedence);
         }
 
         public override bool EqualsNode(

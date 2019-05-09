@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             try {
                 clazz = importService.ClassForNameProvider.ClassForName(factoryClassName);
             }
-            catch (TypeLoadException ex) {
+            catch (TypeLoadException) {
                 throw new ConfigurationException("View factory class " + factoryClassName + " could not be loaded");
             }
 

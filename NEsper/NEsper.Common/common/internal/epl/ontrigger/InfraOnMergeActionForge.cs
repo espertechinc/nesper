@@ -17,14 +17,14 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
     public abstract class InfraOnMergeActionForge
     {
-        internal readonly ExprNode optionalFilter;
+        protected internal readonly ExprNode OptionalFilter;
 
-        public InfraOnMergeActionForge(ExprNode optionalFilter)
+        protected internal InfraOnMergeActionForge(ExprNode optionalFilter)
         {
-            this.optionalFilter = optionalFilter;
+            OptionalFilter = optionalFilter;
         }
 
-        protected abstract CodegenExpression Make(
+        public abstract CodegenExpression Make(
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
@@ -33,9 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            return optionalFilter == null
+            return OptionalFilter == null
                 ? ConstantNull()
-                : ExprNodeUtilityCodegen.CodegenEvaluator(optionalFilter.Forge, method, GetType(), classScope);
+                : ExprNodeUtilityCodegen.CodegenEvaluator(OptionalFilter.Forge, method, GetType(), classScope);
         }
 
         public static CodegenExpression MakeActions(

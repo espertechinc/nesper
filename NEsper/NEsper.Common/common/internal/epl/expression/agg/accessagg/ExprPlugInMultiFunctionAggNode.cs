@@ -135,6 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
         }
 
+        public ExprNodeRenderable EnumForgeRenderable => this;
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(

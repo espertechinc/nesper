@@ -1,12 +1,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.context.aifactory.core;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
@@ -33,21 +35,21 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             OutputPort = outputPort;
         }
 
-        public int ChannelId { get; private set; }
+        public int ChannelId { get; }
 
-        public string ConsumingOpName { get; private set; }
+        public string ConsumingOpName { get; }
 
-        public string ConsumingOpStreamName { get; private set; }
+        public string ConsumingOpStreamName { get; }
 
-        public string ConsumingOptStreamAliasName { get; private set; }
+        public string ConsumingOptStreamAliasName { get; }
 
-        public int ConsumingOpStreamNum { get; private set; }
+        public int ConsumingOpStreamNum { get; }
 
-        public int ConsumingOpNum { get; private set; }
+        public int ConsumingOpNum { get; }
 
-        public LogicalChannelProducingPortCompiled OutputPort { get; private set; }
+        public LogicalChannelProducingPortCompiled OutputPort { get; }
 
-        public string ConsumingOpPrettyPrint { get; private set; }
+        public string ConsumingOpPrettyPrint { get; }
 
         public override string ToString()
         {
@@ -56,6 +58,23 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                    ", produced=" + OutputPort +
                    ", consumed='" + ConsumingOpPrettyPrint + '\'' +
                    '}';
+        }
+
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            return new SAIFFInitializeBuilder(typeof(LogicalChannel), GetType(), "lc", parent, symbols, classScope)
+                .Constant("channelId", ChannelId)
+                .Constant("consumingOpName", ConsumingOpName)
+                .Constant("consumingOpNum", ConsumingOpNum)
+                .Constant("consumingOpStreamNum", ConsumingOpStreamNum)
+                .Constant("consumingOpStreamName", ConsumingOpStreamName)
+                .Constant("consumingOptStreamAliasName", ConsumingOptStreamAliasName)
+                .Constant("consumingOpPrettyPrint", ConsumingOpPrettyPrint)
+                .Method("outputPort", method => OutputPort.Make(method, symbols, classScope))
+                .Build();
         }
     }
 }

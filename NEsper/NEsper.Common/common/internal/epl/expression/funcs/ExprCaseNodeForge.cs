@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return ExprCaseNodeForgeEvalSyntax2.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public Type EvaluationType { get; }
 

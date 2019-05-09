@@ -77,8 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             foreach (EventBean eventBean in streamOneEvents) {
                 eventsPerStream[1] = eventBean;
 
-                Boolean result = (Boolean) filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if ((result != null) && result) {
+                var result = filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if ((result != null) && true.Equals(result)) {
                     filtered[countPass] = eventBean;
                     countPass++;
                 }
@@ -103,8 +103,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            Boolean result = (Boolean) filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            return (result != null) && result;
+            var result = filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            return (result != null) && true.Equals(result);
         }
 
         public static object[] EvaluateExpressions(

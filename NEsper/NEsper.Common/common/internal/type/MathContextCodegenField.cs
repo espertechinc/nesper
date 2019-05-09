@@ -7,10 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.type
@@ -34,19 +35,27 @@ namespace com.espertech.esper.common.@internal.type
 
         public CodegenExpression InitCtorScoped()
         {
-            if (mathContext == null) {
+            if (mathContext == null)
+            {
                 return ConstantNull();
             }
 
-            return NewInstance(
-                typeof(MathContext), Constant(mathContext.Precision),
-                EnumValue(typeof(RoundingMode), mathContext.RoundingMode.Name()));
+            return NewInstance<MathContext>(
+                Constant(mathContext.Precision),
+                EnumValue(mathContext.RoundingMode));
         }
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o)
+            {
+                return true;
+            }
+
+            if (o == null || GetType() != o.GetType())
+            {
+                return false;
+            }
 
             MathContextCodegenField that = (MathContextCodegenField) o;
 

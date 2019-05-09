@@ -35,13 +35,14 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            for (var it = events.GetEnumerator(); it.MoveNext();) {
-                var eventArr = it.Current.Array;
-                var matched = filterExprNode.Evaluate(eventArr, isNewData, exprEvaluatorContext);
-                if (matched == null || false.Equals(matched)) {
-                    it.Remove();
-                }
-            }
+            events
+                .Where(
+                    value => {
+                        var matched = filterExprNode.Evaluate(value.Array, isNewData, exprEvaluatorContext);
+                        return matched == null || false.Equals(matched);
+                    })
+                .ToList()
+                .ForEach(value => events.Remove(value));
         }
 
         public static EventTable[][] ToArray(IDictionary<TableLookupIndexReqKey, EventTable>[] repositories)

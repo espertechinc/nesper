@@ -60,8 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             get => innerForge;
         }
 
-        public ExprNodeRenderable ForgeRenderable {
-            get => innerForge.ForgeRenderable;
+        public ExprNodeRenderable ExprForgeRenderable {
+            get => innerForge.ExprForgeRenderable;
         }
 
         public EventType MapType {

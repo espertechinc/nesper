@@ -20,13 +20,13 @@ namespace com.espertech.esper.common.@internal.view.previous
     public class IStreamSortRankRandomAccessImpl : RandomAccessByIndex,
         IStreamSortRankRandomAccess
     {
-        private readonly RandomAccessByIndexObserver updateObserver;
-        private EventBean[] cache;
-        private int cacheFilledTo;
+        private readonly RandomAccessByIndexObserver _updateObserver;
+        private EventBean[] _cache;
+        private int _cacheFilledTo;
 
-        private IEnumerator<object> iterator;
+        private IEnumerator<object> _iterator;
 
-        private OrderedDictionary<object, object> sortedEvents;
+        private OrderedDictionary<object, object> _sortedEvents;
 
         /// <summary>
         ///     Ctor.
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.view.previous
         /// <param name="updateObserver">for indicating updates to</param>
         public IStreamSortRankRandomAccessImpl(RandomAccessByIndexObserver updateObserver)
         {
-            this.updateObserver = updateObserver;
+            _updateObserver = updateObserver;
         }
 
         /// <summary>
@@ -48,21 +48,21 @@ namespace com.espertech.esper.common.@internal.view.previous
             int currentSize,
             int maxSize)
         {
-            updateObserver.Updated(this);
-            this.sortedEvents = sortedEvents;
+            _updateObserver.Updated(this);
+            _sortedEvents = sortedEvents;
             WindowCount = currentSize;
 
-            iterator = null;
-            cacheFilledTo = 0;
-            if (cache == null || cache.Length < maxSize) {
-                cache = new EventBean[maxSize];
+            _iterator = null;
+            _cacheFilledTo = 0;
+            if (_cache == null || _cache.Length < maxSize) {
+                _cache = new EventBean[maxSize];
             }
         }
 
         public EventBean GetNewData(int index)
         {
-            if (iterator == null) {
-                iterator = sortedEvents.Values.GetEnumerator();
+            if (_iterator == null) {
+                _iterator = _sortedEvents.Values.GetEnumerator();
             }
 
             // if asking for more then the sorted window currently holds, return no data
@@ -71,41 +71,41 @@ namespace com.espertech.esper.common.@internal.view.previous
             }
 
             // If we have it in cache, serve from cache
-            if (index < cacheFilledTo) {
-                return cache[index];
+            if (index < _cacheFilledTo) {
+                return _cache[index];
             }
 
             // Load more into cache
             while (true) {
-                if (cacheFilledTo == WindowCount) {
+                if (_cacheFilledTo == WindowCount) {
                     break;
                 }
 
-                if (!iterator.MoveNext()) {
+                if (!_iterator.MoveNext()) {
                     break;
                 }
 
-                var entry = iterator.Current;
+                var entry = _iterator.Current;
                 if (entry is IList<EventBean> events) {
                     foreach (var theEvent in events) {
-                        cache[cacheFilledTo] = theEvent;
-                        cacheFilledTo++;
+                        _cache[_cacheFilledTo] = theEvent;
+                        _cacheFilledTo++;
                     }
                 }
                 else {
                     var theEvent = (EventBean) entry;
-                    cache[cacheFilledTo] = theEvent;
-                    cacheFilledTo++;
+                    _cache[_cacheFilledTo] = theEvent;
+                    _cacheFilledTo++;
                 }
 
-                if (cacheFilledTo > index) {
+                if (_cacheFilledTo > index) {
                     break;
                 }
             }
 
             // If we have it in cache, serve from cache
-            if (index <= cacheFilledTo) {
-                return cache[index];
+            if (index <= _cacheFilledTo) {
+                return _cache[index];
             }
 
             return null;
@@ -120,8 +120,8 @@ namespace com.espertech.esper.common.@internal.view.previous
         {
             InitCache();
 
-            if (index < cacheFilledTo && index >= 0) {
-                return cache[cacheFilledTo - index - 1];
+            if (index < _cacheFilledTo && index >= 0) {
+                return _cache[_cacheFilledTo - index - 1];
             }
 
             return null;
@@ -130,13 +130,13 @@ namespace com.espertech.esper.common.@internal.view.previous
         public IEnumerator<EventBean> GetWindowEnumerator()
         {
             InitCache();
-            return new ArrayMaxEventIterator(cache, cacheFilledTo);
+            return new ArrayEventEnumerator(_cache, _cacheFilledTo);
         }
 
         public ICollection<EventBean> WindowCollectionReadOnly {
             get {
                 InitCache();
-                return new ArrayMaxEventCollectionRO(cache, cacheFilledTo);
+                return new ArrayMaxEventCollectionRO(_cache, _cacheFilledTo);
             }
         }
 
@@ -144,31 +144,31 @@ namespace com.espertech.esper.common.@internal.view.previous
 
         private void InitCache()
         {
-            if (iterator == null) {
-                iterator = sortedEvents.Values.GetEnumerator();
+            if (_iterator == null) {
+                _iterator = _sortedEvents.Values.GetEnumerator();
             }
 
             // Load more into cache
             while (true) {
-                if (cacheFilledTo == WindowCount) {
+                if (_cacheFilledTo == WindowCount) {
                     break;
                 }
 
-                if (!iterator.MoveNext()) {
+                if (!_iterator.MoveNext()) {
                     break;
                 }
 
-                var entry = iterator.Current;
+                var entry = _iterator.Current;
                 if (entry is IList<EventBean> events) {
                     foreach (var theEvent in events) {
-                        cache[cacheFilledTo] = theEvent;
-                        cacheFilledTo++;
+                        _cache[_cacheFilledTo] = theEvent;
+                        _cacheFilledTo++;
                     }
                 }
                 else {
                     var theEvent = (EventBean) entry;
-                    cache[cacheFilledTo] = theEvent;
-                    cacheFilledTo++;
+                    _cache[_cacheFilledTo] = theEvent;
+                    _cacheFilledTo++;
                 }
             }
         }

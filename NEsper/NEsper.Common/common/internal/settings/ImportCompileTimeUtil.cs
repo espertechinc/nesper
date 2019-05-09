@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.settings
             try {
                 clazz = importService.ResolveClass(className, isAnnotation);
             }
-            catch (ImportException e) {
+            catch (ImportException) {
                 return null;
             }
 

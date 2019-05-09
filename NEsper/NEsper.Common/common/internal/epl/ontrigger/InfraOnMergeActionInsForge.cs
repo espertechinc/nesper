@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             get => insertIntoTable;
         }
 
-        protected override CodegenExpression Make(
+        public override CodegenExpression Make(
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)

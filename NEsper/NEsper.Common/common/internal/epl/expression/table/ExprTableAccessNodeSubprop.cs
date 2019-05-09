@@ -44,6 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override ExprForge Forge => this;
 
+        public ExprNodeRenderable EnumForgeRenderable => this;
+        public override ExprNodeRenderable ExprForgeRenderable => this;
+
         protected override string InstrumentationQName => "ExprTableSubproperty";
 
         protected override CodegenExpression[] InstrumentationQParams =>

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -34,6 +35,7 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -54,7 +56,8 @@ namespace com.espertech.esper.common.@internal.view.expression
         internal int streamNumber;
         internal IDictionary<string, VariableMetaData> variableNames;
 
-        public int ScheduleCallbackId {
+        public int ScheduleCallbackId
+        {
             set => scheduleCallbackId = value;
         }
 
@@ -71,21 +74,21 @@ namespace com.espertech.esper.common.@internal.view.expression
             this.streamNumber = streamNumber;
 
             // define built-in fields
-            LinkedHashMap<string, object> builtinTypeDef = ExpressionViewOAFieldEnum.AsMapOfTypes(eventType);
+            var builtinTypeDef = ExpressionViewOAFieldEnumExtensions.AsMapOfTypes(eventType);
             var outputEventTypeName =
                 viewForgeEnv.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewExpr(streamNumber);
             var metadata = new EventTypeMetadata(
                 outputEventTypeName, viewForgeEnv.ModuleName, EventTypeTypeClass.VIEWDERIVED,
                 EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
                 EventTypeIdPair.Unassigned());
-            IDictionary<string, object> propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(builtinTypeDef);
+            var propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(builtinTypeDef);
             builtinType = BaseNestableEventUtil.MakeOATypeCompileTime(
                 metadata, propertyTypes, null, null, null, null, viewForgeEnv.BeanEventTypeFactoryProtected,
                 viewForgeEnv.EventTypeCompileTimeResolver);
             viewForgeEnv.EventTypeModuleCompileTimeRegistry.NewType(builtinType);
 
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                new[] {eventType, builtinType}, new string[2], new bool[2], false, false);
+                new[] { eventType, builtinType }, new string[2], new bool[2], false, false);
 
             // validate expression
             expiryExpression = ViewForgeSupport.ValidateExpr(
@@ -94,13 +97,15 @@ namespace com.espertech.esper.common.@internal.view.expression
             var summaryVisitor = new ExprNodeSummaryVisitor();
             expiryExpression.Accept(summaryVisitor);
             if (summaryVisitor.HasSubselect || summaryVisitor.HasStreamSelect ||
-                summaryVisitor.HasPreviousPrior) {
+                summaryVisitor.HasPreviousPrior)
+            {
                 throw new ViewParameterException(
                     "Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context");
             }
 
             var returnType = expiryExpression.Forge.EvaluationType;
-            if (returnType.GetBoxedType() != typeof(bool?)) {
+            if (returnType.GetBoxedType() != typeof(bool?))
+            {
                 throw new ViewParameterException(
                     "Invalid return value for expiry expression, expected a boolean return value but received " +
                     returnType.GetParameterAsString());
@@ -115,8 +120,10 @@ namespace com.espertech.esper.common.@internal.view.expression
             // determine aggregation nodes, if any
             IList<ExprAggregateNode> aggregateNodes = new List<ExprAggregateNode>();
             ExprAggregateNodeUtil.GetAggregatesBottomUp(expiryExpression, aggregateNodes);
-            if (!aggregateNodes.IsEmpty()) {
-                try {
+            if (!aggregateNodes.IsEmpty())
+            {
+                try
+                {
                     aggregationServiceForgeDesc = AggregationServiceFactoryFactory.GetService(
                         Collections.GetEmptyList<ExprAggregateNode>(),
                         Collections.GetEmptyMap<ExprNode, string>(),
@@ -131,7 +138,8 @@ namespace com.espertech.esper.common.@internal.view.expression
                         viewForgeEnv.ImportServiceCompileTime,
                         viewForgeEnv.OptionalStatementName);
                 }
-                catch (ExprValidationException ex) {
+                catch (ExprValidationException ex)
+                {
                     throw new ViewParameterException(ex.Message, ex);
                 }
             }
@@ -143,7 +151,8 @@ namespace com.espertech.esper.common.@internal.view.expression
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (scheduleCallbackId == -1) {
+            if (scheduleCallbackId == -1)
+            {
                 throw new IllegalStateException("Schedule callback id not provided");
             }
 
@@ -158,7 +167,8 @@ namespace com.espertech.esper.common.@internal.view.expression
                 .SetProperty(factory, "AggregationServiceFactory", MakeAggregationService(classScope, method, symbols))
                 .SetProperty(factory, "AggregationResultFutureAssignable", Ref("eval"))
                 .SetProperty(factory, "ExpiryEval", Ref("eval"));
-            if (variableNames != null && !variableNames.IsEmpty()) {
+            if (variableNames != null && !variableNames.IsEmpty())
+            {
                 method.Block.SetProperty(factory, "Variables",
                     VariableDeployTimeResolver.MakeResolveVariables(
                         variableNames.Values, symbols.GetAddInitSvc(method)));
@@ -172,7 +182,8 @@ namespace com.espertech.esper.common.@internal.view.expression
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols)
         {
-            if (aggregationServiceForgeDesc == null) {
+            if (aggregationServiceForgeDesc == null)
+            {
                 return ConstantNull();
             }
 

@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public Type EvaluationType => null;
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,

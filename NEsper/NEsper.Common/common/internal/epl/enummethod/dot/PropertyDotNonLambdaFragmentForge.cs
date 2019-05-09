@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethod(methodNode);
         }
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public void ToEPL(
             TextWriter writer,

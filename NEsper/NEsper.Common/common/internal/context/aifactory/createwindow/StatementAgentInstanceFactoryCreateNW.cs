@@ -22,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.virtualdw;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
@@ -149,7 +150,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     try {
                         agentInstanceContext.RuntimeEnvContext.Bind(objectName, virtualDWView.VirtualDataWindow);
                     }
-                    catch (NamingException e) {
+                    catch (DirectoryException e) {
                         throw new ViewProcessingException("Invalid name for adding to context:" + e.Message, e);
                     }
 
@@ -159,7 +160,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 virtualDWView.Destroy();
                                 stopServices.AgentInstanceContext.RuntimeEnvContext.Unbind(objectName);
                             }
-                            catch (NamingException e) {
+                            catch (DirectoryException) {
                             }
                         }
                     };

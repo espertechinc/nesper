@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.collection
@@ -42,16 +43,19 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="theEvent">is the event to add</param>
         public void Add(EventBean theEvent)
         {
-            if (theEvent == null) {
+            if (theEvent == null)
+            {
                 throw new ArgumentException("Null event not allowed");
             }
 
-            if (FirstEvent == null) {
+            if (FirstEvent == null)
+            {
                 FirstEvent = theEvent;
                 return;
             }
 
-            if (AdditionalEvents == null) {
+            if (AdditionalEvents == null)
+            {
                 AdditionalEvents = new LinkedList<EventBean>();
             }
 
@@ -74,19 +78,22 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns>event array</returns>
         public EventBean[] ToArray()
         {
-            if (FirstEvent == null) {
+            if (FirstEvent == null)
+            {
                 return new EventBean[0];
             }
 
-            if (AdditionalEvents == null) {
-                return new[] {FirstEvent};
+            if (AdditionalEvents == null)
+            {
+                return new[] { FirstEvent };
             }
 
             var events = new EventBean[1 + AdditionalEvents.Count];
             events[0] = FirstEvent;
 
             var count = 1;
-            foreach (var theEvent in AdditionalEvents) {
+            foreach (var theEvent in AdditionalEvents)
+            {
                 events[count] = theEvent;
                 count++;
             }
@@ -96,9 +103,16 @@ namespace com.espertech.esper.common.@internal.collection
 
         public void Add(EventBean[] events)
         {
-            foreach (var ev in events) {
+            foreach (var ev in events)
+            {
                 Add(ev);
             }
+        }
+
+        public void Clear()
+        {
+            FirstEvent = null;
+            AdditionalEvents?.Clear();
         }
     }
 }

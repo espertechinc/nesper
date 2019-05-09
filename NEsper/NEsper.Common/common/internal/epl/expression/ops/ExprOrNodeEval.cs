@@ -36,12 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool? result = false;
             // At least one child must evaluate to true
             foreach (var child in evaluators) {
-                var evaluated = (bool) child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var evaluated = child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (evaluated == null) {
                     result = null;
                 }
                 else {
-                    if (evaluated) {
+                    if (true.Equals(evaluated)) {
                         return true;
                     }
                 }

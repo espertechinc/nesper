@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -29,17 +30,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             // Handle namespace-provided
             if (nameSpace != null) {
                 for (int i = 0; i < _collections.Length; i++) {
-                    IDictionary<string, Pair<Type, PluggableObjectEntry>> names = _collections[i].Pluggables.Get(nameSpace);
-                    if (names == null) {
-                        continue;
+                    if (_collections[i].Pluggables.TryGetValue(nameSpace, out var names)) {
+                        if (names.TryGetValue(name, out var entry)) {
+                            return entry;
+                        }
                     }
-
-                    Pair<Type, PluggableObjectEntry> entry = names.Get(name);
-                    if (entry == null) {
-                        continue;
-                    }
-
-                    return entry;
                 }
 
                 return null;
@@ -69,10 +64,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             if (entriesDuplicate != null) {
                 entriesDuplicate.Add(found.Value.Key);
-                throw new ViewProcessingException("Duplicate entries for view '" + name + "' found in namespaces " + entriesDuplicate.Render());
+                throw new IllegalStateException("Duplicate entries for view '" + name + "' found in namespaces " + entriesDuplicate.RenderAny());
             }
 
-            return found == null ? null : found.Value.Value;
+            return found?.Value;
         }
     }
 } // end of namespace

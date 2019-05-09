@@ -92,9 +92,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     forge.ForgeRenderable.MinMaxTypeEnum == MinMaxTypeEnum.MAX, codegenMethodScope, exprSymbol, codegenClassScope, nodes, convertors);
             }
             else if (resultType == typeof(decimal)) {
-                var convertors = new SimpleNumberDecimalCoercer[nodes.Length];
+                var convertors = new SimpleNumberCoercer[nodes.Length];
                 for (var i = 0; i < nodes.Length; i++) {
-                    convertors[i] = SimpleNumberCoercerFactory.GetCoercerBigDecimal(nodes[i].Forge.EvaluationType);
+                    convertors[i] = SimpleNumberCoercerFactory.GetCoercer(nodes[i].Forge.EvaluationType, typeof(decimal));
                 }
 
                 expression = MinMaxTypeEnum.ComputerBigDecCoerce.Codegen(

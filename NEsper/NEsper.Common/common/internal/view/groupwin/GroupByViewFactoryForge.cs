@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 catch (EPException) {
                     throw;
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     throw new ViewParameterException(
                         "Required hint value for hint '" + HintEnum.RECLAIM_GROUP_AGED + "' value '" + hintValueMaxAge +
                         "' could not be parsed as a double value");

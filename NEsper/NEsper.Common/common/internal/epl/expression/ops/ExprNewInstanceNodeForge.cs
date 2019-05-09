@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public Type EvaluationType { get; }
 
-        public ExprNodeRenderable ForgeRenderable => parent;
+        public ExprNodeRenderable ExprForgeRenderable => parent;
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }

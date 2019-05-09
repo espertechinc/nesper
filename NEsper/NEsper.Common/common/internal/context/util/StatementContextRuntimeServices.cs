@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Runtime.Remoting.Contexts;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.render;
@@ -39,19 +38,22 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
+using com.espertech.esper.compat.directory;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
     public class StatementContextRuntimeServices
     {
         public StatementContextRuntimeServices(
+            IContainer container,
             ContextManagementService contextManagementService,
             ContextServiceFactory contextServiceFactory,
             DatabaseConfigServiceRuntime databaseConfigService,
             DataFlowFilterServiceAdapter dataFlowFilterServiceAdapter,
             EPDataFlowServiceImpl dataflowService,
             string runtimeURI,
-            Context runtimeEnvContext,
+            IDirectory runtimeEnvContext,
             ImportServiceRuntime importServiceRuntime,
             RuntimeSettingsService runtimeSettingsService,
             RuntimeExtensionServices runtimeExtensionServices,
@@ -224,7 +226,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public MetricReportingService MetricReportingService { get; }
 
-        public Context RuntimeEnvContext { get; }
+        public IDirectory RuntimeEnvContext { get; }
 
         public PathRegistry<string, EventType> EventTypePathRegistry { get; }
 

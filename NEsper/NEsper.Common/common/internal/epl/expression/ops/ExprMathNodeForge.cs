@@ -13,36 +13,30 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprMathNodeForge : ExprForgeInstrumentable
     {
-        private readonly ExprMathNode parent;
-        private readonly MathArithTypeEnum.Computer arithTypeEnumComputer;
-        private readonly Type resultType;
-
         public ExprMathNodeForge(
             ExprMathNode parent,
             MathArithTypeEnum.Computer arithTypeEnumComputer,
             Type resultType)
         {
-            this.parent = parent;
-            this.arithTypeEnumComputer = arithTypeEnumComputer;
-            this.resultType = resultType;
+            ForgeRenderable = parent;
+            ArithTypeEnumComputer = arithTypeEnumComputer;
+            EvaluationType = resultType;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => new ExprMathNodeForgeEval(this, parent.ChildNodes[0].Forge.ExprEvaluator, parent.ChildNodes[1].Forge.ExprEvaluator);
-        }
+        internal MathArithTypeEnum.Computer ArithTypeEnumComputer { get; }
 
-        public Type EvaluationType {
-            get => resultType;
-        }
+        public ExprMathNode ForgeRenderable { get; }
+
+        public ExprEvaluator ExprEvaluator => new ExprMathNodeForgeEval(
+            this, ForgeRenderable.ChildNodes[0].Forge.ExprEvaluator, ForgeRenderable.ChildNodes[1].Forge.ExprEvaluator);
+
+        public Type EvaluationType { get; }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -50,8 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = ExprMathNodeForgeEval.Codegen(
-                this, codegenMethodScope, exprSymbol, codegenClassScope, parent.ChildNodes[0], parent.ChildNodes[1]);
+            var methodNode = ExprMathNodeForgeEval.Codegen(
+                this, codegenMethodScope, exprSymbol, codegenClassScope, ForgeRenderable.ChildNodes[0], ForgeRenderable.ChildNodes[1]);
             return LocalMethod(methodNode);
         }
 
@@ -61,22 +55,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return new InstrumentationBuilderExpr(this.GetType(), this, "ExprMath", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
-                .Qparam(Constant(parent.MathArithTypeEnum.ExpressionText)).Build();
+            return new InstrumentationBuilderExpr(GetType(), this, "ExprMath", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+                .Qparam(Constant(ForgeRenderable.MathArithTypeEnum.ExpressionText)).Build();
         }
 
-        internal MathArithTypeEnum.Computer ArithTypeEnumComputer {
-            get { return arithTypeEnumComputer; }
-        }
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
-
-        public ExprMathNode ForgeRenderable {
-            get => parent;
-        }
-
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

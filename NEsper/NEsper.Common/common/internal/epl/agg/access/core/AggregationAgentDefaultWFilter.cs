@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             AggregationRow row,
             int column)
         {
-            Boolean pass = (Boolean) filterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            if (pass != null && pass) {
+            var pass = filterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            if (pass != null && true.Equals(pass)) {
                 row.EnterAccess(column, eventsPerStream, exprEvaluatorContext);
             }
         }
@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             AggregationRow row,
             int column)
         {
-            Boolean pass = (Boolean) filterEval.Evaluate(eventsPerStream, false, exprEvaluatorContext);
-            if (pass != null && pass) {
+            var pass = filterEval.Evaluate(eventsPerStream, false, exprEvaluatorContext);
+            if (pass != null && true.Equals(pass)) {
                 row.LeaveAccess(column, eventsPerStream, exprEvaluatorContext);
             }
         }

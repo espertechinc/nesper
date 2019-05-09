@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.settings
 
                         clazz = resolvedClass;
                     }
-                    catch (TypeLoadException ex1) {
+                    catch (TypeLoadException) {
                         // expected, class may not exists in all packages
                     }
                 }
@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.settings
             try {
                 return ClassForNameProvider.ClassForName(className);
             }
-            catch (TypeLoadException e) {
+            catch (TypeLoadException) {
                 if (Log.IsDebugEnabled) {
                     Log.Debug("Class not found for resolving from name as-is '" + className + "'");
                 }
@@ -245,7 +245,7 @@ namespace com.espertech.esper.common.@internal.settings
                             return clazz;
                         }
                     }
-                    catch (TypeLoadException e) {
+                    catch (TypeLoadException) {
                         if (Log.IsDebugEnabled) {
                             Log.Debug("Class not found for resolving from name '" + prefixedClassName + "'");
                         }
@@ -267,7 +267,7 @@ namespace com.espertech.esper.common.@internal.settings
                             return clazz;
                         }
                     }
-                    catch (TypeLoadException e) {
+                    catch (TypeLoadException) {
                         if (Log.IsDebugEnabled) {
                             Log.Debug("Class not found for resolving from name '" + prefixedClassName + "'");
                         }

@@ -125,7 +125,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices);
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable EnumForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
             CodegenMethodScope parent,

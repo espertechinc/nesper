@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             this.key = key;
         }
 
-        public void Write(
+        public override void Write(
             object value,
             EventBean target)
         {

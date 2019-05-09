@@ -37,6 +37,7 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.directory;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -82,8 +83,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public RuntimeSettingsService RuntimeSettingsService => StatementContext.RuntimeSettingsService;
 
-        public ImportServiceRuntime ImportServiceRuntime =>
-            StatementContext.ImportServiceRuntime;
+        public ImportServiceRuntime ImportServiceRuntime => StatementContext.ImportServiceRuntime;
 
         public FilterService FilterService => StatementContext.FilterService;
 
@@ -131,21 +131,19 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public DatabaseConfigServiceRuntime DatabaseConfigService => StatementContext.DatabaseConfigService;
 
-        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped =>
-            StatementContext.EPRuntimeEventProcessWrapped;
+        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped => StatementContext.EPRuntimeEventProcessWrapped;
 
         public EventServiceSendEventCommon EPRuntimeSendEvent => StatementContext.EPRuntimeSendEvent;
 
         public EPRenderEventService EPRuntimeRenderEvent => StatementContext.EPRuntimeRenderEvent;
 
-        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter =>
-            StatementContext.DataFlowFilterServiceAdapter;
+        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter => StatementContext.DataFlowFilterServiceAdapter;
 
         public object Runtime => StatementContext.Runtime;
 
         public MetricReportingService MetricReportingService => StatementContext.MetricReportingService;
 
-        //public Context RuntimeEnvContext => StatementContext.RuntimeEnvContext;
+        public IDirectory RuntimeEnvContext => StatementContext.RuntimeEnvContext;
 
         public long FilterVersionAfterAllocation { get; }
 

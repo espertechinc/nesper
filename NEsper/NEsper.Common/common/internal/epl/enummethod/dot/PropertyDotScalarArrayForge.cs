@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return ConstantNull();
         }
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable EnumForgeRenderable => this;
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
             CodegenMethodScope codegenMethodScope,

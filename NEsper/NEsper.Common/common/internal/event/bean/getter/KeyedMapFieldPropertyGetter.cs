@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         BeanEventPropertyGetter,
         EventPropertyGetterAndMapped
     {
-        private readonly FieldInfo field;
-        private readonly object key;
+        private readonly FieldInfo _field;
+        private readonly object _key;
 
         public KeyedMapFieldPropertyGetter(
             FieldInfo field,
@@ -40,13 +40,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory, beanEventTypeFactory, TypeHelper.GetGenericFieldTypeMap(field, false), null)
         {
-            this.key = key;
-            this.field = field;
+            _key = key;
+            _field = field;
         }
 
         public object GetBeanProp(object @object)
         {
-            return GetBeanPropInternal(@object, key);
+            return GetBeanPropInternal(@object, _key);
         }
 
         public bool IsBeanExistsProperty(object @object)
@@ -65,9 +65,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => TypeHelper.GetGenericFieldTypeMap(field, false);
+        public override Type BeanPropType => TypeHelper.GetGenericFieldTypeMap(_field, false);
 
-        public override Type TargetType => field.DeclaringType;
+        public override Type TargetType => _field.DeclaringType;
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope), underlyingExpression, Constant(key));
+                GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope), underlyingExpression, Constant(_key));
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             object key)
         {
             try {
-                object result = field.Get(@object);
+                var result = _field.GetValue(@object);
                 if (!(result is IDictionary<object, object>)) {
                     return null;
                 }
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return resultMap.Get(key);
             }
             catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(field, @object, e);
+                throw PropertyUtility.GetMismatchException(_field, @object, e);
             }
         }
 
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return codegenMethodScope.MakeChild(BeanPropType, GetType(), codegenClassScope)
                 .AddParam(TargetType, "object").AddParam(typeof(object), "key").Block
-                .DeclareVar(typeof(object), "result", ExprDotName(Ref("object"), field.Name))
+                .DeclareVar(typeof(object), "result", ExprDotName(Ref("object"), _field.Name))
                 .IfRefNotTypeReturnConst("result", typeof(IDictionary<object, object>), null)
                 .DeclareVarWCast(typeof(IDictionary<object, object>), "map", "result")
                 .MethodReturn(Cast(BeanPropType, ExprDotMethod(Ref("map"), "get", Ref("key"))));
@@ -154,8 +154,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public override string ToString()
         {
             return "KeyedMapFieldPropertyGetter " +
-                   " field=" + field +
-                   " key=" + key;
+                   " field=" + _field +
+                   " key=" + _key;
         }
     }
 } // end of namespace

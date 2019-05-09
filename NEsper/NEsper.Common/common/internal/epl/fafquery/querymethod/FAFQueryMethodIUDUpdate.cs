@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
         public EventBeanUpdateHelperWCopy UpdateHelperNamedWindow { get; set; }
 
-        public QueryGraph QueryGraph { get; set; }
+        public override QueryGraph QueryGraph { get; set; }
 
         public EventBeanUpdateHelperNoCopy UpdateHelperTable { get; set; }
 

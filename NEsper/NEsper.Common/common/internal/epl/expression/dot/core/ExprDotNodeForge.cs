@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope);
 
         public abstract Type EvaluationType { get; }
-        public abstract ExprNodeRenderable ForgeRenderable { get; }
+        public abstract ExprNodeRenderable ExprForgeRenderable { get; }
 
         public abstract CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,

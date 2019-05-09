@@ -6,10 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.client.dataflow.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.dataflow.core
 {
@@ -21,8 +18,8 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <summary>
         /// Returns emitter name
         /// </summary>
-        /// <returns>name</returns>
-        string GetName();
+        /// <value>name</value>
+        string Name { get; }
 
         /// <summary>
         /// Submit an underlying event

@@ -51,7 +51,10 @@ namespace com.espertech.esper.common.@internal.type
                     return new decimal(result);
                 }
 
-                return b1.Divide(b2, mathContext);
+                return decimal.Round(
+                    decimal.Divide(b1, b2),
+                    mathContext.Precision,
+                    mathContext.RoundingMode);
             }
 
             public CodegenExpression Codegen(

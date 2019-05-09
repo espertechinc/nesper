@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
     public static class FireAndForgetProcessorForgeExtensions
     {
-        private static CodegenExpression MakeArray(
+        public static CodegenExpression MakeArray(
             FireAndForgetProcessorForge[] processors,
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,

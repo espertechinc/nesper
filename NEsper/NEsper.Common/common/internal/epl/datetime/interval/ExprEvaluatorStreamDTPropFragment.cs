@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
         public Type EvaluationType => typeof(long);
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public void ToEPL(
             TextWriter writer,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using System.Text;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -194,7 +195,7 @@ namespace com.espertech.esper.common.@internal.schedule
         ///     I.e. reduce 0,1,2,3,4,5,6 for week value to 'null' indicating the wildcard.
         /// </summary>
         /// <param name="unitValues">is the set of valid values per unit</param>
-        protected internal static void Compress(IDictionary<ScheduleUnit, ICollection<int>> unitValues)
+        internal static void Compress(IDictionary<ScheduleUnit, ICollection<int>> unitValues)
         {
             var termList = new List<ScheduleUnit>();
 
@@ -214,7 +215,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
         /// <summary>Validate units and their value sets. </summary>
         /// <param name="unitValues">is the set of valid values per unit</param>
-        protected internal static void Validate(IDictionary<ScheduleUnit, ICollection<int>> unitValues)
+        internal static void Validate(IDictionary<ScheduleUnit, ICollection<int>> unitValues)
         {
             if (!unitValues.ContainsKey(ScheduleUnit.MONTHS) ||
                 !unitValues.ContainsKey(ScheduleUnit.DAYS_OF_WEEK) ||
@@ -223,7 +224,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 !unitValues.ContainsKey(ScheduleUnit.DAYS_OF_MONTH)) {
                 throw new ArgumentException(
                     "Incomplete information for schedule specification, only the following keys are supplied=" +
-                    unitValues.Keys.Render());
+                    unitValues.Keys.RenderAny());
             }
 
             foreach (var unit in ScheduleUnit.Values) {

@@ -132,11 +132,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         {
             var method = parent.MakeChild(typeof(InfraOnMergeHelper), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(InfraOnMergeActionIns), "insertUnmatched",
-                    insertUnmatched == null ? ConstantNull() : insertUnmatched.Make(method, symbols, classScope))
-                .DeclareVar(typeof(IList<object>), "matched", MakeList(matched, method, symbols, classScope))
-                .DeclareVar(typeof(IList<object>), "unmatched", MakeList(unmatched, method, symbols, classScope))
+                .DeclareVar<InfraOnMergeActionIns>(
+                    "insertUnmatched", insertUnmatched == null ? ConstantNull() : insertUnmatched.Make(method, symbols, classScope))
+                .DeclareVar<IList<object>>("matched", MakeList(matched, method, symbols, classScope))
+                .DeclareVar<IList<object>>("unmatched", MakeList(unmatched, method, symbols, classScope))
                 .MethodReturn(
                     NewInstance(
                         typeof(InfraOnMergeHelper), Ref("insertUnmatched"), Ref("matched"), Ref("unmatched"),

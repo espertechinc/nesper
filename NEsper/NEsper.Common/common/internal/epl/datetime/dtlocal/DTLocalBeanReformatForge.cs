@@ -7,14 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -38,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             this.returnType = returnType;
         }
 
-        public DTLocalEvaluator DTEvaluator {
+        public DTLocalEvaluator DTEvaluator
+        {
             get => new DTLocalBeanReformatEval(getter, inner.DTEvaluator);
         }
 
@@ -54,7 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             CodegenBlock block = methodNode.Block
                 .DeclareVar(getterResultType, "timestamp", getter.EventBeanGetCodegen(@Ref("target"), methodNode, codegenClassScope));
-            if (!getterResultType.IsPrimitive) {
+            if (!getterResultType.IsPrimitive)
+            {
                 block.IfRefNullReturnNull("timestamp");
             }
 

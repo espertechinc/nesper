@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
     public class NamedWindowConsumerLatchFactory
     {
         internal readonly bool enabled;
-        internal readonly long msecWait;
+        internal readonly int msecWait;
         internal readonly string name;
         internal readonly TimeSourceService timeSourceService;
         internal readonly bool useSpin;
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         public NamedWindowConsumerLatchFactory(
             string name,
             bool enabled,
-            long msecWait,
+            int msecWait,
             Locking locking,
             TimeSourceService timeSourceService,
             bool initializeNow)
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 
         public string Name => name;
 
-        public long MsecWait => msecWait;
+        public int MsecWait => msecWait;
 
         /// <summary>
         ///     Returns a new latch.

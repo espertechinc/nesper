@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         streamTypeService, spec.Name, streamTypeService.HasPropertyAgnosticType, false,
                         validationContext.TableCompileTimeResolver);
                 }
-                catch (ExprValidationPropertyException ex) {
+                catch (ExprValidationPropertyException) {
                     // fine
                 }
 
@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         streamTypeService, propName, streamTypeService.HasPropertyAgnosticType, false,
                         validationContext.TableCompileTimeResolver);
                 }
-                catch (ExprValidationPropertyException ex) {
+                catch (ExprValidationPropertyException) {
                     // fine
                 }
 
@@ -293,7 +293,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     streamTypeService, firstItem.Name, streamTypeService.HasPropertyAgnosticType, true,
                     validationContext.TableCompileTimeResolver);
             }
-            catch (ExprValidationPropertyException ex) {
+            catch (ExprValidationPropertyException) {
                 // not a property
             }
 
@@ -389,7 +389,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     evalsX = ExprDotNodeUtility.GetChainEvaluators(
                         streamId, inputType, modifiedChain, validationContext, isDuckTyping, filterAnalyzerInputProp);
                 }
-                catch (ExprValidationException ex) {
+                catch (ExprValidationException) {
                     // try building the chain based on the fragment event type (i.e. A.after(B) based on A-configured start time where A is a fragment)
                     var fragment = propertyInfoPair.First.FragmentEventType;
                     if (fragment == null) {

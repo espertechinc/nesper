@@ -7,7 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -29,19 +30,26 @@ namespace com.espertech.esper.common.@internal.view.expression
     {
         public static string GetFieldName(this ExpressionViewOAFieldEnum value)
         {
-            switch (value) {
+            switch (value)
+            {
                 case ExpressionViewOAFieldEnum.CURRENT_COUNT:
                     return "current_count";
+
                 case ExpressionViewOAFieldEnum.OLDEST_TIMESTAMP:
                     return "oldest_timestamp";
+
                 case ExpressionViewOAFieldEnum.NEWEST_TIMESTAMP:
                     return "newest_timestamp";
+
                 case ExpressionViewOAFieldEnum.EXPIRED_COUNT:
                     return "expired_count";
+
                 case ExpressionViewOAFieldEnum.VIEW_REFERENCE:
                     return "view_reference";
+
                 case ExpressionViewOAFieldEnum.NEWEST_EVENT:
                     return "newest_event";
+
                 case ExpressionViewOAFieldEnum.OLDEST_EVENT:
                     return "oldest_event";
             }
@@ -83,7 +91,8 @@ namespace com.espertech.esper.common.@internal.view.expression
 
         public static object[] GetPrototypeOA()
         {
-            return new object[ExpressionViewOAFieldEnum.Values.Length];
+            int valuesCount = EnumHelper.GetValues<ExpressionViewOAFieldEnum>().Count();
+            return new object[valuesCount];
         }
     }
 } // end of namespace

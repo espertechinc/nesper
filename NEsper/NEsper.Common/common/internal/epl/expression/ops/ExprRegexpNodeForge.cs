@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             get => parent;
         }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public bool IsNumericValue {
             get => isNumericValue;

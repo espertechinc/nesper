@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public override string ToString()
         {
             return "ReflectionPropFieldGetter " +
-                   "field=" + field.ToGenericString();
+                   "field=" + field.ToString();
         }
     }
 } // end of namespace

@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Computer = computer;
         }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprBitWiseNode ForgeRenderable { get; }
 

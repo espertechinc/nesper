@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override string RootPropertyName => null;
 
-        public override ExprNodeRenderable ForgeRenderable => parent;
+        public override ExprNodeRenderable ExprForgeRenderable => parent;
 
         public ExprDotForge[] Evaluators { get; }
 

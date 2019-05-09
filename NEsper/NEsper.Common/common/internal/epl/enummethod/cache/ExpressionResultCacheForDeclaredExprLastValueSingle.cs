@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
@@ -29,12 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             object node,
             EventBean[] eventsPerStream)
         {
-            SoftReference<ExpressionResultCacheEntryEventBeanArrayAndObj> cacheRef = this.exprDeclCacheObject.Get(node);
+            var cacheRef = exprDeclCacheObject.Get(node);
             if (cacheRef == null) {
                 return null;
             }
 
-            ExpressionResultCacheEntryEventBeanArrayAndObj entry = cacheRef.Get();
+            var entry = cacheRef.Get();
             if (entry == null) {
                 return null;
             }
@@ -47,8 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             EventBean[] eventsPerStream,
             object result)
         {
-            EventBean[] copy = EventBeanUtility.CopyArray(eventsPerStream);
-            ExpressionResultCacheEntryEventBeanArrayAndObj entry = new ExpressionResultCacheEntryEventBeanArrayAndObj(copy, result);
+            var copy = EventBeanUtility.CopyArray(eventsPerStream);
+            var entry = new ExpressionResultCacheEntryEventBeanArrayAndObj(copy, result);
             exprDeclCacheObject.Put(node, new SoftReference<ExpressionResultCacheEntryEventBeanArrayAndObj>(entry));
         }
     }

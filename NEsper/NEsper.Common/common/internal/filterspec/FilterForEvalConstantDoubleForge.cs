@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public FilterForEvalConstantDoubleForge(double doubleValue)
         {
-            this._doubleValue = doubleValue;
+            _doubleValue = doubleValue;
         }
 
         public CodegenExpression MakeCodegen(

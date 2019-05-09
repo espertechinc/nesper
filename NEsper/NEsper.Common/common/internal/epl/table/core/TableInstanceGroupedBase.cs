@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                     table.Add(@event, agentInstanceContext);
                 }
             }
-            catch (EPException ex) {
+            catch (EPException) {
                 foreach (EventTable table in indexRepository.Tables) {
                     table.Remove(@event, agentInstanceContext);
                 }

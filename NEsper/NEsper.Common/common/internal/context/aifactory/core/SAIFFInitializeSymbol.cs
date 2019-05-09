@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -21,16 +22,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 
         private CodegenExpressionRef optionalInitServicesRef;
 
-        public void Provide(IDictionary<string, Type> symbols)
+        public virtual void Provide(IDictionary<string, Type> symbols)
         {
-            if (optionalInitServicesRef != null) {
+            if (optionalInitServicesRef != null)
+            {
                 symbols.Put(optionalInitServicesRef.Ref, typeof(EPStatementInitServices));
             }
         }
 
         public CodegenExpressionRef GetAddInitSvc(CodegenMethodScope scope)
         {
-            if (optionalInitServicesRef == null) {
+            if (optionalInitServicesRef == null)
+            {
                 optionalInitServicesRef = REF_STMTINITSVC;
             }
 

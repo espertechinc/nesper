@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Write(value, arrayEvent.Properties);
         }
 
-        public CodegenExpression WriteCodegen(
+        public virtual CodegenExpression WriteCodegen(
             CodegenExpression assigned,
             CodegenExpression und,
             CodegenExpression target,
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return Assign(ArrayAtIndex(und, Constant(index)), assigned);
         }
 
-        public void Write(
+        public virtual void Write(
             object value,
             object[] array)
         {

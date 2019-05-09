@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.dataflow.core;
@@ -27,6 +28,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.annotation.AnnotationUtil;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
@@ -192,25 +194,31 @@ namespace com.espertech.esper.common.@internal.context.module
         {
             var numbered = _namespaceScope.SubstitutionParamsByNumber;
             var named = _namespaceScope.SubstitutionParamsByName;
-            if (numbered.IsEmpty() && named.IsEmpty()) {
+            if (numbered.IsEmpty() && named.IsEmpty())
+            {
                 return ConstantNull();
             }
 
-            if (!numbered.IsEmpty() && !named.IsEmpty()) {
+            if (!numbered.IsEmpty() && !named.IsEmpty())
+            {
                 throw new IllegalStateException("Both named and numbered substitution parameters are non-empty");
             }
 
             Type[] types;
-            if (!numbered.IsEmpty()) {
+            if (!numbered.IsEmpty())
+            {
                 types = new Type[numbered.Count];
-                for (var i = 0; i < numbered.Count; i++) {
+                for (var i = 0; i < numbered.Count; i++)
+                {
                     types[i] = numbered[i].Type;
                 }
             }
-            else {
+            else
+            {
                 types = new Type[named.Count];
                 var count = 0;
-                foreach (var entry in named) {
+                foreach (var entry in named)
+                {
                     types[count++] = entry.Value.Type;
                 }
             }
@@ -223,7 +231,8 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenClassScope classScope)
         {
             var named = _namespaceScope.SubstitutionParamsByName;
-            if (named.IsEmpty()) {
+            if (named.IsEmpty())
+            {
                 return ConstantNull();
             }
 
@@ -232,7 +241,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 typeof(IDictionary<object, object>), "names",
                 NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(named.Count))));
             var count = 1;
-            foreach (var entry in named) {
+            foreach (var entry in named)
+            {
                 method.Block.ExprDotMethod(Ref("names"), "put", Constant(entry.Key), Constant(count++));
             }
 
@@ -244,7 +254,8 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (!_instrumented) {
+            if (!_instrumented)
+            {
                 return ConstantNull();
             }
 
@@ -255,20 +266,25 @@ namespace com.espertech.esper.common.@internal.context.module
             anonymousClass.AddMethod("activated", activated);
             activated.Block.MethodReturn(ConstantTrue());
 
-            foreach (var forwarded in typeof(InstrumentationCommon).GetMethods()) {
-                if (forwarded.DeclaringType == typeof(object)) {
+            foreach (var forwarded in typeof(InstrumentationCommon).GetMethods())
+            {
+                if (forwarded.DeclaringType == typeof(object))
+                {
                     continue;
                 }
 
-                if (forwarded.Name.Equals("activated")) {
+                if (forwarded.Name.Equals("activated"))
+                {
                     continue;
                 }
 
                 IList<CodegenNamedParam> @params = new List<CodegenNamedParam>();
-                var expressions = new CodegenExpression[forwarded.ParameterCount];
+                var forwardedParameters = forwarded.GetParameters();
+                var expressions = new CodegenExpression[forwardedParameters.Length];
 
                 var num = 0;
-                foreach (var param in forwarded.GetParameters()) {
+                foreach (var param in forwardedParameters)
+                {
                     @params.Add(new CodegenNamedParam(param.ParameterType, param.Name));
                     expressions[num] = Ref(param.Name);
                     num++;
@@ -287,7 +303,8 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (FindAnnotation(_annotations, typeof(AuditAttribute)) == null) {
+            if (FindAnnotation(_annotations, typeof(AuditAttribute)) == null)
+            {
                 return PublicConstValue(typeof(AuditProviderDefault), "INSTANCE");
             }
 
@@ -302,7 +319,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref)
                 .AddParam(typeof(ViewFactory), "viewFactory");
             anonymousClass.AddMethod("view", view);
-            if (AuditEnum.VIEW.GetAudit(_annotations) != null) {
+            if (AuditEnum.VIEW.GetAudit(_annotations) != null)
+            {
                 view.Block.StaticMethod(
                     typeof(AuditPath), "auditView", Ref("newData"), Ref("oldData"), REF_AGENTINSTANCECONTEXT,
                     Ref("viewFactory"));
@@ -316,7 +334,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(EventBean[]), "newData").AddParam(typeof(EventBean[]), "oldData")
                 .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref).AddParam(typeof(string), "filterText");
             anonymousClass.AddMethod("stream", streamTwo);
-            if (AuditEnum.STREAM.GetAudit(_annotations) != null) {
+            if (AuditEnum.STREAM.GetAudit(_annotations) != null)
+            {
                 streamOne.Block.StaticMethod(
                     typeof(AuditPath), "auditStream", Ref("event"), REF_EXPREVALCONTEXT, Ref("filterText"));
                 streamTwo.Block.StaticMethod(
@@ -338,7 +357,8 @@ namespace com.espertech.esper.common.@internal.context.module
             anonymousClass.AddMethod("scheduleAdd", scheduleAdd);
             anonymousClass.AddMethod("scheduleRemove", scheduleRemove);
             anonymousClass.AddMethod("scheduleFire", scheduleFire);
-            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
+            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null)
+            {
                 scheduleAdd.Block.StaticMethod(
                     typeof(AuditPath), "auditScheduleAdd", Ref("time"), REF_AGENTINSTANCECONTEXT,
                     Ref("scheduleHandle"), Ref("type"), Ref("name"));
@@ -353,7 +373,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(string), "name").AddParam(typeof(object), "value").AddParam(
                     typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref);
             anonymousClass.AddMethod("property", property);
-            if (AuditEnum.PROPERTY.GetAudit(_annotations) != null) {
+            if (AuditEnum.PROPERTY.GetAudit(_annotations) != null)
+            {
                 property.Block.StaticMethod(
                     typeof(AuditPath), "auditProperty", Ref("name"), Ref("value"), REF_EXPREVALCONTEXT);
             }
@@ -361,7 +382,8 @@ namespace com.espertech.esper.common.@internal.context.module
             var insert = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
                 .AddParam(typeof(EventBean), "event").AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref);
             anonymousClass.AddMethod("insert", insert);
-            if (AuditEnum.INSERT.GetAudit(_annotations) != null) {
+            if (AuditEnum.INSERT.GetAudit(_annotations) != null)
+            {
                 insert.Block.StaticMethod(typeof(AuditPath), "auditInsert", Ref("event"), REF_EXPREVALCONTEXT);
             }
 
@@ -370,7 +392,8 @@ namespace com.espertech.esper.common.@internal.context.module
                     typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref);
             anonymousClass.AddMethod("expression", expression);
             if (AuditEnum.EXPRESSION.GetAudit(_annotations) != null ||
-                AuditEnum.EXPRESSION_NESTED.GetAudit(_annotations) != null) {
+                AuditEnum.EXPRESSION_NESTED.GetAudit(_annotations) != null)
+            {
                 expression.Block.StaticMethod(
                     typeof(AuditPath), "auditExpression", Ref("text"), Ref("value"), REF_EXPREVALCONTEXT);
             }
@@ -384,7 +407,8 @@ namespace com.espertech.esper.common.@internal.context.module
                     typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT);
             anonymousClass.AddMethod("patternTrue", patternTrue);
             anonymousClass.AddMethod("patternFalse", patternFalse);
-            if (AuditEnum.PATTERN.GetAudit(_annotations) != null) {
+            if (AuditEnum.PATTERN.GetAudit(_annotations) != null)
+            {
                 patternTrue.Block.StaticMethod(
                     typeof(AuditPath), "auditPatternTrue", Ref("factoryNode"), Ref("from"), Ref("matchEvent"),
                     Ref("isQuitted"), REF_AGENTINSTANCECONTEXT);
@@ -397,7 +421,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(bool), "increase").AddParam(typeof(EvalFactoryNode), "factoryNode").AddParam(
                     typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT);
             anonymousClass.AddMethod("patternInstance", patternInstance);
-            if (AuditEnum.PATTERNINSTANCES.GetAudit(_annotations) != null) {
+            if (AuditEnum.PATTERNINSTANCES.GetAudit(_annotations) != null)
+            {
                 patternInstance.Block.StaticMethod(
                     typeof(AuditPath), "auditPatternInstance", Ref("increase"), Ref("factoryNode"),
                     REF_AGENTINSTANCECONTEXT);
@@ -407,7 +432,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(string), "name").AddParam(typeof(object), "value").AddParam(
                     typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref);
             anonymousClass.AddMethod("exprdef", exprdef);
-            if (AuditEnum.EXPRDEF.GetAudit(_annotations) != null) {
+            if (AuditEnum.EXPRDEF.GetAudit(_annotations) != null)
+            {
                 exprdef.Block.StaticMethod(
                     typeof(AuditPath), "auditExprDef", Ref("name"), Ref("value"), REF_EXPREVALCONTEXT);
             }
@@ -417,7 +443,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(EPDataFlowState), "state").AddParam(typeof(EPDataFlowState), "newState").AddParam(
                     typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref);
             anonymousClass.AddMethod("dataflowTransition", dataflowTransition);
-            if (AuditEnum.DATAFLOW_TRANSITION.GetAudit(_annotations) != null) {
+            if (AuditEnum.DATAFLOW_TRANSITION.GetAudit(_annotations) != null)
+            {
                 dataflowTransition.Block.StaticMethod(
                     typeof(AuditPath), "auditDataflowTransition", Ref("name"), Ref("instance"), Ref("state"),
                     Ref("newState"), REF_AGENTINSTANCECONTEXT);
@@ -428,7 +455,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(string), "operatorName").AddParam(typeof(int), "operatorNum").AddParam(
                     typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref);
             anonymousClass.AddMethod("dataflowSource", dataflowSource);
-            if (AuditEnum.DATAFLOW_SOURCE.GetAudit(_annotations) != null) {
+            if (AuditEnum.DATAFLOW_SOURCE.GetAudit(_annotations) != null)
+            {
                 dataflowSource.Block.StaticMethod(
                     typeof(AuditPath), "auditDataflowSource", Ref("name"), Ref("instance"), Ref("operatorName"),
                     Ref("operatorNum"), REF_AGENTINSTANCECONTEXT);
@@ -440,7 +468,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(object[]), "params").AddParam(
                     typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref);
             anonymousClass.AddMethod("dataflowOp", dataflowOp);
-            if (AuditEnum.DATAFLOW_OP.GetAudit(_annotations) != null) {
+            if (AuditEnum.DATAFLOW_OP.GetAudit(_annotations) != null)
+            {
                 dataflowOp.Block.StaticMethod(
                     typeof(AuditPath), "auditDataflowOp", Ref("name"), Ref("instance"), Ref("operatorName"),
                     Ref("operatorNum"), Ref("params"), REF_AGENTINSTANCECONTEXT);
@@ -450,7 +479,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(bool), "allocate").AddParam(
                     typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref);
             anonymousClass.AddMethod("contextPartition", contextPartition);
-            if (AuditEnum.CONTEXTPARTITION.GetAudit(_annotations) != null) {
+            if (AuditEnum.CONTEXTPARTITION.GetAudit(_annotations) != null)
+            {
                 contextPartition.Block.StaticMethod(
                     typeof(AuditPath), "auditContextPartition", Ref("allocate"), REF_AGENTINSTANCECONTEXT);
             }
@@ -463,13 +493,15 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            if (properties.IsEmpty()) {
+            if (properties.IsEmpty())
+            {
                 return StaticMethod(typeof(Collections), "emptyMap");
             }
 
             Func<StatementProperty, CodegenExpression> field = x => EnumValue(typeof(StatementProperty), x.GetName());
             Func<object, CodegenExpression> value = Constant;
-            if (properties.Count == 1) {
+            if (properties.Count == 1)
+            {
                 var first = properties.First();
                 return StaticMethod(
                     typeof(Collections), "singletonMap", field.Invoke(first.Key), value.Invoke(first.Value));
@@ -483,7 +515,8 @@ namespace com.espertech.esper.common.@internal.context.module
                     NewInstance(
                         typeof(Dictionary<object, object>),
                         Constant(CollectionUtil.CapacityHashMap(properties.Count))));
-            foreach (var entry in properties) {
+            foreach (var entry in properties)
+            {
                 method.Block.ExprDotMethod(
                     Ref("properties"), "put", field.Invoke(entry.Key), value.Invoke(entry.Value));
             }

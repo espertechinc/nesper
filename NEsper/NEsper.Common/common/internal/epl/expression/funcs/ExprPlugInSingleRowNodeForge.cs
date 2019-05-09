@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
         }
 
-        public ExprNodeRenderable ForgeRenderable => parent;
+        public ExprNodeRenderable ExprForgeRenderable => parent;
 
         public bool HasMethodInvocationContextParam()
         {

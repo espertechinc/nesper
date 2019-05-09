@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -126,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             // Validate selection expressions, if any (could be wildcard i.e. empty list)
             IList<SelectClauseExprCompiledSpec> namedSelectionList = new List<SelectClauseExprCompiledSpec>();
             var allowRollup = groupByClauseExpressions != null && groupByClauseExpressions.GroupByRollupLevels != null;
-            var resettableAggs = isUnidirectional || statementRawInfo.StatementType.IsOnTriggerInfra;
+            var resettableAggs = isUnidirectional || statementRawInfo.StatementType.IsOnTriggerInfra();
             var intoTableName = spec.IntoTableSpec == null ? null : spec.IntoTableSpec.Name;
             var validationContext = new ExprValidationContextBuilder(typeService, statementRawInfo, services)
                 .WithViewResourceDelegate(viewResourceDelegate).WithAllowRollupFunctions(allowRollup)
@@ -179,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     try {
                         desc = typeService.ResolveByPropertyName(streamSelectSpec.StreamName, false);
                     }
-                    catch (StreamTypesException e) {
+                    catch (StreamTypesException) {
                         // not handled
                     }
 
@@ -694,7 +695,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     hook.Query(new GroupByRollupPlanDesc(validated, rollup));
                 }
             }
-            catch (ExprValidationException e) {
+            catch (ExprValidationException) {
                 throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_QUERY_PLAN);
             }
 

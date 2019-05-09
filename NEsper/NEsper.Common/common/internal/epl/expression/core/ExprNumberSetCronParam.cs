@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprEvaluator ExprEvaluator => this;
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public Type EvaluationType => typeof(CronParameter);
 

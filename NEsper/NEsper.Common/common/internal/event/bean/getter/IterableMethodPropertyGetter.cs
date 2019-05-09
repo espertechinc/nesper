@@ -145,10 +145,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     return null;
                 }
 
-                if (count < index) {
-                    @enum.Current;
-                }
-                else {
+                if (count >= index) {
                     return @enum.Current;
                 }
 

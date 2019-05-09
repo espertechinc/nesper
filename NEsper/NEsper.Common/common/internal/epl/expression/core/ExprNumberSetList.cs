@@ -65,8 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             get {
                 var max = -1;
                 foreach (var child in ChildNodes) {
-                    if (child.Forge.ForgeConstantType.Ordinal() > max) {
-                        max = child.Forge.ForgeConstantType.Ordinal();
+                    if (child.Forge.ForgeConstantType.Ordinal > max) {
+                        max = child.Forge.ForgeConstantType.Ordinal;
                     }
                 }
 
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return LocalMethod(methodNode);
         }
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {

@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             get => returnType;
         }
 
-        public ExprNodeRenderable ForgeRenderable {
+        public ExprNodeRenderable ExprForgeRenderable {
             get => this;
         }
 

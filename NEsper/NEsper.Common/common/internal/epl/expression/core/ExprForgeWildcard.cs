@@ -37,11 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public Type EvaluationType { get; }
 
-        public ExprNodeRenderable ForgeRenderable => ExprForgeWildcardRenderable.INSTANCE;
+        public ExprNodeRenderable ExprForgeRenderable => ExprForgeWildcardRenderable.INSTANCE;
 
         private sealed class ExprForgeWildcardRenderable : ExprNodeRenderable
         {
-            protected internal static readonly ExprForgeWildcardRenderable INSTANCE = new ExprForgeWildcardRenderable();
+            internal static readonly ExprForgeWildcardRenderable INSTANCE = new ExprForgeWildcardRenderable();
 
             private ExprForgeWildcardRenderable()
             {

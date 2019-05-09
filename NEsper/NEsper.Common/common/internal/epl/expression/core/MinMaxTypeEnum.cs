@@ -471,7 +471,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope,
                 ExprNode[] nodes,
-                SimpleNumberDecimalCoercer[] convertors)
+                SimpleNumberCoercer[] convertors)
             {
                 var r0Type = nodes[0].Forge.EvaluationType;
                 var r1Type = nodes[1].Forge.EvaluationType;
@@ -495,8 +495,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     block.IfRefNullReturnNull("r1");
                 }
 
-                block.DeclareVar(typeof(decimal), "bi0", convertors[0].CoerceBoxedDecimalCodegen(Ref("r0"), r0Type));
-                block.DeclareVar(typeof(decimal), "bi1", convertors[1].CoerceBoxedDecimalCodegen(Ref("r1"), r1Type));
+                block.DeclareVar(typeof(decimal), "bi0", convertors[0].CoerceCodegen(Ref("r0"), r0Type));
+                block.DeclareVar(typeof(decimal), "bi1", convertors[1].CoerceCodegen(Ref("r1"), r1Type));
 
                 block.DeclareVarNoInit(typeof(decimal), "result");
                 block.IfCondition(CodegenCompareCompareTo(Ref("bi0"), Ref("bi1"), max))
@@ -518,7 +518,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     var refnameBigint = "bi" + i;
                     block.DeclareVar(
                         typeof(decimal), refnameBigint,
-                        convertors[i].CoerceBoxedDecimalCodegen(Ref(refnameNumber), nodeType));
+                        convertors[i].CoerceCodegen(Ref(refnameNumber), nodeType));
                     block.IfCondition(Not(CodegenCompareCompareTo(Ref("result"), Ref(refnameBigint), max)))
                         .AssignRef("result", Ref(refnameBigint))
                         .BlockEnd();

@@ -33,7 +33,10 @@ namespace com.espertech.esper.common.@internal.type
                 decimal s1,
                 decimal s2)
             {
-                return s1.Divide(s2, mathContext);
+                return decimal.Round(
+                    decimal.Divide(s1, s2),
+                    mathContext.Precision, 
+                    mathContext.RoundingMode);
             }
 
             public override CodegenExpression DoDivideCodegen(

@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public EventPropertyGetterSPI EventPropertyGetter { get; }
 
-        public string ToQueryPlan()
+        public override string ToQueryPlan()
         {
             return KeyProperty;
         }

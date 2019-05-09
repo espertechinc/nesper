@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             try {
                 submap = index.Between(comparableStart, includeStart, comparableEnd, includeEnd);
             }
-            catch (ArgumentException ex) {
+            catch (ArgumentException) {
                 if (allowReverseRange) {
                     submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
                 }

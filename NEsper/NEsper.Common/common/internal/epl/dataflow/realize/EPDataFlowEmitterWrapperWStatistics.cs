@@ -8,16 +8,17 @@
 
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
     public class EPDataFlowEmitterWrapperWStatistics : EPDataFlowEmitter
     {
-        private readonly bool cpuStatistics;
+        private readonly bool _cpuStatistics;
 
-        private readonly EPDataFlowEmitter facility;
-        private readonly int producerOpNum;
-        private readonly OperatorStatisticsProvider statisticsProvider;
+        private readonly EPDataFlowEmitter _facility;
+        private readonly int _producerOpNum;
+        private readonly OperatorStatisticsProvider _statisticsProvider;
 
         public EPDataFlowEmitterWrapperWStatistics(
             EPDataFlowEmitter facility,
@@ -25,10 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             OperatorStatisticsProvider statisticsProvider,
             bool cpuStatistics)
         {
-            this.facility = facility;
-            this.producerOpNum = producerOpNum;
-            this.statisticsProvider = statisticsProvider;
-            this.cpuStatistics = cpuStatistics;
+            _facility = facility;
+            _producerOpNum = producerOpNum;
+            _statisticsProvider = statisticsProvider;
+            _cpuStatistics = cpuStatistics;
         }
 
         public void Submit(object @object)
@@ -38,22 +39,22 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
         public void SubmitSignal(EPDataFlowSignal signal)
         {
-            facility.SubmitSignal(signal);
+            _facility.SubmitSignal(signal);
         }
 
         public void SubmitPort(
             int portNumber,
             object @object)
         {
-            if (!cpuStatistics) {
-                facility.SubmitPort(portNumber, @object);
-                statisticsProvider.CountSubmitPort(producerOpNum, portNumber);
+            if (!_cpuStatistics) {
+                _facility.SubmitPort(portNumber, @object);
+                _statisticsProvider.CountSubmitPort(_producerOpNum, portNumber);
             }
             else {
-                long nanoTime = System.NanoTime();
-                facility.SubmitPort(portNumber, @object);
-                var nanoTimDelta = System.NanoTime() - nanoTime;
-                statisticsProvider.CountSubmitPortWithTime(producerOpNum, portNumber, nanoTimDelta);
+                var nanoTime = PerformanceObserver.NanoTime;
+                _facility.SubmitPort(portNumber, @object);
+                var nanoTimDelta = PerformanceObserver.NanoTime - nanoTime;
+                _statisticsProvider.CountSubmitPortWithTime(_producerOpNum, portNumber, nanoTimDelta);
             }
         }
     }

@@ -100,8 +100,8 @@ namespace com.espertech.esper.common.@internal.context.util
                 var whereClause = entry.OptionalWhereClause;
                 if (whereClause != null) {
                     instrumentation.QUpdateIStreamApplyWhere();
-                    var result = (bool) whereClause.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                    if (result == null || !result) {
+                    var result = whereClause.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                    if (result == null || false.Equals(result)) {
                         instrumentation.AUpdateIStreamApplyWhere(false);
                         instrumentation.AUpdateIStreamApply(null, false);
                         continue;

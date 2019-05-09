@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         ExprForgeConstantType ForgeConstantType { get; }
 
-        ExprNodeRenderable ForgeRenderable { get; }
+        ExprNodeRenderable ExprForgeRenderable { get; }
     }
 
     public class ProxyExprForge : ExprForge
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprForgeConstantType ForgeConstantType
             => ProcForgeConstantType?.Invoke();
 
-        public ExprNodeRenderable ForgeRenderable
+        public ExprNodeRenderable ExprForgeRenderable
             => ProcForgeRenderable?.Invoke();
     }
 } // end of namespace

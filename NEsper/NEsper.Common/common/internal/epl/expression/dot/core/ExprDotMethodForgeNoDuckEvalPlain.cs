@@ -62,8 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             catch (Exception e) when (e is TargetException || e is MemberAccessException) {
                 HandleTargetException(
                     forge.OptionalStatementName,
-                    forge.Method.Name,
-                    forge.Method.GetParameterTypes(),
+                    forge.Method,
                     target.GetType().FullName,
                     args, e);
             }
@@ -145,8 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         /// <param name="t">throwable</param>
         public static void HandleTargetException(
             string optionalStatementName,
-            string methodName,
-            Type[] methodParams,
+            MethodInfo method,
             string targetClassName,
             object[] args,
             Exception t)
@@ -156,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             var message = TypeHelper.GetMessageInvocationTarget(
-                optionalStatementName, methodName, methodParams, targetClassName, args, t);
+                optionalStatementName, method, targetClassName, args, t);
             Log.Error(message, t);
         }
     }

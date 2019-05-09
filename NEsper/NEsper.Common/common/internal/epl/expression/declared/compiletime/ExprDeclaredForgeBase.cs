@@ -67,7 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             }
         }
 
-        public ExprNodeRenderable ForgeRenderable => parent;
+        public ExprNodeRenderable ExprForgeRenderable => parent;
+        public ExprNodeRenderable EnumForgeRenderable => parent;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
             EventBean[] eventsPerStream,

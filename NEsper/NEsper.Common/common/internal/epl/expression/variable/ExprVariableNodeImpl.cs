@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
         public Type EvaluationType { get; private set; }
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -156,11 +156,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
                     throw new ExprValidationException(
                         "The variable by name '" + variableName + "' is ambiguous to a property of the same name");
                 }
-                catch (DuplicatePropertyException e) {
+                catch (DuplicatePropertyException) {
                     throw new ExprValidationException(
                         "The variable by name '" + variableName + "' is ambiguous to a property of the same name");
                 }
-                catch (PropertyNotFoundException e) {
+                catch (PropertyNotFoundException) {
                     // expected
                 }
             }

@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Constant = constant;
         }
 
-        public ExprNodeRenderable ForgeRenderable => ForgeRenderableCast;
+        public ExprNodeRenderable ExprForgeRenderable => ForgeRenderableCast;
 
         public ExprCastNode ForgeRenderableCast { get; }
 
@@ -62,7 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
 
                 return new ExprCastNodeForgeNonConstEval(
-                    this, ForgeRenderable.ChildNodes[0].Forge.ExprEvaluator,
+                    this, 
+                    ForgeRenderableCast.ChildNodes[0].Forge.ExprEvaluator,
                     CasterParserComputerForge.EvaluatorComputer);
             }
         }

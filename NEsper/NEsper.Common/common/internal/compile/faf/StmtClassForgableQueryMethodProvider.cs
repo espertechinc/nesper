@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                     typeof(FAFQueryMethodProvider), _namespaceScope.PackageName, ClassName, classScope,
                     providerExplicitMembers, providerCtor, methods, innerClasses);
             }
-            catch (EPException e)
+            catch (EPException)
             {
                 throw;
             }

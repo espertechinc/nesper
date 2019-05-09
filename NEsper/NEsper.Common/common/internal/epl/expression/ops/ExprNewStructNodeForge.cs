@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public IDictionary<string, object> EventType { get; }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprNewStructNode ForgeRenderable { get; }
 

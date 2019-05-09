@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                         typeWidenerCustomizer,
                         context.Base.StatementName);
                 }
-                catch (TypeWidenerException e) {
+                catch (TypeWidenerException) {
                     throw new ExprValidationException("Failed for property '" + writable.PropertyName + "'");
                 }
 

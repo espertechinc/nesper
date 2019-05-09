@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             try {
                 return descriptor.Method.Invoke(underlying, null);
             }
-            catch (EPException e) {
+            catch (EPException) {
                 throw;
             }
             catch (Exception e) {

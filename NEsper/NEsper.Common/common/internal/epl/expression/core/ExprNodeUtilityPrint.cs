@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var texts = new string[expressions.Length];
             for (var i = 0; i < expressions.Length; i++) {
                 var writer = new StringWriter();
-                expressions[i].ForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                expressions[i].ExprForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
                 texts[i] = writer.ToString();
             }
 
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public static string ToExpressionStringMinPrecedence(ExprForge expression)
         {
             var writer = new StringWriter();
-            expression.ForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            expression.ExprForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
             return writer.ToString();
         }
 

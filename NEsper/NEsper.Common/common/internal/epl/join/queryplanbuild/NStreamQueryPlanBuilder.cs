@@ -503,20 +503,19 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             DependencyGraph dependencyGraph)
         {
             var defNestingorder = BuildDefaultNestingOrder(queryGraph.NumStreams, lookupStream);
-            IEnumerator<int[]> streamEnum;
+            IEnumerable<int[]> streamEnum;
             if (defNestingorder.Length < 6) {
-                streamEnum = new NumberSetPermutationEnumeration(defNestingorder);
+                streamEnum = NumberSetPermutationEnumeration.New(defNestingorder);
             }
             else {
-                streamEnum = new NumberSetShiftGroupEnumeration(defNestingorder);
+                streamEnum = NumberSetShiftGroupEnumeration.New(defNestingorder);
             }
 
             int[] bestPermutation = null;
             var bestDepth = -1;
 
-            while (streamEnum.MoveNext()) {
-                var permutation = streamEnum.Current;
-
+            foreach (var permutation in streamEnum)
+            { 
                 // Only if the permutation satisfies all dependencies is the permutation considered
                 if (dependencyGraph != null) {
                     var pass = IsDependencySatisfied(lookupStream, permutation, dependencyGraph);

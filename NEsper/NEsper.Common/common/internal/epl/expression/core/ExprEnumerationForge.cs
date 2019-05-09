@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
-        ExprNodeRenderable ForgeRenderable { get; }
+        ExprNodeRenderable EnumForgeRenderable { get; }
 
         ExprEnumerationEval ExprEvaluatorEnumeration { get; }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -18,21 +22,56 @@ namespace com.espertech.esper.common.@internal.util
         public static byte[] ObjectToByteArr(object underlying)
         {
             return SerializerFactory.Serialize(
-                new[] {SerializerFactory.OBJECT_SERIALIZER},
-                new[] {underlying});
+                new[] { SerializerFactory.OBJECT_SERIALIZER },
+                new[] { underlying });
         }
 
-        /// <summary>Deserialize byte arry to object. </summary>
+        /// <summary>Deserialize byte array to object. </summary>
         /// <param name="bytes">to read</param>
         /// <returns>object</returns>
         public static object ByteArrToObject(byte[] bytes)
         {
-            if (bytes == null) {
+            if (bytes == null)
+            {
                 return null;
             }
 
             return SerializerFactory.Deserialize(
-                1, bytes, new[] {SerializerFactory.OBJECT_SERIALIZER})[0];
+                1, bytes, new[] { SerializerFactory.OBJECT_SERIALIZER })[0];
+        }
+
+        public static string ObjectToByteArrBase64(object userObject)
+        {
+            byte[] bytes = ObjectToByteArr(userObject);
+            return Convert.ToBase64String(bytes);
+        }
+
+        public static CodegenExpression ExpressionForUserObject(object userObject)
+        {
+            if (userObject == null)
+            {
+                return ConstantNull();
+            }
+            var serialize = IsUseSerialize(userObject.GetType());
+            if (!serialize)
+            {
+                return Constant(userObject);
+            }
+            var value = SerializerUtil.ObjectToByteArrBase64(userObject);
+            return StaticMethod(typeof(SerializerUtil), "ByteArrBase64ToObject", Constant(value));
+        }
+
+        private static bool IsUseSerialize(Type clazz)
+        {
+            if (TypeHelper.IsBuiltinDataType(clazz))
+            {
+                return false;
+            }
+            if (clazz.IsArray)
+            {
+                return IsUseSerialize(clazz.GetElementType());
+            }
+            return true;
         }
     }
 }

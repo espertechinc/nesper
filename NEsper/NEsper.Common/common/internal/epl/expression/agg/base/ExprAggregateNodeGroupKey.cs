@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             get => this;
         }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprNode ForgeRenderable {
             get => this;

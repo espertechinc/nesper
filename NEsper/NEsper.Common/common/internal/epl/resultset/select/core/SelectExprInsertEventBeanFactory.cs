@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     return InitializeCtorInjection(
                         (BeanEventType) eventType, forges, expressionReturnTypes, importService);
                 }
-                catch (ExprValidationException ctorEx) {
+                catch (ExprValidationException) {
                     if (writableProps.IsEmpty()) {
                         throw;
                     }
@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     return InitializeCtorInjection(
                         (BeanEventType) eventType, forges, resultTypes, importService);
                 }
-                catch (ExprValidationException ctorEx) {
+                catch (ExprValidationException) {
                     if (writableProps.IsEmpty()) {
                         throw;
                     }

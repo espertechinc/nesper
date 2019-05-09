@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.annotation;
 using com.espertech.esper.compat;
@@ -35,11 +36,11 @@ namespace com.espertech.esper.common.@internal.context.util
             bool stateless,
             StatementType statementType)
         {
-            if (statementType.IsOnTriggerInfra) {
+            if (statementType.IsOnTriggerInfra()) {
                 throw new UnsupportedOperationException("Operation not available for statement type " + statementType);
             }
 
-            bool foundNoLock = AnnotationUtil.FindAnnotation(annotations, typeof(NoLock)) != null;
+            bool foundNoLock = AnnotationUtil.FindAnnotation(annotations, typeof(NoLockAttribute)) != null;
             if (disableLocking || foundNoLock || stateless) {
                 return new StatementAgentInstanceLockNoLockImpl(statementName);
             }

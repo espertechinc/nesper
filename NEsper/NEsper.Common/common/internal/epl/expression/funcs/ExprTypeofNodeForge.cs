@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope);
 
         public abstract ExprForgeConstantType ForgeConstantType { get; }
-        public abstract ExprNodeRenderable ForgeRenderable { get; }
+        public abstract ExprNodeRenderable ExprForgeRenderable { get; }
 
         public abstract CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,

@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             get => typeof(ICollection<object>);
         }
 
-        public ExprNodeRenderable ForgeRenderable {
-            get => enumeration.ForgeRenderable;
+        public ExprNodeRenderable ExprForgeRenderable {
+            get => enumeration.EnumForgeRenderable;
         }
     }
 } // end of namespace

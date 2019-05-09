@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public Type EvaluationType => inner.Forge.EvaluationType;
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public ExprForgeConstantType ForgeConstantType => inner.Forge.ForgeConstantType;
 

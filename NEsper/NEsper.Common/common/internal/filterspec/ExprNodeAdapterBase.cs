@@ -41,12 +41,12 @@ namespace com.espertech.esper.common.@internal.filterspec
         protected bool EvaluatePerStream(EventBean[] eventsPerStream)
         {
             try {
-                Boolean result = (Boolean) factory.ExprNode.Evaluate(eventsPerStream, true, this.evaluatorContext);
+                var result = factory.ExprNode.Evaluate(eventsPerStream, true, this.evaluatorContext);
                 if (result == null) {
                     return false;
                 }
 
-                return result;
+                return true.Equals(result);
             }
             catch (EPException) {
                 throw;

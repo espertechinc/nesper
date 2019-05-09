@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         ///     Returns the read-write lock, for read-lock when modifications are made.
         /// </summary>
         /// <returns>lock</returns>
-        public IReaderWriterLock RwLock { get; }
+        public ManagedReadWriteLock RwLock { get; }
 
         /// <summary>
         ///     Remove a statement.

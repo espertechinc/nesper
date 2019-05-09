@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="statement">to remove</param>
         public void RemoveStatement(DeploymentIdNamePair statement)
         {
-            if (statementGroups.Remove(statement, out var group)) {
+            if (statementGroups.TryRemove(statement, out var group)) {
                 groupMetrics[group].RemoveStatement(statement);
             }
         }
@@ -122,8 +122,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             var array = groupMetrics[handle.GroupNum];
             using (array.RwLock.AcquireReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
-                metric.AddCPUTime(cpu);
-                metric.AddWallTime(wall);
+                metric.IncrementTime(cpu, wall);
                 metric.AddNumInput(numInput);
             }
         }

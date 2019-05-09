@@ -7,16 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
-using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
 using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -61,12 +61,14 @@ namespace com.espertech.esper.common.@internal.filterspec
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (exprEvaluatorContext.ContextProperties == null) {
+            if (exprEvaluatorContext.ContextProperties == null)
+            {
                 return null;
             }
 
             object @object = _getter.Get(exprEvaluatorContext.ContextProperties);
-            if (@object == null) {
+            if (@object == null)
+            {
                 return null;
             }
 
@@ -82,8 +84,15 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o)
+            {
+                return true;
+            }
+
+            if (o == null || GetType() != o.GetType())
+            {
+                return false;
+            }
 
             FilterForEvalContextPropDoubleForge that = (FilterForEvalContextPropDoubleForge) o;
 

@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
@@ -50,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS) {
                 var rate = -1;
                 if (outputLimitSpec.Rate != null) {
-                    rate = outputLimitSpec.Rate.IntValue();
+                    rate = outputLimitSpec.Rate.AsInt();
                 }
 
                 return new OutputConditionPolledCountFactoryForge(rate, variableMetaData);

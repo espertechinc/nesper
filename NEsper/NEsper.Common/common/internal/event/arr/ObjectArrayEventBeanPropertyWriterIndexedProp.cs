@@ -25,14 +25,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
             this.indexTarget = indexTarget;
         }
 
-        public void Write(
+        public override void Write(
             object value,
             object[] array)
         {
             ObjectArrayWriteIndexedProp(value, array, index, indexTarget);
         }
 
-        public CodegenExpression WriteCodegen(
+        public override CodegenExpression WriteCodegen(
             CodegenExpression assigned,
             CodegenExpression und,
             CodegenExpression target,

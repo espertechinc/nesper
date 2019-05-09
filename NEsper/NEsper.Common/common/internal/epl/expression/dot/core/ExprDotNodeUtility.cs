@@ -300,7 +300,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         GetValidateMethodDescriptor(methodTarget, chainElement.Name, chainElement.Parameters, validationContext);
                         matchingMethod = true;
                     }
-                    catch (ExprValidationException ex)
+                    catch (ExprValidationException)
                     {
                         // expected
                     }
@@ -520,7 +520,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 forges[i].Visit(instrumentationName);
                 block.Apply(
                     Instblock(
-                        codegenClassScope, "qExprDotChainElement", Constant(i), Constant(instrumentationName.MethodType),
+                        codegenClassScope, "qExprDotChainElement", 
+                        Constant(i), 
+                        Constant(instrumentationName.MethodType),
                         Constant(instrumentationName.MethodName)));
 
                 CodegenExpression typeInformation = ConstantNull();

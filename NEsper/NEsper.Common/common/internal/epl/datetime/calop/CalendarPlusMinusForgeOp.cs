@@ -41,10 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var value = param.Evaluate(eventsPerStream, isNewData, context);
             if (value.IsNumber()) {
-                ActionCalendarPlusMinusNumber(dateTimeEx, factor, value.AsLong());
+                return ActionCalendarPlusMinusNumber(dateTimeEx, factor, value.AsLong());
             }
             else {
-                ActionCalendarPlusMinusTimePeriod(dateTimeEx, factor, (TimePeriod) value);
+                return ActionCalendarPlusMinusTimePeriod(dateTimeEx, factor, (TimePeriod) value);
             }
         }
 
@@ -148,24 +148,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         /// <param name="dtx">calendar</param>
         /// <param name="factor">factor</param>
         /// <param name="duration">duration</param>
-        public static void ActionCalendarPlusMinusNumber(
+        public static DateTimeEx ActionCalendarPlusMinusNumber(
             DateTimeEx dtx,
             int factor,
             long? duration)
         {
             if (duration == null) {
-                return;
+                return dtx;
             }
 
             if (duration < int.MaxValue) {
                 dtx.AddMilliseconds((int) (factor * duration));
-                return;
+                return dtx;
             }
 
             var days = (int) (duration / (1000L * 60 * 60 * 24));
             var msec = (int) (duration - days * 1000L * 60 * 60 * 24);
             dtx.AddMilliseconds(factor * msec);
             dtx.AddDays(factor * days);
+
+            return dtx;
         }
 
         /// <summary>
@@ -244,13 +246,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         /// <param name="dtx">calendar</param>
         /// <param name="factor">factor</param>
         /// <param name="tp">duration</param>
-        public static void ActionCalendarPlusMinusTimePeriod(
+        public static DateTimeEx ActionCalendarPlusMinusTimePeriod(
             DateTimeEx dtx,
             int factor,
             TimePeriod tp)
         {
             if (tp == null) {
-                return;
+                return dtx;
             }
 
             if (tp.Years != null) {
@@ -284,6 +286,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             if (tp.Milliseconds != null) {
                 dtx.AddMilliseconds(factor * tp.Milliseconds.Value);
             }
+
+            return dtx;
         }
 
         /// <summary>

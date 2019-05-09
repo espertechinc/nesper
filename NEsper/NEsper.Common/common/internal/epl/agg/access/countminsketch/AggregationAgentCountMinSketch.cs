@@ -6,30 +6,27 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.approx.countminsketch;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
     public class AggregationAgentCountMinSketch : AggregationMultiFunctionAgent
     {
-        private ExprEvaluator stringEval;
         private ExprEvaluator optionalFilterEval;
+        private ExprEvaluator stringEval;
 
-        public void SetStringEval(ExprEvaluator stringEval)
-        {
-            this.stringEval = stringEval;
+        public ExprEvaluator StringEval {
+            get => stringEval;
+            set => stringEval = value;
         }
 
-        public void SetOptionalFilterEval(ExprEvaluator optionalFilterEval)
-        {
-            this.optionalFilterEval = optionalFilterEval;
+        public ExprEvaluator OptionalFilterEval {
+            get => optionalFilterEval;
+            set => optionalFilterEval = value;
         }
 
         public void ApplyEnter(
@@ -39,18 +36,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             int column)
         {
             if (optionalFilterEval != null) {
-                Boolean pass = (Boolean) optionalFilterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (pass == null || !pass) {
+                var pass = optionalFilterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if (pass == null || false.Equals(pass)) {
                     return;
                 }
             }
 
-            object value = stringEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            var value = stringEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
             if (value == null) {
                 return;
             }
 
-            CountMinSketchAggState state = (CountMinSketchAggState) row.GetAccessState(column);
+            var state = (CountMinSketchAggState) row.GetAccessState(column);
             state.Add(value);
         }
 

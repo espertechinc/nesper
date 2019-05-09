@@ -28,9 +28,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             this.prototypeArray = prototypeArray;
         }
 
-        public EventBean[] GetPrototypeArray()
-        {
-            return prototypeArray;
+        public EventBean[] PrototypeArray {
+            get { return prototypeArray; }
         }
 
         public override bool Equals(object o)

@@ -6,13 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
@@ -24,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         {
         }
 
-        protected override CodegenExpression Make(
+        public override CodegenExpression Make(
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
@@ -33,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             method.Block.MethodReturn(
                 NewInstance(
                     typeof(InfraOnMergeActionDel),
-                    optionalFilter == null
+                    OptionalFilter == null
                         ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(optionalFilter.Forge, method, GetType(), classScope)));
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(OptionalFilter.Forge, method, GetType(), classScope)));
             return LocalMethod(method);
         }
     }

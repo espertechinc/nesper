@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.DEPLOYCONST;
 
-        public ExprNodeRenderable ForgeRenderable {
+        public ExprNodeRenderable ExprForgeRenderable {
             get {
                 return new ProxyExprNodeRenderable {
                     ProcToEPL = (

@@ -593,7 +593,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             try {
                 resolved = importService.ResolveClass(typeName, false);
             }
-            catch (ImportException e) {
+            catch (ImportException) {
                 // expected
             }
 
@@ -602,7 +602,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 try {
                     resolved = TypeHelper.GetClassForName(typeName, importService.ClassForNameProvider);
                 }
-                catch (TypeLoadException e) {
+                catch (TypeLoadException) {
                     // expected
                 }
             }

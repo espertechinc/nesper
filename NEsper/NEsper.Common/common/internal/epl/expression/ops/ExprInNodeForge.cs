@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             get => typeof(bool?);
         }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprInNodeImpl ForgeRenderable {
             get => parent;

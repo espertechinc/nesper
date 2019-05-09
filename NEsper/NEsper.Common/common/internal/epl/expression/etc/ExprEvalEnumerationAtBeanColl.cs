@@ -64,8 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             get => TypeHelper.GetArrayType(eventTypeColl.UnderlyingType);
         }
 
-        public ExprNodeRenderable ForgeRenderable {
-            get => enumerationForge.ForgeRenderable;
+        public ExprNodeRenderable ExprForgeRenderable {
+            get => enumerationForge.EnumForgeRenderable;
         }
     }
 } // end of namespace

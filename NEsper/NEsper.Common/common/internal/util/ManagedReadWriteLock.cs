@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Threading;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
@@ -15,43 +16,47 @@ using com.espertech.esper.compat.threading.locks;
 namespace com.espertech.esper.common.@internal.util
 {
     /// <summary>
-    /// Simple read-write lock based on <seealso cref="java.util.concurrent.locks.ReentrantReadWriteLock" /> that associates a
-    /// name with the lock and traces read/write locking and unlocking.
+    ///     Simple read-write lock based on <seealso cref="IReaderWriterLock" /> that
+    ///     associates a name with the lock and traces read/write locking and unlocking.
     /// </summary>
-    public class ManagedReadWriteLock
+    public class ManagedReadWriteLock : IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ManagedReadWriteLock));
-
         /// <summary>
-        /// Acquire text.
+        ///     Acquire text.
         /// </summary>
         public const string ACQUIRE_TEXT = "Acquire ";
 
         /// <summary>
-        /// Acquired text.
+        ///     Acquired text.
         /// </summary>
         public const string ACQUIRED_TEXT = "Got     ";
 
         /// <summary>
-        /// Acquired text.
+        ///     Acquired text.
         /// </summary>
         public const string TRY_TEXT = "Trying  ";
 
         /// <summary>
-        /// Release text.
+        ///     Release text.
         /// </summary>
         public const string RELEASE_TEXT = "Release ";
 
         /// <summary>
-        /// Released text.
+        ///     Released text.
         /// </summary>
         public const string RELEASED_TEXT = "Freed   ";
 
-        private readonly IReaderWriterLock _lock;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ManagedReadWriteLock));
+
+        public IReaderWriterLock Lock { get; }
+
+        private IDisposable _readerLock;
+        private IDisposable _writerLock;
+
         private readonly string _name;
 
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="name">of lock</param>
         /// <param name="isFair">true if a fair lock, false if not</param>
@@ -59,104 +64,147 @@ namespace com.espertech.esper.common.@internal.util
             string name,
             bool isFair)
         {
-            this._name = name;
-            this._lock = isFair
-                ? (IReaderWriterLock) new FairReaderWriterLock(10000)
-                : (IReaderWriterLock) new StandardReaderWriterLock(10000);
+            _name = name;
+            Lock = isFair
+                ? new FairReaderWriterLock(LockConstants.DefaultTimeout)
+                : (IReaderWriterLock) new StandardReaderWriterLock(LockConstants.DefaultTimeout);
+        }
+
+        public void Dispose()
+        {
+            if (_writerLock != null)
+            {
+                _writerLock.Dispose();
+                _writerLock = null;
+            }
+
+            if (_readerLock != null) {
+                _readerLock.Dispose();
+                _readerLock = null;
+            }
         }
 
         /// <summary>
-        /// Lock write lock.
+        ///     Lock write lock.
         /// </summary>
         public void AcquireWriteLock()
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write " + _name, _lock);
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write " + _name, Lock);
             }
 
-            _lock.WriteLock.Acquire();
+            Lock.WriteLock.Acquire();
 
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " write " + _name, _lock);
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " write " + _name, Lock);
             }
         }
 
         /// <summary>
-        /// Try write lock with timeout, returning an indicator whether the lock was acquired or not.
+        ///     Try write lock with timeout, returning an indicator whether the lock was acquired or not.
         /// </summary>
         /// <param name="msec">number of milliseconds to wait for lock</param>
         /// <returns>indicator whether the lock could be acquired or not</returns>
         public bool TryWriteLock(long msec)
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(TRY_TEXT + " write " + _name, _lock);
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(TRY_TEXT + " write " + _name, Lock);
             }
 
-            bool result = false;
-            try {
-                result = _lock.WriteLock.Acquire(msec);
-            }
-            catch (ThreadInterruptedException ex) {
-                Log.Warn("Lock wait interupted");
+            if (_writerLock != null) {
+                throw new IllegalStateException("writer lock already acquired");
             }
 
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(TRY_TEXT + " write " + _name + " : " + result, _lock);
+            try
+            {
+                _writerLock = Lock.WriteLock.Acquire(msec);
+            }
+            catch (ThreadInterruptedException)
+            {
+                Log.Warn("Lock wait interrupted");
             }
 
-            return result;
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(TRY_TEXT + " write " + _name, Lock);
+            }
+
+            return true;
         }
 
         /// <summary>
-        /// Unlock write lock.
+        ///     Unlock write lock.
         /// </summary>
         public void ReleaseWriteLock()
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASE_TEXT + " write " + _name, _lock);
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(RELEASE_TEXT + " write " + _name, Lock);
             }
 
-            _lock.WriteLock.Release();
+            if (_writerLock != null) {
+                throw new IllegalStateException("write lock not acquired");
+            }
 
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASED_TEXT + " write " + _name, _lock);
+            _writerLock.Dispose();
+            _writerLock = null;
+
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(RELEASED_TEXT + " write " + _name, Lock);
             }
         }
 
         /// <summary>
-        /// Lock read lock.
+        ///     Lock read lock.
         /// </summary>
         public void AcquireReadLock()
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " read " + _name, _lock);
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " read " + _name, Lock);
             }
 
-            _lock.ReadLock.Acquire();
+            if (_readerLock != null) {
+                throw new IllegalStateException("reader lock already acquired");
+            }
 
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " read " + _name, _lock);
+            _readerLock = Lock.ReadLock.Acquire();
+
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " read " + _name, Lock);
             }
         }
 
         /// <summary>
-        /// Unlock read lock.
+        ///     Unlock read lock.
         /// </summary>
         public void ReleaseReadLock()
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASE_TEXT + " read " + _name, _lock);
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(RELEASE_TEXT + " read " + _name, Lock);
             }
 
-            _lock.ReadLock.Release();
-
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASED_TEXT + " read " + _name, _lock);
+            if (_readerLock != null)
+            {
+                throw new IllegalStateException("reader lock not acquired");
             }
-        }
 
-        public IReaderWriterLock Lock {
-            get => _lock;
+            _readerLock.Dispose();
+            _readerLock = null;
+
+
+            Lock.ReadLock.Release();
+
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
+                ThreadLogUtil.TraceLock(RELEASED_TEXT + " read " + _name, Lock);
+            }
         }
     }
 } // end of namespace

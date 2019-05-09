@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     new ExprValidationContextBuilder(null, statementRawInfo, compileTimeServices).Build();
                 exprNode.Validate(validationContext);
             }
-            catch (ExprValidationException e) {
+            catch (ExprValidationException) {
                 throw new IllegalStateException("Failed to make representative node for outer join criteria");
             }
         }

@@ -78,6 +78,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public Type EvaluationType => typeof(bool?);
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
     }
 } // end of namespace

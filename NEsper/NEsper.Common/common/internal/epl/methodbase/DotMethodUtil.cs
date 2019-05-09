@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
             var @params = new List<DotMethodFPProvidedParam>();
             foreach (ExprNode node in parameters) {
                 if (!(node is ExprLambdaGoesNode)) {
-                    @params.Add(new DotMethodFPProvidedParam(0, node.ExprEvaluator.ReturnType, node));
+                    @params.Add(new DotMethodFPProvidedParam(0, node.Forge.EvaluationType, node));
                     continue;
                 }
 
@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
         public static DotMethodFP ValidateParametersDetermineFootprint(
             DotMethodFP[] footprints,
             DotMethodTypeEnum methodType,
-            String methodUsedName,
+            string methodUsedName,
             DotMethodFPProvided providedFootprint,
             DotMethodInputTypeMatcher inputTypeMatcher)
         {
-            Boolean isLambdaApplies = DotMethodTypeEnum.ENUM == methodType;
+            bool isLambdaApplies = DotMethodTypeEnum.ENUM == methodType;
 
             // determine footprint candidates strictly based on parameters
             List<DotMethodFP> candidates = null;
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
         }
 
         private static void ValidateSpecificTypes(
-            String methodUsedName,
+            string methodUsedName,
             DotMethodTypeEnum type,
             DotMethodFPParam[] foundParams,
             DotMethodFPProvidedParam[] @params)
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
                 EPLValidationUtil.ValidateParameterType(
                     methodUsedName,
                     type.GetTypeName(), false,
-                    found.ParamType,
+                    found.Type,
                     found.SpecificType,
                     provided.ReturnType, i,
                     provided.Expression);

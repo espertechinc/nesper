@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.client.soda
@@ -18,13 +19,13 @@ namespace com.espertech.esper.common.client.soda
         WHILE_GUARD
     }
 
-    /// <summary> 
-    /// Enum for all build-in guards.
+    /// <summary>
+    ///     Enum for all build-in guards.
     /// </summary>
     public static class GuardEnumExtensions
     {
         /// <summary>
-        /// Gets the namespace.
+        ///     Gets the namespace.
         /// </summary>
         /// <value>The namespace.</value>
         public static string GetNamespace(this GuardEnum value)
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.client.soda
         }
 
         /// <summary>
-        /// Gets the name.
+        ///     Gets the name.
         /// </summary>
         /// <value>The name.</value>
         public static string GetName(this GuardEnum value)
@@ -64,12 +65,12 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">guard name</param>
         /// <returns>enum</returns>
         public static GuardEnum? ForName(
-            String nspace,
-            String name)
+            string nspace,
+            string name)
         {
             foreach (var value in EnumHelper.GetValues<GuardEnum>()) {
-                if ((value.GetNamespace() == nspace) &&
-                    (value.GetName() == name)) {
+                if (value.GetNamespace() == nspace &&
+                    value.GetName() == name) {
                     return value;
                 }
             }
@@ -78,16 +79,16 @@ namespace com.espertech.esper.common.client.soda
         }
 
         public static bool IsWhile(
-            String nspace,
-            String name)
+            string nspace,
+            string name)
         {
             return
-                (GetNamespace(GuardEnum.WHILE_GUARD) == nspace) &&
-                (GetName(GuardEnum.WHILE_GUARD) == name);
+                GetNamespace(GuardEnum.WHILE_GUARD) == nspace &&
+                GetName(GuardEnum.WHILE_GUARD) == name;
         }
 
         /// <summary>
-        /// Gets the class associated with the guard enum.
+        ///     Gets the class associated with the guard enum.
         /// </summary>
         /// <param name="guardEnum">The guard enum.</param>
         /// <returns></returns>
@@ -95,14 +96,14 @@ namespace com.espertech.esper.common.client.soda
         {
             switch (guardEnum) {
                 case GuardEnum.TIMER_WITHIN:
-                    return typeof(TimerWithinGuardFactory);
+                    return typeof(TimerWithinGuardForge);
                 case GuardEnum.TIMER_WITHINMAX:
-                    return typeof(TimerWithinOrMaxCountGuardFactory);
+                    return typeof(TimerWithinOrMaxCountGuardForge);
                 case GuardEnum.WHILE_GUARD:
-                    return typeof(ExpressionGuardFactory);
+                    return typeof(ExpressionGuardForge);
             }
 
-            throw new ArgumentException("invalid value", "guardEnum");
+            throw new ArgumentException("invalid value", nameof(guardEnum));
         }
     }
 }

@@ -49,15 +49,15 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         {
             ScheduleHandleCallback scheduleCallback = new ProxyScheduleHandleCallback() {
                 ProcScheduledTrigger = () => {
-                    AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
-                    agentInstanceContext.InstrumentationProvider.QContextScheduledEval(
-                        agentInstanceContext.StatementContext.ContextRuntimeDescriptor);
+                    AgentInstanceContext agentInstanceContextX = controller.Realization.AgentInstanceContextCreate;
+                    agentInstanceContextX.InstrumentationProvider.QContextScheduledEval(
+                        agentInstanceContextX.StatementContext.ContextRuntimeDescriptor);
 
                     scheduleHandle = null; // terminates automatically unless scheduled again
-                    agentInstanceContext.AuditProvider.ScheduleFire(agentInstanceContext, ScheduleObjectType.context, NAME_AUDITPROVIDER_SCHEDULE);
+                    agentInstanceContextX.AuditProvider.ScheduleFire(agentInstanceContextX, ScheduleObjectType.context, NAME_AUDITPROVIDER_SCHEDULE);
                     callback.RangeNotification(conditionPath, this, null, null, null, null);
 
-                    agentInstanceContext.InstrumentationProvider.AContextScheduledEval();
+                    agentInstanceContextX.InstrumentationProvider.AContextScheduledEval();
                 },
             };
             AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;

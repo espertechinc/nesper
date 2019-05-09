@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -23,6 +24,8 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.table
@@ -33,12 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         ExprEnumerationForge,
         ExprEnumerationEval
     {
-        private readonly ExprNode aggregateAccessMultiValueNode;
-        private readonly string optionalStreamName;
-        private readonly int streamNum;
-        private readonly TableMetaData table;
-        private readonly TableMetadataColumnAggregation tableAccessColumn;
-        private AggregationTableReadDesc tableAccessDesc;
+        private readonly ExprNode _aggregateAccessMultiValueNode;
+        private readonly string _optionalStreamName;
+        private readonly int _streamNum;
+        private readonly TableMetaData _table;
+        private readonly TableMetadataColumnAggregation _tableAccessColumn;
+        private AggregationTableReadDesc _tableAccessDesc;
 
         public ExprTableIdentNodeSubpropAccessor(
             int streamNum,
@@ -47,11 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             TableMetadataColumnAggregation tableAccessColumn,
             ExprNode aggregateAccessMultiValueNode)
         {
-            this.streamNum = streamNum;
-            this.optionalStreamName = optionalStreamName;
-            this.table = table;
-            this.tableAccessColumn = tableAccessColumn;
-            this.aggregateAccessMultiValueNode = aggregateAccessMultiValueNode;
+            _streamNum = streamNum;
+            _optionalStreamName = optionalStreamName;
+            _table = table;
+            _tableAccessColumn = tableAccessColumn;
+            _aggregateAccessMultiValueNode = aggregateAccessMultiValueNode;
         }
 
         public override ExprForge Forge => this;
@@ -92,11 +95,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             CodegenClassScope classScope)
         {
             var reader = classScope.AddOrGetFieldSharable(
-                new AggregationTableAccessAggReaderCodegenField(tableAccessDesc.Reader, classScope, GetType()));
+                new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return StaticMethod(
                 typeof(ExprTableIdentNodeSubpropAccessor), "evaluateTableWithReaderCollectionEvents",
-                Constant(streamNum), reader,
-                Constant(tableAccessColumn.Column), symbols.GetAddEPS(parent), symbols.GetAddIsNewData(parent),
+                Constant(_streamNum), reader,
+                Constant(_tableAccessColumn.Column), symbols.GetAddEPS(parent), symbols.GetAddIsNewData(parent),
                 symbols.GetAddExprEvalCtx(parent));
         }
 
@@ -104,10 +107,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return tableAccessDesc.EventTypeCollection;
+            return _tableAccessDesc.EventTypeCollection;
         }
 
-        public Type ComponentTypeCollection => tableAccessDesc.ComponentTypeCollection;
+        public Type ComponentTypeCollection => _tableAccessDesc.ComponentTypeCollection;
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
             CodegenMethodScope parent,
@@ -115,11 +118,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             CodegenClassScope classScope)
         {
             var reader = classScope.AddOrGetFieldSharable(
-                new AggregationTableAccessAggReaderCodegenField(tableAccessDesc.Reader, classScope, GetType()));
+                new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return StaticMethod(
                 typeof(ExprTableIdentNodeSubpropAccessor), "evaluateTableWithReaderCollectionScalar",
-                Constant(streamNum), reader,
-                Constant(tableAccessColumn.Column), symbols.GetAddEPS(parent), symbols.GetAddIsNewData(parent),
+                Constant(_streamNum), reader,
+                Constant(_tableAccessColumn.Column), symbols.GetAddEPS(parent), symbols.GetAddIsNewData(parent),
                 symbols.GetAddExprEvalCtx(parent));
         }
 
@@ -127,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return tableAccessDesc.EventTypeSingle;
+            return _tableAccessDesc.EventTypeSingle;
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -153,11 +156,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             CodegenClassScope classScope)
         {
             var reader = classScope.AddOrGetFieldSharable(
-                new AggregationTableAccessAggReaderCodegenField(tableAccessDesc.Reader, classScope, GetType()));
+                new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return CodegenLegoCast.CastSafeFromObjectType(
                 requiredType, StaticMethod(
-                    typeof(ExprTableIdentNodeSubpropAccessor), "evaluateTableWithReader", Constant(streamNum), reader,
-                    Constant(tableAccessColumn.Column), symbols.GetAddEPS(parent), symbols.GetAddIsNewData(parent),
+                    typeof(ExprTableIdentNodeSubpropAccessor), "evaluateTableWithReader", Constant(_streamNum), reader,
+                    Constant(_tableAccessColumn.Column), symbols.GetAddEPS(parent), symbols.GetAddIsNewData(parent),
                     symbols.GetAddExprEvalCtx(parent)));
         }
 
@@ -170,9 +173,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             return EvaluateCodegenUninstrumented(requiredType, parent, symbols, classScope);
         }
 
-        public Type EvaluationType => tableAccessDesc.Reader.ResultType;
+        public Type EvaluationType => _tableAccessDesc.Reader.ResultType;
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable EnumForgeRenderable => this;
+
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public ExprEvaluator ExprEvaluator => this;
 
@@ -180,26 +185,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (tableAccessColumn.IsMethodAgg) {
+            if (_tableAccessColumn.IsMethodAgg)
+            {
                 throw new ExprValidationException("Invalid combination of aggregation state and aggregation accessor");
             }
 
-            var mfNode = (ExprAggMultiFunctionNode) aggregateAccessMultiValueNode;
+            var mfNode = (ExprAggMultiFunctionNode) _aggregateAccessMultiValueNode;
             mfNode.ValidatePositionals(validationContext);
-            tableAccessDesc = mfNode.ValidateAggregationTableRead(validationContext, tableAccessColumn, table);
+            _tableAccessDesc = mfNode.ValidateAggregationTableRead(validationContext, _tableAccessColumn, _table);
             return null;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (optionalStreamName != null) {
-                writer.Write(optionalStreamName);
+            if (_optionalStreamName != null)
+            {
+                writer.Write(_optionalStreamName);
                 writer.Write(".");
             }
 
-            writer.Write(tableAccessColumn.ColumnName);
+            writer.Write(_tableAccessColumn.ColumnName);
             writer.Write(".");
-            aggregateAccessMultiValueNode.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            _aggregateAccessMultiValueNode.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
         }
 
         public override bool EqualsNode(
@@ -228,7 +235,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
-            if (@event == null) {
+            if (@event == null)
+            {
                 return null;
             }
 
@@ -255,12 +263,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
-            if (@event == null) {
+            if (@event == null)
+            {
                 return null;
             }
 
             var row = ExprTableEvalStrategyUtil.GetRow((ObjectArrayBackedEventBean) @event);
-            return reader.GetValueCollectionEvents(aggColNum, row, eventsPerStream, isNewData, exprEvaluatorContext);
+            return reader
+                .GetValueCollectionEvents(aggColNum, row, eventsPerStream, isNewData, exprEvaluatorContext)
+                .Unwrap<object>();
         }
 
         /// <summary>
@@ -282,7 +293,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
-            if (@event == null) {
+            if (@event == null)
+            {
                 return null;
             }
 

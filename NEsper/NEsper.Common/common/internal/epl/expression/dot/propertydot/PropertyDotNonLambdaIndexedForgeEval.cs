@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
                 return null;
             }
 
-            int? key = (int?) paramEval.Evaluate(eventsPerStream, isNewData, context);
+            var key = paramEval.Evaluate(eventsPerStream, isNewData, context).AsInt();
             return forge.IndexedGetter.Get(@event, key);
         }
 

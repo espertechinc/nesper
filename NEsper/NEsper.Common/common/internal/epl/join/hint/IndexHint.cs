@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
                 try {
                     return int.Parse(value);
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     throw new EPException("Failed to parse '" + value + "' as an index hint integer value");
                 }
             }
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             try {
                 return int.Parse(value);
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 return value;
             }
         }

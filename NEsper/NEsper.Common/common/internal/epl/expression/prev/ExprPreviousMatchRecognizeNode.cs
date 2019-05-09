@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
         public Type EvaluationType { get; private set; }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprEvaluator ExprEvaluator => this;
 

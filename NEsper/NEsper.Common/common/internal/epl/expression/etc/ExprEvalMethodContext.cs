@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public Type EvaluationType => typeof(EPLMethodInvocationContext);
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public void ToEPL(
             TextWriter writer,

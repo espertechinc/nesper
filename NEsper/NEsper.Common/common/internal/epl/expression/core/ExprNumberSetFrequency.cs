@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public Type EvaluationType => typeof(FrequencyParameter);
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public ExprForgeConstantType ForgeConstantType => ChildNodes[0].Forge.ForgeConstantType;
 

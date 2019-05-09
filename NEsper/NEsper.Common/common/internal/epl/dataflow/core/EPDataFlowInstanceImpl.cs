@@ -30,17 +30,17 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly DataflowDesc dataflowDesc;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly DataflowDesc _dataflowDesc;
 
-        private readonly IDictionary<int, Pair<object, bool>> operators;
-        private readonly IList<GraphSourceRunnable> sourceRunnables;
-        private readonly OperatorStatisticsProvider statistics;
-        private IList<CountDownLatch> joinedThreadLatches;
-        private Thread runCurrentThread;
+        private readonly IDictionary<int, Pair<object, bool>> _operators;
+        private readonly IList<GraphSourceRunnable> _sourceRunnables;
+        private readonly OperatorStatisticsProvider _statistics;
+        private IList<CountDownLatch> _joinedThreadLatches;
+        private Thread _runCurrentThread;
 
-        private EPDataFlowState state;
-        private IList<Thread> threads;
+        private EPDataFlowState _state;
+        private IList<Thread> _threads;
 
         public EPDataFlowInstanceImpl(
             object dataFlowInstanceUserObject,
@@ -55,29 +55,29 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         {
             UserObject = dataFlowInstanceUserObject;
             InstanceId = dataFlowInstanceId;
-            this.statistics = statistics;
-            this.dataflowDesc = dataflowDesc;
-            this.agentInstanceContext = agentInstanceContext;
-            this.sourceRunnables = sourceRunnables;
+            _statistics = statistics;
+            _dataflowDesc = dataflowDesc;
+            _agentInstanceContext = agentInstanceContext;
+            _sourceRunnables = sourceRunnables;
             Statistics = statisticsProvider;
             Parameters = parametersURIs;
 
             State = EPDataFlowState.INSTANTIATED;
 
-            this.operators = new OrderedDictionary<int, Pair<object, bool>>();
+            _operators = new OrderedDictionary<int, Pair<object, bool>>();
             foreach (var entry in operators) {
-                this.operators.Put(entry.Key, new Pair<object, bool>(entry.Value, false));
+                _operators.Put(entry.Key, new Pair<object, bool>(entry.Value, false));
             }
         }
 
-        public string DataFlowName => dataflowDesc.DataflowName;
+        public string DataFlowName => _dataflowDesc.DataflowName;
 
         public EPDataFlowState State {
-            get => state;
+            get => _state;
             set {
-                agentInstanceContext.AuditProvider.DataflowTransition(
-                    dataflowDesc.DataflowName, InstanceId, state, value, agentInstanceContext);
-                state = value;
+                _agentInstanceContext.AuditProvider.DataflowTransition(
+                    _dataflowDesc.DataflowName, InstanceId, _state, value, _agentInstanceContext);
+                _state = value;
             }
         }
 
@@ -87,9 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                 CheckExecCompleteState();
                 CheckExecCancelledState();
                 CheckExecRunningState();
-                var dataFlowName = dataflowDesc.DataflowName;
+                var dataFlowName = _dataflowDesc.DataflowName;
 
-                if (sourceRunnables.Count != 1) {
+                if (_sourceRunnables.Count != 1) {
                     throw new UnsupportedOperationException(
                         "The data flow '" + dataFlowName +
                         "' has zero or multiple sources and requires the use of the start method instead");
@@ -97,13 +97,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
                 CallOperatorOpen();
 
-                GraphSourceRunnable sourceRunnable = sourceRunnables[0];
+                var sourceRunnable = _sourceRunnables[0];
                 State = EPDataFlowState.RUNNING;
-                runCurrentThread = Thread.CurrentThread();
+                _runCurrentThread = Thread.CurrentThread;
                 try {
                     sourceRunnable.RunSync();
                 }
-                catch (ThreadInterruptedException ex) {
+                catch (ThreadInterruptedException) {
                     CallOperatorClose();
                     State = EPDataFlowState.CANCELLED;
                     throw new EPDataFlowCancellationException(
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                 }
 
                 CallOperatorClose();
-                if (state != EPDataFlowState.CANCELLED) {
+                if (_state != EPDataFlowState.CANCELLED) {
                     State = EPDataFlowState.COMPLETE;
                 }
             }
@@ -132,13 +132,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
             CallOperatorOpen();
 
-            var countdown = new AtomicLong(sourceRunnables.Count);
-            threads = new List<Thread>();
-            for (var i = 0; i < sourceRunnables.Count; i++) {
-                var runnable = sourceRunnables[i];
-                var threadName = "esper." + dataflowDesc.DataflowName + "-" + i;
-                var thread = new Thread(runnable, threadName);
-                thread.IsBackground = true;
+            var countdown = new AtomicLong(_sourceRunnables.Count);
+            _threads = new List<Thread>();
+            for (var i = 0; i < _sourceRunnables.Count; i++) {
+                var runnable = _sourceRunnables[i];
+                var threadName = "esper." + _dataflowDesc.DataflowName + "-" + i;
+                var thread = new Thread(runnable.Run) {
+                    Name = threadName,
+                    IsBackground = true
+                };
 
                 runnable.AddCompletionListener(
                     () => {
@@ -148,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                         }
                     });
 
-                threads.Add(thread);
+                _threads.Add(thread);
                 thread.Start();
             }
 
@@ -167,48 +169,48 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
                 IDictionary<string, EPDataFlowEmitterOperator> emitters =
                     new Dictionary<string, EPDataFlowEmitterOperator>();
-                foreach (var operatorStatePair in operators.Values) {
+                foreach (var operatorStatePair in _operators.Values) {
                     if (operatorStatePair.First is EPDataFlowEmitterOperator) {
                         var emitterOp = (EPDataFlowEmitterOperator) operatorStatePair.First;
                         emitters.Put(emitterOp.Name, emitterOp);
                     }
                 }
 
-                return new EPDataFlowInstanceCaptive(emitters, sourceRunnables);
+                return new EPDataFlowInstanceCaptive(emitters, _sourceRunnables);
             }
         }
 
         public void Join()
         {
-            var dataFlowName = dataflowDesc.DataflowName;
-            if (state == EPDataFlowState.INSTANTIATED) {
+            var dataFlowName = _dataflowDesc.DataflowName;
+            if (_state == EPDataFlowState.INSTANTIATED) {
                 throw new IllegalStateException(
                     "Data flow '" + dataFlowName +
                     "' instance has not been executed, please use join after start or run");
             }
 
-            if (state == EPDataFlowState.CANCELLED) {
+            if (_state == EPDataFlowState.CANCELLED) {
                 throw new IllegalStateException(
                     "Data flow '" + dataFlowName + "' instance has been cancelled and cannot be joined");
             }
 
             // latch used for non-blocking start
-            if (threads != null) {
-                foreach (var thread in threads) {
+            if (_threads != null) {
+                foreach (var thread in _threads) {
                     thread.Join();
                 }
             }
             else {
                 var latch = new CountDownLatch(1);
                 lock (this) {
-                    if (joinedThreadLatches == null) {
-                        joinedThreadLatches = new List<CountDownLatch>();
+                    if (_joinedThreadLatches == null) {
+                        _joinedThreadLatches = new List<CountDownLatch>();
                     }
 
-                    joinedThreadLatches.Add(latch);
+                    _joinedThreadLatches.Add(latch);
                 }
 
-                if (state != EPDataFlowState.COMPLETE) {
+                if (_state != EPDataFlowState.COMPLETE) {
                     latch.Await();
                 }
             }
@@ -216,42 +218,42 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
         public void Cancel()
         {
-            if (state == EPDataFlowState.COMPLETE || state == EPDataFlowState.CANCELLED) {
+            if (_state == EPDataFlowState.COMPLETE || _state == EPDataFlowState.CANCELLED) {
                 return;
             }
 
-            if (state == EPDataFlowState.INSTANTIATED) {
+            if (_state == EPDataFlowState.INSTANTIATED) {
                 State = EPDataFlowState.CANCELLED;
-                sourceRunnables.Clear();
+                _sourceRunnables.Clear();
                 CallOperatorClose();
                 return;
             }
 
             // handle async start
-            if (threads != null) {
-                foreach (var runnable in sourceRunnables) {
+            if (_threads != null) {
+                foreach (var runnable in _sourceRunnables) {
                     runnable.Shutdown();
                 }
 
-                foreach (var thread in threads) {
-                    if (thread.IsAlive && !thread.IsInterrupted) {
+                foreach (var thread in _threads) {
+                    if (thread.IsAlive) {
                         thread.Interrupt();
                     }
                 }
             }
             else {
                 // handle run
-                if (runCurrentThread != null) {
-                    runCurrentThread.Interrupt();
+                if (_runCurrentThread != null) {
+                    _runCurrentThread.Interrupt();
                 }
 
-                runCurrentThread = null;
+                _runCurrentThread = null;
             }
 
             CallOperatorClose();
 
             State = EPDataFlowState.CANCELLED;
-            sourceRunnables.Clear();
+            _sourceRunnables.Clear();
         }
 
         public EPDataFlowInstanceStatistics Statistics { get; }
@@ -265,14 +267,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         public void Completed()
         {
             lock (this) {
-                if (state != EPDataFlowState.CANCELLED) {
+                if (_state != EPDataFlowState.CANCELLED) {
                     State = EPDataFlowState.COMPLETE;
                 }
 
                 CallOperatorClose();
 
-                if (joinedThreadLatches != null) {
-                    foreach (var joinedThread in joinedThreadLatches) {
+                if (_joinedThreadLatches != null) {
+                    foreach (var joinedThread in _joinedThreadLatches) {
                         joinedThread.CountDown();
                     }
                 }
@@ -281,8 +283,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
         private void CallOperatorOpen()
         {
-            foreach (int opNum in dataflowDesc.OperatorBuildOrder) {
-                var operatorStatePair = operators.Get(opNum);
+            foreach (var opNum in _dataflowDesc.OperatorBuildOrder) {
+                var operatorStatePair = _operators.Get(opNum);
                 if (operatorStatePair.First is DataFlowOperatorLifecycle) {
                     try {
                         var lf = (DataFlowOperatorLifecycle) operatorStatePair.First;
@@ -295,7 +297,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                         throw new EPDataFlowExecutionException(
                             "Exception encountered opening data flow 'FlowOne' in operator " +
                             operatorStatePair.First.GetType().GetSimpleName() + ": " + ex.Message, ex,
-                            dataflowDesc.DataflowName);
+                            _dataflowDesc.DataflowName);
                     }
                 }
             }
@@ -304,8 +306,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         private void CallOperatorClose()
         {
             lock (this) {
-                foreach (int opNum in dataflowDesc.OperatorBuildOrder) {
-                    var operatorStatePair = operators.Get(opNum);
+                foreach (var opNum in _dataflowDesc.OperatorBuildOrder) {
+                    var operatorStatePair = _operators.Get(opNum);
                     if (operatorStatePair.First is DataFlowOperatorLifecycle && !operatorStatePair.Second) {
                         try {
                             var lf = (DataFlowOperatorLifecycle) operatorStatePair.First;
@@ -316,7 +318,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                         }
                         catch (Exception ex) {
                             Log.Error(
-                                "Exception encountered closing data flow '" + dataflowDesc.DataflowName + "': " +
+                                "Exception encountered closing data flow '" + _dataflowDesc.DataflowName + "': " +
                                 ex.Message, ex);
                         }
 
@@ -328,26 +330,26 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
         private void CheckExecCompleteState()
         {
-            if (state == EPDataFlowState.COMPLETE) {
+            if (_state == EPDataFlowState.COMPLETE) {
                 throw new IllegalStateException(
-                    "Data flow '" + dataflowDesc.DataflowName +
+                    "Data flow '" + _dataflowDesc.DataflowName +
                     "' instance has already completed, please use instantiate to run the data flow again");
             }
         }
 
         private void CheckExecRunningState()
         {
-            if (state == EPDataFlowState.RUNNING) {
+            if (_state == EPDataFlowState.RUNNING) {
                 throw new IllegalStateException(
-                    "Data flow '" + dataflowDesc.DataflowName + "' instance is already running");
+                    "Data flow '" + _dataflowDesc.DataflowName + "' instance is already running");
             }
         }
 
         private void CheckExecCancelledState()
         {
-            if (state == EPDataFlowState.CANCELLED) {
+            if (_state == EPDataFlowState.CANCELLED) {
                 throw new IllegalStateException(
-                    "Data flow '" + dataflowDesc.DataflowName +
+                    "Data flow '" + _dataflowDesc.DataflowName +
                     "' instance has been cancelled and cannot be run or started");
             }
         }

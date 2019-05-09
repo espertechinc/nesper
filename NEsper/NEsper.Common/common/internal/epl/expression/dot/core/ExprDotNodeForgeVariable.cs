@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotStaticMethodWrap resultWrapLambda,
             ExprDotForge[] chainForge)
         {
-            ForgeRenderable = parent;
+            ExprForgeRenderable = parent;
             Variable = variable;
             ResultWrapLambda = resultWrapLambda;
             ChainForge = chainForge;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprDotStaticMethodWrap ResultWrapLambda { get; }
 
-        public override ExprNodeRenderable ForgeRenderable { get; }
+        public override ExprNodeRenderable ExprForgeRenderable { get; }
 
         public override bool IsReturnsConstantResult => false;
 

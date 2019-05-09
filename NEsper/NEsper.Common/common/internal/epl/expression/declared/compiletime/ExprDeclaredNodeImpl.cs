@@ -309,10 +309,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 }
 
                 var declaredForge = (ExprDeclaredForgeBase) forge;
-                var forge = declaredForge.InnerForge;
+                var forgeX = declaredForge.InnerForge;
                 return new ExprFilterSpecLookupableForge(
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
-                    new DeclaredNodeEventPropertyGetterForge(forge), forge.EvaluationType, true);
+                    new DeclaredNodeEventPropertyGetterForge(forgeX),
+                    forgeX.EvaluationType, true);
             }
         }
 

@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
 
-        public virtual string ToString()
+        public override string ToString()
         {
             return "lookupStream=" + lookupStream +
                    " indexedStream=" + indexedStream +

@@ -18,6 +18,7 @@ namespace com.espertech.esper.common.@internal.collection
     {
         private readonly EventBean[] _events;
         private int _index;
+        private int? _limit;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ArrayEventEnumerator" /> class.
@@ -27,10 +28,31 @@ namespace com.espertech.esper.common.@internal.collection
         {
             _events = events;
             _index = -1;
+            _limit = null;
+        }
+
+        public ArrayEventEnumerator(EventBean[] events, int limit)
+        {
+            _events = events;
+            _index = -1;
+            _limit = limit;
         }
 
         public void Dispose()
         {
+        }
+
+        private bool CheckIndex(int index)
+        {
+            if (_limit != null && index >= _limit) {
+                return false;
+            }
+
+            if (index >= _events.Length) {
+                return false;
+            }
+
+            return true;
         }
 
         public bool MoveNext()
@@ -39,14 +61,11 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            if (_index >= _events.Length) {
+            if (!CheckIndex(_index + 1)) {
                 return false;
             }
 
             _index++;
-            if (_index >= _events.Length) {
-                return false;
-            }
 
             return true;
         }

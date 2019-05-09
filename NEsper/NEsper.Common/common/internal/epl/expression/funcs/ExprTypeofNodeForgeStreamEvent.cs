@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprEvaluator ExprEvaluator => this;
 
-        public override ExprNodeRenderable ForgeRenderable => parent;
+        public override ExprNodeRenderable ExprForgeRenderable => parent;
 
         public object Evaluate(
             EventBean[] eventsPerStream,

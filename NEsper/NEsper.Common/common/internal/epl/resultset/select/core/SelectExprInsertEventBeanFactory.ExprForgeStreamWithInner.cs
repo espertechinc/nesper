@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 
             public Type EvaluationType => TypeHelper.GetArrayType(componentReturnType);
 
-            public ExprNodeRenderable ForgeRenderable => this;
+            public ExprNodeRenderable ExprForgeRenderable => this;
 
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 

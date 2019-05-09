@@ -52,9 +52,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             this.constantResult = (Array) constantResult;
         }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => Parent;
+        public ExprArrayNode ForgeRenderableArray => Parent;
 
-        ExprNodeRenderable ExprEnumerationForge.ForgeRenderable => Parent;
+        public ExprNodeRenderable ExprForgeRenderable => Parent;
+
+        public ExprNodeRenderable EnumForgeRenderable => Parent;
 
         public ExprArrayNode Parent { get; }
 

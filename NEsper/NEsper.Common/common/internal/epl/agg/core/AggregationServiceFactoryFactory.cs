@@ -212,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                         hook.Planned(localGroupDesc, localGroupByPlan);
                     }
                 }
-                catch (ExprValidationException e) {
+                catch (ExprValidationException) {
                     throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_AGGLOCALLEVEL);
                 }
             }

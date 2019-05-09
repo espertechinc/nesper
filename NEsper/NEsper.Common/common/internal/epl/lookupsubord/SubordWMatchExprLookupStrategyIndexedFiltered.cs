@@ -62,9 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
                     foreach (EventBean aNewData in newData) {
                         eventsPerStream[1] = aNewData; // Stream 1 events are the originating events (on-delete events)
 
-                        Boolean result = (Boolean) joinExpr.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                        var result = joinExpr.Evaluate(eventsPerStream, true, exprEvaluatorContext);
                         if (result != null) {
-                            if (result) {
+                            if (true.Equals(result)) {
                                 if (foundEvents == null) {
                                     foundEvents = new LinkedHashSet<EventBean>();
                                 }

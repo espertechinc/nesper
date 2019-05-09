@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             return null;
         }
 
-        public ExprNodeRenderable ForgeRenderable {
+        public ExprNodeRenderable ExprForgeRenderable {
             get => this;
         }
 

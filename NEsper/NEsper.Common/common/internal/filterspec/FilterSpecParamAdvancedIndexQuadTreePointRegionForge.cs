@@ -9,14 +9,15 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
     public class FilterSpecParamAdvancedIndexQuadTreePointRegionForge : FilterSpecParamForge
     {
-        private readonly FilterSpecParamFilterForEvalDoubleForge xEval;
-        private readonly FilterSpecParamFilterForEvalDoubleForge yEval;
+        private readonly FilterSpecParamFilterForEvalDoubleForge _xEval;
+        private readonly FilterSpecParamFilterForEvalDoubleForge _yEval;
 
         public FilterSpecParamAdvancedIndexQuadTreePointRegionForge(
             ExprFilterSpecLookupableForge lookupable,
@@ -26,8 +27,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             : base(
                 lookupable, filterOperator)
         {
-            this.xEval = xEval;
-            this.yEval = yEval;
+            _xEval = xEval;
+            _yEval = yEval;
         }
 
         public override CodegenMethod MakeCodegen(
@@ -41,12 +42,16 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar(
                     typeof(ExprFilterSpecLookupable), "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()))
+                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
                 .DeclareVar(
                     typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion), "fpai",
                     NewInstance(typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion), Ref("lookupable"), Ref("op")))
-                .SetProperty(Ref("fpai"), "xEval", MakeAnonymous(xEval, GetType(), classScope, method))
-                .SetProperty(Ref("fpai"), "yEval", MakeAnonymous(yEval, GetType(), classScope, method))
+                .SetProperty(
+                    Ref("fpai"), "xEval",
+                    FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_xEval, GetType(), classScope, method))
+                .SetProperty(
+                    Ref("fpai"), "yEval",
+                    FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_yEval, GetType(), classScope, method))
                 .MethodReturn(Ref("fpai"));
             return method;
         }
@@ -66,8 +71,8 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            return xEval.Equals(other.xEval) &&
-                   yEval.Equals(other.yEval);
+            return _xEval.Equals(other._xEval) &&
+                   _yEval.Equals(other._yEval);
         }
 
         public override int GetHashCode()

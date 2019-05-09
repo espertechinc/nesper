@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.client.dataflow.util
             object defaultValue,
             DataFlowOpInitializeContext context)
         {
-            object resolvedFromProvider = TryParameterProvider(name, context, typeof(object));
+            object resolvedFromProvider = TryParameterProvider<object>(name, context);
             if (resolvedFromProvider != null) {
                 return resolvedFromProvider;
             }
@@ -120,15 +120,14 @@ namespace com.espertech.esper.common.client.dataflow.util
         /// <param name="name">parameter name</param>
         /// <param name="optionalEvaluator">evaluator</param>
         /// <param name="context">initialization context</param>
-        /// <param name="clazz">type of value</param>
         /// <param name="defaultValue">default value</param>
-        /// <param name="&lt;T&gt;">the type of value</param>
         /// <returns>value</returns>
         public static T ResolveWithDefault<T>(
             string name,
             ExprEvaluator optionalEvaluator,
             T defaultValue,
-            DataFlowOpInitializeContext context)
+            DataFlowOpInitializeContext context) 
+            where T : class
         {
             T resolvedFromProvider = TryParameterProvider<T>(name, context);
             if (resolvedFromProvider != null) {
@@ -234,7 +233,7 @@ namespace com.espertech.esper.common.client.dataflow.util
                     try {
                         map.Put(name, ((ExprEvaluator) entry.Value).Evaluate(null, true, context.AgentInstanceContext));
                     }
-                    catch (EPException ex) {
+                    catch (EPException) {
                         throw;
                     }
                     catch (Exception ex) {

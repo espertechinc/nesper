@@ -25,16 +25,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly bool audit;
-        private readonly string dataFlowName;
-        private readonly DataFlowSourceOperator graphSource;
-        private readonly string instanceId;
-        private readonly string operatorName;
-        private readonly int operatorNumber;
-        private readonly string operatorPrettyPrint;
-        private readonly EPDataFlowExceptionHandler optionalExceptionHandler;
-        private IList<CompletionListener> completionListeners;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly bool _audit;
+        private readonly string _dataFlowName;
+        private readonly DataFlowSourceOperator _graphSource;
+        private readonly string _instanceId;
+        private readonly string _operatorName;
+        private readonly int _operatorNumber;
+        private readonly string _operatorPrettyPrint;
+        private readonly EPDataFlowExceptionHandler _optionalExceptionHandler;
+        private IList<CompletionListener> _completionListeners;
 
         public GraphSourceRunnable(
             AgentInstanceContext agentInstanceContext,
@@ -47,15 +47,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
             EPDataFlowExceptionHandler optionalExceptionHandler,
             bool audit)
         {
-            this.agentInstanceContext = agentInstanceContext;
-            this.graphSource = graphSource;
-            this.dataFlowName = dataFlowName;
-            this.instanceId = instanceId;
-            this.operatorName = operatorName;
-            this.operatorNumber = operatorNumber;
-            this.operatorPrettyPrint = operatorPrettyPrint;
-            this.optionalExceptionHandler = optionalExceptionHandler;
-            this.audit = audit;
+            _agentInstanceContext = agentInstanceContext;
+            _graphSource = graphSource;
+            _dataFlowName = dataFlowName;
+            _instanceId = instanceId;
+            _operatorName = operatorName;
+            _operatorNumber = operatorNumber;
+            _operatorPrettyPrint = operatorPrettyPrint;
+            _optionalExceptionHandler = optionalExceptionHandler;
+            _audit = audit;
         }
 
         public bool IsShutdown { get; private set; }
@@ -112,20 +112,20 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
 
         private void HandleException(Exception ex)
         {
-            if (optionalExceptionHandler == null) {
+            if (_optionalExceptionHandler == null) {
                 return;
             }
 
-            optionalExceptionHandler.Handle(
-                new EPDataFlowExceptionContext(dataFlowName, operatorName, operatorNumber, operatorPrettyPrint, ex));
+            _optionalExceptionHandler.Handle(
+                new EPDataFlowExceptionContext(_dataFlowName, _operatorName, _operatorNumber, _operatorPrettyPrint, ex));
         }
 
         private void RunLoop()
         {
             while (true) {
-                agentInstanceContext.AuditProvider.DataflowSource(
-                    dataFlowName, instanceId, operatorName, operatorNumber, agentInstanceContext);
-                graphSource.Next();
+                _agentInstanceContext.AuditProvider.DataflowSource(
+                    _dataFlowName, _instanceId, _operatorName, _operatorNumber, _agentInstanceContext);
+                _graphSource.Next();
 
                 if (IsShutdown) {
                     break;
@@ -136,9 +136,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
         private void InvokeCompletionListeners()
         {
             lock (this) {
-                if (completionListeners != null) {
-                    foreach (var listener in completionListeners) {
-                        listener.Completed();
+                if (_completionListeners != null) {
+                    foreach (var listener in _completionListeners) {
+                        listener.Invoke();
                     }
                 }
             }
@@ -147,19 +147,19 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
         public void AddCompletionListener(CompletionListener completionListener)
         {
             lock (this) {
-                if (completionListeners == null) {
-                    completionListeners = new List<CompletionListener>();
+                if (_completionListeners == null) {
+                    _completionListeners = new List<CompletionListener>();
                 }
 
-                completionListeners.Add(completionListener);
+                _completionListeners.Add(completionListener);
             }
         }
 
         public void Next()
         {
-            agentInstanceContext.AuditProvider.DataflowSource(
-                dataFlowName, instanceId, operatorName, operatorNumber, agentInstanceContext);
-            graphSource.Next();
+            _agentInstanceContext.AuditProvider.DataflowSource(
+                _dataFlowName, _instanceId, _operatorName, _operatorNumber, _agentInstanceContext);
+            _graphSource.Next();
         }
     }
 } // end of namespace

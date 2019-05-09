@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 this.dataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
                     dataCacheDesc, agentInstanceContext, factory.StreamNumber, factory.ScheduleCallbackId);
             }
-            catch (EPException e)
+            catch (EPException)
             {
                 throw;
             }

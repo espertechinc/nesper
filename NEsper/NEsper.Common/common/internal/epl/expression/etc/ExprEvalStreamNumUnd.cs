@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public ExprNodeRenderable ForgeRenderable {
+        public ExprNodeRenderable ExprForgeRenderable {
             get => this;
         }
 

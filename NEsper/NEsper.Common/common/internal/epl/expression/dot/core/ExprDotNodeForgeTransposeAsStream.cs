@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotNodeImpl parent,
             ExprForge inner)
         {
-            ForgeRenderable = parent;
+            ExprForgeRenderable = parent;
             this.inner = inner;
         }
 
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override bool IsReturnsConstantResult => false;
 
-        public override ExprNodeRenderable ForgeRenderable { get; }
+        public override ExprNodeRenderable ExprForgeRenderable { get; }
 
         public override FilterExprAnalyzerAffector FilterExprAnalyzerAffector => null;
 

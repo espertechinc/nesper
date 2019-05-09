@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public override ExprNodeRenderable ForgeRenderable => parent;
+        public override ExprNodeRenderable ExprForgeRenderable => parent;
 
         public override CodegenExpression EvaluateCodegen(
             Type requiredType,

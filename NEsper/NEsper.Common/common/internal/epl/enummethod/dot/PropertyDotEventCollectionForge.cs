@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public Type ComponentTypeCollection => null;
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable EnumForgeRenderable => this;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
             EventBean[] eventsPerStream,

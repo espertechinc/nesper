@@ -10,9 +10,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprForgeConstantType
     {
-        public static readonly ExprForgeConstantType COMPILETIMECONST = new ExprForgeConstantType();
-        public static readonly ExprForgeConstantType DEPLOYCONST = new ExprForgeConstantType();
-        public static readonly ExprForgeConstantType NONCONST = new ExprForgeConstantType();
+        public static readonly ExprForgeConstantType COMPILETIMECONST = new ExprForgeConstantType(0);
+        public static readonly ExprForgeConstantType DEPLOYCONST = new ExprForgeConstantType(1);
+        public static readonly ExprForgeConstantType NONCONST = new ExprForgeConstantType(2);
 
         public static readonly ExprForgeConstantType[] VALUES = {
             COMPILETIMECONST,
@@ -20,9 +20,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             NONCONST
         };
 
-        private ExprForgeConstantType()
+        private ExprForgeConstantType(int ordinal)
         {
+            Ordinal = ordinal;
         }
+
+        public int Ordinal { get; }
 
         public bool IsCompileTimeConstant => this == COMPILETIMECONST;
 

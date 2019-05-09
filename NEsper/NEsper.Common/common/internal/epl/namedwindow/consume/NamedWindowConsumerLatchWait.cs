@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             lock (this) {
                 if (!EarlierLocal.isCompleted) {
                     try {
-                        this.Wait(factory.MsecWait);
+                        Monitor.Wait(this, factory.MsecWait);
                     }
                     catch (ThreadInterruptedException e) {
                         Log.Error("Interrupted: " + e.Message, e);
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             isCompleted = true;
             if (later != null) {
                 lock (later) {
-                    later.Notify();
+                    Monitor.Pulse(later);
                 }
             }
 

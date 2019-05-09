@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNamedParameterNode namedParameterNode,
             Type[] expectedTypes)
         {
-            if (namedParameterNode.ChildNodes.Count != 1) {
+            if (namedParameterNode.ChildNodes.Length != 1) {
                 throw GetNamedValidationException(namedParameterNode.ParameterName, expectedTypes);
             }
 

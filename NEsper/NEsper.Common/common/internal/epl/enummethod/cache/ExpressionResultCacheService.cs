@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.cache
@@ -21,28 +20,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             IThreadLocalManager threadLocalManager)
         {
             _declareExprCacheSize = declareExprCacheSize;
-            _threadCache = threadLocalManager.Create<ExpressionResultCacheServiceHolder>(
+            _threadCache = threadLocalManager.Create(
                 () => new ExpressionResultCacheServiceHolder(declareExprCacheSize));
         }
 
-        public ExpressionResultCacheForPropUnwrap AllocateUnwrapProp {
-            get { return _threadCache.GetOrCreate().GetAllocateUnwrapProp(); }
-        }
+        public ExpressionResultCacheForPropUnwrap AllocateUnwrapProp => _threadCache.GetOrCreate().GetAllocateUnwrapProp();
 
-        public ExpressionResultCacheForDeclaredExprLastValue AllocateDeclaredExprLastValue {
-            get { return _threadCache.GetOrCreate().GetAllocateDeclaredExprLastValue(); }
-        }
+        public ExpressionResultCacheForDeclaredExprLastValue AllocateDeclaredExprLastValue =>
+            _threadCache.GetOrCreate().GetAllocateDeclaredExprLastValue();
 
-        public ExpressionResultCacheForDeclaredExprLastColl AllocateDeclaredExprLastColl {
-            get { return _threadCache.GetOrCreate().GetAllocateDeclaredExprLastColl(); }
-        }
+        public ExpressionResultCacheForDeclaredExprLastColl AllocateDeclaredExprLastColl =>
+            _threadCache.GetOrCreate().GetAllocateDeclaredExprLastColl();
 
-        public ExpressionResultCacheForEnumerationMethod AllocateEnumerationMethod {
-            get { return _threadCache.GetOrCreate().GetAllocateEnumerationMethod(); }
-        }
+        public ExpressionResultCacheForEnumerationMethod AllocateEnumerationMethod => _threadCache.GetOrCreate().GetAllocateEnumerationMethod();
 
-        public bool IsDeclaredExprCacheEnabled {
-            get { return _declareExprCacheSize > 0; }
-        }
+        public bool IsDeclaredExprCacheEnabled => _declareExprCacheSize > 0;
     }
 }

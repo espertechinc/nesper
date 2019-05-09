@@ -221,7 +221,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return ConstantNull();
         }
 
-        public ExprNodeRenderable ForgeRenderable {
+        public ExprNodeRenderable EnumForgeRenderable {
             get => this;
         }
 

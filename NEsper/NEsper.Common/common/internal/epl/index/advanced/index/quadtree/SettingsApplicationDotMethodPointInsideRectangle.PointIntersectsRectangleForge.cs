@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 get => typeof(bool?);
             }
 
-            public ExprNodeRenderable ForgeRenderable {
+            public ExprNodeRenderable ExprForgeRenderable {
                 get => parent;
             }
         }

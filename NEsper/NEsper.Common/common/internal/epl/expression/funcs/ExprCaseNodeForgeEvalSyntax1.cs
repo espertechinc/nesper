@@ -47,10 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             object caseResult = null;
             bool matched = false;
             foreach (UniformPair<ExprEvaluator> p in whenThenNodeList) {
-                Boolean whenResult = (Boolean) p.First.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var whenResult = p.First.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 // If the 'when'-expression returns true
-                if ((whenResult != null) && whenResult) {
+                if ((whenResult != null) && true.Equals(whenResult)) {
                     caseResult = p.Second.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                     matched = true;
                     break;

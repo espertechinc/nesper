@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,8 @@ namespace com.espertech.esper.common.@internal.type
     [Serializable]
     public class WildcardParameter : NumberSetParameter
     {
+        public static readonly WildcardParameter Instance = new WildcardParameter();
+
         /// <summary>
         /// Returns true if all values between and including min and max are supplied by the parameter.
         /// </summary>

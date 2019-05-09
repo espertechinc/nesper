@@ -42,6 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             StateType = stateType;
         }
 
+        public ExprNodeRenderable EnumForgeRenderable => ForgeRenderableLocal;
+
         public override string AggregationFunctionName => StateType.ToString().ToLowerInvariant();
 
         public AggregationAccessorLinearType StateType { get; }

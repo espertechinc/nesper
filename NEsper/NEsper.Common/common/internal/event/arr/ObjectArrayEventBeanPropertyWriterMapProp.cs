@@ -26,14 +26,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
             this.key = key;
         }
 
-        public void Write(
+        public override void Write(
             object value,
             object[] array)
         {
             ObjectArrayWriteMapProp(value, array, index, key);
         }
 
-        public CodegenExpression WriteCodegen(
+        public override CodegenExpression WriteCodegen(
             CodegenExpression assigned,
             CodegenExpression und,
             CodegenExpression target,

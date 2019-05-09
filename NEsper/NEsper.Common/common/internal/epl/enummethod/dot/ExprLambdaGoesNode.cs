@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public Type EvaluationType => null;
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public bool IsValidated => true;
 

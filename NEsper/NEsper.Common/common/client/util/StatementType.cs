@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -70,5 +70,28 @@ namespace com.espertech.esper.common.client.util
 
         /// <summary>EsperIO </summary>
         ESPERIO
+    }
+
+    public static class StatementTypeExtension
+    {
+        /// <summary>
+        /// Returns true for on-action statements that operate against named windows or tables.
+        /// </summary>
+        /// <param name="statementType">Type of the statement.</param>
+
+        public static bool IsOnTriggerInfra(this StatementType statementType)
+        {
+            switch (statementType)
+            {
+                case StatementType.ON_SELECT:
+                case StatementType.ON_INSERT:
+                case StatementType.ON_DELETE:
+                case StatementType.ON_MERGE:
+                case StatementType.ON_UPDATE:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }

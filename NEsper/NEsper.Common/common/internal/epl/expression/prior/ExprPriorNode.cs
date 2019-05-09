@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
                 GetType(), this, "ExprPrior", requiredType, parent, exprSymbol, codegenClassScope).Build();
         }
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {

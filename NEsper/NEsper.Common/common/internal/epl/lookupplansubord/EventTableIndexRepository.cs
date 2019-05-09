@@ -215,7 +215,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                     table.Add(events, agentInstanceContext);
                 }
             }
-            catch (Exception t) {
+            catch (Exception) {
                 table.Destroy();
                 throw;
             }

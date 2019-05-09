@@ -345,7 +345,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     setterMethod = MethodResolver.ResolveMethod(
                         Stem.Clazz, methodName, new[] {typeof(string), typeof(object)}, true, new bool[2], new bool[2]);
                 }
-                catch (MethodResolverNoSuchMethodException e) {
+                catch (MethodResolverNoSuchMethodException) {
                     Log.Info(
                         "Failed to find mapped property setter method '" + methodName + "' for writing to property '" +
                         propertyName + "' taking {String, Object} as parameters");
@@ -367,7 +367,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     setterMethod = MethodResolver.ResolveMethod(
                         Stem.Clazz, methodName, new[] {typeof(int), typeof(object)}, true, new bool[2], new bool[2]);
                 }
-                catch (MethodResolverNoSuchMethodException e) {
+                catch (MethodResolverNoSuchMethodException) {
                     Log.Info(
                         "Failed to find indexed property setter method '" + methodName + "' for writing to property '" +
                         propertyName + "' taking {int, Object} as parameters");

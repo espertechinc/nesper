@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.agg.rollup;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.polled;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.grouped;
 using com.espertech.esper.common.@internal.epl.resultset.rowforall;
@@ -151,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     impl.AddMethod("evaluateHaving", evaluateHaving);
                     evaluateHaving.Block.MethodReturn(
                         CodegenLegoMethodExpression.CodegenBooleanExpressionReturnTrueFalse(
-                            havingForges[i], classScope, factoryCtor, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                            havingForges[i], classScope, factoryCtor, REF_EPS, ResultSetProcessorCodegenNames.REF_ISNEWDATA, REF_EXPREVALCONTEXT));
                     factoryCtor.Block.AssignArrayElement(NAME_HAVINGEVALUATOR_ARRAYNONMEMBER, Constant(i), impl);
                 }
             }

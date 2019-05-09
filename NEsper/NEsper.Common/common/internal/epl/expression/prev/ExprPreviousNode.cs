@@ -63,9 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        ExprNodeRenderable ExprEnumerationForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprEnumerationForge.EnumForgeRenderable => ForgeRenderable;
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprNode ForgeRenderable => this;
 

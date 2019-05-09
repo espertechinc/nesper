@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             return optionalEventTypeRef;
         }
 
-        public void Provide(IDictionary<string, Type> symbols)
+        public override void Provide(IDictionary<string, Type> symbols)
         {
             base.Provide(symbols);
             if (optionalEventTypeRef != null) {

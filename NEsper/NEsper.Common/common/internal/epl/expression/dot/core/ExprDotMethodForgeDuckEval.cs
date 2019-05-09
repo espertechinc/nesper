@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private readonly ExprDotMethodForgeDuck forge;
         private readonly ExprEvaluator[] parameters;
 
-        private ExprDotMethodForgeDuckEval(
+        internal ExprDotMethodForgeDuckEval(
             ExprDotMethodForgeDuck forge,
             ExprEvaluator[] parameters)
         {
@@ -157,10 +157,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             catch (Exception e) when (e is TargetException || e is MemberAccessException) {
                 var message = TypeHelper.GetMessageInvocationTarget(
                     statementName,
-                    method.Name,
-                    method.GetParameterTypes(),
-                    target.GetType().FullName,
-                    args, e);
+                    method,
+                    target.GetType().GetCleanName(),
+                    args, 
+                    e);
                 Log.Error(message, e);
             }
 
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             try {
                 return MethodResolver.ResolveMethod(clazz, methodName, paramTypes, true, allFalse, allFalse);
             }
-            catch (Exception e) {
+            catch (Exception) {
                 Log.Debug("Not resolved for class '" + clazz.Name + "' method '" + methodName + "'");
             }
 

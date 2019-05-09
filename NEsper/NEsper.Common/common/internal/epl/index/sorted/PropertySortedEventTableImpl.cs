@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             try {
                 submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             }
-            catch (ArgumentException ex) {
+            catch (ArgumentException) {
                 if (allowRangeReversal) {
                     submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
                 }
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             try {
                 submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             }
-            catch (ArgumentException ex) {
+            catch (ArgumentException) {
                 if (allowRangeReversal) {
                     submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
                 }

@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                             localDataCache.Put(lookupValue, indexTable);
                         }
                     }
-                    catch (EPException ex) {
+                    catch (EPException) {
                         if (strategyStarted) {
                             pollExecStrategy.Done();
                         }

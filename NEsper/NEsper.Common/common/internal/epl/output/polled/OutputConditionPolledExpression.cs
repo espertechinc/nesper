@@ -91,8 +91,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             }
 
             bool result = false;
-            Boolean output = (Boolean) factory.WhenExpression.Evaluate(eventsPerStream, true, agentInstanceContext);
-            if ((output != null) && output) {
+            var output = factory.WhenExpression.Evaluate(eventsPerStream, true, agentInstanceContext);
+            if ((output != null) && true.Equals(output)) {
                 result = true;
             }
 

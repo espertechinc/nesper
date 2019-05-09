@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public Type EvaluationType => typeof(bool?);
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprEvaluator ExprEvaluator => new ExprOrNodeEval(
             this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildNodes));

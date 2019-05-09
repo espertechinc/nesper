@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.soda
                 case StreamSelector.RSTREAM_ISTREAM_BOTH:
                     return "irstream";
                 default:
-                    throw new ArgumentException("invalid value for enum value", "enumValue");
+                    throw new ArgumentException("invalid value for enum value", nameof(enumValue));
             }
         }
     }

@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                 try {
                     ProcessorInstance.RootViewInstance.Update(inserted, null);
                 }
-                catch (EPException ex) {
+                catch (EPException) {
                     ProcessorInstance.RootViewInstance.Update(null, inserted);
                 }
                 finally {

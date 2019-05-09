@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     try {
                         prop = PropertyParser.ParseAndWalkLaxToSimple(identNode.FullUnresolvedName);
                     }
-                    catch (Exception ex) {
+                    catch (Exception) {
                         throw new ExprValidationException(
                             "Failed to parse property '" + identNode.FullUnresolvedName + "'");
                     }
@@ -217,13 +217,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             try {
                 clazz = TypeHelper.GetClassForName(className, importService.ClassForNameProvider);
             }
-            catch (TypeLoadException e) {
+            catch (TypeLoadException) {
                 if (!className.Contains(".")) {
                     className = topClass.Namespace + "." + className;
                     try {
                         clazz = TypeHelper.GetClassForName(className, importService.ClassForNameProvider);
                     }
-                    catch (TypeLoadException ex) {
+                    catch (TypeLoadException) {
                     }
                 }
 

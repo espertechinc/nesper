@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.view.union
                     LocalMethod(MakeViewFactories(unioned, GetType(), method, classScope, symbols)));
         }
 
-        public virtual void Accept(ViewForgeVisitor visitor)
+        public override void Accept(ViewForgeVisitor visitor)
         {
             visitor.Visit(this);
             foreach (var forge in unioned) {

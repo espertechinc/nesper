@@ -205,6 +205,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return block;
         }
 
+        public CodegenBlock DeclareVarWCast<T>(
+            string var,
+            string rhsName)
+        {
+            return DeclareVarWCast(typeof(T), var, rhsName);
+        }
+
         public CodegenBlock DeclareVarWCast(
             Type clazz,
             string var,
@@ -213,6 +220,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CheckClosed();
             statements.Add(new CodegenStatementDeclareVarWCast(clazz, var, rhsName));
             return this;
+        }
+
+        public CodegenBlock DeclareVar<T>(
+            string var,
+            CodegenExpression initializer)
+        {
+            return DeclareVar(typeof(T), var, initializer);
         }
 
         public CodegenBlock DeclareVar(
@@ -246,6 +260,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+        public CodegenBlock DeclareVarNoInit<T>(
+            string var)
+        {
+            return DeclareVarNoInit(typeof(T), var);
+        }
+
         public CodegenBlock DeclareVarNoInit(
             Type clazz,
             string var)
@@ -253,6 +273,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CheckClosed();
             statements.Add(new CodegenStatementDeclareVar(clazz, null, var, null));
             return this;
+        }
+
+
+        public CodegenBlock DeclareVarNull<T>(
+            string var)
+        {
+            return DeclareVarNull(typeof(T), var);
         }
 
         public CodegenBlock DeclareVarNull(

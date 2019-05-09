@@ -68,12 +68,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public Type EvaluationType => typeof(RangeParameter);
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.VALUES[
             Math.Max(
-                ChildNodes[0].Forge.ForgeConstantType.Ordinal(),
-                ChildNodes[1].Forge.ForgeConstantType.Ordinal())];
+                ChildNodes[0].Forge.ForgeConstantType.Ordinal,
+                ChildNodes[1].Forge.ForgeConstantType.Ordinal
+            )];
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,

@@ -126,7 +126,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
+
+        public ExprNodeRenderable EnumForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -315,7 +317,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             try {
                 return validationContext.ImportService.ResolveClass(returnTypeName, false);
             }
-            catch (ImportException e1) {
+            catch (ImportException) {
                 throw new ExprValidationException(
                     "Failed to resolve return type '" + returnTypeName + "' specified for script '" + Script.Name +
                     "'");

@@ -6,9 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.collection;
@@ -19,9 +19,7 @@ using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
+
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
@@ -46,7 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             AgentInstanceContext agentInstanceContext = null;
             Viewable[] viewablePerStream = new Viewable[numStreams];
 
-            for (int i = 0; i < numStreams; i++) {
+            for (int i = 0; i < numStreams; i++)
+            {
                 FireAndForgetProcessor processor = select.Processors[i];
                 FireAndForgetInstance processorInstance = processor.ProcessorInstanceNoContext;
                 snapshots[i] = Snapshot(
@@ -66,13 +65,15 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
             EventBean[][] oldDataPerStream = new EventBean[numStreams][];
             EventBean[][] newDataPerStream = new EventBean[numStreams][];
-            for (int i = 0; i < numStreams; i++) {
+            for (int i = 0; i < numStreams; i++)
+            {
                 newDataPerStream[i] = snapshots[i].ToArray();
             }
 
             UniformPair<ISet<MultiKey<EventBean>>> result = joinComposer.Join(
                 newDataPerStream, oldDataPerStream, agentInstanceContext);
-            if (joinSetComposerDesc.PostJoinFilterEvaluator != null) {
+            if (joinSetComposerDesc.PostJoinFilterEvaluator != null)
+            {
                 JoinSetComposerUtil.Filter(
                     joinSetComposerDesc.PostJoinFilterEvaluator, result.First, true, agentInstanceContext);
             }

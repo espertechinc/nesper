@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             get => typeof(EventBean);
         }
 
-        public ExprNodeRenderable ForgeRenderable {
+        public ExprNodeRenderable ExprForgeRenderable {
             get => this;
         }
 

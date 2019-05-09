@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.util
             object underlying,
             TextWriter writer)
         {
-            TypeHelper.GetObjectValuePretty(underlying, writer);
+            CompatExtensions.RenderAny(underlying, writer);
         }
 
         public static string Summarize(EventBean[] events)

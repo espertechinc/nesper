@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprConcatNode ForgeRenderable => _parent;
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprEvaluator ExprEvaluator {
             get {

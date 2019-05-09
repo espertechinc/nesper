@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             bool[] selfJoinRepositoryResets)
         {
             this.allowInitIndex = allowInitIndex;
-            this.repositories = this.repositories; //.ToArray();
+            this.repositories = JoinSetComposerUtil.ToArray(repositories);
             this.streamNumber = streamNumber;
             this.queryStrategy = queryStrategy;
 

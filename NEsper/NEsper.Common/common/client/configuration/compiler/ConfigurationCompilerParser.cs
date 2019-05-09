@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
                     var mathContext = new MathContext(mathContextStr);
                     compiler.Expression.MathContext = mathContext;
                 }
-                catch (ArgumentException ex) {
+                catch (ArgumentException) {
                     throw new ConfigurationException("Failed to parse '" + mathContextStr + "' as a MathContext");
                 }
             }

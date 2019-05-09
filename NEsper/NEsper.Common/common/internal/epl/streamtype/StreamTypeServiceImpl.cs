@@ -269,7 +269,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                     // try to resolve a stream and property name
                     desc = FindByStreamName(propertyName, streamName, false, obtainFragment);
                 }
-                catch (StreamNotFoundException e) {
+                catch (StreamNotFoundException) {
                     // Consider the runtime URI as a further prefix
                     var propertyNoEnginePair = GetIsStreamQualified(propertyName);
                     if (propertyNoEnginePair == null) {
@@ -280,7 +280,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                         return FindByStreamNameOnly(
                             propertyNoEnginePair.First, propertyNoEnginePair.Second, false, obtainFragment);
                     }
-                    catch (StreamNotFoundException e1) {
+                    catch (StreamNotFoundException) {
                         throw ex;
                     }
                 }

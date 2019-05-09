@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     catch (EPException) {
                         throw;
                     }
-                    catch (Exception ex) {
+                    catch (Exception) {
                         throw new ExprValidationException(
                             "Expected any of the " + EnumHelper.GetValues<ForClauseKeyword>().RenderAny().ToLowerInvariant() +
                             " for-clause keywords after reserved keyword 'for'");

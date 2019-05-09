@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public Type EvaluationType { get; }
 
-        public ExprNodeRenderable ForgeRenderable => this;
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public ExprEvaluator ExprEvaluator => throw new IllegalStateException("Evaluator not available");
 

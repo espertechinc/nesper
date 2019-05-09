@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprEqualsAllAnyNode ForgeRenderable { get; }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public bool IsMustCoerce { get; }
 

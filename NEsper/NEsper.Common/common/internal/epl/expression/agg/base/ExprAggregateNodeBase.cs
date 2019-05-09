@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         public ExprNode ForgeRenderableLocal => this;
 
-        public ExprNodeRenderable ForgeRenderable => ForgeRenderableLocal;
+        public ExprNodeRenderable ExprForgeRenderable => ForgeRenderableLocal;
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 

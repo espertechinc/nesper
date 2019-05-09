@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                     try {
                         hashSingleRowFunction = services.ImportServiceCompileTime.ResolveSingleRow(hashFuncName);
                     }
-                    catch (Exception e) {
+                    catch (Exception) {
                         // expected
                     }
 

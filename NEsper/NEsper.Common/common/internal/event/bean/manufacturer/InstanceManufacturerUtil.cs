@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             public Type EvaluationType { get; }
 
-            public ExprNodeRenderable ForgeRenderable => innerForge.ForgeRenderable;
+            public ExprNodeRenderable ExprForgeRenderable => innerForge.ExprForgeRenderable;
         }
 
         public class InstanceManufacturerForgeArray : ExprForge,
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             public Type EvaluationType => TypeHelper.GetArrayType(componentReturnType);
 
-            public ExprNodeRenderable ForgeRenderable => this;
+            public ExprNodeRenderable ExprForgeRenderable => this;
 
             public void ToEPL(
                 TextWriter writer,

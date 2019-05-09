@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
         public ExprTimePeriodImpl ForgeRenderable { get; }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprEvaluator[] Evaluators {
             get {

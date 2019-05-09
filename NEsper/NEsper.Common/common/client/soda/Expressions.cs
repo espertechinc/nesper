@@ -1777,11 +1777,11 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="milliseconds">milliseconds part</param>
         /// <returns>time period expression</returns>
         public static TimePeriodExpression TimePeriod(
-            Double days,
-            Double hours,
-            Double minutes,
-            Double seconds,
-            Double milliseconds)
+            double? days,
+            double? hours,
+            double? minutes,
+            double? seconds,
+            double? milliseconds)
         {
             Expression daysExpr = (days != null) ? Constant(days) : null;
             Expression hoursExpr = (hours != null) ? Constant(hours) : null;

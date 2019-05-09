@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <returns>true for match</returns>
         public bool Match(string stringToMatch)
         {
-            return pattern.Matcher(stringToMatch).Matches();
+            return pattern.IsMatch(stringToMatch);
         }
 
         public override bool Equals(object o)

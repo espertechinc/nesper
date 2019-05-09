@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             this.postProcessor = postProcessor;
         }
 
-        protected void PostProcess(
+        protected override void PostProcess(
             bool force,
             UniformPair<EventBean[]> newOldEvents,
             UpdateDispatchView childView)

@@ -525,7 +525,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     LocalMethod(selectList, ConstantTrue(), ConstantTrue(), ConstantFalse()))
                 .IfRefNull("events")
                 .BlockReturn(EnumValue(typeof(CollectionUtil), "NULL_EVENT_ITERATOR"))
-                .MethodReturn(NewInstance(typeof(SingleEventIterator), ArrayAtIndex(Ref("events"), Constant(0))));
+                .MethodReturn(NewInstance(typeof(SingleEventEnumerator), ArrayAtIndex(Ref("events"), Constant(0))));
             return method;
         }
 
@@ -565,7 +565,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     method.Block.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"), ConstantNull(), REF_ISNEWDATA,
+                                    instance.Methods.GetMethod("EvaluateHavingClause"), ConstantNull(), REF_ISNEWDATA,
                                     REF_AGENTINSTANCECONTEXT)))
                         .BlockReturnNoValue();
                 }

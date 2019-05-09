@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     catch (EPException) {
                         throw;
                     }
-                    catch (Exception ex) {
+                    catch (Exception) {
                         Log.Warn(
                             "Error parsing XPath property named '" + property + "' expression result '" + result +
                             " as type " + optionalCastToType.Name);
@@ -259,7 +259,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     catch (EPException) {
                         throw;
                     }
-                    catch (Exception ex) {
+                    catch (Exception) {
                         Log.Warn(
                             "Error coercing XPath property named '" + property + "' expression result '" + result +
                             " as type " + optionalCastToType.Name);
@@ -362,7 +362,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                     arrayItem = simpleTypeParser.Parse(textContent);
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     if (Log.IsInfoEnabled) {
                         Log.Info(
                             "Parse error for text content " + nodeList.Item(i).InnerText + " for expression " +

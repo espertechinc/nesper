@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             object targetObject,
             string optionalStatementName)
         {
-            ForgeRenderable = parent;
+            ExprForgeRenderable = parent;
             IsReturnsConstantResult = isReturnsConstantResult;
             ClassOrPropertyName = classOrPropertyName;
             StaticMethod = staticMethod;
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public object TargetObject { get; }
 
-        public override ExprNodeRenderable ForgeRenderable { get; }
+        public override ExprNodeRenderable ExprForgeRenderable { get; }
 
         public override bool IsReturnsConstantResult { get; }
 

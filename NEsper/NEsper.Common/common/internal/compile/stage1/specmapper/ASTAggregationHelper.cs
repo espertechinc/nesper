@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggfunc;
 using com.espertech.esper.common.client.hook.aggmultifunc;
@@ -16,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
@@ -29,22 +26,27 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             string functionName,
             LazyAllocatedMap<ConfigurationCompilerPlugInAggregationMultiFunction, AggregationMultiFunctionForge> plugInAggregations)
         {
-            try {
+            try
+            {
                 AggregationFunctionForge aggregationFactory = importService.ResolveAggregationFunction(functionName);
                 return new ExprPlugInAggNode(distinct, aggregationFactory, functionName);
             }
-            catch (ImportUndefinedException e) {
+            catch (ImportUndefinedException)
+            {
                 // Not an aggregation function
             }
-            catch (ImportException e) {
+            catch (ImportException e)
+            {
                 throw new ValidationException("Error resolving aggregation: " + e.Message, e);
             }
 
             // try plug-in aggregation multi-function
             ConfigurationCompilerPlugInAggregationMultiFunction config = importService.ResolveAggregationMultiFunction(functionName);
-            if (config != null) {
+            if (config != null)
+            {
                 AggregationMultiFunctionForge factory = plugInAggregations.Map.Get(config);
-                if (factory == null) {
+                if (factory == null)
+                {
                     factory = (AggregationMultiFunctionForge) TypeHelper.Instantiate<AggregationMultiFunctionForge>(
                         config.MultiFunctionForgeClassName, importService.ClassForNameProvider);
                     plugInAggregations.Map.Put(config, factory);

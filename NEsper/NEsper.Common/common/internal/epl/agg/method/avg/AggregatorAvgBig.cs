@@ -9,6 +9,7 @@
 using System;
 using System.Numerics;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -32,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
     public class AggregatorAvgBig : AggregatorMethodWDistinctWFilterWValueBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly CodegenExpressionRef cnt;
 
+        private readonly CodegenExpressionRef cnt;
         private readonly AggregationFactoryMethodAvg factory;
         private readonly CodegenExpressionRef sum;
 
@@ -64,13 +66,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            if (valueType == typeof(BigInteger)) {
+            if (valueType == typeof(BigInteger))
+            {
                 method.Block.AssignRef(
                     sum, ExprDotMethod(
                         sum, "add",
                         NewInstance(typeof(decimal), value)));
             }
-            else {
+            else
+            {
                 method.Block.AssignRef(
                     sum, ExprDotMethod(
                         sum, "add",
@@ -94,13 +98,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                 .Decrement(cnt)
                 .Apply(
                     block => {
-                        if (valueType == typeof(BigInteger)) {
+                        if (valueType == typeof(BigInteger))
+                        {
                             block.AssignRef(
                                 sum, ExprDotMethod(
                                     sum, "subtract",
                                     NewInstance(typeof(decimal), value)));
                         }
-                        else {
+                        else
+                        {
                             block.AssignRef(
                                 sum, ExprDotMethod(
                                     sum, "subtract",
@@ -115,7 +121,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (evaluationTypes[0] == typeof(BigInteger)) {
+            if (evaluationTypes[0] == typeof(BigInteger))
+            {
                 method.Block.AssignRef(
                     sum, ExprDotMethod(
                         sum, "add",
@@ -123,7 +130,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                             typeof(decimal),
                             Cast(typeof(BigInteger), value))));
             }
-            else {
+            else
+            {
                 method.Block.AssignRef(
                     sum, ExprDotMethod(
                         sum, "add",
@@ -145,7 +153,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                 .Decrement(cnt)
                 .Apply(
                     block => {
-                        if (evaluationTypes[0] == typeof(BigInteger)) {
+                        if (evaluationTypes[0] == typeof(BigInteger))
+                        {
                             block.AssignRef(
                                 sum, ExprDotMethod(
                                     sum, "subtract",
@@ -153,7 +162,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                                         typeof(decimal),
                                         Cast(typeof(BigInteger), value))));
                         }
-                        else {
+                        else
+                        {
                             block.AssignRef(
                                 sum, ExprDotMethod(
                                     sum, "subtract",
@@ -219,18 +229,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             MathContext optionalMathContext,
             decimal sum)
         {
-            if (cnt == 0) {
+            if (cnt == 0)
+            {
                 return null;
             }
 
-            try {
-                if (optionalMathContext == null) {
+            try
+            {
+                if (optionalMathContext == null)
+                {
                     return sum / cnt;
                 }
 
-                return sum.Divide(new decimal(cnt), optionalMathContext);
+                return decimal.Round(
+                    decimal.Divide(sum, cnt),
+                    optionalMathContext.Precision,
+                    optionalMathContext.RoundingMode);
             }
-            catch (ArithmeticException ex) {
+            catch (ArithmeticException ex)
+            {
                 Log.Error("Error computing avg aggregation result: " + ex.Message, ex);
                 return 0.0m;
             }

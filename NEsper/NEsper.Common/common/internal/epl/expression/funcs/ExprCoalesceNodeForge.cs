@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public bool[] IsNumericCoercion { get; }
 
-        ExprNodeRenderable ExprForge.ForgeRenderable => ForgeRenderable;
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprEvaluator ExprEvaluator => new ExprCoalesceNodeForgeEval(
             this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes));

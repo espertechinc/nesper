@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.compat.threading.locks;
-
 namespace com.espertech.esper.common.@internal.context.util
 {
     public interface StatementAgentInstanceLock
@@ -21,28 +19,5 @@ namespace com.espertech.esper.common.@internal.context.util
         void AcquireReadLock();
 
         void ReleaseReadLock();
-    }
-
-    public class StatementAgentInstanceLockConstants
-    {
-        /// <summary>
-        /// Acquire text.
-        /// </summary>
-        public const string ACQUIRE_TEXT = "Acquire ";
-
-        /// <summary>
-        /// Acquired text.
-        /// </summary>
-        public const string ACQUIRED_TEXT = "Got     ";
-
-        /// <summary>
-        /// Release text.
-        /// </summary>
-        public const string RELEASE_TEXT = "Release ";
-
-        /// <summary>
-        /// Released text.
-        /// </summary>
-        public const string RELEASED_TEXT = "Freed   ";
     }
 } // end of namespace

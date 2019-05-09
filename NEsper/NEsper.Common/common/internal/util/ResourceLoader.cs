@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
             try {
                 url = new Uri(urlOrClasspathResource);
             }
-            catch (MalformedURLException ex) {
+            catch (MalformedURLException) {
                 url = GetClasspathResourceAsURL(resourceName, urlOrClasspathResource, classLoader);
             }
 

@@ -6,46 +6,25 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
     /// <summary>
-    /// Cache entry bean-to-collection-of-bean.
+    ///     Cache entry bean-to-collection-of-bean.
     /// </summary>
     public class ExpressionResultCacheEntryEventBeanArrayAndObj
     {
-        private EventBean[] reference;
-        private object result;
-
         public ExpressionResultCacheEntryEventBeanArrayAndObj(
             EventBean[] reference,
             object result)
         {
-            this.reference = reference;
-            this.result = result;
+            Reference = reference;
+            Result = result;
         }
 
-        public EventBean[] GetReference()
-        {
-            return reference;
-        }
+        public EventBean[] Reference { get; set; }
 
-        public void SetReference(EventBean[] reference)
-        {
-            this.reference = reference;
-        }
-
-        public object Result {
-            get => result;
-        }
-
-        public void SetResult(object result)
-        {
-            this.result = result;
-        }
+        public object Result { get; set; }
     }
 } // end of namespace

@@ -459,7 +459,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                         var forgeClassName = operatorSpec.OperatorName;
                         forgeClass = services.ImportServiceCompileTime.ResolveClass(forgeClassName, false);
                     }
-                    catch (ImportException e2) {
+                    catch (ImportException) {
                         // expected
                     }
 
@@ -790,7 +790,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                             try {
                                 clazz = services.ImportServiceCompileTime.ResolveClass(typeName, false);
                             }
-                            catch (ImportException e) {
+                            catch (ImportException) {
                                 throw new EPRuntimeException("Failed to resolve type '" + typeName + "'");
                             }
                         }

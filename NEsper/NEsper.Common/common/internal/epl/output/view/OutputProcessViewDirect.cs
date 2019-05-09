@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             }
         }
 
-        protected void PostProcess(
+        protected virtual void PostProcess(
             bool force,
             UniformPair<EventBean[]> newOldEvents,
             UpdateDispatchView childView)

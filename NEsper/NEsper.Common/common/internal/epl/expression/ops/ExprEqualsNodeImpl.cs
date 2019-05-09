@@ -12,24 +12,20 @@ using System.IO;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     /// <summary>
-    /// Represents an equals (=) comparator in a filter expression tree.
+    ///     Represents an equals (=) comparator in a filter expression tree.
     /// </summary>
     [Serializable]
     public class ExprEqualsNodeImpl : ExprNodeBase,
         ExprEqualsNode
     {
-        private readonly bool isNotEquals;
-        private readonly bool isIs;
-
         [NonSerialized] private ExprEqualsNodeForge forge;
 
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="isNotEquals">true if this is a (!=) not equals rather then equals, false if its a '=' equals</param>
         /// <param name="isIs">true when "is" or "is not" (instead of = or &amp;lt;&amp;gt;)</param>
@@ -37,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNotEquals,
             bool isIs)
         {
-            this.isNotEquals = isNotEquals;
-            this.isIs = isIs;
+            IsNotEquals = isNotEquals;
+            IsIs = isIs;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -47,6 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return forge.ExprEvaluator;
             }
         }
+
+        public bool IsConstantResult => false;
+
+        public IDictionary<string, object> EventType => null;
 
         public override ExprForge Forge {
             get {
@@ -58,16 +58,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Must have 2 child nodes
-            if (this.ChildNodes.Length != 2) {
+            if (ChildNodes.Length != 2) {
                 throw new ExprValidationException(
-                    "Invalid use of equals, expecting left-hand side and right-hand side but received " + this.ChildNodes.Length + " expressions");
+                    "Invalid use of equals, expecting left-hand side and right-hand side but received " + ChildNodes.Length + " expressions");
             }
 
             // Must be the same boxed type returned by expressions under this
-            ExprNode lhs = ChildNodes[0];
-            ExprNode rhs = ChildNodes[1];
-            Type typeOne = Boxing.GetBoxedType(lhs.Forge.EvaluationType);
-            Type typeTwo = Boxing.GetBoxedType(rhs.Forge.EvaluationType);
+            var lhs = ChildNodes[0];
+            var rhs = ChildNodes[1];
+            var typeOne = lhs.Forge.EvaluationType.GetBoxedType();
+            var typeTwo = rhs.Forge.EvaluationType.GetBoxedType();
 
             // Null constants can be compared for any type
             if (typeOne == null || typeTwo == null) {
@@ -83,9 +83,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // Get the common type such as Bool, String or Double and Long
             Type coercionType;
             try {
-                coercionType = TypeHelper.GetCompareToCoercionType(typeOne, typeTwo);
+                coercionType = typeOne.GetCompareToCoercionType(typeTwo);
             }
-            catch (CoercionException ex) {
+            catch (CoercionException) {
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
                     typeTwo.GetSimpleName() +
@@ -95,57 +95,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // Check if we need to coerce
-            if ((coercionType == Boxing.GetBoxedType(typeOne)) &&
-                (coercionType == Boxing.GetBoxedType(typeTwo))) {
+            if (coercionType == typeOne.GetBoxedType() &&
+                coercionType == typeTwo.GetBoxedType()) {
                 forge = new ExprEqualsNodeForgeNC(this);
             }
             else {
-                if (!TypeHelper.IsNumeric(coercionType)) {
+                if (!coercionType.IsNumeric()) {
                     throw new ExprValidationException(
                         "Cannot convert datatype '" + coercionType.Name + "' to a value that fits both type '" + typeOne.Name + "' and type '" +
                         typeTwo.Name + "'");
                 }
 
-                var numberCoercerLHS = CoercerFactory.GetCoercer(typeOne, coercionType);
-                var numberCoercerRHS = CoercerFactory.GetCoercer(typeTwo, coercionType);
+                var numberCoercerLHS = SimpleNumberCoercerFactory.GetCoercer(typeOne, coercionType);
+                var numberCoercerRHS = SimpleNumberCoercerFactory.GetCoercer(typeTwo, coercionType);
                 forge = new ExprEqualsNodeForgeCoercion(this, numberCoercerLHS, numberCoercerRHS);
             }
 
             return null;
         }
 
-        public bool IsConstantResult {
-            get => false;
-        }
-
-        public IDictionary<string, object> EventType {
-            get { return null; }
-        }
-
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
-        {
-            this.ChildNodes[0].ToEPL(writer, Precedence);
-            if (isIs) {
-                writer.Write(" is ");
-                if (isNotEquals) {
-                    writer.Write("not ");
-                }
-            }
-            else {
-                if (!isNotEquals) {
-                    writer.Write("=");
-                }
-                else {
-                    writer.Write("!=");
-                }
-            }
-
-            this.ChildNodes[1].ToEPL(writer, Precedence);
-        }
-
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.EQUALS;
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.EQUALS;
 
         public override bool EqualsNode(
             ExprNode node,
@@ -155,16 +124,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return false;
             }
 
-            ExprEqualsNode other = (ExprEqualsNode) node;
-            return Equals(other.IsNotEquals, this.IsNotEquals);
+            var other = (ExprEqualsNode) node;
+            return Equals(other.IsNotEquals, IsNotEquals);
         }
 
-        public bool IsNotEquals {
-            get => isNotEquals;
-        }
+        public bool IsNotEquals { get; }
 
-        public bool IsIs {
-            get => isIs;
+        public bool IsIs { get; }
+
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            ChildNodes[0].ToEPL(writer, Precedence);
+            if (IsIs) {
+                writer.Write(" is ");
+                if (IsNotEquals) {
+                    writer.Write("not ");
+                }
+            }
+            else {
+                if (!IsNotEquals) {
+                    writer.Write("=");
+                }
+                else {
+                    writer.Write("!=");
+                }
+            }
+
+            ChildNodes[1].ToEPL(writer, Precedence);
         }
     }
 } // end of namespace

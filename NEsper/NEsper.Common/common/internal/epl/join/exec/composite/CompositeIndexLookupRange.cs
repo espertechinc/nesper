@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             try {
                 submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             }
-            catch (ArgumentException ex) {
+            catch (ArgumentException) {
                 if (allowRangeReversal) {
                     submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
                 }

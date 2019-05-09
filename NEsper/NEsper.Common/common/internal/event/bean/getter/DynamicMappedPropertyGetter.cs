@@ -86,12 +86,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             try {
                 return clazz.GetMethod(getterMethodName, new[] {typeof(string)});
             }
-            catch (AmbiguousMatchException ex1) {
+            catch (AmbiguousMatchException) {
                 MethodInfo method;
                 try {
                     method = clazz.GetMethod(getterMethodName);
                 }
-                catch (AmbiguousMatchException e) {
+                catch (AmbiguousMatchException) {
                     return null;
                 }
 

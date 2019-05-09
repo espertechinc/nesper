@@ -410,11 +410,10 @@ namespace com.espertech.esper.common.@internal.settings
             }
 
             object @object;
-            try
-            {
-                @object = clazz.NewInstance();
+            try {
+                @object = TypeHelper.Instantiate(clazz);
             }
-            catch (InstantiationException e)
+            catch (TypeLoadException e)
             {
                 throw new ImportException(
                     "Error instantiating aggregation factory class by name '" + className + "'", e);

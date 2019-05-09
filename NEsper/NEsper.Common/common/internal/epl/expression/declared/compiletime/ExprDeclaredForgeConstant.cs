@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
         public Type EvaluationType { get; }
 
-        public ExprNodeRenderable ForgeRenderable => parent;
+        public ExprNodeRenderable ExprForgeRenderable => parent;
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.COMPILETIMECONST;
     }

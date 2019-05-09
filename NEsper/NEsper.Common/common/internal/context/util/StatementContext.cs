@@ -48,6 +48,10 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.directory;
+using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -57,6 +61,7 @@ namespace com.espertech.esper.common.@internal.context.util
         private AgentInstanceScriptContext defaultAgentInstanceScriptContext;
 
         public StatementContext(
+            IContainer container,
             ContextRuntimeDescriptor contextRuntimeDescriptor,
             string deploymentId,
             int statementId,
@@ -76,6 +81,7 @@ namespace com.espertech.esper.common.@internal.context.util
             StatementResultService statementResultService,
             UpdateDispatchView updateDispatchView)
         {
+            Container = container;
             ContextRuntimeDescriptor = contextRuntimeDescriptor;
             DeploymentId = deploymentId;
             StatementId = statementId;
@@ -99,6 +105,14 @@ namespace com.espertech.esper.common.@internal.context.util
                 statementContextRuntimeServices.VariableManagementService,
                 statementContextRuntimeServices.TableExprEvaluatorContext);
         }
+
+        public IContainer Container { get; set; }
+
+        public IThreadLocalManager ThreadLocalManager => Container.ThreadLocalManager();
+
+        public ILockManager LockManager => Container.LockManager();
+
+        public IReaderWriterLockManager RWLockManager => Container.RWLockManager();
 
         public Attribute[] Annotations => StatementInformationals.Annotations;
 
@@ -311,12 +325,10 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public InstrumentationCommon InstrumentationProvider => InstrumentationCommonDefault.INSTANCE;
 
-#if false
-        public Context RuntimeEnvContext
+        public IDirectory RuntimeEnvContext
 	    {
-	        get => statementContextRuntimeServices.RuntimeEnvContext;
+	        get => StatementContextRuntimeServices.RuntimeEnvContext;
 	    }
-#endif
 
         public object UserObjectRuntime { get; }
 

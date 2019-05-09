@@ -7,13 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
 using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -60,8 +59,15 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o)
+            {
+                return true;
+            }
+
+            if (o == null || GetType() != o.GetType())
+            {
+                return false;
+            }
 
             FilterForEvalDeployTimeConstDoubleForge that = (FilterForEvalDeployTimeConstDoubleForge) o;
 

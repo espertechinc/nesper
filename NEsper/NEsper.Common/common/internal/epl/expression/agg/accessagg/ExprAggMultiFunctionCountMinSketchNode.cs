@@ -63,6 +63,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
         internal override bool IsExprTextWildcardWhenNoParams => false;
 
+        public ExprNodeRenderable EnumForgeRenderable => ForgeRenderableLocal;
+
         public ExprValidationException DeclaredWrongParameterExpr => new ExprValidationException(
             MessagePrefix + " expects either no parameter or a single json parameter object");
 

@@ -11,6 +11,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.util
@@ -46,9 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                 var latch = (CountDownLatch) next;
                 latch.Await();
             }
-            else if (next is long) {
-                var sleepTime = (long) next;
-                Thread.Sleep(sleepTime);
+            else if (next.IsLong() || next.IsInt()) {
+                Thread.Sleep(next.AsInt());
             }
             else if (next is EPRuntimeException) {
                 var ex = (EPRuntimeException) next;

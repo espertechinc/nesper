@@ -342,7 +342,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
                 return new Pair<IndexedProperty, TableMetaData>((IndexedProperty) property, table);
             }
-            catch (PropertyAccessException ex) {
+            catch (PropertyAccessException) {
                 // possible
             }
 

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.join.support
                 return (QueryPlanIndexHook) ImportUtil.GetAnnotationHook(
                     annotations, HookType.INTERNAL_QUERY_PLAN, typeof(QueryPlanIndexHook), importService);
             }
-            catch (ExprValidationException e) {
+            catch (ExprValidationException) {
                 throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_QUERY_PLAN);
             }
         }

@@ -7,11 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Threading;
+
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
+using com.espertech.esper.container;
 using static com.espertech.esper.common.@internal.context.util.StatementAgentInstanceLockConstants;
 
 namespace com.espertech.esper.common.@internal.context.util
@@ -32,10 +32,12 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="isFair">true if a fair @lock, false if not</param>
         public StatementAgentInstanceLockRW(bool isFair)
         {
-            if (isFair) {
+            if (isFair)
+            {
                 _lock = new SlimReaderWriterLock();
             }
-            else {
+            else
+            {
                 _lock = new FairReaderWriterLock();
             }
         }
@@ -45,25 +47,29 @@ namespace com.espertech.esper.common.@internal.context.util
         /// </summary>
         public void AcquireWriteLock()
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write ", _lock);
             }
 
             _writeLock = _lock.WriteLock.Acquire();
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " write ", _lock);
             }
         }
 
         public bool AcquireWriteLock(long msecTimeout)
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write ", _lock);
             }
 
             _lock.WriteLock.Acquire(msecTimeout);
 
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " write ", _lock);
             }
 
@@ -75,12 +81,14 @@ namespace com.espertech.esper.common.@internal.context.util
         /// </summary>
         public void ReleaseWriteLock()
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(RELEASE_TEXT + " write ", _lock);
             }
 
             _writeLock.Dispose();
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(RELEASED_TEXT + " write ", _lock);
             }
         }
@@ -90,12 +98,14 @@ namespace com.espertech.esper.common.@internal.context.util
         /// </summary>
         public void AcquireReadLock()
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " read ", _lock);
             }
 
             _readLock = _lock.ReadLock.Acquire();
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " read ", _lock);
             }
         }
@@ -105,12 +115,14 @@ namespace com.espertech.esper.common.@internal.context.util
         /// </summary>
         public void ReleaseReadLock()
         {
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(RELEASE_TEXT + " read ", _lock);
             }
 
             _readLock.Dispose();
-            if (ThreadLogUtil.ENABLED_TRACE) {
+            if (ThreadLogUtil.ENABLED_TRACE)
+            {
                 ThreadLogUtil.TraceLock(RELEASED_TEXT + " read ", _lock);
             }
         }

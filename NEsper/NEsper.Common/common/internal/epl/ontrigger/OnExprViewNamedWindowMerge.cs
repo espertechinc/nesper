@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             instrumentationCommon.AInfraOnAction();
         }
 
-        private static void ApplyDelta(
+        public static void ApplyDelta(
             OneEventCollection newData,
             OneEventCollection oldData,
             InfraOnMergeViewFactory parent,

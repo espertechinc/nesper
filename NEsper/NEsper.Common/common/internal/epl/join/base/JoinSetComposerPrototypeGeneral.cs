@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                         try {
                             it = streamViews[i].GetEnumerator();
                         }
-                        catch (UnsupportedOperationException ex) {
+                        catch (UnsupportedOperationException) {
                             // Joins do not support the iterator
                         }
                     }
