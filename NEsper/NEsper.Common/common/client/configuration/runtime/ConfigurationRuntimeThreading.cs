@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
             IsInsertIntoDispatchPreserveOrder = true;
             InsertIntoDispatchLocking = Locking.SPIN;
 
-            NamedWindowConsumerDispatchTimeout = long.MaxValue;
+            NamedWindowConsumerDispatchTimeout = int.MaxValue;
             IsNamedWindowConsumerDispatchPreserveOrder = true;
             NamedWindowConsumerDispatchLocking = Locking.SPIN;
 
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         ///     Returns the timeout millisecond value for named window dispatches to named window consumers.
         /// </summary>
         /// <returns>timeout milliseconds</returns>
-        public long NamedWindowConsumerDispatchTimeout { get; set; }
+        public int NamedWindowConsumerDispatchTimeout { get; set; }
 
         /// <summary>
         ///     Returns the locking strategy value for named window dispatches to named window consumers (default is spin).

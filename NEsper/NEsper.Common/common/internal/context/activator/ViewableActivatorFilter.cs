@@ -11,43 +11,25 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.activator
 {
     public class ViewableActivatorFilter : ViewableActivator
     {
-        internal bool canIterate;
-        internal FilterSpecActivatable filterSpec;
-        internal bool isSubSelect;
-        internal int? streamNumFromClause;
-        internal int subselectNumber;
+        public IContainer Container { get; set; }
 
-        public FilterSpecActivatable FilterSpec {
-            get => filterSpec;
-            set => filterSpec = value;
-        }
+        public FilterSpecActivatable FilterSpec { get; set; }
 
-        public bool CanIterate {
-            get => canIterate;
-            set => canIterate = value;
-        }
+        public bool CanIterate { get; set; }
 
-        public int? StreamNumFromClause {
-            get => streamNumFromClause;
-            set => streamNumFromClause = value;
-        }
+        public int? StreamNumFromClause { get; set; }
 
-        public bool IsSubSelect {
-            get => isSubSelect;
-            set => isSubSelect = value;
-        }
+        public bool IsSubSelect { get; set; }
 
-        public int SubselectNumber {
-            get => subselectNumber;
-            set => subselectNumber = value;
-        }
+        public int SubselectNumber { get; set; }
 
-        public EventType EventType => filterSpec.ResultEventType;
+        public EventType EventType => FilterSpec.ResultEventType;
 
         public ViewableActivationResult Activate(
             AgentInstanceContext agentInstanceContext,
@@ -57,39 +39,39 @@ namespace com.espertech.esper.common.@internal.context.activator
             FilterValueSetParam[][] addendum = null;
             if (agentInstanceContext.AgentInstanceFilterProxy != null) {
                 addendum = agentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(
-                    filterSpec, agentInstanceContext);
+                    FilterSpec, agentInstanceContext);
             }
 
-            FilterValueSetParam[][] filterValues = filterSpec.GetValueSet(
+            var filterValues = FilterSpec.GetValueSet(
                 null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
 
             EventStream theStream;
             if (!agentInstanceContext.AuditProvider.Activated() &&
                 !agentInstanceContext.InstrumentationProvider.Activated()) {
-                theStream = canIterate
-                    ? (EventStream) new ZeroDepthStreamIterable(filterSpec.ResultEventType)
-                    : (EventStream) new ZeroDepthStreamNoIterate(filterSpec.ResultEventType);
+                theStream = CanIterate
+                    ? new ZeroDepthStreamIterable(FilterSpec.ResultEventType)
+                    : (EventStream) new ZeroDepthStreamNoIterate(FilterSpec.ResultEventType);
             }
             else {
-                int streamNum = streamNumFromClause ?? -1;
-                theStream = canIterate
-                    ? (EventStream) new ZeroDepthStreamIterableWAudit(
-                        filterSpec.ResultEventType, agentInstanceContext, filterSpec, streamNum, isSubselect,
-                        subselectNumber)
+                var streamNum = StreamNumFromClause ?? -1;
+                theStream = CanIterate
+                    ? new ZeroDepthStreamIterableWAudit(
+                        FilterSpec.ResultEventType, agentInstanceContext, FilterSpec, streamNum, isSubselect,
+                        SubselectNumber)
                     : (EventStream) new ZeroDepthStreamNoIterateWAudit(
-                        filterSpec.ResultEventType, agentInstanceContext, filterSpec, streamNum, isSubselect,
-                        subselectNumber);
+                        FilterSpec.ResultEventType, agentInstanceContext, FilterSpec, streamNum, isSubselect,
+                        SubselectNumber);
             }
 
             var statementId = agentInstanceContext.StatementId;
             FilterHandleCallback filterCallback;
-            if (filterSpec.OptionalPropertyEvaluator == null) {
+            if (FilterSpec.OptionalPropertyEvaluator == null) {
                 filterCallback = new ProxyFilterHandleCallback {
                     ProcMatchFound = (
                         theEvent,
                         allStmtMatches) => theStream.Insert(theEvent),
 
-                    ProcIsSubselect = () => isSubSelect
+                    ProcIsSubselect = () => IsSubSelect
                 };
             }
             else {
@@ -97,7 +79,7 @@ namespace com.espertech.esper.common.@internal.context.activator
                     ProcMatchFound = (
                         theEvent,
                         allStmtMatches) => {
-                        var result = filterSpec.OptionalPropertyEvaluator.GetProperty(theEvent, agentInstanceContext);
+                        var result = FilterSpec.OptionalPropertyEvaluator.GetProperty(theEvent, agentInstanceContext);
                         if (result == null) {
                             return;
                         }
@@ -105,16 +87,16 @@ namespace com.espertech.esper.common.@internal.context.activator
                         theStream.Insert(result);
                     },
 
-                    ProcIsSubselect = () => isSubSelect
+                    ProcIsSubselect = () => IsSubSelect
                 };
             }
 
             var filterHandle = new EPStatementHandleCallbackFilter(
                 agentInstanceContext.EpStatementAgentInstanceHandle, filterCallback);
             agentInstanceContext.StatementContext.StatementContextRuntimeServices.FilterService.Add(
-                filterSpec.FilterForEventType, filterValues, filterHandle);
-            var stopCallback = new ViewableActivatorFilterStopCallback(filterHandle, filterSpec);
-            return new ViewableActivationResult(theStream, stopCallback, null, false, false, null, null);
+                FilterSpec.FilterForEventType, filterValues, filterHandle);
+            var filterStopCallback = new ViewableActivatorFilterStopCallback(Container, filterHandle, FilterSpec);
+            return new ViewableActivationResult(theStream, filterStopCallback, null, false, false, null, null);
         }
     }
 } // end of namespace

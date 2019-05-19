@@ -292,7 +292,7 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             var typeEnum = DatabaseTypeEnum.GetEnum(typeName);
             if (typeEnum == null) {
-                string supported = CompatExtensions.RenderAny(DatabaseTypeEnum.Values);
+                string supported = CompatExtensions.RenderAny(DatabaseTypeEnum.VALUES);
                 throw new ConfigurationException(
                     "Unsupported type '" + typeName + "' when expecting any of: " + supported);
             }

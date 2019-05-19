@@ -189,9 +189,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 throw new ExprValidationException(
                     "Exception instantiating class " + applicableClass.Name + ": " + ex.Message, ex);
             }
-            catch (InstantiationException e) {
-                throw new ExprValidationException(GetMessageExceptionInstantiating(applicableClass), e);
-            }
 
             PopulateObject(objectProperties, top, exprNodeOrigin, exprValidationContext);
 

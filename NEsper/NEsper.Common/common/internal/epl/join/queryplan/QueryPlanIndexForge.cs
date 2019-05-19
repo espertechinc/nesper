@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// <summary>
     ///     Specifies an index to build as part of an overall query plan.
     /// </summary>
-    public class QueryPlanIndexForge : CodegenMakeable<SAIFFInitializeSymbol>
+    public class QueryPlanIndexForge : CodegenMakeable
     {
         public QueryPlanIndexForge(IDictionary<TableLookupIndexReqKey, QueryPlanIndexItemForge> items)
         {
@@ -59,14 +59,31 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols,
+            CodegenSymbolProvider symbolsArg,
             CodegenClassScope classScope)
         {
+            var symbols = (SAIFFInitializeSymbol) symbolsArg;
+            var itemsAsMakeables = Items.Transform<
+                CodegenMakeable,
+                CodegenMakeable,
+                TableLookupIndexReqKey,
+                QueryPlanIndexItemForge>(
+                k => k,
+                v => v,
+                k => (TableLookupIndexReqKey) k,
+                v => (QueryPlanIndexItemForge) v);
+
             return NewInstance(
                 typeof(QueryPlanIndex),
                 CodegenMakeableUtil.MakeMap(
-                    "items", typeof(TableLookupIndexReqKey), typeof(QueryPlanIndexItem), Items, GetType(), parent,
-                    symbols, classScope));
+                    "items",
+                    typeof(TableLookupIndexReqKey), 
+                    typeof(QueryPlanIndexItem),
+                    itemsAsMakeables,
+                    GetType(), 
+                    parent,
+                    symbols, 
+                    classScope));
         }
 
         public static QueryPlanIndexForge MakeIndex(IList<QueryPlanIndexItemForge> indexesSet)
@@ -194,9 +211,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
             var delimiter = "";
             for (var i = 0; i < indexSpecs.Length; i++) {
+                var currentSpec = indexSpecs[i];
                 buffer.Append(delimiter);
-                buffer.Append(
-                    "  index spec stream " + i + " : \n" + (indexSpecs[i] == null ? "    null" : indexSpecs[i]));
+                buffer.Append("  index spec stream ");
+                buffer.Append(i);
+                buffer.Append(" : \n");
+                buffer.Append(currentSpec == null ? "    null" : currentSpec.ToString());
                 delimiter = "\n";
             }
 

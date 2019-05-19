@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public void AddChildNodeToFront(ExprNode childNode)
         {
-            ChildNodes = (ExprNode[]) CollectionUtil.ArrayExpandAddElements(new[] {childNode}, ChildNodes);
+            ChildNodes = CollectionUtil.ArrayExpandAddElements<ExprNode>(new[] {childNode}, ChildNodes);
         }
 
         protected internal static void CheckValidated(ExprForge forge)

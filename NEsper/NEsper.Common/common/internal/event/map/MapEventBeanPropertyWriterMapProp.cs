@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             object value,
             IDictionary<string, object> map)
         {
-            var mapEntry = (IDictionary<string, object>) map.Get(PropertyName);
+            var mapEntry = (IDictionary<string, object>) map.Get(propertyName);
             if (mapEntry != null) {
                 mapEntry.Put(_key, value);
             }

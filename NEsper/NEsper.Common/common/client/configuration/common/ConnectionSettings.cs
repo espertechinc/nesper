@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Data;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
@@ -16,7 +17,7 @@ namespace com.espertech.esper.common.client.configuration.common
     [Serializable]
     public class ConnectionSettings
     {
-        private int? transactionIsolation;
+        private IsolationLevel? transactionIsolation;
 
         /// <summary>
         ///     Returns a boolean indicating auto-commit, or null if not set and default accepted.
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the connection settings for transaction isolation level.
         /// </summary>
         /// <value>transaction isolation level</value>
-        public int? TransactionIsolation {
+        public IsolationLevel? TransactionIsolation {
             get => transactionIsolation;
             set => transactionIsolation = value;
         }

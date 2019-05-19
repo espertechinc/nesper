@@ -61,10 +61,5 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 return StatementRawInfo.OptionalContextDescriptor.ContextName;
             }
         }
-
-        public void SetStatementSpec(StatementSpecCompiled statementSpec)
-        {
-            StatementSpec = statementSpec;
-        }
     }
 } // end of namespace

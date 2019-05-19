@@ -207,11 +207,6 @@ namespace com.espertech.esper.common.client.configuration
             string stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
 
             Stream stream = null;
-            ClassLoader classLoader = Thread.CurrentThread().ContextClassLoader;
-            if (classLoader != null) {
-                stream = classLoader.GetResourceAsStream(stripped);
-            }
-
             if (stream == null) {
                 stream = typeof(Configuration).GetResourceAsStream(resource);
             }

@@ -519,7 +519,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
                 // e.g. 31=Sun,30=Sat,29=Fri,28=Thu,27=Wed,26=Tue,25=Mon
                 // e.g. 31-7 = 24
-                return dateTime.Day > dateTime.GetActualMaximum(DateTimeFieldEnum.DAY_OF_MONTH) - 7;
+                return dateTime.Day > dateTime.GetActualMaximum() - 7;
             }
         }
 
@@ -556,7 +556,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     return false;
                 }
 
-                return (dateTime.Day == dateTime.GetActualMaximum(DateTimeFieldEnum.DAY_OF_MONTH));
+                return (dateTime.Day == dateTime.GetActualMaximum());
             }
         }
 
@@ -617,7 +617,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 }
 
                 int day = dateTime.Day;
-                int max = dateTime.GetActualMaximum(DateTimeFieldEnum.DAY_OF_MONTH);
+                int max = dateTime.GetActualMaximum();
                 if (day == max) {
                     return true;
                 }
@@ -669,7 +669,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 int day,
                 DateTimeEx work)
             {
-                int max = work.GetActualMaximum(DateTimeFieldEnum.DAY_OF_MONTH);
+                int max = work.GetActualMaximum();
                 if (day <= max) {
                     work = work.SetFieldValue(DateTimeFieldEnum.DAY_OF_MONTH, day);
                 }

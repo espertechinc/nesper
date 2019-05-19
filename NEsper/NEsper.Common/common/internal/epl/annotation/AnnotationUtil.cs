@@ -551,10 +551,10 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             annotationType.Block.MethodReturn(Clazz(innerProxy.AnnotationClass));
 
             foreach (var method in innerProxy.AnnotationClass.GetMethods()) {
-                if (method.Name.Equals("Equals") ||
-                    method.Name.Equals("GetHashCode") ||
-                    method.Name.Equals("ToString") ||
-                    method.Name.Equals("GetType")) {
+                if ((method.Name == "Equals") ||
+                    (method.Name == "GetHashCode") ||
+                    (method.Name == "ToString") ||
+                    (method.Name == "GetType")) {
                     continue;
                 }
 

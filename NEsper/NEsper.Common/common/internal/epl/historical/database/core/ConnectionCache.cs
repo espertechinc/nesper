@@ -9,11 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.core
@@ -73,10 +73,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         protected internal static void Close(Pair<DbDriver, DbDriverCommand> pair)
         {
             Log.Info(".close Closing statement and connection");
-            try {
+            try
+            {
                 pair.Second.Dispose();
             }
-            catch (DbException ex) {
+            catch (DbException ex)
+            {
                 throw new EPException("Error closing statement", ex);
             }
         }
@@ -89,7 +91,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         {
             Log.Info(".MakeNew Obtaining new connection and statement");
 
-            try {
+            try
+            {
                 // Get the driver
                 DbDriver dbDriver = databaseConnectionFactory.Driver;
                 // Get the command
@@ -97,11 +100,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
                 return new Pair<DbDriver, DbDriverCommand>(dbDriver, dbCommand);
             }
-            catch (DatabaseConfigException ex) {
+            catch (DatabaseConfigException ex)
+            {
                 throw new EPException("Error obtaining connection", ex);
             }
         }
 
-        private readonly static ILog Log = LogManager.GetLogger(typeof(ConnectionCache));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ConnectionCache));
     }
 } // end of namespace

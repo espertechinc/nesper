@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
@@ -29,7 +25,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             StatementCompileTimeServices services)
         {
             StmtForgeMethodSelectResult forgablesResult = StmtForgeMethodSelectUtil.Make(
-                false, packageName, classPostfix, @base, services);
+                services.Container, false, packageName, classPostfix, @base, services);
             return forgablesResult.ForgeResult;
         }
     }

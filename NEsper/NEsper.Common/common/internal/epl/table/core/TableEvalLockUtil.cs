@@ -29,10 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             ILockable @lock,
             TableExprEvaluatorContext tableExprEvaluatorContext)
         {
-            bool added = tableExprEvaluatorContext.AddAcquiredLock(@lock);
-            if (added) {
-                @lock.Lock();
-            }
+            tableExprEvaluatorContext.AddAcquiredLock(@lock);
         }
     }
 } // end of namespace

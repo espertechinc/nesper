@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -16,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.rettype;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -48,19 +48,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            bool max = this.EnumMethodEnum == EnumMethodEnum.MAX;
+            var max = this.EnumMethodEnum == EnumMethodEnum.MAX;
 
-            if (bodiesAndParameters.IsEmpty()) {
-                Type returnType = Boxing.GetBoxedType(collectionComponentType);
-                base.TypeInfo = EPTypeHelper.SingleValue(returnType);
+            if (bodiesAndParameters.IsEmpty())
+            {
+                var returnTypeX = Boxing.GetBoxedType(collectionComponentType);
+                base.TypeInfo = EPTypeHelper.SingleValue(returnTypeX);
                 return new EnumMinMaxScalarForge(numStreamsIncoming, max, base.TypeInfo);
             }
 
-            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-            Type returnType = Boxing.GetBoxedType(first.BodyForge.EvaluationType);
+            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            var returnType = Boxing.GetBoxedType(first.BodyForge.EvaluationType);
             base.TypeInfo = EPTypeHelper.SingleValue(returnType);
 
-            if (inputEventType == null) {
+            if (inputEventType == null)
+            {
                 return new EnumMinMaxScalarLambdaForge(
                     first.BodyForge, first.StreamCountIncoming, max,
                     (ObjectArrayEventType) first.GoesToTypes[0]);

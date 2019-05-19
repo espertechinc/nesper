@@ -7,14 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
-using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
-    public interface ViewFactoryForge : CodegenMakeable<SAIFFInitializeSymbol>
+    public interface ViewFactoryForge : CodegenMakeable
     {
         void SetViewParameters(
             IList<ExprNode> parameters,

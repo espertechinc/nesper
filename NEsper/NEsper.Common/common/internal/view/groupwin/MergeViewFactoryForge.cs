@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols,
+            CodegenSymbolProvider symbols,
             CodegenClassScope classScope)
         {
             throw new UnsupportedOperationException("not supported for merge forge");

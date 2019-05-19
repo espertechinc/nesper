@@ -6,8 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.type;
@@ -17,9 +20,10 @@ using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.historical.execstrategy;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.metrics.audit;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
+
+using DataMap = System.Collections.Generic.IDictionary<string, object>;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.core
 {
@@ -30,52 +34,83 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
     {
         private static readonly ILog ADO_PERF_LOG = LogManager.GetLogger(AuditPath.ADO_LOG);
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly ConnectionCache connectionCache;
 
-        private readonly HistoricalEventViewableDatabaseFactory factory;
-        private Pair<DbDriver, DbDriverCommand> resources;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly ConnectionCache _connectionCache;
+        private readonly HistoricalEventViewableDatabaseFactory _factory;
+        private Pair<DbDriver, DbDriverCommand> _resources;
+
+        private readonly SQLColumnTypeConversion _columnTypeConversionHook;
+        private readonly SQLOutputRowConversion _outputRowConversionHook;
+        private readonly IDictionary<string, DBOutputTypeDesc> _outputTypes;
+        private List<DbInfo> _dbInfoList;
 
         public PollExecStrategyDBQuery(
             HistoricalEventViewableDatabaseFactory factory,
             AgentInstanceContext agentInstanceContext,
-            ConnectionCache connectionCache)
+            ConnectionCache connectionCache,
+            IDictionary<string, DBOutputTypeDesc> outputTypes,
+            SQLColumnTypeConversion columnTypeConversionHook,
+            SQLOutputRowConversion outputRowConversionHook)
         {
-            this.factory = factory;
-            this.agentInstanceContext = agentInstanceContext;
-            this.connectionCache = connectionCache;
+            _factory = factory;
+            _agentInstanceContext = agentInstanceContext;
+            _connectionCache = connectionCache;
+            _dbInfoList = null;
+            _outputTypes = outputTypes;
+            _columnTypeConversionHook = columnTypeConversionHook;
+            _outputRowConversionHook = outputRowConversionHook;
         }
 
-        public void Start()
+        /// <summary>
+        /// Start the poll, called before any poll operation.
+        /// </summary>
+        public virtual void Start()
         {
-            resources = connectionCache.Connection;
+            _resources = _connectionCache.Connection;
         }
 
-        public void Done()
+        /// <summary>
+        /// Indicate we are done polling and can release resources.
+        /// </summary>
+        public virtual void Done()
         {
-            connectionCache.DoneWith(resources);
+            _connectionCache.DoneWith(_resources);
         }
 
+        /// <summary>
+        /// Indicate we are no going to use this object again.
+        /// </summary>
         public void Dispose()
         {
-            connectionCache.Dispose();
+            _connectionCache.Dispose();
         }
 
         public void Destroy()
         {
-            connectionCache.Dispose();
+            _connectionCache.Dispose();
         }
 
+        /// <summary>
+        /// Poll events using the keys provided.
+        /// </summary>
+        /// <param name="lookupValues">is keys for executing a query or such</param>
+        /// <param name="agentInstanceContext">The agent instance context.</param>
+        /// <returns>
+        /// a list of events for the keys
+        /// </returns>
         public IList<EventBean> Poll(
             object lookupValues,
             AgentInstanceContext agentInstanceContext)
         {
             IList<EventBean> result;
-            try {
-                result = Execute(resources.Second, lookupValues);
+            try
+            {
+                result = Execute(_resources.Second, lookupValues);
             }
-            catch (EPException) {
-                connectionCache.DoneWith(resources);
+            catch (EPException)
+            {
+                _connectionCache.DoneWith(_resources);
                 throw;
             }
 
@@ -83,173 +118,209 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         }
 
         private IList<EventBean> Execute(
-            DbDriverCommand preparedStatement,
+            DbDriverCommand driverCommand,
             object lookupValuePerStream)
         {
-            lock (this) {
-                var hasLogging = factory.enableLogging && ADO_PERF_LOG.IsInfoEnabled;
+            var hasLogging = _factory.enableLogging && ADO_PERF_LOG.IsInfoEnabled;
+
+            using (var myDriverCommand = driverCommand.Clone())
+            {
+                var dbCommand = myDriverCommand.Command;
+
+                if (ExecutionPathDebugLog.IsEnabled && Log.IsInfoEnabled)
+                {
+                    Log.Info(".execute Executing prepared statement '{0}'", dbCommand.CommandText);
+                }
+
+                DbParameter dbParam;
 
                 // set parameters
                 SQLInputParameterContext inputParameterContext = null;
-                if (factory.columnTypeConversionHook != null) {
+                if (_columnTypeConversionHook != null)
+                {
                     inputParameterContext = new SQLInputParameterContext();
                 }
 
-                var count = 1;
-                object[] parameters = null;
-                if (hasLogging) {
-                    parameters = new object[factory.inputParameters.Length];
-                }
-
-                var mk = factory.inputParameters.Length == 1 ? null : (HashableMultiKey) lookupValuePerStream;
-                for (var i = 0; i < factory.inputParameters.Length; i++) {
-                    try {
+                var mk = _factory.inputParameters.Length == 1 ? null : (HashableMultiKey) lookupValuePerStream;
+                for (var i = 0; i < _factory.inputParameters.Length; i++)
+                {
+                    try
+                    {
                         object parameter;
-                        if (mk == null) {
+                        if (mk == null)
+                        {
                             parameter = lookupValuePerStream;
                         }
-                        else {
+                        else
+                        {
                             parameter = mk.Keys[i];
                         }
 
-                        if (factory.columnTypeConversionHook != null) {
+                        if (ExecutionPathDebugLog.IsEnabled && Log.IsInfoEnabled)
+                        {
+                            Log.Info(".Execute Setting parameter " + " to " + parameter + " typed " +
+                                     ((parameter == null) ? "null" : parameter.GetType().Name));
+                        }
+
+                        if (_columnTypeConversionHook != null)
+                        {
                             inputParameterContext.ParameterNumber = i + 1;
                             inputParameterContext.ParameterValue = parameter;
-                            parameter = factory.columnTypeConversionHook.GetParameterValue(inputParameterContext);
+                            parameter = _columnTypeConversionHook.GetParameterValue(inputParameterContext);
                         }
 
-                        SetObject(preparedStatement, count, parameter);
-                        if (parameters != null) {
-                            parameters[i] = parameter;
-                        }
+                        dbParam = dbCommand.Parameters[i];
+                        dbParam.Value = parameter ?? DBNull.Value;
                     }
-                    catch (SQLException ex) {
-                        throw new EPException("Error setting parameter " + count, ex);
+                    catch (DbException ex)
+                    {
+                        throw new EPException("Error setting parameter " + i, ex);
                     }
-
-                    count++;
                 }
 
                 // execute
-                ResultSet resultSet;
-                if (hasLogging) {
-                    long startTimeNS = PerformanceObserver.NanoTime;
-                    long startTimeMS = PerformanceObserver.MilliTime;
+                try
+                {
+                    // generate events for result set
+                    IList<EventBean> rows = new List<EventBean>();
 
-                    try {
-                        resultSet = preparedStatement.ExecuteQuery();
-                    }
-                    catch (SQLException ex) {
-                        throw new EPException("Error executing statement '" + factory.preparedStatementText + '\'', ex);
-                    }
-
-                    long endTimeNS = PerformanceObserver.NanoTime;
-                    long endTimeMS = PerformanceObserver.MilliTime;
-
-                    ADO_PERF_LOG.Info(
-                        "Statement '" + factory.preparedStatementText + "' delta nanosec " + (endTimeNS - startTimeNS) +
-                        " delta msec " + (endTimeMS - startTimeMS) +
-                        " parameters " + CompatExtensions.RenderAny(parameters));
-                }
-                else {
-                    try {
-                        resultSet = preparedStatement.ExecuteQuery();
-                    }
-                    catch (SQLException ex) {
-                        throw new EPException("Error executing statement '" + factory.preparedStatementText + '\'', ex);
-                    }
-                }
-
-                // generate events for result set
-                IList<EventBean> rows = new List<EventBean>();
-                try {
-                    SQLColumnValueContext valueContext = null;
-                    if (factory.columnTypeConversionHook != null) {
-                        valueContext = new SQLColumnValueContext();
-                    }
-
-                    SQLOutputRowValueContext rowContext = null;
-                    if (factory.outputRowConversionHook != null) {
-                        rowContext = new SQLOutputRowValueContext();
-                    }
-
-                    var rowNum = 0;
-                    while (resultSet.Next()) {
-                        var colNum = 1;
-                        IDictionary<string, object> row = new Dictionary<string, object>();
-                        foreach (var entry in factory.outputTypes) {
-                            var columnName = entry.Key;
-
-                            object value;
-                            var binding = entry.Value.OptionalBinding;
-                            if (binding != null) {
-                                value = binding.GetValue(resultSet, columnName);
-                            }
-                            else {
-                                value = resultSet.GetObject(columnName);
+                    using (var dataReader = dbCommand.ExecuteReader())
+                    {
+                        try
+                        {
+                            SQLColumnValueContext valueContext = null;
+                            if (_columnTypeConversionHook != null)
+                            {
+                                valueContext = new SQLColumnValueContext();
                             }
 
-                            if (factory.columnTypeConversionHook != null) {
-                                valueContext.ColumnName = columnName;
-                                valueContext.ColumnNumber = colNum;
-                                valueContext.ColumnValue = value;
-                                valueContext.ResultSet = resultSet;
-                                value = factory.columnTypeConversionHook.GetColumnValue(valueContext);
+                            SQLOutputRowValueContext rowContext = null;
+                            if (_outputRowConversionHook != null)
+                            {
+                                rowContext = new SQLOutputRowValueContext();
                             }
 
-                            row.Put(columnName, value);
-                            colNum++;
-                        }
+                            var rowNum = 0;
 
-                        EventBean eventBeanRow = null;
-                        if (factory.outputRowConversionHook == null) {
-                            eventBeanRow =
-                                agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                                    row, factory.EventType);
-                        }
-                        else {
-                            rowContext.Values = row;
-                            rowContext.RowNum = rowNum;
-                            rowContext.ResultSet = resultSet;
-                            var rowData = factory.outputRowConversionHook.GetOutputRow(rowContext);
-                            if (rowData != null) {
-                                eventBeanRow = agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedBean(
-                                    rowData, (BeanEventType) factory.EventType);
+                            if (dataReader.HasRows)
+                            {
+                                // Determine how many fields we will be receiving
+                                var fieldCount = dataReader.FieldCount;
+                                // Allocate a buffer to hold the results of the row
+                                var rawData = new object[fieldCount];
+                                // Convert the names of columns into ordinal indices and prepare
+                                // them so that we only have to incur this cost when we first notice
+                                // the reader has rows.
+                                if (_dbInfoList == null)
+                                {
+                                    _dbInfoList = new List<DbInfo>();
+                                    foreach (var entry in _outputTypes)
+                                    {
+                                        var dbInfo = new DbInfo();
+                                        dbInfo.Name = entry.Key;
+                                        dbInfo.Ordinal = dataReader.GetOrdinal(dbInfo.Name);
+                                        dbInfo.OutputTypeDesc = entry.Value;
+                                        dbInfo.Binding = entry.Value.OptionalBinding;
+                                        _dbInfoList.Add(dbInfo);
+                                    }
+                                }
+
+                                var fieldNames = new string[fieldCount];
+                                for (var ii = 0; ii < fieldCount; ii++)
+                                {
+                                    fieldNames[ii] = dataReader.GetName(ii);
+                                }
+
+                                // Anyone know if the ordinal will always be the same every time
+                                // the query is executed; if so, we could certainly cache this
+                                // dbInfoList so that we only have to do that once for the lifetime
+                                // of the statement.
+                                while (dataReader.Read())
+                                {
+                                    var colNum = 1;
+
+                                    DataMap row = new Dictionary<string, object>();
+                                    // Get all of the values for the row in one shot
+                                    dataReader.GetValues(rawData);
+                                    // Convert the items into raw row objects
+                                    foreach (var dbInfo in _dbInfoList)
+                                    {
+                                        var value = rawData[dbInfo.Ordinal];
+                                        if (value == DBNull.Value)
+                                        {
+                                            value = null;
+                                        }
+                                        else if (dbInfo.Binding != null)
+                                        {
+                                            value = dbInfo.Binding.GetValue(value, dbInfo.Name);
+                                        }
+                                        else if (value.GetType() != dbInfo.OutputTypeDesc.DataType)
+                                        {
+                                            value = Convert.ChangeType(value, dbInfo.OutputTypeDesc.DataType);
+                                        }
+
+                                        if (_columnTypeConversionHook != null)
+                                        {
+                                            valueContext.ColumnName = fieldNames[colNum - 1];
+                                            valueContext.ColumnNumber = colNum;
+                                            valueContext.ColumnValue = value;
+
+                                            value = _columnTypeConversionHook.GetColumnValue(valueContext);
+                                        }
+
+                                        row[dbInfo.Name] = value;
+
+                                        colNum++;
+                                    }
+
+                                    EventBean eventBeanRow = null;
+                                    if (_outputRowConversionHook == null)
+                                    {
+                                        eventBeanRow = _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
+                                                row, _factory.EventType);
+                                    }
+                                    else
+                                    {
+                                        rowContext.Values = row;
+                                        rowContext.RowNum = rowNum;
+                                        var rowData = _outputRowConversionHook.GetOutputRow(rowContext);
+                                        if (rowData != null)
+                                        {
+                                            eventBeanRow = _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedBean(
+                                                rowData, (BeanEventType) _factory.EventType);
+                                        }
+                                    }
+
+                                    if (eventBeanRow != null)
+                                    {
+                                        rows.Add(eventBeanRow);
+                                        rowNum++;
+                                    }
+                                }
                             }
                         }
-
-                        if (eventBeanRow != null) {
-                            rows.Add(eventBeanRow);
-                            rowNum++;
+                        catch (DbException ex)
+                        {
+                            throw new EPException(
+                                "Error reading results for statement '" + _factory.preparedStatementText + "'", ex);
                         }
                     }
-                }
-                catch (SQLException ex) {
-                    throw new EPException(
-                        "Error reading results for statement '" + factory.preparedStatementText + '\'', ex);
-                }
 
-                if (factory.enableLogging && ADO_PERF_LOG.IsInfoEnabled) {
-                    ADO_PERF_LOG.Info("Statement '" + factory.preparedStatementText + "' " + rows.Count + " rows");
+                    return rows;
                 }
-
-                try {
-                    resultSet.Close();
+                catch (DbException ex)
+                {
+                    throw new EPException("Error executing statement '" + _factory.preparedStatementText + "'", ex);
                 }
-                catch (SQLException ex) {
-                    throw new EPException("Error closing statement '" + factory.preparedStatementText + '\'', ex);
-                }
-
-                return rows;
             }
         }
 
-        private void SetObject(
-            DbDriverCommand preparedStatement,
-            int column,
-            object value)
+        private struct DbInfo
         {
-            preparedStatement.SetObject(column, value);
+            public string Name;
+            public int Ordinal;
+            public DBOutputTypeDesc OutputTypeDesc;
+            public DatabaseTypeBinding Binding;
         }
     }
 } // end of namespace

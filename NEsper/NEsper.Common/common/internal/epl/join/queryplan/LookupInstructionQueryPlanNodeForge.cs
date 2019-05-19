@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             return method;
         }
 
-        protected override void Print(IndentWriter writer)
+        protected internal override void Print(IndentWriter writer)
         {
             writer.WriteLine(
                 "LookupInstructionQueryPlanNode" +

@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             properties.Put("to_streamname", typeof(string));
             properties.Put("opname", typeof(string));
             properties.Put("exprs", typeof(string[]));
-            string eventTypeName = EventTypeNameUtil.AnonymousTypeNameExcludePlanHint;
+            string eventTypeName = EventTypeNameUtil.GetAnonymousTypeNameExcludePlanHint();
             EventTypeMetadata eventTypeMetadata = new EventTypeMetadata(
                 eventTypeName, null, EventTypeTypeClass.EXCLUDEPLANHINTDERIVED,
                 EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());

@@ -208,7 +208,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         .AddParam(typeof(AggregationResultFuture), "future");
                     anonymousClass.AddMethod("assign", assign);
 
-                    CodegenExpression field = classScope.PackagNamespaceScopeGetFieldWellKnown(
+                    CodegenExpression field = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                         new CodegenFieldNameMatchRecognizeAgg(i), typeof(AggregationResultFuture));
                     assign.Block.AssignRef(field, Ref("future"));
 

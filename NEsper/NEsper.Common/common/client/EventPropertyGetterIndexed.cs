@@ -27,14 +27,14 @@ namespace com.espertech.esper.common.client
         /// <param name="index">the index value</param>
         /// <returns>value of indexed property in event</returns>
         /// <throws>PropertyAccessException to indicate that property access failed</throws>
-        Object Get(
+        object Get(
             EventBean eventBean,
             int index);
     }
 
     public class ProxyEventPropertyGetterIndexed : EventPropertyGetterIndexed
     {
-        public Func<EventBean, int, Object> ProcGet { get; set; }
+        public Func<EventBean, int, object> ProcGet { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProxyEventPropertyGetterIndexed"/> class.
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.client
         /// <param name="index">the index value</param>
         /// <returns>value of indexed property in event</returns>
         /// <throws>PropertyAccessException to indicate that property access failed</throws>
-        public Object Get(
+        public object Get(
             EventBean eventBean,
             int index)
         {

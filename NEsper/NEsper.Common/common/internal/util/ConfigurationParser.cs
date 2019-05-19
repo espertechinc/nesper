@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -82,34 +83,36 @@ namespace com.espertech.esper.common.@internal.util
 
             foreach (var element in root.ChildNodes.CreateElementEnumerable()) {
                 string nodeName = element.Name;
-                if (nodeName.Equals("common")) {
-                    ConfigurationCommonParser.DoConfigure(configuration.Common, element);
-                }
-                else if (nodeName.Equals("compiler")) {
-                    ConfigurationCompilerParser.DoConfigure(configuration.Compiler, element);
-                }
-                else if (nodeName.Equals("runtime")) {
-                    ConfigurationRuntimeParser.DoConfigure(configuration.Runtime, element);
-                }
-                else if (nodeName.Equals("event-type") ||
-                         nodeName.Equals("auto-import") ||
-                         nodeName.Equals("auto-import-annotations") ||
-                         nodeName.Equals("method-reference") ||
-                         nodeName.Equals("database-reference") ||
-                         nodeName.Equals("plugin-view") ||
-                         nodeName.Equals("plugin-virtualdw") ||
-                         nodeName.Equals("plugin-aggregation-function") ||
-                         nodeName.Equals("plugin-aggregation-multifunction") ||
-                         nodeName.Equals("plugin-singlerow-function") ||
-                         nodeName.Equals("plugin-pattern-guard") ||
-                         nodeName.Equals("plugin-pattern-observer") ||
-                         nodeName.Equals("variable") ||
-                         nodeName.Equals("plugin-loader") ||
-                         nodeName.Equals("engine-settings") ||
-                         nodeName.Equals("variant-stream")) {
-                    Log.Warn(
-                        "The configuration file appears outdated as it has element '" + nodeName +
-                        "' among top-level elements. Please convert to the newest schema using the online converter.");
+                switch (nodeName) {
+                    case "common":
+                        ConfigurationCommonParser.DoConfigure(configuration.Common, element);
+                        break;
+                    case "compiler":
+                        ConfigurationCompilerParser.DoConfigure(configuration.Compiler, element);
+                        break;
+                    case "runtime":
+                        ConfigurationRuntimeParser.DoConfigure(configuration.Runtime, element);
+                        break;
+                    case "event-type":
+                    case "auto-import":
+                    case "auto-import-annotations":
+                    case "method-reference":
+                    case "database-reference":
+                    case "plugin-view":
+                    case "plugin-virtualdw":
+                    case "plugin-aggregation-function":
+                    case "plugin-aggregation-multifunction":
+                    case "plugin-singlerow-function":
+                    case "plugin-pattern-guard":
+                    case "plugin-pattern-observer":
+                    case "variable":
+                    case "plugin-loader":
+                    case "engine-settings":
+                    case "variant-stream":
+                        Log.Warn(
+                            "The configuration file appears outdated as it has element '" + nodeName +
+                            "' among top-level elements. Please convert to the newest schema using the online converter.");
+                        break;
                 }
             }
         }

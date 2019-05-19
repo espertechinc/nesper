@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.dataflow.annotations;
@@ -33,6 +34,7 @@ using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
@@ -44,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
         private EventType[] eventTypes;
 
-        [DataFlowOpParameter] private bool iterate;
+        [DataFlowOpParameter] private readonly bool iterate;
 
         private int[] originatingStreamToViewableStream;
 
@@ -54,34 +56,40 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
         public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
         {
-            if (context.InputPorts.IsEmpty()) {
+            if (context.InputPorts.IsEmpty())
+            {
                 throw new ArgumentException("Select operator requires at least one input stream");
             }
 
-            if (context.OutputPorts.Count != 1) {
+            if (context.OutputPorts.Count != 1)
+            {
                 throw new ArgumentException(
                     "Select operator requires one output stream but produces " + context.OutputPorts.Count +
                     " streams");
             }
 
             var portZero = context.OutputPorts[0];
-            if (portZero.OptionalDeclaredType != null && !portZero.OptionalDeclaredType.IsUnderlying) {
+            if (portZero.OptionalDeclaredType != null && !portZero.OptionalDeclaredType.IsUnderlying)
+            {
                 submitEventBean = true;
             }
 
             // determine adapter factories for each type
             var numStreams = context.InputPorts.Count;
             eventTypes = new EventType[numStreams];
-            for (var i = 0; i < numStreams; i++) {
+            for (var i = 0; i < numStreams; i++)
+            {
                 eventTypes[i] = context.InputPorts.Get(i).TypeDesc.EventType;
             }
 
             // validate
-            if (select.InsertIntoDesc != null) {
+            if (select.InsertIntoDesc != null)
+            {
                 throw new ExprValidationException("Insert-into clause is not supported");
             }
 
-            if (select.SelectStreamSelectorEnum != SelectClauseStreamSelectorEnum.ISTREAM_ONLY) {
+            if (select.SelectStreamSelectorEnum != SelectClauseStreamSelectorEnum.ISTREAM_ONLY)
+            {
                 throw new ExprValidationException("Selecting remove-stream is not supported");
             }
 
@@ -89,14 +97,17 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 StatementSpecRawWalkerSubselectAndDeclaredDot.WalkSubselectAndDeclaredDotExpr(select);
             GroupByClauseExpressions groupByExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(
                 select.GroupByExpressions, select.SelectClauseSpec, select.WhereClause, select.OrderByList, null);
-            if (!visitor.Subselects.IsEmpty()) {
+            if (!visitor.Subselects.IsEmpty())
+            {
                 throw new ExprValidationException("Subselects are not supported");
             }
 
             IDictionary<int, FilterStreamSpecRaw> streams = new Dictionary<int, FilterStreamSpecRaw>();
-            for (var streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++) {
+            for (var streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++)
+            {
                 StreamSpecRaw rawStreamSpec = select.StreamSpecs[streamNum];
-                if (!(rawStreamSpec is FilterStreamSpecRaw)) {
+                if (!(rawStreamSpec is FilterStreamSpecRaw))
+                {
                     throw new ExprValidationException(
                         "From-clause must contain only streams and cannot contain patterns or other constructs");
                 }
@@ -107,10 +118,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             // compile offered streams
             IList<StreamSpecCompiled> streamSpecCompileds = new List<StreamSpecCompiled>();
             originatingStreamToViewableStream = new int[select.StreamSpecs.Count];
-            for (var streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++) {
+            for (var streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++)
+            {
                 var filter = streams.Get(streamNum);
                 var inputPort = FindInputPort(filter.RawFilterSpec.EventTypeName, context.InputPorts);
-                if (inputPort == null) {
+                if (inputPort == null)
+                {
                     throw new ExprValidationException(
                         "Failed to find stream '" + filter.RawFilterSpec.EventTypeName +
                         "' among input ports, input ports are " +
@@ -142,8 +155,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
             // determine if snapshot output is needed
             var outputLimitSpec = select.OutputLimitSpec;
-            if (iterate) {
-                if (outputLimitSpec != null) {
+            if (iterate)
+            {
+                if (outputLimitSpec != null)
+                {
                     throw new ExprValidationException("Output rate limiting is not supported with 'iterate'");
                 }
 
@@ -163,7 +178,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
             // make forgable
             var forablesResult = StmtForgeMethodSelectUtil.Make(
-                true, context.CodegenEnv.PackageName, dataflowClassPostfix, context.Base, context.Services);
+                context.Container, true, context.CodegenEnv.PackageName, dataflowClassPostfix, context.Base, context.Services);
 
             // return the statement spec
             context.Base.StatementSpec = containerStatement;
@@ -171,11 +186,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             EventType outputEventType = forablesResult.EventType;
 
             var initializeResult = new DataFlowOpForgeInitializeResult();
-            initializeResult.TypeDescriptors = new[] {new GraphTypeDesc(false, true, outputEventType)};
+            initializeResult.TypeDescriptors = new[] { new GraphTypeDesc(false, true, outputEventType) };
             initializeResult.AdditionalForgables = forablesResult.ForgeResult;
 
-            foreach (StmtClassForgable forgable in forablesResult.ForgeResult.Forgables) {
-                if (forgable.ForgableType == StmtClassForgableType.AIFACTORYPROVIDER) {
+            foreach (StmtClassForgable forgable in forablesResult.ForgeResult.Forgables)
+            {
+                if (forgable.ForgableType == StmtClassForgableType.AIFACTORYPROVIDER)
+                {
                     classNameAIFactoryProvider = forgable.ClassName;
                 }
             }
@@ -196,7 +213,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 .Constant("originatingStreamToViewableStream", originatingStreamToViewableStream)
                 .Expression(
                     "factoryProvider", NewInstance(
-                        classNameAIFactoryProvider, 
+                        classNameAIFactoryProvider,
                         symbols.GetAddInitSvc(builder.Method())))
                 .Build();
         }
@@ -204,8 +221,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         private Attribute[] AddObjectArrayRepresentation(Attribute[] mergedAnnotations)
         {
             IList<Attribute> annotations = new List<Attribute>();
-            foreach (var annotation in annotations) {
-                if (!(annotation is EventRepresentationAttribute)) {
+            foreach (var annotation in annotations)
+            {
+                if (!(annotation is EventRepresentationAttribute))
+                {
                     annotations.Add(annotation);
                 }
             }
@@ -217,13 +236,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         private string[] GetInputPortNames(IDictionary<int, DataFlowOpInputPort> inputPorts)
         {
             IList<string> portNames = new List<string>();
-            foreach (var entry in inputPorts) {
-                if (entry.Value.OptionalAlias != null) {
+            foreach (var entry in inputPorts)
+            {
+                if (entry.Value.OptionalAlias != null)
+                {
                     portNames.Add(entry.Value.OptionalAlias);
                     continue;
                 }
 
-                if (entry.Value.StreamNames.Count == 1) {
+                if (entry.Value.StreamNames.Count == 1)
+                {
                     portNames.Add(entry.Value.StreamNames.First());
                 }
             }
@@ -235,12 +257,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             string eventTypeName,
             IDictionary<int, DataFlowOpInputPort> inputPorts)
         {
-            foreach (var entry in inputPorts) {
-                if (entry.Value.OptionalAlias != null && entry.Value.OptionalAlias.Equals(eventTypeName)) {
+            foreach (var entry in inputPorts)
+            {
+                if (entry.Value.OptionalAlias != null && entry.Value.OptionalAlias.Equals(eventTypeName))
+                {
                     return entry;
                 }
 
-                if (entry.Value.StreamNames.Count == 1 && entry.Value.StreamNames.First().Equals(eventTypeName)) {
+                if (entry.Value.StreamNames.Count == 1 && entry.Value.StreamNames.First().Equals(eventTypeName))
+                {
                     return entry;
                 }
             }

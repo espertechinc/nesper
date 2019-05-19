@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.rettype;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -49,16 +48,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             if (bodiesAndParameters.IsEmpty()) {
-                Type returnType = Boxing.GetBoxedType(collectionComponentType);
-                base.TypeInfo = EPTypeHelper.SingleValue(returnType);
-                return new EnumMostLeastFrequentScalarForge(numStreamsIncoming, this.EnumMethodEnum == EnumMethodEnum.MOSTFREQUENT, returnType);
+                var returnTypeX = collectionComponentType.GetBoxedType();
+                TypeInfo = EPTypeHelper.SingleValue(returnTypeX);
+                return new EnumMostLeastFrequentScalarForge(numStreamsIncoming, EnumMethodEnum == EnumMethodEnum.MOSTFREQUENT, returnTypeX);
             }
 
-            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-            Type returnType = Boxing.GetBoxedType(first.BodyForge.EvaluationType);
-            base.TypeInfo = EPTypeHelper.SingleValue(returnType);
+            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            var returnType = first.BodyForge.EvaluationType.GetBoxedType();
+            TypeInfo = EPTypeHelper.SingleValue(returnType);
 
-            bool mostFrequent = this.EnumMethodEnum == EnumMethodEnum.MOSTFREQUENT;
+            var mostFrequent = EnumMethodEnum == EnumMethodEnum.MOSTFREQUENT;
             if (inputEventType == null) {
                 return new EnumMostLeastFrequentScalarLamdaForge(
                     first.BodyForge, first.StreamCountIncoming, mostFrequent,

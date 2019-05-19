@@ -29,16 +29,17 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             this.maxPoolCountConfigured = maxPoolCountConfigured;
             this.preventStart = preventStart;
             poolCount = new AtomicLong();
-            matchRecognizeContexts = Collections.SynchronizedSet(new HashSet<StatementEntry>());
+            matchRecognizeContexts = new HashSet<StatementEntry>().AsSyncSet();
         }
 
-        public void SetMatchRecognizeMaxStates(long? maxStates)
-        {
-            if (maxStates == null) {
-                maxPoolCountConfigured = -1;
-            }
-            else {
-                maxPoolCountConfigured = maxStates.Value;
+        public long? MatchRecognizeMaxStates {
+            set {
+                if (value == null) {
+                    maxPoolCountConfigured = -1;
+                }
+                else {
+                    maxPoolCountConfigured = value.Value;
+                }
             }
         }
 

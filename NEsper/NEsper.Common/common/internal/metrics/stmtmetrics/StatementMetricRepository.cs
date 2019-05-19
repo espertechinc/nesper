@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             int numInput)
         {
             var array = groupMetrics[handle.GroupNum];
-            using (array.RwLock.AcquireReadLock()) {
+            using (array.RWLock.AcquireReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
                 metric.IncrementTime(cpu, wall);
                 metric.AddNumInput(numInput);
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             int numRStream)
         {
             var array = groupMetrics[handle.GroupNum];
-            using (array.RwLock.AcquireReadLock()) {
+            using (array.RWLock.AcquireReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
                 metric.AddNumOutputIStream(numIStream);
                 metric.AddNumOutputRStream(numRStream);

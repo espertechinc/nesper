@@ -6,29 +6,35 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.join.queryplanbuild;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
     /// <summary>
     /// Specification node for a query execution plan to be extended by specific execution specification nodes.
     /// </summary>
-    public abstract class QueryPlanNodeForge : CodegenMakeable<SAIFFInitializeSymbol>
+    public abstract class QueryPlanNodeForge : CodegenMakeable
     {
         public abstract void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes);
 
         public abstract void Accept(QueryPlanNodeForgeVisitor visitor);
+
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenSymbolProvider symbols,
+            CodegenClassScope classScope)
+        {
+            return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
+        }
 
         public abstract CodegenExpression Make(
             CodegenMethodScope parent,
@@ -39,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// Print a long readable format of the query node to the supplied PrintWriter.
         /// </summary>
         /// <param name="writer">is the indentation writer to print to</param>
-        protected abstract void Print(IndentWriter writer);
+        protected internal abstract void Print(IndentWriter writer);
 
         /// <summary>
         /// Print in readable format the execution plan spec.
@@ -51,16 +57,19 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             StringBuilder buffer = new StringBuilder();
             buffer.Append("QueryPlanNode[]\n");
 
-            for (int i = 0; i < planNodeSpecs.Length; i++) {
+            for (int i = 0; i < planNodeSpecs.Length; i++)
+            {
                 buffer.Append("  node spec " + i + " :\n");
 
                 StringWriter writer = new StringWriter();
                 IndentWriter indentWriter = new IndentWriter(writer, 4, 2);
 
-                if (planNodeSpecs[i] != null) {
+                if (planNodeSpecs[i] != null)
+                {
                     planNodeSpecs[i].Print(indentWriter);
                 }
-                else {
+                else
+                {
                     indentWriter.WriteLine("no plan (historical)");
                 }
 

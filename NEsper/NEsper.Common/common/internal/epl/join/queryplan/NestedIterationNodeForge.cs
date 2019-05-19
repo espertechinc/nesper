@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             }
         }
 
-        protected override void Print(IndentWriter indentWriter)
+        protected internal override void Print(IndentWriter indentWriter)
         {
             indentWriter.WriteLine("NestedIterationNode with nesting order " + nestingOrder.RenderAny());
             indentWriter.IncrIndent();

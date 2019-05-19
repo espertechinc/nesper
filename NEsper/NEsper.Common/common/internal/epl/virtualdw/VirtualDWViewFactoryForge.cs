@@ -96,6 +96,14 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
+            CodegenSymbolProvider symbols,
+            CodegenClassScope classScope)
+        {
+            return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
+        }
+
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {

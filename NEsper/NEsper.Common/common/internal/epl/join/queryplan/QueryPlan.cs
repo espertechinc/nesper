@@ -6,9 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Text;
-
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
     /// <summary>Contains the query plan for all streams. </summary>
@@ -27,24 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         /// <summary>Return index specs. </summary>
         /// <value>index specs</value>
-        public QueryPlanIndex[] IndexSpecs { get; private set; }
+        public QueryPlanIndex[] IndexSpecs { get; }
 
         /// <summary>Return execution node specs. </summary>
         /// <value>execution node specs</value>
-        public QueryPlanNode[] ExecNodeSpecs { get; private set; }
-
-        public override String ToString()
-        {
-            return ToQueryPlan();
-        }
-
-        public String ToQueryPlan()
-        {
-            var buffer = new StringBuilder();
-            buffer.Append("QueryPlanNode\n");
-            buffer.Append(QueryPlanIndex.Print(IndexSpecs));
-            buffer.Append(QueryPlanNode.Print(ExecNodeSpecs));
-            return buffer.ToString();
-        }
+        public QueryPlanNode[] ExecNodeSpecs { get; }
     }
 }

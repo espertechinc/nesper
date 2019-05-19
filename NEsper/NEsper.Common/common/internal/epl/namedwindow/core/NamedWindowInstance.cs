@@ -6,63 +6,48 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.epl.join.lookup;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.common.@internal.epl.@join.lookup;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 {
     /// <summary>
-    /// An instance of this class is associated with a specific named window. The processor
-    /// provides the views to create-window, on-delete statements and statements selecting from a named window.
+    ///     An instance of this class is associated with a specific named window. The processor
+    ///     provides the views to create-window, on-delete statements and statements selecting from a named window.
     /// </summary>
     public class NamedWindowInstance
     {
-        private readonly NamedWindowRootViewInstance rootViewInstance;
-        private readonly NamedWindowTailViewInstance tailViewInstance;
-
         public NamedWindowInstance(
             NamedWindow processor,
             AgentInstanceContext agentInstanceContext)
         {
-            rootViewInstance = new NamedWindowRootViewInstance(processor.RootView, agentInstanceContext, processor.EventTableIndexMetadata);
-            tailViewInstance = new NamedWindowTailViewInstance(rootViewInstance, processor.TailView, processor, agentInstanceContext);
-            rootViewInstance.DataWindowContents = tailViewInstance; // for iteration used for delete without index
+            RootViewInstance = new NamedWindowRootViewInstance(processor.RootView, agentInstanceContext, processor.EventTableIndexMetadata);
+            TailViewInstance = new NamedWindowTailViewInstance(RootViewInstance, processor.TailView, processor, agentInstanceContext);
+            RootViewInstance.DataWindowContents = TailViewInstance; // for iteration used for delete without index
         }
 
-        public NamedWindowRootViewInstance RootViewInstance {
-            get => rootViewInstance;
-        }
+        public NamedWindowRootViewInstance RootViewInstance { get; }
 
-        public NamedWindowTailViewInstance TailViewInstance {
-            get => tailViewInstance;
-        }
+        public NamedWindowTailViewInstance TailViewInstance { get; }
+
+        public IndexMultiKey[] IndexDescriptors => RootViewInstance.Indexes;
+
+        public long CountDataWindow => TailViewInstance.NumberOfEvents;
 
         public void Destroy()
         {
-            tailViewInstance.Destroy();
-            rootViewInstance.Destroy();
-        }
-
-        public IndexMultiKey[] GetIndexDescriptors()
-        {
-            return rootViewInstance.Indexes;
+            TailViewInstance.Destroy();
+            RootViewInstance.Destroy();
         }
 
         public void RemoveIndex(IndexMultiKey index)
         {
-            rootViewInstance.IndexRepository.RemoveIndex(index);
-        }
-
-        public long CountDataWindow {
-            get => tailViewInstance.NumberOfEvents;
+            RootViewInstance.IndexRepository.RemoveIndex(index);
         }
 
         public void RemoveExplicitIndex(string indexName)
         {
-            rootViewInstance.IndexRepository.RemoveExplicitIndex(indexName);
+            RootViewInstance.IndexRepository.RemoveExplicitIndex(indexName);
         }
     }
 } // end of namespace

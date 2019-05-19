@@ -78,9 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         return true;
                     }
 
-                    IEnumerator<object> oneit = enumcoll.GetEnumerator();
+                    IEnumerator<object> myIterator = enumcoll.GetEnumerator();
                     for (int i = 0; i < enumcoll.Count; i++) {
-                        object first = oneit.Current;
+                        object first = myIterator.Current;
                         object second = otherArray.GetValue(i);
                         if (!Equals(first, second)) {
                             return false;

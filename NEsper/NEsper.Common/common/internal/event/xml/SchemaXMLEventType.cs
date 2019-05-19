@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             IList<ExplicitPropertyDescriptor> additionalSchemaProps = new List<ExplicitPropertyDescriptor>();
 
             // Add a property for each complex child element
-            foreach (SchemaElementComplex complex in schemaModelRoot.Children) {
+            foreach (SchemaElementComplex complex in schemaModelRoot.ComplexElements) {
                 var propertyName = complex.Name;
                 var returnType = typeof(XmlNode);
                 Type propertyComponentType = null;

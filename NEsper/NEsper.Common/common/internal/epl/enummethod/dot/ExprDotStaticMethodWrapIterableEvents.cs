@@ -6,8 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +18,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -55,8 +58,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var typeMember = classScope.AddFieldUnshared(
                 true, typeof(BeanEventType),
                 Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
-            return NewInstance(
-                typeof(WrappingCollection), eventSvcMember, typeMember, ExprDotMethod(result, "iterator"));
+            return StaticMethod(
+                typeof(ExprDotStaticMethodWrapIterableEvents),
+                "UnwrapEventBeans",
+                eventSvcMember,
+                typeMember,
+                result);
+        }
+
+        public static ICollection<EventBean> UnwrapEventBeans(
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventType type,
+            IEnumerable enumerable)
+        {
+            return enumerable
+                .Cast<object>()
+                .Select(value => eventBeanTypedEventFactory.AdapterForTypedBean(value, type))
+                .ToList();
         }
     }
 } // end of namespace

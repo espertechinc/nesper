@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             return LocalMethod(method);
         }
 
-        protected override void Print(IndentWriter writer)
+        protected internal override void Print(IndentWriter writer)
         {
             writer.IncrIndent();
             writer.WriteLine("HistoricalDataPlanNode streamNum=" + StreamNum);

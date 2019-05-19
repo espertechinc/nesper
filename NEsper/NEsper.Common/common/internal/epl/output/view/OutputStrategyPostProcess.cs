@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     }
 
                     if (tableInstance != null) {
-                        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock(), exprEvaluatorContext);
+                        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
                         tableInstance.AddEventUnadorned(natural.OptionalSynthetic);
                     }
                     else {
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     }
 
                     if (tableInstance != null) {
-                        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock(), exprEvaluatorContext);
+                        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
                         tableInstance.AddEventUnadorned(routed);
                     }
                     else {

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             object value,
             IDictionary<string, object> map)
         {
-            var arrayEntry = map.Get(PropertyName) as Array;
+            var arrayEntry = map.Get(propertyName) as Array;
             if (arrayEntry != null && arrayEntry.Length > _index) {
                 arrayEntry.SetValue(value, _index);
             }

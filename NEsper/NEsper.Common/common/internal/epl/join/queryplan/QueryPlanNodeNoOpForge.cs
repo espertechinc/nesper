@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
         }
 
-        protected override void Print(IndentWriter writer)
+        protected internal override void Print(IndentWriter writer)
         {
             writer.WriteLine("No-Op Execution");
         }

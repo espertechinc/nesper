@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             MethodInfo method;
 
             try {
-                return clazz.GetMethod(getterMethodName, typeof(int));
+                return clazz.GetMethod(getterMethodName, new Type[] { typeof(int) });
             }
             catch (Exception ex1) when (ex1 is AmbiguousMatchException || ex1 is ArgumentNullException) {
                 try {
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return array.GetValue(index);
             }
             catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);
+                throw PropertyUtility.GetMismatchException(descriptor.Method.Target, underlying, e);
             }
         }
     }

@@ -9,11 +9,11 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -37,14 +37,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             this.isNot = not;
         }
 
-        public ExprEvaluator ExprEvaluator {
+        public ExprEvaluator ExprEvaluator
+        {
             get {
                 CheckValidated(forge);
                 return forge.ExprEvaluator;
             }
         }
 
-        public override ExprForge Forge {
+        public override ExprForge Forge
+        {
             get {
                 CheckValidated(forge);
                 return forge;
@@ -53,13 +55,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (this.ChildNodes.Length != 2) {
+            if (this.ChildNodes.Length != 2)
+            {
                 throw new ExprValidationException("The regexp operator requires 2 child expressions");
             }
 
             // check pattern child node
             Type patternChildType = ChildNodes[1].Forge.EvaluationType;
-            if (patternChildType != typeof(string)) {
+            if (patternChildType != typeof(string))
+            {
                 throw new ExprValidationException("The regexp operator requires a String-type pattern expression");
             }
 
@@ -68,18 +72,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // check eval child node - can be String or numeric
             Type evalChildType = ChildNodes[0].Forge.EvaluationType;
             bool isNumericValue = TypeHelper.IsNumeric(evalChildType);
-            if ((evalChildType != typeof(string)) && (!isNumericValue)) {
+            if ((evalChildType != typeof(string)) && (!isNumericValue))
+            {
                 throw new ExprValidationException(
                     "The regexp operator requires a String or numeric type left-hand expression");
             }
 
-            if (constantPattern) {
+            if (constantPattern)
+            {
                 string patternText = (string) ChildNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
                 Regex pattern;
-                try {
+                try
+                {
                     pattern = new Regex(patternText);
                 }
-                catch (PatternSyntaxException ex) {
+                catch (PatternSyntaxException ex)
+                {
                     throw new ExprValidationException(
                         "Error compiling regex pattern '" + patternText + "': " + ex.Message, ex);
                 }
@@ -87,18 +95,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 CodegenExpression patternInit = NewInstance<Regex>(Constant(patternText));
                 forge = new ExprRegexpNodeForgeConst(this, isNumericValue, pattern, patternInit);
             }
-            else {
+            else
+            {
                 forge = new ExprRegexpNodeForgeNonconst(this, isNumericValue);
             }
 
             return null;
         }
 
-        public Type Type {
+        public Type Type
+        {
             get => typeof(bool?);
         }
 
-        public bool IsConstantResult {
+        public bool IsConstantResult
+        {
             get => false;
         }
 
@@ -106,12 +117,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprRegexpNode)) {
+            if (!(node is ExprRegexpNode))
+            {
                 return false;
             }
 
             ExprRegexpNode other = (ExprRegexpNode) node;
-            if (this.isNot != other.isNot) {
+            if (this.isNot != other.isNot)
+            {
                 return false;
             }
 
@@ -121,7 +134,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             this.ChildNodes[0].ToEPL(writer, Precedence);
-            if (isNot) {
+            if (isNot)
+            {
                 writer.Write(" not");
             }
 
@@ -129,7 +143,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             this.ChildNodes[1].ToEPL(writer, Precedence);
         }
 
-        public override ExprPrecedenceEnum Precedence {
+        public override ExprPrecedenceEnum Precedence
+        {
             get => ExprPrecedenceEnum.RELATIONAL_BETWEEN_IN;
         }
 
@@ -137,7 +152,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// Returns true if this is a "not regexp", or false if just a regexp
         /// </summary>
         /// <returns>indicator whether negated or not</returns>
-        public bool IsNot {
+        public bool IsNot
+        {
             get => isNot;
         }
     }

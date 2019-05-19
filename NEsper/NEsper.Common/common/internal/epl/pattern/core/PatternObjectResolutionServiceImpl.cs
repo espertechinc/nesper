@@ -13,6 +13,7 @@ using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.epl.pattern.observer;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -125,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
             object result;
             try {
-                result = forgeClass.NewInstance();
+                result = TypeHelper.Instantiate(forgeClass);
             }
             catch (MemberAccessException e) {
                 var message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;

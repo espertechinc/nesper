@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.arr;
@@ -70,18 +71,9 @@ namespace com.espertech.esper.common.@internal.view.expression
             }
 
             if (oldData != null) {
-                var enumerator = window.GetEnumerator();
-                for (; enumerator.MoveNext();) {
-                    ExpressionWindowTimestampEventPair pair = enumerator.Current;
-                    foreach (var anOldData in oldData) {
-                        if (pair.TheEvent == anOldData) {
-                            enumerator.Remove();
-                            break;
-                        }
-                    }
-
-                    InternalHandleRemoved(pair);
-                }
+                window.RemoveWhere(
+                    pair => oldData.Any(anOldData => pair.TheEvent == anOldData),
+                    InternalHandleRemoved);
 
                 aggregationService?.ApplyLeave(oldData, null, agentInstanceContext);
             }

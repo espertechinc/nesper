@@ -869,11 +869,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             // Initialize getters and names array: at this time we do not care about nested types,
             // these are handled at the time someone is asking for them
-            foreach (var entry in propertiesToAdd) {
-                if (!(entry.Key is string)) {
-                    throw new EPException("Invalid type configuration: property name is not a String-type value");
-                }
-
+            foreach (var entry in propertiesToAdd.ToList()) {
                 var name = entry.Key;
 
                 // handle types that are String values
@@ -881,7 +877,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     var value = entry.Value.ToString().Trim();
                     var clazz = TypeHelper.GetPrimitiveTypeForName(value);
                     if (clazz != null) {
-                        entry.Value = clazz;
+                        propertiesToAdd[entry.Key] = clazz;
                     }
                 }
 

@@ -8,15 +8,18 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
 {
     public class DataFlowOpForgeInitializeContext
     {
         public DataFlowOpForgeInitializeContext(
+            IContainer container,
             string dataflowName,
             int operatorNumber,
             Attribute[] operatorAnnotations,
@@ -36,6 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
             CodegenEnv = codegenEnv;
             Base = @base;
             Services = services;
+            Container = container;
         }
 
         public string DataflowName { get; }
@@ -57,5 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
         public IDictionary<int, DataFlowOpOutputPort> OutputPorts { get; }
 
         public Attribute[] OperatorAnnotations { get; }
+
+        public IContainer Container { get; }
     }
 } // end of namespace

@@ -13,8 +13,10 @@ using Castle.MicroKernel.Registration;
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.db;
+using com.espertech.esper.common.@internal.db.drivers;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
@@ -82,17 +84,17 @@ namespace com.espertech.esper.container
             if (container.DoesNotHave<IResourceManager>())
                 container.Register<IResourceManager>(
                     ic => DefaultResourceManager(), Lifespan.Singleton);
-            if (container.DoesNotHave<IConfigurationParser>())
-                container.Register<IConfigurationParser, ConfigurationParser>(
-                    Lifespan.Transient);
+            //if (container.DoesNotHave<IConfigurationParser>())
+            //    container.Register<IConfigurationParser, ConfigurationParser>(
+            //        Lifespan.Transient);
             if (container.DoesNotHave<ClassLoader>())
                 container.Register<ClassLoader, ClassLoaderDefault>(
                     Lifespan.Singleton);
             if (container.DoesNotHave<ClassLoaderProvider>())
                 container.Register<ClassLoaderProvider, ClassLoaderProviderDefault>(
                     Lifespan.Singleton);
-            if (container.DoesNotHave<Directory>())
-                container.Register<Directory, SimpleServiceDirectory>(
+            if (container.DoesNotHave<IDirectory>())
+                container.Register<IDirectory, SimpleDirectory>(
                     Lifespan.Singleton);
             return container;
         }

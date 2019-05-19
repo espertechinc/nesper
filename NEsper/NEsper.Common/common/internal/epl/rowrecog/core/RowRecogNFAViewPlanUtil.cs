@@ -30,6 +30,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 {
@@ -41,6 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static RowRecogDescForge ValidateAndPlan(
+            IContainer container,
             EventType parentEventType,
             bool unbound,
             StatementBaseInfo @base,
@@ -52,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var iterateOnly = HintEnum.ITERATE_ONLY.GetHint(annotations) != null;
 
             // Expand repeats and permutations
-            var expandedPatternNode = RowRecogPatternExpandUtil.Expand(matchRecognizeSpec.Pattern);
+            var expandedPatternNode = RowRecogPatternExpandUtil.Expand(container, matchRecognizeSpec.Pattern);
 
             // Determine single-row and multiple-row variables
             var variablesSingle = new LinkedHashSet<string>();

@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
 {
@@ -30,10 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             AgentInstanceContext agentInstanceContext)
             : base(table, agentInstanceContext)
         {
-            var eventTable =
-                (PropertyHashedEventTableUnique) table.PrimaryIndexFactory.MakeEventTables(agentInstanceContext, null)
-                    [0];
-            rows = CompatExtensions.UnwrapDictionary<object, ObjectArrayBackedEventBean>(eventTable.PropertyIndex);
+            var eventTable = (PropertyHashedEventTableUnique) table.PrimaryIndexFactory.MakeEventTables(agentInstanceContext, null)[0];
+            rows = eventTable.PropertyIndex.TransformLeft<object, EventBean, ObjectArrayBackedEventBean>();
             indexRepository.AddIndex(
                 table.MetaData.KeyIndexMultiKey,
                 new EventTableIndexRepositoryEntry(

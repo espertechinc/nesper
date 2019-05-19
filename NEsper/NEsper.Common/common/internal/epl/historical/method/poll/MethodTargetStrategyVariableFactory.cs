@@ -20,26 +20,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
     {
         protected internal MethodTargetStrategyStaticMethodInvokeType invokeType;
         protected internal MethodInfo method;
-        private string methodName;
-        private Type[] methodParameters;
-        private Variable variable;
 
-        public Variable Variable {
-            set => variable = value;
-        }
+        public Variable Variable { get; set; }
 
-        public string MethodName {
-            set => methodName = value;
-        }
+        public string MethodName { get; set; }
 
-        public Type[] MethodParameters {
-            set => methodParameters = value;
-        }
+        public Type[] MethodParameters { get; set; }
 
         public MethodTargetStrategy Make(AgentInstanceContext agentInstanceContext)
         {
             var reader = agentInstanceContext.VariableManagementService.GetReader(
-                variable.DeploymentId, variable.MetaData.VariableName, agentInstanceContext.AgentInstanceId);
+                Variable.DeploymentId, Variable.MetaData.VariableName, agentInstanceContext.AgentInstanceId);
             return new MethodTargetStrategyVariable(this, reader);
         }
 
@@ -49,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             bool recovery)
         {
             method = MethodTargetStrategyStaticMethod.ResolveMethod(
-                variable.MetaData.Type, methodName, methodParameters);
-            invokeType = MethodTargetStrategyStaticMethodInvokeType.GetInvokeType(method);
+                Variable.MetaData.Type, MethodName, MethodParameters);
+            invokeType = MethodTargetStrategyStaticMethodInvokeTypeExtensions.GetInvokeType(method);
         }
     }
 } // end of namespace

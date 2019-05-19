@@ -11,11 +11,11 @@ using System;
 namespace com.espertech.esper.common.client
 {
     /// <summary>
-    /// Get property values from an event instance for a given event property. Instances that implement this interface
-    /// are usually bound to a particular <seealso cref="com.espertech.esper.client.EventType"/> and cannot be used to
-    /// access <seealso cref="EventBean"/> instances of a different type.
+    /// Get property values from an event instance for a given event property. Instances that
+    /// implement this interface are usually bound to a particular <seealso cref="EventType"/>
+    /// and cannot be used to access <seealso cref="EventBean"/> instances of a different type.
     /// </summary>
-    public interface EventPropertyGetter
+    public interface EventPropertyGetter : EventPropertyValueGetter
     {
         /// <summary>
         /// Return the value for the property in the event object specified when the instance was obtained. Useful for 

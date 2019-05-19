@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.util
             return newArray;
         }
 
-        public static object ArrayExpandAddElements<T>(
+        public static T[] ArrayExpandAddElements<T>(
             Array array,
             ICollection<T> elementsToAdd)
         {

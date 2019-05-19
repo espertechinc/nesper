@@ -12,8 +12,10 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -36,7 +38,7 @@ namespace com.espertech.esper.common.@internal.util
         private static readonly IDictionary<Type, ICollection<Type>> WrappingConversions =
             new Dictionary<Type, ICollection<Type>>();
 
-        static HashSet<Type> InitWrappingConversions<TX, TXN>()
+        private static HashSet<Type> InitWrappingConversions<TX, TXN>()
         {
             var wrappers = new HashSet<Type>();
             wrappers.Add(typeof(TX));
@@ -52,29 +54,29 @@ namespace com.espertech.esper.common.@internal.util
 
             AddWideningConversion<byte>(
                 typeof(byte),
-                typeof(Nullable<byte>)
+                typeof(byte?)
             );
             AddWideningConversion<sbyte>(
-                typeof(Nullable<sbyte>),
+                typeof(sbyte?),
                 typeof(sbyte)
             );
             AddWideningConversion<short>(
                 typeof(byte),
                 typeof(short),
-                typeof(Nullable<byte>),
-                typeof(Nullable<short>),
-                typeof(Nullable<sbyte>),
+                typeof(byte?),
+                typeof(short?),
+                typeof(sbyte?),
                 typeof(sbyte)
             );
             AddWideningConversion<int>(
                 typeof(byte),
                 typeof(short),
                 typeof(int),
-                typeof(Nullable<byte>),
-                typeof(Nullable<short>),
-                typeof(Nullable<int>),
-                typeof(Nullable<sbyte>),
-                typeof(Nullable<ushort>),
+                typeof(byte?),
+                typeof(short?),
+                typeof(int?),
+                typeof(sbyte?),
+                typeof(ushort?),
                 typeof(sbyte),
                 typeof(ushort)
             );
@@ -83,37 +85,37 @@ namespace com.espertech.esper.common.@internal.util
                 typeof(short),
                 typeof(int),
                 typeof(long),
-                typeof(Nullable<byte>),
-                typeof(Nullable<short>),
-                typeof(Nullable<int>),
-                typeof(Nullable<long>),
-                typeof(Nullable<sbyte>),
-                typeof(Nullable<ushort>),
-                typeof(Nullable<uint>),
+                typeof(byte?),
+                typeof(short?),
+                typeof(int?),
+                typeof(long?),
+                typeof(sbyte?),
+                typeof(ushort?),
+                typeof(uint?),
                 typeof(sbyte),
                 typeof(ushort),
                 typeof(uint)
             );
             AddWideningConversion<ushort>(
                 typeof(byte),
-                typeof(Nullable<byte>),
-                typeof(Nullable<ushort>),
+                typeof(byte?),
+                typeof(ushort?),
                 typeof(ushort)
             );
             AddWideningConversion<uint>(
                 typeof(byte),
-                typeof(Nullable<byte>),
-                typeof(Nullable<ushort>),
-                typeof(Nullable<uint>),
+                typeof(byte?),
+                typeof(ushort?),
+                typeof(uint?),
                 typeof(ushort),
                 typeof(uint)
             );
             AddWideningConversion<ulong>(
                 typeof(byte),
-                typeof(Nullable<byte>),
-                typeof(Nullable<ushort>),
-                typeof(Nullable<uint>),
-                typeof(Nullable<ulong>),
+                typeof(byte?),
+                typeof(ushort?),
+                typeof(uint?),
+                typeof(ulong?),
                 typeof(ushort),
                 typeof(uint),
                 typeof(ulong)
@@ -123,15 +125,15 @@ namespace com.espertech.esper.common.@internal.util
                 typeof(short),
                 typeof(int),
                 typeof(long),
-                typeof(Nullable<byte>),
-                typeof(Nullable<short>),
-                typeof(Nullable<int>),
-                typeof(Nullable<long>),
-                typeof(Nullable<sbyte>),
-                typeof(Nullable<float>),
-                typeof(Nullable<ushort>),
-                typeof(Nullable<uint>),
-                typeof(Nullable<ulong>),
+                typeof(byte?),
+                typeof(short?),
+                typeof(int?),
+                typeof(long?),
+                typeof(sbyte?),
+                typeof(float?),
+                typeof(ushort?),
+                typeof(uint?),
+                typeof(ulong?),
                 typeof(sbyte),
                 typeof(float),
                 typeof(ushort),
@@ -144,16 +146,16 @@ namespace com.espertech.esper.common.@internal.util
                 typeof(short),
                 typeof(int),
                 typeof(long),
-                typeof(Nullable<byte>),
-                typeof(Nullable<double>),
-                typeof(Nullable<short>),
-                typeof(Nullable<int>),
-                typeof(Nullable<long>),
-                typeof(Nullable<sbyte>),
-                typeof(Nullable<float>),
-                typeof(Nullable<ushort>),
-                typeof(Nullable<uint>),
-                typeof(Nullable<ulong>),
+                typeof(byte?),
+                typeof(double?),
+                typeof(short?),
+                typeof(int?),
+                typeof(long?),
+                typeof(sbyte?),
+                typeof(float?),
+                typeof(ushort?),
+                typeof(uint?),
+                typeof(ulong?),
                 typeof(sbyte),
                 typeof(float),
                 typeof(ushort),
@@ -162,60 +164,59 @@ namespace com.espertech.esper.common.@internal.util
             );
             AddWideningConversion<decimal>(
                 typeof(decimal),
-                typeof(Nullable<decimal>)
+                typeof(decimal?)
             );
             AddWideningConversion<char>(
                 typeof(byte),
-                typeof(Nullable<byte>),
-                typeof(Nullable<ushort>),
+                typeof(byte?),
+                typeof(ushort?),
                 typeof(ushort)
             );
-            AddWideningConversion<Nullable<byte>>(
+            AddWideningConversion<byte?>(
                 typeof(byte),
-                typeof(Nullable<byte>)
+                typeof(byte?)
             );
-            AddWideningConversion<Nullable<sbyte>>(
-                typeof(Nullable<sbyte>),
+            AddWideningConversion<sbyte?>(
+                typeof(sbyte?),
                 typeof(sbyte)
             );
-            AddWideningConversion<Nullable<short>>(
+            AddWideningConversion<short?>(
                 typeof(short),
-                typeof(Nullable<short>)
+                typeof(short?)
             );
-            AddWideningConversion<Nullable<long>>(
+            AddWideningConversion<long?>(
                 typeof(int),
                 typeof(long),
-                typeof(Nullable<long>)
+                typeof(long?)
             );
-            AddWideningConversion<Nullable<int>>(
+            AddWideningConversion<int?>(
                 typeof(int),
-                typeof(Nullable<int>)
+                typeof(int?)
             );
-            AddWideningConversion<Nullable<ushort>>(
-                typeof(Nullable<ushort>),
+            AddWideningConversion<ushort?>(
+                typeof(ushort?),
                 typeof(ushort)
             );
-            AddWideningConversion<Nullable<uint>>(
-                typeof(Nullable<uint>),
+            AddWideningConversion<uint?>(
+                typeof(uint?),
                 typeof(uint)
             );
-            AddWideningConversion<Nullable<ulong>>(
-                typeof(Nullable<ulong>),
+            AddWideningConversion<ulong?>(
+                typeof(ulong?),
                 typeof(ulong)
             );
-            AddWideningConversion<Nullable<float>>(
-                typeof(Nullable<float>),
+            AddWideningConversion<float?>(
+                typeof(float?),
                 typeof(float)
             );
-            AddWideningConversion<Nullable<double>>(
+            AddWideningConversion<double?>(
                 typeof(double),
-                typeof(Nullable<double>)
+                typeof(double?)
             );
-            AddWideningConversion<Nullable<decimal>>(
+            AddWideningConversion<decimal?>(
                 typeof(decimal),
-                typeof(Nullable<decimal>)
+                typeof(decimal?)
             );
-
 
             // Initialize the map of wrapper conversions
             var boolWrappers = InitWrappingConversions<bool, bool?>();
@@ -305,16 +306,19 @@ namespace com.espertech.esper.common.@internal.util
             // Examine each method, checking if the signature is compatible
             MethodInfo conversionFailedMethod = null;
 
-            for (int mm = 0; mm < methods.Length; mm++) {
+            for (int mm = 0; mm < methods.Length; mm++)
+            {
                 var method = methods[mm];
 
                 // Check the modifiers: we only want public and static, if required
-                if (!IsPublicAndStatic(method, allowInstance)) {
+                if (!IsPublicAndStatic(method, allowInstance))
+                {
                     continue;
                 }
 
                 // Check the name
-                if (method.Name != methodName) {
+                if (method.Name != methodName)
+                {
                     continue;
                 }
 
@@ -322,13 +326,15 @@ namespace com.espertech.esper.common.@internal.util
                     .Select(p => p.ParameterType)
                     .ToArray();
 
-                if (method.IsGenericMethod && method.IsVarArgs()) {
+                if (method.IsGenericMethod && method.IsVarArgs())
+                {
                     // we need to what arguments have been supplied for the
                     // remaining arguments since we need to coerce the remaining
                     // arguments to the same type
                     var commonArgs = paramTypes.Skip(paramTypes.Length - 1).ToArray();
                     var commonType = GetCommonCoersion(commonArgs);
-                    if (commonArgs.Length == 1 && commonArgs[0].IsArray) {
+                    if (commonArgs.Length == 1 && commonArgs[0].IsArray)
+                    {
                         // this is an annoying case where the inputs are an argument array...
                         // in this case we want to unpack the common coercion type from the
                         // underlying common args themselves.
@@ -352,45 +358,55 @@ namespace com.espertech.esper.common.@internal.util
                 );
 
                 // Parameters don't match
-                if (conversionCount == -1) {
+                if (conversionCount == -1)
+                {
                     conversionFailedMethod = method;
                     continue;
                 }
 
                 // Parameters match exactly
-                if (conversionCount == 0) {
+                if (conversionCount == 0)
+                {
                     bestMatch = method;
                     break;
                 }
 
                 // No previous match
-                if (bestMatch == null) {
+                if (bestMatch == null)
+                {
                     bestMatch = method;
                     bestConversionCount = conversionCount;
                 }
-                else {
+                else
+                {
                     // Current match is better
-                    if (conversionCount < bestConversionCount) {
+                    if (conversionCount < bestConversionCount)
+                    {
                         bestMatch = method;
                         bestConversionCount = conversionCount;
                     }
                 }
             }
 
-            if (bestMatch != null) {
+            if (bestMatch != null)
+            {
                 LogWarnBoxedToPrimitiveType(declaringClass, methodName, bestMatch, paramTypes);
                 return bestMatch;
             }
 
             var paramList = new StringBuilder();
-            if (paramTypes != null && paramTypes.Length != 0) {
+            if (paramTypes != null && paramTypes.Length != 0)
+            {
                 var appendString = "";
-                foreach (var param in paramTypes) {
+                foreach (var param in paramTypes)
+                {
                     paramList.Append(appendString);
-                    if (param == null) {
+                    if (param == null)
+                    {
                         paramList.Append("(null)");
                     }
-                    else {
+                    else
+                    {
                         paramList.Append(param.ToString());
                     }
 
@@ -398,7 +414,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
             }
 
-            throw new EngineNoSuchMethodException(
+            throw new MethodResolverNoSuchMethodException(
                 "Unknown method " + declaringClass.Name + '.' + methodName + '(' + paramList + ')',
                 conversionFailedMethod);
         }
@@ -413,7 +429,8 @@ namespace com.espertech.esper.common.@internal.util
         {
             var extensionMethods = TypeHelper.GetExtensionMethods(declaringClass)
                 .Where(m => m.Name == methodName);
-            foreach (var method in extensionMethods) {
+            foreach (var method in extensionMethods)
+            {
                 var parameterTypes = method.GetParameters().Select(p => p.ParameterType).Skip(1).ToArray();
 
                 // Check the parameter list
@@ -427,12 +444,42 @@ namespace com.espertech.esper.common.@internal.util
                 );
 
                 // Parameters match exactly
-                if (conversionCount == 0) {
+                if (conversionCount == 0)
+                {
                     return method;
                 }
             }
 
             return null;
+        }
+
+        public static CodegenExpression ResolveMethodCodegenExactNonStatic(MethodInfo method)
+        {
+            return CodegenExpressionBuilder.StaticMethod(
+                typeof(MethodResolver), "ResolveMethodExactNonStatic",
+                CodegenExpressionBuilder.Constant(method.DeclaringType),
+                CodegenExpressionBuilder.Constant(method.Name),
+                CodegenExpressionBuilder.Constant(method.GetParameterTypes()));
+        }
+
+        public static MethodInfo ResolveMethodExactNonStatic(Type declaringClass, String methodName, Type[] parameters)
+        {
+            try
+            {
+                var method = declaringClass.GetMethod(methodName, parameters);
+                if (method.IsStatic)
+                {
+                    throw new EPException("Not an instance method");
+                }
+                return method;
+            }
+            catch (Exception ex)
+            {
+                string parametersPretty = GetParametersPretty(parameters);
+                throw new EPException(
+                    string.Format("Failed to resolve static method {0}.{1}({2}): {3}",
+                        declaringClass.Name, methodName, parametersPretty, ex.Message), ex);
+            }
         }
 
         private static void LogWarnBoxedToPrimitiveType(
@@ -442,14 +489,17 @@ namespace com.espertech.esper.common.@internal.util
             Type[] paramTypes)
         {
             var parametersMethod = bestMatch.GetParameters().Select(p => p.ParameterType).ToArray();
-            for (int i = 0; i < parametersMethod.Length; i++) {
-                if (!parametersMethod[i].IsPrimitive) {
+            for (int i = 0; i < parametersMethod.Length; i++)
+            {
+                if (!parametersMethod[i].IsPrimitive)
+                {
                     continue;
                 }
 
                 // if null-type parameter, or non-CLR class and boxed type matches
                 if (paramTypes[i] == null || (!declaringClass.GetType().FullName.StartsWith("System.") &&
-                                              (parametersMethod[i].GetBoxedType()) == paramTypes[i])) {
+                                              (parametersMethod[i].GetBoxedType()) == paramTypes[i]))
+                {
                     string paramTypeStr = paramTypes[i] == null ? "null" : paramTypes[i].Name;
                     Log.Info(
                         "Method '{0}' in class '{1}' expects primitive type '{2}' as parameter {3}, but receives a nullable (boxed) type {4}. This may cause null pointer exception at runtime if the actual value is null, please consider using boxed types for method parameters.",
@@ -465,7 +515,8 @@ namespace com.espertech.esper.common.@internal.util
 
             typeList[0].Visit(t => typeHash.Add(t));
 
-            for (int ii = 1; ii < typeList.Count; ii++) {
+            for (int ii = 1; ii < typeList.Count; ii++)
+            {
                 var moreTypes = new HashSet<Type>();
                 typeList[ii].Visit(t => moreTypes.Add(t));
                 typeHash.IntersectWith(moreTypes);
@@ -485,16 +536,20 @@ namespace com.espertech.esper.common.@internal.util
             // We should never have a case where the concrete count is zero.  This would
             // indicate that even System.Object was not found as a common class...
             if (concretes.Count == 0)
+            {
                 throw new EPRuntimeException("Unable to find common concrete root for type");
+            }
 
             // Concrete commonality with a count of one is going to be fairly common
             // and almost always reflects the case where System.Object is only class
             // that could be found.
             concretes.Remove(typeof(object));
-            if (concretes.Count == 0) {
+            if (concretes.Count == 0)
+            {
                 // Look for an interface that might provide a better binding ... if none can
                 // be found then use System.Object as the common coercion.
-                if (interfaces.Count == 0) {
+                if (interfaces.Count == 0)
+                {
                     return typeof(object);
                 }
 
@@ -525,7 +580,8 @@ namespace com.espertech.esper.common.@internal.util
             MethodInfo method,
             bool allowInstance)
         {
-            if (allowInstance) {
+            if (allowInstance)
+            {
                 return method.IsPublic;
             }
 
@@ -544,14 +600,16 @@ namespace com.espertech.esper.common.@internal.util
             var declaredNoContext = declarationParameters;
             if (!isVarArgs &&
                 declarationParameters.Length > 0 &&
-                declarationParameters[declarationParameters.Length - 1] == typeof(EPLMethodInvocationContext)) {
+                declarationParameters[declarationParameters.Length - 1] == typeof(EPLMethodInvocationContext))
+            {
                 declaredNoContext = declarationParameters.Take(declarationParameters.Length - 1).ToArray();
             }
 
             // determine if the previous-to-last parameter is EPLMethodInvocationContext (varargs-only)
             if (isVarArgs &&
                 declarationParameters.Length > 1 &&
-                declarationParameters[declarationParameters.Length - 2] == typeof(EPLMethodInvocationContext)) {
+                declarationParameters[declarationParameters.Length - 2] == typeof(EPLMethodInvocationContext))
+            {
                 var rewritten = new Type[declarationParameters.Length - 1];
                 Array.Copy(declarationParameters, 0, rewritten, 0, declarationParameters.Length - 2);
                 rewritten[rewritten.Length - 1] = declarationParameters[declarationParameters.Length - 1];
@@ -578,26 +636,31 @@ namespace com.espertech.esper.common.@internal.util
             Type[] genericParameterTypes,
             bool isVarArgs)
         {
-            if (invocationParameters == null) {
+            if (invocationParameters == null)
+            {
                 return declarationParameters.Length == 0 ? 0 : -1;
             }
 
             AtomicLong conversionCount;
 
             // handle varargs
-            if (isVarArgs) {
-                if (invocationParameters.Length < declarationParameters.Length - 1) {
+            if (isVarArgs)
+            {
+                if (invocationParameters.Length < declarationParameters.Length - 1)
+                {
                     return -1;
                 }
 
-                if (invocationParameters.Length == 0) {
+                if (invocationParameters.Length == 0)
+                {
                     return 0;
                 }
 
                 conversionCount = new AtomicLong();
 
                 // check declared types (non-vararg)
-                for (int i = 0; i < declarationParameters.Length - 1; i++) {
+                for (int i = 0; i < declarationParameters.Length - 1; i++)
+                {
                     var compatible = CompareParameterTypeCompatible(
                         invocationParameters[i],
                         declarationParameters[i],
@@ -607,7 +670,8 @@ namespace com.espertech.esper.common.@internal.util
                         conversionCount
                     );
 
-                    if (!compatible) {
+                    if (!compatible)
+                    {
                         return -1;
                     }
                 }
@@ -616,15 +680,19 @@ namespace com.espertech.esper.common.@internal.util
                     declarationParameters[declarationParameters.Length - 1].GetElementType();
 
                 // handle array of compatible type passed into vararg
-                if (invocationParameters.Length == declarationParameters.Length) {
+                if (invocationParameters.Length == declarationParameters.Length)
+                {
                     var providedType = invocationParameters[invocationParameters.Length - 1];
-                    if (providedType != null && providedType.IsArray()) {
-                        if (providedType.GetElementType() == varargDeclarationParameter) {
+                    if (providedType != null && providedType.IsArray())
+                    {
+                        if (providedType.GetElementType() == varargDeclarationParameter)
+                        {
                             return (int) conversionCount.Get();
                         }
 
                         if (TypeHelper.IsSubclassOrImplementsInterface(
-                            providedType.GetElementType(), varargDeclarationParameter)) {
+                            providedType.GetElementType(), varargDeclarationParameter))
+                        {
                             conversionCount.IncrementAndGet();
                             return (int) conversionCount.Get();
                         }
@@ -633,7 +701,8 @@ namespace com.espertech.esper.common.@internal.util
 
                 // handle compatible types passed into vararg
                 Type varargGenericParameterTypes = genericParameterTypes[genericParameterTypes.Length - 1];
-                for (int i = declarationParameters.Length - 1; i < invocationParameters.Length; i++) {
+                for (int i = declarationParameters.Length - 1; i < invocationParameters.Length; i++)
+                {
                     var compatible = CompareParameterTypeCompatible(
                         invocationParameters[i],
                         varargDeclarationParameter,
@@ -641,7 +710,8 @@ namespace com.espertech.esper.common.@internal.util
                         optionalAllowEventBeanCollType == null ? (bool?) null : optionalAllowEventBeanCollType[i],
                         varargGenericParameterTypes,
                         conversionCount);
-                    if (!compatible) {
+                    if (!compatible)
+                    {
                         return -1;
                     }
                 }
@@ -650,12 +720,14 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             // handle non-varargs
-            if (declarationParameters.Length != invocationParameters.Length) {
+            if (declarationParameters.Length != invocationParameters.Length)
+            {
                 return -1;
             }
 
             conversionCount = new AtomicLong();
-            for (int i = 0; i < declarationParameters.Length; i++) {
+            for (int i = 0; i < declarationParameters.Length; i++)
+            {
                 var compatible = CompareParameterTypeCompatible(
                     invocationParameters[i],
                     declarationParameters[i],
@@ -663,7 +735,8 @@ namespace com.espertech.esper.common.@internal.util
                     optionalAllowEventBeanCollType == null ? (bool?) null : optionalAllowEventBeanCollType[i],
                     genericParameterTypes[i],
                     conversionCount);
-                if (!compatible) {
+                if (!compatible)
+                {
                     return -1;
                 }
             }
@@ -679,26 +752,31 @@ namespace com.espertech.esper.common.@internal.util
             Type genericParameterType,
             AtomicLong conversionCount)
         {
-            if ((invocationParameter == null) && !(declarationParameter.IsPrimitive)) {
+            if ((invocationParameter == null) && !(declarationParameter.IsPrimitive))
+            {
                 return true;
             }
 
             if (optionalAllowEventBeanType != null &&
                 declarationParameter == typeof(EventBean) &&
-                optionalAllowEventBeanType.GetValueOrDefault()) {
+                optionalAllowEventBeanType.GetValueOrDefault())
+            {
                 return true;
             }
 
             if (optionalAllowEventBeanCollType != null &&
                 declarationParameter == typeof(ICollection<EventBean>) &&
                 optionalAllowEventBeanCollType.GetValueOrDefault(false) &&
-                genericParameterType.GetGenericType(0) == typeof(EventBean)) {
+                genericParameterType.GetGenericType(0) == typeof(EventBean))
+            {
                 return true;
             }
 
-            if (!IsIdentityConversion(declarationParameter, invocationParameter)) {
+            if (!IsIdentityConversion(declarationParameter, invocationParameter))
+            {
                 conversionCount.IncrementAndGet();
-                if (!IsWideningConversion(declarationParameter, invocationParameter)) {
+                if (!IsWideningConversion(declarationParameter, invocationParameter))
+                {
                     return false;
                 }
             }
@@ -712,12 +790,14 @@ namespace com.espertech.esper.common.@internal.util
             Type declarationType,
             Type invocationType)
         {
-            if (WrappingConversions.ContainsKey(declarationType)) {
+            if (WrappingConversions.ContainsKey(declarationType))
+            {
                 return WrappingConversions.Get(declarationType).Contains(invocationType) ||
                        declarationType.IsAssignableFrom(invocationType);
             }
 
-            if (invocationType == null) {
+            if (invocationType == null)
+            {
                 return !declarationType.IsPrimitive;
             }
 
@@ -736,9 +816,11 @@ namespace com.espertech.esper.common.@internal.util
 
             // Examine each method, checking if the signature is compatible
             ConstructorInfo conversionFailedCtor = null;
-            foreach (ConstructorInfo ctor in ctors) {
+            foreach (ConstructorInfo ctor in ctors)
+            {
                 // Check the modifiers: we only want public
-                if (!ctor.IsPublic) {
+                if (!ctor.IsPublic)
+                {
                     continue;
                 }
 
@@ -757,45 +839,55 @@ namespace com.espertech.esper.common.@internal.util
                 // is not overridden in a derived class.
 
                 // Parameters don't match
-                if (conversionCount == -1) {
+                if (conversionCount == -1)
+                {
                     conversionFailedCtor = ctor;
                     continue;
                 }
 
                 // Parameters match exactly
-                if (conversionCount == 0) {
+                if (conversionCount == 0)
+                {
                     bestMatch = ctor;
                     break;
                 }
 
                 // No previous match
-                if (bestMatch == null) {
+                if (bestMatch == null)
+                {
                     bestMatch = ctor;
                     bestConversionCount = conversionCount;
                 }
-                else {
+                else
+                {
                     // Current match is better
-                    if (conversionCount < bestConversionCount) {
+                    if (conversionCount < bestConversionCount)
+                    {
                         bestMatch = ctor;
                         bestConversionCount = conversionCount;
                     }
                 }
             }
 
-            if (bestMatch != null) {
+            if (bestMatch != null)
+            {
                 return bestMatch;
             }
 
             var paramList = new StringBuilder();
             var message = "Constructor not found for " + declaringClass.Name + " taking ";
-            if (paramTypes != null && paramTypes.Length != 0) {
+            if (paramTypes != null && paramTypes.Length != 0)
+            {
                 var appendString = "";
-                foreach (var param in paramTypes) {
+                foreach (var param in paramTypes)
+                {
                     paramList.Append(appendString);
-                    if (param == null) {
+                    if (param == null)
+                    {
                         paramList.Append("(null)");
                     }
-                    else {
+                    else
+                    {
                         paramList.Append(param.ToString());
                     }
 
@@ -804,11 +896,35 @@ namespace com.espertech.esper.common.@internal.util
 
                 message += "('" + paramList + "')'";
             }
-            else {
+            else
+            {
                 message += "no parameters";
             }
 
-            throw new EngineNoSuchCtorException(message, conversionFailedCtor);
+            throw new MethodResolverNoSuchCtorException(message, conversionFailedCtor);
+        }
+
+        private static String GetParametersPretty(Type[] paramTypes)
+        {
+            var parameters = new StringBuilder();
+            if (paramTypes != null && paramTypes.Length != 0)
+            {
+                var appendString = "";
+                foreach (var param in paramTypes)
+                {
+                    parameters.Append(appendString);
+                    if (param == null)
+                    {
+                        parameters.Append("(null)");
+                    }
+                    else
+                    {
+                        parameters.Append(param.ToString());
+                    }
+                    appendString = ", ";
+                }
+            }
+            return parameters.ToString();
         }
     }
 }

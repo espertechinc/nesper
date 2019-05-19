@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,8 +16,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
@@ -35,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             ExprEvaluatorContext exprEvaluatorContext)
         {
             object array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            return CollectionUtil.ArrayToCollectionAllowNull(array);
+            return CollectionUtil.ArrayToCollectionAllowNull<object>(array);
         }
 
         public static CodegenExpression Codegen(

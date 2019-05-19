@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
+using XLR8.CGLib;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -322,7 +323,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 propertyDescriptor = new DynamicPropertyDescriptor(clazz, null, false);
             }
             else {
-                propertyDescriptor = new DynamicPropertyDescriptor(clazz, method, method.GetParameters().Length > 0);
+                propertyDescriptor = new DynamicPropertyDescriptor(clazz, FastClass.CreateMethod(method), method.GetParameters().Length > 0);
             }
 
             cache.Add(propertyDescriptor);

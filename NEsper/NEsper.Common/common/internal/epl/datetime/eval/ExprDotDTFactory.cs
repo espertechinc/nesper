@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 // validate parameters
                 DotMethodUtil.ValidateParametersDetermineFootprint(
                     currentMethod.Footprints, DotMethodTypeEnum.DATETIME, currentMethodName, footprintProvided,
-                    DotMethodInputTypeMatcher.DEFAULT_ALL);
+                    DotMethodInputTypeMatcherImpl.DEFAULT_ALL);
 
                 if (opFactory is CalendarForgeFactory) {
                     var calendarForge = ((CalendarForgeFactory) currentMethod.ForgeFactory).GetOp(

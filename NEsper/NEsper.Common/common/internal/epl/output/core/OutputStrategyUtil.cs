@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 return iterator;
             }
 
-            return new EventDistinctEnumerator(iterator, eventType);
+            return EventDistinctEnumerator.For(iterator, eventType);
         }
     }
 } // end of namespace

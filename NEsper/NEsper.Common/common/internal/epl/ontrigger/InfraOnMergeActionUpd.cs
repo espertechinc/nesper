@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             }
 
             tableUpdateStrategy.UpdateTable(
-                Collections.Singleton(matchingEvent), tableStateInstance, eventsPerStream, agentInstanceContext);
+                Collections.SingletonList(matchingEvent), tableStateInstance, eventsPerStream, agentInstanceContext);
             if (changeHandlerAdded != null) {
                 changeHandlerAdded.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
             }

@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             method.Block
                 .DeclareVar(
                     typeof(UniformPair<EventBean>), typeof(EventBean[]), "result",
-                    ExprDotMethod(Ref("this"), "processJoinResult", REF_JOINSET, StaticMethod(typeof(Collections), "emptySet"), Constant(true)))
+                    ExprDotMethod(Ref("this"), "ProcessJoinResult", REF_JOINSET, StaticMethod(typeof(Collections), "emptySet"), Constant(true)))
                 .MethodReturn(NewInstance(typeof(ArrayEventEnumerator), Cast(typeof(EventBean[]), ExprDotMethod(Ref("result"), "getFirst"))));
         }
     }

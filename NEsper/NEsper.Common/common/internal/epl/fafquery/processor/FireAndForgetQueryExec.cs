@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -49,8 +50,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             AgentInstanceContext agentInstanceContext)
         {
             var queryGraphValue = filterQueryGraph == null ? null : filterQueryGraph.GetGraphValue(QueryGraphForge.SELF_STREAM, 0);
-            if (queryGraphValue == null || queryGraphValue.Items.IsEmpty()) {
-                if (virtualDataWindow != null) {
+            if (queryGraphValue == null || queryGraphValue.Items.IsEmpty())
+            {
+                if (virtualDataWindow != null)
+                {
                     Pair<IndexMultiKey, EventTable> pair = VirtualDWQueryPlanUtil.GetFireAndForgetDesc(
                         virtualDataWindow.EventType,
                         new EmptySet<string>(),
@@ -64,7 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
             // determine custom index
             var customResult = SnapshotCustomIndex(queryGraphValue, indexRepository, annotations, agentInstanceContext, objectName);
-            if (customResult != null) {
+            if (customResult != null)
+            {
                 return customResult.Value;
             }
 
@@ -83,13 +87,15 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             tablePair = FindIndex(keyNamesAvailable, rangeNamesAvailable, indexRepository, virtualDataWindow, annotations);
 
             // regular index lookup
-            if (tablePair != null) {
+            if (tablePair != null)
+            {
                 return SnapshotIndex(keysAvailable, rangesAvailable, tablePair, virtualDataWindow, annotations, agentInstanceContext, objectName);
             }
 
             // in-keyword lookup
             var inkwResult = SnapshotInKeyword(queryGraphValue, indexRepository, virtualDataWindow, annotations, agentInstanceContext, objectName);
-            if (inkwResult != null) {
+            if (inkwResult != null)
+            {
                 return inkwResult.Value;
             }
 
@@ -104,7 +110,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             VirtualDWView virtualDataWindow,
             Attribute[] annotations)
         {
-            if (virtualDataWindow != null) {
+            if (virtualDataWindow != null)
+            {
                 var tablePairNoName = VirtualDWQueryPlanUtil.GetFireAndForgetDesc(
                     virtualDataWindow.EventType, keyNamesAvailable, rangeNamesAvailable);
                 return new Pair<IndexMultiKey, EventTableAndNamePair>(
@@ -125,7 +132,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             string objectName)
         {
             var inkwSingles = queryGraphValue.InKeywordSingles;
-            if (inkwSingles.Indexed.Length == 0) {
+            if (inkwSingles.Indexed.Length == 0)
+            {
                 return null;
             }
 
@@ -135,7 +143,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                 indexRepository,
                 virtualDataWindow,
                 annotations);
-            if (tablePair == null) {
+            if (tablePair == null)
+            {
                 return null;
             }
 
@@ -144,13 +153,17 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             // table lookup with in-clause: determine combinations
             var tableHashProps = tablePair.First.HashIndexedProps;
             var combinations = new object[tableHashProps.Length][];
-            for (var tableHashPropNum = 0; tableHashPropNum < tableHashProps.Length; tableHashPropNum++) {
-                for (var i = 0; i < inkwSingles.Indexed.Length; i++) {
-                    if (inkwSingles.Indexed[i].Equals(tableHashProps[tableHashPropNum].IndexPropName)) {
+            for (var tableHashPropNum = 0; tableHashPropNum < tableHashProps.Length; tableHashPropNum++)
+            {
+                for (var i = 0; i < inkwSingles.Indexed.Length; i++)
+                {
+                    if (inkwSingles.Indexed[i].Equals(tableHashProps[tableHashPropNum].IndexPropName))
+                    {
                         QueryGraphValueEntryInKeywordSingleIdx keysExpressions = inkwSingles.Key[i];
                         var values = new object[keysExpressions.KeyExprs.Length];
                         combinations[tableHashPropNum] = values;
-                        for (var j = 0; j < keysExpressions.KeyExprs.Length; j++) {
+                        for (var j = 0; j < keysExpressions.KeyExprs.Length; j++)
+                        {
                             values[j] = keysExpressions.KeyExprs[j].Evaluate(null, true, agentInstanceContext);
                         }
                     }
@@ -160,7 +173,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             // enumerate combinations
             var enumeration = new CombinationEnumeration(combinations);
             var events = new HashSet<EventBean>();
-            while (enumeration.MoveNext()) {
+            while (enumeration.MoveNext())
+            {
                 object[] keys = enumeration.Current;
                 var result = FafTableLookup(
                     virtualDataWindow, tablePair.First, tablePair.Second.EventTable, keys, null, annotations, agentInstanceContext);
@@ -185,13 +199,17 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             // compile hash lookup values
             var tableHashProps = tablePair.First.HashIndexedProps;
             var keyValues = new object[tableHashProps.Length];
-            for (var tableHashPropNum = 0; tableHashPropNum < tableHashProps.Length; tableHashPropNum++) {
+            for (var tableHashPropNum = 0; tableHashPropNum < tableHashProps.Length; tableHashPropNum++)
+            {
                 var tableHashProp = tableHashProps[tableHashPropNum];
-                for (var i = 0; i < keysAvailable.Indexed.Length; i++) {
-                    if (keysAvailable.Indexed[i].Equals(tableHashProp.IndexPropName)) {
+                for (var i = 0; i < keysAvailable.Indexed.Length; i++)
+                {
+                    if (keysAvailable.Indexed[i].Equals(tableHashProp.IndexPropName))
+                    {
                         var key = keysAvailable.Keys[i];
                         var value = key.KeyExpr.Evaluate(null, true, agentInstanceContext);
-                        if (value != null) {
+                        if (value != null)
+                        {
                             value = MayCoerceNonNull(value, tableHashProp.CoercionType);
                             keyValues[tableHashPropNum] = value;
                         }
@@ -202,39 +220,49 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             // compile range lookup values
             var tableRangeProps = tablePair.First.RangeIndexedProps;
             var rangeValues = new RangeIndexLookupValue[tableRangeProps.Length];
-            for (var tableRangePropNum = 0; tableRangePropNum < tableRangeProps.Length; tableRangePropNum++) {
+            for (var tableRangePropNum = 0; tableRangePropNum < tableRangeProps.Length; tableRangePropNum++)
+            {
                 var tableRangeProp = tableRangeProps[tableRangePropNum];
-                for (var i = 0; i < rangesAvailable.Indexed.Length; i++) {
-                    if (rangesAvailable.Indexed[i].Equals(tableRangeProp.IndexPropName)) {
+                for (var i = 0; i < rangesAvailable.Indexed.Length; i++)
+                {
+                    if (rangesAvailable.Indexed[i].Equals(tableRangeProp.IndexPropName))
+                    {
                         var range = rangesAvailable.Keys[i];
-                        if (range is QueryGraphValueEntryRangeIn) {
+                        if (range is QueryGraphValueEntryRangeIn)
+                        {
                             var between = (QueryGraphValueEntryRangeIn) range;
                             var start = between.ExprStart.Evaluate(null, true, agentInstanceContext);
                             var end = between.ExprEnd.Evaluate(null, true, agentInstanceContext);
                             Range rangeValue;
-                            if (tableRangeProp.CoercionType.IsNumeric()) {
+                            if (tableRangeProp.CoercionType.IsNumeric())
+                            {
                                 double? startDouble = null;
-                                if (start != null) {
+                                if (start != null)
+                                {
                                     startDouble = start.AsDouble();
                                 }
 
                                 double? endDouble = null;
-                                if (end != null) {
+                                if (end != null)
+                                {
                                     endDouble = end.AsDouble();
                                 }
 
                                 rangeValue = new DoubleRange(startDouble, endDouble);
                             }
-                            else {
+                            else
+                            {
                                 rangeValue = new StringRange(start == null ? null : start.ToString(), end == null ? null : end.ToString());
                             }
 
                             rangeValues[tableRangePropNum] = new RangeIndexLookupValueRange(rangeValue, between.Type, between.IsAllowRangeReversal);
                         }
-                        else {
+                        else
+                        {
                             var relOp = (QueryGraphValueEntryRangeRelOp) range;
                             var value = relOp.Expression.Evaluate(null, true, agentInstanceContext);
-                            if (value != null) {
+                            if (value != null)
+                            {
                                 value = MayCoerceNonNull(value, tableRangeProp.CoercionType);
                             }
 
@@ -253,11 +281,13 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             object value,
             Type coercionType)
         {
-            if (value.GetType() == coercionType) {
+            if (value.GetType() == coercionType)
+            {
                 return value;
             }
 
-            if (value.IsNumber()) {
+            if (value.IsNumber())
+            {
                 return TypeHelper.CoerceBoxed(value, coercionType);
             }
 
@@ -273,25 +303,31 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             Attribute[] annotations,
             AgentInstanceContext agentInstanceContext)
         {
-            if (virtualDataWindow != null) {
+            if (virtualDataWindow != null)
+            {
                 return virtualDataWindow.GetFireAndForgetData(eventTable, keyValues, rangeValues, annotations);
             }
 
             ISet<EventBean> result;
-            if (indexMultiKey.HashIndexedProps.Length > 0 && indexMultiKey.RangeIndexedProps.Length == 0) {
+            if (indexMultiKey.HashIndexedProps.Length > 0 && indexMultiKey.RangeIndexedProps.Length == 0)
+            {
                 var table = (PropertyHashedEventTable) eventTable;
-                if (indexMultiKey.HashIndexedProps.Length == 1) {
+                if (indexMultiKey.HashIndexedProps.Length == 1)
+                {
                     result = table.Lookup(keyValues[0]);
                 }
-                else {
+                else
+                {
                     result = table.Lookup(new HashableMultiKey(keyValues));
                 }
             }
-            else if (indexMultiKey.HashIndexedProps.Length == 0 && indexMultiKey.RangeIndexedProps.Length == 1) {
+            else if (indexMultiKey.HashIndexedProps.Length == 0 && indexMultiKey.RangeIndexedProps.Length == 1)
+            {
                 var table = (PropertySortedEventTable) eventTable;
                 result = table.LookupConstants(rangeValues[0]);
             }
-            else {
+            else
+            {
                 var table = (PropertyCompositeEventTable) eventTable;
                 var rangeCoercion = table.OptRangeCoercedTypes;
                 var lookup = CompositeIndexLookupFactory.Make(keyValues, rangeValues, rangeCoercion);
@@ -299,7 +335,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                 lookup.Lookup(table.Index, result, table.PostProcessor);
             }
 
-            if (result != null) {
+            if (result != null)
+            {
                 return result;
             }
 
@@ -319,33 +356,42 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
             // find matching index
             var found = false;
-            foreach (var valueDesc in queryGraphValue.Items) {
-                if (valueDesc.Entry is QueryGraphValueEntryCustom) {
+            foreach (var valueDesc in queryGraphValue.Items)
+            {
+                if (valueDesc.Entry is QueryGraphValueEntryCustom)
+                {
                     var customIndex = (QueryGraphValueEntryCustom) valueDesc.Entry;
 
-                    foreach (var entry in indexRepository.TableIndexesRefCount) {
-                        if (entry.Key.AdvancedIndexDesc == null) {
+                    foreach (var entry in indexRepository.TableIndexesRefCount)
+                    {
+                        if (entry.Key.AdvancedIndexDesc == null)
+                        {
                             continue;
                         }
 
                         var metadata = indexRepository.EventTableIndexMetadata.Indexes.Get(entry.Key);
-                        if (metadata == null || metadata.ExplicitIndexNameIfExplicit == null) {
+                        if (metadata == null || metadata.ExplicitIndexNameIfExplicit == null)
+                        {
                             continue;
                         }
 
                         var provision = metadata.OptionalQueryPlanIndexItem.AdvancedIndexProvisionDesc;
-                        if (provision == null) {
+                        if (provision == null)
+                        {
                             continue;
                         }
 
-                        foreach (var op in customIndex.Operations) {
-                            if (!provision.Factory.Forge.ProvidesIndexForOperation(op.Key.OperationName)) {
+                        foreach (var op in customIndex.Operations)
+                        {
+                            if (!provision.Factory.Forge.ProvidesIndexForOperation(op.Key.OperationName))
+                            {
                                 continue;
                             }
 
                             var indexProperties = entry.Key.AdvancedIndexDesc.IndexExpressions;
                             var expressions = op.Key.Expressions;
-                            if (ArrayHelper.AreEqual(indexProperties, expressions)) {
+                            if (ArrayHelper.AreEqual(indexProperties, expressions))
+                            {
                                 values = op.Value;
                                 table = entry.Value.Table;
                                 indexName = metadata.ExplicitIndexNameIfExplicit;
@@ -354,18 +400,21 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                             }
                         }
 
-                        if (found) {
+                        if (found)
+                        {
                             break;
                         }
                     }
                 }
 
-                if (found) {
+                if (found)
+                {
                     break;
                 }
             }
 
-            if (table == null) {
+            if (table == null)
+            {
                 return null;
             }
 
@@ -393,7 +442,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             string name)
         {
             var number = eval.Evaluate(null, true, context);
-            if (number == null) {
+            if (number == null)
+            {
                 throw new EPException("Invalid null value for '" + name + "'");
             }
 
@@ -415,20 +465,24 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             AgentInstanceContext agentInstanceContext,
             string objectName)
         {
-            var hook = QueryPlanIndexHookUtil.GetHook(annotations, agentInstanceContext.ClasspathImportServiceRuntime);
+            var hook = QueryPlanIndexHookUtil.GetHook(annotations, agentInstanceContext.ImportServiceRuntime);
             var queryPlanLogging = agentInstanceContext.RuntimeSettingsService.ConfigurationCommon.Logging.IsEnableQueryPlan;
-            if (queryPlanLogging && (QUERY_PLAN_LOG.IsInfoEnabled || hook != null)) {
+            if (queryPlanLogging && (QUERY_PLAN_LOG.IsInfoEnabled || hook != null))
+            {
                 var prefix = "Fire-and-forget or init-time-query from " + objectName + " ";
                 var indexText = indexNameOrNull != null ? "index " + indexNameOrNull + " " : "full table scan ";
                 indexText += "(snapshot only, for join see separate query plan) ";
-                if (eventTableOrNull == null) {
+                if (eventTableOrNull == null)
+                {
                     QUERY_PLAN_LOG.Info(prefix + indexText);
                 }
-                else {
+                else
+                {
                     QUERY_PLAN_LOG.Info(prefix + indexText + eventTableOrNull.ToQueryPlan());
                 }
 
-                if (hook != null) {
+                if (hook != null)
+                {
                     hook.FireAndForget(
                         new QueryPlanIndexDescFAF(
                             new[] {

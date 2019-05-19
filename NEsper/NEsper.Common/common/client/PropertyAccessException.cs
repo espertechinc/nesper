@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.client
         /// </summary>
         /// <param name="cause">is the inner exception</param>
         public PropertyAccessException(Exception cause)
-            : base(String.Empty, cause)
+            : base(string.Empty, cause)
         {
         }
 

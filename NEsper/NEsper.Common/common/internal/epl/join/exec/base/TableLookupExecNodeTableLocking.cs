@@ -37,10 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             ExprEvaluatorContext exprEvaluatorContext)
         {
             // acquire table index lock
-            bool added = exprEvaluatorContext.TableExprEvaluatorContext.AddAcquiredLock(_lock);
-            if (added) {
-                _lock.Lock();
-            }
+            exprEvaluatorContext.TableExprEvaluatorContext.AddAcquiredLock(_lock);
 
             // lookup events
             var joinedEvents = lookupStrategy.Lookup(lookupEvent, null, exprEvaluatorContext);

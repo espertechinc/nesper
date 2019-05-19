@@ -28,12 +28,14 @@ using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class ModuleCompileTimeServices
     {
         public ModuleCompileTimeServices(
+            IContainer container,
             CompilerServices compilerServices,
             Configuration configuration,
             ContextCompileTimeRegistry contextCompileTimeRegistry,
@@ -63,6 +65,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ViewResolutionService viewResolutionService,
             XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory)
         {
+            Container = container;
             CompilerServices = compilerServices;
             Configuration = configuration;
             ContextCompileTimeRegistry = contextCompileTimeRegistry;
@@ -93,8 +96,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             XmlFragmentEventTypeFactory = xmlFragmentEventTypeFactory;
         }
 
-        public ModuleCompileTimeServices()
+        public ModuleCompileTimeServices(IContainer container)
         {
+            Container = container;
             CompilerServices = null;
             Configuration = null;
             ContextCompileTimeRegistry = null;
@@ -124,6 +128,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ViewResolutionService = null;
             XmlFragmentEventTypeFactory = null;
         }
+
+        public IContainer Container { get; }
 
         public BeanEventTypeStemService BeanEventTypeStemService { get; }
 

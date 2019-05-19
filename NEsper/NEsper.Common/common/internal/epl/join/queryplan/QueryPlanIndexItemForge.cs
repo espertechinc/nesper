@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// <summary>
     ///     Specifies an index to build as part of an overall query plan.
     /// </summary>
-    public class QueryPlanIndexItemForge : CodegenMakeable<SAIFFInitializeSymbol>
+    public class QueryPlanIndexItemForge : CodegenMakeable
     {
         private readonly EventType eventType;
 
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols,
+            CodegenSymbolProvider symbols,
             CodegenClassScope classScope)
         {
             return Make(parent, classScope);

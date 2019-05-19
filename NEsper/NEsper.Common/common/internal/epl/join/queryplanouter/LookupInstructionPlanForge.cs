@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
@@ -23,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
     ///     Plan for lookup using a from-stream event looking up one or more to-streams using a specified lookup plan for each
     ///     to-stream.
     /// </summary>
-    public class LookupInstructionPlanForge : CodegenMakeable<SAIFFInitializeSymbol>
+    public class LookupInstructionPlanForge : CodegenMakeable
     {
         /// <summary>
         ///     Ctor.
@@ -42,15 +44,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             HistoricalDataPlanNodeForge[] historicalPlans,
             bool[] requiredPerStream)
         {
-            if (toStreams.Length != lookupPlans.Length) {
+            if (toStreams.Length != lookupPlans.Length)
+            {
                 throw new ArgumentException("Invalid number of lookup plans for each stream");
             }
 
-            if (requiredPerStream.Length < lookupPlans.Length) {
+            if (requiredPerStream.Length < lookupPlans.Length)
+            {
                 throw new ArgumentException("Invalid required per stream array");
             }
 
-            if (fromStream < 0 || fromStream >= requiredPerStream.Length) {
+            if (fromStream < 0 || fromStream >= requiredPerStream.Length)
+            {
                 throw new ArgumentException("Invalid from stream");
             }
 
@@ -73,6 +78,14 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         public bool[] RequiredPerStream { get; }
 
         public HistoricalDataPlanNodeForge[] HistoricalPlans { get; }
+
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenSymbolProvider symbols,
+            CodegenClassScope classScope)
+        {
+            return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
+        }
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -104,11 +117,14 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             );
 
             writer.IncrIndent();
-            for (var i = 0; i < LookupPlans.Length; i++) {
-                if (LookupPlans[i] != null) {
+            for (var i = 0; i < LookupPlans.Length; i++)
+            {
+                if (LookupPlans[i] != null)
+                {
                     writer.WriteLine("plan " + i + " :" + LookupPlans[i].ToString());
                 }
-                else {
+                else
+                {
                     writer.WriteLine("plan " + i + " : no lookup plan");
                 }
             }
@@ -118,8 +134,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
 
         public void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
         {
-            for (var i = 0; i < LookupPlans.Length; i++) {
-                if (LookupPlans[i] != null) {
+            for (var i = 0; i < LookupPlans.Length; i++)
+            {
+                if (LookupPlans[i] != null)
+                {
                     usedIndexes.AddAll(CompatExtensions.AsList(LookupPlans[i].IndexNum));
                 }
             }

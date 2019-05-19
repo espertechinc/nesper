@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.client
         /// <param name="mapped">true if the property is a mapped property, i.e. type is an Map or the property value access requires an string map key</param>
         /// <param name="fragment">true if the property value can be represented as an EventBean and property type can be represented as an EventType</param>
         public EventPropertyDescriptor(
-            String propertyName,
+            string propertyName,
             Type propertyType,
             Type propertyComponentType,
             bool isRequiresIndex,
@@ -169,7 +169,7 @@ namespace com.espertech.esper.common.client
         /// <exception cref="T:System.NullReferenceException">
         /// The <paramref name="obj"/> parameter is null.
         /// </exception>
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.client
         /// <returns>
         /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
         /// </returns>
-        public override String ToString()
+        public override string ToString()
         {
             return "name " + PropertyName +
                    " propertyType " + PropertyType +

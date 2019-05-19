@@ -15,24 +15,22 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
     public class EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory : EventAdvancedIndexFactoryForgeQuadTreeFactory
     {
-        public readonly static EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory INSTANCE =
+        public static readonly EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory INSTANCE =
             new EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory();
 
         private EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory()
         {
         }
 
-        public override EventAdvancedIndexFactoryForge Forge {
-            get => EventAdvancedIndexFactoryForgeQuadTreePointRegionForge.INSTANCE;
-        }
+        public override EventAdvancedIndexFactoryForge Forge => EventAdvancedIndexFactoryForgeQuadTreePointRegionForge.INSTANCE;
 
         public override EventTable Make(
             EventAdvancedIndexConfigStatement configStatement,
             AdvancedIndexConfigContextPartition configCP,
             EventTableOrganization organization)
         {
-            AdvancedIndexConfigContextPartitionQuadTree qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
-            PointRegionQuadTree<object> quadTree = PointRegionQuadTreeFactory.Make(
+            var qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
+            var quadTree = PointRegionQuadTreeFactory.Make<object>(
                 qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
             return new EventTableQuadTreePointRegionImpl(organization, (AdvancedIndexConfigStatementPointRegionQuadtree) configStatement, quadTree);
         }

@@ -29,6 +29,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
@@ -114,8 +115,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             services.ExprDeclaredCompileTimeResolver, services.ContextCompileTimeResolver,
             services.TableCompileTimeResolver, services.ScriptCompileTimeResolver, services.CompilerServices);
 
-        public bool IsInstrumented {
-            get { return services.IsInstrumented(); }
-        }
+        public bool IsInstrumented => services.IsInstrumented();
+
+        public IContainer Container => services.Container;
     }
 } // end of namespace

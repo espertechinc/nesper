@@ -11,11 +11,11 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
-    public interface CodegenMakeable<T> where T : CodegenSymbolProvider
+    public interface CodegenMakeable
     {
         CodegenExpression Make(
             CodegenMethodScope parent,
-            T symbols,
+            CodegenSymbolProvider symbols,
             CodegenClassScope classScope);
     }
 } // end of namespace

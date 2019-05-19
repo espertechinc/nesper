@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                     case MethodTargetStrategyStaticMethodInvokeType.NOPARAM:
                         return factory.method.Invoke(target, null);
                     case MethodTargetStrategyStaticMethodInvokeType.SINGLE:
-                        return factory.method.Invoke(target, lookupValues);
+                        return factory.method.Invoke(target, new object[] { lookupValues });
                     case MethodTargetStrategyStaticMethodInvokeType.MULTIKEY:
                         return factory.method.Invoke(target, ((HashableMultiKey) lookupValues).Keys);
                     default:

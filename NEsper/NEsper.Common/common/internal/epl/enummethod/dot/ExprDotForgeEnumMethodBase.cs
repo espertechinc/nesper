@@ -233,9 +233,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ValidateDuplicateStreamNames(validationContext.StreamTypeService.StreamNames, additionalStreamNames);
 
             // add name and type to list of known types
-            var addTypes = (EventType[]) CollectionUtil.ArrayExpandAddElements(
+            var addTypes = CollectionUtil.ArrayExpandAddElements<EventType>(
                 validationContext.StreamTypeService.EventTypes, additionalTypes);
-            var addNames = (string[]) CollectionUtil.ArrayExpandAddElements(
+            var addNames = CollectionUtil.ArrayExpandAddElements<string>(
                 validationContext.StreamTypeService.StreamNames, additionalStreamNames);
 
             var types = new StreamTypeServiceImpl(

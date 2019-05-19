@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <returns>lookup plan</returns>
         public TableLookupPlanForge LookupStrategySpec => TableLookupPlan;
 
-        protected override void Print(IndentWriter writer)
+        protected internal override void Print(IndentWriter writer)
         {
             writer.WriteLine(
                 "TableLookupNode " +

@@ -30,9 +30,9 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         /// <throws>IOException if the streams returned an exception</throws>
         /// <throws>ClassNotFoundException if the de-serialize fails</throws>
-        public static object Copy(
+        public static T Copy<T>(
             IContainer container,
-            object orig)
+            T orig)
         {
             // Create the formatter
             var formatter = new BinaryFormatter();
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.util
                 // Rewind the stream
                 stream.Seek(0, SeekOrigin.Begin);
                 // Deserialize the object graph from the stream
-                return formatter.Deserialize(stream);
+                return (T) formatter.Deserialize(stream);
             }
         }
     }

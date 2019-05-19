@@ -15,23 +15,21 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
     public class EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory : EventAdvancedIndexFactoryForgeQuadTreeFactory
     {
-        public readonly static EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory INSTANCE = new EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory();
+        public static readonly EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory INSTANCE = new EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory();
 
         private EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory()
         {
         }
 
-        public override EventAdvancedIndexFactoryForge Forge {
-            get => EventAdvancedIndexFactoryForgeQuadTreeMXCIFForge.INSTANCE;
-        }
+        public override EventAdvancedIndexFactoryForge Forge => EventAdvancedIndexFactoryForgeQuadTreeMXCIFForge.INSTANCE;
 
         public override EventTable Make(
             EventAdvancedIndexConfigStatement configStatement,
             AdvancedIndexConfigContextPartition configCP,
             EventTableOrganization organization)
         {
-            AdvancedIndexConfigContextPartitionQuadTree qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
-            MXCIFQuadTree<object> quadTree = MXCIFQuadTreeFactory.Make(qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
+            var qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
+            var quadTree = MXCIFQuadTreeFactory.Make<object>(qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
             return new EventTableQuadTreeMXCIFImpl(organization, (AdvancedIndexConfigStatementMXCIFQuadtree) configStatement, quadTree);
         }
 

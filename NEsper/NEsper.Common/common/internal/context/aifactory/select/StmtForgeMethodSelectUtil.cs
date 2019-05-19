@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.hook.type;
@@ -49,12 +50,14 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.prior;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
     public class StmtForgeMethodSelectUtil
     {
         public static StmtForgeMethodSelectResult Make(
+            IContainer container,
             bool dataflowOperator,
             string packageName,
             string classPostfix,
@@ -67,9 +70,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
             var statementSpec = @base.StatementSpec;
 
-            string[] streamNames = DetermineStreamNames(statementSpec.StreamSpecs);
+            string[] streamNames = StatementForgeMethodSelectUtil.DetermineStreamNames(statementSpec.StreamSpecs);
             var numStreams = streamNames.Length;
-            if (numStreams == 0) {
+            if (numStreams == 0)
+            {
                 throw new ExprValidationException("The from-clause is required but has not been specified");
             }
 
@@ -89,7 +93,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             IList<ViewFactoryForge>[] viewForges = new IList<ViewFactoryForge>[numStreams];
             var historicalEventViewables = new HistoricalEventViewableForge[numStreams];
 
-            for (var stream = 0; stream < numStreams; stream++) {
+            for (var stream = 0; stream < numStreams; stream++)
+            {
                 var streamSpec = statementSpec.StreamSpecs[stream];
                 var isCanIterateUnbound = streamSpec.ViewSpecs.Length == 0 &&
                                           (services.Configuration.Compiler.ViewResources.IsIterableUnbound ||
@@ -98,14 +103,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 var args = new ViewFactoryForgeArgs(
                     stream, false, -1, streamSpec.Options, null, @base.StatementRawInfo, services);
 
-                if (dataflowOperator) {
+                if (dataflowOperator)
+                {
                     var dfResult = HandleDataflowActivation(args, streamSpec);
                     streamEventTypes[stream] = dfResult.StreamEventType;
                     eventTypeNames[stream] = dfResult.EventTypeName;
                     viewableActivatorForges[stream] = dfResult.ViewableActivatorForge;
                     viewForges[stream] = dfResult.ViewForges;
                 }
-                else if (streamSpec is FilterStreamSpecCompiled) {
+                else if (streamSpec is FilterStreamSpecCompiled)
+                {
                     var filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.StreamSpecs[stream];
                     var filterSpecCompiled = filterStreamSpec.FilterSpecCompiled;
                     streamEventTypes[stream] = filterSpecCompiled.ResultEventType;
@@ -117,10 +124,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                         streamSpec.ViewSpecs, args, streamEventTypes[stream]);
                     filterSpecCompileds.Add(filterSpecCompiled);
                 }
-                else if (streamSpec is PatternStreamSpecCompiled) {
+                else if (streamSpec is PatternStreamSpecCompiled)
+                {
                     var patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
                     var forges = patternStreamSpec.Root.CollectFactories();
-                    foreach (var forgeNode in forges) {
+                    foreach (var forgeNode in forges)
+                    {
                         forgeNode.CollectSelfFilterAndSchedule(filterSpecCompileds, scheduleHandleCallbackProviders);
                     }
 
@@ -132,12 +141,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     streamEventTypes[stream] = patternType;
                     viewForges[stream] = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, patternType);
                 }
-                else if (streamSpec is NamedWindowConsumerStreamSpec) {
+                else if (streamSpec is NamedWindowConsumerStreamSpec)
+                {
                     var namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
                     NamedWindowMetaData namedWindow =
                         services.NamedWindowCompileTimeResolver.Resolve(namedSpec.NamedWindow.EventType.Name);
                     EventType namedWindowType = namedWindow.EventType;
-                    if (namedSpec.OptPropertyEvaluator != null) {
+                    if (namedSpec.OptPropertyEvaluator != null)
+                    {
                         namedWindowType = namedSpec.OptPropertyEvaluator.FragmentEventType;
                     }
 
@@ -161,10 +172,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     viewForges[stream] = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, namedWindowType);
                     EPStatementStartMethodHelperValidate.ValidateNoDataWindowOnNamedWindow(viewForges[stream]);
                 }
-                else if (streamSpec is TableQueryStreamSpec) {
+                else if (streamSpec is TableQueryStreamSpec)
+                {
                     ValidateNoViews(streamSpec, "Table data");
                     var tableStreamSpec = (TableQueryStreamSpec) streamSpec;
-                    if (numStreams > 1 && tableStreamSpec.FilterExpressions.Count > 0) {
+                    if (numStreams > 1 && tableStreamSpec.FilterExpressions.Count > 0)
+                    {
                         throw new ExprValidationException(
                             "Joins with tables do not allow table filter expressions, please add table filters to the where-clause instead");
                     }
@@ -180,15 +193,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     streamEventTypes[stream] = tableStreamSpec.Table.InternalEventType;
                     joinAnalysisResult.SetTablesForStream(stream, table);
 
-                    if (tableStreamSpec.Options.IsUnidirectional) {
+                    if (tableStreamSpec.Options.IsUnidirectional)
+                    {
                         throw new ExprValidationException("Tables cannot be marked as unidirectional");
                     }
 
-                    if (tableStreamSpec.Options.IsRetainIntersection || tableStreamSpec.Options.IsRetainUnion) {
+                    if (tableStreamSpec.Options.IsRetainIntersection || tableStreamSpec.Options.IsRetainUnion)
+                    {
                         throw new ExprValidationException("Tables cannot be marked with retain");
                     }
                 }
-                else if (streamSpec is DBStatementStreamSpec) {
+                else if (streamSpec is DBStatementStreamSpec)
+                {
                     ValidateNoViews(streamSpec, "Historical data");
                     var sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
                     var typeConversionHook = (SQLColumnTypeConversion) ImportUtil.GetAnnotationHook(
@@ -198,13 +214,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                         statementSpec.Annotations, HookType.SQLROW, typeof(SQLOutputRowConversion),
                         services.ImportServiceCompileTime);
                     var viewable = HistoricalEventViewableDatabaseForgeFactory.CreateDBStatementView(
-                        stream, sqlStreamSpec, typeConversionHook, outputRowConversionHook, @base, services);
+                        stream, sqlStreamSpec, typeConversionHook, outputRowConversionHook, @base, services,
+                        statementSpec.Annotations);
                     streamEventTypes[stream] = viewable.EventType;
                     viewForges[stream] = Collections.GetEmptyList<ViewFactoryForge>();
                     viewableActivatorForges[stream] = new ViewableActivatorHistoricalForge(viewable);
                     historicalEventViewables[stream] = viewable;
                 }
-                else if (streamSpec is MethodStreamSpec) {
+                else if (streamSpec is MethodStreamSpec)
+                {
                     ValidateNoViews(streamSpec, "Method data");
                     var methodStreamSpec = (MethodStreamSpec) streamSpec;
                     var viewable = HistoricalEventViewableMethodForgeFactory.CreateMethodStatementView(
@@ -215,18 +233,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     viewableActivatorForges[stream] = new ViewableActivatorHistoricalForge(viewable);
                     historicalEventViewables[stream] = viewable;
                 }
-                else {
+                else
+                {
                     throw new IllegalStateException("Unrecognized stream " + streamSpec);
                 }
             }
 
             // handle match-recognize pattern
-            if (statementSpec.Raw.MatchRecognizeSpec != null) {
-                if (numStreams > 1) {
+            if (statementSpec.Raw.MatchRecognizeSpec != null)
+            {
+                if (numStreams > 1)
+                {
                     throw new ExprValidationException("Joins are not allowed when using match-recognize");
                 }
 
-                if (joinAnalysisResult.TablesPerStream[0] != null) {
+                if (joinAnalysisResult.TablesPerStream[0] != null)
+                {
                     throw new ExprValidationException("Tables cannot be used with match-recognize");
                 }
 
@@ -235,14 +257,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 var eventType = viewForges[0].IsEmpty()
                     ? streamEventTypes[0]
                     : viewForges[0][(viewForges[0].Count - 1)].EventType;
-                var desc = RowRecogNFAViewPlanUtil.ValidateAndPlan(eventType, isUnbound, @base, services);
+                var desc = RowRecogNFAViewPlanUtil.ValidateAndPlan(container, eventType, isUnbound, @base, services);
                 var factoryForge = new RowRecogNFAViewFactoryForge(desc);
                 scheduleHandleCallbackProviders.Add(factoryForge);
                 viewForges[0].Add(factoryForge);
             }
 
             // Obtain event types from view factory chains
-            for (var i = 0; i < viewForges.Length; i++) {
+            for (var i = 0; i < viewForges.Length; i++)
+            {
                 streamEventTypes[i] = viewForges[i].IsEmpty()
                     ? streamEventTypes[i]
                     : viewForges[i][(viewForges[i].Count - 1)].EventType;
@@ -268,16 +291,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             // Validate views that require validation, specifically streams that don't have
             // sub-views such as DB SQL joins
             var historicalViewableDesc = new HistoricalViewableDesc(numStreams);
-            for (var stream = 0; stream < historicalEventViewables.Length; stream++) {
+            for (var stream = 0; stream < historicalEventViewables.Length; stream++)
+            {
                 var historicalEventViewable = historicalEventViewables[stream];
-                if (historicalEventViewable == null) {
+                if (historicalEventViewable == null)
+                {
                     continue;
                 }
 
                 scheduleHandleCallbackProviders.Add(historicalEventViewable);
                 historicalEventViewable.Validate(typeService, @base, services);
                 historicalViewableDesc.SetHistorical(stream, historicalEventViewable.RequiredStreams);
-                if (historicalEventViewable.RequiredStreams.Contains(stream)) {
+                if (historicalEventViewable.RequiredStreams.Contains(stream))
+                {
                     throw new ExprValidationException(
                         "Parameters for historical stream " + stream +
                         " indicate that the stream is subordinate to itself as stream parameters originate in the same stream");
@@ -299,9 +325,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             var viewResourceDelegateDesc =
                 ViewResourceVerifyHelper.VerifyPreviousAndPriorRequirements(viewForges, viewResourceDelegateExpr);
             var hasPrior = ViewResourceDelegateDesc.HasPrior(viewResourceDelegateDesc);
-            if (hasPrior) {
-                for (var stream = 0; stream < numStreams; stream++) {
-                    if (!viewResourceDelegateDesc[stream].PriorRequests.IsEmpty()) {
+            if (hasPrior)
+            {
+                for (var stream = 0; stream < numStreams; stream++)
+                {
+                    if (!viewResourceDelegateDesc[stream].PriorRequests.IsEmpty())
+                    {
                         viewForges[stream].Add(
                             new PriorEventViewForge(viewForges[stream].IsEmpty(), streamEventTypes[stream]));
                     }
@@ -314,7 +343,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             outputProcessViewFactoryForge.CollectSchedules(scheduleHandleCallbackProviders);
 
             JoinSetComposerPrototypeForge joinForge = null;
-            if (numStreams > 1) {
+            if (numStreams > 1)
+            {
                 bool hasAggregations = !resultSetProcessorDesc.AggregationServiceForgeDesc.Expressions.IsEmpty();
                 joinForge = JoinSetComposerPrototypeForgeFactory.MakeComposerPrototype(
                     statementSpec, joinAnalysisResult, typeService, historicalViewableDesc, false, hasAggregations,
@@ -326,7 +356,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges =
                 ExprTableEvalHelperPlan.PlanTableAccess(@base.StatementSpec.TableAccessNodes);
             ValidateTableAccessUse(statementSpec.Raw.IntoTableSpec, statementSpec.Raw.TableExpressions);
-            if (joinAnalysisResult.IsUnidirectional && statementSpec.Raw.IntoTableSpec != null) {
+            if (joinAnalysisResult.IsUnidirectional && statementSpec.Raw.IntoTableSpec != null)
+            {
                 throw new ExprValidationException("Into-table does not allow unidirectional joins");
             }
 
@@ -365,7 +396,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             forgables.Add(
                 new StmtClassForgableStmtFields(namespaceScope.FieldsClassNameOptional, namespaceScope, numStreams));
 
-            if (!dataflowOperator) {
+            if (!dataflowOperator)
+            {
                 var informationals = StatementInformationalsUtil.GetInformationals(
                     @base, filterSpecCompileds, scheduleHandleCallbackProviders, namedWindowConsumers, true,
                     resultSetProcessorDesc.SelectSubscriberDescriptor, namespaceScope, services);
@@ -384,7 +416,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             ViewFactoryForgeArgs args,
             StreamSpecCompiled streamSpec)
         {
-            if (!(streamSpec is FilterStreamSpecCompiled)) {
+            if (!(streamSpec is FilterStreamSpecCompiled))
+            {
                 throw new ExprValidationException(
                     "Dataflow operator only allows filters for event types and does not allow tables, named windows or patterns");
             }
@@ -403,8 +436,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
         {
             var collector = new ViewForgeVisitorSchedulesCollector(scheduleHandleCallbackProviders);
-            foreach (var subselect in subselects) {
-                foreach (ViewFactoryForge forge in subselect.Value.ViewForges) {
+            foreach (var subselect in subselects)
+            {
+                foreach (ViewFactoryForge forge in subselect.Value.ViewForges)
+                {
                     forge.Accept(collector);
                 }
             }
@@ -414,7 +449,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             StreamSpecCompiled streamSpec,
             string conceptName)
         {
-            if (streamSpec.ViewSpecs.Length > 0) {
+            if (streamSpec.ViewSpecs.Length > 0)
+            {
                 throw new ExprValidationException(
                     conceptName + " joins do not allow views onto the data, view '"
                                 + streamSpec.ViewSpecs[0].ObjectName + "' is not valid in this context");
@@ -425,9 +461,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             IntoTableSpec intoTableSpec,
             ISet<ExprTableAccessNode> tableNodes)
         {
-            if (intoTableSpec != null && tableNodes != null && tableNodes.Count > 0) {
-                foreach (var node in tableNodes) {
-                    if (node.TableName.Equals(intoTableSpec.Name)) {
+            if (intoTableSpec != null && tableNodes != null && tableNodes.Count > 0)
+            {
+                foreach (var node in tableNodes)
+                {
+                    if (node.TableName.Equals(intoTableSpec.Name))
+                    {
                         throw new ExprValidationException(
                             "Invalid use of table '" + intoTableSpec.Name +
                             "', aggregate-into requires write-only, the expression '" +
@@ -441,19 +480,24 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             QueryPlanForge queryPlan,
             StatementCompileTimeServices services)
         {
-            if (queryPlan == null) {
+            if (queryPlan == null)
+            {
                 return;
             }
 
             var indexes = new HashSet<TableLookupIndexReqKey>();
-            for (var streamnum = 0; streamnum < queryPlan.ExecNodeSpecs.Length; streamnum++) {
+            for (var streamnum = 0; streamnum < queryPlan.ExecNodeSpecs.Length; streamnum++)
+            {
                 QueryPlanNodeForge node = queryPlan.ExecNodeSpecs[streamnum];
                 indexes.Clear();
                 node.AddIndexes(indexes);
-                foreach (var index in indexes) {
-                    if (index.TableName != null) {
+                foreach (var index in indexes)
+                {
+                    if (index.TableName != null)
+                    {
                         var tableMeta = services.TableCompileTimeResolver.Resolve(index.TableName);
-                        if (tableMeta.TableVisibility == NameAccessModifier.PUBLIC) {
+                        if (tableMeta.TableVisibility == NameAccessModifier.PUBLIC)
+                        {
                             services.ModuleDependenciesCompileTime.AddPathIndex(
                                 false, index.TableName, tableMeta.TableModuleName, index.IndexName,
                                 index.IndexModuleName, services.NamedWindowCompileTimeRegistry,

@@ -10,15 +10,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -51,7 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public bool IsConstantResult => false;
 
-        public ExprEvaluator ExprEvaluator {
+        public ExprEvaluator ExprEvaluator
+        {
             get {
                 CheckValidated(_forge);
                 return _forge.ExprEvaluator;
@@ -78,7 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 3) {
+            if (ChildNodes.Length != 3)
+            {
                 throw new ExprValidationException("The Between operator requires exactly 3 child expressions");
             }
 
@@ -88,33 +91,40 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var typeTwo = forges[1].EvaluationType.GetBoxedType();
             var typeThree = forges[2].EvaluationType.GetBoxedType();
 
-            if (typeOne == null) {
+            if (typeOne == null)
+            {
                 throw new ExprValidationException("Null value not allowed in between-clause");
             }
 
             Type compareType;
             var isAlwaysFalse = false;
             ExprBetweenComp computer = null;
-            if (typeTwo == null || typeThree == null) {
+            if (typeTwo == null || typeThree == null)
+            {
                 isAlwaysFalse = true;
             }
-            else {
-                if (typeOne != typeof(string) || typeTwo != typeof(string) || typeThree != typeof(string)) {
-                    if (!typeOne.IsNumeric()) {
+            else
+            {
+                if (typeOne != typeof(string) || typeTwo != typeof(string) || typeThree != typeof(string))
+                {
+                    if (!typeOne.IsNumeric())
+                    {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             typeOne.GetSimpleName() +
                             "' to numeric is not allowed");
                     }
 
-                    if (!typeTwo.IsNumeric()) {
+                    if (!typeTwo.IsNumeric())
+                    {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             typeTwo.GetSimpleName() +
                             "' to numeric is not allowed");
                     }
 
-                    if (!typeThree.IsNumeric()) {
+                    if (!typeThree.IsNumeric())
+                    {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             typeThree.GetSimpleName() +
@@ -141,7 +151,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.RELATIONAL_BETWEEN_IN;
 
-        public override ExprForge Forge {
+        public override ExprForge Forge
+        {
             get {
                 CheckValidated(_forge);
                 return _forge;
@@ -150,13 +161,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            IEnumerator<ExprNode> it = ChildNodes.GetEnumerator();
-            if (IsLowEndpointIncluded && IsHighEndpointIncluded) {
+            IList<ExprNode> children = ChildNodes;
+            IEnumerator<ExprNode> it = children.GetEnumerator();
+            if (IsLowEndpointIncluded && IsHighEndpointIncluded)
+            {
                 it.Advance().ToEPL(writer, Precedence);
-                if (IsNotBetween) {
+                if (IsNotBetween)
+                {
                     writer.Write(" not between ");
                 }
-                else {
+                else
+                {
                     writer.Write(" between ");
                 }
 
@@ -164,23 +179,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 writer.Write(" and ");
                 it.Advance().ToEPL(writer, Precedence);
             }
-            else {
+            else
+            {
                 it.Advance().ToEPL(writer, Precedence);
                 writer.Write(" in ");
-                if (IsLowEndpointIncluded) {
+                if (IsLowEndpointIncluded)
+                {
                     writer.Write('[');
                 }
-                else {
+                else
+                {
                     writer.Write('(');
                 }
 
                 it.Advance().ToEPL(writer, Precedence);
                 writer.Write(':');
                 it.Advance().ToEPL(writer, Precedence);
-                if (IsHighEndpointIncluded) {
+                if (IsHighEndpointIncluded)
+                {
                     writer.Write(']');
                 }
-                else {
+                else
+                {
                     writer.Write(')');
                 }
             }
@@ -194,21 +214,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             ExprBetweenComp computer;
 
-            if (compareType == typeof(string)) {
+            if (compareType == typeof(string))
+            {
                 computer = new ExprBetweenCompString(IsLowEndpointIncluded, IsHighEndpointIncluded);
             }
-            else if (compareType == typeof(decimal?)) {
+            else if (compareType == typeof(decimal?))
+            {
                 computer = new ExprBetweenCompDecimal(
                     IsLowEndpointIncluded, IsHighEndpointIncluded, valueType, lowType, highType);
             }
-            else if (compareType == typeof(BigInteger)) {
+            else if (compareType == typeof(BigInteger))
+            {
                 computer = new ExprBetweenCompBigInteger(
                     IsLowEndpointIncluded, IsHighEndpointIncluded, valueType, lowType, highType);
             }
-            else if (compareType == typeof(long?)) {
+            else if (compareType == typeof(long?))
+            {
                 computer = new ExprBetweenCompLong(IsLowEndpointIncluded, IsHighEndpointIncluded);
             }
-            else {
+            else
+            {
                 computer = new ExprBetweenCompDouble(IsLowEndpointIncluded, IsHighEndpointIncluded);
             }
 
@@ -251,7 +276,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 object lower,
                 object upper)
             {
-                if (value == null || lower == null || upper == null) {
+                if (value == null || lower == null || upper == null)
+                {
                     return false;
                 }
 
@@ -259,28 +285,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var lowerStr = (string) lower;
                 var upperStr = (string) upper;
 
-                if (string.Compare(upperStr, lowerStr, StringComparison.Ordinal) < 0) {
+                if (string.Compare(upperStr, lowerStr, StringComparison.Ordinal) < 0)
+                {
                     var temp = upperStr;
                     upperStr = lowerStr;
                     lowerStr = temp;
                 }
 
-                if (string.Compare(valueStr, lowerStr, StringComparison.Ordinal) < 0) {
+                if (string.Compare(valueStr, lowerStr, StringComparison.Ordinal) < 0)
+                {
                     return false;
                 }
 
-                if (string.Compare(valueStr, upperStr, StringComparison.Ordinal) > 0) {
+                if (string.Compare(valueStr, upperStr, StringComparison.Ordinal) > 0)
+                {
                     return false;
                 }
 
-                if (!_isLowIncluded) {
-                    if (valueStr.Equals(lowerStr)) {
+                if (!_isLowIncluded)
+                {
+                    if (valueStr.Equals(lowerStr))
+                    {
                         return false;
                     }
                 }
 
-                if (!_isHighIncluded) {
-                    if (valueStr.Equals(upperStr)) {
+                if (!_isHighIncluded)
+                {
+                    if (valueStr.Equals(upperStr))
+                    {
                         return false;
                     }
                 }
@@ -310,11 +343,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     .BlockReturn(ConstantFalse())
                     .IfCondition(Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("upper")), GT, Constant(0)))
                     .BlockReturn(ConstantFalse());
-                if (!_isLowIncluded) {
+                if (!_isLowIncluded)
+                {
                     block.IfCondition(ExprDotMethod(Ref("value"), "equals", Ref("lower"))).BlockReturn(ConstantFalse());
                 }
 
-                if (!_isHighIncluded) {
+                if (!_isHighIncluded)
+                {
                     block.IfCondition(ExprDotMethod(Ref("value"), "equals", Ref("upper"))).BlockReturn(ConstantFalse());
                 }
 
@@ -348,7 +383,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 object lower,
                 object upper)
             {
-                if (value == null || lower == null || upper == null) {
+                if (value == null || lower == null || upper == null)
+                {
                     return false;
                 }
 
@@ -356,25 +392,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var lowerD = lower.AsDouble();
                 var upperD = upper.AsDouble();
 
-                if (lowerD > upperD) {
+                if (lowerD > upperD)
+                {
                     var temp = upperD;
                     upperD = lowerD;
                     lowerD = temp;
                 }
 
-                if (valueD > lowerD) {
-                    if (valueD < upperD) {
+                if (valueD > lowerD)
+                {
+                    if (valueD < upperD)
+                    {
                         return true;
                     }
 
-                    if (_isHighIncluded) {
+                    if (_isHighIncluded)
+                    {
                         return valueD == upperD;
                     }
 
                     return false;
                 }
 
-                if (_isLowIncluded && valueD == lowerD) {
+                if (_isLowIncluded && valueD == lowerD)
+                {
                     return true;
                 }
 
@@ -402,18 +443,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var ifValueGtLower = block.IfCondition(Relational(Ref("value"), GT, Ref("lower")));
                 {
                     ifValueGtLower.IfCondition(Relational(Ref("value"), LT, Ref("upper"))).BlockReturn(ConstantTrue());
-                    if (_isHighIncluded) {
+                    if (_isHighIncluded)
+                    {
                         ifValueGtLower.BlockReturn(EqualsIdentity(Ref("value"), Ref("upper")));
                     }
-                    else {
+                    else
+                    {
                         ifValueGtLower.BlockReturn(ConstantFalse());
                     }
                 }
                 CodegenMethod method;
-                if (_isLowIncluded) {
+                if (_isLowIncluded)
+                {
                     method = block.MethodReturn(EqualsIdentity(Ref("value"), Ref("lower")));
                 }
-                else {
+                else
+                {
                     method = block.MethodReturn(ConstantFalse());
                 }
 
@@ -439,7 +484,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 object lower,
                 object upper)
             {
-                if (value == null || lower == null || upper == null) {
+                if (value == null || lower == null || upper == null)
+                {
                     return false;
                 }
 
@@ -447,25 +493,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var lowerD = lower.AsLong();
                 var upperD = upper.AsLong();
 
-                if (lowerD > upperD) {
+                if (lowerD > upperD)
+                {
                     var temp = upperD;
                     upperD = lowerD;
                     lowerD = temp;
                 }
 
-                if (valueD > lowerD) {
-                    if (valueD < upperD) {
+                if (valueD > lowerD)
+                {
+                    if (valueD < upperD)
+                    {
                         return true;
                     }
 
-                    if (_isHighIncluded) {
+                    if (_isHighIncluded)
+                    {
                         return valueD == upperD;
                     }
 
                     return false;
                 }
 
-                if (_isLowIncluded && valueD == lowerD) {
+                if (_isLowIncluded && valueD == lowerD)
+                {
                     return true;
                 }
 
@@ -493,18 +544,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var ifValueGtLower = block.IfCondition(Relational(Ref("value"), GT, Ref("lower")));
                 {
                     ifValueGtLower.IfCondition(Relational(Ref("value"), LT, Ref("upper"))).BlockReturn(ConstantTrue());
-                    if (_isHighIncluded) {
+                    if (_isHighIncluded)
+                    {
                         ifValueGtLower.BlockReturn(EqualsIdentity(Ref("value"), Ref("upper")));
                     }
-                    else {
+                    else
+                    {
                         ifValueGtLower.BlockReturn(ConstantFalse());
                     }
                 }
                 CodegenMethod method;
-                if (_isLowIncluded) {
+                if (_isLowIncluded)
+                {
                     method = block.MethodReturn(EqualsIdentity(Ref("value"), Ref("lower")));
                 }
-                else {
+                else
+                {
                     method = block.MethodReturn(ConstantFalse());
                 }
 
@@ -533,7 +588,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 object lowerUncast,
                 object upperUncast)
             {
-                if (valueUncast == null || lowerUncast == null || upperUncast == null) {
+                if (valueUncast == null || lowerUncast == null || upperUncast == null)
+                {
                     return false;
                 }
 
@@ -541,23 +597,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var lower = lowerUncast.AsDecimal();
                 var upper = upperUncast.AsDecimal();
 
-                if (lower.CompareTo(upper) > 0) {
+                if (lower.CompareTo(upper) > 0)
+                {
                     var temp = upper;
                     upper = lower;
                     lower = temp;
                 }
 
                 var valueComparedLower = value.CompareTo(lower);
-                if (valueComparedLower > 0) {
+                if (valueComparedLower > 0)
+                {
                     var valueComparedUpper = value.CompareTo(upper);
-                    if (valueComparedUpper < 0) {
+                    if (valueComparedUpper < 0)
+                    {
                         return true;
                     }
 
                     return _isHighIncluded && valueComparedUpper == 0;
                 }
 
-                if (_isLowIncluded && valueComparedLower == 0) {
+                if (_isLowIncluded && valueComparedLower == 0)
+                {
                     return true;
                 }
 
@@ -585,18 +645,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var ifValueGtLower = block.IfCondition(Relational(Ref("value"), GT, Ref("lower")));
                 {
                     ifValueGtLower.IfCondition(Relational(Ref("value"), LT, Ref("upper"))).BlockReturn(ConstantTrue());
-                    if (_isHighIncluded) {
+                    if (_isHighIncluded)
+                    {
                         ifValueGtLower.BlockReturn(EqualsIdentity(Ref("value"), Ref("upper")));
                     }
-                    else {
+                    else
+                    {
                         ifValueGtLower.BlockReturn(ConstantFalse());
                     }
                 }
                 CodegenMethod method;
-                if (_isLowIncluded) {
+                if (_isLowIncluded)
+                {
                     method = block.MethodReturn(EqualsIdentity(Ref("value"), Ref("lower")));
                 }
-                else {
+                else
+                {
                     method = block.MethodReturn(ConstantFalse());
                 }
 
@@ -632,7 +696,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 object lower,
                 object upper)
             {
-                if (value == null || lower == null || upper == null) {
+                if (value == null || lower == null || upper == null)
+                {
                     return false;
                 }
 
@@ -640,25 +705,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 BigInteger lowerD = _numberCoercerLower.CoerceBoxedBigInt(lower);
                 BigInteger upperD = _numberCoercerUpper.CoerceBoxedBigInt(upper);
 
-                if (lowerD.CompareTo(upperD) > 0) {
+                if (lowerD.CompareTo(upperD) > 0)
+                {
                     var temp = upperD;
                     upperD = lowerD;
                     lowerD = temp;
                 }
 
-                if (valueD.CompareTo(lowerD) > 0) {
-                    if (valueD.CompareTo(upperD) < 0) {
+                if (valueD.CompareTo(lowerD) > 0)
+                {
+                    if (valueD.CompareTo(upperD) < 0)
+                    {
                         return true;
                     }
 
-                    if (_isHighIncluded) {
+                    if (_isHighIncluded)
+                    {
                         return valueD.Equals(upperD);
                     }
 
                     return false;
                 }
 
-                if (_isLowIncluded && valueD.Equals(lowerD)) {
+                if (_isLowIncluded && valueD.Equals(lowerD))
+                {
                     return true;
                 }
 
@@ -694,18 +764,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .IfCondition(
                             Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("upper")), LT, Constant(0)))
                         .BlockReturn(ConstantTrue());
-                    if (_isHighIncluded) {
+                    if (_isHighIncluded)
+                    {
                         ifValueGtLower.BlockReturn(ExprDotMethod(Ref("value"), "equals", Ref("upper")));
                     }
-                    else {
+                    else
+                    {
                         ifValueGtLower.BlockReturn(ConstantFalse());
                     }
                 }
                 CodegenMethod method;
-                if (_isLowIncluded) {
+                if (_isLowIncluded)
+                {
                     method = block.MethodReturn(ExprDotMethod(Ref("value"), "equals", Ref("lower")));
                 }
-                else {
+                else
+                {
                     method = block.MethodReturn(ConstantFalse());
                 }
 

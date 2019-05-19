@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             metrics = new StatementMetric[initialSize];
             statementNames = new DeploymentIdNamePair[initialSize];
             currentLastElement = -1;
-            RwLock = new ManagedReadWriteLock("StatementMetricArray-" + name, true);
+            RWLock = new ManagedReadWriteLock("StatementMetricArray-" + name, true);
             removedStatementNames = new HashSet<DeploymentIdNamePair>();
         }
 
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         ///     Returns the read-write lock, for read-lock when modifications are made.
         /// </summary>
         /// <returns>lock</returns>
-        public ManagedReadWriteLock RwLock { get; }
+        public ManagedReadWriteLock RWLock { get; }
 
         /// <summary>
         ///     Remove a statement.
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="statement">to remove</param>
         public void RemoveStatement(DeploymentIdNamePair statement)
         {
-            using (RwLock.AcquireWriteLock()) {
+            using (RWLock.AcquireWriteLock()) {
                 removedStatementNames.Add(statement);
 
                 if (removedStatementNames.Count > 1000) {
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>index added to</returns>
         public int AddStatementGetIndex(DeploymentIdNamePair statement)
         {
-            using (RwLock.AcquireWriteLock()) {
+            using (RWLock.AcquireWriteLock()) {
                 // see if there is room
                 if (currentLastElement + 1 < metrics.Length) {
                     currentLastElement++;
@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>metrics</returns>
         public StatementMetric[] FlushMetrics()
         {
-            using (RwLock.AcquireWriteLock()) {
+            using (RWLock.AcquireWriteLock()) {
                 var isEmpty = false;
                 if (currentLastElement == -1) {
                     isEmpty = true;

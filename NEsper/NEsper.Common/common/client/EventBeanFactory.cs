@@ -20,6 +20,6 @@ namespace com.espertech.esper.common.client
         /// <summary>Wraps the underlying event object. </summary>
         /// <param name="underlying">event to wrap</param>
         /// <returns>event bean</returns>
-        EventBean Wrap(Object underlying);
+        EventBean Wrap(object underlying);
     }
 }

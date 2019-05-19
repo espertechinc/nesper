@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 return null;
             }
 
-            return CollectionUtil.ArrayToCollectionAllowNull(result);
+            return CollectionUtil.ArrayToCollectionAllowNull<object>(result);
         }
 
         public static CodegenExpression CodegenWrapArray(
