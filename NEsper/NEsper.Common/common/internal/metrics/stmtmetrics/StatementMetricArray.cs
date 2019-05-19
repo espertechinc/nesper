@@ -11,31 +11,38 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {
     /// <summary>
     ///     Holder for statement group's statement metrics.
-    ///     <para />
-    ///     Changes to StatementMetric instances must be done in a read-lock:
-    ///     getRwLock.readLock.lock()
-    ///     metric = getAddMetric(index)
-    ///     metric.accountFor(cpu, wall, etc)
-    ///     getRwLock.readLock.unlock()
-    ///     <para />
-    ///     All other changes are done under write lock for this class.
-    ///     <para />
-    ///     This is a collection backed by an array that grows by 50% each time expanded, maintains a free/busy list of
-    ///     statement names,
-    ///     maintains an element number of last used element.
-    ///     <para />
-    ///     The flush operaton copies the complete array, thereby keeping array size. Statement names are only removed on the
-    ///     next flush.
+    ///     <para>
+    ///         Changes to StatementMetric instances must be done in a read-lock:
+    ///         getRwLock.readLock.lock()
+    ///         metric = getAddMetric(index)
+    ///         metric.accountFor(cpu, wall, etc)
+    ///         getRwLock.readLock.unlock()
+    ///     </para>
+    ///     <para>
+    ///         All other changes are done under write lock for this class.
+    ///     </para>
+    ///     <para>
+    ///         This is a collection backed by an array that grows by 50% each time expanded, maintains a free/busy list of
+    ///         statement names,
+    ///         maintains an element number of last used element.
+    ///     </para>
+    ///     <para>
+    ///         The flush operation copies the complete array, thereby keeping array size. Statement names are only removed on
+    ///         the
+    ///         next flush.
+    ///     </para>
     /// </summary>
     public class StatementMetricArray
     {
         private readonly bool isReportInactive;
+
+        // Statements ids to remove with the next flush
+        private readonly ISet<DeploymentIdNamePair> removedStatementNames;
         private readonly string runtimeURI;
 
         // Lock
@@ -47,9 +54,6 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 
         // Flushed metric per statement
         private volatile StatementMetric[] metrics;
-
-        // Statements ids to remove with the next flush
-        private readonly ISet<DeploymentIdNamePair> removedStatementNames;
 
         // Active statements
         private DeploymentIdNamePair[] statementNames;
@@ -91,7 +95,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="statement">to remove</param>
         public void RemoveStatement(DeploymentIdNamePair statement)
         {
-            using (RWLock.AcquireWriteLock()) {
+            using (RWLock.AcquireDisposableWriteLock()) {
                 removedStatementNames.Add(statement);
 
                 if (removedStatementNames.Count > 1000) {
@@ -115,7 +119,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>index added to</returns>
         public int AddStatementGetIndex(DeploymentIdNamePair statement)
         {
-            using (RWLock.AcquireWriteLock()) {
+            using (RWLock.AcquireDisposableWriteLock()) {
                 // see if there is room
                 if (currentLastElement + 1 < metrics.Length) {
                     currentLastElement++;
@@ -162,11 +166,8 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>metrics</returns>
         public StatementMetric[] FlushMetrics()
         {
-            using (RWLock.AcquireWriteLock()) {
-                var isEmpty = false;
-                if (currentLastElement == -1) {
-                    isEmpty = true;
-                }
+            using (RWLock.AcquireDisposableWriteLock()) {
+                var isEmpty = currentLastElement == -1;
 
                 // first fill in the blanks if there are no reports and we report inactive statements
                 if (isReportInactive) {

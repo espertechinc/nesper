@@ -84,6 +84,12 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
+        public IDisposable AcquireDisposableWriteLock()
+        {
+            AcquireWriteLock();
+            return new TrackedDisposable(ReleaseWriteLock);
+        }
+
         /// <summary>
         ///     Lock write lock.
         /// </summary>
@@ -156,6 +162,12 @@ namespace com.espertech.esper.common.@internal.util
             {
                 ThreadLogUtil.TraceLock(RELEASED_TEXT + " write " + _name, Lock);
             }
+        }
+
+        public IDisposable AcquireDisposableReadLock()
+        {
+            AcquireReadLock();
+            return new TrackedDisposable(ReleaseReadLock);
         }
 
         /// <summary>
