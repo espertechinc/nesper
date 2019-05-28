@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -19,16 +20,20 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public interface MatchedEventMap : MatchedEventMapMinimal
     {
+#if INHERITED
         /// <summary>
         ///     Returns a map containing the events where the key is the event tag string and the value is the event
         ///     instance.
         /// </summary>
         /// <returns>Map containing event instances</returns>
         object[] MatchingEvents { get; }
+#endif
 
         IDictionary<string, object> MatchingEventsAsMap { get; }
 
+#if INHERITED
         MatchedEventMapMeta Meta { get; }
+#endif
 
         /// <summary>
         ///     Add an event to the collection identified by the given tag.

@@ -39,6 +39,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns an object type of the pattern object plug-in.
         /// </summary>
         /// <value>pattern object type</value>
-        public PatternObjectType PatternObjectType { get; set; }
+        public PatternObjectType? PatternObjectType { get; set; }
     }
 } // end of namespace

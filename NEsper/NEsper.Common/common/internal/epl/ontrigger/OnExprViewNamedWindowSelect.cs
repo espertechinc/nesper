@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly bool audit;
         private readonly bool isDelete;
         private readonly ISet<MultiKey<EventBean>> oldEvents = new HashSet<MultiKey<EventBean>>();
-        private readonly InfraOnSelectViewFactory parent;
+        private new readonly InfraOnSelectViewFactory parent;
         private readonly ResultSetProcessor resultSetProcessor;
         private readonly TableInstance tableInstanceInsertInto;
 

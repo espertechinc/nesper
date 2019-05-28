@@ -108,8 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             block.MethodReturn(
-                NewInstance(
-                    typeof(RangeParameter),
+                NewInstance<RangeParameter>(
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(
                         Ref("valueLower"), valueLower.EvaluationType),
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(

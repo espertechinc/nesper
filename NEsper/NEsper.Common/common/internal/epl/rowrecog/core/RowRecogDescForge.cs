@@ -253,7 +253,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             var method = parent.MakeChild(typeof(IList<object>), GetType(), classScope);
             method.Block.DeclareVar(
-                typeof(IList<object>), "next", NewInstance(typeof(List<object>), Constant(nextStates.Count)));
+                typeof(IList<object>), "next", NewInstance<List<object>>(Constant(nextStates.Count)));
             foreach (var pair in nextStates) {
                 method.Block.ExprDotMethod(
                     Ref("next"), "add", NewInstance(typeof(Pair<int, int[]>), Constant(pair.First), Constant(pair.Second)));

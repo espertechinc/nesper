@@ -55,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             CodegenExpressionNewAnonymousClass anonymousSelect = SelectExprProcessorUtil.MakeAnonymous(
                 insertHelper, method, symbols.GetAddInitSvc(method), classScope);
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(InfraOnMergeActionIns),
+                NewInstance<InfraOnMergeActionIns>(
                     MakeFilter(method, classScope), anonymousSelect,
                     insertIntoTable == null
                         ? ConstantNull()

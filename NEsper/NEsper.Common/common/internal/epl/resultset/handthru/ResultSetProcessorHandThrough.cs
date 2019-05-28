@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             method.Block
                 .DeclareVar(typeof(EventBean[]), "selectOldEvents", oldEvents)
                 .DeclareVar(typeof(EventBean[]), "selectNewEvents", newEvents)
-                .MethodReturn(NewInstance(typeof(UniformPair<>), Ref("selectNewEvents"), Ref("selectOldEvents")));
+                .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
         internal static void ProcessViewResultCodegen(
@@ -61,24 +61,32 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             method.Block
                 .DeclareVar(typeof(EventBean[]), "selectOldEvents", oldEvents)
                 .DeclareVar(typeof(EventBean[]), "selectNewEvents", newEvents)
-                .MethodReturn(NewInstance(typeof(UniformPair<EventBean>), Ref("selectNewEvents"), Ref("selectOldEvents")));
+                .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
         internal static void GetIteratorViewCodegen(CodegenMethod methodNode)
         {
             methodNode.Block.MethodReturn(
-                NewInstance(
-                    typeof(TransformEventIterator), ExprDotMethod(REF_VIEWABLE, "iterator"),
-                    NewInstance(typeof(ResultSetProcessorHandtruTransform), Ref("this"))));
+                NewInstance<TransformEventEnumerator>(
+                    ExprDotMethod(REF_VIEWABLE, "iterator"),
+                    NewInstance<ResultSetProcessorHandtruTransform>(Ref("this"))));
         }
 
         internal static void GetIteratorJoinCodegen(CodegenMethod method)
         {
             method.Block
                 .DeclareVar(
-                    typeof(UniformPair<EventBean>), typeof(EventBean[]), "result",
-                    ExprDotMethod(Ref("this"), "ProcessJoinResult", REF_JOINSET, StaticMethod(typeof(Collections), "emptySet"), Constant(true)))
-                .MethodReturn(NewInstance(typeof(ArrayEventEnumerator), Cast(typeof(EventBean[]), ExprDotMethod(Ref("result"), "getFirst"))));
+                    typeof(UniformPair<EventBean>),
+                    typeof(EventBean[]),
+                    "result",
+                    ExprDotMethod(
+                        Ref("this"), "ProcessJoinResult", REF_JOINSET,
+                        StaticMethod(
+                            typeof(Collections), "emptySet"),
+                        Constant(true)))
+                .MethodReturn(
+                    NewInstance<ArrayEventEnumerator>(
+                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("result"), "getFirst"))));
         }
     }
 } // end of namespace

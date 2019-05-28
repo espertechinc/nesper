@@ -13,12 +13,14 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.enummethod.compile;
+using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.view.access;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -30,13 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprValidationContext(
             StreamTypeService streamTypeService,
             ExprValidationContext ctx)
-            : this(
-                streamTypeService, ctx.ViewResourceDelegate, ctx.contextDescriptor,
-                ctx.IsDisablePropertyExpressionEventCollCache, ctx.IsAllowRollupFunctions,
-                ctx.IsAllowBindingConsumption,
-                ctx.IsResettingAggregations, ctx.intoTableName, ctx.IsFilterExpression, ctx.MemberNames,
-                ctx.IsAggregationFutureNameAlreadySet,
-                ctx.StatementRawInfo, ctx.StatementCompileTimeService)
+            : this(streamTypeService, ctx.ViewResourceDelegate, ctx.contextDescriptor, ctx.IsDisablePropertyExpressionEventCollCache, ctx.IsAllowRollupFunctions, ctx.IsAllowBindingConsumption, ctx.IsResettingAggregations, ctx.intoTableName, ctx.IsFilterExpression, ctx.MemberNames, ctx.IsAggregationFutureNameAlreadySet, ctx.StatementRawInfo, ctx.StatementCompileTimeService)
         {
         }
 
@@ -73,6 +69,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             IsExpressionNestedAudit = AuditEnum.EXPRESSION_NESTED.GetAudit(statementRawInfo.Annotations) != null;
         }
 
+        public IContainer Container => StatementCompileTimeService.Container;
+
         public Attribute[] Annotations => StatementRawInfo.Annotations;
 
         public StreamTypeService StreamTypeService { get; }
@@ -80,6 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ContextCompileTimeDescriptor ContextDescriptor => StatementRawInfo.OptionalContextDescriptor;
 
         public bool IsFilterExpression { get; }
+
+        public ScriptingService ScriptingService { get; }
 
         public ImportServiceCompileTime ImportService =>
             StatementCompileTimeService.ImportServiceCompileTime;

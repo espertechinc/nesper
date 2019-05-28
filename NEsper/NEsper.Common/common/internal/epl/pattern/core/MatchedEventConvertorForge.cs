@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                         StaticMethod(typeof(Collections), "singletonMap", Constant(entry.Key), Ref("arr" + count)))
                     .AssignArrayElement(
                         Ref("events"), Constant(count),
-                        NewInstance(typeof(MapEventBean), Ref("map" + count), ConstantNull()));
+                        NewInstance<MapEventBean>(Ref("map" + count), ConstantNull()));
                 count++;
             }
 

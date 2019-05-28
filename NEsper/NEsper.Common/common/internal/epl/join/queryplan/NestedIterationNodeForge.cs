@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             var childNodeArray = CodegenMakeableUtil.MakeArray(
                 "childNodes", typeof(QueryPlanNode), childNodes.ToArray(),
                 GetType(), parent, symbols, classScope);
-            return NewInstance(typeof(NestedIterationNode), childNodeArray, Constant(nestingOrder));
+            return NewInstance<NestedIterationNode>(childNodeArray, Constant(nestingOrder));
         }
 
         public override void Accept(QueryPlanNodeForgeVisitor visitor)

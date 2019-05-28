@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,8 +13,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -29,8 +27,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         private readonly TableMetaData[] tables;
         private readonly EventType[] types;
 
-        private SelectExprProcessor inner;
-
         public SelectEvalJoinWildcardProcessorTableRows(
             EventType[] types,
             SelectExprProcessorForge inner,
@@ -39,12 +35,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             this.types = types;
             this.innerForge = inner;
             tables = new TableMetaData[types.Length];
-            for (int i = 0; i < types.Length; i++) {
+            for (int i = 0; i < types.Length; i++)
+            {
                 tables[i] = tableResolver.ResolveTableFromEventType(types[i]);
             }
         }
 
-        public EventType ResultEventType {
+        public EventType ResultEventType
+        {
             get => innerForge.ResultEventType;
         }
 
@@ -62,11 +60,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block.DeclareVar(
                 typeof(EventBean[]), "eventsPerStreamWTableRows", NewArrayByLength(typeof(EventBean), Constant(types.Length)));
-            for (int i = 0; i < types.Length; i++) {
-                if (tables[i] == null) {
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (tables[i] == null)
+                {
                     methodNode.Block.AssignArrayElement("eventsPerStreamWTableRows", Constant(i), ArrayAtIndex(refEPS, Constant(i)));
                 }
-                else {
+                else
+                {
                     CodegenExpressionField eventToPublic =
                         TableDeployTimeResolver.MakeTableEventToPublicField(tables[i], codegenClassScope, this.GetType());
                     string refname = "e" + i;

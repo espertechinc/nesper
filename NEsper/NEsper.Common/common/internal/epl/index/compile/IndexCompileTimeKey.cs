@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            return NewInstance(
-                typeof(IndexCompileTimeKey), Constant(InfraModuleName), Constant(InfraName), Constant(Visibility), Constant(IsNamedWindow),
+            return NewInstance<IndexCompileTimeKey>(
+                Constant(InfraModuleName), Constant(InfraName), Constant(Visibility), Constant(IsNamedWindow),
                 Constant(IndexName), Constant(IndexModuleName));
         }
 

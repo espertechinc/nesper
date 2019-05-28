@@ -290,8 +290,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 typeof(VariableTriggerSetDesc[]), "sets",
                 NewArrayByLength(typeof(VariableTriggerSetDesc), Constant(assignments.Length)));
             for (var i = 0; i < assignments.Length; i++) {
-                var set = NewInstance(
-                    typeof(VariableTriggerSetDesc), Constant(assignments[i].VariableName),
+                var set = NewInstance<VariableTriggerSetDesc>(
+                    Constant(assignments[i].VariableName),
                     ExprNodeUtilityCodegen.CodegenEvaluator(
                         assignments[i].Forge, method, typeof(VariableReadWritePackageForge), classScope));
                 method.Block.AssignArrayElement("sets", Constant(i), set);

@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
             var advanced = AdvancedIndexDesc == null
                 ? ConstantNull()
                 : AdvancedIndexDesc.CodegenMake(parent, classScope);
-            method.Block.MethodReturn(NewInstance(typeof(IndexMultiKey), Constant(IsUnique), hashes, ranges, advanced));
+            method.Block.MethodReturn(NewInstance<IndexMultiKey>(Constant(IsUnique), hashes, ranges, advanced));
             return LocalMethod(method);
         }
 

@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         {
             try {
                 dataCache = agentInstanceContext.DatabaseConfigService.GetDataCache(
-                    factory.databaseName,
+                    factory.DatabaseName,
                     agentInstanceContext, factory.StreamNumber, factory.ScheduleCallbackId);
             }
             catch (DatabaseConfigException e) {

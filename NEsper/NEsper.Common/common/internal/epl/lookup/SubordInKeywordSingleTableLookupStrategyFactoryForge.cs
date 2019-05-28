@@ -50,8 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             }
 
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(SubordInKeywordSingleTableLookupStrategyFactory),
+                NewInstance<SubordInKeywordSingleTableLookupStrategyFactory>(
                     Constant(_isNwOnTrigger), Constant(_streamCountOuter), Ref("evals"), Constant(expressions)));
             return LocalMethod(method);
         }

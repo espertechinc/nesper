@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             param.AddMethod("getFilterValue", getFilterValue);
             if (_inListConstantsOnly != null) {
-                getFilterValue.Block.MethodReturn(NewInstance(typeof(HashableMultiKey), Constant(_inListConstantsOnly)));
+                getFilterValue.Block.MethodReturn(NewInstance<HashableMultiKey>(Constant(_inListConstantsOnly)));
             }
             else if (!_hasCollMapOrArray) {
                 getFilterValue.Block.DeclareVar(
@@ -183,11 +183,11 @@ namespace com.espertech.esper.common.@internal.filterspec
                         Ref("values"), Constant(i), forge.MakeCodegen(classScope, method));
                 }
 
-                getFilterValue.Block.MethodReturn(NewInstance(typeof(HashableMultiKey), Ref("values")));
+                getFilterValue.Block.MethodReturn(NewInstance<HashableMultiKey>(Ref("values")));
             }
             else {
                 getFilterValue.Block.DeclareVar(
-                    typeof(ArrayDeque<object>), "values", NewInstance(typeof(ArrayDeque<object>), Constant(_listOfValues.Count)));
+                    typeof(ArrayDeque<object>), "values", NewInstance<ArrayDeque<object>>(Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {
                     var valueName = "value" + i;
                     var adderName = "adder" + i;
@@ -200,7 +200,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 }
 
                 getFilterValue.Block.MethodReturn(
-                    NewInstance(typeof(HashableMultiKey), ExprDotMethod(Ref("values"), "toArray")));
+                    NewInstance<HashableMultiKey>(ExprDotMethod(Ref("values"), "toArray")));
             }
 
             method.Block.MethodReturn(param);

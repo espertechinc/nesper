@@ -24,7 +24,7 @@ using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
+using com.espertech.esper.container;
 using DictionaryExtensions = com.espertech.esper.compat.collections.DictionaryExtensions;
 
 namespace com.espertech.esper.common.@internal.settings
@@ -48,13 +48,14 @@ namespace com.espertech.esper.common.@internal.settings
         private readonly bool sortUsingCollator;
 
         public ImportServiceCompileTime(
+            IContainer container,
             IDictionary<string, object> transientConfiguration,
             TimeAbacus timeAbacus,
             ISet<string> eventTypeAutoNames,
             MathContext mathContext,
             bool allowExtendedAggregationFunc,
             bool sortUsingCollator)
-            : base(transientConfiguration, timeAbacus, eventTypeAutoNames)
+            : base(container, transientConfiguration, timeAbacus, eventTypeAutoNames)
         {
             aggregationFunctions = new Dictionary<string, ConfigurationCompilerPlugInAggregationFunction>();
             aggregationAccess = new List<Pair<ISet<string>, ConfigurationCompilerPlugInAggregationMultiFunction>>();

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.view.prior
         ViewDataVisitable
     {
         protected internal ViewUpdatedCollection buffer;
-        private Viewable parent;
+        private new Viewable parent;
 
         /// <summary>
         ///     Ctor.

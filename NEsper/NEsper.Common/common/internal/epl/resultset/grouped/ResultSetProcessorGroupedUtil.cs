@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                 }
 
                 methodNode.Block
-                    .DeclareVar(typeof(HashableMultiKey), "key", NewInstance(typeof(HashableMultiKey), Ref("keys")))
+                    .DeclareVar(typeof(HashableMultiKey), "key", NewInstance<HashableMultiKey>(Ref("keys")))
                     .Apply(
                         Instblock(
                             classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA,

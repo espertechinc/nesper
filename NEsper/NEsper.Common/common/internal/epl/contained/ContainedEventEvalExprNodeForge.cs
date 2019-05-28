@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     typeof(EventType), "type",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(
-                    NewInstance(
-                        typeof(ContainedEventEvalExprNode), Ref("eval"), Ref("type"), symbols.GetAddInitSvc(method)));
+                    NewInstance<ContainedEventEvalExprNode>(
+                        Ref("eval"), Ref("type"), symbols.GetAddInitSvc(method)));
             return LocalMethod(method);
         }
     }

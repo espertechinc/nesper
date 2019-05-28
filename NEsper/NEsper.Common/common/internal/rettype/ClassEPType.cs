@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.rettype
             CodegenClassScope classScope,
             CodegenExpression typeInitSvcRef)
         {
-            return CodegenExpressionBuilder.NewInstance(typeof(ClassEPType), CodegenExpressionBuilder.Constant(Clazz));
+            return CodegenExpressionBuilder.NewInstance<ClassEPType>(CodegenExpressionBuilder.Constant(Clazz));
         }
     }
 }

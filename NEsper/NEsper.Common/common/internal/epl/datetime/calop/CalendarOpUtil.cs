@@ -44,13 +44,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
 
             var fieldname = (string) exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
-            var fieldNum = EnumHelper.Parse<DateTimeFieldEnum>(fieldname);
-            if (fieldNum == null) {
-                throw new ExprValidationException(
-                    GetMessage(methodName) + " datetime-field name '" + fieldname + "' is not recognized, " + GetValidFieldNamesMessage());
+            try
+            {
+                return EnumHelper.Parse<DateTimeFieldEnum>(fieldname);
             }
-
-            return fieldNum;
+            catch (ArgumentException e) {
+                throw new ExprValidationException(
+                    GetMessage(methodName) + " datetime-field name '" + fieldname + "' is not recognized, " + GetValidFieldNamesMessage(), e);
+            }
         }
 
         public static ReformatFormatForgeDesc ValidateGetFormatterType(

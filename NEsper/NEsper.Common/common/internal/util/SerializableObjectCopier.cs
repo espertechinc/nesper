@@ -6,11 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
+
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util
@@ -18,21 +18,27 @@ namespace com.espertech.esper.common.@internal.util
     /// <summary>
     /// Utility class for copying serializable objects via object input and output streams.
     /// </summary>
-    public class SerializableObjectCopier
+    public class SerializableObjectCopier : IObjectCopier
     {
+        private readonly IContainer container;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SerializableObjectCopier"/> class.
+        /// </summary>
+        /// <param name="container">The container.</param>
+        public SerializableObjectCopier(IContainer container)
+        {
+            this.container = container;
+        }
+
         /// <summary>
         /// Deep copies the input object.
         /// </summary>
-        /// <param name="container">The container.</param>
         /// <param name="orig">is the object to be copied, must be serializable</param>
-        /// <returns>
-        /// copied object
-        /// </returns>
+        /// <returns>copied object</returns>
         /// <throws>IOException if the streams returned an exception</throws>
         /// <throws>ClassNotFoundException if the de-serialize fails</throws>
-        public static T Copy<T>(
-            IContainer container,
-            T orig)
+        public T Copy<T>(T orig)
         {
             // Create the formatter
             var formatter = new BinaryFormatter();
@@ -42,7 +48,8 @@ namespace com.espertech.esper.common.@internal.util
 #endif
             formatter.Context = new StreamingContext(StreamingContextStates.Clone, container);
 
-            using (MemoryStream stream = new MemoryStream()) {
+            using (MemoryStream stream = new MemoryStream())
+            {
                 // Serialize the object graph to the stream
                 formatter.Serialize(stream, orig);
                 // Rewind the stream

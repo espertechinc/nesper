@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
         {
             internal readonly EventType eventType;
             internal readonly ExprForge exprForge;
-            internal ExprEvaluator evaluator;
 
             protected SelectExprInsertNativeExpressionCoerceBase(
                 EventType eventType,

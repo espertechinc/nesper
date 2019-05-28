@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                             ExprDotMethod(Ref("context"), "getAgentInstanceContext")));
                 if (!parameter.Forge.EvaluationType.IsPrimitive) {
                     computeDelta.Block.IfRefNull("result").BlockThrow(
-                        NewInstance(typeof(EPException), Constant("Null value returned for guard expression")));
+                        NewInstance<EPException>(Constant("Null value returned for guard expression")));
                 }
 
                 computeDelta.Block.MethodReturn(timeAbacus.DeltaForSecondsDoubleCodegen(Ref("result"), classScope));

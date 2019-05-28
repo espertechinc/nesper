@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.client.module
                 }
             }
 
-            Collections.Reverse(reverseDeployList);
+            reverseDeployList.Reverse();
             return new ModuleOrder(reverseDeployList);
         }
     }

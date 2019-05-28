@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 .AssignRef(REF_REMOVEDKEYS, NewArrayByLength(typeof(IList<object>), Constant(rollupDesc.NumLevelsAggregation)));
             for (var i = 0; i < rollupDesc.NumLevelsAggregation; i++) {
                 ctor.Block.AssignArrayElement(REF_AGGREGATORSPERGROUP, Constant(i), NewInstance(typeof(Dictionary<object, object>)));
-                ctor.Block.AssignArrayElement(REF_REMOVEDKEYS, Constant(i), NewInstance(typeof(List<object>), Constant(4)));
+                ctor.Block.AssignArrayElement(REF_REMOVEDKEYS, Constant(i), NewInstance<List<object>>(Constant(4)));
             }
 
             explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, REF_AGGREGATORTOPGROUP.Ref));

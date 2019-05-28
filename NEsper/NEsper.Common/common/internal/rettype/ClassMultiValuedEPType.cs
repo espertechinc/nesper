@@ -35,8 +35,7 @@ namespace com.espertech.esper.common.@internal.rettype
             CodegenClassScope classScope,
             CodegenExpression typeInitSvcRef)
         {
-            return CodegenExpressionBuilder.NewInstance(
-                typeof(ClassMultiValuedEPType),
+            return CodegenExpressionBuilder.NewInstance<ClassMultiValuedEPType>(
                 CodegenExpressionBuilder.Constant(Container),
                 CodegenExpressionBuilder.Constant(Component));
         }

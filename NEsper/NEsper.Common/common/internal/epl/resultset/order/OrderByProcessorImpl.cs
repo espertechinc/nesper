@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     }
 
                     forEach.AssignArrayElement(
-                        "sortProperties", Ref("count"), NewInstance(typeof(HashableMultiKey), Ref("values")));
+                        "sortProperties", Ref("count"), NewInstance<HashableMultiKey>(Ref("values")));
                 }
 
                 forEach.Apply(Instblock(classScope, "aOrderBy", Ref("sortProperties")))
@@ -325,7 +325,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     method.Block.DeclareVar(
                             typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(elements.Length)))
                         .DeclareVar(
-                            typeof(HashableMultiKey), "valuesMk", NewInstance(typeof(HashableMultiKey), Ref("values")));
+                            typeof(HashableMultiKey), "valuesMk", NewInstance<HashableMultiKey>(Ref("values")));
 
                     var forEach = method.Block.ForEach(typeof(EventBean[]), "eventsPerStream", REF_GENERATINGEVENTS);
 
@@ -352,7 +352,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                     Constant(0))))
                         .AssignRef("localMinMax", Ref("valuesMk"))
                         .AssignRef("values", NewArrayByLength(typeof(object), Constant(elements.Length)))
-                        .AssignRef("valuesMk", NewInstance(typeof(HashableMultiKey), Ref("values")))
+                        .AssignRef("valuesMk", NewInstance<HashableMultiKey>(Ref("values")))
                         .AssignRef("outgoingMinMaxBean", ArrayAtIndex(REF_OUTGOINGEVENTS, Ref("count")))
                         .BlockEnd()
                         .Increment("count");
@@ -399,7 +399,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             REF_EXPREVALCONTEXT));
                 }
 
-                methodNode.Block.MethodReturn(NewInstance(typeof(HashableMultiKey), Ref("keys")));
+                methodNode.Block.MethodReturn(NewInstance<HashableMultiKey>(Ref("keys")));
             };
 
             return namedMethods.AddMethod(

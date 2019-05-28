@@ -165,10 +165,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.DeclareVar(
                         typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
-                    .DeclareVar(typeof(List<>), "events", NewInstance(typeof(List<object>), Constant(1)))
+                    .DeclareVar(typeof(List<>), "events", NewInstance<List<object>>(Constant(1)))
                     .DeclareVar(
                         typeof(IList<object>), "currentGenerators",
-                        forge.IsSorting ? NewInstance(typeof(List<object>), Constant(1)) : ConstantNull())
+                        forge.IsSorting ? NewInstance<List<object>>(Constant(1)) : ConstantNull())
                     .DeclareVar(
                         typeof(AggregationGroupByRollupLevel[]), "levels",
                         ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"));
@@ -221,8 +221,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         Cast(typeof(EventBean), ExprDotMethod(Ref("entry"), "getValue"))))
                                 .ExprDotMethod(
                                     Ref("currentGenerators"), "add",
-                                    NewInstance(
-                                        typeof(GroupByRollupKey), Ref("currentEventsPerStream"), Ref("level"),
+                                    NewInstance<GroupByRollupKey>(
+                                        Ref("currentEventsPerStream"), Ref("level"),
                                         Ref("groupKey")));
                         }
                     }
@@ -260,10 +260,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.DeclareVar(
-                        typeof(List<object>), "events", NewInstance(typeof(List<object>), Constant(1)))
+                        typeof(List<object>), "events", NewInstance<List<object>>(Constant(1)))
                     .DeclareVar(
                         typeof(IList<object>), "currentGenerators",
-                        forge.IsSorting ? NewInstance(typeof(List<object>), Constant(1)) : ConstantNull())
+                        forge.IsSorting ? NewInstance<List<object>>(Constant(1)) : ConstantNull())
                     .DeclareVar(
                         typeof(AggregationGroupByRollupLevel[]), "levels",
                         ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"));
@@ -311,8 +311,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         {
                             forEvents.ExprDotMethod(
                                 Ref("currentGenerators"), "add",
-                                NewInstance(
-                                    typeof(GroupByRollupKey), Ref("eventsPerStream"), Ref("level"), Ref("groupKey")));
+                                NewInstance<GroupByRollupKey>(
+                                    Ref("eventsPerStream"), Ref("level"), Ref("groupKey")));
                         }
                     }
                 }

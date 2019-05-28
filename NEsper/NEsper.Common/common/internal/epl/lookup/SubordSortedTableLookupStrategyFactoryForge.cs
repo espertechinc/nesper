@@ -49,8 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             CodegenClassScope classScope)
         {
             var expressions = ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(_rangeKey.RangeInfo.Expressions);
-            return NewInstance(
-                typeof(SubordSortedTableLookupStrategyFactory), Constant(_isNwOnTrigger), Constant(_numStreamsOuter),
+            return NewInstance<SubordSortedTableLookupStrategyFactory>(
+                Constant(_isNwOnTrigger), Constant(_numStreamsOuter),
                 Constant(expressions[0]),
                 _rangeKey.RangeInfo.Make(_coercionDesc.CoercionTypes[0], parent, symbols, classScope));
         }

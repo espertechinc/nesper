@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var block = methodNode.Block;
             block.DeclareVar(
-                typeof(AggregatorAvgBigDecimal), "agg", NewInstance(typeof(AggregatorAvgBigDecimal), math));
+                typeof(AggregatorAvgBigDecimal), "agg", NewInstance<AggregatorAvgBigDecimal>(math));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
                 .DeclareVar(
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 _optionalMathContext = optionalMathContext;
             }
 
-            public decimal Value => GetValueDecimalDivide(_cnt, _optionalMathContext, _sum);
+            public decimal Value => GetValueDecimalDivide(_cnt, _optionalMathContext, _sum) ?? throw new IllegalStateException();
 
             public void Enter(object @object)
             {

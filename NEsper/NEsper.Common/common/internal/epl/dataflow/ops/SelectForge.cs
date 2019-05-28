@@ -46,11 +46,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
         private EventType[] eventTypes;
 
+#pragma warning disable 649
         [DataFlowOpParameter] private readonly bool iterate;
+#pragma warning restore 649
 
         private int[] originatingStreamToViewableStream;
 
+#pragma warning disable 649
         [DataFlowOpParameter] private StatementSpecRaw select;
+#pragma warning restore 649
 
         private bool submitEventBean;
 

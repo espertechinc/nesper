@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 init[i] = items[i].Make(addInitSvc);
             }
 
-            return NewInstance(typeof(ContextControllerHashValidation), NewArrayWithInit(typeof(ContextControllerHashValidationItem), init));
+            return NewInstance<ContextControllerHashValidation>(NewArrayWithInit(typeof(ContextControllerHashValidationItem), init));
         }
 
         public void ValidateStatement(

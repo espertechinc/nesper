@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
     public interface HistoricalEventViewable : Viewable,
         AgentInstanceStopCallback
     {
-#if INHERITED_HIDE
+#if INHERITED
         EventType EventType { get; }
 #endif
 

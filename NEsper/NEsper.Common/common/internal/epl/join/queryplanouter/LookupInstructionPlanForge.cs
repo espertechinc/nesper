@@ -92,8 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(LookupInstructionPlan),
+            return NewInstance<LookupInstructionPlan>(
                 Constant(FromStream),
                 Constant(FromStreamName),
                 Constant(ToStreams),

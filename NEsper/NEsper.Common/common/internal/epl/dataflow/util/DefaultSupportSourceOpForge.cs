@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
     [DataFlowOpProvideSignal]
     public class DefaultSupportSourceOpForge : DataFlowOperatorForge
     {
+#pragma warning disable 649
         [DataFlowOpParameter] private string name;
+#pragma warning restore 649
 
         public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
         {

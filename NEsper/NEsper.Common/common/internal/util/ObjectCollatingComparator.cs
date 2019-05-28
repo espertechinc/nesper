@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -21,14 +22,14 @@ namespace com.espertech.esper.common.@internal.util
     {
         private readonly bool _isDescendingValue;
 
-        [NonSerialized] private readonly StringComparer _collator = null;
+        [NonSerialized] private readonly IComparer<object> _collator = null;
 
         /// <summary>Ctor. </summary>
         /// <param name="isDescendingValue">ascending or descending</param>
         public ObjectCollatingComparator(bool isDescendingValue)
         {
             _isDescendingValue = isDescendingValue;
-            _collator = StringComparer.CurrentCulture;
+            _collator = Comparers.Collating();
         }
 
         public int Compare(

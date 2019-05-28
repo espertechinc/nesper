@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(FAFQueryInformationals), Constant(substitutionParamsTypes), MakeNames(parent, classScope));
+            return NewInstance<FAFQueryInformationals>(Constant(substitutionParamsTypes), MakeNames(parent, classScope));
         }
 
         private CodegenExpression MakeNames(

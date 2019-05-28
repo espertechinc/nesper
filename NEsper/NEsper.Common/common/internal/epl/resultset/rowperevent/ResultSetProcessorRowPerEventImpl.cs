@@ -128,8 +128,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 .AddParam(typeof(Viewable), NAME_VIEWABLE);
             if (!forge.IsSorting) {
                 iterator.Block.MethodReturn(
-                    NewInstance(
-                        typeof(ResultSetProcessorRowPerEventEnumerator), ExprDotMethod(REF_VIEWABLE, "iterator"),
+                    NewInstance<ResultSetProcessorRowPerEventEnumerator>(
+                        ExprDotMethod(REF_VIEWABLE, "iterator"),
                         Ref("this"), REF_AGENTINSTANCECONTEXT));
                 return iterator;
             }
@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 }
             }
 
-            method.Block.MethodReturn(NewInstance(typeof(ArrayEventEnumerator), Ref("result")));
+            method.Block.MethodReturn(NewInstance<ArrayEventEnumerator>(Ref("result")));
         }
 
         public static void ClearMethodCodegen(CodegenMethod method)
@@ -522,7 +522,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     typeof(EventBean[]), "lastOld",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastOldEvent")))
                 .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld")))).BlockReturn(ConstantNull())
-                .MethodReturn(NewInstance(typeof(UniformPair<EventBean>), Ref("lastNew"), Ref("lastOld")));
+                .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("lastNew"), Ref("lastOld")));
         }
 
         private static void ProcessOutputLimitedViewDefaultCodegen(
@@ -706,7 +706,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     typeof(EventBean[]), "lastOld",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastOldEvent")))
                 .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld")))).BlockReturn(ConstantNull())
-                .MethodReturn(NewInstance(typeof(UniformPair<EventBean>), Ref("lastNew"), Ref("lastOld")));
+                .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("lastNew"), Ref("lastOld")));
         }
 
         public static void AcceptHelperVisitorCodegen(

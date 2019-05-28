@@ -57,8 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             CodegenClassScope classScope)
         {
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(OutputProcessViewDirectDistinctOrAfterFactory),
+                NewInstance<OutputProcessViewDirectDistinctOrAfterFactory>(
                     outputStrategyPostProcessForge == null ? ConstantNull() : outputStrategyPostProcessForge.Make(method, symbols, classScope),
                     Constant(isDistinct),
                     afterTimePeriod == null ? ConstantNull() : afterTimePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope),

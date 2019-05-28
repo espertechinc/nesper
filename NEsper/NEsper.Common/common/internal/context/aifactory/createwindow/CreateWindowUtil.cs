@@ -163,8 +163,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                         else if (selectFromType is BeanEventType) {
                             var beanType = (BeanEventType) selectFromType;
                             targetType = new BeanEventType(
-                                beanType.Stem, metadata.Invoke(EventTypeApplicationType.CLASS), services.BeanEventTypeFactoryPrivate, null, null,
-                                beanType.StartTimestampPropertyName, beanType.EndTimestampPropertyName);
+                                services.Container,
+                                beanType.Stem, metadata.Invoke(EventTypeApplicationType.CLASS),
+                                services.BeanEventTypeFactoryPrivate, null, null,
+                                beanType.StartTimestampPropertyName, 
+                                beanType.EndTimestampPropertyName);
                         }
                         else {
                             targetType = WrapperEventTypeUtil.MakeWrapper(

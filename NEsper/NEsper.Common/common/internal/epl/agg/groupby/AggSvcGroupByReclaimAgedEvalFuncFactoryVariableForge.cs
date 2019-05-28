@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenExpression resolve = VariableDeployTimeResolver.MakeResolveVariable(variableMetaData, EPStatementInitServicesConstants.REF);
             return classScope.AddFieldUnshared(
                 true, typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryVariable),
-                NewInstance(typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryVariable), resolve));
+                NewInstance<AggSvcGroupByReclaimAgedEvalFuncFactoryVariable>(resolve));
         }
     }
 } // end of namespace

@@ -297,8 +297,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                 block, "microseconds", ForgeRenderable.HasMicrosecond, counter, methodNode, exprSymbol,
                 codegenClassScope);
             block.MethodReturn(
-                NewInstance(
-                    typeof(TimePeriod), @Ref("year"), @Ref("month"), @Ref("week"), @Ref("day"), @Ref("hours"),
+                NewInstance<TimePeriod>(
+                    @Ref("year"), @Ref("month"), @Ref("week"), @Ref("day"), @Ref("hours"),
                     @Ref("minutes"), @Ref("seconds"), @Ref("milliseconds"), @Ref("microseconds")));
             return LocalMethod(methodNode);
         }

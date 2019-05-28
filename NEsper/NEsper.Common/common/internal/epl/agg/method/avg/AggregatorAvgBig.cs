@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                 method.Block.AssignRef(
                     sum, ExprDotMethod(
                         sum, "add",
-                        NewInstance(typeof(decimal), value)));
+                        NewInstance<decimal>(value)));
             }
             else
             {
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                             block.AssignRef(
                                 sum, ExprDotMethod(
                                     sum, "subtract",
-                                    NewInstance(typeof(decimal), value)));
+                                    NewInstance<decimal>(value)));
                         }
                         else
                         {
@@ -126,8 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                 method.Block.AssignRef(
                     sum, ExprDotMethod(
                         sum, "add",
-                        NewInstance(
-                            typeof(decimal),
+                        NewInstance<decimal>(
                             Cast(typeof(BigInteger), value))));
             }
             else
@@ -158,8 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                             block.AssignRef(
                                 sum, ExprDotMethod(
                                     sum, "subtract",
-                                    NewInstance(
-                                        typeof(decimal),
+                                    NewInstance<decimal>(
                                         Cast(typeof(BigInteger), value))));
                         }
                         else
@@ -256,7 +254,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         private Consumer<CodegenBlock> ClearCode()
         {
             return block =>
-                block.AssignRef(sum, NewInstance(typeof(decimal), Constant(0.0m))).AssignRef(cnt, Constant(0));
+                block.AssignRef(sum, NewInstance<decimal>(Constant(0.0m))).AssignRef(cnt, Constant(0));
         }
     }
 } // end of namespace

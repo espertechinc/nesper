@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 .IfRefNullReturnNull("value");
             CodegenMethod method;
             if (ComponentTypeCollection.IsPrimitive) {
-                method = block.MethodReturn(NewInstance(typeof(ArrayWrappingCollection), Ref("value")));
+                method = block.MethodReturn(NewInstance<ArrayWrappingCollection>(Ref("value")));
             }
             else {
                 method = block.MethodReturn(Ref("value"));

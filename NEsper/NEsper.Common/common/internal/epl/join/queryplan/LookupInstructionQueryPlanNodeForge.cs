@@ -78,8 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             CodegenClassScope classScope)
         {
             var method = MakeInstructions(AssemblyInstructionFactories, parent, symbols, classScope);
-            return NewInstance(
-                typeof(LookupInstructionQueryPlanNode),
+            return NewInstance<LookupInstructionQueryPlanNode>(
                 Constant(RootStream),
                 Constant(RootStreamName),
                 Constant(NumStreams),

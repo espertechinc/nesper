@@ -55,8 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(AdvancedIndexIndexMultiKeyPart), Constant(IndexTypeName), Constant(IndexExpressions),
+            return NewInstance<AdvancedIndexIndexMultiKeyPart>(
+                Constant(IndexTypeName), Constant(IndexExpressions),
                 Constant(IndexedProperties));
         }
     }

@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 eval = ExprNodeUtilityCodegen.CodegenEvaluatorObjectArray(forges, method, this.GetType(), classScope);
             }
 
-            return NewInstance(typeof(TableColumnMethodPairEval), eval, Constant(column));
+            return NewInstance<TableColumnMethodPairEval>(eval, Constant(column));
         }
     }
 } // end of namespace

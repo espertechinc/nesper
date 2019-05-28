@@ -62,8 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(CartesianProdAssemblyNodeFactory), Constant(streamNum), Constant(numStreams),
+            return NewInstance<CartesianProdAssemblyNodeFactory>(
+                Constant(streamNum), Constant(numStreams),
                 Constant(allSubStreamsOptional));
         }
     }

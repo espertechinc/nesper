@@ -35,9 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private readonly ExprDotEval[] _chainEval;
         private readonly ExprEvaluator[] _childEvals;
         private readonly ExprDotNodeForgeStaticMethod _forge;
+#if NOT_USED
         private object _cachedResult;
         private bool _isCachedResult;
-
+#endif
         public ExprDotNodeForgeStaticMethodEval(
             ExprDotNodeForgeStaticMethod forge,
             ExprEvaluator[] childEvals,

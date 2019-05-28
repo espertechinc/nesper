@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(TableOuterLookupNode), LookupStrategySpec.Make(parent, symbols, classScope));
+            return NewInstance<TableOuterLookupNode>(LookupStrategySpec.Make(parent, symbols, classScope));
         }
 
         public override void Accept(QueryPlanNodeForgeVisitor visitor)

@@ -85,8 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 ifResultNotNull.IfCondition(NotEqualsNull(ExprDotMethod(Ref("result"), "getSecond")))
                     .ExprDotMethod(
                         REF_CHILD, "newResult",
-                        NewInstance(
-                            typeof(UniformPair<EventBean>), ExprDotMethod(Ref("result"), "getSecond"), ConstantNull()))
+                        NewInstance<UniformPair<EventBean>>(
+                            ExprDotMethod(Ref("result"), "getSecond"), ConstantNull()))
                     .IfElseIf(Ref("forceUpdate"))
                     .ExprDotMethod(
                         REF_CHILD, "newResult", PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
@@ -105,8 +105,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 ifResultNotNull.IfCondition(NotEqualsNull(ExprDotMethod(Ref("result"), "getFirst")))
                     .ExprDotMethod(
                         REF_CHILD, "newResult",
-                        NewInstance(
-                            typeof(UniformPair<EventBean>), ExprDotMethod(Ref("result"), "getFirst"), ConstantNull()))
+                        NewInstance<UniformPair<EventBean>>(
+                            ExprDotMethod(Ref("result"), "getFirst"), ConstantNull()))
                     .IfElseIf(Ref("forceUpdate"))
                     .ExprDotMethod(
                         REF_CHILD, "newResult", PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
@@ -151,8 +151,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             var resolveTable = table == null
                 ? ConstantNull()
                 : TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method));
-            return NewInstance(
-                typeof(OutputStrategyPostProcessFactory), Constant(isRouted),
+            return NewInstance<OutputStrategyPostProcessFactory>(
+                Constant(isRouted),
                 EnumValue(typeof(SelectClauseStreamSelectorEnum), insertIntoStreamSelector.GetName()),
                 EnumValue(typeof(SelectClauseStreamSelectorEnum), selectStreamSelector.GetName()),
                 Constant(routeToFront), resolveTable);

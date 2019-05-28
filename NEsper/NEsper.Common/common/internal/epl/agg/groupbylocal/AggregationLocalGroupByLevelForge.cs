@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             string rowSerde,
             CodegenExpression groupKeyEval)
         {
-            return NewInstance(
-                typeof(AggregationLocalGroupByLevel),
+            return NewInstance<AggregationLocalGroupByLevel>(
                 NewInstance(rowFactory, Ref("this")),
                 NewInstance(rowSerde, Ref("this")),
                 Constant(ExprNodeUtilityQuery.GetExprResultTypes(PartitionForges)),

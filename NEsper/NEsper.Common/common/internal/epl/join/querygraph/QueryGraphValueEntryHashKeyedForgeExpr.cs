@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                     typeof(ExprEvaluator), "expression",
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(KeyExpr.Forge, method, GetType(), classScope))
                 .MethodReturn(
-                    NewInstance(
-                        typeof(QueryGraphValueEntryHashKeyedExpr),
+                    NewInstance<QueryGraphValueEntryHashKeyedExpr>(
                         Ref("expression"), Constant(IsRequiresKey)));
             return LocalMethod(method);
         }

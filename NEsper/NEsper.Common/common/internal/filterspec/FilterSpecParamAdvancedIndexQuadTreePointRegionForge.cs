@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
                 .DeclareVar(
                     typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion), "fpai",
-                    NewInstance(typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion), Ref("lookupable"), Ref("op")))
+                    NewInstance<FilterSpecParamAdvancedIndexQuadTreePointRegion>(Ref("lookupable"), Ref("op")))
                 .SetProperty(
                     Ref("fpai"), "xEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_xEval, GetType(), classScope, method))

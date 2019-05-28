@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ActionCodegen(NewInstance(typeof(DateTimeEx), inner));
+            return ActionCodegen(NewInstance<DateTimeEx>(inner));
         }
 
         public CodegenExpression CodegenDateTimeEx(

@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
                 .DeclareVar(
                     typeof(ExprEvaluator), "eval",
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(exprEvaluator.Forge, method, GetType(), classScope))
-                .MethodReturn(NewInstance(typeof(SubordWMatchExprLookupStrategyAllFilteredFactory), Ref("eval")));
+                .MethodReturn(NewInstance<SubordWMatchExprLookupStrategyAllFilteredFactory>(Ref("eval")));
             return LocalMethod(method);
         }
 

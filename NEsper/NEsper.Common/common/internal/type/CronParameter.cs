@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public CodegenExpression Make()
         {
-            return NewInstance(typeof(CronParameter), Constant(Operator), Constant(Day), Constant(Month));
+            return NewInstance<CronParameter>(Constant(Operator), Constant(Day), Constant(Month));
         }
     }
 }

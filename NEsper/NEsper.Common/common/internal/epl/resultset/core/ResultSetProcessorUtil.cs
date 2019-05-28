@@ -297,9 +297,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("generated")))
                         .IfCondition(EqualsNull(Ref("result")))
-                        .AssignRef("result", NewInstance(typeof(ArrayDeque<EventBean>), ArrayLength(Ref("events"))))
+                        .AssignRef("result", NewInstance<ArrayDeque<EventBean>>(ArrayLength(Ref("events"))))
                         .AssignRef(
-                            "eventGenerators", NewInstance(typeof(ArrayDeque<EventBean>), ArrayLength(Ref("events"))))
+                            "eventGenerators", NewInstance<ArrayDeque<EventBean>>(ArrayLength(Ref("events"))))
                         .BlockEnd()
                         .ExprDotMethod(Ref("result"), "add", Ref("generated"))
                         .DeclareVar(typeof(EventBean[]), "tmp", NewArrayByLength(typeof(EventBean), Constant(0)))
@@ -411,7 +411,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("generated")))
                         .IfCondition(EqualsNull(Ref("result")))
-                        .AssignRef("result", NewInstance(typeof(ArrayDeque<EventBean>), ArrayLength(Ref("events"))))
+                        .AssignRef("result", NewInstance<ArrayDeque<EventBean>>(ArrayLength(Ref("events"))))
                         .BlockEnd()
                         .ExprDotMethod(Ref("result"), "add", Ref("generated")).BlockEnd();
                 }
@@ -580,7 +580,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         .IfCondition(NotEqualsNull(Ref("generated")))
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef(
-                            "result", NewInstance(typeof(ArrayDeque<EventBean>), ExprDotMethod(Ref("events"), "size")))
+                            "result", NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
                         .BlockEnd()
                         .ExprDotMethod(Ref("result"), "add", Ref("generated")).BlockEnd();
                 }
@@ -691,10 +691,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef(
-                            "result", NewInstance(typeof(ArrayDeque<EventBean>), ExprDotMethod(Ref("events"), "size")))
+                            "result", NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
                         .AssignRef(
                             "eventGenerators",
-                            NewInstance(typeof(ArrayDeque<EventBean>), ExprDotMethod(Ref("events"), "size")))
+                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
                         .BlockEnd()
                         .ExprDotMethod(Ref("result"), "add", Ref("resultEvent"))
                         .ExprDotMethod(Ref("eventGenerators"), "add", Ref("eventsPerStream"))

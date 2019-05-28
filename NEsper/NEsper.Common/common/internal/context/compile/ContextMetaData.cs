@@ -48,8 +48,7 @@ namespace com.espertech.esper.common.@internal.context.compile
                 validationInfos[i] = ValidationInfos[i].Make(addInitSvc);
             }
 
-            return NewInstance(
-                typeof(ContextMetaData),
+            return NewInstance<ContextMetaData>(
                 Constant(ContextName),
                 Constant(ContextModuleName),
                 Constant(ContextVisibility),

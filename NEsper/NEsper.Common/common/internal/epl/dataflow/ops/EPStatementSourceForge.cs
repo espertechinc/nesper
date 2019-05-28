@@ -22,6 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 {
     public class EPStatementSourceForge : DataFlowOperatorForge
     {
+#pragma warning disable 649
         [DataFlowOpParameter] private ExprNode statementDeploymentId;
 
         [DataFlowOpParameter] private ExprNode statementName;
@@ -29,6 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         [DataFlowOpParameter] private IDictionary<string, object> statementFilter; // interface EPDataFlowEPStatementFilter
 
         [DataFlowOpParameter] private IDictionary<string, object> collector; // interface EPDataFlowIRStreamCollector
+#pragma warning restore 649
 
         private bool submitEventBean;
 

@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             exprMethod.Block.DeclareVar(
                     typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(forges.Count)))
-                .DeclareVar(typeof(HashableMultiKey), "valuesMk", NewInstance(typeof(HashableMultiKey), Ref("values")));
+                .DeclareVar(typeof(HashableMultiKey), "valuesMk", NewInstance<HashableMultiKey>(Ref("values")));
             for (var i = 0; i < forges.Count; i++) {
                 var result = expressions[i];
                 if (optCoercionTypes != null &&

@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .BlockReturn(ConstantNull())
                 .DeclareVar(
                     typeof(ICollection<object>), "events",
-                    NewInstance(typeof(ArrayDeque<object>), ExprDotMethod(@Ref("groupKeys"), "size")))
+                    NewInstance<ArrayDeque<object>>(ExprDotMethod(@Ref("groupKeys"), "size")))
                 .ForEach(typeof(object), "groupKey", @Ref("groupKeys"))
                 .ExprDotMethod(aggService, "SetCurrentAccess", @Ref("groupKey"), @Ref("cpid"), ConstantNull())
                 .DeclareVar(

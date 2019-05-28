@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar(
                     typeof(ArrayDeque<object>), "result",
-                    NewInstance(typeof(ArrayDeque<object>), ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size")));
+                    NewInstance<ArrayDeque<object>>(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size")));
             CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
                 .DeclareVar(typeof(object), "item", forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))

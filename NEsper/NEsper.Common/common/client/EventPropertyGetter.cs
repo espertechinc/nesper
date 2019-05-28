@@ -17,6 +17,7 @@ namespace com.espertech.esper.common.client
     /// </summary>
     public interface EventPropertyGetter : EventPropertyValueGetter
     {
+#if INHERITED
         /// <summary>
         /// Return the value for the property in the event object specified when the instance was obtained. Useful for 
         /// fast access to event properties. Throws a PropertyAccessException if the getter instance doesn't match the 
@@ -26,6 +27,7 @@ namespace com.espertech.esper.common.client
         /// <returns>value of property in event</returns>
         /// <throws>PropertyAccessException to indicate that property access failed</throws>
         Object Get(EventBean eventBean);
+#endif
 
         /// <summary>
         /// Returns true if the property exists, or false if the type does not have such a property.

@@ -47,8 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         public CodegenExpression Make()
         {
-            return NewInstance(
-                typeof(AdvancedIndexConfigContextPartitionQuadTree),
+            return NewInstance<AdvancedIndexConfigContextPartitionQuadTree>(
                 Constant(X), Constant(Y), Constant(Width), Constant(Height), Constant(LeafCapacity), Constant(MaxTreeHeight));
         }
 

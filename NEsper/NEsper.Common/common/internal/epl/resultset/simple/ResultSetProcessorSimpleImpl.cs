@@ -74,9 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             {
                 // Return an iterator that gives row-by-row a result
                 method.Block.MethodReturn(
-                    NewInstance(
-                        typeof(TransformEventIterator), ExprDotMethod(REF_VIEWABLE, "iterator"),
-                        NewInstance(typeof(ResultSetProcessorHandtruTransform), Ref("this"))
+                    NewInstance<TransformEventEnumerator>(
+                        ExprDotMethod(REF_VIEWABLE, "iterator"),
+                        NewInstance<ResultSetProcessorHandtruTransform>(Ref("this"))
                         ));
                 return;
             }

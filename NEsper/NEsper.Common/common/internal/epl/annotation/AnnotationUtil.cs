@@ -450,20 +450,17 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is NameAttribute name) {
-                return NewInstance(
-                    typeof(AnnotationNameAttribute),
+                return NewInstance<AnnotationNameAttribute>(
                     Constant(name.Value));
             }
 
             if (annotation is PriorityAttribute priority) {
-                return NewInstance(
-                    typeof(AnnotationPriorityAttribute),
+                return NewInstance<AnnotationPriorityAttribute>(
                     Constant(priority.Value));
             }
 
             if (annotation is TagAttribute tag) {
-                return NewInstance(
-                    typeof(AnnotationTag),
+                return NewInstance<AnnotationTag>(
                     Constant(tag.Name),
                     Constant(tag.Value));
             }
@@ -473,14 +470,12 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is DescriptionAttribute description) {
-                return NewInstance(
-                    typeof(AnnotationDescription),
+                return NewInstance<AnnotationDescription>(
                     Constant(description.Value));
             }
 
             if (annotation is HintAttribute hint) {
-                return NewInstance(
-                    typeof(AnnotationHintAttribute),
+                return NewInstance<AnnotationHintAttribute>(
                     Constant(hint.Value),
                     Constant(hint.Applies),
                     Constant(hint.Model));
@@ -491,12 +486,11 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is AuditAttribute audit) {
-                return NewInstance(typeof(AnnotationAudit), Constant(audit.Value));
+                return NewInstance<AnnotationAudit>(Constant(audit.Value));
             }
 
             if (annotation is EventRepresentationAttribute anno) {
-                return NewInstance(
-                    typeof(AnnotationEventRepresentation),
+                return NewInstance<AnnotationEventRepresentation>(
                     EnumValue(
                         anno.Value.GetType(),
                         anno.Value.GetName()));
@@ -507,15 +501,13 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is HookAttribute hook) {
-                return NewInstance(
-                    typeof(AnnotationHookAttribute),
+                return NewInstance<AnnotationHookAttribute>(
                     EnumValue(typeof(HookType), hook.HookType.GetName()),
                     Constant(hook.Hook));
             }
 
             if (annotation is AvroSchemaFieldAttribute field) {
-                return NewInstance(
-                    typeof(AvroSchemaFieldHook),
+                return NewInstance<AvroSchemaFieldHook>(
                     Constant(field.Name),
                     Constant(field.Schema));
             }

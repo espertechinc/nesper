@@ -64,8 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(QueryPlan), MakeIndexes(method, symbols, classScope),
+            return NewInstance<QueryPlan>(
+                MakeIndexes(method, symbols, classScope),
                 MakeStrategies(method, symbols, classScope));
         }
 

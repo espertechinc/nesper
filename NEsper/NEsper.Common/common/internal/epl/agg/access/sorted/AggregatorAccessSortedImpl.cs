@@ -90,8 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             }
         }
 
-        public CodegenExpression ReverseIteratorCodegen => NewInstance(
-            typeof(AggregationStateSortedEnumerator), sorted, ConstantTrue());
+        public CodegenExpression ReverseIteratorCodegen => NewInstance<AggregationStateSortedEnumerator>(
+            sorted, ConstantTrue());
 
         public override void ClearCodegen(
             CodegenMethod method,
@@ -139,12 +139,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public CodegenExpression IteratorCodegen()
         {
-            return NewInstance(typeof(AggregationStateSortedEnumerator), sorted, ConstantFalse());
+            return NewInstance<AggregationStateSortedEnumerator>(sorted, ConstantFalse());
         }
 
         public CodegenExpression CollectionReadOnlyCodegen()
         {
-            return NewInstance(typeof(AggregationStateSortedWrappingCollection), sorted, size);
+            return NewInstance<AggregationStateSortedWrappingCollection>(sorted, size);
         }
 
         public CodegenExpression SizeCodegen()
@@ -270,7 +270,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                         method.Block.AssignArrayElement(Ref("result"), Constant(i), expressions[i]);
                     }
 
-                    method.Block.MethodReturn(NewInstance(typeof(HashableMultiKey), Ref("result")));
+                    method.Block.MethodReturn(NewInstance<HashableMultiKey>(Ref("result")));
                 }
             };
             return namedMethods.AddMethod(
@@ -298,7 +298,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .IfRefNull("existing")
                 .ExprDotMethod(sorted, "put", Ref("comparable"), Ref("theEvent"))
                 .IfElseIf(InstanceOf(Ref("existing"), typeof(EventBean)))
-                .DeclareVar(typeof(ArrayDeque<EventBean>), "coll", NewInstance(typeof(ArrayDeque<EventBean>), Constant(2)))
+                .DeclareVar(typeof(ArrayDeque<EventBean>), "coll", NewInstance<ArrayDeque<EventBean>>(Constant(2)))
                 .ExprDotMethod(Ref("coll"), "add", Ref("existing"))
                 .ExprDotMethod(Ref("coll"), "add", Ref("theEvent"))
                 .ExprDotMethod(sorted, "put", Ref("comparable"), Ref("coll"))

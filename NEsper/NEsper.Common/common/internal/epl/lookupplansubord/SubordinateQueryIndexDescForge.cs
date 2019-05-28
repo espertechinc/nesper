@@ -55,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                         ? ConstantNull()
                         : OptionalQueryPlanIndexItem.Make(method, classScope));
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(SubordinateQueryIndexDesc),
+                NewInstance<SubordinateQueryIndexDesc>(
                     ConstantNull(), Constant(IndexName), Ref("indexMultiKey"), Ref("queryPlanIndexItem")));
             return LocalMethod(method);
         }

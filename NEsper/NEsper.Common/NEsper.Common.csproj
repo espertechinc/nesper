@@ -28,6 +28,8 @@
 
   <ItemGroup>
     <Compile Remove="common\client\util\DateTimeUtil.cs" />
+    <Compile Remove="common\internal\epl\datetime\dtlocal\DTLocalDtxOpsDateEval.cs" />
+    <Compile Remove="common\internal\epl\datetime\dtlocal\DTLocalDtxOpsDateForge.cs" />
   </ItemGroup>
 
   <ItemGroup>

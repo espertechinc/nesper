@@ -100,8 +100,7 @@ namespace com.espertech.esper.common.@internal.@event.path
             ISet<EventType> deepSuperTypes)
         {
             var stem = beanEventTypeStemService.GetCreateStem(clazz, null);
-            var eventType = eventTypeFactory.CreateBeanType(
-                stem, metadata, beanEventTypeFactory, superTypes, deepSuperTypes, startTimestampName, endTimestampName);
+            var eventType = eventTypeFactory.CreateBeanType(stem, metadata, beanEventTypeFactory, superTypes, deepSuperTypes, startTimestampName, endTimestampName);
             HandleRegister(eventType);
         }
 

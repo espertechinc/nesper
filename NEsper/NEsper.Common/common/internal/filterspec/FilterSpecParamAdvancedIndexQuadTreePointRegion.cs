@@ -14,9 +14,6 @@ namespace com.espertech.esper.common.@internal.filterspec
 {
     public sealed class FilterSpecParamAdvancedIndexQuadTreePointRegion : FilterSpecParam
     {
-        private readonly FilterSpecParamFilterForEvalDouble _xEval;
-        private readonly FilterSpecParamFilterForEvalDouble _yEval;
-
         public FilterSpecParamAdvancedIndexQuadTreePointRegion(
             ExprFilterSpecLookupable lookupable,
             FilterOperator filterOperator)
@@ -24,25 +21,35 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
         }
 
+        public FilterSpecParamFilterForEvalDouble XEval { get; }
+
+        public FilterSpecParamFilterForEvalDouble YEval { get; }
+
         public override object GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
-            var x = _xEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
-            var y = _yEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+            var x = XEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+            var y = YEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             return new XYPoint(x, y);
         }
 
         private bool Equals(FilterSpecParamAdvancedIndexQuadTreePointRegion other)
         {
-            return base.Equals(other) && Equals(_xEval, other._xEval) && Equals(_yEval, other._yEval);
+            return base.Equals(other) && Equals(XEval, other.XEval) && Equals(YEval, other.YEval);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (ReferenceEquals(null, obj)) {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj)) {
+                return true;
+            }
+
             return obj is FilterSpecParamAdvancedIndexQuadTreePointRegion &&
                    Equals((FilterSpecParamAdvancedIndexQuadTreePointRegion) obj);
         }
@@ -51,8 +58,8 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             unchecked {
                 var hashCode = base.GetHashCode();
-                hashCode = (hashCode * 397) ^ (_xEval != null ? _xEval.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (_yEval != null ? _yEval.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (XEval != null ? XEval.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (YEval != null ? YEval.GetHashCode() : 0);
                 return hashCode;
             }
         }

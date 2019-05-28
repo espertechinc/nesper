@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                         method.Block.AssignArrayElement("keys", Constant(i), expressions[i]);
                     }
 
-                    method.Block.MethodReturn(NewInstance(typeof(HashableMultiKey), Ref("keys")));
+                    method.Block.MethodReturn(NewInstance<HashableMultiKey>(Ref("keys")));
                 }
             };
 

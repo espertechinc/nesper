@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             method.Block.MethodReturn(
-                NewInstance(typeof(SubordinateWMatchExprQueryPlan), Ref("strategy"), Ref("indexes")));
+                NewInstance<SubordinateWMatchExprQueryPlan>(Ref("strategy"), Ref("indexes")));
             return LocalMethod(method);
         }
     }

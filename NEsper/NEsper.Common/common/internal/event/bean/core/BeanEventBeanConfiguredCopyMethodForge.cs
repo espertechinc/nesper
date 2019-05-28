@@ -40,8 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
         {
             var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            return NewInstance(
-                typeof(BeanEventBeanConfiguredCopyMethod),
+            return NewInstance<BeanEventBeanConfiguredCopyMethod>(
                 Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF)),
                 factory, MethodResolver.ResolveMethodCodegenExactNonStatic(copyMethod));
         }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
@@ -54,7 +55,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         /// <summary>
         ///     Return the property name, for mapped and indexed properties this is just the property name
-        ///     without parantheses or brackets.
+        ///     without parentheses or brackets.
         /// </summary>
         /// <returns>property name</returns>
         public string PropertyName { get; }
@@ -81,9 +82,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         ///     Returns the type of the underlying method or field of the event property.
         /// </summary>
         /// <value>return type</value>
-        public Type ReturnType {
+        public Type ReturnType
+        {
             get {
-                if (ReadMethod != null) {
+                if (ReadMethod != null)
+                {
                     return ReadMethod.ReturnType;
                 }
 
@@ -92,12 +95,33 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         }
 
         /// <summary>
+        /// Gets the declaring type for the property.
+        /// </summary>
+        /// <value>The type of the declaring.</value>
+        public Type DeclaringType
+        {
+            get {
+                if (ReadMethod != null) {
+                    return ReadMethod.DeclaringType;
+                }
+
+                if (AccessorField != null) {
+                    return AccessorField.DeclaringType;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
         ///     Returns the type of the underlying method or field of the event property.
         /// </summary>
         /// <value>return type</value>
-        public GenericPropertyDesc ReturnTypeGeneric {
+        public GenericPropertyDesc ReturnTypeGeneric
+        {
             get {
-                if (ReadMethod != null) {
+                if (ReadMethod != null)
+                {
                     return new GenericPropertyDesc(
                         ReadMethod.ReturnType, TypeHelper.GetGenericReturnType(ReadMethod, true));
                 }
@@ -109,53 +133,60 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public override string ToString()
         {
-            return "propertyName=" + PropertyName +
-                   " readMethod=" + ReadMethod +
-                   " accessorField=" + AccessorField +
-                   " propertyType=" + PropertyType;
+            return string.Format(
+                "PropertyName: {0}, ReadMethod: {1}, AccessorField: {2}, EventPropertyType: {3}",
+                PropertyName,
+                ReadMethod,
+                AccessorField,
+                PropertyType);
         }
 
-        public override bool Equals(object other)
+        public bool Equals(PropertyStem obj)
         {
-            if (!(other is PropertyStem)) {
+            if (ReferenceEquals(null, obj))
                 return false;
-            }
+            if (ReferenceEquals(this, obj))
+                return true;
+            return
+                Equals(obj.PropertyName, PropertyName) &&
+                Equals(obj.ReadMethod, ReadMethod) &&
+                Equals(obj.AccessorField, AccessorField) &&
+                Equals(obj.PropertyType, PropertyType);
+        }
 
-            var otherDesc = (PropertyStem) other;
-            if (!otherDesc.PropertyName.Equals(PropertyName)) {
+
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+        /// </returns>
+        /// <exception cref="T:System.NullReferenceException">
+        /// The <paramref name="obj"/> parameter is null.
+        /// </exception>
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
                 return false;
-            }
-
-            if (otherDesc.ReadMethod == null && ReadMethod != null ||
-                otherDesc.ReadMethod != null && ReadMethod == null) {
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != typeof(PropertyStem))
                 return false;
-            }
-
-            if (otherDesc.ReadMethod != null && ReadMethod != null &&
-                !otherDesc.ReadMethod.Equals(ReadMethod)) {
-                return false;
-            }
-
-            if (otherDesc.AccessorField == null && AccessorField != null ||
-                otherDesc.AccessorField != null && AccessorField == null) {
-                return false;
-            }
-
-            if (otherDesc.AccessorField != null && AccessorField != null &&
-                !otherDesc.AccessorField.Equals(AccessorField)) {
-                return false;
-            }
-
-            if (otherDesc.PropertyType != PropertyType) {
-                return false;
-            }
-
-            return true;
+            return Equals((PropertyStem) obj);
         }
 
         public override int GetHashCode()
         {
-            return PropertyName.GetHashCode();
+            unchecked
+            {
+                int result = (PropertyName != null ? PropertyName.GetHashCode() : 0);
+                result = (result * 397) ^ (ReadMethod != null ? ReadMethod.GetHashCode() : 0);
+                result = (result * 397) ^ (AccessorField != null ? AccessorField.GetHashCode() : 0);
+                result = (result * 397) ^ PropertyType.GetHashCode();
+                return result;
+            }
         }
     }
 } // end of namespace

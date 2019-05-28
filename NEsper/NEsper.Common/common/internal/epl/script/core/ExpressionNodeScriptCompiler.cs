@@ -7,11 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using com.espertech.esper.common.client.hook.expr;
+
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.compat.collections;
-using static com.espertech.esper.common.@internal.epl.script.core.ExprNodeScript;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
@@ -26,12 +23,16 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExpressionScriptCompiled optionalPrecompiled,
             ImportService importService)
         {
+#if NOT_USED
             ExpressionScriptCompiled compiled;
-            if (optionalPrecompiled != null) {
+#endif
+            if (optionalPrecompiled != null)
+            {
                 return optionalPrecompiled;
             }
 
-            return JSR223Helper.VerifyCompileScript(scriptName, expression, dialect);
+            throw new NotImplementedException();
+            //return JSR223Helper.VerifyCompileScript(scriptName, expression, dialect);
         }
     }
 } // end of namespace

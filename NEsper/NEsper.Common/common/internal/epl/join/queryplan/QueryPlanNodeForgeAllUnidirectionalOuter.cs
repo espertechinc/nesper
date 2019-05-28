@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(QueryPlanNodeAllUnidirectionalOuter), Constant(streamNum));
+            return NewInstance<QueryPlanNodeAllUnidirectionalOuter>(Constant(streamNum));
         }
 
         public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)

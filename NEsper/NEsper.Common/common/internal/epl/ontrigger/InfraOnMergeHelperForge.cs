@@ -137,8 +137,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 .DeclareVar<IList<object>>("matched", MakeList(matched, method, symbols, classScope))
                 .DeclareVar<IList<object>>("unmatched", MakeList(unmatched, method, symbols, classScope))
                 .MethodReturn(
-                    NewInstance(
-                        typeof(InfraOnMergeHelper), Ref("insertUnmatched"), Ref("matched"), Ref("unmatched"),
+                    NewInstance<InfraOnMergeHelper>(
+                        Ref("insertUnmatched"), Ref("matched"), Ref("unmatched"),
                         Constant(requiresTableWriteLock)));
             return LocalMethod(method);
         }
@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         {
             var method = parent.MakeChild(typeof(IList<object>), GetType(), classScope);
             method.Block.DeclareVar(
-                typeof(IList<object>), typeof(InfraOnMergeMatch), "list", NewInstance(typeof(List<object>), Constant(items.Count)));
+                typeof(IList<object>), typeof(InfraOnMergeMatch), "list", NewInstance<List<object>>(Constant(items.Count)));
             foreach (var item in items) {
                 method.Block.ExprDotMethod(Ref("list"), "add", item.Make(method, symbols, classScope));
             }

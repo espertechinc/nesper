@@ -729,11 +729,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 var key = entry.Key.Streams;
                 method.Block.ExprDotMethod(
                     Ref("map"), "put",
-                    NewInstance(typeof(UniformPair<int>), Constant(key.First), Constant(key.Second)),
+                    NewInstance<UniformPair<int>>(Constant(key.First), Constant(key.Second)),
                     entry.Value.Make(method, symbols, classScope));
             }
 
-            return NewInstance(typeof(QueryGraph), Ref("map"));
+            return NewInstance<QueryGraph>(Ref("map"));
         }
     }
 } // end of namespace

@@ -103,6 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             IContainer container,
             RowRecogExprNodePermute permute)
         {
+            var copier = new SerializableObjectCopier(container);
             var e = PermutationEnumerator.Create(permute.ChildNodes.Count);
             var parent = new RowRecogExprNodeAlteration();
             foreach (var indexes in e)
@@ -112,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 for (var i = 0; i < indexes.Length; i++)
                 {
                     var toCopy = permute.ChildNodes[indexes[i]];
-                    var copy = CheckedCopy(container, toCopy);
+                    var copy = CheckedCopy(copier, toCopy);
                     concat.AddChildNode(copy);
                 }
             }
@@ -287,11 +288,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return repeated;
         }
 
-        private static RowRecogExprNode CheckedCopy(IContainer container, RowRecogExprNode inner)
+        private static RowRecogExprNode CheckedCopy(IObjectCopier copier, RowRecogExprNode inner)
         {
             try
             {
-                return SerializableObjectCopier.Copy(container, inner);
+                return copier.Copy(inner);
             }
             catch (Exception e)
             {
@@ -365,11 +366,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 RowRecogExprNode nodeToCopy,
                 RowRecogNFATypeEnum newType)
             {
+                var copier = new SerializableObjectCopier(container);
                 var nested = (RowRecogExprNodeNested) nodeToCopy;
                 var nestedCopy = new RowRecogExprNodeNested(newType, null);
                 foreach (var inner in nested.ChildNodes)
                 {
-                    var innerCopy = CheckedCopy(container, inner);
+                    var innerCopy = CheckedCopy(copier, inner);
                     nestedCopy.AddChildNode(innerCopy);
                 }
 

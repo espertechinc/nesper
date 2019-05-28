@@ -69,11 +69,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                             forge.overlaps
                                 ? IntervalForgeCodegenNames.REF_LEFTSTART
                                 : IntervalForgeCodegenNames.REF_RIGHTSTART, methodNode, exprSymbol, codegenClassScope));
-                CodegenMethod method;
                 if (forge.overlaps) {
                     block.MethodReturn(
                         CodegenExpressionBuilder.StaticMethod(
-                            typeof(IntervalComputerOverlapsAndByThresholdEval), "computeIntervalOverlaps",
+                            typeof(IntervalComputerOverlapsAndByThresholdEval), "ComputeIntervalOverlaps",
                             IntervalForgeCodegenNames.REF_LEFTSTART, IntervalForgeCodegenNames.REF_LEFTEND,
                             IntervalForgeCodegenNames.REF_RIGHTSTART, IntervalForgeCodegenNames.REF_RIGHTEND,
                             CodegenExpressionBuilder.Constant(0), CodegenExpressionBuilder.Ref("threshold")));
@@ -81,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 else {
                     block.MethodReturn(
                         CodegenExpressionBuilder.StaticMethod(
-                            typeof(IntervalComputerOverlapsAndByThresholdEval), "computeIntervalOverlaps",
+                            typeof(IntervalComputerOverlapsAndByThresholdEval), "ComputeIntervalOverlaps",
                             IntervalForgeCodegenNames.REF_RIGHTSTART, IntervalForgeCodegenNames.REF_RIGHTEND,
                             IntervalForgeCodegenNames.REF_LEFTSTART, IntervalForgeCodegenNames.REF_LEFTEND, CodegenExpressionBuilder.Constant(0),
                             CodegenExpressionBuilder.Ref("threshold")));

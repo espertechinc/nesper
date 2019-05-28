@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             methodNode.Block
                 .IfRefNullReturnNull("target")
-                .MethodReturn(NewInstance(typeof(EventUnderlyingCollection), @Ref("target")));
+                .MethodReturn(NewInstance<EventUnderlyingCollection>(@Ref("target")));
             return LocalMethod(methodNode, inner);
         }
 

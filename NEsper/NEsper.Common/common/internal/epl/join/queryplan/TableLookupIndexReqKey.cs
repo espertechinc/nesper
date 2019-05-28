@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             CodegenSymbolProvider symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(TableLookupIndexReqKey), Constant(IndexName), Constant(IndexModuleName), Constant(TableName));
+            return NewInstance<TableLookupIndexReqKey>(
+                Constant(IndexName), Constant(IndexModuleName), Constant(TableName));
         }
 
         public override string ToString()

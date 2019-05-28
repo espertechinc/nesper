@@ -12,13 +12,11 @@ using System.Data;
 namespace com.espertech.esper.common.client.configuration.common
 {
     /// <summary>
-    ///     Supplies connectioon-level settings for a given database name.
+    ///     Supplies connection-level settings for a given database name.
     /// </summary>
     [Serializable]
     public class ConnectionSettings
     {
-        private IsolationLevel? transactionIsolation;
-
         /// <summary>
         ///     Returns a boolean indicating auto-commit, or null if not set and default accepted.
         /// </summary>
@@ -41,9 +39,6 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the connection settings for transaction isolation level.
         /// </summary>
         /// <value>transaction isolation level</value>
-        public IsolationLevel? TransactionIsolation {
-            get => transactionIsolation;
-            set => transactionIsolation = value;
-        }
+        public IsolationLevel? TransactionIsolation { get; set; }
     }
 }

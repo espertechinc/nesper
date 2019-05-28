@@ -30,8 +30,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            return NewInstance(
-                typeof(ContextControllerCategoryValidation),
+            return NewInstance<ContextControllerCategoryValidation>(
                 EventTypeUtility.ResolveTypeCodegen(CategoryEventType, addInitSvc));
         }
 

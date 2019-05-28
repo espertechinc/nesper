@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             if (!(value is IDictionary<string, object>)) {
-                var detail = "expects an " + TypeHelper.GetClassForName(type) +
+                var detail = "expects an " + type.GetCleanName() +
                              " but receives a value of type " + value.GetType().Name;
                 throw new ExprValidationException(
                     GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));

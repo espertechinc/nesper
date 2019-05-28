@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfCondition(InstanceOf(Ref("entry"), typeof(ICollection<object>)))
                 .ExprDotMethod(Cast(typeof(ICollection<object>), Ref("entry")), "add", Ref("next"))
                 .BlockContinue()
-                .DeclareVar(typeof(Deque<object>), "coll", NewInstance(typeof(ArrayDeque<object>), Constant(2)))
+                .DeclareVar(typeof(Deque<object>), "coll", NewInstance<ArrayDeque<object>>(Constant(2)))
                 .ExprDotMethod(Ref("coll"), "add", Ref("entry"))
                 .ExprDotMethod(Ref("coll"), "add", Ref("next"))
                 .ExprDotMethod(Ref("sort"), "put", Ref("value"), Ref("coll"))

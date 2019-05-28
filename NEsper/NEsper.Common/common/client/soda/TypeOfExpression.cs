@@ -20,8 +20,6 @@ namespace com.espertech.esper.common.client.soda
     /// </summary>
     public class TypeOfExpression : ExpressionBase
     {
-        private string[] typeNames;
-
         /// <summary>
         /// Ctor.
         /// </summary>

@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar(
                     typeof(ObjectArrayEventBean), "indexEvent",
-                    NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(1)), indexTypeMember))
+                    NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), indexTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda + 1), @Ref("indexEvent"))
                 .DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("indexEvent"), "getProperties"));
 

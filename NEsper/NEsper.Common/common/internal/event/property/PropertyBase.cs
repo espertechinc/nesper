@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -27,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         ///     Ctor.
         /// </summary>
         /// <param name="propertyName">is the name of the property</param>
-        public PropertyBase(string propertyName)
+        protected PropertyBase(string propertyName)
         {
             PropertyNameAtomic = PropertyParser.UnescapeBacktickForProperty(propertyName);
         }
@@ -79,6 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             string propertyExpression);
 
         public abstract void ToPropertyEPL(TextWriter writer);
+
         public abstract string[] ToPropertyArray();
     }
 } // end of namespace

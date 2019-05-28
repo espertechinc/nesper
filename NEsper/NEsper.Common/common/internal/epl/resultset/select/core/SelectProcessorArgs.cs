@@ -23,6 +23,7 @@ using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
@@ -53,6 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             StatementRawInfo = statementRawInfo;
             CompileTimeServices = compileTimeServices;
         }
+
+        public IContainer Container => CompileTimeServices.Container;
 
         public SelectClauseElementCompiled[] SelectionList { get; }
 

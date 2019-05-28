@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -15,8 +16,8 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.xml;
-using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 {
@@ -27,14 +28,14 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             IDictionary<string, ConfigurationCommonEventTypeXMLDOM> eventTypesXMLDOM,
             BeanEventTypeFactory beanEventTypeFactory,
             XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
-            ImportService importService)
+            IResourceManager resourceManager)
         {
             // Add from the configuration the XML DOM names and type def
             foreach (var entry in eventTypesXMLDOM) {
                 SchemaModel schemaModel = null;
                 if (entry.Value.SchemaResource != null || entry.Value.SchemaText != null) {
                     try {
-                        schemaModel = XSDSchemaMapper.LoadAndMap(entry.Value.SchemaResource, entry.Value.SchemaText, importService);
+                        schemaModel = XSDSchemaMapper.LoadAndMap(entry.Value.SchemaResource, entry.Value.SchemaText, resourceManager);
                     }
                     catch (Exception ex) {
                         throw new ConfigurationException(ex.Message, ex);

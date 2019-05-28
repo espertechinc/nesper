@@ -78,8 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             block.MethodReturn(
-                NewInstance(
-                    typeof(FrequencyParameter),
+                NewInstance<FrequencyParameter>(
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(Ref("value"), evaluationType)));
             return LocalMethod(methodNode);
         }

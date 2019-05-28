@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
 
             if (code == ApacheCommonsDateUtils.MODIFY_CEILING) {
-                return dateTimeOffset.Plus(1, field).TruncatedTo(field);
+                return dateTimeOffset.AddUsingField(field, 1).TruncatedTo(field);
             }
 
             throw new EPException("Round-half operation not supported for LocalDateTime");
@@ -81,12 +81,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprEvaluatorContext context)
         {
             if (code == ApacheCommonsDateUtils.MODIFY_TRUNCATE) {
-                return dateTime.TruncatedTo(field.ChronoUnit);
+                return dateTime.TruncatedTo(field);
             }
 
             if (code == ApacheCommonsDateUtils.MODIFY_CEILING) {
-                DateTimeFieldMath.AddUsingField(dateTime, field, 1);
-                return dateTime.Plus(1, field.ChronoUnit).TruncatedTo(field.ChronoUnit);
+                return dateTime.AddUsingField(field, 1).TruncatedTo(field);
             }
 
             throw new EPException("Round-half operation not supported for ZonedDateTime");

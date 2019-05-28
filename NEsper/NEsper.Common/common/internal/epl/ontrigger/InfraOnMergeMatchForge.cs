@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 ? ConstantNull()
                 : ExprNodeUtilityCodegen.CodegenEvaluator(optionalCond.Forge, method, this.GetType(), classScope);
             CodegenExpression actionsList = InfraOnMergeActionForge.MakeActions(actions, method, symbols, classScope);
-            method.Block.MethodReturn(NewInstance(typeof(InfraOnMergeMatch), evaluator, actionsList));
+            method.Block.MethodReturn(NewInstance<InfraOnMergeMatch>(evaluator, actionsList));
             return LocalMethod(method);
         }
     }

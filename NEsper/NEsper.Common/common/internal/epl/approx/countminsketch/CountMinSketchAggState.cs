@@ -83,9 +83,9 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
                 long frequency = state.Frequency(buf.Array);
                 fromBytes.Bytes = buf.Array;
                 object value = agent.FromBytes(fromBytes);
-                if (frequency == null) {
-                    continue;
-                }
+                //if (frequency == null) {
+                //    continue;
+                //}
 
                 arr[index++] = new CountMinSketchTopK(frequency, value);
             }

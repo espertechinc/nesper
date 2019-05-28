@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             IList<object> list = new List<object>(enumcoll);
             if (descending) {
-                Collections.SortInPlace(list, Collections.Reverse);
+                Collections.SortInPlace(list, Comparers.Inverse(Comparers.Default<object>()));
             }
             else {
                 Collections.SortInPlace(list);
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS).Block
                 .IfCondition(Or(EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL), ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar(typeof(IList<object>), "list", NewInstance(typeof(List<object>), EnumForgeCodegenNames.REF_ENUMCOLL));
+                .DeclareVar(typeof(IList<object>), "list", NewInstance<List<object>>(EnumForgeCodegenNames.REF_ENUMCOLL));
             if (descending) {
                 block.StaticMethod(typeof(Collections), "sort", @Ref("list"), StaticMethod(typeof(Collections), "reverseOrder"));
             }

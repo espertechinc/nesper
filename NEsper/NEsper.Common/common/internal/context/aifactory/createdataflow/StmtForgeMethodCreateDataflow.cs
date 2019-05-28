@@ -38,6 +38,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 {
@@ -109,7 +110,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             // compiled filter spec list
             IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
-            foreach (KeyValuePair<int, DataFlowOperatorForge> entry in dataflowForge.GetOperatorFactories()) {
+            foreach (KeyValuePair<int, DataFlowOperatorForge> entry in dataflowForge.OperatorFactories) {
                 if (entry.Value is EventBusSourceForge) {
                     var eventBusSource = (EventBusSourceForge) entry.Value;
                     filterSpecCompileds.Add(eventBusSource.FilterSpecCompiled);
@@ -122,7 +123,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             IList<ScheduleHandleCallbackProvider> scheduleds = new List<ScheduleHandleCallbackProvider>();
 
             // add additional forgeables
-            foreach (StmtForgeMethodResult additional in dataflowForge.GetAdditionalForgables()) {
+            foreach (StmtForgeMethodResult additional in dataflowForge.AdditionalForgables) {
                 foreach (var v in Enumerable.Reverse(additional.Forgables)) {
                     forgables.Insert(0, v);
                 }
@@ -203,6 +204,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
+            var container = services.Container;
+
             // Step 1: find all the operators that have explicit output ports and determine the type of such
             IDictionary<int, IList<LogicalChannelProducingPortDeclared>> declaredOutputPorts =
                 new Dictionary<int, IList<LogicalChannelProducingPortDeclared>>();
@@ -225,7 +228,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             // Step 2: determine for each operator the output ports: some are determined via "prepare" and some can be implicit
             // since they may not be declared or can be punctuation.
-            // Therefore we need to meet ends: on one end the declared types, on the other the implied and dynamically-determined types based on input.
+            // Therefore we need to meet ends: on one end the declared types, on the other the implied and dynamically-determined
+            // types based on input.
+            //
             // We do this in operator build order.
             IDictionary<int, IList<LogicalChannelProducingPortCompiled>> compiledOutputPorts =
                 new Dictionary<int, IList<LogicalChannelProducingPortCompiled>>();
@@ -240,8 +245,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 // Compile type information, call method, obtain output types.
                 var incomingDependentOpNums = operatorDependencies[operatorNum].Incoming;
                 var initializeResult = InitializeOperatorForge(
-                    operatorNum, operatorForge, operatorAnno, metadata, operatorSpec, declaredOutputPorts,
-                    compiledOutputPorts, declaredTypes, incomingDependentOpNums, desc, codegenEnv, @base, services);
+                    container, operatorNum, operatorForge, operatorAnno, metadata, operatorSpec,
+                    declaredOutputPorts, compiledOutputPorts, declaredTypes, incomingDependentOpNums,
+                    desc, codegenEnv, @base, services);
 
                 GraphTypeDesc[] typesPerOutput = null;
                 if (initializeResult != null) {
@@ -917,6 +923,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static DataFlowOpForgeInitializeResult InitializeOperatorForge(
+            IContainer container,
             int operatorNumber,
             DataFlowOperatorForge forge,
             Attribute[] operatorAnnotations,
@@ -984,9 +991,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             DataFlowOpForgeInitializeResult initializeResult;
             try {
                 var context = new DataFlowOpForgeInitializeContext(
+                    container,
                     desc.GraphName,
-                    operatorNumber, operatorAnnotations, operatorSpec, inputPorts, outputPorts,
-                    codegenEnv, @base, services);
+                    operatorNumber,
+                    operatorAnnotations,
+                    operatorSpec,
+                    inputPorts,
+                    outputPorts,
+                    codegenEnv, 
+                    @base,
+                    services);
                 initializeResult = forge.InitializeForge(context);
             }
             catch (EPException) {

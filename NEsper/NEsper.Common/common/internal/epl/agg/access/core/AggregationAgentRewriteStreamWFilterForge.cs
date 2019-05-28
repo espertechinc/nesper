@@ -10,21 +10,22 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.core
 {
     public class AggregationAgentRewriteStreamWFilterForge : AggregationAgentForge
     {
-        private readonly int streamNum;
-        private readonly ExprForge filterEval;
+        private readonly int _streamNum;
+        private readonly ExprForge _filterEval;
 
         public AggregationAgentRewriteStreamWFilterForge(
             int streamNum,
             ExprForge filterEval)
         {
-            this.streamNum = streamNum;
-            this.filterEval = filterEval;
+            _streamNum = streamNum;
+            _filterEval = filterEval;
         }
 
         public CodegenExpression Make(
@@ -32,17 +33,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(AggregationAgentRewriteStreamWFilter), Constant(streamNum),
-                ExprNodeUtilityCodegen.CodegenEvaluator(filterEval, method, this.GetType(), classScope));
+            return NewInstance<AggregationAgentRewriteStreamWFilter>(
+                Constant(_streamNum),
+                ExprNodeUtilityCodegen.CodegenEvaluator(_filterEval, method, this.GetType(), classScope));
         }
 
-        public ExprForge FilterEval {
-            get => filterEval;
+        public ExprForge FilterEval
+        {
+            get => _filterEval;
         }
 
-        public ExprForge OptionalFilter {
-            get => filterEval;
+        public ExprForge OptionalFilter
+        {
+            get => _filterEval;
         }
     }
 } // end of namespace

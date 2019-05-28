@@ -278,7 +278,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return new DOMIndexedGetter(PropertyNameAtomic, Index, null);
             }
 
-            foreach (SchemaElementComplex complex in complexProperty.Children) {
+            foreach (SchemaElementComplex complex in complexProperty.ComplexElements) {
                 if (!complex.IsArray) {
                     continue;
                 }
@@ -297,7 +297,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
         public override SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty)
         {
-            foreach (var simple in complexProperty.SimpleElements) {
+            foreach (SchemaElementSimple simple in complexProperty.SimpleElements) {
                 if (!simple.IsArray) {
                     continue;
                 }
@@ -308,10 +308,10 @@ namespace com.espertech.esper.common.@internal.@event.property
 
                 // return the simple as a non-array since an index is provided
                 return new SchemaElementSimple(
-                    simple.Name, simple.Namespace, simple.XsSimpleType, simple.TypeName, false, simple.FractionDigits);
+                    simple.Name, simple.Namespace, simple.SimpleType, simple.TypeName, false, simple.FractionDigits);
             }
 
-            foreach (SchemaElementComplex complex in complexProperty.Children) {
+            foreach (SchemaElementComplex complex in complexProperty.ComplexElements) {
                 if (!complex.IsArray) {
                     continue;
                 }
@@ -322,8 +322,13 @@ namespace com.espertech.esper.common.@internal.@event.property
 
                 // return the complex as a non-array since an index is provided
                 return new SchemaElementComplex(
-                    complex.Name, complex.Namespace, complex.Attributes, complex.Children, complex.SimpleElements,
-                    false, complex.OptionalSimpleType, complex.OptionalSimpleTypeName);
+                    complex.Name,
+                    complex.Namespace, 
+                    complex.Attributes,
+                    complex.ComplexElements,
+                    complex.SimpleElements, false, 
+                    complex.OptionalSimpleType, 
+                    complex.OptionalSimpleTypeName);
             }
 
             return null;

@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -32,7 +34,7 @@ namespace com.espertech.esper.common.client.configuration.common
             ConnectionSettings = new ConnectionSettings();
             MetadataRetrievalEnum = MetadataOriginEnum.DEFAULT;
             ColumnChangeCase = ColumnChangeCaseEnum.NONE;
-            SqlTypesMapping = new Dictionary<int, string>();
+            DataTypesMapping = new Dictionary<Type, Type>();
         }
 
         /// <summary>
@@ -64,7 +66,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns an enumeration indicating how the runtime retrieves metadata about the columns
         ///     that a given SQL query returns.
         ///     <para />
-        ///     The runtimerequires to retrieve result column names and types in order to build a resulting
+        ///     The runtime requires to retrieve result column names and types in order to build a resulting
         ///     event type and perform expression type checking.
         /// </summary>
         /// <returns>indication how to retrieve metadata</returns>
@@ -84,7 +86,8 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     is true to set auto-commit to true, or false to set auto-commit to false, or null to accepts the
         ///     default
         /// </value>
-        public bool ConnectionAutoCommit {
+        public bool ConnectionAutoCommit
+        {
             set => ConnectionSettings.AutoCommit = value;
         }
 
@@ -92,7 +95,9 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the transaction isolation level on new connections created for this database.
         /// </summary>
         /// <value>is the transaction isolation level</value>
-        public int ConnectionTransactionIsolation {
+        public IsolationLevel? ConnectionTransactionIsolation
+        {
+            get => ConnectionSettings.TransactionIsolation;
             set => ConnectionSettings.TransactionIsolation = value;
         }
 
@@ -100,7 +105,9 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the read-only flag on new connections created for this database.
         /// </summary>
         /// <value>is the read-only flag</value>
-        public bool ConnectionReadOnly {
+        public bool ConnectionReadOnly
+        {
+            get => ConnectionSettings.ReadOnly;
             set => ConnectionSettings.ReadOnly = value;
         }
 
@@ -108,29 +115,33 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the catalog name for new connections created for this database.
         /// </summary>
         /// <value>is the catalog name</value>
-        public string ConnectionCatalog {
+        public string ConnectionCatalog
+        {
+            get => ConnectionSettings.Catalog;
             set => ConnectionSettings.Catalog = value;
         }
 
         /// <summary>
-        ///     Returns the mapping of types that the runtimemust perform
+        ///     Returns the mapping of types that the runtime must perform
         ///     when receiving output columns of that sql types.
         /// </summary>
-        /// <value>map of &lt;seealso cref="java.sql.Types" /&gt; types to Java types</value>
-        public IDictionary<int, string> SqlTypesMapping { get; }
+        public IDictionary<Type, Type> DataTypesMapping { get; }
 
         /// <summary>
-        ///     Set the connection factory to use a factory class that provides an instance of
-        ///     <seealso cref="javax.sql.DataSource" />.
+        ///     Sets and indicator how the runtime should retrieve metadata about the columns
+        ///     that a given SQL query returns.
         ///     <para />
-        ///     This method is designed for use with Apache Commons DBCP and its BasicDataSourceFactory
-        ///     but can also work for any application-provided factory for DataSource instances.
-        ///     <para />
-        ///     When using Apache DBCP, specify BasicDataSourceFactory.class.getName() as the class name
-        ///     and populate all properties that Apache DBCP takes for connection pool configuration.
-        ///     <para />
-        ///     When using an application-provided data source factory, pass the class name of
-        ///     a class that provides a public static method createDataSource(Properties properties) returning DataSource.
+        ///     The runtime requires to retrieve result column names and types in order to build a resulting
+        ///     event type and perform expression type checking.
+        /// </summary>
+        /// <value>indication how to retrieve metadata</value>
+        public MetadataOriginEnum MetadataOrigin
+        {
+            set => MetadataRetrievalEnum = value;
+        }
+
+        /// <summary>
+        ///     Set the connection factory to use a factory class.
         /// </summary>
         /// <param name="dataSourceFactoryClassName">the classname of the data source factory</param>
         /// <param name="properties">passed to the createDataSource method of the data source factory class</param>
@@ -142,10 +153,9 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Sets the connection factory to use <seealso cref="javax.sql.DataSource" /> to obtain a
-        ///     connection.
+        ///     Sets the connection factory to use to obtain a connection.
         /// </summary>
-        /// <param name="contextLookupName">is the object name to look up via &lt;seealso cref="javax.naming.InitialContext" /&gt;</param>
+        /// <param name="contextLookupName">is the object name to look up</param>
         /// <param name="environmentProps">are the optional properties to pass to the context</param>
         public void SetDataSourceConnection(
             string contextLookupName,
@@ -155,8 +165,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Sets the connection factory to use <seealso cref="java.sql.DriverManager" /> to obtain a
-        ///     connection.
+        ///     Sets the connection factory to use to obtain a connection.
         /// </summary>
         /// <param name="className">is the driver class name</param>
         /// <param name="url">is the URL</param>
@@ -170,8 +179,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Sets the connection factory to use <seealso cref="java.sql.DriverManager" /> to obtain a
-        ///     connection.
+        ///     Sets the connection factory to use to obtain a connection.
         /// </summary>
         /// <param name="className">is the driver class name</param>
         /// <param name="url">is the URL</param>
@@ -187,8 +195,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Sets the connection factory to use <seealso cref="java.sql.DriverManager" /> to obtain a
-        ///     connection.
+        ///     Sets the connection factory to use to obtain a connection.
         /// </summary>
         /// <param name="className">is the driver class name</param>
         /// <param name="url">is the URL</param>
@@ -253,68 +260,20 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Sets and indicator how the runtimeshould retrieve metadata about the columns
-        ///     that a given SQL query returns.
-        ///     <para />
-        ///     The runtimerequires to retrieve result column names and types in order to build a resulting
-        ///     event type and perform expression type checking.
+        /// Adds the SQL types binding.
         /// </summary>
-        /// <param name="metadataOrigin">indication how to retrieve metadata</param>
-        public void SetMetadataOrigin(MetadataOriginEnum metadataOrigin)
+        /// <param name="sqlType">Type of the SQL.</param>
+        /// <param name="desiredType">The desired type.</param>
+        public void AddSqlTypeBinding(Type sqlType, Type desiredType)
         {
-            MetadataRetrievalEnum = metadataOrigin;
-        }
-
-        /// <summary>
-        ///     Sets enum value determining how the runtimeshould change case on output column names
-        ///     returned from statement or statement result set metadata.
-        /// </summary>
-        /// <param name="columnChangeCaseEnum">change case enums</param>
-        public void SetColumnChangeCase(ColumnChangeCaseEnum columnChangeCaseEnum)
-        {
-            ColumnChangeCase = columnChangeCaseEnum;
-        }
-
-        /// <summary>
-        ///     Adds a mapping of a sqlType to a type.
-        ///     <para />
-        ///     The mapping dictates to the runtimehow the output column should be
-        ///     represented as an object.
-        ///     <para />
-        ///     Accepts a classname (fully-qualified or simple) or primitive type name
-        ///     for the type parameter. See <seealso cref="DatabaseTypeEnum" /> for valid values for the type name.
-        /// </summary>
-        /// <param name="sqlType">is a sqlType constant, for which output columns are converted to type</param>
-        /// <param name="typeName">is a type name</param>
-        public void AddSqlTypesBinding(
-            int sqlType,
-            string typeName)
-        {
-            var typeEnum = DatabaseTypeEnum.GetEnum(typeName);
-            if (typeEnum == null) {
-                string supported = CompatExtensions.RenderAny(DatabaseTypeEnum.VALUES);
+            var typeEnum = DatabaseTypeEnum.GetEnum(desiredType.FullName);
+            if (typeEnum == null)
+            {
+                var supported = DatabaseTypeEnum.VALUES.RenderAny();
                 throw new ConfigurationException(
-                    "Unsupported type '" + typeName + "' when expecting any of: " + supported);
+                    "Unsupported type '" + desiredType.FullName + "' when expecting any of: " + supported);
             }
-
-            SqlTypesMapping.Put(sqlType, typeName);
-        }
-
-        /// <summary>
-        ///     Adds a mapping of a java.sql.Types type to a type.
-        ///     <para />
-        ///     The mapping dictates to the runtimehow the output column should be
-        ///     represented as an object.
-        ///     <para />
-        ///     Accepts a type for the type parameter. See <seealso cref="DatabaseTypeEnum" /> for valid values.
-        /// </summary>
-        /// <param name="sqlType">is a java.sql.Types constant, for which output columns are converted to java type</param>
-        /// <param name="typeName">is a type</param>
-        public void AddSqlTypesBinding(
-            int sqlType,
-            Type typeName)
-        {
-            AddSqlTypesBinding(sqlType, typeName.Name);
+            DataTypesMapping[sqlType] = desiredType;
         }
     }
 } // end of namespace

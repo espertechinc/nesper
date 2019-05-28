@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 .SetProperty(spec, "AfterConditionNumberOfEvents", Constant(afterNumberOfEvents))
                 .SetProperty(spec, "UnaggregatedUngrouped", Constant(unaggregatedUngrouped))
                 .SetProperty(spec, "EventTypes", EventTypeUtility.ResolveTypeArrayCodegen(eventTypes, EPStatementInitServicesConstants.REF))
-                .MethodReturn(NewInstance(typeof(OutputProcessViewConditionFactory), spec));
+                .MethodReturn(NewInstance<OutputProcessViewConditionFactory>(spec));
         }
 
         public void UpdateCodegen(

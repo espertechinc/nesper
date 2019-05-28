@@ -29,8 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         {
             CodegenMethod method = parent.MakeChild(typeof(TimerScheduleSpecComputeISOString), this.GetType(), classScope);
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(TimerScheduleSpecComputeISOString),
+                NewInstance<TimerScheduleSpecComputeISOString>(
                     ExprNodeUtilityCodegen.CodegenEvaluator(parameter.Forge, method, this.GetType(), classScope)));
             return LocalMethod(method);
         }

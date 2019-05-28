@@ -196,8 +196,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             }
 
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(QueryPlanIndexItem),
+                NewInstance<QueryPlanIndexItem>(
                     Constant(HashProps), Constant(HashTypes), valueGetter,
                     Constant(RangeProps), Constant(RangeTypes), rangeGetters,
                     Constant(IsUnique),

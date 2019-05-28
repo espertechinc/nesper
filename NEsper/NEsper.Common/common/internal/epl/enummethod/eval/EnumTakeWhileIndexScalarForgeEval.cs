@@ -110,12 +110,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar(
                     typeof(ObjectArrayEventBean), "evalEvent",
-                    NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(1)), evalTypeMember))
+                    NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), evalTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("evalEvent"))
                 .DeclareVar(typeof(object[]), "evalProps", ExprDotMethod(@Ref("evalEvent"), "getProperties"))
                 .DeclareVar(
                     typeof(ObjectArrayEventBean), "indexEvent",
-                    NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(1)), indexTypeMember))
+                    NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), indexTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda + 1), @Ref("indexEvent"))
                 .DeclareVar(typeof(object[]), "indexProps", ExprDotMethod(@Ref("indexEvent"), "getProperties"));
 

@@ -93,8 +93,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            return NewInstance(
-                typeof(NamedWindowMetaData), EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc),
+            return NewInstance<NamedWindowMetaData>(
+                EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc),
                 Constant(NamedWindowModuleName), Constant(ContextName), Constant(Uniqueness),
                 Constant(IsChildBatching), Constant(IsEnableIndexShare),
                 OptionalEventTypeAs == null

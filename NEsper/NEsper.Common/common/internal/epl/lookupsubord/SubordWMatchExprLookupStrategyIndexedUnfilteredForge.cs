@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
                     typeof(SubordTableLookupStrategyFactory), "lookup",
                     OptionalInnerStrategy.Make(method, symbols, classScope))
                 .MethodReturn(
-                    NewInstance(typeof(SubordWMatchExprLookupStrategyIndexedUnfilteredFactory), Ref("lookup")));
+                    NewInstance<SubordWMatchExprLookupStrategyIndexedUnfilteredFactory>(Ref("lookup")));
             return LocalMethod(method);
         }
 

@@ -73,8 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 k => (TableLookupIndexReqKey) k,
                 v => (QueryPlanIndexItemForge) v);
 
-            return NewInstance(
-                typeof(QueryPlanIndex),
+            return NewInstance<QueryPlanIndex>(
                 CodegenMakeableUtil.MakeMap(
                     "items",
                     typeof(TableLookupIndexReqKey), 

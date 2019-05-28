@@ -650,8 +650,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 .AddParam(typeof(Viewable), NAME_VIEWABLE);
             if (!forge.IsSorting) {
                 iterator.Block.MethodReturn(
-                    NewInstance(
-                        typeof(ResultSetProcessorRowPerGroupEnumerator), ExprDotMethod(REF_VIEWABLE, "iterator"),
+                    NewInstance<ResultSetProcessorRowPerGroupEnumerator>(
+                        ExprDotMethod(REF_VIEWABLE, "iterator"),
                         Ref("this"), REF_AGGREGATIONSVC, REF_AGENTINSTANCECONTEXT));
                 return iterator;
             }
@@ -742,7 +742,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 .DeclareVar(
                     typeof(EventBean[]), "selectNewEvents",
                     LocalMethod(generateOutputEventsJoin, Ref("keysAndEvents"), ConstantTrue(), ConstantTrue()))
-                .MethodReturn(NewInstance(typeof(ArrayEventEnumerator), Ref("selectNewEvents")));
+                .MethodReturn(NewInstance<ArrayEventEnumerator>(Ref("selectNewEvents")));
         }
 
         public static void ClearMethodCodegen(CodegenMethod method)
@@ -2053,12 +2053,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR, "sortTwoKeys", Ref("newKeyEvent"), Ref("newSortKey"),
                                 Ref("oldKeyEvent"), Ref("oldSortKey")))
-                        .MethodReturn(NewInstance(typeof(UniformPair<EventBean>), Ref("sorted"), ConstantNull()));
+                        .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("sorted"), ConstantNull()));
                 }
                 else {
                     methodNode.Block.MethodReturn(
-                        NewInstance(
-                            typeof(UniformPair<EventBean>),
+                        NewInstance<UniformPair<EventBean>>(
                             NewArrayWithInit(typeof(EventBean), Ref("newKeyEvent"), Ref("oldKeyEvent")),
                             ConstantNull()));
                 }

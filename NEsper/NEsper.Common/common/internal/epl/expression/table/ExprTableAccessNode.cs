@@ -33,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
     {
         internal readonly string tableName;
         internal ExprForge[] groupKeyEvaluators;
+#if NOT_USED
         internal ExprTableEvalStrategyFactoryForge strategy;
+#endif
         internal TableMetaData tableMeta;
 
         /// <summary>

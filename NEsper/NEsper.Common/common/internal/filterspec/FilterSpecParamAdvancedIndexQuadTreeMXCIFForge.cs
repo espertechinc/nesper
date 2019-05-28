@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
                 .DeclareVar<FilterSpecParamAdvancedIndexQuadTreeMXCIF>("fpai",
-                    NewInstance(typeof(FilterSpecParamAdvancedIndexQuadTreeMXCIF), Ref("lookupable"), Ref("op")))
+                    NewInstance<FilterSpecParamAdvancedIndexQuadTreeMXCIF>(Ref("lookupable"), Ref("op")))
                 .SetProperty(
                     Ref("fpai"), "xEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_xEval, GetType(), classScope, method))

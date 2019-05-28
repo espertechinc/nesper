@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar(typeof(decimal), "sum", NewInstance(typeof(decimal), Constant(0d)));
+                block.DeclareVar(typeof(decimal), "sum", NewInstance<decimal>(Constant(0d)));
                 block.DeclareVar(typeof(long), "cnt", Constant(0));
             }
 

@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             var method = parent.MakeChild(typeof(IList<object>), typeof(InfraOnMergeActionForge), classScope);
             method.Block.DeclareVar(
                 typeof(IList<object>), typeof(InfraOnMergeAction), "list",
-                NewInstance(typeof(List<object>), Constant(actions.Count)));
+                NewInstance<List<object>>(Constant(actions.Count)));
             foreach (var item in actions) {
                 method.Block.ExprDotMethod(Ref("list"), "add", item.Make(method, symbols, classScope));
             }

@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
     /// </summary>
     public class LastPostObserverView : ViewSupport
     {
-        protected internal Viewable parent;
+        protected internal new Viewable parent;
         protected internal readonly int streamId;
         protected internal LastPostObserver observer;
 

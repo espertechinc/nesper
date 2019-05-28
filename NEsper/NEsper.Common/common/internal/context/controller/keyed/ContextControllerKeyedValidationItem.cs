@@ -34,8 +34,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            return NewInstance(
-                typeof(ContextControllerKeyedValidationItem),
+            return NewInstance<ContextControllerKeyedValidationItem>(
                 EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc), Constant(PropertyNames));
         }
     }

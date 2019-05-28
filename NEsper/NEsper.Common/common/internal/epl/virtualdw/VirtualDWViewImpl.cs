@@ -37,8 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         private readonly VirtualDWViewFactory _factory;
         private readonly AgentInstanceContext _agentInstanceContext;
         private readonly VirtualDataWindow _dataExternal;
+#pragma warning disable 649
         private string _lastAccessedByDeploymentId;
         private string _lastAccessedByStatementName;
+#pragma warning restore 649
         private int _lastAccessedByNum;
 
         public VirtualDWViewImpl(

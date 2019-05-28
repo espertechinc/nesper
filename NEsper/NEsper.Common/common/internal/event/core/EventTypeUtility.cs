@@ -84,8 +84,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventBeanTypedEventFactory factory,
             EventTypeAvroHandler eventTypeAvroHandler)
         {
-            if (type is WrapperEventType) {
-                var wrapperType = (WrapperEventType) type;
+            if (type is WrapperEventType wrapperType) {
                 if (wrapperType.UnderlyingEventType is BeanEventType) {
                     return new EventBeanFactoryBeanWrapped(wrapperType.UnderlyingEventType, wrapperType, factory);
                 }
@@ -137,8 +136,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return null;
             }
 
-            if (eventType is BeanEventType) {
-                var beanEventType = (BeanEventType) eventType;
+            if (eventType is BeanEventType beanEventType) {
                 return new EventBeanManufacturerBeanForge(beanEventType, properties, importService);
             }
 
@@ -152,13 +150,11 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return new EventBeanManufacturerMapForge(mapEventType, properties);
             }
 
-            if (eventType is ObjectArrayEventType) {
-                var objectArrayEventType = (ObjectArrayEventType) eventType;
+            if (eventType is ObjectArrayEventType objectArrayEventType) {
                 return new EventBeanManufacturerObjectArrayForge(objectArrayEventType, properties);
             }
 
-            if (eventType is AvroSchemaEventType) {
-                var avroSchemaEventType = (AvroSchemaEventType) eventType;
+            if (eventType is AvroSchemaEventType avroSchemaEventType) {
                 return avroHandler.GetEventBeanManufacturer(avroSchemaEventType, properties);
             }
 
@@ -338,7 +334,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 .DeclareVar(
                     eventType.UnderlyingType, "und", Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("bean"))))
                 .DeclareVar(typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(getters.Length)))
-                .DeclareVar(typeof(HashableMultiKey), "valuesMk", NewInstance(typeof(HashableMultiKey), Ref("values")));
+                .DeclareVar(typeof(HashableMultiKey), "valuesMk", NewInstance<HashableMultiKey>(Ref("values")));
 
             for (var i = 0; i < getters.Length; i++) {
                 var result = getters[i].UnderlyingGetCodegen(Ref("und"), get, classScope);
@@ -493,8 +489,8 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             // parse, can be an nested property
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is PropertyBase) {
-                return target.GetPropertyDescriptor(((PropertyBase) property).PropertyNameAtomic);
+            if (property is PropertyBase propertyBase) {
+                return target.GetPropertyDescriptor(propertyBase.PropertyNameAtomic);
             }
 
             if (!(property is NestedProperty)) {
@@ -522,7 +518,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             var simple = (SimpleProperty) topProperty;
 
             var fragmentEventType = target.GetFragmentType(simple.PropertyNameAtomic);
-            if (fragmentEventType == null || fragmentEventType.FragmentType == null) {
+            if (fragmentEventType?.FragmentType == null) {
                 return null;
             }
 
@@ -634,13 +630,13 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                 if (!prop.IsFragment) {
                     var assigned = prop.PropertyType;
-                    if (existing != null && existing is Type) {
+                    if (existing is Type) {
                         if (((Type) existing).GetBoxedType() != assigned.GetBoxedType()) {
                             throw new ExprValidationException(
                                 "Type by name '" + typeToMerge.Name + "' contributes property '" +
                                 prop.PropertyName + "' defined as '" +
                                 assigned.GetCleanName() +
-                                "' which overides the same property of type '" +
+                                "' which overrides the same property of type '" +
                                 ((Type) existing).GetCleanName() + "'");
                         }
                     }
@@ -881,9 +877,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     }
                 }
 
-                if (entry.Value is Type) {
-                    var classType = (Type) entry.Value;
-
+                if (entry.Value is Type classType) {
                     var isArray = classType.IsArray;
                     Type componentType = null;
                     if (isArray) {
@@ -941,15 +935,14 @@ namespace com.espertech.esper.common.@internal.@event.core
                     continue;
                 }
 
-                if (entry.Value is EventType) {
+                if (entry.Value is EventType eventTypeX) {
                     // Add EventType itself as a property
-                    var eventType = (EventType) entry.Value;
-                    var getter = factory.GetGetterEventBean(name, eventType.UnderlyingType);
+                    var getter = factory.GetGetterEventBean(name, eventTypeX.UnderlyingType);
                     var descriptor = new EventPropertyDescriptor(
-                        name, eventType.UnderlyingType, null, false, false, false, false, true);
-                    var fragmentEventType = new FragmentEventType(eventType, false, false);
+                        name, eventTypeX.UnderlyingType, null, false, false, false, false, true);
+                    var fragmentEventType = new FragmentEventType(eventTypeX, false, false);
                     var item = new PropertySetDescriptorItem(
-                        descriptor, eventType.UnderlyingType, getter, fragmentEventType);
+                        descriptor, eventTypeX.UnderlyingType, getter, fragmentEventType);
                     propertyNameList.Add(name);
                     propertyDescriptors.Add(descriptor);
                     propertyItems.Put(name, item);
@@ -1060,16 +1053,15 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
 
                 if (property is SimpleProperty) {
-                    var propitem = simplePropertyTypes.Get(propertyName);
-                    if (propitem != null) {
-                        return propitem.SimplePropertyType;
+                    var propItem = simplePropertyTypes.Get(propertyName);
+                    if (propItem != null) {
+                        return propItem.SimplePropertyType;
                     }
 
                     return null;
                 }
 
-                if (property is IndexedProperty) {
-                    var indexedProp = (IndexedProperty) property;
+                if (property is IndexedProperty indexedProp) {
                     var type = nestableTypes.Get(indexedProp.PropertyNameAtomic);
                     if (type == null) {
                         return null;
@@ -1096,8 +1088,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     return ((Type) type).GetElementType();
                 }
 
-                if (property is MappedProperty) {
-                    var mappedProp = (MappedProperty) property;
+                if (property is MappedProperty mappedProp) {
                     var type = nestableTypes.Get(mappedProp.PropertyNameAtomic);
                     if (type == null) {
                         return null;
@@ -1135,8 +1126,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             if (nestedType == null) {
                 // parse, can be an indexed property
                 var property = PropertyParser.ParseAndWalkLaxToSimple(propertyMap);
-                if (property is IndexedProperty) {
-                    var indexedProp = (IndexedProperty) property;
+                if (property is IndexedProperty indexedProp) {
                     var type = nestableTypes.Get(indexedProp.PropertyNameAtomic);
                     if (type == null) {
                         return null;
@@ -1153,7 +1143,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     }
 
                     if (type is EventType[]) {
-                        // handle eventtype[] in map
+                        // handle eventType[] in map
                         var innerType = ((EventType[]) type)[0];
                         return innerType.GetPropertyType(propertyNested);
                     }
@@ -1280,8 +1270,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     return getterDyn;
                 }
 
-                if (prop is IndexedProperty) {
-                    var indexedProp = (IndexedProperty) prop;
+                if (prop is IndexedProperty indexedProp) {
                     var type = nestableTypes.Get(indexedProp.PropertyNameAtomic);
                     if (type == null) {
                         return null;
@@ -1294,8 +1283,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                         return getterArr;
                     }
 
-                    if (type is TypeBeanOrUnderlying) {
-                        var innerType = ((TypeBeanOrUnderlying) type).EventType;
+                    if (type is TypeBeanOrUnderlying innerTypeWrapper) {
+                        var innerType = innerTypeWrapper.EventType;
                         if (!(innerType is BaseNestableEventType)) {
                             return null;
                         }
@@ -1306,8 +1295,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                         return typeGetter;
                     }
 
-                    if (type is TypeBeanOrUnderlying[]) {
-                        var innerType = ((TypeBeanOrUnderlying[]) type)[0].EventType;
+                    if (type is TypeBeanOrUnderlying[] innerTypes) {
+                        var innerType = innerTypes[0].EventType;
                         if (!(innerType is BaseNestableEventType)) {
                             return null;
                         }
@@ -1336,15 +1325,14 @@ namespace com.espertech.esper.common.@internal.@event.core
                     return indexedGetter;
                 }
 
-                if (prop is MappedProperty) {
-                    var mappedProp = (MappedProperty) prop;
+                if (prop is MappedProperty mappedProp) {
                     var type = nestableTypes.Get(mappedProp.PropertyNameAtomic);
                     if (type == null) {
                         return null;
                     }
 
-                    if (type is Type) {
-                        if (TypeHelper.IsImplementsInterface((Type) type, typeof(IDictionary<string, object>))) {
+                    if (type is Type interfaceType) {
+                        if (TypeHelper.IsImplementsInterface(interfaceType, typeof(IDictionary<string, object>))) {
                             return factory.GetGetterMappedProperty(mappedProp.PropertyNameAtomic, mappedProp.Key);
                         }
                     }
@@ -1370,15 +1358,14 @@ namespace com.espertech.esper.common.@internal.@event.core
             if (nestedType == null) {
                 // parse, can be an indexed property
                 var property = PropertyParser.ParseAndWalkLaxToSimple(propertyMap);
-                if (property is IndexedProperty) {
-                    var indexedProp = (IndexedProperty) property;
+                if (property is IndexedProperty indexedProp) {
                     var type = nestableTypes.Get(indexedProp.PropertyNameAtomic);
                     if (type == null) {
                         return null;
                     }
 
-                    if (type is TypeBeanOrUnderlying[]) {
-                        var innerType = (EventTypeSPI) ((TypeBeanOrUnderlying[]) type)[0].EventType;
+                    if (type is TypeBeanOrUnderlying[] innerTypes) {
+                        var innerType = (EventTypeSPI) innerTypes[0].EventType;
                         if (!(innerType is BaseNestableEventType)) {
                             return null;
                         }
@@ -1395,8 +1382,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                         return typeGetter;
                     }
 
-                    if (type is EventType[]) {
-                        var componentType = (EventTypeSPI) ((EventType[]) type)[0];
+                    if (type is EventType[] componentTypes) {
+                        var componentType = (EventTypeSPI) componentTypes[0];
                         var nestedGetter = componentType.GetGetterSPI(propertyNested);
                         if (nestedGetter == null) {
                             return null;
@@ -1468,9 +1455,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return mapGetter;
             }
 
-            if (nestedType is IDictionary<string, object>) {
+            if (nestedType is IDictionary<string, object> nestedTypes) {
                 var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyNested);
-                var nestedTypes = (IDictionary<string, object>) nestedType;
                 var getterNestedMap = prop.GetGetterMap(
                     nestedTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
                 if (getterNestedMap == null) {
@@ -1482,9 +1468,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return mapGetter;
             }
 
-            if (nestedType is Type) {
+            if (nestedType is Type simpleClass) {
                 // ask the nested class to resolve the property
-                var simpleClass = (Type) nestedType;
                 if (simpleClass.IsArray) {
                     return null;
                 }
@@ -1530,8 +1515,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return getter;
             }
 
-            if (nestedType is EventType[]) {
-                var typeArray = (EventType[]) nestedType;
+            if (nestedType is EventType[] typeArray) {
                 var beanArrGetter = factory.GetGetterEventBeanArray(propertyMap, typeArray[0]);
                 propertyGetterCache.Put(propertyName, beanArrGetter);
                 return beanArrGetter;
@@ -2002,8 +1986,12 @@ namespace com.espertech.esper.common.@internal.@event.core
                     var superTypes = GetSuperTypes(stem.SuperTypes, services);
                     var deepSuperTypes = GetDeepSupertypes(stem.DeepSuperTypes, services);
                     eventType = new BeanEventType(
-                        stem, metadata, services.BeanEventTypeFactoryPrivate, superTypes, deepSuperTypes,
-                        spec.StartTimestampProperty, spec.EndTimestampProperty);
+                        services.Container,
+                        stem, metadata, 
+                        services.BeanEventTypeFactoryPrivate, 
+                        superTypes, deepSuperTypes,
+                        spec.StartTimestampProperty, 
+                        spec.EndTimestampProperty);
                 }
                 catch (ImportException ex) {
                     throw new ExprValidationException(ex.Message, ex);

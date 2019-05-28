@@ -158,7 +158,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             GETDAYOFMONTH,
             GETDAYOFWEEK,
             GETDAYOFYEAR,
-            GETERA,
             GETHOUROFDAY,
             GETMILLISOFSECOND,
             GETSECONDOFMINUTE,

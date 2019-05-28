@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         private CodegenExpression Make()
         {
-            return NewInstance(typeof(NameParamNumAndModule), Constant(name), Constant(paramNum), Constant(moduleName));
+            return NewInstance<NameParamNumAndModule>(Constant(name), Constant(paramNum), Constant(moduleName));
         }
     }
 } // end of namespace

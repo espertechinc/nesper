@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
     public class OnExprViewTableUpdate : OnExprViewTableBase
     {
-        private readonly InfraOnUpdateViewFactory parent;
+        private new readonly InfraOnUpdateViewFactory parent;
 
         public OnExprViewTableUpdate(
             SubordWMatchExprLookupStrategy lookupStrategy,

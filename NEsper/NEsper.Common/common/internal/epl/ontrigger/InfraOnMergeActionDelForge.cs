@@ -29,8 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         {
             CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeActionDel), this.GetType(), classScope);
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(InfraOnMergeActionDel),
+                NewInstance<InfraOnMergeActionDel>(
                     OptionalFilter == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(OptionalFilter.Forge, method, GetType(), classScope)));

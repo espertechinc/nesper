@@ -83,8 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             }
 
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(SubordCompositeTableLookupStrategyFactory),
+                NewInstance<SubordCompositeTableLookupStrategyFactory>(
                     Constant(isNWOnTrigger), Constant(_numStreams), Constant(expressions.ToArray()),
                     hashEval, Ref("rangeEvals")));
             return LocalMethod(method);

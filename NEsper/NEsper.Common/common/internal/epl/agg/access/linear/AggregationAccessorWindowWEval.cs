@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             context.Method.Block.DeclareVar(typeof(int), "size", stateForge.AggregatorLinear.SizeCodegen())
                 .IfCondition(EqualsIdentity(Ref("size"), Constant(0))).BlockReturn(ConstantNull())
-                .DeclareVar(typeof(IList<EventBean>), "values", NewInstance(typeof(List<EventBean>), Ref("size")))
+                .DeclareVar(typeof(IList<EventBean>), "values", NewInstance<List<EventBean>>(Ref("size")))
                 .DeclareVar(
                     typeof(IEnumerator<EventBean>), "it",
                     stateForge.AggregatorLinear.IteratorCodegen(context.ClassScope, context.Method, context.NamedMethods))

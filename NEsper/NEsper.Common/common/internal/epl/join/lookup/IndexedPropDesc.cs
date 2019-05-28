@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
 
         public CodegenExpression Make()
         {
-            return NewInstance(typeof(IndexedPropDesc), Constant(IndexPropName), Constant(CoercionType));
+            return NewInstance<IndexedPropDesc>(Constant(IndexPropName), Constant(CoercionType));
         }
 
         /// <summary>

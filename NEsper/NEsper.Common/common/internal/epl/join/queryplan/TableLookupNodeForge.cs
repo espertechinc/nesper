@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(TableLookupNode), TableLookupPlan.Make(parent, symbols, classScope));
+            return NewInstance<TableLookupNode>(TableLookupPlan.Make(parent, symbols, classScope));
         }
 
         public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)

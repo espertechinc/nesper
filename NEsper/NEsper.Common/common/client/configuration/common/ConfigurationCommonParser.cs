@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             var eventTypeNodeEnumerator = DOMElementEnumerator.Create(commonElement.ChildNodes);
             while (eventTypeNodeEnumerator.MoveNext()) {
-                XmlElement element = eventTypeNodeEnumerator.Current;
+                var element = eventTypeNodeEnumerator.Current;
                 var nodeName = element.Name;
                 switch (nodeName) {
                     case "event-type":
@@ -92,7 +93,7 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             var threadingProfileStr = GetOptionalAttribute(parentElement, "threading-profile");
             if (threadingProfileStr != null) {
-                ThreadingProfile profile = EnumHelper.Parse<ThreadingProfile>(threadingProfileStr);
+                var profile = EnumHelper.Parse<ThreadingProfile>(threadingProfileStr);
                 common.Execution.ThreadingProfile = profile;
             }
         }
@@ -112,7 +113,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         }
 
                         try {
-                            TimeUnit timeUnit = EnumHelper.Parse<TimeUnit>(valueText);
+                            var timeUnit = EnumHelper.Parse<TimeUnit>(valueText);
                             common.TimeSource.TimeUnit = timeUnit;
                         }
                         catch (EPException) {
@@ -159,7 +160,7 @@ namespace com.espertech.esper.common.client.configuration.common
             var varianceName = GetRequiredAttribute(element, "name");
 
             if (element.Attributes.GetNamedItem("type-variance") != null) {
-                string typeVar = element.Attributes.GetNamedItem("type-variance").InnerText;
+                var typeVar = element.Attributes.GetNamedItem("type-variance").InnerText;
                 TypeVariance typeVarianceEnum;
                 try {
                     typeVarianceEnum = EnumHelper.Parse<TypeVariance>(typeVar.Trim());
@@ -177,7 +178,7 @@ namespace com.espertech.esper.common.client.configuration.common
             while (nodeEnumerator.MoveNext()) {
                 var subElement = nodeEnumerator.Current;
                 if (subElement.Name == "variant-event-type") {
-                    string name = subElement.Attributes.GetNamedItem("name").InnerText;
+                    var name = subElement.Attributes.GetNamedItem("name").InnerText;
                     variantStream.AddEventTypeName(name);
                 }
             }
@@ -199,13 +200,13 @@ namespace com.espertech.esper.common.client.configuration.common
                 switch (subElement.Name) {
                     case "datasource-connection": {
                         var lookup = GetRequiredAttribute(subElement, "context-lookup-name");
-                        Properties properties = DOMUtil.GetProperties(subElement, "env-property");
+                        var properties = DOMUtil.GetProperties(subElement, "env-property");
                         configDBRef.SetDataSourceConnection(lookup, properties);
                         break;
                     }
                     case "datasourcefactory-connection": {
                         var className = GetRequiredAttribute(subElement, "class-name");
-                        Properties properties = DOMUtil.GetProperties(subElement, "env-property");
+                        var properties = DOMUtil.GetProperties(subElement, "env-property");
                         configDBRef.SetDataSourceFactory(properties, className);
                         break;
                     }
@@ -214,7 +215,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         var url = GetRequiredAttribute(subElement, "url");
                         var userName = GetRequiredAttribute(subElement, "user");
                         var password = GetRequiredAttribute(subElement, "password");
-                        Properties properties = DOMUtil.GetProperties(subElement, "connection-arg");
+                        var properties = DOMUtil.GetProperties(subElement, "connection-arg");
                         configDBRef.SetDriverManagerConnection(className, url, userName, password, properties);
                         break;
                     }
@@ -225,22 +226,22 @@ namespace com.espertech.esper.common.client.configuration.common
                     }
                     case "connection-settings":
                         if (subElement.Attributes.GetNamedItem("auto-commit") != null) {
-                            string autoCommit = subElement.Attributes.GetNamedItem("auto-commit").InnerText;
+                            var autoCommit = subElement.Attributes.GetNamedItem("auto-commit").InnerText;
                             configDBRef.ConnectionAutoCommit = Boolean.Parse(autoCommit);
                         }
 
                         if (subElement.Attributes.GetNamedItem("transaction-isolation") != null) {
-                            string transactionIsolation = subElement.Attributes.GetNamedItem("transaction-isolation").InnerText;
-                            configDBRef.ConnectionTransactionIsolation = Int32.Parse(transactionIsolation);
+                            var transactionIsolation = subElement.Attributes.GetNamedItem("transaction-isolation").InnerText;
+                            configDBRef.ConnectionTransactionIsolation = EnumHelper.Parse<IsolationLevel>(transactionIsolation);
                         }
 
                         if (subElement.Attributes.GetNamedItem("catalog") != null) {
-                            string catalog = subElement.Attributes.GetNamedItem("catalog").InnerText;
+                            var catalog = subElement.Attributes.GetNamedItem("catalog").InnerText;
                             configDBRef.ConnectionCatalog = catalog;
                         }
 
                         if (subElement.Attributes.GetNamedItem("read-only") != null) {
-                            string readOnly = subElement.Attributes.GetNamedItem("read-only").InnerText;
+                            var readOnly = subElement.Attributes.GetNamedItem("read-only").InnerText;
                             configDBRef.ConnectionReadOnly = Boolean.Parse(readOnly);
                         }
 
@@ -254,7 +255,7 @@ namespace com.espertech.esper.common.client.configuration.common
                     case "metadata-origin": {
                         var value = GetRequiredAttribute(subElement, "value");
                         var parsed = EnumHelper.Parse<MetadataOriginEnum>(value);
-                        configDBRef.SetMetadataOrigin(parsed);
+                        configDBRef.MetadataOrigin = parsed;
                         break;
                     }
 #if NOT_SUPPORTED
@@ -277,9 +278,9 @@ namespace com.espertech.esper.common.client.configuration.common
                     case "expiry-time-cache":
                         var maxAge = GetRequiredAttribute(subElement, "max-age-seconds");
                         var purgeInterval = GetRequiredAttribute(subElement, "purge-interval-seconds");
-                        CacheReferenceType refTypeEnum = CacheReferenceType.DEFAULT;
+                        var refTypeEnum = CacheReferenceType.DEFAULT;
                         if (subElement.Attributes.GetNamedItem("ref-type") != null) {
-                            string refType = subElement.Attributes.GetNamedItem("ref-type").InnerText;
+                            var refType = subElement.Attributes.GetNamedItem("ref-type").InnerText;
                             refTypeEnum = EnumHelper.Parse<CacheReferenceType>(refType);
                         }
 
@@ -300,7 +301,7 @@ namespace com.espertech.esper.common.client.configuration.common
             var variableName = GetRequiredAttribute(element, "name");
             var type = GetRequiredAttribute(element, "type");
 
-            Type variableType = TypeHelper.GetTypeForSimpleName(type, ClassForNameProviderDefault.INSTANCE);
+            var variableType = TypeHelper.GetTypeForSimpleName(type, ClassForNameProviderDefault.INSTANCE);
             if (variableType == null) {
                 throw new ConfigurationException("Invalid variable type for variable '" + variableName + "', the type is not recognized");
             }
@@ -341,7 +342,7 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             var eventTypeNodeEnumerator = DOMElementEnumerator.Create(parentNode.ChildNodes);
             while (eventTypeNodeEnumerator.MoveNext()) {
-                XmlElement eventTypeElement = eventTypeNodeEnumerator.Current;
+                var eventTypeElement = eventTypeNodeEnumerator.Current;
                 var nodeName = eventTypeElement.Name;
                 switch (nodeName) {
                     case "xml-dom":
@@ -412,7 +413,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
             var propertyNodeEnumerator = DOMElementEnumerator.Create(xmldomElement.ChildNodes);
             while (propertyNodeEnumerator.MoveNext()) {
-                XmlElement propertyElement = propertyNodeEnumerator.Current;
+                var propertyElement = propertyNodeEnumerator.Current;
                 switch (propertyElement.Name) {
                     case "namespace-prefix":
                         var prefix = GetRequiredAttribute(propertyElement, "prefix");
@@ -561,7 +562,7 @@ namespace com.espertech.esper.common.client.configuration.common
             if (superTypesList != null || startTimestampProp != null || endTimestampProp != null) {
                 config = new ConfigurationCommonEventTypeMap();
                 if (superTypesList != null) {
-                    string value = superTypesList.InnerText;
+                    var value = superTypesList.InnerText;
                     var names = value.Split(',');
                     foreach (var superTypeName in names) {
                         config.SuperTypes.Add(superTypeName.Trim());
@@ -596,7 +597,7 @@ namespace com.espertech.esper.common.client.configuration.common
             if (superTypesList != null || startTimestampProp != null || endTimestampProp != null) {
                 config = new ConfigurationCommonEventTypeObjectArray();
                 if (superTypesList != null) {
-                    string value = superTypesList.InnerText;
+                    var value = superTypesList.InnerText;
                     var names = value.SplitCsv();
                     foreach (var superTypeName in names) {
                         config.SuperTypes.Add(superTypeName.Trim());
@@ -654,7 +655,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         var purgeInterval = GetRequiredAttribute(subElement, "purge-interval-seconds");
                         var refTypeEnum = CacheReferenceType.DEFAULT;
                         if (subElement.Attributes.GetNamedItem("ref-type") != null) {
-                            string refType = subElement.Attributes.GetNamedItem("ref-type").InnerText;
+                            var refType = subElement.Attributes.GetNamedItem("ref-type").InnerText;
                             refTypeEnum = EnumHelper.Parse<CacheReferenceType>(refType);
                         }
 
@@ -679,15 +680,15 @@ namespace com.espertech.esper.common.client.configuration.common
                     case "class-property-resolution":
                         var styleNode = subElement.Attributes.GetNamedItem("style");
                         if (styleNode != null) {
-                            string styleText = styleNode.InnerText;
-                            PropertyResolutionStyle value = EnumHelper.Parse<PropertyResolutionStyle>(styleText);
+                            var styleText = styleNode.InnerText;
+                            var value = EnumHelper.Parse<PropertyResolutionStyle>(styleText);
                             common.EventMeta.ClassPropertyResolutionStyle = value;
                         }
 
                         var accessorStyleNode = subElement.Attributes.GetNamedItem("accessor-style");
                         if (accessorStyleNode != null) {
-                            string accessorStyleText = accessorStyleNode.InnerText;
-                            AccessorStyle value = EnumHelper.Parse<AccessorStyle>(accessorStyleText);
+                            var accessorStyleText = accessorStyleNode.InnerText;
+                            var value = EnumHelper.Parse<AccessorStyle>(accessorStyleText);
                             common.EventMeta.DefaultAccessorStyle = value;
                         }
 
@@ -695,8 +696,8 @@ namespace com.espertech.esper.common.client.configuration.common
                     case "event-representation":
                         var typeNode = subElement.Attributes.GetNamedItem("type");
                         if (typeNode != null) {
-                            string typeText = typeNode.InnerText;
-                            EventUnderlyingType value = EnumHelper.Parse<EventUnderlyingType>(typeText);
+                            var typeText = typeNode.InnerText;
+                            var value = EnumHelper.Parse<EventUnderlyingType>(typeText);
                             common.EventMeta.DefaultEventRepresentation = value;
                         }
 

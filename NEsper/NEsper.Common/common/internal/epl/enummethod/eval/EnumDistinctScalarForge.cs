@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfCondition(InstanceOf(Ref("enumcoll"), typeof(ISet<object>)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                .MethodReturn(NewInstance(typeof(LinkedHashSet<object>), EnumForgeCodegenNames.REF_ENUMCOLL));
+                .MethodReturn(NewInstance<LinkedHashSet<object>>(EnumForgeCodegenNames.REF_ENUMCOLL));
             return LocalMethod(method, args.Expressions);
         }
     }

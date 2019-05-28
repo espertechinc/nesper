@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             propertyOrigClasses.Add(clazz);
 
             // Get the set of property names for all classes
-            return GetPropertiesForClasses(propertyOrigClasses);
+            return GetPropertiesForTypes(propertyOrigClasses);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         private static void GetImplementedInterfaceParents(
             Type clazz,
-            ISet<Type> classesResult)
+            ICollection<Type> classesResult)
         {
             var interfaces = clazz.GetInterfaces();
 
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
         }
 
-        private static ISet<WriteablePropertyDescriptor> GetWritablePropertiesForClasses(ISet<Type> propertyClasses)
+        private static ISet<WriteablePropertyDescriptor> GetWritablePropertiesForClasses(IEnumerable<Type> propertyClasses)
         {
             ISet<WriteablePropertyDescriptor> result = new HashSet<WriteablePropertyDescriptor>();
 
@@ -101,13 +101,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return result;
         }
 
-        private static IList<PropertyStem> GetPropertiesForClasses(ISet<Type> propertyClasses)
+        private static IList<PropertyStem> GetPropertiesForTypes(IEnumerable<Type> propertyClasses)
         {
-            IList<PropertyStem> result = new List<PropertyStem>();
+            var result = new List<PropertyStem>();
+            foreach (var type in propertyClasses) {
+                var magicType = MagicType.GetCachedType(type);
 
-            foreach (var clazz in propertyClasses) {
-                AddIntrospectProperties(clazz, result);
-                AddMappedProperties(clazz, result);
+                AddIntrospectProperties(magicType, result);
+                // MagicType captures properties that are true 'native' properties
+                // - and properties that are exposed via getters.  As such, the
+                // - AddMappedProperties call is no needed, but left here commented
+                // - for future revisions.
+                //
+                // AddMappedProperties(magicType, result);
             }
 
             RemoveDuplicateProperties(result);
@@ -116,23 +122,28 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return result;
         }
 
+        private static void AddIntrospectProperties(
+            MagicType magicType,
+            List<PropertyStem> result)
+        {
+            foreach (var propertyInfo in magicType.GetAllProperties(true).Where(p => p.GetMethod != null)) {
+                result.Add(
+                    new PropertyStem(
+                        propertyInfo.Name,
+                        propertyInfo.GetMethod,
+                        propertyInfo.EventPropertyType));
+            }
+        }
+
         /// <summary>
-        ///     Remove Java language specific properties from the given list of property descriptors.
+        ///     Remove language or platform specific properties from the given list of property descriptors.
         /// </summary>
         /// <param name="properties">is the list of property descriptors</param>
         public static void RemovePlatformProperties(IList<PropertyStem> properties)
         {
-            IList<PropertyStem> toRemove = new List<PropertyStem>();
-
-            // add removed entries to separate list
-            foreach (var desc in properties) {
-                if (desc.PropertyName.Equals("class") ||
-                    desc.PropertyName.Equals("getClass") ||
-                    desc.PropertyName.Equals("toString") ||
-                    desc.PropertyName.Equals("hashCode")) {
-                    toRemove.Add(desc);
-                }
-            }
+            IList<PropertyStem> toRemove = properties
+                .Where(d => d.DeclaringType == typeof(object))
+                .ToList();
 
             // remove
             foreach (var desc in toRemove) {
@@ -147,7 +158,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         protected internal static void RemoveDuplicateProperties(IList<PropertyStem> properties)
         {
             var set = new LinkedHashMap<string, PropertyStem>();
-            IList<PropertyStem> toRemove = new List<PropertyStem>();
+            var toRemove = new List<PropertyStem>();
 
             // add duplicates to separate list
             foreach (var desc in properties) {
@@ -162,39 +173,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             // remove duplicates
             foreach (var desc in toRemove) {
                 properties.Remove(desc);
-            }
-        }
-
-        /// <summary>
-        ///     Adds to the given list of property descriptors the properties of the given class
-        ///     using the Introspector to introspect properties. This also finds array and indexed properties.
-        /// </summary>
-        /// <param name="clazz">to introspect</param>
-        /// <param name="result">is the list to add to</param>
-        protected internal static void AddIntrospectProperties(
-            Type clazz,
-            IList<PropertyStem> result)
-        {
-            var magic = MagicType.GetCachedType(clazz);
-
-
-            PropertyDescriptor[] properties = Introspect(clazz);
-            for (var i = 0; i < properties.Length; i++) {
-                PropertyDescriptor property = properties[i];
-                string propertyName = property.Name;
-                MethodInfo readMethod = property.ReadMethod;
-
-                var type = EventPropertyType.SIMPLE;
-                if (property is IndexedPropertyDescriptor) {
-                    readMethod = ((IndexedPropertyDescriptor) property).IndexedReadMethod;
-                    type = EventPropertyType.INDEXED;
-                }
-
-                if (readMethod == null) {
-                    continue;
-                }
-
-                result.Add(new PropertyStem(propertyName, readMethod, type));
             }
         }
 
@@ -217,12 +195,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         ///     Adds to the given list of property descriptors the mapped properties, ie.
         ///     properties that have a getter method taking a single String value as a parameter.
         /// </summary>
-        /// <param name="clazz">to introspect</param>
+        /// <param name="magicType">type to introspect</param>
         /// <param name="result">is the list to add to</param>
         protected internal static void AddMappedProperties(
-            Type clazz,
+            MagicType magicType,
             IList<PropertyStem> result)
         {
+            var clazz = magicType.TargetType;
             ISet<string> uniquePropertyNames = new HashSet<string>();
             var methods = clazz.GetMethods();
 

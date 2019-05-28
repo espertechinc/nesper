@@ -6,15 +6,19 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.support
 {
     public class SupportClasspathImport
     {
-        public readonly static ImportServiceCompileTime INSTANCE = new ImportServiceCompileTime(null, null, null, null, false, false);
+        public static ImportServiceCompileTime GetInstance(IContainer container)
+        {
+            return container.ResolveSingleton(
+                () => new ImportServiceCompileTime(
+                    container, null, null, null, MathContext.DECIMAL32, false, false));
+        }
     }
 } // end of namespace

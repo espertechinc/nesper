@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(TimePeriodComputeConstGivenDeltaEval), Constant(timeDelta));
+            return NewInstance<TimePeriodComputeConstGivenDeltaEval>(Constant(timeDelta));
         }
     }
 } // end of namespace

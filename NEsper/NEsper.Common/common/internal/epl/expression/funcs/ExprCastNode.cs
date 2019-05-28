@@ -357,12 +357,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Exception ex)
         {
             string pattern;
-            if (format is SimpleDateFormat)
-            {
-                pattern = ((SimpleDateFormat) format).ToPattern();
+            if (format is SimpleDateFormat simpleDateFormat) {
+                pattern = simpleDateFormat.FormatString;
             }
-            else
-            {
+            else {
                 pattern = format.ToString();
             }
 
@@ -448,7 +446,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// </summary>
         /// <param name="format">format</param>
         /// <returns>date format</returns>
-        public static DateFormat StringToSimpleDateFormatSafe(object format)
+        public static SimpleDateFormat StringToSimpleDateFormatSafe(object format)
         {
             if (format == null)
             {
@@ -495,7 +493,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return codegenClassScope.AddFieldUnshared(
-                true, typeof(DateFormat), NewInstance(typeof(SimpleDateFormat), Constant(dateFormatString)));
+                true, typeof(DateFormat), NewInstance<SimpleDateFormat>(Constant(dateFormatString)));
         }
 
         private static CodegenExpression FormatFieldExpr(

@@ -92,8 +92,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                     keyStreamTypes, _hashStrictKeys, _hashKeyCoercionTypes.CoercionTypes, keyStreamNums,
                     methodNode, GetType(), classScope);
                 methodNode.Block.MethodReturn(
-                    NewInstance(
-                        typeof(SubordHashedTableLookupStrategyPropFactory), Constant(_hashStrictKeys),
+                    NewInstance<SubordHashedTableLookupStrategyPropFactory>(
+                        Constant(_hashStrictKeys),
                         Constant(keyStreamNums), eval));
                 return LocalMethod(methodNode);
             }
@@ -107,8 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
                     forges, _hashKeyCoercionTypes.CoercionTypes, methodNode, GetType(), classScope);
                 methodNode.Block.MethodReturn(
-                    NewInstance(
-                        typeof(SubordHashedTableLookupStrategyExprFactory), Constant(expressions), eval,
+                    NewInstance<SubordHashedTableLookupStrategyExprFactory>(
+                        Constant(expressions), eval,
                         Constant(isNWOnTrigger), Constant(_numStreamsOuter)));
                 return LocalMethod(methodNode);
             }

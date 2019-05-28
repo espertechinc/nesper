@@ -27,8 +27,7 @@ namespace com.espertech.esper.common.@internal.rettype
             CodegenClassScope classScope,
             CodegenExpression typeInitSvcRef)
         {
-            return CodegenExpressionBuilder.NewInstance(
-                typeof(EventEPType),
+            return CodegenExpressionBuilder.NewInstance<EventEPType>(
                 EventTypeUtility.ResolveTypeCodegen(EventType, typeInitSvcRef));
         }
     }

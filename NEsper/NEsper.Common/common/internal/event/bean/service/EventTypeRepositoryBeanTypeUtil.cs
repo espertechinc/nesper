@@ -88,8 +88,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             // bean type
             var startTS = optionalConfig == null ? null : optionalConfig.StartTimestampPropertyName;
             var endTS = optionalConfig == null ? null : optionalConfig.EndTimestampPropertyName;
-            var eventType = privateFactory.EventTypeFactory.CreateBeanType(
-                stem, metadata, privateFactory, superTypes, deepSuperTypes, startTS, endTS);
+            var eventType = privateFactory.EventTypeFactory.CreateBeanType(stem, metadata, privateFactory, superTypes, deepSuperTypes, startTS, endTS);
 
             repo.AddType(eventType);
         }

@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             blockMethod.DeclareVar(
                 typeof(LikeUtil), "likeUtil",
-                NewInstance(typeof(LikeUtil), Ref("pattern"), Ref("es"), Constant(false)));
+                NewInstance<LikeUtil>(Ref("pattern"), Ref("es"), Constant(false)));
 
             if (!forge.IsNumericValue) {
                 blockMethod.DeclareVar(

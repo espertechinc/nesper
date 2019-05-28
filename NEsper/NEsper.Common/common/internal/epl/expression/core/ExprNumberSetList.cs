@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             block.StaticMethod(typeof(ExprNumberSetList), METHOD_HANDLEEXPRNUMBERSETLISTEMPTY, Ref("parameters"))
-                .MethodReturn(NewInstance(typeof(ListParameter), Ref("parameters")));
+                .MethodReturn(NewInstance<ListParameter>(Ref("parameters")));
             return LocalMethod(methodNode);
         }
 

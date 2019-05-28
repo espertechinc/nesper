@@ -30,8 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
         {
             var method = parent.MakeChild(typeof(ContainedEventEvalEventBeanArray), GetType(), classScope);
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(ContainedEventEvalEventBeanArray),
+                NewInstance<ContainedEventEvalEventBeanArray>(
                     ExprNodeUtilityCodegen.CodegenEvaluator(evaluator, method, GetType(), classScope)));
             return LocalMethod(method);
         }

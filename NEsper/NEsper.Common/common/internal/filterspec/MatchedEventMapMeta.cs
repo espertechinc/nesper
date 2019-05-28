@@ -111,8 +111,8 @@ namespace com.espertech.esper.common.@internal.filterspec
                     typeof(EventType[]), "eventTypes",
                     EventTypeUtility.ResolveTypeArrayCodegen(EventTypes, symbols.GetAddInitSvc(method)))
                 .MethodReturn(
-                    NewInstance(
-                        typeof(MatchedEventMapMeta), Ref("tagsPerIndex"), Ref("eventTypes"), Constant(ArrayTags)));
+                    NewInstance<MatchedEventMapMeta>(
+                        Ref("tagsPerIndex"), Ref("eventTypes"), Constant(ArrayTags)));
             return method;
         }
 

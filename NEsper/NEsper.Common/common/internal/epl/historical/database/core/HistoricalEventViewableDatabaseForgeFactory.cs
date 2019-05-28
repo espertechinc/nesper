@@ -157,7 +157,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
                 var stem = services.BeanEventTypeStemService.GetCreateStem(carrierClass, null);
                 eventType = new BeanEventType(
-                    stem, metadata.Invoke(EventTypeApplicationType.CLASS), services.BeanEventTypeFactoryPrivate, null,
+                    services.Container,
+                    stem, 
+                    metadata.Invoke(EventTypeApplicationType.CLASS), 
+                    services.BeanEventTypeFactoryPrivate, null,
                     null, null, null);
             }
 
@@ -269,10 +272,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
                 case MetadataOriginEnum.SAMPLE: {
                     string sampleSQL;
-                    var isGivenMetadataSQL = true;
                     if (databaseStreamSpec.MetadataSQL != null) {
                         sampleSQL = databaseStreamSpec.MetadataSQL;
-                        isGivenMetadataSQL = true;
                         if (Log.IsInfoEnabled) {
                             Log.Info(".GetQueryMetaData Using provided sample SQL '" + sampleSQL + "'");
                         }

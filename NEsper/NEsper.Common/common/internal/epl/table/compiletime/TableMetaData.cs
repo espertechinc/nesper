@@ -143,8 +143,8 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            return NewInstance(
-                typeof(TableMetaData), Constant(TableName),
+            return NewInstance<TableMetaData>(
+                Constant(TableName),
                 Constant(OptionalContextName), Constant(OptionalContextVisibility), Constant(OptionalContextModule),
                 EventTypeUtility.ResolveTypeCodegen(InternalEventType, addInitSvc),
                 EventTypeUtility.ResolveTypeCodegen(PublicEventType, addInitSvc));

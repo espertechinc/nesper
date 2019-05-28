@@ -59,8 +59,8 @@ namespace com.espertech.esper.common.@internal.context.module
 
         private CodegenExpression Make()
         {
-            return NewInstance(
-                typeof(ModuleIndexMeta), Constant(IsNamedWindow), Constant(InfraName), Constant(InfraModuleName),
+            return NewInstance<ModuleIndexMeta>(
+                Constant(IsNamedWindow), Constant(InfraName), Constant(InfraModuleName),
                 Constant(IndexName), Constant(IndexModuleName));
         }
 

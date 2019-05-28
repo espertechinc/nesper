@@ -59,8 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
         public CodegenExpression Make()
         {
-            return NewInstance(
-                typeof(DBOutputTypeDesc),
+            return NewInstance<DBOutputTypeDesc>(
                 Constant(SqlType),
                 Constant(DataType),
                 OptionalBinding == null ? ConstantNull() : OptionalBinding.Make());

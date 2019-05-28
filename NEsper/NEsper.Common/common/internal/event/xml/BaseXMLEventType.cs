@@ -15,6 +15,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
@@ -101,6 +102,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
             set => _namespaceContext = value;
         }
 
+        /// <summary>
+        /// Creates a new XPath expression object from the text representation.
+        /// </summary>
+        /// <param name="xPathExpression">The xpath expression as text.</param>
+        internal XPathExpression CreateXPath(string xPathExpression)
+        {
+            return XPathExpression.Compile(xPathExpression, NamespaceContext);
+        }
+
         public override EventType[] SuperTypes => null;
 
         public override IEnumerable<EventType> DeepSuperTypes => null;
@@ -140,11 +150,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
             string xpathExpression = null;
             try {
                 foreach (var property in explicitXPathProperties) {
-                    var xPath = _xPathFactory.NewXPath();
-                    if (_namespaceContext != null) {
-                        xPath.NamespaceContext = _namespaceContext;
-                    }
-
                     xpathExpression = property.XPath;
                     if (Log.IsInfoEnabled) {
                         Log.Info(
@@ -152,7 +157,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                             "'");
                     }
 
-                    XPathExpression expression = xPath.Compile(xpathExpression);
+                    var expression = CreateXPath(xpathExpression);
 
                     FragmentFactoryXPathPredefinedGetter fragmentFactory = null;
                     var isFragment = false;

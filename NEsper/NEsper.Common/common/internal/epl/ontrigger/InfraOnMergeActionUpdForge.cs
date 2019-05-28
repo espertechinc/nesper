@@ -43,14 +43,14 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             if (_table == null)
             {
                 method.Block.MethodReturn(
-                    NewInstance(typeof(InfraOnMergeActionUpd), MakeFilter(method, classScope), _updateHelper.MakeWCopy(method, classScope)));
+                    NewInstance<InfraOnMergeActionUpd>(MakeFilter(method, classScope), _updateHelper.MakeWCopy(method, classScope)));
             }
             else
             {
                 method.Block
                     .DeclareVar(
-                        typeof(InfraOnMergeActionUpd), "upd", NewInstance(
-                            typeof(InfraOnMergeActionUpd), MakeFilter(method, classScope), _updateHelper.MakeNoCopy(method, classScope),
+                        typeof(InfraOnMergeActionUpd), "upd", NewInstance<InfraOnMergeActionUpd>(
+                            MakeFilter(method, classScope), _updateHelper.MakeNoCopy(method, classScope),
                             TableDeployTimeResolver.MakeResolveTable(_table, symbols.GetAddInitSvc(method))))
                     .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", @Ref("upd"))
                     .MethodReturn(@Ref("upd"));

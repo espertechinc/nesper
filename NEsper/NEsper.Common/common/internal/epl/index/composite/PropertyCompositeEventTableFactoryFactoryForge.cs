@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             @params.Add(Ref("rangeGetters"));
 
             method.Block.MethodReturn(
-                NewInstance(typeof(PropertyCompositeEventTableFactoryFactory), @params.ToArray()));
+                NewInstance<PropertyCompositeEventTableFactoryFactory>(@params.ToArray()));
             return LocalMethod(method);
         }
     }

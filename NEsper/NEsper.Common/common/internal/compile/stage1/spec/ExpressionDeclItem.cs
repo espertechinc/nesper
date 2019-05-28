@@ -57,8 +57,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             method.Block
                 .DeclareVar(
                     typeof(ExpressionDeclItem), "item",
-                    NewInstance(
-                        typeof(ExpressionDeclItem), Constant(Name), Constant(ParametersNames), Constant(IsAlias)))
+                    NewInstance<ExpressionDeclItem>(
+                        Constant(Name), Constant(ParametersNames), Constant(IsAlias)))
                 .SetProperty(Ref("item"), "OptionalSodaBytes", supplierSodaBytes)
                 .SetProperty(Ref("item"), "ModuleName", Constant(ModuleName))
                 .SetProperty(Ref("item"), "Visibility", Constant(Visibility))

@@ -264,8 +264,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 var values = UnitValues.Get(unit);
                 var valuesExpr = ConstantNull();
                 if (values != null) {
-                    valuesExpr = NewInstance(
-                        typeof(SortedSet<object>),
+                    valuesExpr = NewInstance<SortedSet<object>>(
                         StaticMethod(
                             typeof(CompatExtensions), "AsList",
                             Constant(IntArrayUtil.ToBoxedArray(values))));

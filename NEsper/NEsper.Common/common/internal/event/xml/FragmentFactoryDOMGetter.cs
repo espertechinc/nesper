@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var xmlType = Cast(
                 typeof(BaseXMLEventType),
                 EventTypeUtility.ResolveTypeCodegen(xmlEventType, EPStatementInitServicesConstants.REF));
-            return NewInstance(typeof(FragmentFactoryDOMGetter), factory, xmlType, Constant(propertyExpression));
+            return NewInstance<FragmentFactoryDOMGetter>(factory, xmlType, Constant(propertyExpression));
         }
 
         public EventBean GetEvent(XmlNode result)

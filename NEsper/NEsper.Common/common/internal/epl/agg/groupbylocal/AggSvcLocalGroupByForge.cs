@@ -425,7 +425,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     method.Block.IfCondition(Relational(ExprDotMethod(Ref(rowName), "getRefcount"), LE, Constant(0)))
                         .ExprDotMethod(
                             REF_REMOVEDKEYS, "add",
-                            NewInstance(typeof(AggSvcLocalGroupLevelKeyPair), Constant(levelNum), Ref(groupKeyName)));
+                            NewInstance<AggSvcLocalGroupLevelKeyPair>(Constant(levelNum), Ref(groupKeyName)));
                 }
             }
         }

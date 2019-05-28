@@ -75,12 +75,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             methodNode.Block
                 .IfCondition(EqualsNull(refExprEvalCtx))
                 .BlockReturn(
-                    NewInstance(
-                        typeof(EPLMethodInvocationContext), ConstantNull(), Constant(-1), ConstantNull(),
+                    NewInstance<EPLMethodInvocationContext>(
+                        ConstantNull(), Constant(-1), ConstantNull(),
                         Constant(functionName), ConstantNull(), ConstantNull()))
                 .MethodReturn(
-                    NewInstance(
-                        typeof(EPLMethodInvocationContext), stmtName, cpid, runtimeURI, Constant(functionName),
+                    NewInstance<EPLMethodInvocationContext>(
+                        stmtName, cpid, runtimeURI, Constant(functionName),
                         userObject, eventBeanSvc));
             return LocalMethod(methodNode);
         }

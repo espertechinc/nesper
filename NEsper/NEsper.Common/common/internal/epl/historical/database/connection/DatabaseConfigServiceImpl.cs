@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             return new ColumnSettings(
                 config.MetadataRetrievalEnum,
                 config.ColumnChangeCase,
-                config.SqlTypesMapping);
+                config.DataTypesMapping);
         }
 
         public HistoricalDataCache GetDataCache(

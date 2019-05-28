@@ -67,8 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             method.Block
                 .DeclareVar(
-                    typeof(ExprFilterSpecLookupable), "lookupable", NewInstance(
-                        typeof(ExprFilterSpecLookupable),
+                    typeof(ExprFilterSpecLookupable), "lookupable", NewInstance<ExprFilterSpecLookupable>(
                         Constant(expression), Ref("getter"), EnumValue(returnType, "class"),
                         Constant(isNonPropertyGetter)))
                 .Expression(

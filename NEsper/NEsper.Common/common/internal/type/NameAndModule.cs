@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.type
 
         private CodegenExpression Make()
         {
-            return NewInstance(typeof(NameAndModule), Constant(name), Constant(moduleName));
+            return NewInstance<NameAndModule>(Constant(name), Constant(moduleName));
         }
 
         public static NameAndModule FindName(

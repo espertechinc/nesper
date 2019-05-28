@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 .DeclareVar(
                     typeof(ExprEvaluator[]), "expressions",
                     ExprNodeUtilityCodegen.CodegenEvaluators(KeyExprs, method, GetType(), classScope))
-                .MethodReturn(NewInstance(typeof(QueryGraphValueEntryInKeywordSingleIdx), Ref("expressions")));
+                .MethodReturn(NewInstance<QueryGraphValueEntryInKeywordSingleIdx>(Ref("expressions")));
             return LocalMethod(method);
         }
 

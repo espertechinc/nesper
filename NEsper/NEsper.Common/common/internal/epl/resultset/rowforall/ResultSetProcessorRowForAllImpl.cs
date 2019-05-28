@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 .IfCondition(And(EqualsNull(Ref("selectNewEvents")), EqualsNull(Ref("selectOldEvents"))))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
-                    NewInstance(typeof(UniformPair<EventBean>), Ref("selectNewEvents"), Ref("selectOldEvents")));
+                    NewInstance<UniformPair<EventBean>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
         public static void ProcessViewResultCodegen(
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 .IfCondition(And(EqualsNull(Ref("selectNewEvents")), EqualsNull(Ref("selectOldEvents"))))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
-                    NewInstance(typeof(UniformPair<EventBean>), Ref("selectNewEvents"), Ref("selectOldEvents")));
+                    NewInstance<UniformPair<EventBean>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
         protected internal static void GetIteratorViewCodegen(
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             method.Block
                 .DeclareVar(
                     typeof(EventBean[]), "result", LocalMethod(select, Constant(true), ConstantTrue(), ConstantTrue()))
-                .MethodReturn(NewInstance(typeof(ArrayEventEnumerator), Ref("result")));
+                .MethodReturn(NewInstance<ArrayEventEnumerator>(Ref("result")));
         }
 
         public static void ClearCodegen(CodegenMethod method)
@@ -393,7 +393,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastOldEvent")))
                 .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld"))))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(NewInstance(typeof(UniformPair<EventBean>), Ref("lastNew"), Ref("lastOld")));
+                .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("lastNew"), Ref("lastOld")));
         }
 
         protected internal static void ProcessOutputLimitedViewDefaultCodegen(
@@ -508,7 +508,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastOldEvent")))
                 .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld"))))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(NewInstance(typeof(UniformPair<EventBean>), Ref("lastNew"), Ref("lastOld")));
+                .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("lastNew"), Ref("lastOld")));
         }
 
         protected internal static CodegenMethod ObtainIteratorCodegen(
@@ -525,7 +525,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     LocalMethod(selectList, ConstantTrue(), ConstantTrue(), ConstantFalse()))
                 .IfRefNull("events")
                 .BlockReturn(EnumValue(typeof(CollectionUtil), "NULL_EVENT_ITERATOR"))
-                .MethodReturn(NewInstance(typeof(SingleEventEnumerator), ArrayAtIndex(Ref("events"), Constant(0))));
+                .MethodReturn(NewInstance<SingleEventEnumerator>(ArrayAtIndex(Ref("events"), Constant(0))));
             return method;
         }
 

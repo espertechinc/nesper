@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.client.util
     public enum AccessorStyle
     { // ensure the names match the configuration schema type restriction defs
         /// <summary>
-        ///     Expose native objects properties & getter methods only, plus explicitly configured properties.
+        ///     Expose native objects properties and getter methods only, plus explicitly configured properties.
         /// </summary>
         NATIVE,
 

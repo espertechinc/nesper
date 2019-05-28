@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 indexes[i] = GetSingleIdentNodeProp(IndexExprs[i]);
             }
 
-            return NewInstance(typeof(QueryGraphValueDesc), Constant(indexes), Entry.Make(parent, symbols, classScope));
+            return NewInstance<QueryGraphValueDesc>(Constant(indexes), Entry.Make(parent, symbols, classScope));
         }
 
         private string GetSingleIdentNodeProp(ExprNode indexExpr)

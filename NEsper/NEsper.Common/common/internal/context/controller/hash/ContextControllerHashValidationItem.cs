@@ -29,8 +29,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            return NewInstance(
-                typeof(ContextControllerHashValidationItem),
+            return NewInstance<ContextControllerHashValidationItem>(
                 EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc));
         }
     }

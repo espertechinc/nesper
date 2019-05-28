@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(AggregationAgentDefaultWFilter), ExprNodeUtilityCodegen.CodegenEvaluator(filterEval, method, this.GetType(), classScope));
+            return NewInstance<AggregationAgentDefaultWFilter>(
+                ExprNodeUtilityCodegen.CodegenEvaluator(filterEval, method, this.GetType(), classScope));
         }
 
         public ExprForge FilterEval {

@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.settings
 {
@@ -32,17 +33,22 @@ namespace com.espertech.esper.common.@internal.settings
         private readonly IDictionary<string, object> transientConfiguration;
 
         public ImportServiceBase(
+            IContainer container,
             IDictionary<string, object> transientConfiguration,
             TimeAbacus timeAbacus,
             ISet<string> eventTypeAutoNames)
         {
+            Container = container;
             this.transientConfiguration = transientConfiguration;
             TimeAbacus = timeAbacus;
             this.eventTypeAutoNames = eventTypeAutoNames;
         }
 
-        public ClassLoader ClassLoader =>
-            TransientConfigurationResolver.ResolveClassLoader(transientConfiguration).GetClassLoader();
+        public IContainer Container { get; }
+
+        public ClassLoader ClassLoader => TransientConfigurationResolver
+            .ResolveClassLoader(Container, transientConfiguration)
+            .GetClassLoader();
 
         public TimeAbacus TimeAbacus { get; }
 
@@ -79,7 +85,7 @@ namespace com.espertech.esper.common.@internal.settings
                         if (clazz != null) {
                             throw new ImportException(
                                 "Failed to resolve name '" + fullyQualClassName +
-                                "', the class was ambigously found both in " +
+                                "', the class was ambiguously found both in " +
                                 "package '" + clazz.Namespace + "' and in " +
                                 "package '" + resolvedClass.Namespace + "'", ex);
                         }
@@ -176,8 +182,7 @@ namespace com.espertech.esper.common.@internal.settings
             bool forAnnotationUse)
         {
             if (forAnnotationUse) {
-                var lowercase = className.ToLowerInvariant();
-                switch (lowercase) {
+                switch (className.ToLowerInvariant()) {
                     case "private":
                         return typeof(PrivateAttribute);
                     case "protected":

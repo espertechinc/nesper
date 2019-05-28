@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     ChildNodes[1].Forge, methodX, codegenClassScope);
 
                 methodX.Block.DeclareVar(typeof(EventBean), "originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
-                    .DeclareVar(typeof(ICollection<object>), "result", NewInstance(typeof(ArrayDeque<object>), Ref("size")))
+                    .DeclareVar(typeof(ICollection<object>), "result", NewInstance<ArrayDeque<object>>(Ref("size")))
                     .ForLoopIntSimple("i", Ref("size"))
                     .AssignArrayElement(
                         eps, Constant(StreamNumber), Cast(typeof(EventBean), ExprDotMethod(Ref("events"), "next")))

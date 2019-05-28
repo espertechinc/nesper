@@ -73,5 +73,10 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             return true;
         }
+
+        public override int GetHashCode()
+        {
+            return CompatExtensions.HashAll(prototypeArray);
+        }
     }
 } // end of namespace

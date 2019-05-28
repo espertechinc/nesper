@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 typeof(EventBeanManufacturerCtorForge), "ResolveConstructor",
                 Constant(constructor.GetParameterTypes()),
                 Constant(constructor.DeclaringType));
-            return NewInstance(typeof(EventBeanManufacturerCtor), ctor, beanType, factory);
+            return NewInstance<EventBeanManufacturerCtor>(ctor, beanType, factory);
         }
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)

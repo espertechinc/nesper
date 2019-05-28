@@ -40,7 +40,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-
+using com.espertech.esper.container;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
@@ -52,11 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     public class SelectExprProcessorHelper
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly SelectProcessorArgs args;
-        private readonly InsertIntoDesc insertIntoDesc;
-        private readonly IList<SelectExprStreamDesc> selectedStreams;
 
-        private readonly IList<SelectClauseExprCompiledSpec> selectionList;
+        private readonly IContainer _container;
+        private readonly SelectProcessorArgs _args;
+        private readonly InsertIntoDesc _insertIntoDesc;
+        private readonly IList<SelectExprStreamDesc> _selectedStreams;
+        private readonly IList<SelectClauseExprCompiledSpec> _selectionList;
 
         public SelectExprProcessorHelper(
             IList<SelectClauseExprCompiledSpec> selectionList,
@@ -64,31 +65,32 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             SelectProcessorArgs args,
             InsertIntoDesc insertIntoDesc)
         {
-            this.selectionList = selectionList;
-            this.selectedStreams = selectedStreams;
-            this.args = args;
-            this.insertIntoDesc = insertIntoDesc;
+            _container = args.Container;
+            _selectionList = selectionList;
+            _selectedStreams = selectedStreams;
+            _args = args;
+            _insertIntoDesc = insertIntoDesc;
         }
 
         public SelectExprProcessorForge Forge
         {
             get {
-                var isUsingWildcard = args.IsUsingWildcard;
-                var typeService = args.TypeService;
-                var importService = args.ImportService;
-                BeanEventTypeFactory beanEventTypeFactoryProtected = args.BeanEventTypeFactoryPrivate;
+                var isUsingWildcard = _args.IsUsingWildcard;
+                var typeService = _args.TypeService;
+                var importService = _args.ImportService;
+                BeanEventTypeFactory beanEventTypeFactoryProtected = _args.BeanEventTypeFactoryPrivate;
                 var eventTypeNameGeneratorStatement =
-                    args.CompileTimeServices.EventTypeNameGeneratorStatement;
-                var moduleName = args.ModuleName;
+                    _args.CompileTimeServices.EventTypeNameGeneratorStatement;
+                var moduleName = _args.ModuleName;
 
                 // Get the named and un-named stream selectors (i.e. select s0.* from S0 as s0), if any
                 IList<SelectClauseStreamCompiledSpec> namedStreams = new List<SelectClauseStreamCompiledSpec>();
                 IList<SelectExprStreamDesc> unnamedStreams = new List<SelectExprStreamDesc>();
-                foreach (var spec in selectedStreams)
+                foreach (var spec in _selectedStreams)
                 {
                     // handle special "transpose(...)" function
-                    if (spec.StreamSelected != null && spec.StreamSelected.OptionalName == null
-                        ||
+                    if (spec.StreamSelected != null && 
+                        spec.StreamSelected.OptionalName == null ||
                         spec.ExpressionSelectedAsStream != null)
                     {
                         unnamedStreams.Add(spec);
@@ -112,12 +114,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation");
                 }
 
-                if (selectedStreams.IsEmpty() && selectionList.IsEmpty() && !isUsingWildcard)
+                if (_selectedStreams.IsEmpty() && _selectionList.IsEmpty() && !isUsingWildcard)
                 {
                     throw new ArgumentException("Empty selection list not supported");
                 }
 
-                foreach (var entry in selectionList)
+                foreach (var entry in _selectionList)
                 {
                     if (entry.AssignedName == null)
                     {
@@ -126,9 +128,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 }
 
                 // Verify insert into clause
-                if (insertIntoDesc != null)
+                if (_insertIntoDesc != null)
                 {
-                    VerifyInsertInto(insertIntoDesc, selectionList);
+                    VerifyInsertInto(_insertIntoDesc, _selectionList);
                 }
 
                 // Build a subordinate wildcard processor for joins
@@ -136,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 if (typeService.StreamNames.Length > 1 && isUsingWildcard)
                 {
                     joinWildcardProcessor = SelectExprJoinWildcardProcessorFactory.Create(
-                        args, null, eventTypeName => eventTypeName + "_join");
+                        _args, null, eventTypeName => eventTypeName + "_join");
                 }
 
                 // Resolve underlying event type in the case of wildcard select
@@ -160,23 +162,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                 // Find if there is any fragments selected
                 EventType insertIntoTargetType = null;
-                if (insertIntoDesc != null)
+                if (_insertIntoDesc != null)
                 {
-                    if (args.OptionalInsertIntoEventType != null)
+                    if (_args.OptionalInsertIntoEventType != null)
                     {
-                        insertIntoTargetType = args.OptionalInsertIntoEventType;
+                        insertIntoTargetType = _args.OptionalInsertIntoEventType;
                     }
                     else
                     {
                         insertIntoTargetType =
-                            args.EventTypeCompileTimeResolver.GetTypeByName(insertIntoDesc.EventTypeName);
+                            _args.EventTypeCompileTimeResolver.GetTypeByName(_insertIntoDesc.EventTypeName);
                         if (insertIntoTargetType == null)
                         {
-                            var table = args.TableCompileTimeResolver.Resolve(insertIntoDesc.EventTypeName);
+                            var table = _args.TableCompileTimeResolver.Resolve(_insertIntoDesc.EventTypeName);
                             if (table != null)
                             {
                                 insertIntoTargetType = table.InternalEventType;
-                                args.OptionalInsertIntoEventType = insertIntoTargetType;
+                                _args.OptionalInsertIntoEventType = insertIntoTargetType;
                             }
                         }
                     }
@@ -184,21 +186,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                 // Obtain insert-into per-column type information, when available
                 var insertIntoTargetsPerCol =
-                    DetermineInsertedEventTypeTargets(insertIntoTargetType, selectionList);
+                    DetermineInsertedEventTypeTargets(insertIntoTargetType, _selectionList);
 
                 // Get expression nodes
-                var exprForges = new ExprForge[selectionList.Count];
-                var exprNodes = new ExprNode[selectionList.Count];
-                var expressionReturnTypes = new object[selectionList.Count];
-                for (var i = 0; i < selectionList.Count; i++)
+                var exprForges = new ExprForge[_selectionList.Count];
+                var exprNodes = new ExprNode[_selectionList.Count];
+                var expressionReturnTypes = new object[_selectionList.Count];
+                for (var i = 0; i < _selectionList.Count; i++)
                 {
-                    var spec = selectionList[i];
+                    var spec = _selectionList[i];
                     var expr = spec.SelectExpression;
                     var forge = expr.Forge;
                     exprNodes[i] = expr;
 
                     // if there is insert-into specification, use that
-                    if (insertIntoDesc != null)
+                    if (_insertIntoDesc != null)
                     {
                         // handle insert-into, with well-defined target event-typed column, and enumeration
                         var pairInner = HandleInsertIntoEnumeration(
@@ -211,7 +213,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         }
 
                         // handle insert-into with well-defined target event-typed column, and typable expression
-                        pairInner = HandleInsertIntoTypableExpression(insertIntoTargetsPerCol[i], forge, args);
+                        pairInner = HandleInsertIntoTypableExpression(insertIntoTargetsPerCol[i], forge, _args);
                         if (pairInner != null)
                         {
                             expressionReturnTypes[i] = pairInner.Type;
@@ -239,12 +241,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     }
 
                     // handle select-clause expressions that match group-by expressions with rollup and therefore should be boxed types as rollup can produce a null value
-                    if (args.GroupByRollupInfo != null && args.GroupByRollupInfo.RollupDesc != null)
+                    if (_args.GroupByRollupInfo != null && _args.GroupByRollupInfo.RollupDesc != null)
                     {
                         var returnType = forge.EvaluationType;
                         var returnTypeBoxed = returnType.GetBoxedType();
                         if (returnType != returnTypeBoxed &&
-                            IsGroupByRollupNullableExpression(expr, args.GroupByRollupInfo))
+                            IsGroupByRollupNullableExpression(expr, _args.GroupByRollupInfo))
                         {
                             exprForges[i] = forge;
                             expressionReturnTypes[i] = returnTypeBoxed;
@@ -260,12 +262,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 // Get column names
                 string[] columnNames;
                 string[] columnNamesAsProvided;
-                if (insertIntoDesc != null && !insertIntoDesc.ColumnNames.IsEmpty())
+                if (_insertIntoDesc != null && !_insertIntoDesc.ColumnNames.IsEmpty())
                 {
-                    columnNames = insertIntoDesc.ColumnNames.ToArray();
+                    columnNames = _insertIntoDesc.ColumnNames.ToArray();
                     columnNamesAsProvided = columnNames;
                 }
-                else if (!selectedStreams.IsEmpty())
+                else if (!_selectedStreams.IsEmpty())
                 { // handle stream selection column names
                     var numStreamColumnsJoin = 0;
                     if (isUsingWildcard && typeService.EventTypes.Length > 1)
@@ -273,10 +275,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         numStreamColumnsJoin = typeService.EventTypes.Length;
                     }
 
-                    columnNames = new string[selectionList.Count + namedStreams.Count + numStreamColumnsJoin];
+                    columnNames = new string[_selectionList.Count + namedStreams.Count + numStreamColumnsJoin];
                     columnNamesAsProvided = new string[columnNames.Length];
                     var countInner = 0;
-                    foreach (var aSelectionList in selectionList)
+                    foreach (var aSelectionList in _selectionList)
                     {
                         columnNames[countInner] = aSelectionList.AssignedName;
                         columnNamesAsProvided[countInner] = aSelectionList.ProvidedName;
@@ -304,19 +306,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 else
                 {
                     // handle regular column names
-                    columnNames = new string[selectionList.Count];
-                    columnNamesAsProvided = new string[selectionList.Count];
-                    for (var i = 0; i < selectionList.Count; i++)
+                    columnNames = new string[_selectionList.Count];
+                    columnNamesAsProvided = new string[_selectionList.Count];
+                    for (var i = 0; i < _selectionList.Count; i++)
                     {
-                        columnNames[i] = selectionList[i].AssignedName;
-                        columnNamesAsProvided[i] = selectionList[i].ProvidedName;
+                        columnNames[i] = _selectionList[i].AssignedName;
+                        columnNamesAsProvided[i] = _selectionList[i].ProvidedName;
                     }
                 }
 
                 // Find if there is any fragment event types:
                 // This is a special case for fragments: select a, b from pattern [a=A => b=B]
                 // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
-                for (var i = 0; i < selectionList.Count; i++)
+                for (var i = 0; i < _selectionList.Count; i++)
                 {
                     if (!(exprNodes[i] is ExprIdentNode))
                     {
@@ -336,7 +338,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     var fragmentType = eventTypeStream.GetFragmentType(propertyName);
                     if (fragmentType == null || fragmentType.IsNative)
                     {
-                        continue; // we also ignore native Java classes as fragments for performance reasons
+                        continue; // we also ignore native classes as fragments for performance reasons
                     }
 
                     // may need to unwrap the fragment if the target type has this underlying type
@@ -385,7 +387,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 // Find if there is any stream expression (ExprStreamNode) :
                 // This is a special case for stream selection: select a, b from A as a, B as b
                 // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
-                for (var i = 0; i < selectionList.Count; i++)
+                for (var i = 0; i < _selectionList.Count; i++)
                 {
                     var pair = HandleUnderlyingStreamInsert(exprForges[i]);
                     if (pair != null)
@@ -405,7 +407,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     count++;
                 }
 
-                if (!selectedStreams.IsEmpty())
+                if (!_selectedStreams.IsEmpty())
                 {
                     foreach (var element in namedStreams)
                     {
@@ -441,7 +443,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 EventPropertyGetterSPI underlyingPropertyEventGetter = null;
                 ExprForge underlyingExprForge = null;
 
-                if (!selectedStreams.IsEmpty())
+                if (!_selectedStreams.IsEmpty())
                 {
                     // Resolve underlying event type in the case of wildcard or non-named stream select.
                     // Determine if the we are considering a tagged event or a stream name.
@@ -478,7 +480,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                                     // create or get an underlying type for that Class
                                     var stem =
-                                        args.CompileTimeServices.BeanEventTypeStemService.GetCreateStem(
+                                        _args.CompileTimeServices.BeanEventTypeStemService.GetCreateStem(
                                             propertyType, null);
                                     var visibility = GetVisibility(propertyType.Name);
                                     var metadata = new EventTypeMetadata(
@@ -486,8 +488,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                         EventTypeApplicationType.CLASS, visibility, EventTypeBusModifier.NONBUS, false,
                                         EventTypeIdPair.Unassigned());
                                     underlyingEventType = new BeanEventType(
-                                        stem, metadata, beanEventTypeFactoryProtected, null, null, null, null);
-                                    args.EventTypeCompileTimeRegistry.NewType(underlyingEventType);
+                                        _container, stem, metadata, beanEventTypeFactoryProtected, null, null, null, null);
+                                    _args.EventTypeCompileTimeRegistry.NewType(underlyingEventType);
                                     underlyingPropertyEventGetter =
                                         ((EventTypeSPI) typeService.EventTypes[streamNumber])
                                         .GetGetterSPI(propertyName);
@@ -506,7 +508,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             else
                             {
                                 // handle case where the unnamed stream is a "transpose" function, for non-insert-into
-                                if (insertIntoDesc == null || insertIntoTargetType == null)
+                                if (_insertIntoDesc == null || insertIntoTargetType == null)
                                 {
                                     var expression = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
                                     var returnType = expression.Forge.EvaluationType;
@@ -521,7 +523,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     }
 
                                     var stem =
-                                        args.CompileTimeServices.BeanEventTypeStemService.GetCreateStem(
+                                        _args.CompileTimeServices.BeanEventTypeStemService.GetCreateStem(
                                             returnType, null);
                                     var visibility = GetVisibility(returnType.Name);
                                     var metadata = new EventTypeMetadata(
@@ -529,9 +531,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                         EventTypeApplicationType.CLASS,
                                         visibility, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
                                     underlyingEventType = new BeanEventType(
-                                        stem, metadata, beanEventTypeFactoryProtected, null, null, null, null);
+                                        _container, stem, metadata, beanEventTypeFactoryProtected, null, null, null, null);
                                     underlyingExprForge = expression.Forge;
-                                    args.EventTypeCompileTimeRegistry.NewType(underlyingEventType);
+                                    _args.EventTypeCompileTimeRegistry.NewType(underlyingEventType);
                                 }
                             }
                         }
@@ -558,18 +560,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                 // obtains evaluators
                 var selectExprForgeContext = new SelectExprForgeContext(
-                    exprForges, columnNames, null, typeService.EventTypes, args.EventTypeAvroHandler);
+                    exprForges, columnNames, null, typeService.EventTypes, _args.EventTypeAvroHandler);
 
-                if (insertIntoDesc == null)
+                if (_insertIntoDesc == null)
                 {
                     EventType resultEventType;
-                    if (!selectedStreams.IsEmpty())
+                    if (!_selectedStreams.IsEmpty())
                     {
                         var eventTypeNameInner = eventTypeNameGeneratorStatement.AnonymousTypeName;
                         if (underlyingEventType != null)
                         {
                             var table =
-                                args.TableCompileTimeResolver.ResolveTableFromEventType(underlyingEventType);
+                                _args.TableCompileTimeResolver.ResolveTableFromEventType(underlyingEventType);
                             if (table != null)
                             {
                                 underlyingEventType = table.PublicEventType;
@@ -582,8 +584,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 EventTypeIdPair.Unassigned());
                             resultEventType = WrapperEventTypeUtil.MakeWrapper(
                                 metadata, underlyingEventType, selPropertyTypes, null, beanEventTypeFactoryProtected,
-                                args.EventTypeCompileTimeResolver);
-                            args.EventTypeCompileTimeRegistry.NewType(resultEventType);
+                                _args.EventTypeCompileTimeResolver);
+                            _args.EventTypeCompileTimeRegistry.NewType(resultEventType);
 
                             return new SelectEvalStreamWUnderlying(
                                 selectExprForgeContext, resultEventType, namedStreams, isUsingWildcard,
@@ -599,8 +601,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 EventTypeIdPair.Unassigned());
                             resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                                 metadata, selPropertyTypes, null, null, null, null, beanEventTypeFactoryProtected,
-                                args.EventTypeCompileTimeResolver);
-                            args.EventTypeCompileTimeRegistry.NewType(resultEventType);
+                                _args.EventTypeCompileTimeResolver);
+                            _args.EventTypeCompileTimeRegistry.NewType(resultEventType);
                             return new SelectEvalStreamNoUnderlyingMap(
                                 selectExprForgeContext, resultEventType, namedStreams, isUsingWildcard);
                         }
@@ -616,8 +618,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             EventTypeIdPair.Unassigned());
                         EventType resultEventTypeInner = WrapperEventTypeUtil.MakeWrapper(
                             metadata, eventType, selPropertyTypes, null, beanEventTypeFactoryProtected,
-                            args.EventTypeCompileTimeResolver);
-                        args.EventTypeCompileTimeRegistry.NewType(resultEventTypeInner);
+                            _args.EventTypeCompileTimeResolver);
+                        _args.EventTypeCompileTimeRegistry.NewType(resultEventTypeInner);
                         if (singleStreamWrapper)
                         {
                             return new SelectEvalInsertWildcardSSWrapper(selectExprForgeContext, resultEventTypeInner);
@@ -633,7 +635,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     }
 
                     var representation = EventRepresentationUtil.GetRepresentation(
-                        args.Annotations, args.Configuration, AssignedType.NONE);
+                        _args.Annotations, _args.Configuration, AssignedType.NONE);
                     var eventTypeName = eventTypeNameGeneratorStatement.AnonymousTypeName;
                     if (representation == EventUnderlyingType.OBJECTARRAY)
                     {
@@ -644,7 +646,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             EventTypeIdPair.Unassigned());
                         resultEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
                             metadata, selPropertyTypes, null, null, null, null, beanEventTypeFactoryProtected,
-                            args.EventTypeCompileTimeResolver);
+                            _args.EventTypeCompileTimeResolver);
                     }
                     else if (representation == EventUnderlyingType.AVRO)
                     {
@@ -652,11 +654,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             eventTypeName, moduleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.AVRO,
                             NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
                             EventTypeIdPair.Unassigned());
-                        resultEventType = args.EventTypeAvroHandler.NewEventTypeFromNormalized(
-                            metadata, args.EventTypeCompileTimeResolver,
-                            args.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory, selPropertyTypes,
-                            args.Annotations,
-                            null, null, null, args.StatementName);
+                        resultEventType = _args.EventTypeAvroHandler.NewEventTypeFromNormalized(
+                            metadata, _args.EventTypeCompileTimeResolver,
+                            _args.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory, selPropertyTypes,
+                            _args.Annotations,
+                            null, null, null, _args.StatementName);
                     }
                     else
                     {
@@ -668,10 +670,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             EventTypeUtility.GetPropertyTypesNonPrimitive(selPropertyTypes);
                         resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                             metadata, propertyTypes, null, null, null, null, beanEventTypeFactoryProtected,
-                            args.EventTypeCompileTimeResolver);
+                            _args.EventTypeCompileTimeResolver);
                     }
 
-                    args.EventTypeCompileTimeRegistry.NewType(resultEventType);
+                    _args.EventTypeCompileTimeRegistry.NewType(resultEventType);
 
                     if (selectExprForgeContext.ExprForges.Length == 0)
                     {
@@ -685,9 +687,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                     if (representation == EventUnderlyingType.AVRO)
                     {
-                        return args.CompileTimeServices.EventTypeAvroHandler.OutputFactory.MakeSelectNoWildcard(
-                            selectExprForgeContext, exprForges, resultEventType, args.TableCompileTimeResolver,
-                            args.StatementName);
+                        return _args.CompileTimeServices.EventTypeAvroHandler.OutputFactory.MakeSelectNoWildcard(
+                            selectExprForgeContext, exprForges, resultEventType, _args.TableCompileTimeResolver,
+                            _args.StatementName);
                     }
 
                     return new SelectEvalNoWildcardMap(selectExprForgeContext, resultEventType);
@@ -700,12 +702,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                 try
                 {
-                    if (!selectedStreams.IsEmpty())
+                    if (!_selectedStreams.IsEmpty())
                     {
                         EventType resultEventTypeX;
 
                         // handle "transpose" special function with predefined target type
-                        if (insertIntoTargetType != null && selectedStreams[0].ExpressionSelectedAsStream != null)
+                        if (insertIntoTargetType != null && _selectedStreams[0].ExpressionSelectedAsStream != null)
                         {
                             if (exprForges.Length != 0)
                             {
@@ -742,7 +744,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             }
 
                             if (insertIntoTargetType is AvroSchemaEventType &&
-                                returnType.Name.Equals(TypeHelper.APACHE_AVRO_GENERIC_RECORD_CLASSNAME))
+                                returnType.Name.Equals(TypeHelper.AVRO_GENERIC_RECORD_CLASSNAME))
                             {
                                 return new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceAvro(
                                     insertIntoTargetType, expression.Forge);
@@ -785,8 +787,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             {
                                 return SelectEvalStreamWUndRecastMapFactory.Make(
                                     typeService.EventTypes, selectExprForgeContext,
-                                    selectedStreams[0].StreamSelected.StreamNumber, insertIntoTargetType, exprNodes,
-                                    importService, args.StatementName);
+                                    _selectedStreams[0].StreamSelected.StreamNumber, insertIntoTargetType, exprNodes,
+                                    importService, _args.StatementName);
                             }
 
                             // recast as a Object-array-type
@@ -795,31 +797,31 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             {
                                 return SelectEvalStreamWUndRecastObjectArrayFactory.Make(
                                     typeService.EventTypes, selectExprForgeContext,
-                                    selectedStreams[0].StreamSelected.StreamNumber, insertIntoTargetType, exprNodes,
-                                    importService, args.StatementName);
+                                    _selectedStreams[0].StreamSelected.StreamNumber, insertIntoTargetType, exprNodes,
+                                    importService, _args.StatementName);
                             }
 
                             // recast as a Avro-type
                             if (underlyingEventType is AvroSchemaEventType &&
                                 insertIntoTargetType is AvroSchemaEventType)
                             {
-                                return args.EventTypeAvroHandler.OutputFactory.MakeRecast(
+                                return _args.EventTypeAvroHandler.OutputFactory.MakeRecast(
                                     typeService.EventTypes, selectExprForgeContext,
-                                    selectedStreams[0].StreamSelected.StreamNumber,
-                                    (AvroSchemaEventType) insertIntoTargetType, exprNodes, args.StatementName);
+                                    _selectedStreams[0].StreamSelected.StreamNumber,
+                                    (AvroSchemaEventType) insertIntoTargetType, exprNodes, _args.StatementName);
                             }
 
                             // recast as a Bean-type
                             if (underlyingEventType is BeanEventType && insertIntoTargetType is BeanEventType)
                             {
                                 return new SelectEvalInsertBeanRecast(
-                                    insertIntoTargetType, selectedStreams[0].StreamSelected.StreamNumber,
+                                    insertIntoTargetType, _selectedStreams[0].StreamSelected.StreamNumber,
                                     typeService.EventTypes);
                             }
 
                             // wrap if no recast possible
                             var table =
-                                args.TableCompileTimeResolver.ResolveTableFromEventType(underlyingEventType);
+                                _args.TableCompileTimeResolver.ResolveTableFromEventType(underlyingEventType);
                             if (table != null)
                             {
                                 underlyingEventType = table.PublicEventType;
@@ -827,16 +829,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                             if (insertIntoTargetType == null || !(insertIntoTargetType is WrapperEventType))
                             {
-                                var visibility = GetVisibility(insertIntoDesc.EventTypeName);
+                                var visibility = GetVisibility(_insertIntoDesc.EventTypeName);
                                 var metadata = new EventTypeMetadata(
-                                    insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
+                                    _insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
                                     EventTypeApplicationType.WRAPPER, visibility, EventTypeBusModifier.NONBUS, false,
                                     EventTypeIdPair.Unassigned());
                                 resultEventTypeX = WrapperEventTypeUtil.MakeWrapper(
                                     metadata, underlyingEventType, selPropertyTypes, null,
                                     beanEventTypeFactoryProtected,
-                                    args.EventTypeCompileTimeResolver);
-                                args.EventTypeCompileTimeRegistry.NewType(resultEventTypeX);
+                                    _args.EventTypeCompileTimeResolver);
+                                _args.EventTypeCompileTimeRegistry.NewType(resultEventTypeX);
                             }
                             else
                             {
@@ -852,8 +854,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         // there are one or more streams selected with column name such as "stream.* as columnOne"
                         if (insertIntoTargetType is BeanEventType)
                         {
-                            var name = selectedStreams[0].StreamSelected.StreamName;
-                            var alias = selectedStreams[0].StreamSelected.OptionalName;
+                            var name = _selectedStreams[0].StreamSelected.StreamName;
+                            var alias = _selectedStreams[0].StreamSelected.OptionalName;
                             var syntaxUsed = name + ".*" + (alias != null ? " as " + alias : "");
                             var syntaxInstead = name + (alias != null ? " as " + alias : "");
                             throw new ExprValidationException(
@@ -864,16 +866,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                         if (insertIntoTargetType == null || insertIntoTargetType is MapEventType)
                         {
-                            var visibility = GetVisibility(insertIntoDesc.EventTypeName);
+                            var visibility = GetVisibility(_insertIntoDesc.EventTypeName);
                             var metadata = new EventTypeMetadata(
-                                insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
+                                _insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
                                 EventTypeApplicationType.MAP, visibility, EventTypeBusModifier.NONBUS, false,
                                 EventTypeIdPair.Unassigned());
                             var propertyTypes =
                                 EventTypeUtility.GetPropertyTypesNonPrimitive(selPropertyTypes);
                             var proposed = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                                metadata, propertyTypes, null, null, null, null, args.BeanEventTypeFactoryPrivate,
-                                args.EventTypeCompileTimeResolver);
+                                metadata, propertyTypes, null, null, null, null, _args.BeanEventTypeFactoryPrivate,
+                                _args.EventTypeCompileTimeResolver);
                             if (insertIntoTargetType != null)
                             {
                                 EventTypeUtility.CompareExistingType(proposed, insertIntoTargetType);
@@ -881,7 +883,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             else
                             {
                                 insertIntoTargetType = proposed;
-                                args.EventTypeCompileTimeRegistry.NewType(proposed);
+                                _args.EventTypeCompileTimeRegistry.NewType(proposed);
                             }
 
                             var propertiesToUnwrap = GetEventBeanToObjectProps(
@@ -1010,25 +1012,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 var existingTypeProcessor =
                                     SelectExprInsertEventBeanFactory.GetInsertUnderlyingNonJoin(
                                         insertIntoTargetType, isUsingWildcard, typeService, exprForges, columnNames,
-                                        expressionReturnTypes, insertIntoDesc, columnNamesAsProvided, true,
-                                        args.StatementName,
-                                        args.ImportService, args.EventTypeAvroHandler);
+                                        expressionReturnTypes, _insertIntoDesc, columnNamesAsProvided, true,
+                                        _args.StatementName,
+                                        _args.ImportService, _args.EventTypeAvroHandler);
                                 if (existingTypeProcessor != null)
                                 {
                                     return existingTypeProcessor;
                                 }
                             }
 
-                            var visibility = GetVisibility(insertIntoDesc.EventTypeName);
+                            var visibility = GetVisibility(_insertIntoDesc.EventTypeName);
                             if (selPropertyTypes.IsEmpty() && eventType is BeanEventType)
                             {
                                 var beanEventType = (BeanEventType) eventType;
                                 var metadata = new EventTypeMetadata(
-                                    insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
+                                    _insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
                                     EventTypeApplicationType.CLASS, visibility, EventTypeBusModifier.NONBUS, false,
                                     EventTypeIdPair.Unassigned());
                                 var newBeanType = new BeanEventType(
-                                    beanEventType.Stem, metadata, beanEventTypeFactoryProtected, null, null, null,
+                                    _container, beanEventType.Stem, metadata, beanEventTypeFactoryProtected, null, null, null,
                                     null);
                                 resultEventType = newBeanType;
                                 if (insertIntoTargetType != null)
@@ -1037,18 +1039,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 }
                                 else
                                 {
-                                    args.EventTypeCompileTimeRegistry.NewType(resultEventType);
+                                    _args.EventTypeCompileTimeRegistry.NewType(resultEventType);
                                 }
                             }
                             else
                             {
                                 var metadata = new EventTypeMetadata(
-                                    insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
+                                    _insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
                                     EventTypeApplicationType.WRAPPER, visibility, EventTypeBusModifier.NONBUS, false,
                                     EventTypeIdPair.Unassigned());
                                 var wrapperEventType = WrapperEventTypeUtil.MakeWrapper(
                                     metadata, eventType, selPropertyTypes, null, beanEventTypeFactoryProtected,
-                                    args.EventTypeCompileTimeResolver);
+                                    _args.EventTypeCompileTimeResolver);
                                 resultEventType = wrapperEventType;
                                 if (insertIntoTargetType != null)
                                 {
@@ -1056,7 +1058,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 }
                                 else
                                 {
-                                    args.EventTypeCompileTimeRegistry.NewType(resultEventType);
+                                    _args.EventTypeCompileTimeRegistry.NewType(resultEventType);
                                 }
                             }
                         }
@@ -1097,8 +1099,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
                             resultEventType = WrapperEventTypeUtil.MakeWrapper(
                                 metadata, eventType, selPropertyTypes, null, beanEventTypeFactoryProtected,
-                                args.EventTypeCompileTimeResolver);
-                            args.EventTypeCompileTimeRegistry.NewType(resultEventType);
+                                _args.EventTypeCompileTimeResolver);
+                            _args.EventTypeCompileTimeRegistry.NewType(resultEventType);
                             return new SelectEvalInsertWildcardVariantWrapper(
                                 selectExprForgeContext, resultEventType, variantEventType, resultEventType);
                         }
@@ -1115,7 +1117,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                     // not using wildcard
                     resultEventType = null;
-                    if (columnNames.Length == 1 && insertIntoDesc.ColumnNames.Count == 0)
+                    if (columnNames.Length == 1 && _insertIntoDesc.ColumnNames.Count == 0)
                     {
                         if (insertIntoTargetType != null)
                         {
@@ -1205,9 +1207,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
                                 EventTypeIdPair.Unassigned());
                             resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                                metadata, selPropertyTypes, null, null, null, null, args.BeanEventTypeFactoryPrivate,
-                                args.EventTypeCompileTimeResolver);
-                            args.EventTypeCompileTimeRegistry.NewType(resultEventType);
+                                metadata, selPropertyTypes, null, null, null, null, _args.BeanEventTypeFactoryPrivate,
+                                _args.EventTypeCompileTimeResolver);
+                            _args.EventTypeCompileTimeRegistry.NewType(resultEventType);
                         }
                         else
                         {
@@ -1218,28 +1220,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 Type clazz = null;
                                 try
                                 {
-                                    clazz = importService.ResolveClass(insertIntoDesc.EventTypeName, false);
+                                    clazz = importService.ResolveClass(_insertIntoDesc.EventTypeName, false);
                                 }
                                 catch (ImportException)
                                 {
                                     Log.Debug(
-                                        "Target stream name '" + insertIntoDesc.EventTypeName +
+                                        "Target stream name '" + _insertIntoDesc.EventTypeName +
                                         "' is not resolved as a class name");
                                 }
 
                                 if (clazz != null)
                                 {
-                                    var nameVisibility = GetVisibility(insertIntoDesc.EventTypeName);
+                                    var nameVisibility = GetVisibility(_insertIntoDesc.EventTypeName);
                                     var stem =
-                                        args.CompileTimeServices.BeanEventTypeStemService.GetCreateStem(clazz, null);
+                                        _args.CompileTimeServices.BeanEventTypeStemService.GetCreateStem(clazz, null);
                                     var metadata = new EventTypeMetadata(
-                                        insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
+                                        _insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
                                         EventTypeApplicationType.CLASS, nameVisibility, EventTypeBusModifier.NONBUS,
                                         false,
                                         EventTypeIdPair.Unassigned());
                                     existingType = new BeanEventType(
-                                        stem, metadata, beanEventTypeFactoryProtected, null, null, null, null);
-                                    args.EventTypeCompileTimeRegistry.NewType(existingType);
+                                        _container, stem, metadata, beanEventTypeFactoryProtected, null, null, null, null);
+                                    _args.EventTypeCompileTimeRegistry.NewType(existingType);
                                 }
                             }
 
@@ -1249,8 +1251,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 selectExprInsertEventBean = SelectExprInsertEventBeanFactory.GetInsertUnderlyingNonJoin(
                                     existingType, isUsingWildcard, typeService, exprForges, columnNames,
                                     expressionReturnTypes,
-                                    insertIntoDesc, columnNamesAsProvided, false, args.StatementName,
-                                    args.ImportService, args.EventTypeAvroHandler);
+                                    _insertIntoDesc, columnNamesAsProvided, false, _args.StatementName,
+                                    _args.ImportService, _args.EventTypeAvroHandler);
                             }
 
                             if (selectExprInsertEventBean != null)
@@ -1259,23 +1261,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             }
 
                             // use the provided override-type if there is one
-                            if (args.OptionalInsertIntoEventType != null)
+                            if (_args.OptionalInsertIntoEventType != null)
                             {
                                 resultEventType = insertIntoTargetType;
                             }
                             else if (existingType is AvroSchemaEventType)
                             {
-                                args.EventTypeAvroHandler.AvroCompat(existingType, selPropertyTypes);
+                                _args.EventTypeAvroHandler.AvroCompat(existingType, selPropertyTypes);
                                 resultEventType = existingType;
                             }
                             else
                             {
-                                var visibility = GetVisibility(insertIntoDesc.EventTypeName);
+                                var visibility = GetVisibility(_insertIntoDesc.EventTypeName);
                                 var @out = EventRepresentationUtil.GetRepresentation(
-                                    args.Annotations, args.Configuration, AssignedType.NONE);
+                                    _args.Annotations, _args.Configuration, AssignedType.NONE);
                                 Func<EventTypeApplicationType, EventTypeMetadata> metadata = appType =>
                                     new EventTypeMetadata(
-                                        insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
+                                        _insertIntoDesc.EventTypeName, moduleName, EventTypeTypeClass.STREAM,
                                         appType,
                                         visibility, EventTypeBusModifier.NONBUS, false,
                                         EventTypeIdPair.Unassigned());
@@ -1286,7 +1288,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     var proposed = BaseNestableEventUtil.MakeMapTypeCompileTime(
                                         metadata.Invoke(EventTypeApplicationType.MAP), propertyTypes, null, null,
                                         null, null,
-                                        args.BeanEventTypeFactoryPrivate, args.EventTypeCompileTimeResolver);
+                                        _args.BeanEventTypeFactoryPrivate, _args.EventTypeCompileTimeResolver);
                                     if (insertIntoTargetType != null)
                                     {
                                         EventTypeUtility.CompareExistingType(proposed, insertIntoTargetType);
@@ -1294,7 +1296,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     }
                                     else
                                     {
-                                        args.EventTypeCompileTimeRegistry.NewType(proposed);
+                                        _args.EventTypeCompileTimeRegistry.NewType(proposed);
                                         resultEventType = proposed;
                                     }
                                 }
@@ -1303,7 +1305,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     var proposed = BaseNestableEventUtil.MakeOATypeCompileTime(
                                         metadata.Invoke(EventTypeApplicationType.OBJECTARR), propertyTypes, null,
                                         null, null,
-                                        null, args.BeanEventTypeFactoryPrivate, args.EventTypeCompileTimeResolver);
+                                        null, _args.BeanEventTypeFactoryPrivate, _args.EventTypeCompileTimeResolver);
                                     if (insertIntoTargetType != null)
                                     {
                                         EventTypeUtility.CompareExistingType(proposed, insertIntoTargetType);
@@ -1311,18 +1313,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     }
                                     else
                                     {
-                                        args.EventTypeCompileTimeRegistry.NewType(proposed);
+                                        _args.EventTypeCompileTimeRegistry.NewType(proposed);
                                         resultEventType = proposed;
                                     }
                                 }
                                 else if (@out == EventUnderlyingType.AVRO)
                                 {
                                     var proposed =
-                                        args.EventTypeAvroHandler.NewEventTypeFromNormalized(
+                                        _args.EventTypeAvroHandler.NewEventTypeFromNormalized(
                                             metadata.Invoke(EventTypeApplicationType.AVRO), null,
-                                            args.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory,
+                                            _args.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory,
                                             propertyTypes,
-                                            args.Annotations, null, null, null, args.StatementName);
+                                            _args.Annotations, null, null, null, _args.StatementName);
                                     if (insertIntoTargetType != null)
                                     {
                                         EventTypeUtility.CompareExistingType(proposed, insertIntoTargetType);
@@ -1330,7 +1332,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     }
                                     else
                                     {
-                                        args.EventTypeCompileTimeRegistry.NewType(proposed);
+                                        _args.EventTypeCompileTimeRegistry.NewType(proposed);
                                         resultEventType = proposed;
                                     }
                                 }
@@ -1359,14 +1361,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         {
                             return MakeObjectArrayConsiderReorder(
                                 selectExprForgeContext, (ObjectArrayEventType) resultEventType, exprForges,
-                                args.StatementRawInfo, args.CompileTimeServices);
+                                _args.StatementRawInfo, _args.CompileTimeServices);
                         }
 
                         if (resultEventType is AvroSchemaEventType)
                         {
-                            return args.EventTypeAvroHandler.OutputFactory.MakeSelectNoWildcard(
-                                selectExprForgeContext, exprForges, resultEventType, args.TableCompileTimeResolver,
-                                args.StatementName);
+                            return _args.EventTypeAvroHandler.OutputFactory.MakeSelectNoWildcard(
+                                selectExprForgeContext, exprForges, resultEventType, _args.TableCompileTimeResolver,
+                                _args.StatementName);
                         }
 
                         throw new IllegalStateException("Unrecognized output type " + resultEventType);
@@ -1462,7 +1464,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 {
                     TypeWidenerFactory.GetCheckPropertyAssignType(
                         colName, sourceColumnType, targetPropType, colName, false,
-                        args.EventTypeAvroHandler.GetTypeWidenerCustomizer(resultEventType),
+                        _args.EventTypeAvroHandler.GetTypeWidenerCustomizer(resultEventType),
                         statementRawInfo.StatementName);
                 }
                 catch (TypeWidenerException ex)
@@ -1510,9 +1512,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             var streamNum = undNode.StreamId;
             var returnType = undNode.Forge.EvaluationType;
             var namedWindowAsType = GetNamedWindowUnderlyingType(
-                args.NamedWindowCompileTimeResolver, args.TypeService.EventTypes[streamNum]);
+                _args.NamedWindowCompileTimeResolver, _args.TypeService.EventTypes[streamNum]);
             var tableMetadata =
-                args.TableCompileTimeResolver.ResolveTableFromEventType(args.TypeService.EventTypes[streamNum]);
+                _args.TableCompileTimeResolver.ResolveTableFromEventType(_args.TypeService.EventTypes[streamNum]);
 
             EventType eventTypeStream;
             ExprForge forge;
@@ -1523,7 +1525,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
             else if (namedWindowAsType == null)
             {
-                eventTypeStream = args.TypeService.EventTypes[streamNum];
+                eventTypeStream = _args.TypeService.EventTypes[streamNum];
                 forge = new ExprEvalStreamInsertUnd(undNode, streamNum, returnType);
             }
             else
@@ -1615,13 +1617,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             var eventTypeName = eventTypeNameGeneratorStatement.GetAnonymousTypeNameWithInner(expressionNum);
             var metadata = new EventTypeMetadata(
-                eventTypeName, args.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP,
+                eventTypeName, _args.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP,
                 NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             var propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(eventTypeExpr);
             EventType mapType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                metadata, propertyTypes, null, null, null, null, args.BeanEventTypeFactoryPrivate,
-                args.EventTypeCompileTimeResolver);
-            args.EventTypeCompileTimeRegistry.NewType(mapType);
+                metadata, propertyTypes, null, null, null, null, _args.BeanEventTypeFactoryPrivate,
+                _args.EventTypeCompileTimeResolver);
+            _args.EventTypeCompileTimeRegistry.NewType(mapType);
 
             ExprForge newForge = new SelectExprProcessorTypableMapForge(mapType, forge);
             return new TypeAndForgePair(mapType, newForge);
@@ -1639,9 +1641,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
 
             var enumeration = (ExprEnumerationForge) forge;
-            var eventTypeSingle = enumeration.GetEventTypeSingle(args.StatementRawInfo, args.CompileTimeServices);
+            var eventTypeSingle = enumeration.GetEventTypeSingle(_args.StatementRawInfo, _args.CompileTimeServices);
             var eventTypeColl = enumeration.GetEventTypeCollection(
-                args.StatementRawInfo, args.CompileTimeServices);
+                _args.StatementRawInfo, _args.CompileTimeServices);
             var sourceType = eventTypeSingle != null ? eventTypeSingle : eventTypeColl;
             if (eventTypeColl == null && eventTypeSingle == null)
             {
@@ -1898,10 +1900,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
 
             var enumEval = (ExprEnumerationForge) forge;
-            var eventTypeSingle = enumEval.GetEventTypeSingle(args.StatementRawInfo, args.CompileTimeServices);
+            var eventTypeSingle = enumEval.GetEventTypeSingle(_args.StatementRawInfo, _args.CompileTimeServices);
             if (eventTypeSingle != null)
             {
-                var tableMetadata = args.TableCompileTimeResolver.ResolveTableFromEventType(eventTypeSingle);
+                var tableMetadata = _args.TableCompileTimeResolver.ResolveTableFromEventType(eventTypeSingle);
                 if (tableMetadata == null)
                 {
                     var beanForge =
@@ -1912,10 +1914,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 throw new IllegalStateException("Unrecognized enumeration source returning table row-typed values");
             }
 
-            var eventTypeColl = enumEval.GetEventTypeCollection(args.StatementRawInfo, args.CompileTimeServices);
+            var eventTypeColl = enumEval.GetEventTypeCollection(_args.StatementRawInfo, _args.CompileTimeServices);
             if (eventTypeColl != null)
             {
-                var tableMetadata = args.TableCompileTimeResolver.ResolveTableFromEventType(eventTypeColl);
+                var tableMetadata = _args.TableCompileTimeResolver.ResolveTableFromEventType(eventTypeColl);
                 if (tableMetadata == null)
                 {
                     var
@@ -1966,8 +1968,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
         private NameAccessModifier GetVisibility(string name)
         {
-            return args.CompileTimeServices.ModuleVisibilityRules.GetAccessModifierEventType(
-                args.StatementRawInfo, name);
+            return _args.CompileTimeServices.ModuleVisibilityRules.GetAccessModifierEventType(
+                _args.StatementRawInfo, name);
         }
 
         private static void VerifyInsertInto(

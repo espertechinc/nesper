@@ -59,8 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                     ExprNodeUtilityCodegen.CodegenEvaluatorWCoerce(
                         Expression.Forge, optCoercionType, method, GetType(), classScope))
                 .MethodReturn(
-                    NewInstance(
-                        typeof(QueryGraphValueEntryRangeRelOp), EnumValue(typeof(QueryGraphRangeEnum), type.GetName()),
+                    NewInstance<QueryGraphValueEntryRangeRelOp>(
+                        EnumValue(typeof(QueryGraphRangeEnum), type.GetName()),
                         Ref("expression"), Constant(IsBetweenPart)));
             return LocalMethod(method);
         }
@@ -76,8 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                     typeof(ExprEvaluator), "expression",
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(Expression.Forge, method, GetType(), classScope))
                 .MethodReturn(
-                    NewInstance(
-                        typeof(QueryGraphValueEntryRangeRelOp), EnumValue(typeof(QueryGraphRangeEnum), type.GetName()),
+                    NewInstance<QueryGraphValueEntryRangeRelOp>(
+                        EnumValue(typeof(QueryGraphRangeEnum), type.GetName()),
                         Ref("expression"), Constant(IsBetweenPart)));
             return LocalMethod(method);
         }

@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
             ModuleIndexesInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(IndexDetail), indexMultiKey.Make(parent, classScope), queryPlanIndexItem.Make(parent, classScope));
+            return NewInstance<IndexDetail>(indexMultiKey.Make(parent, classScope), queryPlanIndexItem.Make(parent, classScope));
         }
     }
 } // end of namespace

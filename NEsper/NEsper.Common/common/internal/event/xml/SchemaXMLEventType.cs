@@ -307,7 +307,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             else {
                 var allowFragments = !ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr;
                 getter = SchemaXMLPropertyParser.GetXPathResolution(
-                    propertyExpression, XPathFactory, RootElementName, rootElementNamespace, SchemaModel,
+                    propertyExpression, NamespaceContext, RootElementName, rootElementNamespace, SchemaModel,
                     EventBeanTypedEventFactory, this, allowFragments, ConfigurationEventTypeXMLDOM.DefaultNamespace);
             }
 

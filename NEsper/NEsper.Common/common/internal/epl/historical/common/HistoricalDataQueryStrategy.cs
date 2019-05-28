@@ -128,9 +128,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                             // In an outer join compare the on-fields
                             if (_outerJoinCompareNode != null)
                             {
-                                var compareResult =
-                                    (bool?) _outerJoinCompareNode.Evaluate(new EvaluateParams(resultRow, true, exprEvaluatorContext));
-                                if ((compareResult != null) && (compareResult.Value))
+                                var compareResult = _outerJoinCompareNode.Evaluate(resultRow, true, exprEvaluatorContext);
+                                if ((compareResult != null) && true.Equals(compareResult))
                                 {
                                     joinSet.Add(new MultiKey<EventBean>(resultRow));
                                     foundMatch = true;

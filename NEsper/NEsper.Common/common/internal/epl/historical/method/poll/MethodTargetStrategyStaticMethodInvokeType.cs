@@ -6,9 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Reflection;
-using com.espertech.esper.compat;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
@@ -25,13 +24,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         public static MethodTargetStrategyStaticMethodInvokeType GetInvokeType(MethodInfo method)
         {
             var parameterTypes = method.GetParameterTypes();
-            if (parameterTypes.Length == 0) {
+            if (parameterTypes.Length == 0)
+            {
                 return MethodTargetStrategyStaticMethodInvokeType.NOPARAM;
             }
-            else if (parameterTypes.Length == 1) {
+            else if (parameterTypes.Length == 1)
+            {
                 return MethodTargetStrategyStaticMethodInvokeType.SINGLE;
             }
-            else {
+            else
+            {
                 return MethodTargetStrategyStaticMethodInvokeType.MULTIKEY;
             }
         }

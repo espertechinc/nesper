@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -15,24 +16,29 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 {
     public class EventBusSinkForge : DataFlowOperatorForge
     {
-        [DataFlowOpParameter] private IDictionary<string, object> collector;
+#pragma warning disable 649
+        [DataFlowOpParameter] private readonly IDictionary<string, object> collector;
+#pragma warning restore 649
 
         private EventType[] eventTypes;
 
         public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
         {
-            if (!context.OutputPorts.IsEmpty()) {
+            if (!context.OutputPorts.IsEmpty())
+            {
                 throw new ArgumentException("EventBusSink operator does not provide an output stream");
             }
 
             eventTypes = new EventType[context.InputPorts.Count];
-            for (var i = 0; i < eventTypes.Length; i++) {
+            for (var i = 0; i < eventTypes.Length; i++)
+            {
                 eventTypes[i] = context.InputPorts[i].TypeDesc.EventType;
             }
 

@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
 
                 LikeUtil likeUtil = new LikeUtil(patternVal, escapeCharacter, false);
-                CodegenExpression likeUtilInit = NewInstance(typeof(LikeUtil), Constant(patternVal), Constant(escapeCharacter), ConstantFalse());
+                CodegenExpression likeUtilInit = NewInstance<LikeUtil>(Constant(patternVal), Constant(escapeCharacter), ConstantFalse());
                 forge = new ExprLikeNodeForgeConst(this, isNumericValue, likeUtil, likeUtilInit);
             }
             else {

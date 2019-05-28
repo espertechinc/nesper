@@ -8,7 +8,6 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
 {
@@ -17,8 +16,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
     /// </summary>
     public class RowRecogNFAStateOneToManyEvalNoCond : RowRecogNFAStateBase
     {
-        private ExprEvaluator expression;
-
         public override bool Matches(
             EventBean[] eventsPerStream,
             AgentInstanceContext agentInstanceContext)

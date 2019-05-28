@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 using PropertyInfo = com.espertech.esper.common.@internal.@event.bean.introspect.PropertyInfo;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -34,6 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly BeanEventTypeFactory beanEventTypeFactory;
 
+        private readonly IContainer container;
         private readonly IDictionary<string, EventPropertyGetterSPI> propertyGetterCache =
             new Dictionary<string, EventPropertyGetterSPI>(4);
 
@@ -41,6 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         private IDictionary<string, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>> writerMap;
 
         public BeanEventType(
+            IContainer container,
             BeanEventTypeStem stem,
             EventTypeMetadata metadata,
             BeanEventTypeFactory beanEventTypeFactory,
@@ -49,6 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             string startTimestampPropertyName,
             string endTimestampPropertyName)
         {
+            this.container = container;
             Stem = stem;
             Metadata = metadata;
             this.beanEventTypeFactory = beanEventTypeFactory;
@@ -266,7 +270,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var copyMethodName = Stem.OptionalLegacyDef == null ? null : Stem.OptionalLegacyDef.CopyMethod;
             if (copyMethodName == null) {
                 if (Stem.Clazz.IsSerializable) {
-                    return new BeanEventBeanSerializableCopyMethodForge(this);
+                    return new BeanEventBeanSerializableCopyMethodForge(this, container.Resolve<SerializableObjectCopier>());
                 }
 
                 return null;
@@ -285,7 +289,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             if (method == null) {
                 if (Stem.Clazz.IsSerializable) {
-                    return new BeanEventBeanSerializableCopyMethodForge(this);
+                    return new BeanEventBeanSerializableCopyMethodForge(this, container.Resolve<SerializableObjectCopier>());
                 }
 
                 throw new EPException(

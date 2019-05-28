@@ -213,7 +213,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             BaseXMLEventType eventType,
             string propertyExpression)
         {
-            foreach (SchemaElementComplex complex in complexProperty.Children) {
+            foreach (SchemaElementComplex complex in complexProperty.ComplexElements) {
                 if (!complex.Name.Equals(PropertyNameAtomic)) {
                     continue;
                 }
@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
         public override SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty)
         {
-            foreach (SchemaElementComplex complex in complexProperty.Children) {
+            foreach (SchemaElementComplex complex in complexProperty.ComplexElements) {
                 if (!complex.Name.Equals(PropertyNameAtomic)) {
                     continue;
                 }

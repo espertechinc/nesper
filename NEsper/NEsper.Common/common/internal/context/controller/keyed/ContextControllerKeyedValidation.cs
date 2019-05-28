@@ -33,8 +33,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 init[i] = Items[i].Make(addInitSvc);
             }
 
-            return NewInstance(
-                typeof(ContextControllerKeyedValidation),
+            return NewInstance<ContextControllerKeyedValidation>(
                 NewArrayWithInit(typeof(ContextControllerKeyedValidationItem), init));
         }
 

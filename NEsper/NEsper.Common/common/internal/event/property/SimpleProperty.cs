@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 }
             }
 
-            foreach (SchemaElementComplex complex in complexProperty.Children) {
+            foreach (SchemaElementComplex complex in complexProperty.ComplexElements) {
                 var complexFragmentFactory = new FragmentFactoryDOMGetter(
                     eventBeanTypedEventFactory, xmlEventType, propertyExpression);
                 if (complex.Name.Equals(PropertyNameAtomic)) {

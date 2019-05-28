@@ -108,8 +108,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         CodegenMethod method = parent.MakeChild(typeof(ICollection<object>), this.GetType(), classScope);
                         method.Block.DeclareVar(
                             typeof(ICollection<object>), "events",
-                            NewInstance(
-                                typeof(ArrayDeque<object>), ExprDotMethod(symbols.GetAddMatchingEvents(method), "size")));
+                            NewInstance<ArrayDeque<object>>(
+                                ExprDotMethod(symbols.GetAddMatchingEvents(method), "size")));
                         CodegenBlock @foreach = method.Block.ForEach(
                             typeof(EventBean), "event", symbols.GetAddMatchingEvents(method));
                         {
@@ -135,8 +135,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     methodX.Block
                         .DeclareVar(
                             typeof(ICollection<object>), "result",
-                            NewInstance(
-                                typeof(ArrayDeque<object>), ExprDotMethod(symbols.GetAddMatchingEvents(methodX), "size")))
+                            NewInstance<ArrayDeque<object>>(
+                                ExprDotMethod(symbols.GetAddMatchingEvents(methodX), "size")))
                         .ApplyTri(DECLARE_EVENTS_SHIFTED, methodX, symbols);
                     CodegenBlock foreachX = methodX.Block.ForEach(
                         typeof(EventBean), "event", symbols.GetAddMatchingEvents(methodX));

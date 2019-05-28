@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar(typeof(bool), "hasColl", ConstantFalse())
                 .DeclareVar(
                     typeof(ObjectArrayEventBean), "resultEvent",
-                    NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
+                    NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
                 .DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
 
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfCondition(InstanceOf(@Ref("entry"), typeof(ICollection<object>)))
                 .ExprDotMethod(Cast(typeof(ICollection<object>), @Ref("entry")), "add", @Ref("next"))
                 .BlockContinue()
-                .DeclareVar(typeof(Deque<object>), "coll", NewInstance(typeof(ArrayDeque<object>), Constant(2)))
+                .DeclareVar(typeof(Deque<object>), "coll", NewInstance<ArrayDeque<object>>(Constant(2)))
                 .ExprDotMethod(@Ref("coll"), "add", @Ref("entry"))
                 .ExprDotMethod(@Ref("coll"), "add", @Ref("next"))
                 .ExprDotMethod(@Ref("sort"), "put", @Ref("value"), @Ref("coll"))

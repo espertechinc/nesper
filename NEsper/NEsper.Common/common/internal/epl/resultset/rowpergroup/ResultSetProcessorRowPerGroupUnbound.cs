@@ -138,8 +138,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             if (!forge.IsSorting) {
                 method.Block.DeclareVar(typeof(IEnumerator<EventBean>), "it", ExprDotMethod(@Ref("groupReps"), "valueIterator"))
                     .MethodReturn(
-                        NewInstance(
-                            typeof(ResultSetProcessorRowPerGroupEnumerator), @Ref("it"), @Ref("this"), REF_AGGREGATIONSVC,
+                        NewInstance<ResultSetProcessorRowPerGroupEnumerator>(
+                            @Ref("it"), @Ref("this"), REF_AGGREGATIONSVC,
                             REF_AGENTINSTANCECONTEXT));
             }
             else {

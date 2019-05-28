@@ -116,10 +116,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluatorContext exprEvaluatorContext)
         {
             lock (this) {
-                if (timeAbacus.OneSecond == 1000L) {
-                    return DateFormatFormatter.Format(ts);
-                }
-
                 return DateFormatFormatter.Format(timeAbacus.ToDateTimeEx(ts));
             }
         }
@@ -163,7 +159,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             else {
                 var parse = classScope.NamespaceScope.InitMethod.MakeChild(
                     typeof(DateFormat), GetType(), classScope);
-                parse.Block.MethodReturn(NewInstance(typeof(SimpleDateFormat), formatEval));
+                parse.Block.MethodReturn(NewInstance<SimpleDateFormat>(formatEval));
                 init = LocalMethod(parse);
             }
 

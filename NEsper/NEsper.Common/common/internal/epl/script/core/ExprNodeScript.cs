@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,10 +23,12 @@ using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
+    [Serializable]
     public class ExprNodeScript : ExprNodeBase,
         ExprForge,
         ExprEnumerationForge,
@@ -58,10 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public bool IsConstantResult => false;
 
-        public Type ComponentTypeCollection {
+        public Type ComponentTypeCollection
+        {
             get {
                 var returnType = _scriptDescriptor.ReturnType;
-                if (returnType.IsArray) {
+                if (returnType.IsArray)
+                {
                     return returnType.GetElementType();
                 }
 
@@ -88,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEval("evaluateGetROCollectionEvents", codegenMethodScope, symbols, codegenClassScope);
+            return MakeEval("EvaluateGetROCollectionEvents", codegenMethodScope, symbols, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
@@ -96,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEval("evaluateGetROCollectionScalar", codegenMethodScope, symbols, codegenClassScope);
+            return MakeEval("EvaluateGetROCollectionScalar", codegenMethodScope, symbols, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -104,20 +110,20 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEval("evaluateGetEventBean", codegenMethodScope, symbols, codegenClassScope);
+            return MakeEval("EvaluateGetEventBean", codegenMethodScope, symbols, codegenClassScope);
         }
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
-        public ExprEvaluator ExprEvaluator {
+        public ExprEvaluator ExprEvaluator
+        {
             get {
-                return new ProxyExprEvaluator {
+                return new ProxyExprEvaluator
+                {
                     ProcEvaluate = (
                         eventsPerStream,
                         isNewData,
-                        context) => {
-                        throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
-                    }
+                        context) => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime()
                 };
             }
         }
@@ -137,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             CodegenClassScope codegenClassScope)
         {
             return CodegenLegoCast.CastSafeFromObjectType(
-                requiredType, MakeEval("evaluate", codegenMethodScope, symbols, codegenClassScope));
+                requiredType, MakeEval("Evaluate", codegenMethodScope, symbols, codegenClassScope));
         }
 
         public IList<ExprNode> AdditionalNodes => Parameters;
@@ -152,17 +158,20 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (this == node) {
+            if (this == node)
+            {
                 return true;
             }
 
-            if (node == null || GetType() != node.GetType()) {
+            if (node == null || GetType() != node.GetType())
+            {
                 return false;
             }
 
             var that = (ExprNodeScript) node;
 
-            if (Script != null ? !Script.Equals(that.Script) : that.Script != null) {
+            if (Script != null ? !Script.Equals(that.Script) : that.Script != null)
+            {
                 return false;
             }
 
@@ -171,22 +180,24 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (Script.ParameterNames.Length != Parameters.Count) {
+            if (Script.ParameterNames.Length != Parameters.Count)
+            {
                 throw new ExprValidationException(
-                    "Invalid number of parameters for script '" + Script.Name + "', expected " +
-                    Script.ParameterNames.Length + " parameters but received " + Parameters.Count + " parameters");
+                    string.Format("Invalid number of parameters for script '{0}', expected {1} parameters but received {2} parameters",
+                        Script.Name,
+                        Script.ParameterNames.Length,
+                        Parameters.Count));
             }
 
             // validate all expression parameters
-            IList<ExprNode> validatedParameters = new List<ExprNode>();
-            foreach (var expr in Parameters) {
-                validatedParameters.Add(
-                    ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.SCRIPTPARAMS, expr, validationContext));
-            }
+            var validatedParameters = Parameters
+                .Select(expr => ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.SCRIPTPARAMS, expr, validationContext))
+                .ToList();
 
             // set up map of input parameter names and evaluators
             var forges = new ExprForge[Script.ParameterNames.Length];
-            for (var i = 0; i < Script.ParameterNames.Length; i++) {
+            for (var i = 0; i < Script.ParameterNames.Length; i++)
+            {
                 forges[i] = validatedParameters[i].Forge;
             }
 
@@ -195,30 +206,43 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             // Compile script
             var parameterTypes = ExprNodeUtilityQuery.GetExprResultTypes(forges);
             var dialect = Script.OptionalDialect == null ? _defaultDialect : Script.OptionalDialect;
-            var compiled = ExpressionNodeScriptCompiler.CompileScript(
-                dialect, Script.Name, Script.Expression, Script.ParameterNames, parameterTypes, Script.CompiledBuf,
-                validationContext.ImportService);
+            var compiled = CompileScript(
+                dialect,
+                Script.Name,
+                Script.Expression,
+                Script.ParameterNames,
+                parameterTypes,
+                Script.CompiledBuf,
+                validationContext.ImportService,
+                validationContext.ScriptingService);
 
             // Determine declared return type
             var declaredReturnType = GetDeclaredReturnType(Script.OptionalReturnTypeName, validationContext);
-            if (Script.IsOptionalReturnTypeIsArray && declaredReturnType != null) {
+            if (Script.IsOptionalReturnTypeIsArray && declaredReturnType != null)
+            {
                 declaredReturnType = TypeHelper.GetArrayType(declaredReturnType);
             }
 
             Type returnType;
-            if (compiled.KnownReturnType == null && Script.OptionalReturnTypeName == null) {
+            if (compiled.KnownReturnType == null && Script.OptionalReturnTypeName == null)
+            {
                 returnType = typeof(object);
             }
-            else if (compiled.KnownReturnType != null) {
-                if (declaredReturnType == null) {
+            else if (compiled.KnownReturnType != null)
+            {
+                if (declaredReturnType == null)
+                {
                     returnType = compiled.KnownReturnType;
                 }
-                else {
+                else
+                {
                     var knownReturnType = compiled.KnownReturnType;
-                    if (declaredReturnType.IsArray && knownReturnType.IsArray) {
+                    if (declaredReturnType.IsArray && knownReturnType.IsArray)
+                    {
                         // we are fine
                     }
-                    else if (!knownReturnType.IsAssignmentCompatible(declaredReturnType)) {
+                    else if (!knownReturnType.IsAssignmentCompatible(declaredReturnType))
+                    {
                         throw new ExprValidationException(
                             "Return type and declared type not compatible for script '" + Script.Name +
                             "', known return type is " + knownReturnType.Name + " versus declared return type " +
@@ -228,22 +252,27 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                     returnType = declaredReturnType;
                 }
             }
-            else {
+            else
+            {
                 returnType = declaredReturnType;
             }
 
-            if (returnType == null) {
+            if (returnType == null)
+            {
                 returnType = typeof(object);
             }
 
             _eventTypeCollection = null;
-            if (Script.OptionalEventTypeName != null) {
-                if (returnType.IsArray && returnType.GetElementType() == typeof(EventBean)) {
+            if (Script.OptionalEventTypeName != null)
+            {
+                if (returnType.IsArray && returnType.GetElementType() == typeof(EventBean))
+                {
                     _eventTypeCollection = EventTypeUtility.RequireEventType(
                         "Script", Script.Name, Script.OptionalEventTypeName,
                         validationContext.StatementCompileTimeService.EventTypeCompileTimeResolver);
                 }
-                else {
+                else
+                {
                     throw new ExprValidationException(EventTypeUtility.DisallowedAtTypeMessage());
                 }
             }
@@ -252,6 +281,22 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 Script.OptionalDialect, Script.Name, Script.Expression,
                 Script.ParameterNames, forges, returnType, _defaultDialect);
             return null;
+        }
+
+        private ExpressionScriptCompiled CompileScript(
+            string dialect,
+            string scriptName,
+            string scriptExpression,
+            string[] scriptParameterNames,
+            Type[] parameterTypes,
+            ExpressionScriptCompiled scriptCompiledBuf,
+            ImportServiceCompileTime importService,
+            ScriptingService scriptingService)
+        {
+            return new ExpressionScriptCompiledImpl(
+                scriptingService.Compile(
+                    Script.OptionalDialect ?? _defaultDialect,
+                    Script));
         }
 
         public override void Accept(ExprNodeVisitor visitor)
@@ -296,28 +341,34 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             string returnTypeName,
             ExprValidationContext validationContext)
         {
-            if (returnTypeName == null) {
+            if (returnTypeName == null)
+            {
                 return null;
             }
 
-            if (returnTypeName.Equals("void")) {
+            if (returnTypeName.Equals("void"))
+            {
                 return null;
             }
 
             var returnType = TypeHelper.GetTypeForSimpleName(
                 returnTypeName, validationContext.ImportService.ClassForNameProvider);
-            if (returnType != null) {
+            if (returnType != null)
+            {
                 return returnType;
             }
 
-            if (returnTypeName.Equals("EventBean")) {
+            if (returnTypeName.Equals("EventBean"))
+            {
                 return typeof(EventBean);
             }
 
-            try {
+            try
+            {
                 return validationContext.ImportService.ResolveClass(returnTypeName, false);
             }
-            catch (ImportException) {
+            catch (ImportException)
+            {
                 throw new ExprValidationException(
                     "Failed to resolve return type '" + returnTypeName + "' specified for script '" + Script.Name +
                     "'");

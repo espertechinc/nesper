@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(AggregationAgentRewriteStream), Constant(streamNum));
+            return NewInstance<AggregationAgentRewriteStream>(Constant(streamNum));
         }
     }
 } // end of namespace

@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Ctor - sets up defaults.
         /// </summary>
-        protected ConfigurationCommonLogging()
+        internal ConfigurationCommonLogging()
         {
             IsEnableQueryPlan = false;
             IsEnableADO = false;

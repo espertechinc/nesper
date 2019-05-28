@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             anonymousClass.AddMethod("getFragment", getFragment);
             getFragment.Block.MethodReturn(getter.EventBeanFragmentCodegen(@Ref("event"), getFragment, classScope));
 
-            method.Block.MethodReturn(NewInstance(typeof(ContainedEventEvalGetter), anonymousClass));
+            method.Block.MethodReturn(NewInstance<ContainedEventEvalGetter>(anonymousClass));
             return LocalMethod(method);
         }
     }

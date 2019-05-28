@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
                         var tok = m.Value.Trim();
                         tokens.Add(new Token(info.token, tok));
 
-                        str = m.ReplaceFirst("").Trim();
+                        str = info.regex.Replace(str, "", 1).Trim();
                         break;
                     }
                 }

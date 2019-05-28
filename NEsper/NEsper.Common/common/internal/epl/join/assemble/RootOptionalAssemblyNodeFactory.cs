@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(RootOptionalAssemblyNodeFactory), Constant(streamNum), Constant(numStreams));
+            return NewInstance<RootOptionalAssemblyNodeFactory>(Constant(streamNum), Constant(numStreams));
         }
     }
 } // end of namespace

@@ -23,20 +23,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly BeanEventType beanEventType;
-        private readonly EventBeanTypedEventFactory eventAdapterService;
+        private readonly IObjectCopier _copier;
+        private readonly BeanEventType _beanEventType;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
 
-        /// <summary>
-        ///     Ctor.
-        /// </summary>
+        /// <summary>Ctor.</summary>
         /// <param name="beanEventType">event type</param>
         /// <param name="eventAdapterService">for creating the event object</param>
+        /// <param name="copier">an object copier</param>
         public BeanEventBeanSerializableCopyMethod(
             BeanEventType beanEventType,
-            EventBeanTypedEventFactory eventAdapterService)
+            EventBeanTypedEventFactory eventAdapterService,
+            SerializableObjectCopier copier)
         {
-            this.beanEventType = beanEventType;
-            this.eventAdapterService = eventAdapterService;
+            _copier = copier;
+            _beanEventType = beanEventType;
+            _eventAdapterService = eventAdapterService;
         }
 
         public EventBean Copy(EventBean theEvent)
@@ -44,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var underlying = theEvent.Underlying;
             object copied;
             try {
-                copied = SerializableObjectCopier.Copy(underlying);
+                copied = _copier.Copy(underlying);
             }
             catch (IOException e) {
                 Log.Error("IOException copying event object for update: " + e.Message, e);
@@ -55,7 +57,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return null;
             }
 
-            return eventAdapterService.AdapterForTypedBean(copied, beanEventType);
+            return _eventAdapterService.AdapterForTypedBean(copied, _beanEventType);
         }
     }
 } // end of namespace

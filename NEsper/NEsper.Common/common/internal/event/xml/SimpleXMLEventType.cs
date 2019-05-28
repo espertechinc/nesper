@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -36,7 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// <author>pablo</author>
     public class SimpleXMLEventType : BaseXMLEventType
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly bool isResolvePropertiesAbsolute;
 
         private readonly IDictionary<string, EventPropertyGetterSPI> propertyGetterCache;
@@ -55,18 +56,22 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             // Set of namespace context for XPath expressions
             var xPathNamespaceContext = new XPathNamespaceContext();
-            foreach (var entry in configurationEventTypeXMLDOM.NamespacePrefixes) {
+            foreach (var entry in configurationEventTypeXMLDOM.NamespacePrefixes)
+            {
                 xPathNamespaceContext.AddNamespace(entry.Key, entry.Value);
             }
 
-            if (configurationEventTypeXMLDOM.DefaultNamespace != null) {
+            if (configurationEventTypeXMLDOM.DefaultNamespace != null)
+            {
                 var defaultNamespace = configurationEventTypeXMLDOM.DefaultNamespace;
                 xPathNamespaceContext.SetDefaultNamespace(defaultNamespace);
 
                 // determine a default namespace prefix to use to construct XPath expressions from pure property names
                 defaultNamespacePrefix = null;
-                foreach (var entry in configurationEventTypeXMLDOM.NamespacePrefixes) {
-                    if (entry.Value.Equals(defaultNamespace)) {
+                foreach (var entry in configurationEventTypeXMLDOM.NamespacePrefixes)
+                {
+                    if (entry.Value.Equals(defaultNamespace))
+                    {
                         defaultNamespacePrefix = entry.Key;
                         break;
                     }
@@ -85,7 +90,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         protected override EventPropertyGetterSPI DoResolvePropertyGetter(string propertyExpression)
         {
             var getter = propertyGetterCache.Get(propertyExpression);
-            if (getter != null) {
+            if (getter != null)
+            {
                 return getter;
             }
 
@@ -104,7 +110,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public static Type ResolveSimpleXMLPropertyType(string propertyExpression)
         {
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
-            if (PropertyParser.IsPropertyDynamic(prop)) {
+            if (PropertyParser.IsPropertyDynamic(prop))
+            {
                 return typeof(XmlNode);
             }
 
@@ -117,46 +124,39 @@ namespace com.espertech.esper.common.@internal.@event.xml
             string defaultNamespacePrefix,
             bool isResolvePropertiesAbsolute)
         {
-            if (!baseXMLEventType.ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr) {
+            if (!baseXMLEventType.ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr)
+            {
                 var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
                 var getter = prop.GetterDOM;
-                if (!prop.IsDynamic) {
+                if (!prop.IsDynamic)
+                {
                     getter = new DOMConvertingGetter((DOMPropertyGetter) getter, typeof(string));
                 }
 
                 return getter;
             }
 
-            XPathExpression xPathExpression;
-            string xPathExpr;
-            bool isDynamic;
-            try {
+            try
+            {
                 var property = PropertyParserNoDep.ParseAndWalkLaxToSimple(propertyExpression, false);
-                isDynamic = PropertyParser.IsPropertyDynamic(property);
+                var isDynamic = PropertyParser.IsPropertyDynamic(property);
 
-                xPathExpr = SimpleXMLPropertyParser.Walk(
+                var xPathExpr = SimpleXMLPropertyParser.Walk(
                     property, baseXMLEventType.RootElementName, defaultNamespacePrefix, isResolvePropertiesAbsolute);
-                var xpath = baseXMLEventType.XPathFactory.NewXPath();
-                xpath.NamespaceContext = baseXMLEventType.namespaceContext;
-                if (log.IsInfoEnabled) {
-                    log.Info("Compiling XPath expression for property '" + propertyExpression + "' as '" + xPathExpr + "'");
+
+                if (Log.IsInfoEnabled)
+                {
+                    Log.Info("Compiling XPath expression for property '" + propertyExpression + "' as '" + xPathExpr + "'");
                 }
 
-                xPathExpression = xpath.Compile(xPathExpr);
+                var xPathExpression = baseXMLEventType.CreateXPath(xPathExpr);
+                var xPathReturnType = isDynamic ? XPathResultType.Any : XPathResultType.String;
+                return new XPathPropertyGetter(baseXMLEventType, propertyExpression, xPathExpr, xPathExpression, xPathReturnType, null, null);
             }
-            catch (XPathExpressionException e) {
+            catch (XPathException e)
+            {
                 throw new EPException("Error constructing XPath expression from property name '" + propertyExpression + '\'', e);
             }
-
-            XPathResultType xPathReturnType;
-            if (isDynamic) {
-                xPathReturnType = XPathResultType.Any;
-            }
-            else {
-                xPathReturnType = XPathResultType.String;
-            }
-
-            return new XPathPropertyGetter(baseXMLEventType, propertyExpression, xPathExpr, xPathExpression, xPathReturnType, null, null);
         }
     }
 } // end of namespace

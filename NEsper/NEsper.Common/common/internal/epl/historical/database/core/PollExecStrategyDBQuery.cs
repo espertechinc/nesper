@@ -48,18 +48,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         public PollExecStrategyDBQuery(
             HistoricalEventViewableDatabaseFactory factory,
             AgentInstanceContext agentInstanceContext,
-            ConnectionCache connectionCache,
-            IDictionary<string, DBOutputTypeDesc> outputTypes,
-            SQLColumnTypeConversion columnTypeConversionHook,
-            SQLOutputRowConversion outputRowConversionHook)
+            ConnectionCache connectionCache)
         {
             _factory = factory;
             _agentInstanceContext = agentInstanceContext;
             _connectionCache = connectionCache;
             _dbInfoList = null;
-            _outputTypes = outputTypes;
-            _columnTypeConversionHook = columnTypeConversionHook;
-            _outputRowConversionHook = outputRowConversionHook;
+            _outputTypes = factory.OutputTypes;
+            _columnTypeConversionHook = factory.ColumnTypeConversionHook;
+            _outputRowConversionHook = factory.OutputRowConversionHook;
         }
 
         /// <summary>
@@ -121,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             DbDriverCommand driverCommand,
             object lookupValuePerStream)
         {
-            var hasLogging = _factory.enableLogging && ADO_PERF_LOG.IsInfoEnabled;
+            var hasLogging = _factory.IsEnableLogging && ADO_PERF_LOG.IsInfoEnabled;
 
             using (var myDriverCommand = driverCommand.Clone())
             {
@@ -141,8 +138,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                     inputParameterContext = new SQLInputParameterContext();
                 }
 
-                var mk = _factory.inputParameters.Length == 1 ? null : (HashableMultiKey) lookupValuePerStream;
-                for (var i = 0; i < _factory.inputParameters.Length; i++)
+                var mk = _factory.InputParameters.Length == 1 ? null : (HashableMultiKey) lookupValuePerStream;
+                for (var i = 0; i < _factory.InputParameters.Length; i++)
                 {
                     try
                     {
@@ -302,7 +299,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                         catch (DbException ex)
                         {
                             throw new EPException(
-                                "Error reading results for statement '" + _factory.preparedStatementText + "'", ex);
+                                "Error reading results for statement '" + _factory.PreparedStatementText + "'", ex);
                         }
                     }
 
@@ -310,7 +307,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                 }
                 catch (DbException ex)
                 {
-                    throw new EPException("Error executing statement '" + _factory.preparedStatementText + "'", ex);
+                    throw new EPException("Error executing statement '" + _factory.PreparedStatementText + "'", ex);
                 }
             }
         }

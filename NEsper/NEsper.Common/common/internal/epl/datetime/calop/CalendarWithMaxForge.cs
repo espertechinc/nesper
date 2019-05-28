@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ValueRange range = dateTimeOffset.Range(_field);
+            ValueRange<int> range = dateTimeOffset.Range(_field);
             return dateTimeOffset.With(_field, range.Maximum);
         }
 
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ValueRange range = dateTime.Range(_field);
+            ValueRange<int> range = dateTime.Range(_field);
             return dateTime.With(_field, range.Maximum);
         }
 

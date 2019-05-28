@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope codegenClassScope)
         {
             var enumValue = EnumValue(typeof(CronOperatorEnum), CronOperator.GetName());
-            var defaultValue = NewInstance(typeof(CronParameter), enumValue, ConstantNull());
+            var defaultValue = NewInstance<CronParameter>(enumValue, ConstantNull());
             if (ChildNodes.Length == 0) {
                 return defaultValue;
             }
@@ -107,8 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             block.MethodReturn(
-                NewInstance(
-                    typeof(CronParameter), enumValue,
+                NewInstance<CronParameter>(
+                    enumValue,
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(Ref("value"), evaluationType)));
             return LocalMethod(methodNode);
         }

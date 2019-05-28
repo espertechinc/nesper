@@ -69,8 +69,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 EventTypeUtility.CodegenGetterWCoerce(getter, typeof(double?), null, method, GetType(), classScope);
             method.Block
                 .DeclareVar(
-                    typeof(FilterSpecLookupableAdvancedIndex), "lookupable", NewInstance(
-                        typeof(FilterSpecLookupableAdvancedIndex),
+                    typeof(FilterSpecLookupableAdvancedIndex), "lookupable", NewInstance<FilterSpecLookupableAdvancedIndex>(
                         Constant(expression), ConstantNull(), EnumValue(returnType, "class")))
                 .SetProperty(Ref("lookupable"), "QuadTreeConfig", QuadTreeConfig.Make())
                 .SetProperty(Ref("lookupable"), "X", toEval.Invoke(x))

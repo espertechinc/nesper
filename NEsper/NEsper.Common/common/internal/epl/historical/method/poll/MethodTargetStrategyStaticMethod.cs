@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             bool recovery)
         {
             method = ResolveMethod(clazz, methodName, methodParameters);
-            invokeType = MethodTargetStrategyStaticMethodInvokeType.GetInvokeType(method);
+            invokeType = MethodTargetStrategyStaticMethodInvokeTypeExtensions.GetInvokeType(method);
         }
 
         protected internal static MethodInfo ResolveMethod(

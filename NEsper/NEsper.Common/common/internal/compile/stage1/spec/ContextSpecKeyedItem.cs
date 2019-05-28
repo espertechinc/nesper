@@ -73,8 +73,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             for (var i = 0; i < getters.Length; i++) {
                 var getter = EventTypeUtility.CodegenGetterWCoerce(
                     getters[i], types[i], types[i], method, GetType(), classScope);
-                var lookupable = NewInstance(
-                    typeof(ExprFilterSpecLookupable), Constant(PropertyNames[i]), getter,
+                var lookupable = NewInstance<ExprFilterSpecLookupable>(
+                    Constant(PropertyNames[i]), getter,
                     Constant(types[i]), ConstantFalse());
                 var eventType = ExprDotMethod(Ref("activatable"), "getFilterForEventType");
                 method.Block

@@ -95,10 +95,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockReturn(@Ref("value"));
             block.DeclareVar(
                     typeof(ObjectArrayEventBean), "resultEvent",
-                    NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
+                    NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
                 .DeclareVar(
                     typeof(ObjectArrayEventBean), "evalEvent",
-                    NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(1)), evalTypeMember))
+                    NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), evalTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda + 1), @Ref("evalEvent"))
                 .DeclareVar(typeof(object[]), "resultProps", ExprDotMethod(@Ref("resultEvent"), "getProperties"))

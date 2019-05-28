@@ -32,8 +32,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
     public class StatementSpecMapContext
     {
         private IDictionary<string, ExpressionDeclItem> expressionDeclarations;
-
-        private bool hasVariables;
         private IDictionary<string, ExpressionScriptProvided> scripts;
 
         public StatementSpecMapContext(
@@ -48,7 +46,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         public VariableCompileTimeResolver VariableCompileTimeResolver => MapEnv.VariableCompileTimeResolver;
 
         /// <summary>
-        ///     Returns the runtimeimport service.
+        ///     Returns the runtime import service.
         /// </summary>
         /// <returns>service</returns>
         public ImportServiceCompileTime ImportService => MapEnv.ImportService;

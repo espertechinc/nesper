@@ -8,9 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -22,14 +24,20 @@ namespace com.espertech.esper.common.@internal.util
             IDictionary<string, object> transientConfiguration)
         {
             return Resolve(
-                transientConfiguration, ClassForNameProviderDefault.INSTANCE, ClassForNameProviderDefault.NAME,
+                transientConfiguration,
+                ClassForNameProviderDefault.INSTANCE,
+                ClassForNameProviderDefault.NAME,
                 typeof(ClassForNameProvider));
         }
 
-        public static ClassLoaderProvider ResolveClassLoader(IDictionary<string, object> transientConfiguration)
+        public static ClassLoaderProvider ResolveClassLoader(
+            IContainer container,
+            IDictionary<string, object> transientConfiguration)
         {
             return Resolve(
-                transientConfiguration, ClassLoaderProviderDefault.INSTANCE, ClassLoaderProviderDefault.NAME,
+                transientConfiguration,
+                container.Resolve<ClassLoaderProvider>(),
+                ClassLoaderProviderDefault.NAME,
                 typeof(ClassLoaderProvider));
         }
 
@@ -39,16 +47,19 @@ namespace com.espertech.esper.common.@internal.util
             string name,
             Type interfaceClass)
         {
-            if (transientConfiguration == null) {
+            if (transientConfiguration == null)
+            {
                 return defaultProvider;
             }
 
             var value = transientConfiguration.Get(name);
-            if (value == null) {
+            if (value == null)
+            {
                 return defaultProvider;
             }
 
-            if (!value.GetType().IsImplementsInterface(interfaceClass)) {
+            if (!value.GetType().IsImplementsInterface(interfaceClass))
+            {
                 log.Warn(
                     "For transient configuration '" + name + "' expected an object implementing " +
                     interfaceClass.Name + " but received " + value.GetType() + ", using default provider");

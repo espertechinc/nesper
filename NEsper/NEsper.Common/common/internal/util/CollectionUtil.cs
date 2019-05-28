@@ -142,8 +142,7 @@ namespace com.espertech.esper.common.@internal.util
 
             var length = array.Length;
             var newLength = length + elementsToAdd.Count;
-            var componentType = array.GetType().GetElementType();
-            var newArray = Array.CreateInstance(componentType, newLength);
+            var newArray = new T[newLength];
             Array.Copy(array, 0, newArray, 0, length);
             var count = 0;
             foreach (object element in elementsToAdd) {
@@ -666,7 +665,7 @@ namespace com.espertech.esper.common.@internal.util
                     StaticMethod(typeof(Collections), "singletonList", ArrayAtIndex(Ref("array"), Constant(0))))
                 .DeclareVar(
                     typeof(ArrayDeque<object>), "dq",
-                    NewInstance(typeof(ArrayDeque<object>), ArrayLength(Ref("array"))))
+                    NewInstance<ArrayDeque<object>>(ArrayLength(Ref("array"))))
                 .ForLoopIntSimple("i", ArrayLength(Ref("array")))
                 .Expression(ExprDotMethod(Ref("dq"), "add", ArrayAtIndex(Ref("array"), Ref("i"))))
                 .BlockEnd()

@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
 
             if (HasRefCounting) {
                 explicitMembers.Add(new CodegenTypedParam(typeof(IList<object>), REF_REMOVEDKEYS.Ref));
-                ctor.Block.AssignRef(REF_REMOVEDKEYS, NewInstance(typeof(List<object>), Constant(4)));
+                ctor.Block.AssignRef(REF_REMOVEDKEYS, NewInstance<List<object>>(Constant(4)));
             }
         }
 

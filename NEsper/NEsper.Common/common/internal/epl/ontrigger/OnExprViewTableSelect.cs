@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
     public class OnExprViewTableSelect : OnExprViewTableBase
     {
-        private readonly InfraOnSelectViewFactory parent;
+        private new readonly InfraOnSelectViewFactory parent;
         private readonly ResultSetProcessor resultSetProcessor;
         private readonly bool audit;
         private readonly bool deleteAndSelect;

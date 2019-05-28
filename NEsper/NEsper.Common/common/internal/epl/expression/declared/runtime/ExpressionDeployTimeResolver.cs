@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
                         typeof(ExpressionDeployTimeResolver), "resolveDeploymentId",
                         Constant(expression.Name), Constant(expression.Visibility), Constant(expression.ModuleName),
                         EPStatementInitServicesConstants.REF))
-                .MethodReturn(NewInstance(typeof(ExprDeclaredCacheKeyGlobal), @Ref("deploymentId"), Constant(expression.Name)));
+                .MethodReturn(NewInstance<ExprDeclaredCacheKeyGlobal>(@Ref("deploymentId"), Constant(expression.Name)));
             return classScope.NamespaceScope.AddFieldUnshared(
                 true, typeof(ExprDeclaredCacheKeyGlobal), LocalMethod(keyInit, EPStatementInitServicesConstants.REF));
         }

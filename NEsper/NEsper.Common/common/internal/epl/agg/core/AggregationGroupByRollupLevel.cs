@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public CodegenExpression ToExpression()
         {
-            return NewInstance(
-                typeof(AggregationGroupByRollupLevel), Constant(LevelNumber), Constant(levelOffset),
+            return NewInstance<AggregationGroupByRollupLevel>(
+                Constant(LevelNumber), Constant(levelOffset),
                 Constant(RollupKeys));
         }
 

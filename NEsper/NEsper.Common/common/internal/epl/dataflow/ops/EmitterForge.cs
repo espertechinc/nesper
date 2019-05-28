@@ -19,7 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
     [DataFlowOpProvideSignal]
     public class EmitterForge : DataFlowOperatorForge
     {
+#pragma warning disable 649
         [DataFlowOpParameter] private ExprNode name;
+#pragma warning restore 649
 
         public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
         {

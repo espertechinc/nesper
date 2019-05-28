@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
                 exprNode.Forge, method, GetType(), classScope);
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(SubordInKeywordMultiTableLookupStrategyFactory), Constant(isNWOnTrigger),
+                NewInstance<SubordInKeywordMultiTableLookupStrategyFactory>(
+                    Constant(isNWOnTrigger),
                     Constant(streamCountOuter), eval, Constant(expression)));
             return LocalMethod(method);
         }

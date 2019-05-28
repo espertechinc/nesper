@@ -46,8 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(OutputConditionPolledCrontabFactory),
+            return NewInstance<OutputConditionPolledCrontabFactory>(
                 ExprNodeUtilityCodegen.CodegenEvaluators(expressions, parent, this.GetType(), classScope));
         }
     }

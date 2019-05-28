@@ -61,17 +61,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // check pattern child node
-            Type patternChildType = ChildNodes[1].Forge.EvaluationType;
+            var patternChildType = ChildNodes[1].Forge.EvaluationType;
             if (patternChildType != typeof(string))
             {
                 throw new ExprValidationException("The regexp operator requires a String-type pattern expression");
             }
 
-            bool constantPattern = this.ChildNodes[1].Forge.ForgeConstantType.IsCompileTimeConstant;
+            var constantPattern = this.ChildNodes[1].Forge.ForgeConstantType.IsCompileTimeConstant;
 
             // check eval child node - can be String or numeric
-            Type evalChildType = ChildNodes[0].Forge.EvaluationType;
-            bool isNumericValue = TypeHelper.IsNumeric(evalChildType);
+            var evalChildType = ChildNodes[0].Forge.EvaluationType;
+            var isNumericValue = TypeHelper.IsNumeric(evalChildType);
             if ((evalChildType != typeof(string)) && (!isNumericValue))
             {
                 throw new ExprValidationException(
@@ -80,19 +80,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             if (constantPattern)
             {
-                string patternText = (string) ChildNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
+                var patternText = (string) ChildNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
                 Regex pattern;
                 try
                 {
                     pattern = new Regex(patternText);
                 }
-                catch (PatternSyntaxException ex)
+                catch (ArgumentException ex)
                 {
                     throw new ExprValidationException(
                         "Error compiling regex pattern '" + patternText + "': " + ex.Message, ex);
                 }
 
-                CodegenExpression patternInit = NewInstance<Regex>(Constant(patternText));
+                var patternInit = NewInstance<Regex>(Constant(patternText));
                 forge = new ExprRegexpNodeForgeConst(this, isNumericValue, pattern, patternInit);
             }
             else
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return false;
             }
 
-            ExprRegexpNode other = (ExprRegexpNode) node;
+            var other = (ExprRegexpNode) node;
             if (this.isNot != other.isNot)
             {
                 return false;

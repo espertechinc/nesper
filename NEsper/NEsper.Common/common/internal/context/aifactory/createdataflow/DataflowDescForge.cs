@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,18 +19,17 @@ using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 {
     public class DataflowDescForge
     {
-        private readonly IList<StmtForgeMethodResult> additionalForgables;
         private readonly string dataflowName;
         private readonly IDictionary<string, EventType> declaredTypes;
         private readonly IList<LogicalChannel> logicalChannels;
         private readonly ISet<int> operatorBuildOrder;
-        private readonly IDictionary<int, DataFlowOperatorForge> operatorFactories;
         private readonly IDictionary<int, OperatorMetadataDescriptor> operatorMetadata;
 
         public DataflowDescForge(
@@ -45,10 +45,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             this.declaredTypes = declaredTypes;
             this.operatorMetadata = operatorMetadata;
             this.operatorBuildOrder = operatorBuildOrder;
-            this.operatorFactories = operatorFactories;
+            OperatorFactories = operatorFactories;
             this.logicalChannels = logicalChannels;
-            this.additionalForgables = additionalForgables;
+            AdditionalForgables = additionalForgables;
         }
+
+        public IDictionary<int, DataFlowOperatorForge> OperatorFactories { get; }
+
+        public IList<StmtForgeMethodResult> AdditionalForgables { get; }
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -61,22 +65,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 .SetProperty(Ref("df"), "DataflowName", Constant(dataflowName))
                 .SetProperty(Ref("df"), "DeclaredTypes", MakeTypes(declaredTypes, method, symbols, classScope))
                 .SetProperty(Ref("df"), "OperatorMetadata", MakeOpMeta(operatorMetadata, method, symbols, classScope))
-                .SetProperty(Ref("df"), "OperatorBuildOrder",
+                .SetProperty(
+                    Ref("df"), "OperatorBuildOrder",
                     MakeOpBuildOrder(operatorBuildOrder, method, symbols, classScope))
-                .SetProperty(Ref("df"), "OperatorFactories", MakeOpFactories(operatorFactories, method, symbols, classScope))
+                .SetProperty(Ref("df"), "OperatorFactories", MakeOpFactories(OperatorFactories, method, symbols, classScope))
                 .SetProperty(Ref("df"), "LogicalChannels", MakeOpChannels(logicalChannels, method, symbols, classScope))
                 .MethodReturn(Ref("df"));
             return LocalMethod(method);
-        }
-
-        public IDictionary<int, DataFlowOperatorForge> GetOperatorFactories()
-        {
-            return operatorFactories;
-        }
-
-        public IList<StmtForgeMethodResult> GetAdditionalForgables()
-        {
-            return additionalForgables;
         }
 
         private static CodegenExpression MakeOpChannels(
@@ -87,8 +82,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             var method = parent.MakeChild(typeof(IList<object>), typeof(DataflowDescForge), classScope);
             method.Block.DeclareVar(
-                typeof(IList<object>), "chnl", NewInstance(typeof(List<object>), Constant(logicalChannels.Count)));
-            foreach (var channel in logicalChannels) {
+                typeof(IList<object>), "chnl", NewInstance<List<object>>(Constant(logicalChannels.Count)));
+            foreach (var channel in logicalChannels)
+            {
                 method.Block.ExprDotMethod(Ref("chnl"), "add", channel.Make(method, symbols, classScope));
             }
 
@@ -102,12 +98,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(LinkedHashSet<object>), typeof(DataflowDescForge), classScope);
+            var method = parent.MakeChild(
+                typeof(LinkedHashSet<object>),
+                typeof(DataflowDescForge),
+                classScope);
             method.Block.DeclareVar(
                 typeof(LinkedHashSet<object>), "order",
-                NewInstance(
-                    typeof(LinkedHashSet<object>), Constant(CollectionUtil.CapacityHashMap(operatorBuildOrder.Count))));
-            foreach (var entry in operatorBuildOrder) {
+                NewInstance<LinkedHashSet<object>>(
+                    Constant(CollectionUtil.CapacityHashMap(operatorBuildOrder.Count))));
+            foreach (var entry in operatorBuildOrder)
+            {
                 method.Block.ExprDotMethod(Ref("order"), "add", Constant(entry));
             }
 
@@ -127,7 +127,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 NewInstance(
                     typeof(Dictionary<object, object>),
                     Constant(CollectionUtil.CapacityHashMap(operatorFactories.Count))));
-            foreach (var entry in operatorFactories) {
+            foreach (var entry in operatorFactories)
+            {
                 method.Block.ExprDotMethod(
                     Ref("fac"), "put", Constant(entry.Key), entry.Value.Make(method, symbols, classScope));
             }
@@ -148,7 +149,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 NewInstance(
                     typeof(Dictionary<object, object>),
                     Constant(CollectionUtil.CapacityHashMap(operatorMetadata.Count))));
-            foreach (var entry in operatorMetadata) {
+            foreach (var entry in operatorMetadata)
+            {
                 method.Block.ExprDotMethod(
                     Ref("op"), "put", Constant(entry.Key), entry.Value.Make(method, symbols, classScope));
             }
@@ -168,7 +170,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 typeof(IDictionary<object, object>), "types",
                 NewInstance(
                     typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(declaredTypes.Count))));
-            foreach (var entry in declaredTypes) {
+            foreach (var entry in declaredTypes)
+            {
                 method.Block.ExprDotMethod(
                     Ref("types"), "put", Constant(entry.Key),
                     EventTypeUtility.ResolveTypeCodegen(entry.Value, symbols.GetAddInitSvc(method)));

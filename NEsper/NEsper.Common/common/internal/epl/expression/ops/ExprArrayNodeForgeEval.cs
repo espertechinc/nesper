@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var block = methodNode.Block
                 .DeclareVar(
                     typeof(ArrayDeque<object>), "resultList",
-                    NewInstance(typeof(ArrayDeque<object>), Constant(children.Length)));
+                    NewInstance<ArrayDeque<object>>(Constant(children.Length)));
             var count = -1;
             foreach (var child in children) {
                 count++;

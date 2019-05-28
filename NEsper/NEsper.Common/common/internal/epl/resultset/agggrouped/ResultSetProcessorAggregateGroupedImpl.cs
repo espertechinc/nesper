@@ -524,7 +524,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     LocalMethod(
                         generateOutputEventsJoin, REF_JOINSET, Ref("groupByKeys"), ConstantTrue(), ConstantTrue()))
                 .MethodReturn(
-                    NewInstance(typeof(ArrayEventEnumerator), Ref("result")));
+                    NewInstance<ArrayEventEnumerator>(Ref("result")));
         }
 
         public static void ClearMethodCodegen(CodegenMethod method)

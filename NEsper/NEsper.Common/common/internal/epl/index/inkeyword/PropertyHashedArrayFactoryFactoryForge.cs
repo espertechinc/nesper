@@ -67,8 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             }
 
             method.Block.MethodReturn(
-                NewInstance(
-                    typeof(PropertyHashedArrayFactoryFactory),
+                NewInstance<PropertyHashedArrayFactoryFactory>(
                     Constant(streamNum), Constant(propertyNames), Constant(propertyTypes), Constant(unique), @Ref("getters"),
                     Constant(isFireAndForget)));
             return LocalMethod(method);

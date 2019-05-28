@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.settings
 {
@@ -20,6 +22,7 @@ namespace com.espertech.esper.common.@internal.settings
         private readonly IDictionary<string, ConfigurationCommonMethodRef> methodInvocationRef;
 
         public ImportServiceRuntime(
+            IContainer container,
             IDictionary<string, object> transientConfiguration,
             TimeAbacus timeAbacus,
             ISet<string> eventTypeAutoNames,
@@ -27,22 +30,26 @@ namespace com.espertech.esper.common.@internal.settings
             IDictionary<string, ConfigurationCommonMethodRef> methodInvocationRef,
             IList<string> imports,
             IList<string> annotationImports)
-            : base(transientConfiguration, timeAbacus, eventTypeAutoNames)
+            : base(container, transientConfiguration, timeAbacus, eventTypeAutoNames)
 
         {
             TimeZone = timeZone;
             this.methodInvocationRef = methodInvocationRef;
 
-            try {
-                foreach (var importName in imports) {
+            try
+            {
+                foreach (var importName in imports)
+                {
                     AddImport(importName);
                 }
 
-                foreach (var importName in annotationImports) {
+                foreach (var importName in annotationImports)
+                {
                     AddAnnotationImport(importName);
                 }
             }
-            catch (ImportException ex) {
+            catch (ImportException ex)
+            {
                 throw new ConfigurationException("Failed to process imports: " + ex.Message, ex);
             }
         }

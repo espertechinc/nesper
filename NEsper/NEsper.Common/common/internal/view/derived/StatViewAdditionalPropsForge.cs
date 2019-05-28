@@ -109,8 +109,8 @@ namespace com.espertech.esper.common.@internal.view.derived
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(StatViewAdditionalPropsEval), Constant(AdditionalProps),
+            return NewInstance<StatViewAdditionalPropsEval>(
+                Constant(AdditionalProps),
                 CodegenEvaluators(AdditionalEvals, method, GetType(), classScope), Constant(AdditionalTypes));
         }
     }

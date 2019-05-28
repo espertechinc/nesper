@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.client.meta
         /// <summary>
         ///     Build an expression for the metadata (for internal use).
         /// </summary>
-        /// <returns>exppression</returns>
+        /// <returns>expression</returns>
         public CodegenExpression ToExpression()
         {
             return ToExpressionWPublicId(Constant(EventTypeIdPair.PublicId));
@@ -121,19 +121,19 @@ namespace com.espertech.esper.common.client.meta
         ///     Build an expression for the metadata (for internal use).
         /// </summary>
         /// <param name="expressionEventTypeIdPublic">id pair</param>
-        /// <returns>exppression</returns>
+        /// <returns>expression</returns>
         public CodegenExpression ToExpressionWPublicId(CodegenExpression expressionEventTypeIdPublic)
         {
-            return NewInstance(
-                typeof(EventTypeMetadata),
-                Constant(Name), Constant(ModuleName),
+            return NewInstance<EventTypeMetadata>(
+                Constant(Name), 
+                Constant(ModuleName),
                 EnumValue(typeof(EventTypeTypeClass), TypeClass.GetName()),
                 EnumValue(typeof(EventTypeApplicationType), ApplicationType.GetName()),
                 EnumValue(typeof(NameAccessModifier), AccessModifier.GetName()),
                 EnumValue(typeof(EventTypeBusModifier), BusModifier.GetName()),
                 Constant(IsPropertyAgnostic),
-                NewInstance(
-                    typeof(EventTypeIdPair), expressionEventTypeIdPublic, Constant(EventTypeIdPair.ProtectedId)));
+                NewInstance<EventTypeIdPair>(
+                    expressionEventTypeIdPublic, Constant(EventTypeIdPair.ProtectedId)));
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.client.meta
         /// </summary>
         /// <param name="eventTypeIdPublic">public id</param>
         /// <param name="eventTypeIdProtected">protected id</param>
-        /// <returns>exppression</returns>
+        /// <returns>expression</returns>
         public EventTypeMetadata WithIds(
             long eventTypeIdPublic,
             long eventTypeIdProtected)

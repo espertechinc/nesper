@@ -93,8 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar(
                     typeof(List<object>), "result",
-                    NewInstance(
-                        typeof(List<object>),
+                    NewInstance<List<object>>(
                         Op(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), "+", ExprDotMethod(@Ref("other"), "size"))))
                 .Expression(ExprDotMethod(@Ref("result"), "addAll", EnumForgeCodegenNames.REF_ENUMCOLL))
                 .Expression(ExprDotMethod(@Ref("result"), "addAll", @Ref("other")))

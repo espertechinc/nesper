@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
@@ -41,7 +42,33 @@ namespace com.espertech.esper.common.client.configuration
         /// <summary>
         /// Gets or sets the container.
         /// </summary>
-        private IContainer Container { get; set; }
+        public IContainer Container { get; set; }
+
+        /// <summary>
+        /// Gets the resource manager.
+        /// </summary>
+        public IResourceManager ResourceManager => Container.ResourceManager();
+
+        /// <summary>
+        /// Returns the common section of the configuration.
+        /// <para />The common section is for use by both the compiler and the runtime.
+        /// </summary>
+        /// <returns>common configuration</returns>
+        public ConfigurationCommon Common { get; set; }
+
+        /// <summary>
+        /// Returns the compiler section of the configuration.
+        /// <para />The compiler section is for use by the compiler. The runtime ignores this part of the configuration object.
+        /// </summary>
+        /// <returns>compiler configuration</returns>
+        public ConfigurationCompiler Compiler { get; set; }
+
+        /// <summary>
+        /// Returns the runtime section of the configuration.
+        /// <para />The runtime section is for use by the runtime. The compiler ignores this part of the configuration object.
+        /// </summary>
+        /// <returns>runtime configuration</returns>
+        public ConfigurationRuntime Runtime { get; set; }
 
         /// <summary>
         /// Constructs an empty configuration. The auto import values are set to defaults.
@@ -86,13 +113,14 @@ namespace com.espertech.esper.common.client.configuration
         /// <param name="resource">if the file name of the resource</param>
         /// <returns>Configuration initialized from the resource</returns>
         /// <throws>EPException thrown to indicate error reading configuration</throws>
-        public Configuration Configure(string resource)
+        public Configuration Configure(
+            string resource)
         {
             if (Log.IsDebugEnabled) {
                 Log.Debug("Configuring from resource: " + resource);
             }
 
-            Stream stream = GetConfigurationInputStream(resource);
+            var stream = GetConfigurationInputStream(resource);
             ConfigurationParser.DoConfigure(this, stream, resource);
             return this;
         }
@@ -101,14 +129,54 @@ namespace com.espertech.esper.common.client.configuration
         /// Get the configuration file as an <tt>InputStream</tt>. Might be overridden
         /// by subclasses to allow the configuration to be located by some arbitrary
         /// mechanism.
-        /// <para />See <tt>getResourceAsStream</tt> for information on how the resource name is resolved.
         /// </summary>
         /// <param name="resource">is the resource name</param>
         /// <returns>input stream for resource</returns>
         /// <throws>EPException thrown to indicate error reading configuration</throws>
-        protected internal static Stream GetConfigurationInputStream(string resource)
+        internal Stream GetConfigurationInputStream(
+            string resource)
         {
             return GetResourceAsStream(resource);
+        }
+
+        /// <summary>
+        /// Returns an input stream from an application resource in the classpath.
+        /// <para>
+        /// The method first removes the '/' character from the resource name if
+        /// the first character is '/'.
+        /// </para>
+        /// <para>
+        /// The lookup order is as follows:
+        /// </para>
+        /// <para>
+        /// If a thread context class loader exists, use <tt>Thread.CurrentThread().getResourceAsStream</tt>
+        /// to obtain an InputStream.
+        /// </para>
+        /// <para>
+        /// If no input stream was returned, use the <tt>typeof(Configuration).getResourceAsStream</tt>.
+        /// to obtain an InputStream.
+        /// </para>
+        /// <para>
+        /// If no input stream was returned, use the <tt>typeof(Configuration).ClassLoader.getResourceAsStream</tt>.
+        /// to obtain an InputStream.
+        /// </para>
+        /// <para>
+        /// If no input stream was returned, throw an Exception.
+        /// </para>
+        /// </summary>
+        /// <param name="resource">to get input stream for</param>
+        /// <returns>input stream for resource</returns>
+        internal Stream GetResourceAsStream(String resource)
+        {
+            var stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase)
+                ? resource.Substring(1) : resource;
+            var stream = ResourceManager.GetResourceAsStream(resource) ??
+                            ResourceManager.GetResourceAsStream(stripped);
+            if (stream == null)
+            {
+                throw new EPException(resource + " not found");
+            }
+            return stream;
         }
 
         /// <summary>
@@ -125,12 +193,16 @@ namespace com.espertech.esper.common.client.configuration
                 Log.Debug("configuring from url: " + url);
             }
 
-            try {
-                ConfigurationParser.DoConfigure(this, url.OpenStream(), url.ToString());
-                return this;
-            }
-            catch (IOException ioe) {
-                throw new EPException("could not configure from URL: " + url, ioe);
+            using (var webClient = new WebClient()) {
+                using (var stream = webClient.OpenRead(url)) {
+                    try {
+                        ConfigurationParser.DoConfigure(this, stream, url.ToString());
+                        return this;
+                    }
+                    catch (IOException ioe) {
+                        throw new EPException("could not configure from URL: " + url, ioe);
+                    }
+                }
             }
         }
 
@@ -187,61 +259,6 @@ namespace com.espertech.esper.common.client.configuration
             ConfigurationParser.DoConfigure(this, document);
             return this;
         }
-
-        /// <summary>
-        /// Returns an input stream from an application resource in the classpath.
-        /// <para />The method first removes the '/' character from the resource name if
-        /// the first character is '/'.
-        /// <para />The lookup order is as follows:
-        /// <para />If a thread context class loader exists, use <tt>Thread.currentThread().getResourceAsStream</tt>to obtain an InputStream.
-        /// <para />If no input stream was returned, use the <tt>Configuration.class.getResourceAsStream</tt>.
-        /// to obtain an InputStream.
-        /// <para />If no input stream was returned, use the <tt>Configuration.class.getClassLoader().getResourceAsStream</tt>.
-        /// to obtain an InputStream.
-        /// <para />If no input stream was returned, throw an Exception.
-        /// </summary>
-        /// <param name="resource">to get input stream for</param>
-        /// <returns>input stream for resource</returns>
-        protected internal static Stream GetResourceAsStream(string resource)
-        {
-            string stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
-
-            Stream stream = null;
-            if (stream == null) {
-                stream = typeof(Configuration).GetResourceAsStream(resource);
-            }
-
-            if (stream == null) {
-                stream = typeof(Configuration).ClassLoader.GetResourceAsStream(stripped);
-            }
-
-            if (stream == null) {
-                throw new EPException(resource + " not found");
-            }
-
-            return stream;
-        }
-
-        /// <summary>
-        /// Returns the common section of the configuration.
-        /// <para />The common section is for use by both the compiler and the runtime.
-        /// </summary>
-        /// <returns>common configuration</returns>
-        public ConfigurationCommon Common { get; set; }
-
-        /// <summary>
-        /// Returns the compiler section of the configuration.
-        /// <para />The compiler section is for use by the compiler. The runtime ignores this part of the configuration object.
-        /// </summary>
-        /// <returns>compiler configuration</returns>
-        public ConfigurationCompiler Compiler { get; set; }
-
-        /// <summary>
-        /// Returns the runtime section of the configuration.
-        /// <para />The runtime section is for use by the runtime. The compiler ignores this part of the configuration object.
-        /// </summary>
-        /// <returns>runtime configuration</returns>
-        public ConfigurationRuntime Runtime { get; set; }
 
         /// <summary>
         /// Reset to an empty configuration.

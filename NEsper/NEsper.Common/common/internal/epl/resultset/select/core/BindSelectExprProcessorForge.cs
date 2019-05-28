@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 .AssignRef("syntheticEvent", LocalMethod(syntheticMethod))
                 .BlockEnd()
                 .DeclareVar(typeof(object[]), "parameters", LocalMethod(bindMethod))
-                .MethodReturn(NewInstance(typeof(NaturalEventBean), resultEventType, @Ref("parameters"), @Ref("syntheticEvent")));
+                .MethodReturn(NewInstance<NaturalEventBean>(resultEventType, @Ref("parameters"), @Ref("syntheticEvent")));
 
             return processMethod;
         }

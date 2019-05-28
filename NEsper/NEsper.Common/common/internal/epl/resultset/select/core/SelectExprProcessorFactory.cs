@@ -157,7 +157,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             // Construct processor
             var buckets = GetSelectExpressionBuckets(args.SelectionList);
-
             var factory = new SelectExprProcessorHelper(buckets.Expressions, buckets.SelectedStreams, args, insertIntoDesc);
             var forge = factory.Forge;
             return forge;

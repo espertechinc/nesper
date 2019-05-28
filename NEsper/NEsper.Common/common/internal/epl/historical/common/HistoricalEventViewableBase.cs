@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.datacache;
@@ -185,7 +186,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         public IEnumerator<EventBean> GetEnumerator()
         {
             var tablesPerRow = Poll(NULL_ROWS, ITERATOR_INDEXING_STRATEGY, agentInstanceContext);
-            return new IterablesArrayIterator(tablesPerRow);
+            return new IterablesArrayEnumerator(tablesPerRow);
         }
     }
 } // end of namespace

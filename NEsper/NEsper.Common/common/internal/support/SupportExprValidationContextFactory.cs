@@ -6,38 +6,38 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.support
 {
     public class SupportExprValidationContextFactory
     {
-        public static ExprValidationContext MakeEmpty()
+        public static ExprValidationContext MakeEmpty(IContainer container)
         {
-            return Make(new StreamTypeServiceImpl(false));
+            return Make(container, new StreamTypeServiceImpl(false));
         }
 
-        public static ExprValidationContext Make(StreamTypeService streamTypeService)
+        public static ExprValidationContext MakeEmpty(
+            IContainer container,
+            ThreadingProfile threadingProfile)
         {
-            ModuleCompileTimeServices moduleServices = new ModuleCompileTimeServices();
+            return MakeEmpty(container);
+        }
+
+        public static ExprValidationContext Make(IContainer container, StreamTypeService streamTypeService)
+        {
+            var moduleServices = new ModuleCompileTimeServices(container);
             moduleServices.Configuration = new Configuration();
-            moduleServices.ImportServiceCompileTime = SupportClasspathImport.INSTANCE;
-            StatementCompileTimeServices services = new StatementCompileTimeServices(1, moduleServices);
-            StatementRawInfo raw = new StatementRawInfo(1, "abc", null, StatementType.SELECT, null, null, null, null);
+            moduleServices.ImportServiceCompileTime = SupportClasspathImport.GetInstance(container);
+            var services = new StatementCompileTimeServices(1, moduleServices);
+            var raw = new StatementRawInfo(1, "abc", null, StatementType.SELECT, null, null, null, null);
             return new ExprValidationContextBuilder(streamTypeService, raw, services).Build();
-        }
-
-        public static ExprValidationContext MakeEmpty(ThreadingProfile threadingProfile)
-        {
-            return MakeEmpty();
         }
     }
 } // end of namespace

@@ -255,8 +255,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         FilterSpecParamForge.MakeParamArrayArrayCodegen(Parameters, classScope, method),
                         Ref("eventType"), symbols.GetAddInitSvc(method)))
                 .DeclareVar(
-                    typeof(FilterSpecActivatable), "activatable", NewInstance(
-                        typeof(FilterSpecActivatable), SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
+                    typeof(FilterSpecActivatable), "activatable", NewInstance<FilterSpecActivatable>(
+                        SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
                         Constant(FilterForEventType.Name), Ref("params"), propertyEval, Constant(filterCallbackId)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))

@@ -75,8 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            return NewInstance(
-                typeof(VariableMetaData), Constant(VariableName), Constant(VariableModuleName),
+            return NewInstance<VariableMetaData>(
+                Constant(VariableName), Constant(VariableModuleName),
                 Constant(VariableVisibility),
                 Constant(OptionalContextName), Constant(OptionalContextVisibility), Constant(OptionalContextModule),
                 Constant(Type),

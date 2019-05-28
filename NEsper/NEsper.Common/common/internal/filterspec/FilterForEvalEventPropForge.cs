@@ -65,8 +65,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                     typeof(EventBean), "event",
                     ExprDotMethod(Ref("matchedEvents"), "getMatchingEventByTag", Constant(_resultEventAsName)))
                 .IfRefNull(Ref("event")).BlockThrow(
-                    NewInstance(
-                        typeof(IllegalStateException),
+                    NewInstance<IllegalStateException>(
                         Constant("Matching event named '" + _resultEventAsName + "' not found in event result set")))
                 .DeclareVar(typeof(object), "value", get);
 

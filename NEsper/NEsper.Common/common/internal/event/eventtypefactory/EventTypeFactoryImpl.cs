@@ -19,16 +19,18 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.@event.eventtypefactory
 {
     public class EventTypeFactoryImpl : EventTypeFactory
     {
-        public static readonly EventTypeFactoryImpl INSTANCE = new EventTypeFactoryImpl();
-
-        private EventTypeFactoryImpl()
+        private EventTypeFactoryImpl(IContainer container)
         {
+            Container = container;
         }
+
+        public IContainer Container { get; }
 
         public BeanEventType CreateBeanType(
             BeanEventTypeStem stem,
@@ -40,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             string endTimestampPropertyName)
         {
             return new BeanEventType(
-                stem, metadata, beanEventTypeFactory, superTypes, deepSuperTypes, startTimestampPropertyName, endTimestampPropertyName);
+                Container, stem, metadata, beanEventTypeFactory, superTypes, deepSuperTypes, startTimestampPropertyName, endTimestampPropertyName);
         }
 
         public MapEventType CreateMap(
@@ -112,6 +114,11 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             VariantSpec spec)
         {
             return new VariantEventType(metadata, spec);
+        }
+
+        public static EventTypeFactoryImpl GetInstance(IContainer container)
+        {
+            return container.ResolveSingleton(() => new EventTypeFactoryImpl(container));
         }
     }
 } // end of namespace

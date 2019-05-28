@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         public static CodegenExpression ToExpression(SortedSet<int> values)
         {
             var arr = values.ToArray();
-            return NewInstance(typeof(SortedSet<int>), StaticMethod(typeof(CompatExtensions), "AsList", Constant(arr)));
+            return NewInstance<SortedSet<int>>(StaticMethod(typeof(CompatExtensions), "AsList", Constant(arr)));
         }
     }
 } // end of namespace

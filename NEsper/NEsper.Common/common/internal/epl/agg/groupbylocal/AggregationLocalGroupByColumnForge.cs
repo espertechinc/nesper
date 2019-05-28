@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
         public CodegenExpression ToExpression(int fieldNum)
         {
-            return NewInstance(
-                typeof(AggregationLocalGroupByColumn), Constant(IsDefaultGroupLevel), Constant(fieldNum),
+            return NewInstance<AggregationLocalGroupByColumn>(
+                Constant(IsDefaultGroupLevel), Constant(fieldNum),
                 Constant(LevelNum));
         }
     }

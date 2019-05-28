@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             // get type
-            var item = property.GetPropertyTypeSchema(rootComplexElement, eventBeanTypedEventFactory);
+            var item = property.GetPropertyTypeSchema(rootComplexElement);
             if (item == null && !isDynamic) {
                 return null;
             }
@@ -170,7 +170,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 fragmentFactory = new FragmentFactoryDOMGetter(eventBeanTypedEventFactory, xmlEventType, propertyName);
             }
 
-            return new XPathPropertyGetter(propertyName, xPath, expr, pair.Second, resultType, fragmentFactory);
+            return new XPathPropertyGetter(xmlEventType, propertyName, xPath, expr, pair.Second, resultType, fragmentFactory);
         }
 
         private static Pair<string, XPathResultType> MakeProperty(

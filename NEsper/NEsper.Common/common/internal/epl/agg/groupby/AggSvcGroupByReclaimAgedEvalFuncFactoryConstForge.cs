@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         {
             return classScope.AddFieldUnshared(
                 true, typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst),
-                NewInstance(typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst), Constant(valueDouble)));
+                NewInstance<AggSvcGroupByReclaimAgedEvalFuncFactoryConst>(Constant(valueDouble)));
         }
     }
 } // end of namespace

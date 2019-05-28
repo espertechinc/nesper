@@ -18,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 {
     public class DefaultSupportSourceOp : DataFlowSourceOperator
     {
+#pragma warning disable 649
         [DataFlowContext] private EPDataFlowEmitter graphContext;
+#pragma warning restore 649
 
         public object[] instructions;
 

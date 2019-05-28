@@ -249,8 +249,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 var eventsPerStream = new EventBean[1];
                 foreach (var candidate in sourceWindowInstances.TailViewInstance) {
                     eventsPerStream[0] = candidate;
-                    var result = (bool) insertFromFilter.Evaluate(eventsPerStream, true, agentInstanceContext);
-                    if (result == null || !result) {
+                    var result = insertFromFilter.Evaluate(eventsPerStream, true, agentInstanceContext);
+                    if (result == null || false.Equals(result)) {
                         continue;
                     }
 

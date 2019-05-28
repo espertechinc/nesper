@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -25,51 +26,28 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
     /// </summary>
     public class HistoricalEventViewableDatabaseFactory : HistoricalEventViewableFactoryBase
     {
-        internal SQLColumnTypeConversion columnTypeConversionHook;
+        public bool IsEnableLogging { get; set; }
 
-        internal string databaseName;
-        internal bool enableLogging;
-        internal string[] inputParameters;
-        internal SQLOutputRowConversion outputRowConversionHook;
-        internal IDictionary<string, DBOutputTypeDesc> outputTypes;
-        internal string preparedStatementText;
+        public string DatabaseName { get; set; }
 
-        public string DatabaseName {
-            get => databaseName;
-            set => databaseName = value;
-        }
+        public string[] InputParameters { get; set; }
 
-        public string[] InputParameters {
-            get => inputParameters;
-            set => inputParameters = value;
-        }
+        public string PreparedStatementText { get; set; }
 
-        public string PreparedStatementText {
-            get => preparedStatementText;
-            set => preparedStatementText = value;
-        }
+        public IDictionary<string, DBOutputTypeDesc> OutputTypes { get; set; }
 
-        public IDictionary<string, DBOutputTypeDesc> OutputTypes {
-            get => outputTypes;
-            set => outputTypes = value;
-        }
+        public SQLColumnTypeConversion ColumnTypeConversionHook { get; set; }
 
-        public SQLColumnTypeConversion ColumnTypeConversionHook {
-            get => columnTypeConversionHook;
-            set => columnTypeConversionHook = value;
-        }
+        public SQLOutputRowConversion OutputRowConversionHook { get; set; }
 
-        public SQLOutputRowConversion OutputRowConversionHook {
-            get => outputRowConversionHook;
-            set => outputRowConversionHook = value;
-        }
+        public ICollection<Attribute> ContextAttributes { get; set; }
 
         public override HistoricalEventViewable Activate(AgentInstanceContext agentInstanceContext)
         {
             ConnectionCache connectionCache = null;
             try {
                 connectionCache =
-                    agentInstanceContext.DatabaseConfigService.GetConnectionCache(databaseName, preparedStatementText, TODO);
+                    agentInstanceContext.DatabaseConfigService.GetConnectionCache(DatabaseName, PreparedStatementText, ContextAttributes);
             }
             catch (DatabaseConfigException e) {
                 throw new EPException("Failed to obtain connection cache: " + e.Message, e);
@@ -85,11 +63,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             bool recovery)
         {
             try {
-                columnTypeConversionHook = (SQLColumnTypeConversion) ImportUtil
+                ColumnTypeConversionHook = (SQLColumnTypeConversion) ImportUtil
                     .GetAnnotationHook(
                         statementContext.Annotations, HookType.SQLCOL, typeof(SQLColumnTypeConversion),
                         statementContext.ImportServiceRuntime);
-                outputRowConversionHook = (SQLOutputRowConversion) ImportUtil
+                OutputRowConversionHook = (SQLOutputRowConversion) ImportUtil
                     .GetAnnotationHook(
                         statementContext.Annotations, HookType.SQLROW, typeof(SQLOutputRowConversion),
                         statementContext.ImportServiceRuntime);

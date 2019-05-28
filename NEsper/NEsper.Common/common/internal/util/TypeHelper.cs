@@ -41,6 +41,8 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public static class TypeHelper
     {
+        public const string AVRO_GENERIC_RECORD_CLASSNAME = "Avro.Generic.GenericRecord";
+
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>

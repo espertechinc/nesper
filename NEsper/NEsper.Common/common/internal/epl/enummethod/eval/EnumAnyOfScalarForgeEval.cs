@@ -83,8 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfConditionReturnConst(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"), false)
                 .DeclareVar(
                     typeof(ObjectArrayEventBean), "evalEvent",
-                    NewInstance(
-                        typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(1)), typeMember));
+                    NewInstance<ObjectArrayEventBean>(
+                        NewArrayByLength(typeof(object), Constant(1)), typeMember));
             block.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("evalEvent"))
                 .DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("evalEvent"), "getProperties"));
 
