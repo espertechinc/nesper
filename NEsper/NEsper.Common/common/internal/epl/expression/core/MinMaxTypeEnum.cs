@@ -7,14 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Numerics;
-using com.espertech.esper.common.client;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -22,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// <summary>
     ///     Enumeration for the type of arithmetic to use.
     /// </summary>
-    public class MinMaxTypeEnum
+    public partial class MinMaxTypeEnum
     {
         /// <summary>
         ///     Max.
@@ -55,7 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var r0Type = nodes[0].Forge.EvaluationType;
             var r1Type = nodes[1].Forge.EvaluationType;
-            if (r0Type == null || r1Type == null) {
+            if (r0Type == null || r1Type == null)
+            {
                 return ConstantNull();
             }
 
@@ -65,13 +65,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             block.DeclareVar(
                 r0Type, "r0", nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
-            if (!r0Type.IsPrimitive) {
+            if (!r0Type.IsPrimitive)
+            {
                 block.IfRefNullReturnNull("r0");
             }
 
             block.DeclareVar(
                 r1Type, "r1", nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
-            if (!r1Type.IsPrimitive) {
+            if (!r1Type.IsPrimitive)
+            {
                 block.IfRefNullReturnNull("r1");
             }
 
@@ -85,13 +87,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref("r1"), r1Type, returnType))
                 .BlockEnd();
 
-            for (var i = 2; i < nodes.Length; i++) {
+            for (var i = 2; i < nodes.Length; i++)
+            {
                 var nodeType = nodes[i].Forge.EvaluationType;
                 var refname = "r" + i;
                 block.DeclareVar(
                     nodeType, refname,
                     nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
-                if (!nodeType.IsPrimitive) {
+                if (!nodeType.IsPrimitive)
+                {
                     block.IfRefNullReturnNull(refname);
                 }
 
@@ -129,404 +133,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 max
                     ? CodegenExpressionRelational.CodegenRelational.GT
                     : CodegenExpressionRelational.CodegenRelational.LT, Constant(0));
-        }
-
-        /// <summary>
-        ///     Executes child expression nodes and compares results.
-        /// </summary>
-        public interface Computer
-        {
-            /// <summary>
-            ///     Executes child expression nodes and compares results, returning the min/max.
-            /// </summary>
-            /// <param name="eventsPerStream">events per stream</param>
-            /// <param name="isNewData">true if new data</param>
-            /// <param name="exprEvaluatorContext">expression evaluation context</param>
-            /// <returns>result</returns>
-            object Execute(
-                EventBean[] eventsPerStream,
-                bool isNewData,
-                ExprEvaluatorContext exprEvaluatorContext);
-        }
-
-        /// <summary>
-        ///     Determines minimum using AsDouble.
-        /// </summary>
-        public class MinComputerDoubleCoerce : Computer
-        {
-            private readonly ExprEvaluator[] childNodes;
-
-            /// <summary>
-            ///     Ctor.
-            /// </summary>
-            /// <param name="childNodes">array of expression nodes</param>
-            public MinComputerDoubleCoerce(ExprEvaluator[] childNodes)
-            {
-                this.childNodes = childNodes;
-            }
-
-            public object Execute(
-                EventBean[] eventsPerStream,
-                bool isNewData,
-                ExprEvaluatorContext exprEvaluatorContext)
-            {
-                var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-
-                if (valueChildOne == null || valueChildTwo == null) {
-                    return null;
-                }
-
-                object result;
-                if (valueChildOne.AsDouble() > valueChildTwo.AsDouble()) {
-                    result = valueChildTwo;
-                }
-                else {
-                    result = valueChildOne;
-                }
-
-                for (var i = 2; i < childNodes.Length; i++) {
-                    var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                    if (valueChild == null) {
-                        return null;
-                    }
-
-                    if (valueChild.AsDouble() < result.AsDouble()) {
-                        result = valueChild;
-                    }
-                }
-
-                return result;
-            }
-
-            public static CodegenExpression Codegen(
-                CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope,
-                ExprNode[] nodes,
-                Type returnType)
-            {
-                return CodegenMinMax(true, codegenMethodScope, exprSymbol, codegenClassScope, nodes, returnType);
-            }
-        }
-
-        /// <summary>
-        ///     Determines maximum using AsDouble.
-        /// </summary>
-        public class MaxComputerDoubleCoerce : Computer
-        {
-            private readonly ExprEvaluator[] childNodes;
-
-            /// <summary>
-            ///     Ctor.
-            /// </summary>
-            /// <param name="childNodes">array of expression nodes</param>
-            public MaxComputerDoubleCoerce(ExprEvaluator[] childNodes)
-            {
-                this.childNodes = childNodes;
-            }
-
-            public object Execute(
-                EventBean[] eventsPerStream,
-                bool isNewData,
-                ExprEvaluatorContext exprEvaluatorContext)
-            {
-                var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-
-                if (valueChildOne == null || valueChildTwo == null) {
-                    return null;
-                }
-
-                object result;
-                if (valueChildOne.AsDouble() > valueChildTwo.AsDouble()) {
-                    result = valueChildOne;
-                }
-                else {
-                    result = valueChildTwo;
-                }
-
-                for (var i = 2; i < childNodes.Length; i++) {
-                    var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                    if (valueChild == null) {
-                        return null;
-                    }
-
-                    if (valueChild.AsDouble() > result.AsDouble()) {
-                        result = valueChild;
-                    }
-                }
-
-                return result;
-            }
-
-            public static CodegenExpression Codegen(
-                CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope,
-                ExprNode[] nodes,
-                Type returnType)
-            {
-                return CodegenMinMax(false, codegenMethodScope, exprSymbol, codegenClassScope, nodes, returnType);
-            }
-        }
-
-        /// <summary>
-        ///     Determines minimum/maximum using BigInteger.compareTo.
-        /// </summary>
-        public class ComputerBigIntCoerce : Computer
-        {
-            private readonly ExprEvaluator[] childNodes;
-            private readonly BigIntegerCoercer[] convertors;
-            private readonly bool isMax;
-
-            /// <summary>
-            ///     Ctor.
-            /// </summary>
-            /// <param name="childNodes">expressions</param>
-            /// <param name="convertors">convertors to BigInteger</param>
-            /// <param name="isMax">true if max, false if min</param>
-            public ComputerBigIntCoerce(
-                ExprEvaluator[] childNodes,
-                BigIntegerCoercer[] convertors,
-                bool isMax)
-            {
-                this.childNodes = childNodes;
-                this.convertors = convertors;
-                this.isMax = isMax;
-            }
-
-            public object Execute(
-                EventBean[] eventsPerStream,
-                bool isNewData,
-                ExprEvaluatorContext exprEvaluatorContext)
-            {
-                var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-
-                if (valueChildOne == null || valueChildTwo == null) {
-                    return null;
-                }
-
-                var bigIntOne = convertors[0].CoerceBoxedBigInt(valueChildOne);
-                var bigIntTwo = convertors[1].CoerceBoxedBigInt(valueChildTwo);
-
-                BigInteger result;
-                if (isMax && bigIntOne.CompareTo(bigIntTwo) > 0 ||
-                    !isMax && bigIntOne.CompareTo(bigIntTwo) < 0) {
-                    result = bigIntOne;
-                }
-                else {
-                    result = bigIntTwo;
-                }
-
-                for (var i = 2; i < childNodes.Length; i++) {
-                    var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                    if (valueChild == null) {
-                        return null;
-                    }
-
-                    var bigInt = convertors[i].CoerceBoxedBigInt(valueChild);
-                    if (isMax && result.CompareTo(bigInt) < 0 ||
-                        !isMax && result.CompareTo(bigInt) > 0) {
-                        result = bigInt;
-                    }
-                }
-
-                return result;
-            }
-
-            public static CodegenExpression Codegen(
-                bool max,
-                CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope,
-                ExprNode[] nodes,
-                BigIntegerCoercer[] convertors)
-            {
-                var r0Type = nodes[0].Forge.EvaluationType;
-                var r1Type = nodes[1].Forge.EvaluationType;
-                if (r0Type == null || r1Type == null) {
-                    return ConstantNull();
-                }
-
-                var methodNode = codegenMethodScope.MakeChild(
-                    typeof(BigInteger), typeof(ComputerBigIntCoerce), codegenClassScope);
-                var block = methodNode.Block;
-
-                block.DeclareVar(
-                    r0Type, "r0", nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
-                if (!r0Type.IsPrimitive) {
-                    block.IfRefNullReturnNull("r0");
-                }
-
-                block.DeclareVar(
-                    r1Type, "r1", nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
-                if (!r1Type.IsPrimitive) {
-                    block.IfRefNullReturnNull("r1");
-                }
-
-                block.DeclareVar(typeof(BigInteger), "bi0", convertors[0].CoerceBoxedBigIntCodegen(Ref("r0"), r0Type));
-                block.DeclareVar(typeof(BigInteger), "bi1", convertors[1].CoerceBoxedBigIntCodegen(Ref("r1"), r1Type));
-
-                block.DeclareVarNoInit(typeof(BigInteger), "result");
-                block.IfCondition(CodegenCompareCompareTo(Ref("bi0"), Ref("bi1"), max))
-                    .AssignRef("result", Ref("bi0"))
-                    .IfElse()
-                    .AssignRef("result", Ref("bi1"))
-                    .BlockEnd();
-
-                for (var i = 2; i < nodes.Length; i++) {
-                    var nodeType = nodes[i].Forge.EvaluationType;
-                    var refnameNumber = "r" + i;
-                    block.DeclareVar(
-                        nodeType, refnameNumber,
-                        nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
-                    if (!nodeType.IsPrimitive) {
-                        block.IfRefNullReturnNull(refnameNumber);
-                    }
-
-                    var refnameBigint = "bi" + i;
-                    block.DeclareVar(
-                        typeof(BigInteger), refnameBigint,
-                        convertors[i].CoerceBoxedBigIntCodegen(Ref(refnameNumber), nodeType));
-                    block.IfCondition(Not(CodegenCompareCompareTo(Ref("result"), Ref(refnameBigint), max)))
-                        .AssignRef("result", Ref(refnameBigint))
-                        .BlockEnd();
-                }
-
-                block.MethodReturn(Ref("result"));
-                return LocalMethod(methodNode);
-            }
-        }
-
-        /// <summary>
-        ///     Determines minimum/maximum using decimal.compareTo.
-        /// </summary>
-        public class ComputerBigDecCoerce : Computer
-        {
-            private readonly ExprEvaluator[] childNodes;
-            private readonly SimpleNumberDecimalCoercer[] convertors;
-            private readonly bool isMax;
-
-            /// <summary>
-            ///     Ctor.
-            /// </summary>
-            /// <param name="childNodes">expressions</param>
-            /// <param name="convertors">convertors to decimal</param>
-            /// <param name="isMax">true if max, false if min</param>
-            public ComputerBigDecCoerce(
-                ExprEvaluator[] childNodes,
-                SimpleNumberDecimalCoercer[] convertors,
-                bool isMax)
-            {
-                this.childNodes = childNodes;
-                this.convertors = convertors;
-                this.isMax = isMax;
-            }
-
-            public object Execute(
-                EventBean[] eventsPerStream,
-                bool isNewData,
-                ExprEvaluatorContext exprEvaluatorContext)
-            {
-                var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-
-                if (valueChildOne == null || valueChildTwo == null) {
-                    return null;
-                }
-
-                var decimalOne = valueChildOne.AsDecimal();
-                var decimalTwo = valueChildTwo.AsDecimal();
-
-                decimal result;
-                if (isMax && decimalOne.CompareTo(decimalTwo) > 0 ||
-                    !isMax && decimalOne.CompareTo(decimalTwo) < 0) {
-                    result = decimalOne;
-                }
-                else {
-                    result = decimalTwo;
-                }
-
-                for (var i = 2; i < childNodes.Length; i++) {
-                    var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                    if (valueChild == null) {
-                        return null;
-                    }
-
-                    var decimalResult = valueChild.AsDecimal();
-                    if (isMax && result.CompareTo(decimalResult) < 0 ||
-                        !isMax && result.CompareTo(decimalResult) > 0) {
-                        result = decimalResult;
-                    }
-                }
-
-                return result;
-            }
-
-            public static CodegenExpression Codegen(
-                bool max,
-                CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope,
-                ExprNode[] nodes,
-                SimpleNumberCoercer[] convertors)
-            {
-                var r0Type = nodes[0].Forge.EvaluationType;
-                var r1Type = nodes[1].Forge.EvaluationType;
-                if (r0Type == null || r1Type == null) {
-                    return ConstantNull();
-                }
-
-                var methodNode = codegenMethodScope.MakeChild(
-                    typeof(decimal), typeof(ComputerBigDecCoerce), codegenClassScope);
-                var block = methodNode.Block;
-
-                block.DeclareVar(
-                    r0Type, "r0", nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
-                if (!r0Type.IsPrimitive) {
-                    block.IfRefNullReturnNull("r0");
-                }
-
-                block.DeclareVar(
-                    r1Type, "r1", nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
-                if (!r1Type.IsPrimitive) {
-                    block.IfRefNullReturnNull("r1");
-                }
-
-                block.DeclareVar(typeof(decimal), "bi0", convertors[0].CoerceCodegen(Ref("r0"), r0Type));
-                block.DeclareVar(typeof(decimal), "bi1", convertors[1].CoerceCodegen(Ref("r1"), r1Type));
-
-                block.DeclareVarNoInit(typeof(decimal), "result");
-                block.IfCondition(CodegenCompareCompareTo(Ref("bi0"), Ref("bi1"), max))
-                    .AssignRef("result", Ref("bi0"))
-                    .IfElse()
-                    .AssignRef("result", Ref("bi1"))
-                    .BlockEnd();
-
-                for (var i = 2; i < nodes.Length; i++) {
-                    var nodeType = nodes[i].Forge.EvaluationType;
-                    var refnameNumber = "r" + i;
-                    block.DeclareVar(
-                        nodeType, refnameNumber,
-                        nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
-                    if (!nodeType.IsPrimitive) {
-                        block.IfRefNullReturnNull(refnameNumber);
-                    }
-
-                    var refnameBigint = "bi" + i;
-                    block.DeclareVar(
-                        typeof(decimal), refnameBigint,
-                        convertors[i].CoerceCodegen(Ref(refnameNumber), nodeType));
-                    block.IfCondition(Not(CodegenCompareCompareTo(Ref("result"), Ref(refnameBigint), max)))
-                        .AssignRef("result", Ref(refnameBigint))
-                        .BlockEnd();
-                }
-
-                block.MethodReturn(Ref("result"));
-                return LocalMethod(methodNode);
-            }
         }
     }
 } // end of namespace

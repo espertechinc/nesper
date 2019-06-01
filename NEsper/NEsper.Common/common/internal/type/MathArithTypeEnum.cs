@@ -141,7 +141,12 @@ namespace com.espertech.esper.common.@internal.type
             }
 
             if (!isIntegerDivision) {
+                //return new DivideDecimal(isDivisionByZeroReturnsNull);
                 return new DivideDouble(isDivisionByZeroReturnsNull);
+            }
+
+            if (coercedType == typeof(decimal?)) {
+                return new DivideDecimal(isDivisionByZeroReturnsNull);
             }
 
             if (coercedType == typeof(double?)) {
@@ -181,8 +186,8 @@ namespace com.espertech.esper.common.@internal.type
                 return computers.Get(new HashableMultiKey(new object[] {typeof(decimal?), this}));
             }
 
-            SimpleNumberDecimalCoercer convertorOne = SimpleNumberCoercerFactory.GetCoercerDecimal(typeOne);
-            SimpleNumberDecimalCoercer convertorTwo = SimpleNumberCoercerFactory.GetCoercerDecimal(typeTwo);
+            var convertorOne = SimpleNumberCoercerFactory.GetCoercer(typeOne, typeof(decimal));
+            var convertorTwo = SimpleNumberCoercerFactory.GetCoercer(typeTwo, typeof(decimal));
             if (this == ADD) {
                 return new AddDecimalConvComputer(convertorOne, convertorTwo);
             }

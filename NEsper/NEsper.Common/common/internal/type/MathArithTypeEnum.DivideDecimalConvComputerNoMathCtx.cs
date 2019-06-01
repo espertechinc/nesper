@@ -17,8 +17,8 @@ namespace com.espertech.esper.common.@internal.type
         public class DivideDecimalConvComputerNoMathCtx : DivideDecimalConvComputerBase
         {
             public DivideDecimalConvComputerNoMathCtx(
-                SimpleNumberDecimalCoercer convOne,
-                SimpleNumberDecimalCoercer convTwo,
+                SimpleNumberCoercer convOne,
+                SimpleNumberCoercer convTwo,
                 bool divisionByZeroReturnsNull)
                 : base(convOne, convTwo, divisionByZeroReturnsNull)
             {

@@ -6,8 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.util;
@@ -18,27 +18,31 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
 {
     public class ScriptCompileTimeRegistry : CompileTimeRegistry
     {
-        private readonly IDictionary<NameAndParamNum, ExpressionScriptProvided> expressions =
-            new Dictionary<NameAndParamNum, ExpressionScriptProvided>();
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ScriptCompileTimeRegistry" /> class.
+        /// </summary>
+        public ScriptCompileTimeRegistry()
+        {
+            Scripts = new Dictionary<NameAndParamNum, ExpressionScriptProvided>();
+        }
+
+        public IDictionary<NameAndParamNum, ExpressionScriptProvided> Scripts { get; }
 
         public void NewScript(ExpressionScriptProvided detail)
         {
-            if (!detail.Visibility.IsModuleProvidedAccessModifier) {
+            if (!detail.Visibility.IsModuleProvidedAccessModifier)
+            {
                 throw new IllegalStateException("Invalid visibility for contexts");
             }
 
-            NameAndParamNum key = new NameAndParamNum(detail.Name, detail.ParameterNames.Length);
-            ExpressionScriptProvided existing = expressions.Get(key);
-            if (existing != null) {
+            var key = new NameAndParamNum(detail.Name, detail.ParameterNames.Length);
+            var existing = Scripts.Get(key);
+            if (existing != null)
+            {
                 throw new IllegalStateException("Duplicate script has been encountered for name '" + key + "'");
             }
 
-            expressions.Put(key, detail);
-        }
-
-        public IDictionary<NameAndParamNum, ExpressionScriptProvided> GetScripts()
-        {
-            return expressions;
+            Scripts.Put(key, detail);
         }
     }
 } // end of namespace

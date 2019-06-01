@@ -45,10 +45,11 @@ namespace com.espertech.esper.common.@internal.view.util
                     var timeAbacus = viewForgeEnv.ImportServiceCompileTime.TimeAbacus;
                     var secondsEvaluator = validated.Forge.ExprEvaluator;
                     var time = ViewForgeSupport.Evaluate(secondsEvaluator, 0, viewName);
-                    EnsureNumeric(time);
-                    if (ExprTimePeriodUtil.ValidateTime(time, timeAbacus)) {
+                    if (!time.IsNumber()) {
+                        throw new IllegalStateException(nameof(time) + " is not a number");
                     }
-                    else {
+
+                    if (!ExprTimePeriodUtil.ValidateTime(time, timeAbacus)) {
                         throw new ViewParameterException(ExprTimePeriodUtil.GetTimeInvalidMsg(viewName, "view", time));
                     }
 

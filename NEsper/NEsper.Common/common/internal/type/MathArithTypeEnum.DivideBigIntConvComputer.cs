@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var s1 = convOne.CoerceBoxedBigInt(d1);
                 var s2 = convTwo.CoerceBoxedBigInt(d2);
-                if (s2.AsDouble() == 0) {
+                if (s2.Equals(BigInteger.Zero)) {
                     return null;
                 }
 
@@ -61,7 +61,8 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var method = codegenMethodScope
                     .MakeChild(typeof(BigInteger), typeof(DivideBigIntConvComputer), codegenClassScope)
-                    .AddParam(ltype, "d1").AddParam(rtype, "d2").Block
+                    .AddParam(ltype, "d1")
+                    .AddParam(rtype, "d2").Block
                     .DeclareVar(typeof(BigInteger), "s1", convOne.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
                     .DeclareVar(typeof(BigInteger), "s2", convTwo.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
                     .IfCondition(

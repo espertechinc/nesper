@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public abstract class DivideDecimalConvComputerBase : Computer
         {
-            private readonly SimpleNumberDecimalCoercer convOne;
-            private readonly SimpleNumberDecimalCoercer convTwo;
+            private readonly SimpleNumberCoercer convOne;
+            private readonly SimpleNumberCoercer convTwo;
             private readonly bool divisionByZeroReturnsNull;
 
             /// <summary>
@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.type
             /// <param name="convTwo">convertor for RHS</param>
             /// <param name="divisionByZeroReturnsNull">false for division-by-zero returns infinity, true for null</param>
             public DivideDecimalConvComputerBase(
-                SimpleNumberDecimalCoercer convOne,
-                SimpleNumberDecimalCoercer convTwo,
+                SimpleNumberCoercer convOne,
+                SimpleNumberCoercer convTwo,
                 bool divisionByZeroReturnsNull)
             {
                 this.convOne = convOne;
@@ -45,9 +45,9 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
-                decimal s1 = convOne.CoerceBoxedDecimal(d1);
-                decimal s2 = convTwo.CoerceBoxedDecimal(d2);
-                if (s2.AsDouble() == 0) {
+                decimal s1 = convOne.CoerceBoxed(d1).AsDecimal();
+                decimal s2 = convTwo.CoerceBoxed(d2).AsDecimal();
+                if (s2 == 0.0m) {
                     if (divisionByZeroReturnsNull) {
                         return null;
                     }
@@ -70,13 +70,15 @@ namespace com.espertech.esper.common.@internal.type
                 var block = codegenMethodScope
                     .MakeChild(typeof(decimal?), typeof(DivideDecimalConvComputerBase), codegenClassScope)
                     .AddParam(ltype, "d1").AddParam(rtype, "d2").Block
-                    .DeclareVar(typeof(decimal?), "s1", convOne.CoerceBoxedDecimalCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
-                    .DeclareVar(typeof(decimal?), "s2", convTwo.CoerceBoxedDecimalCodegen(CodegenExpressionBuilder.Ref("d2"), rtype));
+                    .DeclareVar(typeof(decimal), "s1",
+                        convOne.CoerceCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
+                    .DeclareVar(typeof(decimal), "s2", 
+                        convTwo.CoerceCodegen(CodegenExpressionBuilder.Ref("d2"), rtype));
                 var ifZeroDivisor =
                     block.IfCondition(
                         CodegenExpressionBuilder.EqualsIdentity(
-                            CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s2"), "doubleValue"),
-                            CodegenExpressionBuilder.Constant(0)));
+                            CodegenExpressionBuilder.Ref("s2"),
+                            CodegenExpressionBuilder.Constant(0.0m)));
                 if (divisionByZeroReturnsNull) {
                     ifZeroDivisor.BlockReturn(CodegenExpressionBuilder.ConstantNull());
                 }
@@ -84,8 +86,8 @@ namespace com.espertech.esper.common.@internal.type
                     ifZeroDivisor.DeclareVar(
                             typeof(double), "result",
                             CodegenExpressionBuilder.Op(
-                                CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s1"), "doubleValue"), "/",
-                                CodegenExpressionBuilder.Constant(0)))
+                                CodegenExpressionBuilder.Ref("s1"), "/",
+                                CodegenExpressionBuilder.Constant(0.0m)))
                         .BlockReturn(CodegenExpressionBuilder.NewInstance(typeof(decimal?), CodegenExpressionBuilder.Ref("result")));
                 }
 

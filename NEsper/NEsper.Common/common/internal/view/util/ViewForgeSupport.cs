@@ -128,7 +128,10 @@ namespace com.espertech.esper.common.@internal.view.util
 
             if (sizeNode.Forge.ForgeConstantType.IsCompileTimeConstant) {
                 var size = Evaluate(forge.ExprEvaluator, expressionNumber, viewName);
-                EnsureNumeric(size);
+                if (!size.IsNumber()) {
+                    throw new IllegalStateException(nameof(size) + " is not a number");
+                }
+
                 if (!ValidateSize(size)) {
                     throw new ViewParameterException(GetSizeValidationMsg(viewName, size));
                 }

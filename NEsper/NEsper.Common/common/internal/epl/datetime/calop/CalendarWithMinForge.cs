@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return dateTimeEx.Set(_field, dateTimeEx.GetActualMinimum(_field));
+            return dateTimeEx.SetFieldValue(_field, dateTimeEx.GetActualMinimum(_field));
         }
 
         public DateTimeOffset Evaluate(

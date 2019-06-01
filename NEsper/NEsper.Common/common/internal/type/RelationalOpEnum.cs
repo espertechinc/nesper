@@ -153,41 +153,12 @@ namespace com.espertech.esper.common.@internal.type
                 throw new ArgumentException("Unsupported type for relational op compare, type " + coercedType);
             }
 
-            if (coercedType == typeof(decimal?)) {
-                return MakeDecimalComputer(typeOne, typeTwo);
-            }
-
             if (coercedType == typeof(BigInteger)) {
                 return MakeBigIntegerComputer(typeOne, typeTwo);
             }
 
             var key = new HashableMultiKey(new object[] {coercedType, this});
             return computers.Get(key);
-        }
-
-        private Computer MakeDecimalComputer(
-            Type typeOne,
-            Type typeTwo)
-        {
-            if (typeOne == typeof(decimal?) && typeTwo == typeof(decimal?)) {
-                return computers.Get(new HashableMultiKey(new object[] {typeof(decimal?), this}));
-            }
-
-            SimpleNumberDecimalCoercer convertorOne = SimpleNumberCoercerFactory.GetCoercerDecimal(typeOne);
-            SimpleNumberDecimalCoercer convertorTwo = SimpleNumberCoercerFactory.GetCoercerDecimal(typeTwo);
-            if (this == GT) {
-                return new GTDecimalConvComputer(convertorOne, convertorTwo);
-            }
-
-            if (this == LT) {
-                return new LTDecimalConvComputer(convertorOne, convertorTwo);
-            }
-
-            if (this == GE) {
-                return new GEDecimalConvComputer(convertorOne, convertorTwo);
-            }
-
-            return new LEDecimalConvComputer(convertorOne, convertorTwo);
         }
 
         private Computer MakeBigIntegerComputer(

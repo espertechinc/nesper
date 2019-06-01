@@ -10,6 +10,7 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -20,8 +21,8 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class AddDecimalConvComputer : Computer
         {
-            private readonly SimpleNumberDecimalCoercer convOne;
-            private readonly SimpleNumberDecimalCoercer convTwo;
+            private readonly SimpleNumberCoercer convOne;
+            private readonly SimpleNumberCoercer convTwo;
 
             /// <summary>
             ///     Ctor.
@@ -29,8 +30,8 @@ namespace com.espertech.esper.common.@internal.type
             /// <param name="convOne">conversion for LHS</param>
             /// <param name="convTwo">conversion for RHS</param>
             public AddDecimalConvComputer(
-                SimpleNumberDecimalCoercer convOne,
-                SimpleNumberDecimalCoercer convTwo)
+                SimpleNumberCoercer convOne,
+                SimpleNumberCoercer convTwo)
             {
                 this.convOne = convOne;
                 this.convTwo = convTwo;
@@ -40,8 +41,8 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
-                decimal s1 = convOne.CoerceBoxedDecimal(d1);
-                decimal s2 = convTwo.CoerceBoxedDecimal(d2);
+                decimal s1 = convOne.CoerceBoxed(d1).AsDecimal();
+                decimal s2 = convTwo.CoerceBoxed(d2).AsDecimal();
                 return s1 + s2;
             }
 
@@ -53,8 +54,8 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                var leftAsBig = convOne.CoerceBoxedDecimalCodegen(left, ltype);
-                var rightAsBig = convTwo.CoerceBoxedDecimalCodegen(right, rtype);
+                var leftAsBig = convOne.CoerceCodegen(left, ltype);
+                var rightAsBig = convTwo.CoerceCodegen(right, rtype);
                 return CodegenExpressionBuilder.ExprDotMethod(leftAsBig, "add", rightAsBig);
             }
         }
