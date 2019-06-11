@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             ExprNode otherNode;
             try {
-                otherNode = ((ExprNodeProxy) Proxy.GetInvocationHandler(args[0])).Proxy;
+                otherNode = ((ExprNodeProxy) args[0]).Proxy;
             }
             catch (ArgumentException) {
                 otherNode = (ExprNode) args[0];

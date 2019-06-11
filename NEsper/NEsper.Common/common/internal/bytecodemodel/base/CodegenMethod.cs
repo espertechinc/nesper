@@ -109,6 +109,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return AddChild(new CodegenMethod(returnType, null, generator, symbolProvider, env));
         }
 
+        public static CodegenMethod MakeParentNode<T>(
+            Type generator,
+            CodegenScope env)
+        {
+            return MakeParentNode(typeof(T), generator, env);
+        }
+
         public static CodegenMethod MakeParentNode(
             Type returnType,
             Type generator,
@@ -194,6 +201,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             foreach (var param in LocalParams) {
                 param.MergeClasses(classes);
             }
+        }
+
+        public CodegenMethod AddParam<T>(
+            string name)
+        {
+            return AddParam(typeof(T), name);
         }
 
         public CodegenMethod AddParam(

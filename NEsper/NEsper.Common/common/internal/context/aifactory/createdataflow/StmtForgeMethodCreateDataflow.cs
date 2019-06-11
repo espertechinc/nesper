@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             Validate(desc);
 
             // compile operator annotations
-            IDictionary<int, Attribute[]> operatorAnnotations = new Dictionary<int, Attribute[]>();
+            IDictionary<object, Attribute[]> operatorAnnotations = new Dictionary<object, Attribute[]>();
             var count = 0;
             foreach (var spec in desc.Operators) {
                 Attribute[] operatorAnnotation;
@@ -156,6 +156,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     throw new ExprValidationException("Invalid annotation: " + e.Message, e);
                 }
 
+                // Using the 'count' helps facilitate the build order based lookups, but this is really quite
+                // problematic and messy.  Esper is using type erasure in a way that is highly frowned upon.
                 operatorAnnotations.Put(count, operatorAnnotation);
                 count++;
             }
@@ -195,7 +197,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         private static InitForgesResult DetermineChannelsInitForges(
             IDictionary<int, DataFlowOperatorForge> operatorForges,
             ISet<int> operatorBuildOrder,
-            IDictionary<int, Attribute[]> operatorAnnotations,
+            IDictionary<object, Attribute[]> operatorAnnotations,
             IDictionary<int, OperatorDependencyEntry> operatorDependencies,
             IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
             IDictionary<string, EventType> declaredTypes,
@@ -327,7 +329,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         private static IDictionary<int, DataFlowOperatorForge> InstantiateOperatorForges(
             IDictionary<int, OperatorDependencyEntry> operatorDependencies,
             IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
-            IDictionary<int, Attribute[]> operatorAnnotations,
+            IDictionary<object, Attribute[]> operatorAnnotations,
             IDictionary<string, EventType> declaredTypes,
             CreateDataFlowDesc createDataFlowDesc,
             StatementBaseInfo @base,
@@ -442,7 +444,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
         private static IDictionary<int, OperatorMetadataDescriptor> ResolveMetadata(
             CreateDataFlowDesc desc,
-            IDictionary<GraphOperatorSpec, Attribute[]> operatorAnnotations,
+            IDictionary<object, Attribute[]> operatorAnnotations,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {

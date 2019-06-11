@@ -33,6 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="common\internal\util\apachecommonstext\EntityArrays.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.1.1" />
     <PackageReference Include="Castle.Core" Version="4.2.1" />
     <PackageReference Include="Castle.Windsor" Version="4.1.0" />

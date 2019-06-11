@@ -534,7 +534,16 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             // application-provided annotation
-            var innerProxy = (EPLAnnotationInvocationHandler) Proxy.GetInvocationHandler(annotation);
+            if (annotation is CustomAttribute) {
+                return ((CustomAttribute) annotation).MakeCodegenExpression(
+                    parent, codegenClassScope);
+            }
+
+            throw new IllegalStateException(
+                "Unrecognized annotation having type" + annotation.GetType().FullName);
+
+#if FALSE
+            //var innerProxy = (EPLAnnotationInvocationHandler) annotation; // Proxy.GetInvocationHandler(annotation);
             var methodNode = parent.MakeChild(typeof(Attribute), typeof(AnnotationUtil), codegenClassScope);
             var clazz = NewAnonymousClass(methodNode.Block, annotation.GetType());
 
@@ -576,6 +585,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
             methodNode.Block.MethodReturn(clazz);
             return LocalMethod(methodNode);
+#endif
         }
     }
 } // end of namespacecom

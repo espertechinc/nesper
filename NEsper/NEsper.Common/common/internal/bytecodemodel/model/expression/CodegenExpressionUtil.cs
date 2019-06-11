@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-//using com.espertech.esper.common.@internal.util.apachecommonstext;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -25,7 +23,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             IDictionary<Type, string> imports)
         {
             if (constant is string) {
-                builder.Append('"').Append(StringEscapeUtils.EscapeJava((string) constant)).Append('"');
+                builder.Append('"');
+                builder.Append(constant); // StringEscapeUtils.EscapeJava((string) constant));
+                builder.Append('"');
             }
             else if (constant is char) {
                 var c = (char) constant;

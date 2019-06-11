@@ -9,9 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using Castle.DynamicProxy;
 
 namespace com.espertech.esper.common.@internal.epl.annotation
@@ -21,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
     /// </summary>
     public class EPLAnnotationInvocationHandler : IInterceptor
     {
-        private static readonly ProxyGenerator generator = new ProxyGenerator();
+        private static readonly ProxyGenerator Generator = new ProxyGenerator();
 
         private int? hashCode;
         private string toStringResult;
@@ -69,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             ClassLoader classLoader,
             Type attributeType)
         {
-            return (Attribute) generator.CreateClassProxy(attributeType, ProxyGenerationOptions.Default, this);
+            return (Attribute) Generator.CreateClassProxy(attributeType, ProxyGenerationOptions.Default, this);
         }
 
         private string HandleToString()
@@ -82,14 +84,14 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     var delimiter = "";
                     buf.Append("(");
 
-                    if (Attributes.Count == 1 && Attributes.ContainsKey("value")) {
-                        if (Attributes.Get("value") is string) {
+                    if (Attributes.Count == 1 && Attributes.ContainsKey("Value")) {
+                        if (Attributes.Get("Value") is string) {
                             buf.Append("\"");
-                            buf.Append(Attributes.Get("value"));
+                            buf.Append(Attributes.Get("Value"));
                             buf.Append("\"");
                         }
                         else {
-                            buf.Append(Attributes.Get("value"));
+                            buf.Append(Attributes.Get("Value"));
                         }
                     }
                     else {

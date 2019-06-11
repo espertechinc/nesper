@@ -347,7 +347,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 {
                     try
                     {
-                        return CoercerFactory.CoerceBoxed(result, optionalCastToType);
+                        return TypeHelper.CoerceBoxed(result, optionalCastToType);
                     }
                     catch
                     {

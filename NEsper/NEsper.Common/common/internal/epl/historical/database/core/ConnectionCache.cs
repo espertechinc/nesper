@@ -14,6 +14,7 @@ using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.core
@@ -30,9 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
     /// </summary>
     public abstract class ConnectionCache : IDisposable
     {
-        private readonly DatabaseConnectionFactory databaseConnectionFactory;
-        private readonly string sql;
-        private readonly IEnumerable<Attribute> contextAttributes;
+        private readonly DatabaseConnectionFactory _databaseConnectionFactory;
+        private readonly string _sql;
+        private readonly IList<PlaceholderParser.Fragment> _sqlFragments;
+        private readonly IEnumerable<Attribute> _contextAttributes;
 
         /// <summary>
         /// Returns a cached or new connection and statement pair.
@@ -56,14 +58,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         /// </summary>
         /// <param name="databaseConnectionFactory">connection factory</param>
         /// <param name="sql">statement sql</param>
+        /// <param name="contextAttributes">statement contextual attributes</param>
         protected ConnectionCache(
             DatabaseConnectionFactory databaseConnectionFactory,
             string sql,
             IEnumerable<Attribute> contextAttributes)
         {
-            this.databaseConnectionFactory = databaseConnectionFactory;
-            this.sql = sql;
-            this.contextAttributes = contextAttributes;
+            this._databaseConnectionFactory = databaseConnectionFactory;
+            this._sql = sql;
+            this._sqlFragments = PlaceholderParser.ParsePlaceholder(sql);
+            this._contextAttributes = contextAttributes;
         }
 
         /// <summary>
@@ -94,9 +98,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             try
             {
                 // Get the driver
-                DbDriver dbDriver = databaseConnectionFactory.Driver;
+                DbDriver dbDriver = _databaseConnectionFactory.Driver;
                 // Get the command
-                DbDriverCommand dbCommand = dbDriver.CreateCommand(sqlFragments, null, contextAttributes);
+                DbDriverCommand dbCommand = dbDriver.CreateCommand(_sqlFragments, null, _contextAttributes);
 
                 return new Pair<DbDriver, DbDriverCommand>(dbDriver, dbCommand);
             }
