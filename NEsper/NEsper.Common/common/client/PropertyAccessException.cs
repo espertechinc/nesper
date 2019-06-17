@@ -12,7 +12,7 @@ using System.Text;
 namespace com.espertech.esper.common.client
 {
     /// <summary>
-    /// This exception is thrown to indicate a problem with a accessing a property of an <seealso cref="com.espertech.esper.client.EventBean" />.
+    /// This exception is thrown to indicate a problem with a accessing a property of an EventBean />.
     /// </summary>
     public sealed class PropertyAccessException : Exception
     {

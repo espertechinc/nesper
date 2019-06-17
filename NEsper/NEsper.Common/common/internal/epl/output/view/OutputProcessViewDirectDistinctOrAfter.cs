@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (ExecutionPathDebugLog.IsEnabled && log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && log.IsDebugEnabled) {
                 log.Debug(
                     ".process Received update, " +
                     "  newData.length==" + (newEvents == null ? 0 : newEvents.Count) +

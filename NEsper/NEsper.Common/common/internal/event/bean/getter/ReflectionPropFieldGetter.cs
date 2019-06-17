@@ -21,7 +21,7 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
     /// <summary>
-    ///     Property getter for fields using Java's vanilla reflection.
+    ///     Property getter for fields using vanilla reflection.
     /// </summary>
     public class ReflectionPropFieldGetter : BaseNativePropertyGetter,
         BeanEventPropertyGetter

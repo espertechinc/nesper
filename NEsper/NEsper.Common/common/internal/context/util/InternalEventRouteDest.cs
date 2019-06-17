@@ -32,6 +32,6 @@ namespace com.espertech.esper.common.@internal.context.util
 
         void Dispatch();
 
-        string EngineURI { get; }
+        string RuntimeURI { get; }
     }
 }

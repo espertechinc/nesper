@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
+using com.espertech.esper.common.client.util;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -16,13 +17,13 @@ namespace com.espertech.esper.common.@internal.context.util
     {
         IEnumerator<EventBean> GetEnumerator(int statementId);
 
-        IEnumerator<EventBean> GetSafeEnumerator(int statementId);
+        SafeEnumerator<EventBean> GetSafeEnumerator(int statementId);
 
         IEnumerator<EventBean> GetEnumerator(
             int statementId,
             ContextPartitionSelector selector);
 
-        IEnumerator<EventBean> GetSafeEnumerator(
+        SafeEnumerator<EventBean> GetSafeEnumerator(
             int statementId,
             ContextPartitionSelector selector);
     }

@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         ///     Ctor.
         /// </summary>
         /// <param name="mathArithTypeEnum">type of math</param>
-        /// <param name="isIntegerDivision">false for division returns double, true for using Java-standard integer division</param>
+        /// <param name="isIntegerDivision">false for division returns double, true for using standard integer division</param>
         /// <param name="isDivisionByZeroReturnsNull">false for division-by-zero returns infinity, true for null</param>
         public ExprMathNode(
             MathArithTypeEnum mathArithTypeEnum,

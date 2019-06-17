@@ -6,14 +6,27 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
-    internal interface EventTypeIdResolver
+    public interface EventTypeIdResolver
     {
         EventType GetTypeById(
             long eventTypeIdPublic,
             long eventTypeIdProtected);
+    }
+
+    public class ProxyEventTypeIdResolver : EventTypeIdResolver
+    {
+        public Func<long, long, EventType> ProcGetTypeById { get; set; }
+
+        public EventType GetTypeById(
+            long eventTypeIdPublic,
+            long eventTypeIdProtected)
+        {
+            return ProcGetTypeById?.Invoke(eventTypeIdPublic, eventTypeIdProtected);
+        }
     }
 } // end of namespace

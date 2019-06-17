@@ -23,6 +23,18 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             IsEnabled = true;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StatementMetricHandle"/> class.
+        /// </summary>
+        /// <param name="isEnabled">if set to <c>true</c> [is enabled].</param>
+        public StatementMetricHandle(
+            bool isEnabled)
+        {
+            GroupNum = -1;
+            Index = -1;
+            IsEnabled = true;
+        }
+
         /// <summary>Returns group number for statement. </summary>
         /// <returns>group number</returns>
         public int GroupNum { get; }

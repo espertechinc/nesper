@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             int newEventsCount,
             int oldEventsCount)
         {
-            if ((ExecutionPathDebugLog.IsEnabled) && (log.IsDebugEnabled))
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled))
             {
                 log.Debug(
                     ".updateOutputCondition, " +

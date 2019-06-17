@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <summary>
         ///     Returns false (the default) for integer division returning double values.
         ///     <para />
-        ///     Returns true to signal that Java-convention integer division semantics
+        ///     Returns true to signal that convention integer division semantics
         ///     are used for divisions, whereas the division between two non-FP numbers
         ///     returns only the whole number part of the result and any fractional part is dropped.
         /// </summary>
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
         /// <summary>
         ///     Set to false (default) for integer division returning double values.
-        ///     Set to true to signal the Java-convention integer division semantics
+        ///     Set to true to signal the convention integer division semantics
         ///     are used for divisions, whereas the division between two non-FP numbers
         ///     returns only the whole number part of the result and any fractional part is dropped.
         /// </summary>

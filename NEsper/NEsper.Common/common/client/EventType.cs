@@ -23,17 +23,17 @@ namespace com.espertech.esper.common.client
     ///     </para>
     ///     <para>
     ///         The interface presents an immutable view of events. There are no methods to change property values.
-    ///         Events by definition are an observation of a past occurrance or state change and may not be modified.
+    ///         Events by definition are an observation of a past occurrence or state change and may not be modified.
     ///     </para>
     ///     <para>
-    ///         Information on the super-types (superclass and interfaces implemented by JavaBean events) is also available,
+    ///         Information on the super-types (superclass and interfaces implemented by native events) is also available,
     ///         for vanilla events as well as for Map event types that has supertypes.
     ///     </para>
     ///     <para>
-    ///         Implementations provide metadata on the properties that an implemenation itself provides.
+    ///         Implementations provide metadata on the properties that an implementation itself provides.
     ///     </para>
     ///     <para>
-    ///         Implementations also allow property expressioms that may use nested, indexed, mapped or a combination
+    ///         Implementations also allow property expressions that may use nested, indexed, mapped or a combination
     ///         of these as a syntax to access property types and values.
     ///     </para>
     ///     <para>

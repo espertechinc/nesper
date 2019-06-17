@@ -13,7 +13,7 @@ using com.espertech.esper.common.@internal.@event.core;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     /// <summary>
-    ///     Reader for fast access to all event properties for an event backed by a Java object.
+    ///     Reader for fast access to all event properties for an event backed by an object.
     /// </summary>
     public class BeanEventBeanReader : EventBeanReader
     {

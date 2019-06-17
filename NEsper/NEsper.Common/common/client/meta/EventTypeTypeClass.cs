@@ -39,12 +39,12 @@ namespace com.espertech.esper.common.client.meta
         VARIANT,
 
         /// <summary>
-        ///     An application-defined event type such as JavaBean or legacy Java, XML or Map.
+        ///     An application-defined event type such as native, XML or Map.
         /// </summary>
         APPLICATION,
 
         /// <summary>
-        ///     An application-defined event type such as JavaBean or legacy Java, XML or Map.
+        ///     An application-defined event type such as native, XML or Map.
         /// </summary>
         STATEMENTOUT,
 

@@ -233,7 +233,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             // Map event types allow 2 types of properties inside:
-            //   - a property that is a Java object is interrogated via bean property getters and BeanEventType
+            //   - a property that is a object is interrogated via bean property getters and BeanEventType
             //   - a property that is a Map itself is interrogated via map property getters
             // The property getters therefore act on
 

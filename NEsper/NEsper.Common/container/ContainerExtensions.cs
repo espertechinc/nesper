@@ -16,6 +16,7 @@ using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 using Castle.Windsor;
 using com.espertech.esper.compat.function;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.container
 {

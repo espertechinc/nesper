@@ -6,10 +6,21 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.common.@internal.filterspec
 {
     public interface FilterSharedBoolExprRegistery
     {
         void RegisterBoolExpr(FilterSpecParamExprNode node);
+    }
+
+    public class ProxyFilterSharedBoolExprRegistery : FilterSharedBoolExprRegistery
+    {
+        public Action<FilterSpecParamExprNode> ProcRegisterBoolExpr { get; set; }
+        public void RegisterBoolExpr(FilterSpecParamExprNode node)
+        {
+            ProcRegisterBoolExpr?.Invoke(node);
+        }
     }
 } // end of namespace

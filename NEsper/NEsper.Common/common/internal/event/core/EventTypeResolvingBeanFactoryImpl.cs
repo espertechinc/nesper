@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.avro;
@@ -68,6 +69,16 @@ namespace com.espertech.esper.common.@internal.@event.core
             return new XMLEventBean(namedNode, type);
         }
 
+        public EventBean AdapterForXML(
+            XNode node,
+            string eventTypeName)
+        {
+            var type = eventTypeRepository.GetTypeByName(eventTypeName);
+            EventTypeUtility.ValidateTypeXMLDOM(eventTypeName, type);
+            var namedNode = GetXElementFromNode(node);
+            return new XElementEventBean(namedNode, type);
+        }
+
         public EventBean AdapterForAvro(
             object avroGenericDataDotRecord,
             string eventTypeName)
@@ -88,6 +99,18 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             return resultNode;
+        }
+
+        public static XElement GetXElementFromNode(XNode node)
+        {
+            if (node is XDocument document) {
+                return document.Root;
+            }
+            if (node is XElement element) {
+                return element;
+            }
+
+            throw new EPException("Unexpected DOM node of type '" + node.GetType() + "' encountered, please supply a Document or Element node");
         }
     }
 } // end of namespace

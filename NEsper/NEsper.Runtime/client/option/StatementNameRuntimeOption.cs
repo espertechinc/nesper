@@ -1,0 +1,37 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
+
+namespace com.espertech.esper.runtime.client.option
+{
+    /// <summary>
+    /// Implement this interface to provide a statement name at runtime for statements when they are deployed.
+    /// </summary>
+    public interface StatementNameRuntimeOption
+    {
+        /// <summary>
+        /// Returns the statement name to assign to a newly-deployed statement.
+        /// <para />Implementations would typically interrogate the context object EPL expression
+        /// or module and module item information and determine the right statement name to assign.
+        /// <para />When using HA the returned object must implement the Serializable interface.
+        /// </summary>
+        /// <param name="env">the statement's deployment context</param>
+        /// <returns>statement name or null if none needs to be assigned</returns>
+        string GetStatementName(StatementNameRuntimeContext env);
+    }
+
+    public class ProxyStatementNameRuntimeOption : StatementNameRuntimeOption
+    {
+        public Func<StatementNameRuntimeContext, string> ProcGetStatementName { get; set; }
+        public string GetStatementName(StatementNameRuntimeContext env)
+        {
+            return ProcGetStatementName?.Invoke(env);
+        }
+    }
+} // end of namespace

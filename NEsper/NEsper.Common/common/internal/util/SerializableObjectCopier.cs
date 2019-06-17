@@ -58,5 +58,11 @@ namespace com.espertech.esper.common.@internal.util
                 return (T) formatter.Deserialize(stream);
             }
         }
+
+        public static IObjectCopier GetInstance(IContainer container)
+        {
+            return container.ResolveSingleton<IObjectCopier>(
+                () => new SerializableObjectCopier(container));
+        }
     }
 }

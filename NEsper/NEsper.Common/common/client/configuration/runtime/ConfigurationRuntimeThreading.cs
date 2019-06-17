@@ -46,6 +46,11 @@ namespace com.espertech.esper.common.client.configuration.runtime
             ThreadPoolInboundNumThreads = 2;
             ThreadPoolRouteExecNumThreads = 2;
             ThreadPoolOutboundNumThreads = 2;
+
+            ThreadPoolInboundBlocking = Locking.SUSPEND;
+            ThreadPoolTimerExecBlocking = Locking.SUSPEND;
+            ThreadPoolRouteExecBlocking = Locking.SUSPEND;
+            ThreadPoolOutboundBlocking = Locking.SUSPEND;
         }
 
         /// <summary>
@@ -82,12 +87,12 @@ namespace com.espertech.esper.common.client.configuration.runtime
         public long InternalTimerMsecResolution { get; set; }
 
         /// <summary>
-        ///     Returns the number of milliseconds that a thread may maximually be blocking
+        ///     Returns the number of milliseconds that a thread may maximally be blocking
         ///     to deliver statement results from a producing statement that employs insert-into
         ///     to a consuming statement.
         /// </summary>
         /// <returns>millisecond timeout for order-of-delivery blocking between statements</returns>
-        public long InsertIntoDispatchTimeout { get; set; }
+        public int InsertIntoDispatchTimeout { get; set; }
 
         /// <summary>
         ///     Returns the blocking strategy to use when multiple threads deliver results for
@@ -206,5 +211,10 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// </summary>
         /// <value>capacity or null if none defined</value>
         public int? ThreadPoolOutboundCapacity { get; set; }
+
+        public Locking ThreadPoolInboundBlocking { get; set; }
+        public Locking ThreadPoolTimerExecBlocking { get; set; }
+        public Locking ThreadPoolRouteExecBlocking { get; set; }
+        public Locking ThreadPoolOutboundBlocking { get; set; }
     }
 } // end of namespace

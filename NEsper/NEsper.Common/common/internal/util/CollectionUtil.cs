@@ -251,7 +251,6 @@ namespace com.espertech.esper.common.@internal.util
         ///     Returns a list of the elements invoking toString on non-null elements.
         /// </summary>
         /// <param name="collection">to render</param>
-        /// <param name="&lt;T&gt;">type</param>
         /// <returns>comma-separate list of values (no escape)</returns>
         public static string ToString<T>(ICollection<T> collection)
         {

@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             EventBean[] newData,
             EventBean[] oldData)
         {
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
                 Log.Debug(
                     ".update Received update, " +
                     "  newData.length==" + ((newData == null) ? 0 : newData.Length) +
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
                 Log.Debug(
                     ".process Received update, " +
                     "  newData.length==" + ((newEvents == null) ? 0 : newEvents.Count) +
@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool doOutput,
             bool forceUpdate)
         {
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
                 Log.Debug(".continueOutputProcessingView");
             }
 
@@ -259,7 +259,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool doOutput,
             bool forceUpdate)
         {
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
                 Log.Debug(".continueOutputProcessingJoin");
             }
 

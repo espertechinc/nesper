@@ -13,7 +13,7 @@ using com.espertech.esper.common.client.util;
 namespace com.espertech.esper.common.client.configuration.common
 {
     /// <summary>
-    ///     Configuration information for legacy (non-JavaBean) event types.
+    ///     Configuration information for legacy event types.
     /// </summary>
     [Serializable]
     public class ConfigurationCommonEventTypeBean

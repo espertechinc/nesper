@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.context.util
             EventBean[] newData,
             EventBean[] oldData)
         {
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".Update Received Update, " +
                     "  newData.Length==" + (newData == null ? 0 : newData.Length) +

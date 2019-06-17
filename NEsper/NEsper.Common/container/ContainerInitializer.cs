@@ -19,6 +19,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.container
 {
@@ -93,8 +94,8 @@ namespace com.espertech.esper.container
             if (container.DoesNotHave<ClassLoaderProvider>())
                 container.Register<ClassLoaderProvider, ClassLoaderProviderDefault>(
                     Lifespan.Singleton);
-            if (container.DoesNotHave<IDirectory>())
-                container.Register<IDirectory, SimpleDirectory>(
+            if (container.DoesNotHave<INamingContext>())
+                container.Register<INamingContext, SimpleNamingContext>(
                     Lifespan.Singleton);
             return container;
         }

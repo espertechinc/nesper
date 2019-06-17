@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.context.util
             DataFlowFilterServiceAdapter dataFlowFilterServiceAdapter,
             EPDataFlowServiceImpl dataflowService,
             string runtimeURI,
-            IDirectory runtimeEnvContext,
+            INamingContext runtimeEnvContext,
             ImportServiceRuntime importServiceRuntime,
             RuntimeSettingsService runtimeSettingsService,
             RuntimeExtensionServices runtimeExtensionServices,
@@ -226,7 +226,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public MetricReportingService MetricReportingService { get; }
 
-        public IDirectory RuntimeEnvContext { get; }
+        public INamingContext RuntimeEnvContext { get; }
 
         public PathRegistry<string, EventType> EventTypePathRegistry { get; }
 

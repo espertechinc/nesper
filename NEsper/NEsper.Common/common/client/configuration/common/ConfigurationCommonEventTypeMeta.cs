@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Returns the default accessor style, JavaBean unless changed.
+        ///     Returns the default accessor style, native unless changed.
         /// </summary>
         /// <value>style enum</value>
         public AccessorStyle DefaultAccessorStyle {
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
         /// <summary>
         ///     Sets the property resolution style to use for resolving property names
-        ///     of Java classes.
+        ///     of types.
         /// </summary>
         /// <value>style of property resolution</value>
         public PropertyResolutionStyle ClassPropertyResolutionStyle {

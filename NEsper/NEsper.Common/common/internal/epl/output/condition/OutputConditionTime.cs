@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             currentReferencePoint = delta.LastReference;
             currentScheduledTime = deltaTime;
 
-            if ((ExecutionPathDebugLog.IsEnabled) && (log.IsDebugEnabled)) {
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
                 log.Debug(
                     ".scheduleCallback Scheduled new callback for " +
                     " afterMsec=" + deltaTime +

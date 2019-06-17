@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 || TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTimeOffset))
                 || TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTimeEx))) {
                 if (TypeHelper.IsSubclassOrImplementsInterface(formatType, typeof(DateFormat))) {
-                    return new ReformatFormatForgeDesc(false, typeof(DateFormat));
+                    return new ReformatFormatForgeDesc(typeof(DateFormat));
                 }
 
                 if (TypeHelper.IsSubclassOrImplementsInterface(formatType, typeof(string))) {
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                         }
                     }
 
-                    return new ReformatFormatForgeDesc(false, typeof(string));
+                    return new ReformatFormatForgeDesc(typeof(string));
                 }
 
                 throw GetFailedExpected(methodName, typeof(DateFormat), formatType);
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             // handle jdk8 date
             if (TypeHelper.IsSubclassOrImplementsInterface(formatType, typeof(DateTimeFormat))) {
-                return new ReformatFormatForgeDesc(true, typeof(DateTimeFormat));
+                return new ReformatFormatForgeDesc(typeof(DateTimeFormat));
             }
 
             if (TypeHelper.IsSubclassOrImplementsInterface(formatType, typeof(string))) {
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     }
                 }
 
-                return new ReformatFormatForgeDesc(true, typeof(string));
+                return new ReformatFormatForgeDesc(typeof(string));
             }
 
             throw GetFailedExpected(methodName, typeof(DateTimeFormat), formatType);

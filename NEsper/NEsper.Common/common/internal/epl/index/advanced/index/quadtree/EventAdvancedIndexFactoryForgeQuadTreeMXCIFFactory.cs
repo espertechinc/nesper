@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             EventTableOrganization organization)
         {
             var qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
-            var quadTree = MXCIFQuadTreeFactory.Make<object>(qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
+            var quadTree = MXCIFQuadTreeFactory<object>.Make(qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
             return new EventTableQuadTreeMXCIFImpl(organization, (AdvancedIndexConfigStatementMXCIFQuadtree) configStatement, quadTree);
         }
 

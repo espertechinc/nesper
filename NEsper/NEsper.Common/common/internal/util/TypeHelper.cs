@@ -2871,7 +2871,6 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="annotations">to search</param>
         /// <param name="hookType">type to look for</param>
         /// <param name="interfaceExpected">interface required</param>
-        /// <param name="optionalResolver">for resolving references, optional, if not provided then using ResolveType</param>
         /// <returns>hook instance</returns>
         /// <throws>ExprValidationException if instantiation failed</throws>
         public static object GetAnnotationHook(

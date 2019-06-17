@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.client.soda
         /// Cast function, casts the result on an expression to the desired type, or
         /// returns null if the type cannot be casted to the type.
         /// <para />The list of types can include fully-qualified class names plus any of the
-        /// Java primitive type names: byte, char, short, int, long, float, double, boolean.
+        /// primitive type names: byte, char, short, int, long, float, double, boolean.
         /// Alternatively to "java.lang.String" the simple "string" is also permitted.
         /// <para />Type checks include all superclasses and interfaces of the value returned by the expression.
         /// </summary>
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.client.soda
         /// Cast function, casts the result on an expression to the desired type, or
         /// returns null if the type cannot be casted to the type.
         /// <para />The list of types can include fully-qualified class names plus any of the
-        /// Java primitive type names: byte, char, short, int, long, float, double, boolean.
+        /// primitive type names: byte, char, short, int, long, float, double, boolean.
         /// Alternatively to "java.lang.String" the simple "string" is also permitted.
         /// <para />Type checks include all superclasses and interfaces of the value returned by the expression.
         /// </summary>
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Instance-of function, tests if the type of the return value of an expression is in a list of types.
         /// <para />The list of types can include fully-qualified class names plus any of the
-        /// Java primitive type names: byte, char, short, int, long, float, double, boolean.
+        /// primitive type names: byte, char, short, int, long, float, double, boolean.
         /// Alternatively to "java.lang.String" the simple "string" is also permitted.
         /// <para />Type checks include all superclasses and interfaces of the value returned by the expression.
         /// </summary>
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.client.soda
         /// Instance-of function, tests if the type of the return value of a property is in a list of types.
         /// <para />Useful with dynamic (unchecked) properties to check the type of property returned.
         /// <para />The list of types can include fully-qualified class names plus any of the
-        /// Java primitive type names: byte, char, short, int, long, float, double, boolean.
+        /// primitive type names: byte, char, short, int, long, float, double, boolean.
         /// Alternatively to "java.lang.String" the simple "string" is also permitted.
         /// <para />Type checks include all superclasses and interfaces of the value returned by the expression.
         /// </summary>

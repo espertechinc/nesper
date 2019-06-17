@@ -51,6 +51,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
+using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.util
@@ -325,7 +326,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public InstrumentationCommon InstrumentationProvider => InstrumentationCommonDefault.INSTANCE;
 
-        public IDirectory RuntimeEnvContext
+        public INamingContext RuntimeEnvContext
 	    {
 	        get => StatementContextRuntimeServices.RuntimeEnvContext;
 	    }

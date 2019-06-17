@@ -97,8 +97,8 @@ namespace com.espertech.esper.common.client.context
         /// <summary>
         ///     Returns an iterator of context state listeners (read-only)
         /// </summary>
-        /// <returns>listeners</returns>
-        IEnumerator<ContextStateListener> GetContextStateListeners();
+        /// <value>listeners</value>
+        IEnumerator<ContextStateListener> ContextStateListeners { get; }
 
         /// <summary>
         ///     Removes all context state listener

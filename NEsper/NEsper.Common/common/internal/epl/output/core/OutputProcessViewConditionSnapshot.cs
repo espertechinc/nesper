@@ -180,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             bool doOutput,
             bool forceUpdate)
         {
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(".continueOutputProcessingJoin");
             }
 

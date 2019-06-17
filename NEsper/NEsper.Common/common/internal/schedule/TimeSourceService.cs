@@ -13,6 +13,6 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <summary>
         /// Returns time in millis.
         /// </summary>
-        long GetTimeMillis();
+        long TimeMillis { get; }
     }
 }

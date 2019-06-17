@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.client
     /// <summary>
     /// Get property values from an event instance for a given indexed event property by passing the array index.
     /// Instances that implement this interface are usually bound to a particular 
-    /// <see cref="com.espertech.esper.client.EventType" /> and cannot be used to access 
+    /// <see cref="EventType" /> and cannot be used to access 
     /// <see cref="EventBean" /> instances of a different type.
     /// </summary>
     public interface EventPropertyGetterIndexed

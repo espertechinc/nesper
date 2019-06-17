@@ -25,10 +25,12 @@ namespace com.espertech.esper.common.client.metric
         private long _numOutputIStream;
         private long _numInput;
 
-
-        /// <summary>Ctor. </summary>
-        /// <param name="engineURI">engine URI</param>
-        /// <param name="statementName">statement name</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StatementMetric"/> class.
+        /// </summary>
+        /// <param name="runtimeURI">The runtime URI.</param>
+        /// <param name="deploymentId">The deployment identifier.</param>
+        /// <param name="statementName">Name of the statement.</param>
         public StatementMetric(
             string runtimeURI,
             string deploymentId,

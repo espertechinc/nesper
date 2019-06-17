@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             state.OldEventsCount = state.OldEventsCount + oldDataCount;
 
             if (IsSatisfied() || state.IsFirst) {
-                if ((ExecutionPathDebugLog.IsEnabled) && (log.IsDebugEnabled)) {
+                if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
                     log.Debug(".updateOutputCondition() condition satisfied");
                 }
 

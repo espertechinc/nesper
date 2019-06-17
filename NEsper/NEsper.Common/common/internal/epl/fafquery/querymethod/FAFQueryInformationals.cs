@@ -10,9 +10,7 @@ using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -20,16 +18,17 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
     public class FAFQueryInformationals
     {
-        private readonly Type[] substitutionParamsTypes;
-        private readonly IDictionary<string, int> substitutionParamsNames;
-
         public FAFQueryInformationals(
             Type[] substitutionParamsTypes,
             IDictionary<string, int> substitutionParamsNames)
         {
-            this.substitutionParamsTypes = substitutionParamsTypes;
-            this.substitutionParamsNames = substitutionParamsNames;
+            SubstitutionParamsTypes = substitutionParamsTypes;
+            SubstitutionParamsNames = substitutionParamsNames;
         }
+
+        public Type[] SubstitutionParamsTypes { get; }
+
+        public IDictionary<string, int> SubstitutionParamsNames { get; }
 
         public static FAFQueryInformationals From(
             IList<CodegenSubstitutionParamEntry> paramsByNumber,
@@ -39,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             IDictionary<string, int> names;
             if (!paramsByNumber.IsEmpty()) {
                 types = new Type[paramsByNumber.Count];
-                for (int i = 0; i < paramsByNumber.Count; i++) {
+                for (var i = 0; i < paramsByNumber.Count; i++) {
                     types[i] = paramsByNumber[i].Type;
                 }
 
@@ -48,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             else if (!paramsByName.IsEmpty()) {
                 types = new Type[paramsByName.Count];
                 names = new Dictionary<string, int>();
-                int index = 0;
-                foreach (KeyValuePair<string, CodegenSubstitutionParamEntry> entry in paramsByName) {
+                var index = 0;
+                foreach (var entry in paramsByName) {
                     types[index] = entry.Value.Type;
                     names.Put(entry.Key, index + 1);
                     index++;
@@ -63,40 +62,30 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             return new FAFQueryInformationals(types, names);
         }
 
-        public Type[] GetSubstitutionParamsTypes()
-        {
-            return substitutionParamsTypes;
-        }
-
-        public IDictionary<string, int> GetSubstitutionParamsNames()
-        {
-            return substitutionParamsNames;
-        }
-
         public CodegenExpression Make(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return NewInstance<FAFQueryInformationals>(Constant(substitutionParamsTypes), MakeNames(parent, classScope));
+            return NewInstance<FAFQueryInformationals>(Constant(SubstitutionParamsTypes), MakeNames(parent, classScope));
         }
 
         private CodegenExpression MakeNames(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            if (substitutionParamsNames == null) {
+            if (SubstitutionParamsNames == null) {
                 return ConstantNull();
             }
 
-            CodegenMethod method = parent.MakeChild(typeof(IDictionary<object, object>), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(IDictionary<object, object>), GetType(), classScope);
             method.Block.DeclareVar(
                 typeof(IDictionary<object, object>), "names",
-                NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(substitutionParamsNames.Count))));
-            foreach (KeyValuePair<string, int> entry in substitutionParamsNames) {
-                method.Block.ExprDotMethod(@Ref("names"), "put", Constant(entry.Key), Constant(entry.Value));
+                NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(SubstitutionParamsNames.Count))));
+            foreach (var entry in SubstitutionParamsNames) {
+                method.Block.ExprDotMethod(Ref("names"), "put", Constant(entry.Key), Constant(entry.Value));
             }
 
-            method.Block.MethodReturn(@Ref("names"));
+            method.Block.MethodReturn(Ref("names"));
             return LocalMethod(method);
         }
     }

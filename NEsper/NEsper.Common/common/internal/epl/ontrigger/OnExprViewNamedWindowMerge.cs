@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -127,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 var metricHandle = rootView.AgentInstanceContext.StatementContext.EpStatementHandle.MetricsHandle;
                 if (metricHandle.IsEnabled && !newData.IsEmpty()) {
                     agentInstanceContext.MetricReportingService.AccountTime(
-                        metricHandle, 0, 0, newData.ToArray().Length);
+                        metricHandle, 0L, 0L, newData.ToArray().Length);
                 }
 
                 var statementResultService = agentInstanceContext.StatementResultService;

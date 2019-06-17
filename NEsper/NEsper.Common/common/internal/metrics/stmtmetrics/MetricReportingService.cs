@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.schedule;
@@ -15,7 +16,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
     /// <summary>
     ///     Metrics reporting service for instrumentation data publishing, if enabled.
     /// </summary>
-    public interface MetricReportingService
+    public interface MetricReportingService : IDisposable
     {
         void SetContext(
             FilterService filterService,
@@ -29,21 +30,16 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         void ProcessTimeEvent(long currentTime);
 
         /// <summary>
-        ///     Destroy the service.
-        /// </summary>
-        void Destroy();
-
-        /// <summary>
         ///     Account for statement CPU and wall time.
         /// </summary>
         /// <param name="metricsHandle">statement handle</param>
-        /// <param name="deltaCPU">cpu time nsec</param>
-        /// <param name="deltaWall">wall time nsec</param>
+        /// <param name="cpuTime">cpu time</param>
+        /// /// <param name="wallTime">wall time</param>
         /// <param name="numInput">number of input rows</param>
         void AccountTime(
             StatementMetricHandle metricsHandle,
-            long deltaCPU,
-            long deltaWall,
+            long cpuTime,
+            long wallTime,
             int numInput);
 
         /// <summary>

@@ -1107,7 +1107,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             // Map event types allow 2 types of properties inside:
-            //   - a property that is a Java object is interrogated via bean property getters and BeanEventType
+            //   - a property that is a object is interrogated via bean property getters and BeanEventType
             //   - a property that is a Map itself is interrogated via map property getters
             // The property getters therefore act on
 
@@ -1966,7 +1966,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
             }
             else {
-                // Java Object/Bean/POJO type definition
+                // Object type definition
                 if (spec.CopyFrom != null && !spec.CopyFrom.IsEmpty()) {
                     throw new ExprValidationException("Copy-from types are not allowed with class-provided types");
                 }

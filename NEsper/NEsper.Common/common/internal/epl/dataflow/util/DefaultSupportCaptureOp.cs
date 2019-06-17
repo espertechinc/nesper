@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
@@ -39,10 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         }
     }
 
-    public class DefaultSupportCaptureOp<T>
-        : DataFlowOperator,
-            EPDataFlowSignalHandler,
-            Future<Object[]>
+    public class DefaultSupportCaptureOp<T> : DataFlowOperator
+        , EPDataFlowSignalHandler
+        , IFuture<Object[]>
     {
         private IList<IList<T>> _received = new List<IList<T>>();
         private IList<T> _current = new List<T>();
@@ -184,6 +184,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                     return;
                 }
             }
+        }
+
+        public bool Cancel(bool force)
+        {
+            throw new NotSupportedException();
         }
     }
 }

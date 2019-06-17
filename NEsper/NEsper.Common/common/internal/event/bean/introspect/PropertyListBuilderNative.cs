@@ -14,7 +14,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 namespace com.espertech.esper.common.@internal.@event.bean.introspect
 {
     /// <summary>
-    ///     Implementation for a property list builder that considers JavaBean-style methods
+    ///     Implementation for a property list builder that considers methods
     ///     as the exposed event properties, plus any explicitly configured props.
     /// </summary>
     public class PropertyListBuilderNative : PropertyListBuilder

@@ -23,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.historical.database.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.db.drivers
 {

@@ -13,9 +13,9 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
 {
-    public class PointRegionQuadTreeFilterIndexCollect
+    public class PointRegionQuadTreeFilterIndexCollect<TL, TT>
     {
-        public static void CollectRange<TL, TT>(
+        public static void CollectRange(
             PointRegionQuadTree<object> quadTree,
             double x,
             double y,
@@ -28,15 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             CollectRange(quadTree.Root, x, y, width, height, eventBean, target, collector);
         }
 
-        private static void CollectRange<L, T>(
+        private static void CollectRange(
             PointRegionQuadTreeNode node,
             double x,
             double y,
             double width,
             double height,
             EventBean eventBean,
-            T target,
-            QuadTreeCollector<L, T> collector)
+            TT target,
+            QuadTreeCollector<TL, TT> collector)
         {
             if (!node.Bb.IntersectsBoxIncludingEnd(x, y, width, height)) {
                 return;
@@ -55,23 +55,23 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             CollectRange(branch.Se, x, y, width, height, eventBean, target, collector);
         }
 
-        private static void CollectLeaf<L, T>(
+        private static void CollectLeaf(
             PointRegionQuadTreeNodeLeaf<object> node,
             double x,
             double y,
             double width,
             double height,
             EventBean eventBean,
-            T target,
-            QuadTreeCollector<L, T> collector)
+            TT target,
+            QuadTreeCollector<TL, TT> collector)
         {
             var points = node.Points;
             if (points == null) {
                 return;
             }
 
-            if (points is XYPointWValue<L>) {
-                var point = (XYPointWValue<L>) points;
+            if (points is XYPointWValue<TL>) {
+                var point = (XYPointWValue<TL>) points;
                 if (BoundingBox.ContainsPoint(x, y, width, height, point.X, point.Y)) {
                     collector.CollectInto(eventBean, point.Value, target);
                 }
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 return;
             }
 
-            var collection = (ICollection<XYPointWValue<L>>) points;
+            var collection = (ICollection<XYPointWValue<TL>>) points;
             foreach (var point in collection) {
                 if (BoundingBox.ContainsPoint(x, y, width, height, point.X, point.Y)) {
                     collector.CollectInto(eventBean, point.Value, target);

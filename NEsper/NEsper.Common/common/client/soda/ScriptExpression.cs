@@ -14,7 +14,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
-    /// Script-expression is external scripting language expression such as JavaScript, Groovy or MVEL, for example.
+    /// Script-expression is external scripting language expression such as JavaScript, for example.
     /// </summary>
     [Serializable]
     public class ScriptExpression

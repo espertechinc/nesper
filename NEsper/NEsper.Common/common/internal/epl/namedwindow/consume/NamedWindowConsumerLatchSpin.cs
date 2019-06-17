@@ -69,10 +69,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
                 return;
             }
 
-            long spinStartTime = factory.TimeSourceService.GetTimeMillis();
+            long spinStartTime = factory.TimeSourceService.TimeMillis;
             while (!earlier.isCompleted) {
                 Thread.Yield();
-                long spinDelta = factory.TimeSourceService.GetTimeMillis() - spinStartTime;
+                long spinDelta = factory.TimeSourceService.TimeMillis - spinStartTime;
                 if (spinDelta > factory.MsecWait) {
                     Log.Info(
                         "Spin wait timeout exceeded in named window '" + factory.Name + "' consumer dispatch at " + factory.MsecWait + "ms for " +

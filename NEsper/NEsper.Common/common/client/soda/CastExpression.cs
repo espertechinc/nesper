@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         ///     Ctor - for use to create an expression tree, without child expression.
         /// </summary>
-        /// <param name="typeName">is the type to cast to: a fully-qualified class name or Java primitive type name or "string"</param>
+        /// <param name="typeName">is the type to cast to: a fully-qualified class name or primitive type name or "string"</param>
         public CastExpression(string typeName)
         {
             TypeName = typeName;
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Ctor.
         /// </summary>
         /// <param name="expressionToCheck">provides values to cast</param>
-        /// <param name="typeName">is the type to cast to: a fully-qualified class names or Java primitive type names or "string"</param>
+        /// <param name="typeName">is the type to cast to: a fully-qualified class names or primitive type names or "string"</param>
         public CastExpression(
             Expression expressionToCheck,
             string typeName)

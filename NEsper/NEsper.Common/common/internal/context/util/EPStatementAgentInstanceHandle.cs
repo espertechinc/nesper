@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public bool IsPreemptive => StatementHandle.IsPreemptive;
 
-        public bool IsVariables => StatementHandle.HasVariables;
+        public bool HasVariables => StatementHandle.HasVariables;
 
-        public bool IsTableAccess => StatementHandle.HasTableAccess;
+        public bool HasTableAccess => StatementHandle.HasTableAccess;
 
         public StatementAgentInstanceFilterVersion StatementFilterVersion { get; } =
             new StatementAgentInstanceFilterVersion();

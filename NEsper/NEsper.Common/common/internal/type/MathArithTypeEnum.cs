@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="coercedType">target type</param>
         /// <param name="typeOne">the LHS type</param>
         /// <param name="typeTwo">the RHS type</param>
-        /// <param name="isIntegerDivision">false for division returns double, true for using Java-standard integer division</param>
+        /// <param name="isIntegerDivision">false for division returns double, true for using standard integer division</param>
         /// <param name="isDivisionByZeroReturnsNull">false for division-by-zero returns infinity, true for null</param>
         /// <param name="optionalMathContext">math context or null</param>
         /// <returns>number cruncher</returns>

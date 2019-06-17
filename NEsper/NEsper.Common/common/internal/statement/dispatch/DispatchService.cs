@@ -1,41 +1,61 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.statement.dispatch
 {
     /// <summary>
-    /// Service for dispatching internally (for operators/views processing results of prior operators/views)
-    /// and externally (dispatch events to UpdateListener implementations).
-    /// <para>
-    /// The service accepts Dispatchable implementations to its internal and external lists.
-    /// When a client invokes dispatch the implementation first invokes all internal Dispatchable
-    /// instances then all external Dispatchable instances. Dispatchables are invoked
-    /// in the same order they are added. Any dispatchable added twice is dispatched once.
-    /// </para>
-    /// <para>
-    /// Note: Each execution thread owns its own dispatch queue.
-    /// </para>
-    /// <para>
-    /// Note: Dispatchs could result in further call to the dispatch service. This is because listener code
-    /// that is invoked as a result of a dispatch may create patterns that fire as soon as they are Started
-    /// resulting in further dispatches within the same thread. Thus the implementation class must be careful
-    /// with the use of iterators to avoid ConcurrentModificationException errors.
-    /// </para>
+    /// Implements dispatch service using a thread-local linked list of Dispatchable instances.
     /// </summary>
-    public interface DispatchService
+    public class DispatchService
     {
-        /// <summary> Add a Dispatchable implementation.</summary>
-        /// <param name="dispatchable">to execute later
-        /// </param>
-        void AddExternal(Dispatchable dispatchable);
+        private readonly IThreadLocal<ArrayDeque<Dispatchable>> dispatchStateThreadLocal =
+            new FastThreadLocal<ArrayDeque<Dispatchable>>(() => new ArrayDeque<Dispatchable>());
 
-        /// <summary> Execute all Dispatchable implementations added to the service since the last invocation of this method.</summary>
-        void Dispatch();
+        public IThreadLocal<ArrayDeque<Dispatchable>> DispatchStateThreadLocal => dispatchStateThreadLocal;
+
+        public void Dispatch()
+        {
+            DispatchFromQueue(dispatchStateThreadLocal.GetOrCreate());
+        }
+
+        public void AddExternal(Dispatchable dispatchable)
+        {
+            ArrayDeque<Dispatchable> dispatchQueue = dispatchStateThreadLocal.GetOrCreate();
+            AddToQueue(dispatchable, dispatchQueue);
+        }
+
+        private static void AddToQueue(
+            Dispatchable dispatchable,
+            ICollection<Dispatchable> dispatchQueue)
+        {
+            dispatchQueue.Add(dispatchable);
+        }
+
+        private static void DispatchFromQueue(ArrayDeque<Dispatchable> dispatchQueue)
+        {
+            while (true)
+            {
+                var next = dispatchQueue.Poll();
+                if (next != null)
+                {
+                    next.Execute();
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
     }
-}
+} // end of namespace

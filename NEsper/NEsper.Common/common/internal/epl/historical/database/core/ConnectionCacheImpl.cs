@@ -26,6 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         /// </summary>
         /// <param name="databaseConnectionFactory">connection factory</param>
         /// <param name="sql">statement sql</param>
+        /// <param name="contextAttributes">statement contextual attributes</param>
         public ConnectionCacheImpl(
             DatabaseConnectionFactory databaseConnectionFactory,
             string sql,

@@ -137,8 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="optionalStatementName">name</param>
-        /// <param name="methodName">method name</param>
-        /// <param name="methodParams">params</param>
+        /// <param name="method">method name</param>
         /// <param name="targetClassName">target class name</param>
         /// <param name="args">args</param>
         /// <param name="t">throwable</param>

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.configuration.runtime;
@@ -116,8 +117,8 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         ///     Account statement times.
         /// </summary>
         /// <param name="handle">statement handle</param>
-        /// <param name="cpu">time</param>
-        /// <param name="wall">time</param>
+        /// <param name="cpu">cpu time</param>
+        /// <param name="wall">wall time</param>
         /// <param name="numInput">number of input rows</param>
         public void AccountTimes(
             StatementMetricHandle handle,

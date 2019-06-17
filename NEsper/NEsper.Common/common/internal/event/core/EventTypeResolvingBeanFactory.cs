@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Linq;
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.@event.core
@@ -28,6 +29,10 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         EventBean AdapterForXMLDOM(
             XmlNode node,
+            string eventTypeName);
+
+        EventBean AdapterForXML(
+            XNode node,
             string eventTypeName);
 
         EventBean AdapterForAvro(

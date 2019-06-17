@@ -19,9 +19,9 @@ using com.espertech.esper.common.@internal.@event.xml;
 namespace com.espertech.esper.common.@internal.@event.property
 {
     /// <summary>
-    ///     Interface for a property of an event of type BeanEventType (JavaBean event). Properties are designed to
-    ///     handle the different types of properties for such events: indexed, mapped, simple, nested, or a combination of
-    ///     those.
+    ///     Interface for a property of an event of type BeanEventType . Properties are designed to
+    ///     handle the different types of properties for such events: indexed, mapped, simple, nested,
+    ///     or a combination of those.
     /// </summary>
     public interface Property
     {
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <summary>
         ///     Returns the property type.
         /// </summary>
-        /// <param name="eventType">is the event type representing the JavaBean</param>
+        /// <param name="eventType">is the event type representing the value</param>
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <returns>property type class</returns>
         Type GetPropertyType(
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <summary>
         ///     Returns the property type plus its generic type parameter, if any.
         /// </summary>
-        /// <param name="eventType">is the event type representing the JavaBean</param>
+        /// <param name="eventType">is the event type representing the value</param>
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <returns>type and generic descriptor</returns>
         GenericPropertyDesc GetPropertyTypeGeneric(

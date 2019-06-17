@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <param name="eventTypeName">is the name of the event type</param>
         /// <param name="optionalPropertyEvaluator">optional if evaluating properties returned by filtered events</param>
         /// <param name="filterCallbackId">filter id</param>
-        /// <throws>IllegalArgumentException if validation invalid</throws>
+        /// <throws>ArgumentException if validation invalid</throws>
         public FilterSpecActivatable(
             EventType eventType,
             string eventTypeName,

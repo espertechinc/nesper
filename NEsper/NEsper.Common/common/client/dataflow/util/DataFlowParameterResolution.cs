@@ -127,7 +127,6 @@ namespace com.espertech.esper.common.client.dataflow.util
             ExprEvaluator optionalEvaluator,
             T defaultValue,
             DataFlowOpInitializeContext context) 
-            where T : class
         {
             T resolvedFromProvider = TryParameterProvider<T>(name, context);
             if (resolvedFromProvider != null) {
@@ -166,9 +165,7 @@ namespace com.espertech.esper.common.client.dataflow.util
         /// </summary>
         /// <param name="name">parameter name</param>
         /// <param name="configuration">map with key 'class' for the class name</param>
-        /// <param name="clazz">expected interface or supertype</param>
         /// <param name="context">initialization context</param>
-        /// <param name="&lt;T&gt;">type of value returned</param>
         /// <returns>instance</returns>
         public static T ResolveOptionalInstance<T>(
             string name,
@@ -253,21 +250,20 @@ namespace com.espertech.esper.common.client.dataflow.util
         private static T TryParameterProvider<T>(
             string name,
             DataFlowOpInitializeContext context)
-            where T : class
         {
             if (context.AdditionalParameters != null && context.AdditionalParameters.ContainsKey(name)) {
                 return (T) context.AdditionalParameters.Get(name);
             }
 
             if (context.ParameterProvider == null) {
-                return null;
+                return default(T);
             }
 
             EPDataFlowOperatorParameterProviderContext ctx =
                 new EPDataFlowOperatorParameterProviderContext(context, name);
             object value = context.ParameterProvider.Provide(ctx);
             if (value == null) {
-                return null;
+                return default(T);
             }
 
             var clazz = typeof(T);

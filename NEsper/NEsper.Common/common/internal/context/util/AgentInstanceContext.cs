@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public MetricReportingService MetricReportingService => StatementContext.MetricReportingService;
 
-        public IDirectory RuntimeEnvContext => StatementContext.RuntimeEnvContext;
+        public INamingContext RuntimeEnvContext => StatementContext.RuntimeEnvContext;
 
         public long FilterVersionAfterAllocation { get; }
 

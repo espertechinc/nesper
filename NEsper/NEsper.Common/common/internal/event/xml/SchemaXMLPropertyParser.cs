@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="schemaModel">is the schema model</param>
         /// <param name="xPathContext">is the xpath factory instance to use</param>
         /// <param name="rootElementName">is the name of the root element</param>
-        /// <param name="eventAdapterService">for type lookup and creation</param>
+        /// <param name="eventBeanTypedEventFactory">for type lookup and creation</param>
         /// <param name="xmlEventType">the resolving type</param>
         /// <param name="isAllowFragment">whether fragmenting is allowed</param>
         /// <param name="defaultNamespace">default namespace</param>
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             var xPath = xPathBuf.ToString();
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(".parse XPath for property '" + propertyName + "' is expression=" + xPath);
             }
 

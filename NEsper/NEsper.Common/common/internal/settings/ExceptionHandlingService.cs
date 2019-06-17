@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.settings
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ExceptionHandlingService(
-            string engineURI,
+            string runtimeUri,
             IEnumerable<ExceptionHandler> exceptionHandlers,
             IEnumerable<ConditionHandler> conditionHandlers)
         {
-            EngineURI = engineURI;
+            RuntimeURI = runtimeUri;
 
             foreach (var handler in exceptionHandlers) {
                 UnhandledException += handler;
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.settings
             }
         }
 
-        public string EngineURI { get; }
+        public string RuntimeURI { get; }
 
         public event ExceptionHandler UnhandledException;
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.settings
 
             UnhandledCondition(
                 new ConditionHandlerContext(
-                    EngineURI, statement.StatementName, statement.DeploymentId, condition));
+                    RuntimeURI, statement.StatementName, statement.DeploymentId, condition));
         }
 
         public void HandleException(
@@ -79,11 +79,16 @@ namespace com.espertech.esper.common.@internal.settings
             EventBean optionalCurrentEvent)
         {
             HandleException(
-                ex, handle.StatementHandle.StatementName, handle.StatementHandle.EPL, type, optionalCurrentEvent);
+                ex,
+                handle.StatementHandle.DeploymentId,
+                handle.StatementHandle.StatementName, 
+                handle.StatementHandle.OptionalStatementEPL, 
+                type, optionalCurrentEvent);
         }
 
         public void HandleException(
             Exception ex,
+            string deploymentId,
             string statementName,
             string epl,
             ExceptionHandlerExceptionType type,
@@ -98,11 +103,19 @@ namespace com.espertech.esper.common.@internal.settings
                     writer.Write("Exception encountered performing instance stop for ");
                 }
 
+                writer.Write("deployment-id '");
+                writer.Write(deploymentId);
+                writer.Write("' ");
                 writer.Write("statement '");
                 writer.Write(statementName);
-                writer.Write("' expression '");
-                writer.Write(epl);
-                writer.Write("' : ");
+                writer.Write("'");
+                if (epl != null)
+                {
+                    writer.Write(" expression '");
+                    writer.Write(epl);
+                    writer.Write("'");
+                }
+                writer.Write(" : ");
                 writer.Write(ex.Message);
 
                 var message = writer.ToString();
@@ -120,7 +133,7 @@ namespace com.espertech.esper.common.@internal.settings
             if (UnhandledException != null) {
                 UnhandledException(
                     this, new ExceptionHandlerEventArgs {
-                        Context = new ExceptionHandlerContext(EngineURI, ex, statementName, epl, type, optionalCurrentEvent)
+                        Context = new ExceptionHandlerContext(RuntimeURI, ex, statementName, epl, type, optionalCurrentEvent)
                     });
             }
         }

@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     ///     <seealso cref="BeanEventTypeFactory" />.
     ///     Two BeanEventBean instances are equal if they have the same event type and refer to the same instance of event
     ///     object.
-    ///     Clients that need to compute equality between Java beans wrapped by this class need to obtain the underlying
+    ///     Clients that need to compute equality between beans wrapped by this class need to obtain the underlying
     ///     object.
     /// </summary>
     public class BeanEventBean : EventBeanSPI

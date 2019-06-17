@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.schedule
             TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
         {
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".computeNextOccurance Computing next occurance," +
                     "  afterTimeInTicks=" + afterTimeInMillis.TimeFromMillis(timeZone) +

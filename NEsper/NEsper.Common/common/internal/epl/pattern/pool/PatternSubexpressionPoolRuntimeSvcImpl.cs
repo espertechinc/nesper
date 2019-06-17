@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
                 agentInstanceContext.StatementContext.ExceptionHandlingService.HandleCondition(
                     new ConditionPatternRuntimeSubexpressionMax(maxPoolCountConfigured, counts),
                     agentInstanceContext.StatementContext);
-                if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled &&
+                if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled &&
                     ExecutionPathDebugLog.IsTimerDebugEnabled) {
                     var stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
                     var stmtName = agentInstanceContext.StatementContext.StatementName;
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
                 return true;
             }
 
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 var stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
                 var stmtName = agentInstanceContext.StatementContext.StatementName;
                 Log.Debug(
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
             AgentInstanceContext agentInstanceContext)
         {
             var newMax = poolCount.IncrementAndGet();
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 var stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
                 var stmtName = agentInstanceContext.StatementContext.StatementName;
                 Log.Debug(
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
             AgentInstanceContext agentInstanceContext)
         {
             var newMax = poolCount.DecrementAndGet();
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 var stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
                 var stmtName = agentInstanceContext.StatementContext.StatementName;
                 Log.Debug(

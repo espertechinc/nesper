@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.historical.indexingstrategy;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.epl.historical.common
 {

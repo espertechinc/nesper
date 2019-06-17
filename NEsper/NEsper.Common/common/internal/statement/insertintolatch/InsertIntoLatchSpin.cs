@@ -73,12 +73,12 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         public EventBean Await()
         {
             if (!_earlier._isCompleted) {
-                var spinStartTime = _factory.TimeSourceService.GetTimeMillis();
+                var spinStartTime = _factory.TimeSourceService.TimeMillis;
 
                 while (!_earlier._isCompleted) {
                     Thread.Yield();
 
-                    var spinDelta = _factory.TimeSourceService.GetTimeMillis() - spinStartTime;
+                    var spinDelta = _factory.TimeSourceService.TimeMillis - spinStartTime;
                     if (spinDelta > _msecTimeout) {
                         Log.Info(
                             "Spin wait timeout exceeded in insert-into dispatch at " + _msecTimeout + "ms for " +

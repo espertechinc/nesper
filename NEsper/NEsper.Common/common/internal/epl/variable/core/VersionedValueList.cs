@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         /// </returns>
         public T GetVersion(int versionAndOlder)
         {
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".GetVersion Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + Name +
                     "' retrieving version " + versionAndOlder + " or older");
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 }
             }
 
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".getVersion Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + Name + " version " +
                     versionAndOlder + " or older result is " + resultValue);
@@ -197,7 +197,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             T value,
             long timestamp)
         {
-            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".addValue Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + Name +
                     "' adding version " + version + " at value " + value);

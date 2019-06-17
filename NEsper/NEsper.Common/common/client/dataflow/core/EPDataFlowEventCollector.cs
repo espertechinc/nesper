@@ -9,7 +9,7 @@
 namespace com.espertech.esper.common.client.dataflow.core
 {
     /// <summary>
-    /// Collector for use with the <seealso cref="com.espertech.esper.dataflow.ops.EventBusSink" /> operator.
+    /// Collector for use with the <seealso cref="EventBusSink" /> operator.
     /// </summary>
     public interface EPDataFlowEventCollector
     {

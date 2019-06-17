@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             {
                 var dbCommand = myDriverCommand.Command;
 
-                if (ExecutionPathDebugLog.IsEnabled && Log.IsInfoEnabled)
+                if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsInfoEnabled)
                 {
                     Log.Info(".execute Executing prepared statement '{0}'", dbCommand.CommandText);
                 }
@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                             parameter = mk.Keys[i];
                         }
 
-                        if (ExecutionPathDebugLog.IsEnabled && Log.IsInfoEnabled)
+                        if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsInfoEnabled)
                         {
                             Log.Info(".Execute Setting parameter " + " to " + parameter + " typed " +
                                      ((parameter == null) ? "null" : parameter.GetType().Name));

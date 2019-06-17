@@ -255,7 +255,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
 #if false
 /// <summary>
-/// Using the Java Introspector class the method returns the property descriptors obtained through introspection.
+/// Using the Introspector class the method returns the property descriptors obtained through introspection.
 /// </summary>
 /// <param name="clazz">to introspect</param>
 /// <returns>array of property descriptors</returns>

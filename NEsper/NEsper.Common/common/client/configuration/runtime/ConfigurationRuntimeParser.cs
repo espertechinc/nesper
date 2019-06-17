@@ -335,7 +335,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
 
                         if (subElement.Attributes.GetNamedItem("timeout-msec") != null) {
                             var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").InnerText;
-                            var timeoutMSec = long.Parse(timeoutMSecText);
+                            var timeoutMSec = int.Parse(timeoutMSecText);
                             runtime.Threading.InsertIntoDispatchTimeout = timeoutMSec;
                         }
 

@@ -11,6 +11,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.statement.multimatch
 {

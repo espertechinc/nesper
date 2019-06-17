@@ -14,6 +14,12 @@ namespace com.espertech.esper.common.@internal.view.previous
 {
     public class ViewServicePreviousFactoryImpl : ViewServicePreviousFactory
     {
+        public static readonly ViewServicePreviousFactoryImpl INSTANCE = new ViewServicePreviousFactoryImpl();
+
+        private ViewServicePreviousFactoryImpl()
+        {
+        }
+
         public ViewUpdatedCollection GetOptPreviousExprRandomAccess(
             AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {

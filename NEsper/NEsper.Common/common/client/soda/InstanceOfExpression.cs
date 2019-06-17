@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Ctor - for use to create an expression tree, without child expression.
         /// </summary>
-        /// <param name="typeNames">is the fully-qualified class names or Java primitive type names or "string"</param>
+        /// <param name="typeNames">is the fully-qualified class names or primitive type names or "string"</param>
         public InstanceOfExpression(string[] typeNames)
         {
             this.typeNames = typeNames;
@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.client.soda
         /// Ctor.
         /// </summary>
         /// <param name="expressionToCheck">provides values to check the type of</param>
-        /// <param name="typeName">is one fully-qualified class names or Java primitive type names or "string"</param>
-        /// <param name="moreTypes">is additional optional fully-qualified class names or Java primitive type names or "string"</param>
+        /// <param name="typeName">is one fully-qualified class names or primitive type names or "string"</param>
+        /// <param name="moreTypes">is additional optional fully-qualified class names or primitive type names or "string"</param>
         public InstanceOfExpression(
             Expression expressionToCheck,
             string typeName,

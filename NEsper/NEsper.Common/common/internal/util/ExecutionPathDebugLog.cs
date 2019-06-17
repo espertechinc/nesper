@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary>
         /// Gets or sets a flag that allows execution path debug logging.
         /// </summary>
-        public static bool IsEnabled { get; set; }
+        public static bool IsDebugEnabled { get; set; }
 
         /// <summary>
         /// Public access.
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         static ExecutionPathDebugLog()
         {
-            IsEnabled = false;
+            IsDebugEnabled = false;
             IsTimerDebugEnabled = true;
         }
     }

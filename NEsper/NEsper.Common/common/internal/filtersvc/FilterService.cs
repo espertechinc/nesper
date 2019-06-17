@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,15 +14,13 @@ namespace com.espertech.esper.common.@internal.filtersvc
 {
     /// <summary>
     ///     Interface for filtering events by event type and event property values. Allows adding and removing filters.
-    ///     <para>
-    ///         Filters are defined by a <seealso cref="FilterSpecActivatable" /> and are
-    ///         associated with a <seealso cref="FilterHandle" />callback.
-    ///         Implementations may decide if the same filter callback can be registered twice for different or some
-    ///         filter specifications.
-    ///     </para>
-    ///     <para>
-    ///         The performance of an implementation of this service is crucial in achieving a high overall event throughput.
-    ///     </para>
+    ///     <para />
+    ///     Filters are defined by a <seealso cref="FilterSpecActivatable" /> and are associated with a
+    ///     <seealso cref="FilterHandle" />callback.
+    ///     Implementations may decide if the same filter callback can be registered twice for different or some
+    ///     filter specifications.
+    ///     <para />
+    ///     The performance of an implementation of this service is crucial in achieving a high overall event throughput.
     /// </summary>
     public interface FilterService
     {

@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
             var currentTime = AgentInstanceContext.TimeProvider.Time;
             if (nextSweepTime == null || nextSweepTime <= currentTime) {
-                if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled) {
+                if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                     Log.Debug(
                         "Reclaiming groups older then " + ViewFactory.ReclaimMaxAge + " msec and every " +
                         ViewFactory.ReclaimFrequency + "msec in frequency");

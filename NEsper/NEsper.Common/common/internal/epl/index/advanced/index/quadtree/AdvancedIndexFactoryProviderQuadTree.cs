@@ -77,14 +77,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
             int leafCapacity = parameters.Length > 4
                 ? EvalIntParameter(parameters[4], indexName, PARAM_LEAFCAPACITY, exprEvaluatorContext)
-                : PointRegionQuadTreeFactory.DEFAULT_LEAF_CAPACITY;
+                : PointRegionQuadTreeFactory<object>.DEFAULT_LEAF_CAPACITY;
             if (leafCapacity < 1) {
                 throw InvalidParameterValue(indexName, PARAM_LEAFCAPACITY, leafCapacity, "value>=1");
             }
 
             int maxTreeHeight = parameters.Length > 5
                 ? EvalIntParameter(parameters[5], indexName, PARAM_MAXTREEHEIGHT, exprEvaluatorContext)
-                : PointRegionQuadTreeFactory.DEFAULT_MAX_TREE_HEIGHT;
+                : PointRegionQuadTreeFactory<object>.DEFAULT_MAX_TREE_HEIGHT;
             if (maxTreeHeight < 2) {
                 throw InvalidParameterValue(indexName, PARAM_MAXTREEHEIGHT, maxTreeHeight, "value>=2");
             }

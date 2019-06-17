@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 if (beanClass == typeof(void) || beanClass == typeof(void) || beanClass.IsBuiltinDataType()) {
                     throw new ExprValidationException(
                         "Invalid return type for static method '" + methodReflection.Name + "' of class '" +
-                        methodStreamSpec.ClassName + "', expecting a Java class");
+                        methodStreamSpec.ClassName + "', expecting a type");
                 }
 
                 if (methodReflection.ReturnType.IsArray &&

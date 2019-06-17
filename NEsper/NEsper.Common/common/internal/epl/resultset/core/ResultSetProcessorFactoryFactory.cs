@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
                     // see if the stream name is known as a nested event type
                     var candidateProviderOfFragments = typeService.EventTypes[i];
-                    // for the native event type we don't need to fragment, we simply use the property itself since all wrappers understand Java objects
+                    // for the native event type we don't need to fragment, we simply use the property itself since all wrappers understand objects
                     if (!(candidateProviderOfFragments is NativeEventType) &&
                         candidateProviderOfFragments.GetFragmentType(streamName) != null) {
                         streamNum = i;

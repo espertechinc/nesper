@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.client
     /// <summary>
     /// Get property values from an event instance for a given mapped event property by passing 
     /// the map string key. Instances that implement this interface are usually bound to a particular 
-    /// <see cref="EventType" /> and cannot be used to access <see cref="com.espertech.esper.client.EventBean" />
+    /// <see cref="EventType" /> and cannot be used to access <see cref="EventBean" />
     /// instances of a different type.
     /// </summary>
     public interface EventPropertyGetterMapped

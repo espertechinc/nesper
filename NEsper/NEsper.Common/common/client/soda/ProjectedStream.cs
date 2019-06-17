@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         ///     Adds an un-parameterized view to the stream.
         /// </summary>
-        /// <param name="@namespace">is the view namespace, for example "win" for most data windows</param>
+        /// <param name="namespace">is the view namespace, for example "win" for most data windows</param>
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <returns>stream</returns>
         public ProjectedStream AddView(
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         ///     Adds a parameterized view to the stream.
         /// </summary>
-        /// <param name="@namespace">is the view namespace, for example "win" for most data windows</param>
+        /// <param name="namespace">is the view namespace, for example "win" for most data windows</param>
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <param name="parameters">is a list of view parameters</param>
         /// <returns>stream</returns>
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         ///     Adds a parameterized view to the stream.
         /// </summary>
-        /// <param name="@namespace">is the view namespace, for example "win" for most data windows</param>
+        /// <param name="namespace">is the view namespace, for example "win" for most data windows</param>
         /// <param name="name">is the view name, for example "length" for a length window</param>
         /// <param name="parameters">is a list of view parameters</param>
         /// <returns>stream</returns>
