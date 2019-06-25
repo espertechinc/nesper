@@ -58,7 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         JOINON,
         MERGEMATCHCOND,
         MERGEMATCHWHERE,
-        HINT
+        HINT,
+        API
     }
 
     public static class ExprNodeOriginExtensions
@@ -160,9 +161,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     return ("match where-clause");
                 case ExprNodeOrigin.HINT:
                     return ("hint");
+                case ExprNodeOrigin.API:
+                    return ("api");
             }
 
-            throw new ArgumentException("invalid value for enumValue", "enumValue");
+            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
         }
     }
 } // end of namespace

@@ -30,15 +30,19 @@ namespace com.espertech.esper.common.@internal.util
             return writer.ToString();
         }
 
-        private static void ReadFile(
-            TextReader reader,
-            IList<string> list)
+        public static IList<string> ReadFile(TextReader reader)
         {
+            List<string> list = new List<string>();
+
             string text;
             // repeat until all lines is read
-            while ((text = reader.ReadLine()) != null) {
+            while ((text = reader.ReadLine()) != null)
+            {
                 list.Add(text);
             }
+
+            return list;
         }
+
     }
 } // end of namespace

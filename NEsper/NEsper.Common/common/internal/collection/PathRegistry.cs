@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public Pair<TE, string> GetAnyModuleExpectSingle(
             TK entityKey,
-            ISet<string> moduleUses)
+            ICollection<string> moduleUses)
         {
             var existing = entities.Get(entityKey);
             return existing?.GetAnyModuleExpectSingle(entityKey.ToString(), ObjectType, moduleUses);

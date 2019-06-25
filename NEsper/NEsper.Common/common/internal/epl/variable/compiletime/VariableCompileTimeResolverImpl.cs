@@ -6,23 +6,21 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.epl.variable.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 {
     public class VariableCompileTimeResolverImpl : VariableCompileTimeResolver
     {
         private readonly string moduleName;
-        private readonly ISet<string> moduleUses;
+        private readonly ICollection<string> moduleUses;
         private readonly VariableRepositoryPreconfigured publicVariables;
         private readonly VariableCompileTimeRegistry compileTimeRegistry;
         private readonly PathRegistry<string, VariableMetaData> pathVariables;
@@ -30,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 
         public VariableCompileTimeResolverImpl(
             string moduleName,
-            ISet<string> moduleUses,
+            ICollection<string> moduleUses,
             VariableRepositoryPreconfigured publicVariables,
             VariableCompileTimeRegistry compileTimeRegistry,
             PathRegistry<string, VariableMetaData> pathVariables,
@@ -56,7 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
         private VariableMetaData ResolvePreconfigured(string variableName)
         {
             VariableMetaData metadata = publicVariables.GetMetadata(variableName);
-            if (metadata == null) {
+            if (metadata == null)
+            {
                 return null;
             }
 
@@ -66,20 +65,24 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 
         private VariableMetaData ResolvePath(string variableName)
         {
-            try {
+            try
+            {
                 Pair<VariableMetaData, string> pair = pathVariables.GetAnyModuleExpectSingle(variableName, moduleUses);
-                if (pair == null) {
+                if (pair == null)
+                {
                     return null;
                 }
 
-                if (!NameAccessModifier.Visible(pair.First.VariableVisibility, pair.First.VariableModuleName, moduleName)) {
+                if (!NameAccessModifier.Visible(pair.First.VariableVisibility, pair.First.VariableModuleName, moduleName))
+                {
                     return null;
                 }
 
                 moduleDependencies.AddPathVariable(variableName, pair.Second);
                 return pair.First;
             }
-            catch (PathException e) {
+            catch (PathException e)
+            {
                 throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.VARIABLE, variableName, e);
             }
         }

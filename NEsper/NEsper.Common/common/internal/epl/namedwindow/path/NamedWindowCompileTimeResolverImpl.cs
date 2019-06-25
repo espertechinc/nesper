@@ -22,14 +22,14 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
     public class NamedWindowCompileTimeResolverImpl : NamedWindowCompileTimeResolver
     {
         private readonly string moduleName;
-        private readonly ISet<string> moduleUses;
+        private readonly ICollection<string> moduleUses;
         private readonly NamedWindowCompileTimeRegistry locals;
         private readonly PathRegistry<string, NamedWindowMetaData> path;
         private readonly ModuleDependenciesCompileTime moduleDependencies;
 
         public NamedWindowCompileTimeResolverImpl(
             string moduleName,
-            ISet<string> moduleUses,
+            ICollection<string> moduleUses,
             NamedWindowCompileTimeRegistry locals,
             PathRegistry<string, NamedWindowMetaData> path,
             ModuleDependenciesCompileTime moduleDependencies)

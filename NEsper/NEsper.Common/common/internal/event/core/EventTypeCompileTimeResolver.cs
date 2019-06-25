@@ -21,12 +21,12 @@ namespace com.espertech.esper.common.@internal.@event.core
         private readonly EventTypeCompileTimeRegistry locals;
         private readonly ModuleDependenciesCompileTime moduleDependencies;
         private readonly string moduleName;
-        private readonly ISet<string> moduleUses;
+        private readonly ICollection<string> moduleUses;
         private readonly EventTypeRepositoryImpl publics;
 
         public EventTypeCompileTimeResolver(
             string moduleName,
-            ISet<string> moduleUses,
+            ICollection<string> moduleUses,
             EventTypeCompileTimeRegistry locals,
             EventTypeRepositoryImpl publics,
             PathRegistry<string, EventType> path,

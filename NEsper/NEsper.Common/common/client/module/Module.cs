@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.client.module
 
         /// <summary>Returns the optional user object that may be attached to the module. </summary>
         /// <value>user object</value>
-        public object UserObject { get; set; }
+        public object UserObjectCompileTime { get; set; }
 
         /// <summary>Returns the module name, if provided. </summary>
         /// <value>module name</value>

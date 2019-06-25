@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using com.espertech.esper.common.client.soda;
 
 namespace com.espertech.esper.common.client.module
 {
@@ -18,7 +19,9 @@ namespace com.espertech.esper.common.client.module
     [Serializable]
     public class ModuleItem
     {
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModuleItem"/> class.
+        /// </summary>
         /// <param name="expression">EPL</param>
         /// <param name="commentOnly">true if the statement consists only of comments or whitespace</param>
         /// <param name="lineNumber">line number</param>
@@ -33,6 +36,27 @@ namespace com.espertech.esper.common.client.module
         {
             Expression = expression;
             IsCommentOnly = commentOnly;
+            LineNumber = lineNumber;
+            CharPosStart = charPosStart;
+            CharPosEnd = charPosEnd;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModuleItem"/> class.
+        /// </summary>
+        /// <param name="model">The statement object model.</param>
+        /// <param name="isCommentOnly">if set to <c>true</c> [is comment only].</param>
+        /// <param name="lineNumber">The line number.</param>
+        /// <param name="charPosStart">The character position start.</param>
+        /// <param name="charPosEnd">The character position end.</param>
+        public ModuleItem(EPStatementObjectModel model,
+            bool isCommentOnly,
+            int lineNumber,
+            int charPosStart,
+            int charPosEnd)
+        {
+            Model = model;
+            IsCommentOnly = isCommentOnly;
             LineNumber = lineNumber;
             CharPosStart = charPosStart;
             CharPosEnd = charPosEnd;
@@ -57,5 +81,9 @@ namespace com.espertech.esper.common.client.module
         /// <summary>Returns end position of character on line for the item. </summary>
         /// <value>position</value>
         public int CharPosEnd { get; set; }
+
+        /// <summary>Returns the statement object model when provided</summary>
+        /// <value>the statement object model</value>
+        public EPStatementObjectModel Model { get; private set; }
     }
 }

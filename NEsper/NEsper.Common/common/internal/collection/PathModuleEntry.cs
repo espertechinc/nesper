@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.collection
         public Pair<TE, string> GetAnyModuleExpectSingle(
             string entityName,
             PathRegistryObjectType objectType,
-            ISet<string> moduleNames)
+            ICollection<string> moduleNames)
         {
             if (modules.IsEmpty()) {
                 return null;

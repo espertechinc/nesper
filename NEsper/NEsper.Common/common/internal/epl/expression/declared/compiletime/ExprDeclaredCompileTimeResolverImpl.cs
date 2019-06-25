@@ -6,14 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
@@ -21,14 +20,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
     public class ExprDeclaredCompileTimeResolverImpl : ExprDeclaredCompileTimeResolver
     {
         private readonly string moduleName;
-        private readonly ISet<string> moduleUses;
+        private readonly ICollection<string> moduleUses;
         private readonly ExprDeclaredCompileTimeRegistry locals;
         private readonly PathRegistry<string, ExpressionDeclItem> path;
         private readonly ModuleDependenciesCompileTime moduleDependencies;
 
         public ExprDeclaredCompileTimeResolverImpl(
             string moduleName,
-            ISet<string> moduleUses,
+            ICollection<string> moduleUses,
             ExprDeclaredCompileTimeRegistry locals,
             PathRegistry<string, ExpressionDeclItem> path,
             ModuleDependenciesCompileTime moduleDependencies)
@@ -44,14 +43,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
             // try self-originated protected types first
             ExpressionDeclItem localExpr = locals.Expressions.Get(name);
-            if (localExpr != null) {
+            if (localExpr != null)
+            {
                 return localExpr;
             }
 
-            try {
+            try
+            {
                 var expression = path.GetAnyModuleExpectSingle(name, moduleUses);
-                if (expression != null) {
-                    if (!NameAccessModifier.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName)) {
+                if (expression != null)
+                {
+                    if (!NameAccessModifier.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName))
+                    {
                         return null;
                     }
 
@@ -59,7 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     return expression.First;
                 }
             }
-            catch (PathException e) {
+            catch (PathException e)
+            {
                 throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.EXPRDECL, name, e);
             }
 

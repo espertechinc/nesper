@@ -4,7 +4,7 @@ options {
 	language=CSharp;
 }
 
-@namespace { com.espertech.esper.epl.generated }
+@namespace { com.espertech.esper.compiler.@internal.generated }
 @header {
   using System;
   using System.Collections.Generic;
@@ -265,8 +265,6 @@ options {
 //----------------------------------------------------------------------------
 // Start Rules
 //----------------------------------------------------------------------------
-startPatternExpressionRule : (annotationEnum | expressionDecl)* patternExpression EOF;
-
 startEPLExpressionRule : (annotationEnum | expressionDecl)* eplExpression EOF;
 
 startEventPropertyRule : eventProperty EOF;
@@ -345,13 +343,13 @@ onExpr : ON onStreamExpr
 	(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ outputClauseInsert?)? | onSetExpr | onUpdateExpr | onMergeExpr)
 	;
 
-onStreamExpr : (eventFilterExpression | patternInclusionExpression) (AS i=IDENT | i=IDENT)?;
+onStreamExpr : (eventFilterExpression | patternInclusionExpression) (AS identOrTicked | identOrTicked)?;
 
 updateExpr : UPDATE ISTREAM updateDetails;
 
-updateDetails :	classIdentifier (AS i=IDENT | i=IDENT)? SET onSetAssignmentList (WHERE whereClause)?;
+updateDetails :	classIdentifier (AS identOrTicked | identOrTicked)? SET onSetAssignmentList (WHERE whereClause)?;
 
-onMergeExpr : MERGE INTO? n=IDENT (AS i=IDENT | i=IDENT)? (WHERE whereClause)? mergeItem+;
+onMergeExpr : MERGE INTO? n=IDENT (AS identOrTicked | identOrTicked)? (onMergeDirectInsert | (WHERE whereClause)? mergeItem+);
 
 mergeItem : (mergeMatched | mergeUnmatched);
 
@@ -363,6 +361,8 @@ mergeMatchedItem : THEN (
 		  | mergeInsert
 		  )
 		  ;
+
+onMergeDirectInsert: INSERT (LPAREN columnList RPAREN)? SELECT selectionList;
 
 mergeUnmatched : WHEN NOT_EXPR MATCHED (AND_EXPR expression)? mergeUnmatchedItem+;
 
@@ -386,7 +386,7 @@ onSelectExpr
 onUpdateExpr
 @init  { paraphrases.Push("on-update clause"); }
 @after { paraphrases.Pop(); }
-		: UPDATE n=IDENT (AS i=IDENT | i=IDENT)? SET onSetAssignmentList (WHERE whereClause)?;
+		: UPDATE n=IDENT (AS identOrTicked | identOrTicked)? SET onSetAssignmentList (WHERE whereClause)?;
 
 onSelectInsertExpr
 @init  { paraphrases.Push("on-select-insert clause"); }
@@ -394,7 +394,7 @@ onSelectInsertExpr
 		: INSERT insertIntoExpr SELECT selectionList onSelectInsertFromClause? (WHERE whereClause)?;
 
 onSelectInsertFromClause
-		: FROM propertyExpression (AS i=IDENT | i=IDENT)?;
+		: FROM propertyExpression (AS identOrTicked | identOrTicked)?;
 
 outputClauseInsert : OUTPUT (f=FIRST | a=ALL);
 
@@ -412,7 +412,7 @@ onSetAssignmentList : onSetAssignment (COMMA onSetAssignment)*;
 
 onSetAssignment : eventProperty EQUALS expression | expression;
 
-onExprFrom : FROM n=IDENT (AS i=IDENT | i=IDENT)?;
+onExprFrom : FROM n=IDENT (AS identOrTicked | identOrTicked)?;
 
 createWindowExpr : CREATE WINDOW i=IDENT viewExpressions? (ru=RETAINUNION|ri=RETAININTERSECTION)? AS?
 		  (
@@ -427,24 +427,22 @@ createIndexExpr : CREATE (u=IDENT)? INDEX n=IDENT ON w=IDENT LPAREN createIndexC
 
 createIndexColumnList : createIndexColumn (COMMA createIndexColumn)*;
 
-createIndexColumn : (expression | LPAREN i=expressionList? RPAREN) (t=IDENT (LPAREN p=expressionList? RPAREN)? )?;	
+createIndexColumn : (expression | LPAREN i=expressionList? RPAREN) (t=IDENT (LPAREN p=expressionList? RPAREN)? )?;
 
-createVariableExpr : CREATE c=IDENT? VARIABLE classIdentifier (arr=LBRACK p=IDENT? RBRACK)? n=IDENT (EQUALS expression)?;
+createVariableExpr : CREATE c=IDENT? VARIABLE classIdentifierWithDimensions n=IDENT (EQUALS expression)?;
 
 createTableExpr : CREATE TABLE n=IDENT AS? LPAREN createTableColumnList RPAREN;
 
 createTableColumnList : createTableColumn (COMMA createTableColumn)*;
 
-createTableColumn : n=IDENT (createTableColumnPlain | builtinFunc | libFunction) p=IDENT? k=IDENT? (typeExpressionAnnotation | annotationEnum)*;
-
-createTableColumnPlain : classIdentifier (b=LBRACK p=IDENT? RBRACK)?;
+createTableColumn : n=IDENT (classIdentifierWithDimensions | builtinFunc | libFunction) p=IDENT? k=IDENT? (typeExpressionAnnotation | annotationEnum)*;
 
 createColumnList
 @init  { paraphrases.Push("column list"); }
 @after { paraphrases.Pop(); }
 		: createColumnListElement (COMMA createColumnListElement)*;
 
-createColumnListElement : classIdentifier (VALUE_NULL | (classIdentifier (b=LBRACK p=IDENT? RBRACK)?)) ;
+createColumnListElement : classIdentifier (VALUE_NULL | classIdentifierWithDimensions) ;
 
 createSelectionList
 @init  { paraphrases.Push("select clause"); }
@@ -463,7 +461,7 @@ createSchemaDef : SCHEMA name=IDENT AS?
 		  |   	LPAREN createColumnList? RPAREN
 		  ) createSchemaQual*;
 
-fafDelete : DELETE FROM classIdentifier (AS i=IDENT | i=IDENT)? (WHERE whereClause)?;
+fafDelete : DELETE FROM classIdentifier (AS identOrTicked | identOrTicked)? (WHERE whereClause)?;
 
 fafUpdate : UPDATE updateDetails;
 
@@ -512,7 +510,7 @@ contextContextNested : CONTEXT name=IDENT AS? createContextChoice;
 
 createContextChoice : START (ATCHAR i=IDENT | r1=createContextRangePoint) (END r2=createContextRangePoint)?
 		| INITIATED (BY)? createContextDistinct? (ATCHAR i=IDENT AND_EXPR)? r1=createContextRangePoint (TERMINATED (BY)? r2=createContextRangePoint)?
-		| PARTITION (BY)? createContextPartitionItem (COMMA createContextPartitionItem)*
+		| PARTITION (BY)? createContextPartitionItem (COMMA createContextPartitionItem)* createContextPartitionInit? createContextPartitionTerm?
 		| createContextGroupItem (COMMA createContextGroupItem)* FROM eventFilterExpression
 		| COALESCE (BY)? createContextCoalesceItem (COMMA createContextCoalesceItem)* g=IDENT number (p=IDENT)?;
 
@@ -525,11 +523,15 @@ createContextRangePoint : createContextFilter
 
 createContextFilter : eventFilterExpression (AS? i=IDENT)?;
 
-createContextPartitionItem : eventProperty ((AND_EXPR|COMMA) eventProperty)* FROM eventFilterExpression;
+createContextPartitionItem : eventProperty ((AND_EXPR|COMMA) eventProperty)* FROM eventFilterExpression (AS? keywordAllowedIdent)?;
 
 createContextCoalesceItem : libFunctionNoClass FROM eventFilterExpression;
 
 createContextGroupItem : GROUP BY? expression AS i=IDENT;
+
+createContextPartitionInit : INITIATED (BY)? createContextFilter (COMMA createContextFilter)*;
+
+createContextPartitionTerm : TERMINATED (BY)? createContextRangePoint;
 
 createSchemaQual : i=IDENT columnList;
 
@@ -595,7 +597,7 @@ selectionListElementAnno : ATCHAR i=IDENT;
 streamSelector : s=IDENT DOT STAR (AS i=IDENT)?;
 
 streamExpression : (eventFilterExpression | patternInclusionExpression | databaseJoinExpression | methodJoinExpression )
-		viewExpressions? (AS i=IDENT | i=IDENT)? (u=UNIDIRECTIONAL)? (ru=RETAINUNION|ri=RETAININTERSECTION)?;
+		viewExpressions? (AS identOrTicked | identOrTicked)? (u=UNIDIRECTIONAL)? (ru=RETAINUNION|ri=RETAININTERSECTION)?;
 
 forExpr : FOR i=IDENT (LPAREN expressionList? RPAREN)?;
 
@@ -803,7 +805,7 @@ additiveExpression : multiplyExpression ( (PLUS|MINUS) multiplyExpression )*;
 
 multiplyExpression : unaryExpression ( (STAR|DIV|MOD) unaryExpression )*;
 
-unaryExpression : MINUS eventProperty
+unaryExpression : unaryMinus
 		| constant
 		| substitutionCanChain
 		| inner=LPAREN expression RPAREN chainedFunction?
@@ -817,6 +819,8 @@ unaryExpression : MINUS eventProperty
 		| b=IDENT LBRACK expression (COMMA expression)* RBRACK chainedFunction?
 		| jsonobject
 		;
+
+unaryMinus : MINUS eventProperty;
 
 substitutionCanChain : substitution chainedFunction?;
 
@@ -838,7 +842,7 @@ subQueryExpr
 subSelectFilterExpr
 @init  { paraphrases.Push("subquery filter specification"); }
 @after { paraphrases.Pop(); }
-		: eventFilterExpression viewExpressions? (AS i=IDENT | i=IDENT)? (ru=RETAINUNION|ri=RETAININTERSECTION)?;
+		: eventFilterExpression viewExpressions? (AS identOrTicked | identOrTicked)? (ru=RETAINUNION|ri=RETAININTERSECTION)?;
 
 arrayExpression : LCURLY (expression (COMMA expression)* )? RCURLY chainedFunction?;
 
@@ -861,7 +865,7 @@ builtinFunc : SUM LPAREN (ALL | DISTINCT)? expressionListWithNamed RPAREN   			#
 		// therefore handled in code via libFunction as below
 		| INSTANCEOF LPAREN expression COMMA classIdentifier (COMMA classIdentifier)* RPAREN	#builtin_instanceof
 		| TYPEOF LPAREN expression RPAREN							#builtin_typeof
-		| CAST LPAREN expression (COMMA | AS) classIdentifier (COMMA expressionNamedParameter)? RPAREN chainedFunction?	#builtin_cast
+		| CAST LPAREN expression (COMMA | AS) classIdentifierWithDimensions (COMMA expressionNamedParameter)? RPAREN chainedFunction?	#builtin_cast
 		| EXISTS LPAREN eventProperty RPAREN						#builtin_exists
 		| CURRENT_TIMESTAMP (LPAREN RPAREN)? chainedFunction?				#builtin_currts
 		| ISTREAM LPAREN RPAREN								#builtin_istream
@@ -945,7 +949,7 @@ matchUntilRange : LBRACK ( low=expression (c1=COLON high=expression?)? | c2=COLO
 
 //----------------------------------------------------------------------------
 // Filter expressions
-//   Operators are the usual bunch =, <, >, =<, >=
+//   Operators are the usual bunch =, <, >, <=, >=
 //	 Ranges such as 'property in [a,b]' are allowed and ([ and )] distinguish open/closed range endpoints
 //----------------------------------------------------------------------------
 eventFilterExpression
@@ -976,9 +980,11 @@ patternFilterExpression
 
 patternFilterAnnotation : ATCHAR i=IDENT (LPAREN number RPAREN)?;
 
-classIdentifier : i1=escapableStr (DOT i2=escapableStr)*;
+classIdentifierWithDimensions : classIdentifier dimensions*;
 
-slashIdentifier : (d=DIV)? i1=escapableStr (DIV i2=escapableStr)*;
+dimensions : LBRACK p=IDENT? RBRACK;
+
+classIdentifier : i1=escapableStr (DOT i2=escapableStr)*;
 
 expressionListWithNamed : expressionWithNamed (COMMA expressionWithNamed)*;
 
@@ -1043,6 +1049,8 @@ eventPropertyAtomic : eventPropertyIdent (
 			)?;
 
 eventPropertyIdent : ipi=keywordAllowedIdent (ESCAPECHAR DOT ipi2=keywordAllowedIdent?)*;
+
+identOrTicked : i1=IDENT | i2=TICKED_STRING_LITERAL;
 
 keywordAllowedIdent : i1=IDENT
 		| i2=TICKED_STRING_LITERAL
@@ -1132,7 +1140,9 @@ microsecondPart : (numberconstant|i=IDENT|substitution) (TIMEPERIOD_MICROSECONDS
 
 number : IntegerLiteral | FloatingPointLiteral;
 
-substitution : q=QUESTION (COLON slashIdentifier)?;
+substitution : q=QUESTION (COLON substitutionSlashIdent? (COLON classIdentifierWithDimensions)? )?;
+
+substitutionSlashIdent : (d=DIV)? i1=escapableStr (DIV i2=escapableStr)*;
 
 constant : numberconstant
 		| stringconstant
@@ -1416,7 +1426,7 @@ EscapeSequence	:	'\\'
 // that after we match the rule, we look in the literals table to see
 // if it's a literal or really an identifer
 IDENT
-	:	('a'..'z'|'_') ('a'..'z'|'_'|'$'|'0'..'9')*
+	:	('a'..'z'|'_'|'$') ('a'..'z'|'_'|'0'..'9'|'$')*
 	;
 
 IntegerLiteral

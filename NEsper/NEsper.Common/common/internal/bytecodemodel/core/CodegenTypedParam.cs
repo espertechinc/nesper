@@ -9,8 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
@@ -32,7 +31,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             bool memberWhenCtorParam,
             bool isPublic)
         {
-            if (type == null && typeName == null) {
+            if (type == null && typeName == null)
+            {
                 throw new ArgumentException("Invalid null type");
             }
 
@@ -103,7 +103,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             return this;
         }
 
-        public string Name {
+        public string Name
+        {
             get => name;
         }
 
@@ -111,10 +112,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             StringBuilder builder,
             IDictionary<Type, string> imports)
         {
-            if (type != null) {
+            if (type != null)
+            {
                 AppendClassName(builder, type, null, imports);
             }
-            else {
+            else
+            {
                 builder.Append(typeName);
             }
 
@@ -123,7 +126,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public void MergeClasses(ISet<Type> classes)
         {
-            if (type != null) {
+            if (type != null)
+            {
                 classes.Add(type);
             }
         }
@@ -132,10 +136,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             StringBuilder builder,
             IDictionary<Type, string> imports)
         {
-            if (type != null) {
+            if (type != null)
+            {
                 AppendClassName(builder, type, null, imports);
             }
-            else {
+            else
+            {
                 builder.Append(typeName);
             }
 
@@ -146,28 +152,36 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             StringBuilder builder,
             IDictionary<Type, string> imports)
         {
-            if (type != null) {
+            if (type != null)
+            {
                 AppendClassName(builder, type, null, imports);
             }
-            else {
+            else
+            {
                 builder.Append(typeName);
             }
         }
 
-        public bool IsMemberWhenCtorParam {
+        public bool IsMemberWhenCtorParam
+        {
             get => memberWhenCtorParam;
         }
 
-        public bool IsPublic {
+        public bool IsPublic
+        {
             get => isPublic;
         }
 
-        public bool IsFinal {
+        public bool IsFinal
+        {
             get => isFinal;
+            set => isFinal = value;
         }
 
-        public bool IsStatic {
+        public bool IsStatic
+        {
             get => isStatic;
+            set => isStatic = value;
         }
 
         public override string ToString()

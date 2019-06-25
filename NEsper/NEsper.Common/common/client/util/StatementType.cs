@@ -69,7 +69,10 @@ namespace com.espertech.esper.common.client.util
         UPDATE,
 
         /// <summary>EsperIO </summary>
-        ESPERIO
+        ESPERIO,
+
+        /// <summary>Statement for compiling an expression.</summary>
+        INTERNAL_USE_API_COMPILE_EXPR
     }
 
     public static class StatementTypeExtension

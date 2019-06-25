@@ -12,7 +12,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
     /// <summary>
-    ///     Agents change mult-function aggregation state.
+    ///     Agents change multi-function aggregation state.
     /// </summary>
     public interface AggregationMultiFunctionAgent
     {

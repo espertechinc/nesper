@@ -21,14 +21,14 @@ namespace com.espertech.esper.common.@internal.context.compile
     public class ContextCompileTimeResolverImpl : ContextCompileTimeResolver
     {
         private readonly string moduleName;
-        private readonly ISet<string> moduleUses;
+        private readonly ICollection<string> moduleUses;
         private readonly ContextCompileTimeRegistry locals;
         private readonly PathRegistry<string, ContextMetaData> path;
         private readonly ModuleDependenciesCompileTime moduleDependencies;
 
         public ContextCompileTimeResolverImpl(
             string moduleName,
-            ISet<string> moduleUses,
+            ICollection<string> moduleUses,
             ContextCompileTimeRegistry locals,
             PathRegistry<string, ContextMetaData> path,
             ModuleDependenciesCompileTime moduleDependencies)
