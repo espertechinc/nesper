@@ -1,71 +1,52 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.codegen.core;
-using com.espertech.esper.codegen.model.expression;
-using com.espertech.esper.compat;
-using com.espertech.esper.events;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.@event.core;
 
 using NEsper.Avro.Extensions;
 
-using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
-
 namespace NEsper.Avro.Getter
 {
-    using Map = IDictionary<string, object>;
-
     public class AvroEventBeanGetterNestedMapped : EventPropertyGetterSPI
     {
-        private readonly Field _top;
-        private readonly Field _pos;
         private readonly string _key;
+        private readonly Field _pos;
+        private readonly Field _top;
 
-        public AvroEventBeanGetterNestedMapped(Field top, Field pos, string key)
+        public AvroEventBeanGetterNestedMapped(
+            Field top,
+            Field pos,
+            string key)
         {
             _top = top;
             _pos = pos;
             _key = key;
         }
 
-        public Object Get(EventBean eventBean)
+        public object Get(EventBean eventBean)
         {
-            GenericRecord record = (GenericRecord)eventBean.Underlying;
-            GenericRecord inner = (GenericRecord)record.Get(_top);
+            var record = (GenericRecord) eventBean.Underlying;
+            var inner = (GenericRecord) record.Get(_top);
             if (inner == null)
             {
                 return null;
             }
 
-            var map = inner.Get(_pos).AsStringDictionary();
+            var map = (IDictionary<string, object>) inner.Get(_pos);
             return AvroEventBeanGetterMapped.GetAvroMappedValueWNullCheck(map, _key);
-        }
-
-        private string GetCodegen(ICodegenContext context)
-        {
-            return context.AddMethod(typeof(Object), typeof(GenericRecord), "record", GetType())
-                .DeclareVar(
-                    typeof(GenericRecord), "inner", Cast(
-                        typeof(GenericRecord),
-                        ExprDotMethod(Ref("record"), "Get", Constant(_top))))
-                .IfRefNullReturnNull("inner")
-                .DeclareVar(
-                    typeof(Map), "map",
-                    Cast(typeof(Map), ExprDotMethod(Ref("inner"), "Get", Constant(_pos))))
-                .MethodReturn(
-                    StaticMethod(
-                        typeof(AvroEventBeanGetterMapped), "GetAvroMappedValueWNullCheck", Ref("map"), Constant(_key)));
         }
 
         public bool IsExistsProperty(EventBean eventBean)
@@ -73,39 +54,70 @@ namespace NEsper.Avro.Getter
             return true;
         }
 
-        public Object GetFragment(EventBean eventBean)
+        public object GetFragment(EventBean eventBean)
         {
             return null;
         }
 
-        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return CodegenUnderlyingGet(CastUnderlying(typeof(GenericRecord), beanExpression), context);
+            return UnderlyingGetCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
         }
 
-        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return ConstantTrue();
+            return CodegenExpressionBuilder.ConstantTrue();
         }
 
-        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return ConstantNull();
+            return CodegenExpressionBuilder.ConstantNull();
         }
 
-        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return LocalMethod(GetCodegen(context), underlyingExpression);
+            return CodegenExpressionBuilder.LocalMethod(GetCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
-        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return ConstantTrue();
+            return CodegenExpressionBuilder.ConstantTrue();
         }
 
-        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return ConstantNull();
+            return CodegenExpressionBuilder.ConstantNull();
+        }
+
+        private CodegenMethod GetCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(GenericRecord), "record").Block
+                .DeclareVar(typeof(GenericRecord), "inner", CodegenExpressionBuilder.Cast(typeof(GenericRecord), CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("record"), "get", CodegenExpressionBuilder.Constant(_top))))
+                .IfRefNullReturnNull("inner")
+                .DeclareVar(
+                    typeof(IDictionary<string, object>), "map",
+                    CodegenExpressionBuilder.Cast(typeof(IDictionary<string, object>), CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("inner"), "get", CodegenExpressionBuilder.Constant(_pos))))
+                .MethodReturn(CodegenExpressionBuilder.StaticMethod(typeof(AvroEventBeanGetterMapped), "getAvroMappedValueWNullCheck", CodegenExpressionBuilder.Ref("map"), CodegenExpressionBuilder.Constant(_key)));
         }
     }
 } // end of namespace

@@ -11,9 +11,9 @@ using System.Linq;
 
 using Avro;
 
-using Newtonsoft.Json.Linq;
-
 using NEsper.Avro.Extensions;
+
+using Newtonsoft.Json.Linq;
 
 namespace NEsper.Avro.IO
 {
@@ -111,27 +111,35 @@ namespace NEsper.Avro.IO
                 case Schema.Type.Null:
                     jtoken = new JValue("null");
                     break;
+
                 case Schema.Type.Boolean:
                     jtoken = new JValue("boolean");
                     break;
+
                 case Schema.Type.Int:
                     jtoken = new JValue("int");
                     break;
+
                 case Schema.Type.Long:
                     jtoken = new JValue("long");
                     break;
+
                 case Schema.Type.Float:
                     jtoken = new JValue("float");
                     break;
+
                 case Schema.Type.Double:
                     jtoken = new JValue("double");
                     break;
+
                 case Schema.Type.String:
                     jtoken = new JValue("string");
                     break;
+
                 case Schema.Type.Bytes:
                     jtoken = new JValue("bytes");
                     break;
+
                 default:
                     throw new ArgumentException("unknown schema tag: " + schema.Tag, nameof(schema));
             }
@@ -174,21 +182,28 @@ namespace NEsper.Avro.IO
                 case Schema.Type.Double:
                 case Schema.Type.String:
                 case Schema.Type.Bytes:
-                    return EncodePrimitive((PrimitiveSchema)schema);
+                    return EncodePrimitive((PrimitiveSchema) schema);
+
                 case Schema.Type.Error:
                     throw new NotImplementedException();
                 case Schema.Type.Record:
                     return EncodeRecord((RecordSchema) schema);
+
                 case Schema.Type.Enumeration:
                     return EncodeEnum((EnumSchema) schema);
+
                 case Schema.Type.Fixed:
                     return EncodeFixed((FixedSchema) schema);
+
                 case Schema.Type.Array:
                     return EncodeArray((ArraySchema) schema);
+
                 case Schema.Type.Map:
-                    return EncodeMap((MapSchema)schema);
+                    return EncodeMap((MapSchema) schema);
+
                 case Schema.Type.Union:
                     return EncodeUnion((UnionSchema) schema);
+
                 default:
                     throw new ArgumentException("unknown schema tag: " + schema.Tag, nameof(schema));
             }

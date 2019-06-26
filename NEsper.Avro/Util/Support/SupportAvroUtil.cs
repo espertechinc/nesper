@@ -13,21 +13,20 @@ using System.IO;
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.events;
-using com.espertech.esper.events.avro;
-
-using Newtonsoft.Json;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.IO;
 
+using Newtonsoft.Json;
+
 namespace NEsper.Avro.Util.Support
 {
     public static class SupportAvroUtil
     {
-
         public static string AvroToJson(EventBean theEvent)
         {
             //var schema = (Schema) ((AvroSchemaEventType) theEvent.EventType).Schema;
@@ -111,25 +110,10 @@ namespace NEsper.Avro.Util.Support
             return null;
         }
 
-        public static GenericRecord GetAvroRecord(EPServiceProvider epService, string eventTypeName)
+        public static AvroEventType MakeAvroSupportEventType(Schema schema)
         {
-            return new GenericRecord(GetAvroSchema(epService, eventTypeName).AsRecordSchema());
-        }
-
-        public static Schema GetAvroSchema(EPServiceProvider epService, string eventTypeName)
-        {
-            return GetAvroSchema(epService.EPAdministrator.Configuration.GetEventType(eventTypeName));
-        }
-
-        public static AvroEventType MakeAvroSupportEventType(EventAdapterService eventAdapterService, Schema schema)
-        {
-            var metadata = EventTypeMetadata.CreateNonPonoApplicationType(
-                    ApplicationType.AVRO, "typename", true, true, true, false, false);
-            return new AvroEventType(
-                metadata, "typename", 1,
-                eventAdapterService,
-                schema.AsRecordSchema(),
-                null, null, null, null);
+            EventTypeMetadata metadata = new EventTypeMetadata("typename", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.AVRO, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+            return new AvroEventType(metadata, schema, null, null, null, null, null, new EventTypeAvroHandlerImpl());
         }
 
         private static void AddSchemaFieldNames(ISet<string> names, Schema schema)

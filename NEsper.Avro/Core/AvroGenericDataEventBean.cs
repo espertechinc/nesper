@@ -1,76 +1,64 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using Avro.Generic;
+
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.@event.core;
 
 namespace NEsper.Avro.Core
 {
-    public class AvroGenericDataEventBean
-        : EventBean
-        , AvroGenericDataBackedEventBean
-        , AvroBackedBean
+    public class AvroGenericDataEventBean : EventBean,
+        AvroGenericDataBackedEventBean,
+        AvroBackedBean
     {
-        private GenericRecord _record;
-        private readonly EventType _eventType;
-
-        public AvroGenericDataEventBean(GenericRecord record, EventType eventType)
+        public AvroGenericDataEventBean(
+            GenericRecord record,
+            EventType eventType)
         {
-            _record = record;
-            _eventType = eventType;
+            Properties = record;
+            EventType = eventType;
         }
 
-        public EventType EventType
+        public GenericRecord Properties { get; private set; }
+
+        public object GenericRecordDotData
         {
-            get { return _eventType; }
+            get => Properties;
+            set => Properties = (GenericRecord) value;
         }
 
-        public object Underlying
-        {
-            get { return _record; }
-        }
+        public EventType EventType { get; }
 
-        public object this[string property]
-        {
-            get { return Get(property); }
-        }
+        public object Underlying => Properties;
 
-        public Object Get(string property)
+        public object Get(string property)
         {
-            var getter = _eventType.GetGetter(property);
+            var getter = EventType.GetGetter(property);
             if (getter == null)
             {
-                throw new PropertyAccessException(
-                    "Property named '" + property + "' is not a valid property name for this type");
+                throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
             }
+
             return getter.Get(this);
         }
 
-        public Object GetFragment(string propertyExpression)
+        public object GetFragment(string propertyExpression)
         {
-            EventPropertyGetter getter = _eventType.GetGetter(propertyExpression);
+            var getter = EventType.GetGetter(propertyExpression);
             if (getter == null)
             {
                 throw PropertyAccessException.NotAValidProperty(propertyExpression);
             }
+
             return getter.GetFragment(this);
         }
 
-        public GenericRecord Properties
-        {
-            get { return _record; }
-        }
-
-        public object GenericRecordDotData
-        {
-            get { return _record; }
-            set { this._record = (GenericRecord) value; }
-        }
+        public object this[string property] => Get(property);
     }
 } // end of namespace

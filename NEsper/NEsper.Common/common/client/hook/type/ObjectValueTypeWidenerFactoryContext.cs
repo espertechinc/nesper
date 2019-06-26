@@ -11,76 +11,51 @@ using System;
 namespace com.espertech.esper.common.client.hook.type
 {
     /// <summary>
-    /// For Avro types for widening objects to Avro record values, see <seealso cref="ObjectValueTypeWidenerFactory" />
+    ///     For Avro types for widening objects to Avro record values, see <seealso cref="ObjectValueTypeWidenerFactory" />
     /// </summary>
     public class ObjectValueTypeWidenerFactoryContext
     {
-        private readonly Type clazz;
-        private readonly string propertyName;
-        private readonly EventType eventType;
-        private readonly string statementName;
-        private readonly string engineURI;
-
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="clazz">class</param>
         /// <param name="propertyName">property name</param>
         /// <param name="eventType">event type</param>
         /// <param name="statementName">statement name</param>
-        /// <param name="engineURI">engine URI</param>
         public ObjectValueTypeWidenerFactoryContext(
             Type clazz,
             string propertyName,
             EventType eventType,
-            string statementName,
-            string engineURI)
+            string statementName)
         {
-            this.clazz = clazz;
-            this.propertyName = propertyName;
-            this.eventType = eventType;
-            this.statementName = statementName;
-            this.engineURI = engineURI;
+            Clazz = clazz;
+            PropertyName = propertyName;
+            EventType = eventType;
+            StatementName = statementName;
         }
 
         /// <summary>
-        /// Returns the class
+        ///     Returns the class
         /// </summary>
         /// <returns>class</returns>
-        public Type Clazz {
-            get => clazz;
-        }
+        public Type Clazz { get; }
 
         /// <summary>
-        /// Returns the property name
+        ///     Returns the property name
         /// </summary>
         /// <returns>property name</returns>
-        public string PropertyName {
-            get => propertyName;
-        }
+        public string PropertyName { get; }
 
         /// <summary>
-        /// Returns the statement name
+        ///     Returns the statement name
         /// </summary>
         /// <returns>statement name</returns>
-        public string StatementName {
-            get => statementName;
-        }
+        public string StatementName { get; }
 
         /// <summary>
-        /// Returns the engine URI
-        /// </summary>
-        /// <returns>engine URI</returns>
-        public string EngineURI {
-            get => engineURI;
-        }
-
-        /// <summary>
-        /// Returns the event type
+        ///     Returns the event type
         /// </summary>
         /// <returns>event type</returns>
-        public EventType EventType {
-            get => eventType;
-        }
+        public EventType EventType { get; }
     }
 } // end of namespace

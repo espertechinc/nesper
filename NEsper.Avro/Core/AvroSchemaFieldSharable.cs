@@ -6,18 +6,33 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using Avro.Generic;
+using System;
 
-using com.espertech.esper.common.@internal.@event.core;
+using Avro;
+
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace NEsper.Avro.Core
 {
-    public interface AvroEventPropertyGetter : EventPropertyGetterSPI
+    public class AvroSchemaFieldSharable : CodegenFieldSharable
     {
-        object GetAvroFieldValue(GenericRecord record);
+        private readonly Schema _schema;
 
-        object GetAvroFragment(GenericRecord record);
+        public AvroSchemaFieldSharable(Schema schema)
+        {
+            _schema = schema;
+        }
 
-        bool IsExistsPropertyAvro(GenericRecord record);
+        public Type Type()
+        {
+            return typeof(Schema);
+        }
+
+        public CodegenExpression InitCtorScoped()
+        {
+            return CodegenExpressionBuilder.StaticMethod<Schema>(
+                    "Parse", CodegenExpressionBuilder.Constant(_schema.ToString()));
+        }
     }
 } // end of namespace

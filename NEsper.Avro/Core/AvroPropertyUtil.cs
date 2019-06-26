@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,14 @@ using System;
 using System.Collections.Generic;
 
 using Avro;
+
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.@event.avro;
+using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.property;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
+
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Getter;
 
@@ -17,43 +25,44 @@ namespace NEsper.Avro.Core
 {
     public class AvroPropertyUtil
     {
-        public static Type PropertyType(Schema fieldSchema, Property property)
+        public static Type PropertyType(
+            Schema fieldSchema,
+            Property property)
         {
             var desc = AvroFieldUtil.FieldForProperty(fieldSchema, property);
             if (desc == null)
             {
                 return null;
             }
+
             if (desc.IsDynamic)
             {
-                return typeof (Object);
+                return typeof(object);
             }
+
             Schema typeSchema = desc.Field.Schema;
             if (desc.IsAccessedByIndex)
             {
-                if (desc.Field.Schema.Tag == Schema.Type.Array)
-                {
-                    typeSchema = desc.Field.Schema.GetElementType();
-                }
-                else if (desc.Field.Schema.Tag == Schema.Type.String)
-                {
-                    return typeof(char);
-                }
+                typeSchema = desc.Field.Schema.AsArraySchema().ItemSchema;
             }
             else if (desc.IsAccessedByKey)
             {
-                typeSchema = desc.Field.Schema.GetValueType();
+                typeSchema = desc.Field.Schema.AsMapSchema().ValueSchema;
             }
+
             return AvroTypeUtil.PropertyType(typeSchema);
         }
 
         public static EventPropertyGetterSPI GetGetter(
             Schema avroSchema,
+            string moduleName,
             Dictionary<string, EventPropertyGetterSPI> propertyGetterCache,
             IDictionary<string, PropertySetDescriptorItem> propertyDescriptors,
             string propertyName,
             bool addToCache,
-            EventAdapterService eventAdapterService)
+            EventBeanTypedEventFactory eventAdapterService,
+            EventTypeAvroHandler eventTypeAvroHandler,
+            AvroEventTypeFragmentTypeCache fragmentTypeCache)
         {
             var getter = propertyGetterCache.Get(propertyName);
             if (getter != null)
@@ -61,7 +70,7 @@ namespace NEsper.Avro.Core
                 return getter;
             }
 
-            var unescapePropName = ASTUtil.UnescapeDot(propertyName);
+            var unescapePropName = StringValue.UnescapeDot(propertyName);
             var item = propertyDescriptors.Get(unescapePropName);
             if (item != null)
             {
@@ -71,76 +80,66 @@ namespace NEsper.Avro.Core
             }
 
             // see if this is a nested property
-            var index = ASTUtil.UnescapedIndexOfDot(propertyName);
+            var index = StringValue.UnescapedIndexOfDot(propertyName);
             if (index == -1)
             {
                 var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-                if (prop is IndexedProperty)
+                if (prop is IndexedProperty indexedProp)
                 {
-                    var indexedProp = (IndexedProperty) prop;
-                    Field field = avroSchema.GetField(prop.PropertyNameAtomic);
-                    if (field == null)
+                    Field field = avroSchema.GetField(indexedProp.PropertyNameAtomic);
+                    if (field == null || field.Schema.Tag != Schema.Type.Array)
                     {
                         return null;
                     }
-                    switch(field.Schema.Tag)
-                    {
-                        case Schema.Type.Array:
-                            var fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
-                                field.Schema, eventAdapterService);
-                            getter = new AvroEventBeanGetterIndexed(
-                                field, indexedProp.Index,
-                                fragmentEventType == null ? null : fragmentEventType.FragmentType, eventAdapterService);
-                            MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
-                            return getter;
 
-                        case Schema.Type.String:
-                            getter = new AvroEventBeanGetterStringIndexed(field, indexedProp.Index);
-                            MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
-                            return getter;
-
-                        default:
-                            return null;
-                    }
+                    var fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
+                        field.Schema, moduleName, eventAdapterService, eventTypeAvroHandler, fragmentTypeCache);
+                    getter = new AvroEventBeanGetterIndexed(
+                        field, indexedProp.Index, fragmentEventType?.FragmentType, eventAdapterService);
+                    MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
+                    return getter;
                 }
-                else if (prop is MappedProperty)
+
+                if (prop is MappedProperty mappedProp)
                 {
-                    var mappedProp = (MappedProperty) prop;
-                    Field field = avroSchema.GetField(prop.PropertyNameAtomic);
+                    Field field = avroSchema.GetField(mappedProp.PropertyNameAtomic);
                     if (field == null || field.Schema.Tag != Schema.Type.Map)
                     {
                         return null;
                     }
+
                     getter = new AvroEventBeanGetterMapped(field, mappedProp.Key);
                     MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
                     return getter;
                 }
-                if (prop is DynamicIndexedProperty)
+
+                if (prop is DynamicIndexedProperty dynamicIndexedProp)
                 {
-                    var dynamicIndexedProp = (DynamicIndexedProperty) prop;
-                    getter = new AvroEventBeanGetterIndexedDynamic(prop.PropertyNameAtomic, dynamicIndexedProp.Index);
+                    getter = new AvroEventBeanGetterIndexedDynamic(dynamicIndexedProp.PropertyNameAtomic, dynamicIndexedProp.Index);
                     MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
                     return getter;
                 }
-                if (prop is DynamicMappedProperty)
+
+                if (prop is DynamicMappedProperty dynamicMappedProp)
                 {
-                    var dynamicMappedProp = (DynamicMappedProperty) prop;
-                    getter = new AvroEventBeanGetterMappedDynamic(prop.PropertyNameAtomic, dynamicMappedProp.Key);
+                    getter = new AvroEventBeanGetterMappedDynamic(dynamicMappedProp.PropertyNameAtomic, dynamicMappedProp.Key);
                     MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
                     return getter;
                 }
-                else if (prop is DynamicSimpleProperty)
+
+                if (prop is DynamicSimpleProperty)
                 {
                     getter = new AvroEventBeanGetterSimpleDynamic(prop.PropertyNameAtomic);
                     MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
                     return getter;
                 }
+
                 return null; // simple property already cached
             }
 
             // Take apart the nested property into a map key and a nested value class property name
-            var propertyTop = ASTUtil.UnescapeDot(propertyName.Substring(0, index));
-            var propertyNested = propertyName.Substring(index + 1);
+            var propertyTop = StringValue.UnescapeDot(propertyName.Substring(0, index));
+            var propertyNested = propertyName.Substring(index + 1, propertyName.Length);
             var isRootedDynamic = false;
 
             // If the property is dynamic, remove the ? since the property type is defined without
@@ -158,18 +157,19 @@ namespace NEsper.Avro.Core
             {
                 var factory = new GetterNestedFactoryRootedSimple(eventAdapterService, fieldTop);
                 var property = PropertyParser.ParseAndWalk(propertyNested, isRootedDynamic);
-                getter = PropertyGetterNested(factory, fieldTop.Schema, property, eventAdapterService);
+                getter = PropertyGetterNested(
+                    factory, fieldTop.Schema, property, moduleName, eventAdapterService, eventTypeAvroHandler, fragmentTypeCache);
                 MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
                 return getter;
             }
 
             // field is known and is a record
-            if (fieldTop != null && fieldTop.Schema.Tag == Schema.Type.Array && propTop is IndexedProperty)
+            if (fieldTop != null && fieldTop.Schema.Tag == Schema.Type.Array && propTop is IndexedProperty indexedProperty)
             {
-                var factory = new GetterNestedFactoryRootedIndexed(
-                    eventAdapterService, fieldTop, ((IndexedProperty) propTop).Index);
+                var factory = new GetterNestedFactoryRootedIndexed(eventAdapterService, fieldTop, indexedProperty.Index);
                 var property = PropertyParser.ParseAndWalk(propertyNested, isRootedDynamic);
-                getter = PropertyGetterNested(factory, fieldTop.Schema.GetElementType(), property, eventAdapterService);
+                getter = PropertyGetterNested(
+                    factory, fieldTop.Schema.AsArraySchema().ItemSchema, property, moduleName, eventAdapterService, eventTypeAvroHandler, fragmentTypeCache);
                 MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
                 return getter;
             }
@@ -179,6 +179,7 @@ namespace NEsper.Avro.Core
             {
                 return null;
             }
+
             var propertyX = PropertyParser.ParseAndWalk(propertyNested, true);
             var innerGetter = GetDynamicGetter(propertyX);
             getter = new AvroEventBeanGetterNestedDynamicPoly(propertyTop, innerGetter);
@@ -190,7 +191,10 @@ namespace NEsper.Avro.Core
             GetterNestedFactory factory,
             Schema fieldSchema,
             Property property,
-            EventAdapterService eventAdapterService)
+            string moduleName,
+            EventBeanTypedEventFactory eventAdapterService,
+            EventTypeAvroHandler eventTypeAvroHandler,
+            AvroEventTypeFragmentTypeCache fragmentTypeCache)
         {
             if (property is SimpleProperty)
             {
@@ -199,35 +203,36 @@ namespace NEsper.Avro.Core
                 {
                     return null;
                 }
+
                 var fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
-                    fieldNested.Schema, eventAdapterService);
+                    fieldNested.Schema, moduleName, eventAdapterService, eventTypeAvroHandler, fragmentTypeCache);
                 return factory.MakeSimple(
-                    fieldNested, fragmentEventType == null ? null : fragmentEventType.FragmentType);
+                    fieldNested, fragmentEventType?.FragmentType,
+                    AvroTypeUtil.PropertyType(fieldNested.Schema));
             }
 
-            if (property is IndexedProperty)
+            if (property is IndexedProperty indexedProperty)
             {
-                var indexed = (IndexedProperty) property;
-                Field fieldNested = fieldSchema.GetField(property.PropertyNameAtomic);
+                Field fieldNested = fieldSchema.GetField(indexedProperty.PropertyNameAtomic);
                 if (fieldNested == null || fieldNested.Schema.Tag != Schema.Type.Array)
                 {
                     return null;
                 }
+
                 var fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
-                    fieldNested.Schema, eventAdapterService);
-                return factory.MakeIndexed(
-                    fieldNested, indexed.Index, fragmentEventType == null ? null : fragmentEventType.FragmentType);
+                    fieldNested.Schema, moduleName, eventAdapterService, eventTypeAvroHandler, fragmentTypeCache);
+                return factory.MakeIndexed(fieldNested, indexedProperty.Index, fragmentEventType?.FragmentType);
             }
 
-            if (property is MappedProperty)
+            if (property is MappedProperty mappedProperty)
             {
-                var mapped = (MappedProperty) property;
-                Field fieldNested = fieldSchema.GetField(property.PropertyNameAtomic);
+                Field fieldNested = fieldSchema.GetField(mappedProperty.PropertyNameAtomic);
                 if (fieldNested == null || fieldNested.Schema.Tag != Schema.Type.Map)
                 {
                     return null;
                 }
-                return factory.MakeMapped(fieldNested, mapped.Key);
+
+                return factory.MakeMapped(fieldNested, mappedProperty.Key);
             }
 
             if (property is DynamicProperty)
@@ -236,7 +241,8 @@ namespace NEsper.Avro.Core
                 {
                     return factory.MakeDynamicSimple(property.PropertyNameAtomic);
                 }
-                throw new UnsupportedOperationException();
+
+                throw new NotSupportedException();
             }
 
             var nested = (NestedProperty) property;
@@ -249,105 +255,113 @@ namespace NEsper.Avro.Core
                     break;
                 }
             }
+
             if (allSimple)
             {
-                var currentSchemaX = fieldSchema;
-                var countX = 0;
+                var currentSchema = fieldSchema;
+                var count = 0;
                 var path = new Field[nested.Properties.Count];
+                var types = new Type[nested.Properties.Count];
                 foreach (var levelProperty in nested.Properties)
                 {
-                    if (currentSchemaX.Tag != Schema.Type.Record)
+                    if (currentSchema.Tag != Schema.Type.Record)
                     {
                         return null;
                     }
-                    Field fieldNested = currentSchemaX.GetField(levelProperty.PropertyNameAtomic);
+
+                    Field fieldNested = currentSchema.GetField(levelProperty.PropertyNameAtomic);
                     if (fieldNested == null)
                     {
                         return null;
                     }
-                    currentSchemaX = fieldNested.Schema;
-                    path[countX] = fieldNested;
-                    countX++;
+
+                    currentSchema = fieldNested.Schema;
+                    path[count] = fieldNested;
+                    types[count] = AvroTypeUtil.PropertyType(currentSchema);
+                    count++;
                 }
+
                 var fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
-                    currentSchemaX, eventAdapterService);
-                return factory.MakeNestedSimpleMultiLevel(
-                    path, fragmentEventType == null ? null : fragmentEventType.FragmentType);
+                    currentSchema, moduleName, eventAdapterService, eventTypeAvroHandler, fragmentTypeCache);
+                return factory.MakeNestedSimpleMultiLevel(path, types, fragmentEventType?.FragmentType);
             }
 
             var getters = new AvroEventPropertyGetter[nested.Properties.Count];
-            var count = 0;
-            var currentSchema = fieldSchema;
+            var countX = 0;
+            var currentSchemaX = fieldSchema;
             foreach (var levelProperty in nested.Properties)
             {
-                if (currentSchema == null)
+                if (currentSchemaX == null)
                 {
                     return null;
                 }
 
                 if (levelProperty is SimpleProperty)
                 {
-                    Field fieldNested = currentSchema.GetField(levelProperty.PropertyNameAtomic);
+                    Field fieldNested = currentSchemaX.GetField(levelProperty.PropertyNameAtomic);
                     if (fieldNested == null)
                     {
                         return null;
                     }
-                    FragmentEventType fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
-                        fieldNested.Schema, eventAdapterService);
-                    getters[count] = new AvroEventBeanGetterSimple(
-                        fieldNested, fragmentEventType == null ? null : fragmentEventType.FragmentType,
-                        eventAdapterService);
-                    currentSchema = fieldNested.Schema;
+
+                    var fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
+                        fieldNested.Schema, moduleName, eventAdapterService, eventTypeAvroHandler, fragmentTypeCache);
+                    var propertyType = AvroTypeUtil.PropertyType(fieldNested.Schema);
+                    getters[countX] = new AvroEventBeanGetterSimple(
+                        fieldNested, fragmentEventType?.FragmentType, eventAdapterService, propertyType);
+                    currentSchemaX = fieldNested.Schema;
                 }
-                else if (levelProperty is IndexedProperty)
+                else if (levelProperty is IndexedProperty indexed)
                 {
-                    var indexed = (IndexedProperty) levelProperty;
-                    Field fieldIndexed = currentSchema.GetField(levelProperty.PropertyNameAtomic);
+                    Field fieldIndexed = currentSchemaX.GetField(indexed.PropertyNameAtomic);
                     if (fieldIndexed == null || fieldIndexed.Schema.Tag != Schema.Type.Array)
                     {
                         return null;
                     }
+
                     var fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
-                        fieldIndexed.Schema, eventAdapterService);
-                    getters[count] = new AvroEventBeanGetterIndexed(
-                        fieldIndexed, indexed.Index,
-                        fragmentEventType == null ? null : fragmentEventType.FragmentType, eventAdapterService);
-                    currentSchema = fieldIndexed.Schema.GetElementType();
+                        fieldIndexed.Schema, moduleName, eventAdapterService, eventTypeAvroHandler, fragmentTypeCache);
+                    getters[countX] = new AvroEventBeanGetterIndexed(
+                        fieldIndexed, indexed.Index, fragmentEventType?.FragmentType, eventAdapterService);
+                    currentSchemaX = fieldIndexed.Schema.AsArraySchema().ItemSchema;
                 }
-                else if (levelProperty is MappedProperty)
+                else if (levelProperty is MappedProperty mapped)
                 {
-                    var mapped = (MappedProperty) levelProperty;
-                    Field fieldMapped = currentSchema.GetField(levelProperty.PropertyNameAtomic);
+                    Field fieldMapped = currentSchemaX.GetField(mapped.PropertyNameAtomic);
                     if (fieldMapped == null || fieldMapped.Schema.Tag != Schema.Type.Map)
                     {
                         return null;
                     }
-                    getters[count] = new AvroEventBeanGetterMapped(fieldMapped, mapped.Key);
-                    currentSchema = fieldMapped.Schema;
+
+                    getters[countX] = new AvroEventBeanGetterMapped(fieldMapped, mapped.Key);
+                    currentSchemaX = fieldMapped.Schema;
                 }
                 else if (levelProperty is DynamicSimpleProperty)
                 {
-                    if (currentSchema.Tag != Schema.Type.Record)
+                    if (currentSchemaX.Tag != Schema.Type.Record)
                     {
                         return null;
                     }
-                    Field fieldDynamic = currentSchema.GetField(levelProperty.PropertyNameAtomic);
-                    getters[count] = new AvroEventBeanGetterSimpleDynamic(levelProperty.PropertyNameAtomic);
+
+                    Field fieldDynamic = currentSchemaX.GetField(levelProperty.PropertyNameAtomic);
+                    getters[countX] = new AvroEventBeanGetterSimpleDynamic(levelProperty.PropertyNameAtomic);
                     if (fieldDynamic.Schema.Tag == Schema.Type.Record)
                     {
-                        currentSchema = fieldDynamic.Schema;
+                        currentSchemaX = fieldDynamic.Schema;
                     }
                     else if (fieldDynamic.Schema.Tag == Schema.Type.Union)
                     {
-                        currentSchema = AvroSchemaUtil.FindUnionRecordSchemaSingle(fieldDynamic.Schema);
+                        currentSchemaX = AvroSchemaUtil.FindUnionRecordSchemaSingle(fieldDynamic.Schema);
                     }
                 }
                 else
                 {
-                    throw new UnsupportedOperationException();
+                    throw new NotSupportedException();
                 }
-                count++;
+
+                countX++;
             }
+
             return factory.MakeNestedPolyMultiLevel(getters);
         }
 
@@ -357,14 +371,16 @@ namespace NEsper.Avro.Core
             {
                 return new AvroEventBeanGetterSimpleDynamic(property.PropertyNameAtomic);
             }
-            else if (property is PropertyWithIndex)
+
+            if (property is PropertyWithIndex propertyWithIndex)
             {
-                var index = ((PropertyWithIndex) property).Index;
+                var index = propertyWithIndex.Index;
                 return new AvroEventBeanGetterIndexedDynamic(property.PropertyNameAtomic, index);
             }
-            else if (property is PropertyWithKey)
+
+            if (property is PropertyWithKey propertyWithKey)
             {
-                var key = ((PropertyWithKey) property).Key;
+                var key = propertyWithKey.Key;
                 return new AvroEventBeanGetterMappedDynamic(property.PropertyNameAtomic, key);
             }
 
@@ -376,12 +392,13 @@ namespace NEsper.Avro.Core
                 getters[count] = GetDynamicGetter(levelProperty);
                 count++;
             }
+
             return new AvroEventBeanGetterDynamicPoly(getters);
         }
 
         private static void MayAddToGetterCache(
             string propertyName,
-            IDictionary<string, EventPropertyGetterSPI> propertyGetterCache,
+            Dictionary<string, EventPropertyGetterSPI> propertyGetterCache,
             EventPropertyGetterSPI getter,
             bool add)
         {
@@ -389,47 +406,68 @@ namespace NEsper.Avro.Core
             {
                 return;
             }
+
             propertyGetterCache.Put(propertyName, getter);
         }
 
         private interface GetterNestedFactory
         {
-            EventPropertyGetterSPI MakeSimple(Field posNested, EventType fragmentEventType);
+            EventPropertyGetterSPI MakeSimple(
+                Field posNested,
+                EventType fragmentEventType,
+                Type propertyType);
 
-            EventPropertyGetterSPI MakeIndexed(Field posNested, int index, EventType fragmentEventType);
+            EventPropertyGetterSPI MakeIndexed(
+                Field posNested,
+                int index,
+                EventType fragmentEventType);
 
-            EventPropertyGetterSPI MakeMapped(Field posNested, string key);
+            EventPropertyGetterSPI MakeMapped(
+                Field posNested,
+                string key);
 
             EventPropertyGetterSPI MakeDynamicSimple(string propertyName);
 
-            EventPropertyGetterSPI MakeNestedSimpleMultiLevel(Field[] path, EventType fragmentEventType);
+            EventPropertyGetterSPI MakeNestedSimpleMultiLevel(
+                Field[] path,
+                Type[] propertyTypes,
+                EventType fragmentEventType);
 
             EventPropertyGetterSPI MakeNestedPolyMultiLevel(AvroEventPropertyGetter[] getters);
         }
 
         private class GetterNestedFactoryRootedSimple : GetterNestedFactory
         {
-            private readonly EventAdapterService _eventAdapterService;
+            private readonly EventBeanTypedEventFactory _eventAdapterService;
             private readonly Field _posTop;
 
-            public GetterNestedFactoryRootedSimple(EventAdapterService eventAdapterService, Field posTop)
+            public GetterNestedFactoryRootedSimple(
+                EventBeanTypedEventFactory eventAdapterService,
+                Field posTop)
             {
                 _eventAdapterService = eventAdapterService;
                 _posTop = posTop;
             }
 
-            public EventPropertyGetterSPI MakeSimple(Field posNested, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeSimple(
+                Field posNested,
+                EventType fragmentEventType,
+                Type propertyType)
             {
                 return new AvroEventBeanGetterNestedSimple(_posTop, posNested, fragmentEventType, _eventAdapterService);
             }
 
-            public EventPropertyGetterSPI MakeIndexed(Field posNested, int index, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeIndexed(
+                Field posNested,
+                int index,
+                EventType fragmentEventType)
             {
-                return new AvroEventBeanGetterNestedIndexed(
-                    _posTop, posNested, index, fragmentEventType, _eventAdapterService);
+                return new AvroEventBeanGetterNestedIndexed(_posTop, posNested, index, fragmentEventType, _eventAdapterService);
             }
 
-            public EventPropertyGetterSPI MakeMapped(Field posNested, string key)
+            public EventPropertyGetterSPI MakeMapped(
+                Field posNested,
+                string key)
             {
                 return new AvroEventBeanGetterNestedMapped(_posTop, posNested, key);
             }
@@ -439,7 +477,10 @@ namespace NEsper.Avro.Core
                 return new AvroEventBeanGetterNestedDynamicSimple(_posTop, propertyName);
             }
 
-            public EventPropertyGetterSPI MakeNestedSimpleMultiLevel(Field[] path, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeNestedSimpleMultiLevel(
+                Field[] path,
+                Type[] propertyTypes,
+                EventType fragmentEventType)
             {
                 return new AvroEventBeanGetterNestedMultiLevel(_posTop, path, fragmentEventType, _eventAdapterService);
             }
@@ -452,49 +493,61 @@ namespace NEsper.Avro.Core
 
         private class GetterNestedFactoryRootedIndexed : GetterNestedFactory
         {
-            private readonly EventAdapterService _eventAdapterService;
-            private readonly Field _pos;
+            private readonly EventBeanTypedEventFactory _eventAdapterService;
             private readonly int _index;
+            private readonly Field _pos;
 
-            public GetterNestedFactoryRootedIndexed(EventAdapterService eventAdapterService, Field pos, int index)
+            public GetterNestedFactoryRootedIndexed(
+                EventBeanTypedEventFactory eventAdapterService,
+                Field pos,
+                int index)
             {
                 _eventAdapterService = eventAdapterService;
                 _pos = pos;
                 _index = index;
             }
 
-            public EventPropertyGetterSPI MakeSimple(Field posNested, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeSimple(
+                Field posNested,
+                EventType fragmentEventType,
+                Type propertyType)
             {
                 return new AvroEventBeanGetterNestedIndexRooted(
-                    _pos, _index, new AvroEventBeanGetterSimple(posNested, fragmentEventType, _eventAdapterService));
+                    _pos, _index, new AvroEventBeanGetterSimple(posNested, fragmentEventType, _eventAdapterService, propertyType));
             }
 
-            public EventPropertyGetterSPI MakeIndexed(Field posNested, int index, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeIndexed(
+                Field posNested,
+                int index,
+                EventType fragmentEventType)
             {
                 return new AvroEventBeanGetterNestedIndexRooted(
-                    _pos, index,
-                    new AvroEventBeanGetterIndexed(posNested, index, fragmentEventType, _eventAdapterService));
+                    _pos, index, new AvroEventBeanGetterIndexed(posNested, index, fragmentEventType, _eventAdapterService));
             }
 
-            public EventPropertyGetterSPI MakeMapped(Field posNested, string key)
+            public EventPropertyGetterSPI MakeMapped(
+                Field posNested,
+                string key)
             {
-                return new AvroEventBeanGetterNestedIndexRooted(
-                    _pos, _index, new AvroEventBeanGetterMapped(posNested, key));
+                return new AvroEventBeanGetterNestedIndexRooted(_pos, _index, new AvroEventBeanGetterMapped(posNested, key));
             }
 
             public EventPropertyGetterSPI MakeDynamicSimple(string propertyName)
             {
-                return new AvroEventBeanGetterNestedIndexRooted(
-                    _pos, _index, new AvroEventBeanGetterSimpleDynamic(propertyName));
+                return new AvroEventBeanGetterNestedIndexRooted(_pos, _index, new AvroEventBeanGetterSimpleDynamic(propertyName));
             }
 
-            public EventPropertyGetterSPI MakeNestedSimpleMultiLevel(Field[] path, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeNestedSimpleMultiLevel(
+                Field[] path,
+                Type[] propertyTypes,
+                EventType fragmentEventType)
             {
                 var getters = new AvroEventPropertyGetter[path.Length];
                 for (var i = 0; i < path.Length; i++)
                 {
-                    getters[i] = new AvroEventBeanGetterSimple(path[i], fragmentEventType, _eventAdapterService);
+                    getters[i] = new AvroEventBeanGetterSimple(path[i], fragmentEventType, _eventAdapterService, propertyTypes[i]);
                 }
+
                 return new AvroEventBeanGetterNestedIndexRootedMultilevel(_pos, _index, getters);
             }
 

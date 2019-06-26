@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,10 @@ using System.Linq;
 
 using Avro;
 using Avro.Generic;
+
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+
 using NEsper.Avro.Extensions;
 
 namespace NEsper.Avro.Core
@@ -22,23 +26,22 @@ namespace NEsper.Avro.Core
 
         static AvroTypeUtil()
         {
-            Schema.Type[] schemaTypes = EnumHelper.GetValues<Schema.Type>().ToArray();
-
             TYPES_PER_AVRO_ORD = new Dictionary<Schema.Type, AvroTypeDesc>();
 
-            foreach(var type in schemaTypes)
+            var schemaTypes = EnumHelper.GetValues<Schema.Type>().ToArray();
+            foreach (var type in schemaTypes)
             {
                 if (type == Schema.Type.Int)
                 {
-                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof (int));
+                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof(int));
                 }
                 else if (type == Schema.Type.Long)
                 {
-                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof (long));
+                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof(long));
                 }
                 else if (type == Schema.Type.Double)
                 {
-                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof (double));
+                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof(double));
                 }
                 else if (type == Schema.Type.Float)
                 {
@@ -46,11 +49,11 @@ namespace NEsper.Avro.Core
                 }
                 else if (type == Schema.Type.Boolean)
                 {
-                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof (bool));
+                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof(bool));
                 }
                 else if (type == Schema.Type.Bytes)
                 {
-                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof (byte[]));
+                    TYPES_PER_AVRO_ORD[type] = new AvroTypeDesc(typeof(byte[]));
                 }
                 else if (type == Schema.Type.Null)
                 {
@@ -63,9 +66,9 @@ namespace NEsper.Avro.Core
         {
             if (fieldSchema.Tag == Schema.Type.Union)
             {
-                bool hasNull = false;
+                var hasNull = false;
                 var unionTypes = new HashSet<Type>();
-                foreach (Schema memberSchema in ((UnionSchema) fieldSchema).Schemas)
+                foreach (var memberSchema in fieldSchema.AsUnionSchema().Schemas)
                 {
                     if (memberSchema.Tag == Schema.Type.Null)
                     {
@@ -73,7 +76,7 @@ namespace NEsper.Avro.Core
                     }
                     else
                     {
-                        Type type = PropertyType(memberSchema);
+                        var type = PropertyType(memberSchema);
                         if (type != null)
                         {
                             unionTypes.Add(type);
@@ -88,71 +91,79 @@ namespace NEsper.Avro.Core
                 {
                     if (hasNull)
                     {
-                        return unionTypes.First().GetBoxedType();
+                        return Boxing.GetBoxedType(unionTypes.First());
                     }
+
                     return unionTypes.First();
                 }
+
 #if NOT_NEEDED
-                bool allNumeric = true;
+                var allNumeric = true;
                 foreach (var unioned in unionTypes)
                 {
-                    if (!unioned.IsNumeric())
+                    if (!TypeHelper.IsNumeric(unioned))
                     {
                         allNumeric = false;
                     }
                 }
+                if (allNumeric)
+                {
+                    return typeof(Number);
+                }
 #endif
-                //if (allNumeric)
-                //{
-                //    return typeof (Numeric);
-                //}
-                return typeof (Object);
+                return typeof(object);
             }
             else if (fieldSchema.Tag == Schema.Type.Record)
             {
-                return typeof (GenericRecord);
+                return typeof(GenericRecord);
             }
             else if (fieldSchema.Tag == Schema.Type.Array)
             {
-                var arrayItemSchema = ((ArraySchema)fieldSchema).ItemSchema;
+                var arrayItemSchema = ((ArraySchema) fieldSchema).ItemSchema;
                 var arrayItemType = PropertyType(arrayItemSchema);
                 if (arrayItemType == null)
+                {
                     return typeof(ICollection<object>);
+                }
 
                 return arrayItemType.MakeArrayType();
-                //return typeof (ICollection<object>);
             }
             else if (fieldSchema.Tag == Schema.Type.Map)
             {
                 var mapValueSchema = ((MapSchema) fieldSchema).ValueSchema;
                 var mapValueType = PropertyType(mapValueSchema);
                 if (mapValueType == null)
+                {
                     return typeof(IDictionary<string, object>);
+                }
 
                 return typeof(IDictionary<,>).MakeGenericType(new Type[] { typeof(string), mapValueType });
-                //return typeof (IDictionary<string, object>);
             }
             else if (fieldSchema.Tag == Schema.Type.Fixed)
             {
-                return typeof (GenericFixed);
+                return typeof(GenericFixed);
             }
             else if (fieldSchema.Tag == Schema.Type.Enumeration)
             {
-                return typeof (GenericEnum);
+                return typeof(GenericEnum);
             }
             else if (fieldSchema.Tag == Schema.Type.String)
             {
                 string prop = fieldSchema.GetProp(AvroConstant.PROP_STRING_KEY);
                 // there is a bug in the AVRO parser that adds quotes to properties
                 if ((prop == null) || (prop.Length <= 2))
+                {
 #if AVRO_STRINGS_AND_CHARARRAY
                     return typeof(char[]);
 #else
                     return typeof(string);
+                }
 #endif
 
                 if ((prop[0] == '"') && (prop[prop.Length - 1] == '"'))
+                {
                     prop = prop.Substring(1, prop.Length - 2);
+                }
 
 #if AVRO_STRINGS_AND_CHARARRAY
                 return Equals(prop, AvroConstant.PROP_STRING_VALUE)
@@ -165,13 +176,7 @@ namespace NEsper.Avro.Core
 #endif
             }
 
-            AvroTypeDesc desc;
-            if (TYPES_PER_AVRO_ORD.TryGetValue(fieldSchema.Tag, out desc))
-            {
-                return desc.UnderlyingType;
-            }
-
-            return null;
+            return TYPES_PER_AVRO_ORD.TryGetValue(fieldSchema.Tag, out var desc) ? desc.Type : null;
         }
     }
 } // end of namespace

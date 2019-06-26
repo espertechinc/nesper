@@ -114,19 +114,26 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
                         if (representation == EventUnderlyingType.MAP) {
                             targetType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                                metadata.Invoke(EventTypeApplicationType.MAP), compiledProperties, null, null, null, null,
-                                services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                                metadata.Invoke(EventTypeApplicationType.MAP),
+                                compiledProperties, null, null, null, null,
+                                services.BeanEventTypeFactoryPrivate, 
+                                services.EventTypeCompileTimeResolver);
                         }
                         else if (representation == EventUnderlyingType.OBJECTARRAY) {
                             targetType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                                metadata.Invoke(EventTypeApplicationType.OBJECTARR), compiledProperties, null, null, null, null,
-                                services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                                metadata.Invoke(EventTypeApplicationType.OBJECTARR), 
+                                compiledProperties, null, null, null, null,
+                                services.BeanEventTypeFactoryPrivate, 
+                                services.EventTypeCompileTimeResolver);
                         }
                         else if (representation == EventUnderlyingType.AVRO) {
                             targetType = services.EventTypeAvroHandler.NewEventTypeFromNormalized(
-                                metadata.Invoke(EventTypeApplicationType.AVRO), services.EventTypeCompileTimeResolver,
-                                services.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory, compiledProperties,
-                                @base.StatementRawInfo.Annotations, null, null, null, @base.StatementName);
+                                metadata.Invoke(EventTypeApplicationType.AVRO),
+                                services.EventTypeCompileTimeResolver,
+                                services.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory,
+                                compiledProperties,
+                                @base.StatementRawInfo.Annotations, null, null, null,
+                                @base.StatementName);
                         }
                         else {
                             throw new IllegalStateException("Unrecognized representation " + representation);

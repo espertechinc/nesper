@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net452</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
     <!--
-    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     -->
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyName>NEsper.Common</AssemblyName>
     <AssemblyTitle>NEsper.Common</AssemblyTitle>
-    <PackageId>NEsper</PackageId>
+    <PackageId>NEsper.Common</PackageId>
     <RootNamespace>com.espertech.esper</RootNamespace>
     <Summary>Underlying common library for NEsper.</Summary>
     <Description>Underlying common library for NEsper.</Description>

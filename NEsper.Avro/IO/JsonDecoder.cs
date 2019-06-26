@@ -12,12 +12,12 @@ using System.Collections.Generic;
 using Avro;
 using Avro.Generic;
 
-using Newtonsoft.Json.Linq;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.magic;
 
 using NEsper.Avro.Extensions;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.magic;
+using Newtonsoft.Json.Linq;
 
 namespace NEsper.Avro.IO
 {
@@ -35,7 +35,7 @@ namespace NEsper.Avro.IO
                     .GetConstructor(new Type[0])
                     .Invoke(null);
 
-                var magicDict = MagicMarker.GetStringDictionaryFactory(valueType).Invoke(valueDict);
+                var magicDict = MagicMarker.SingletonInstance.GetStringDictionaryFactory(valueType).Invoke(valueDict);
 
                 foreach (var property in jobject.Properties())
                 {
@@ -77,7 +77,7 @@ namespace NEsper.Avro.IO
                 {
                     return DecodeAny(schemaType, value);
                 }
-                catch(ArgumentException)
+                catch (ArgumentException)
                 {
                 }
             }
@@ -113,7 +113,7 @@ namespace NEsper.Avro.IO
                 var underlying = jvalue.Value;
                 if (underlying is string)
                 {
-                    return (string)underlying;
+                    return (string) underlying;
                 }
             }
 
@@ -128,7 +128,7 @@ namespace NEsper.Avro.IO
                 var underlying = jvalue.Value;
                 if (underlying is T)
                 {
-                    return (T)underlying;
+                    return (T) underlying;
                 }
 
                 var castConverter = CastHelper.GetCastConverter<T>();
@@ -144,7 +144,9 @@ namespace NEsper.Avro.IO
         public static object DecodeNull(this PrimitiveSchema schema, JToken value)
         {
             if (value.Type == JTokenType.Null)
+            {
                 return null;
+            }
 
             throw new ArgumentException("invalid value type: " + value.GetType().FullName);
         }
@@ -155,31 +157,43 @@ namespace NEsper.Avro.IO
             {
                 case Schema.Type.Int:
                     return DecodePrimitive<int>((PrimitiveSchema) schema, value);
+
                 case Schema.Type.Long:
                     return DecodePrimitive<long>((PrimitiveSchema) schema, value);
+
                 case Schema.Type.Float:
                     return DecodePrimitive<float>((PrimitiveSchema) schema, value);
+
                 case Schema.Type.Double:
                     return DecodePrimitive<double>((PrimitiveSchema) schema, value);
+
                 case Schema.Type.Boolean:
                     return DecodePrimitive<bool>((PrimitiveSchema) schema, value);
+
                 case Schema.Type.Bytes:
                     return DecodePrimitive<byte[]>((PrimitiveSchema) schema, value);
+
                 case Schema.Type.String:
                     return DecodeString((PrimitiveSchema) schema, value);
+
                 case Schema.Type.Null:
                     return DecodeNull((PrimitiveSchema) schema, value);
+
                 case Schema.Type.Fixed:
                 case Schema.Type.Error:
                     throw new NotImplementedException();
                 case Schema.Type.Map:
                     return DecodeMap((MapSchema) schema, value);
+
                 case Schema.Type.Union:
                     return DecodeUnion((UnionSchema) schema, value);
+
                 case Schema.Type.Record:
                     return DecodeRecord((RecordSchema) schema, value);
+
                 case Schema.Type.Array:
                     return DecodeArray((ArraySchema) schema, value);
+
                 case Schema.Type.Enumeration:
                     throw new NotImplementedException();
             }
@@ -193,31 +207,43 @@ namespace NEsper.Avro.IO
             {
                 case Schema.Type.Int:
                     return typeof(int);
+
                 case Schema.Type.Long:
                     return typeof(long);
+
                 case Schema.Type.Float:
                     return typeof(float);
+
                 case Schema.Type.Double:
                     return typeof(double);
+
                 case Schema.Type.Boolean:
                     return typeof(bool);
+
                 case Schema.Type.Bytes:
                     return typeof(byte[]);
+
                 case Schema.Type.String:
                     return typeof(string);
+
                 case Schema.Type.Null:
                     return typeof(object);
+
                 case Schema.Type.Fixed:
                 case Schema.Type.Error:
                     throw new NotImplementedException();
                 case Schema.Type.Map:
-                    return typeof(IDictionary<,>).MakeGenericType(typeof(string), GetNativeType(((MapSchema)schema).ValueSchema));
+                    return typeof(IDictionary<,>).MakeGenericType(typeof(string), GetNativeType(((MapSchema) schema).ValueSchema));
+
                 case Schema.Type.Union:
                     return typeof(object);
+
                 case Schema.Type.Record:
                     return typeof(GenericRecord);
+
                 case Schema.Type.Array:
-                    return GetNativeType((ArraySchema)schema).MakeArrayType();
+                    return GetNativeType((ArraySchema) schema).MakeArrayType();
+
                 case Schema.Type.Enumeration:
                     return typeof(GenericEnum);
             }

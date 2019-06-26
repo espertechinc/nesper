@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,38 +7,94 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
 
-using com.espertech.esper.client;
-using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.@event.core;
 
 namespace NEsper.Avro.SelectExprRep
 {
-    public class SelectExprProcessorEvalByGetterFragmentAvro : ExprEvaluator
+    public class SelectExprProcessorEvalByGetterFragmentAvro : ExprEvaluator,
+        ExprForge,
+        ExprNodeRenderable
     {
-        private readonly EventPropertyGetter _getter;
-        private readonly Type _returnType;
         private readonly int _streamNum;
+        private readonly EventPropertyGetterSPI _getter;
+        private readonly Type _returnType;
 
-        public SelectExprProcessorEvalByGetterFragmentAvro(int streamNum, EventPropertyGetter getter, Type returnType)
+        public SelectExprProcessorEvalByGetterFragmentAvro(
+            int streamNum,
+            EventPropertyGetterSPI getter,
+            Type returnType)
         {
             _streamNum = streamNum;
             _getter = getter;
             _returnType = returnType;
         }
 
-        public Type ReturnType
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            get { return _returnType; }
-        }
-
-        public object Evaluate(EvaluateParams evaluateParams)
-        {
-            var streamEvent = evaluateParams.EventsPerStream[_streamNum];
+            EventBean streamEvent = eventsPerStream[_streamNum];
             if (streamEvent == null)
             {
                 return null;
             }
+
             return _getter.Get(streamEvent);
         }
+
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(_returnType, GetType(), codegenClassScope);
+
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            methodNode.Block
+                .DeclareVar(typeof(EventBean), "streamEvent", CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_streamNum)))
+                .IfRefNullReturnNull("streamEvent")
+                .MethodReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(
+                        _returnType, _getter.EventBeanGetCodegen(CodegenExpressionBuilder.Ref("streamEvent"), methodNode, codegenClassScope)));
+            return CodegenExpressionBuilder.LocalMethod(methodNode);
+        }
+
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
+        {
+            writer.Write(GetType().Name);
+        }
+
+        public ExprEvaluator ExprEvaluator
+        {
+            get => this;
+        }
+
+        public Type EvaluationType
+        {
+            get => _returnType;
+        }
+
+        public ExprForgeConstantType ForgeConstantType
+        {
+            get => ExprForgeConstantType.NONCONST;
+        }
+
+        public ExprNodeRenderable ForgeRenderable
+        {
+            get => this;
+        }
+
+        public ExprNodeRenderable ExprForgeRenderable => ForgeRenderable;
     }
 } // end of namespace

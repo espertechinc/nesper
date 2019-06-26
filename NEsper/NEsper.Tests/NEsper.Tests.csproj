@@ -30,7 +30,8 @@
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Data.PgSQL\NEsper.Data.PgSQL.csproj" />
     <ProjectReference Include="..\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
-    <ProjectReference Include="..\NEsper\NEsper.csproj" />
+    <ProjectReference Include="..\NEsper\NEsper.Common\NEsper.Common.csproj" />
+    <ProjectReference Include="..\NEsper\NEsper.Runtime\NEsper.Runtime.csproj" />
   </ItemGroup>
 
   <ItemGroup>

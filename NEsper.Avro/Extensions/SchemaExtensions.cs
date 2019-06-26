@@ -12,11 +12,12 @@ using System.Reflection;
 
 using Avro;
 
+using com.espertech.esper.compat.collections;
+
+using NEsper.Avro.IO;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-using com.espertech.esper.compat.collections;
-using NEsper.Avro.IO;
 
 namespace NEsper.Avro.Extensions
 {
@@ -174,7 +175,7 @@ namespace NEsper.Avro.Extensions
                 return null;
             }
 
-            var propertyMap = (PropertyMap)getMethod.Invoke(schema, NO_ARGS);
+            var propertyMap = (PropertyMap) getMethod.Invoke(schema, NO_ARGS);
             if (propertyMap == null)
             {
                 return null;

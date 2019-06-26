@@ -1,18 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.client;
-using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.core.eval;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.table.mgmt;
-using com.espertech.esper.events;
-using com.espertech.esper.events.avro;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+using com.espertech.esper.common.@internal.epl.table.compiletime;
+using com.espertech.esper.common.@internal.@event.avro;
 
 using NEsper.Avro.Writer;
 
@@ -20,35 +18,38 @@ namespace NEsper.Avro.SelectExprRep
 {
     public class SelectExprProcessorRepresentationFactoryAvro : SelectExprProcessorRepresentationFactory
     {
-        public SelectExprProcessor MakeSelectNoWildcard(
-            SelectExprContext selectExprContext,
+        public SelectExprProcessorForge MakeSelectNoWildcard(
+            SelectExprForgeContext selectExprForgeContext,
+            ExprForge[] exprForges,
             EventType resultEventType,
-            TableService tableService,
-            string statementName,
-            string engineURI)
+            TableCompileTimeResolver tableService,
+            string statementName)
         {
-            return new EvalSelectNoWildcardAvro(selectExprContext, resultEventType, statementName, engineURI);
+            return new EvalSelectNoWildcardAvro(selectExprForgeContext, exprForges, resultEventType, statementName);
         }
 
-        public SelectExprProcessor MakeRecast(
+        public SelectExprProcessorForge MakeRecast(
             EventType[] eventTypes,
-            SelectExprContext selectExprContext,
+            SelectExprForgeContext selectExprForgeContext,
             int streamNumber,
             AvroSchemaEventType insertIntoTargetType,
             ExprNode[] exprNodes,
-            string statementName,
-            string engineURI)
+            string statementName)
         {
             return AvroRecastFactory.Make(
-                eventTypes, selectExprContext, streamNumber, insertIntoTargetType, exprNodes, statementName, engineURI);
+                eventTypes,
+                selectExprForgeContext,
+                streamNumber,
+                insertIntoTargetType,
+                exprNodes,
+                statementName);
         }
 
-        public SelectExprProcessor MakeJoinWildcard(
+        public SelectExprProcessorForge MakeJoinWildcard(
             string[] streamNames,
-            EventType resultEventType,
-            EventAdapterService eventAdapterService)
+            EventType resultEventType)
         {
-            return new SelectExprJoinWildcardProcessorAvro(resultEventType, eventAdapterService);
+            return new SelectExprJoinWildcardProcessorAvro(resultEventType);
         }
     }
 } // end of namespace

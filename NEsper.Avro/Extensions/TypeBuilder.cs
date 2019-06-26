@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using Avro;
+﻿using Avro;
 
 using Newtonsoft.Json.Linq;
 

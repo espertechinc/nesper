@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,69 +12,44 @@ using System.Collections.Generic;
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.codegen.core;
-using com.espertech.esper.codegen.model.expression;
-using com.espertech.esper.events;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.@event.core;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
-
-using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace NEsper.Avro.Getter
 {
     public class AvroEventBeanGetterSimple : AvroEventPropertyGetter
     {
-        private readonly Field _propertyIndex;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
         private readonly EventType _fragmentType;
-        private readonly EventAdapterService _eventAdapterService;
+        private readonly Field _propertyIndex;
+        private readonly Type _propertyType;
 
-        /// <summary>
-        /// NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="value">value</param>
-        /// <param name="eventAdapterService">svc</param>
-        /// <param name="fragmentType">type</param>
-        /// <returns>fragment</returns>
-        public static Object GetFragmentAvro(Object value, EventAdapterService eventAdapterService, EventType fragmentType)
-        {
-            if (fragmentType == null)
-            {
-                return null;
-            }
-            if (value is GenericRecord)
-            {
-                return eventAdapterService.AdapterForTypedAvro(value, fragmentType);
-            }
-            if (value is ICollection<object> coll)
-            {
-                var events = new EventBean[coll.Count];
-                int index = 0;
-                foreach (Object item in coll)
-                {
-                    events[index++] = eventAdapterService.AdapterForTypedAvro(item, fragmentType);
-                }
-                return events;
-            }
-            return null;
-        }
-
-        public AvroEventBeanGetterSimple(Field propertyIndex, EventType fragmentType, EventAdapterService eventAdapterService)
+        public AvroEventBeanGetterSimple(
+            Field propertyIndex,
+            EventType fragmentType,
+            EventBeanTypedEventFactory eventAdapterService,
+            Type propertyType)
         {
             _propertyIndex = propertyIndex;
             _fragmentType = fragmentType;
             _eventAdapterService = eventAdapterService;
+            _propertyType = propertyType;
         }
 
-        public Object GetAvroFieldValue(GenericRecord record)
+        public object GetAvroFieldValue(GenericRecord record)
         {
             return record.Get(_propertyIndex);
         }
 
-        public Object Get(EventBean theEvent)
+        public object Get(EventBean theEvent)
         {
-            return GetAvroFieldValue((GenericRecord)theEvent.Underlying);
+            return GetAvroFieldValue((GenericRecord) theEvent.Underlying);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
@@ -87,60 +62,119 @@ namespace NEsper.Avro.Getter
             return true;
         }
 
-        public Object GetFragment(EventBean obj)
+        public object GetFragment(EventBean obj)
         {
-            Object value = Get(obj);
+            var value = Get(obj);
             return GetFragmentAvro(value, _eventAdapterService, _fragmentType);
         }
 
-        public Object GetAvroFragment(GenericRecord record)
+        public object GetAvroFragment(GenericRecord record)
         {
-            Object value = GetAvroFieldValue(record);
+            var value = GetAvroFieldValue(record);
             return GetFragmentAvro(value, _eventAdapterService, _fragmentType);
         }
 
-        private string GetAvroFragmentCodegen(ICodegenContext context)
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            var mSvc = context.MakeAddMember(typeof(EventAdapterService), _eventAdapterService);
-            var mType = context.MakeAddMember(typeof(EventType), _fragmentType);
-            return context.AddMethod(typeof(Object), typeof(GenericRecord), "record", GetType())
-                .DeclareVar(typeof(Object), "value", CodegenUnderlyingGet( Ref("record"), context))
-                .MethodReturn(StaticMethod(GetType(), "GetFragmentAvro", Ref("value"), Ref(mSvc.MemberName), Ref(mType.MemberName)));
+            return UnderlyingGetCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
         }
 
-        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return CodegenUnderlyingGet(CastUnderlying(typeof(GenericRecord), beanExpression), context);
+            return UnderlyingExistsCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
         }
 
-        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return CodegenUnderlyingExists(CastUnderlying(typeof(GenericRecord), beanExpression), context);
+            return UnderlyingFragmentCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
         }
 
-        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return CodegenUnderlyingFragment(CastUnderlying(typeof(GenericRecord), beanExpression), context);
+            return CodegenExpressionBuilder.Cast(_propertyType, CodegenExpressionBuilder.ExprDotMethod(underlyingExpression, "get", CodegenExpressionBuilder.Constant(_propertyIndex)));
         }
 
-        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, "Get", Constant(_propertyIndex));
+            return CodegenExpressionBuilder.ConstantTrue();
         }
 
-        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            return ConstantTrue();
-        }
-
-        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             if (_fragmentType == null)
             {
-                return ConstantNull();
+                return CodegenExpressionBuilder.ConstantNull();
             }
-            return LocalMethod(GetAvroFragmentCodegen(context), underlyingExpression);
+
+            return CodegenExpressionBuilder.LocalMethod(GetAvroFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="value">value</param>
+        /// <param name="eventAdapterService">svc</param>
+        /// <param name="fragmentType">type</param>
+        /// <returns>fragment</returns>
+        public static object GetFragmentAvro(
+            object value,
+            EventBeanTypedEventFactory eventAdapterService,
+            EventType fragmentType)
+        {
+            if (fragmentType == null)
+            {
+                return null;
+            }
+
+            if (value is GenericRecord)
+            {
+                return eventAdapterService.AdapterForTypedAvro(value, fragmentType);
+            }
+
+            if (value is ICollection<object>)
+            {
+                var coll = (ICollection<object>) value;
+                var events = new EventBean[coll.Count];
+                var index = 0;
+                foreach (var item in coll)
+                {
+                    events[index++] = eventAdapterService.AdapterForTypedAvro(item, fragmentType);
+                }
+
+                return events;
+            }
+
+            return null;
+        }
+
+        private CodegenMethod GetAvroFragmentCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var type = codegenClassScope.AddFieldUnshared(
+                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(_fragmentType, EPStatementInitServicesConstants.REF));
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(GenericRecord), "record").Block
+                .DeclareVar(typeof(object), "value", UnderlyingGetCodegen(CodegenExpressionBuilder.Ref("record"), codegenMethodScope, codegenClassScope))
+                .MethodReturn(CodegenExpressionBuilder.StaticMethod(GetType(), "getFragmentAvro", CodegenExpressionBuilder.Ref("value"), factory, type));
         }
     }
-
 } // end of namespace

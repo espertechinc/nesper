@@ -45,9 +45,11 @@ namespace NEsper.Avro.Extensions
                 case "array":
                     ReduceArray(schema);
                     break;
+
                 case "record":
                     ReduceRecord(schema);
                     break;
+
                 case "map":
                     ReduceMap(schema);
                     break;

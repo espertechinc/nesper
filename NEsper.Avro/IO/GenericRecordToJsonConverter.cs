@@ -5,8 +5,9 @@ using System.Linq;
 using Avro;
 using Avro.Generic;
 
-using Newtonsoft.Json.Linq;
 using com.espertech.esper.compat.magic;
+
+using Newtonsoft.Json.Linq;
 
 namespace NEsper.Avro.IO
 {
@@ -20,46 +21,59 @@ namespace NEsper.Avro.IO
         {
         }
 
-
         private bool ValueMatchSchemaType(Schema schema, object value)
         {
             switch (schema.Tag)
             {
                 case Schema.Type.Null:
                     return value == null;
+
                 case Schema.Type.Boolean:
                     return value is bool;
+
                 case Schema.Type.Int:
                     return value is int;
+
                 case Schema.Type.Long:
                     return value is long;
+
                 case Schema.Type.Float:
                     return value is float;
+
                 case Schema.Type.Double:
                     return value is double;
+
                 case Schema.Type.String:
                     return value is string;
+
                 case Schema.Type.Bytes:
                     return value is byte[];
+
                 case Schema.Type.Error:
                 case Schema.Type.Record:
                     return (value is GenericRecord)
                            && (schema is RecordSchema)
-                           && (value as GenericRecord).Schema.SchemaName.Equals(((RecordSchema)schema).SchemaName);
+                           && (value as GenericRecord).Schema.SchemaName.Equals(((RecordSchema) schema).SchemaName);
+
                 case Schema.Type.Enumeration:
                     return (value is GenericEnum)
                            && (schema is EnumSchema)
-                           && (value as GenericEnum).Schema.SchemaName.Equals(((EnumSchema)schema).SchemaName);
+                           && (value as GenericEnum).Schema.SchemaName.Equals(((EnumSchema) schema).SchemaName);
+
                 case Schema.Type.Fixed:
                     return (value is GenericFixed)
                            && (schema is FixedSchema)
-                           && (value as GenericFixed).Schema.SchemaName.Equals(((FixedSchema)schema).SchemaName);
+                           && (value as GenericFixed).Schema.SchemaName.Equals(((FixedSchema) schema).SchemaName);
+
                 case Schema.Type.Array:
                     return (value is Array) && (!(value is byte[]));
+
                 case Schema.Type.Map:
                     return (value is IDictionary<string, object>);
+
                 case Schema.Type.Union:
                     return false;
+
                 default:
                     throw new ArgumentException("unknown schema tag: " + schema.Tag, nameof(schema));
             }
@@ -74,7 +88,6 @@ namespace NEsper.Avro.IO
 
             return jvalue;
         }
-
 
         private JObject EncodeRecord(RecordSchema schema, GenericRecord record)
         {
@@ -113,7 +126,7 @@ namespace NEsper.Avro.IO
         private JObject EncodeMap(MapSchema schema, object value)
         {
             var valueType = schema.ValueSchema;
-            var valueDict = MagicMarker.GetStringDictionary(value);
+            var valueDict = MagicMarker.SingletonInstance.GetStringDictionary(value);
             var jvalue = new JObject();
 
             foreach (var valueKeyPair in valueDict)
@@ -123,7 +136,7 @@ namespace NEsper.Avro.IO
 
             return jvalue;
         }
-        
+
         private JToken EncodeUnion(UnionSchema schema, object value)
         {
             var unionTypes = schema.Schemas.ToArray();
@@ -158,36 +171,50 @@ namespace NEsper.Avro.IO
             {
                 case Schema.Type.Null:
                     return NULL_VALUE;
+
                 case Schema.Type.Boolean:
                     return true.Equals(value)
                         ? new JValue(true)
                         : new JValue(false);
+
                 case Schema.Type.Int:
                     return new JValue((int) value);
+
                 case Schema.Type.Long:
                     return new JValue((long) value);
+
                 case Schema.Type.Float:
                     return new JValue((float) value);
+
                 case Schema.Type.Double:
                     return new JValue((double) value);
+
                 case Schema.Type.String:
                     return new JValue((string) value);
+
                 case Schema.Type.Bytes:
                     return new JValue((byte[]) value);
+
                 case Schema.Type.Error:
                     throw new NotImplementedException();
                 case Schema.Type.Record:
                     return EncodeRecord((RecordSchema) schema, (GenericRecord) value);
+
                 case Schema.Type.Enumeration:
                     return EncodeEnum((EnumSchema) schema, (GenericEnum) value);
+
                 case Schema.Type.Fixed:
                     return EncodeFixed((FixedSchema) schema, (GenericFixed) value);
+
                 case Schema.Type.Array:
                     return EncodeArray((ArraySchema) schema, value);
+
                 case Schema.Type.Map:
-                    return EncodeMap((MapSchema)schema, value);
+                    return EncodeMap((MapSchema) schema, value);
+
                 case Schema.Type.Union:
                     return EncodeUnion((UnionSchema) schema, value);
+
                 default:
                     throw new ArgumentException("unknown schema tag: " + schema.Tag, nameof(schema));
             }

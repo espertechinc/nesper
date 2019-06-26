@@ -11,64 +11,42 @@ using System;
 namespace com.espertech.esper.common.client.hook.type
 {
     /// <summary>
-    /// For Avro customized type mapping, use with <seealso cref="TypeRepresentationMapper" />
+    ///     For Avro customized type mapping, use with <seealso cref="TypeRepresentationMapper" />
     /// </summary>
     public class TypeRepresentationMapperContext
     {
-        private readonly Type clazz;
-        private readonly string propertyName;
-        private readonly string statementName;
-        private readonly string engineURI;
-
         /// <summary>
-        /// Ctor
+        ///     Ctor
         /// </summary>
         /// <param name="clazz">class</param>
         /// <param name="propertyName">property name</param>
         /// <param name="statementName">statement name</param>
-        /// <param name="engineURI">engine URI</param>
         public TypeRepresentationMapperContext(
             Type clazz,
             string propertyName,
-            string statementName,
-            string engineURI)
+            string statementName)
         {
-            this.clazz = clazz;
-            this.propertyName = propertyName;
-            this.statementName = statementName;
-            this.engineURI = engineURI;
+            Clazz = clazz;
+            PropertyName = propertyName;
+            StatementName = statementName;
         }
 
         /// <summary>
-        /// Returns the class.
+        ///     Returns the class.
         /// </summary>
         /// <returns>class</returns>
-        public Type Clazz {
-            get => clazz;
-        }
+        public Type Clazz { get; }
 
         /// <summary>
-        /// Returns the property name
+        ///     Returns the property name
         /// </summary>
         /// <returns>property name</returns>
-        public string PropertyName {
-            get => propertyName;
-        }
+        public string PropertyName { get; }
 
         /// <summary>
-        /// Returns the statement name
+        ///     Returns the statement name
         /// </summary>
         /// <returns>statement name</returns>
-        public string StatementName {
-            get => statementName;
-        }
-
-        /// <summary>
-        /// Returns the engine URI
-        /// </summary>
-        /// <returns>engine URI</returns>
-        public string EngineURI {
-            get => engineURI;
-        }
+        public string StatementName { get; }
     }
 } // end of namespace

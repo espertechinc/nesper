@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
     <!--
-    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     -->
   </PropertyGroup>
 
   <PropertyGroup>
-    <AssemblyName>NEsper</AssemblyName>
-    <AssemblyTitle>NEsper</AssemblyTitle>
-    <PackageId>NEsper</PackageId>
+    <AssemblyName>NEsper.Runtime</AssemblyName>
+    <AssemblyTitle>NEsper.Runtime</AssemblyTitle>
+    <PackageId>NEsper.Runtime</PackageId>
     <RootNamespace>com.espertech.esper.runtime</RootNamespace>
     <Summary>A component for complex event processing (CEP).</Summary>
     <Description>A component for complex event processing (CEP).  NEsper enables rapid development of applications that process large volumes of incoming messages or events, regardless of whether incoming messages are historical or real-time in nature.  NEsper filters and analyze events in various ways, and respond to conditions of interest with minimal latency.</Description>
