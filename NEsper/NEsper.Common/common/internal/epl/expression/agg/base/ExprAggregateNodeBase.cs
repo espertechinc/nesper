@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         ///     Ctor.
         /// </summary>
         /// <param name="distinct">sets the flag indicatating whether only unique values should be aggregated</param>
-        internal ExprAggregateNodeBase(bool distinct)
+        protected internal ExprAggregateNodeBase(bool distinct)
         {
             isDistinct = distinct;
         }
@@ -202,7 +202,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             return CodegenLegoCast.CastSafeFromObjectType(EvaluationType, eval);
         }
 
-        internal abstract bool IsFilterExpressionAsLastParameter { get; }
+        protected internal abstract bool IsFilterExpressionAsLastParameter { get; }
 
         /// <summary>
         ///     Return true if a expression aggregate node semantically equals the current node, or false if not.
@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         /// </summary>
         /// <param name="node">to compare to</param>
         /// <returns>true if semantically equal, or false if not equals</returns>
-        internal abstract bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node);
+        protected internal abstract bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node);
 
         /// <summary>
         ///     Gives the aggregation node a chance to validate the sub-expression types.
@@ -219,7 +219,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         /// <param name="validationContext">validation information</param>
         /// <returns>aggregation function factory to use</returns>
         /// <throws>ExprValidationException when expression validation failed</throws>
-        internal abstract AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext);
+        protected internal abstract AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext);
 
         /// <summary>
         ///     Returns the aggregation state factory for use in grouping aggregation states per group-by keys.
@@ -245,7 +245,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
         }
 
-        internal Type ValidateNumericChildAllowFilter(bool hasFilter)
+        protected internal Type ValidateNumericChildAllowFilter(bool hasFilter)
         {
             if (positionalParams.Length == 0 || positionalParams.Length > 2) {
                 throw MakeExceptionExpectedParamNum(1, 2);
@@ -268,7 +268,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             return childType;
         }
 
-        internal ExprValidationException MakeExceptionExpectedParamNum(
+        protected internal ExprValidationException MakeExceptionExpectedParamNum(
             int lower,
             int upper)
         {
@@ -325,9 +325,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
         }
 
-        internal virtual bool IsExprTextWildcardWhenNoParams => true;
+        protected internal virtual bool IsExprTextWildcardWhenNoParams => true;
 
-        internal CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
+        protected internal CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
         {
             return codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
                 aggregationResultFutureMemberName, typeof(AggregationResultFuture));

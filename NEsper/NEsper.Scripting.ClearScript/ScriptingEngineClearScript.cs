@@ -12,11 +12,12 @@ using System.Dynamic;
 using System.IO;
 
 using com.espertech.esper.client;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.script.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.spec;
-using com.espertech.esper.script;
-using com.espertech.esper.util;
 
 using Microsoft.ClearScript;
 using Microsoft.ClearScript.Windows;

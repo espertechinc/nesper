@@ -26,29 +26,29 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         /// <summary>
         ///     Child nodes.
         /// </summary>
-        internal readonly IList<BaseAssemblyNode> childNodes;
+        protected internal readonly IList<BaseAssemblyNode> childNodes;
 
         /// <summary>
         ///     Number of streams in statement.
         /// </summary>
-        internal readonly int numStreams;
+        protected internal readonly int numStreams;
 
         /// <summary>
         ///     Stream number.
         /// </summary>
-        internal readonly int streamNum;
+        protected internal readonly int streamNum;
 
         /// <summary>
         ///     Parent node.
         /// </summary>
-        internal ResultAssembler parentNode;
+        protected internal ResultAssembler parentNode;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="streamNum">stream number of the event stream that this node assembles results for.</param>
         /// <param name="numStreams">number of streams</param>
-        internal BaseAssemblyNode(
+        protected internal BaseAssemblyNode(
             int streamNum,
             int numStreams)
         {
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         ///     Returns an array of stream numbers that lists all child node's stream numbers.
         /// </summary>
         /// <value>child node stream numbers</value>
-        internal int[] Substreams {
+        protected internal int[] Substreams {
             get {
                 IList<int> substreams = new List<int>();
                 RecusiveAddSubstreams(substreams);
