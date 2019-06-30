@@ -105,12 +105,12 @@ namespace com.espertech.esper.compat.directory
 				object tempObj = _dataTable.Get( oldName );
 				if ( tempObj == null )
 				{
-					throw new DirectoryException( "Value '" + oldName + "' was not found" ) ;
+					throw new NamingException( "Value '" + oldName + "' was not found" ) ;
 				}
 				
 				if ( _dataTable.ContainsKey( newName ) )
 				{
-					throw new DirectoryException( "Value '" + newName + "' was already bound" ) ;
+					throw new NamingException( "Value '" + newName + "' was already bound" ) ;
 				}
 				
 				_dataTable.Remove(oldName) ;

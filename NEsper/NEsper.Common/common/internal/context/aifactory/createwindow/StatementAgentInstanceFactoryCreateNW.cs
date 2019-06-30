@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     try {
                         agentInstanceContext.RuntimeEnvContext.Bind(objectName, virtualDWView.VirtualDataWindow);
                     }
-                    catch (DirectoryException e) {
+                    catch (NamingException e) {
                         throw new ViewProcessingException("Invalid name for adding to context:" + e.Message, e);
                     }
 
@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 virtualDWView.Destroy();
                                 stopServices.AgentInstanceContext.RuntimeEnvContext.Unbind(objectName);
                             }
-                            catch (DirectoryException) {
+                            catch (NamingException) {
                             }
                         }
                     };

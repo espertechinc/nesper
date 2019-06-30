@@ -214,11 +214,6 @@ namespace com.espertech.esper.compat.collections
             return new List<T>(enumerable);
         }
 
-        public static IList<T> AsList<T>(params T[] array)
-        {
-            return array;
-        }
-
         public static IList<T> AsMutableList<T>(this IEnumerable<T> enumerable)
         {
             return new List<T>(enumerable);

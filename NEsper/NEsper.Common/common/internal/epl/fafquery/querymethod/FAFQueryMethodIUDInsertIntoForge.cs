@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             StatementCompileTimeServices services)
         {
             var selectNoWildcard = InfraOnMergeHelperForge.CompileSelectNoWildcard(
-                UuidGenerator.Generate(), CompatExtensions.AsList(spec.SelectClauseCompiled.SelectExprList));
+                UuidGenerator.Generate(), Arrays.AsList(spec.SelectClauseCompiled.SelectExprList));
 
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(true);
 

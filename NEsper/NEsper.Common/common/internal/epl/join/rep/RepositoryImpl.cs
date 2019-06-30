@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             var leafNode = new Node(resultStream);
             leafNode.Events = lookupResults;
             leafNode.Parent = cursor.Node;
-            leafNode.ParentEvent = cursor.Event;
+            leafNode.ParentEvent = cursor.TheEvent;
 
             var nodes = NodesPerStream[resultStream];
             if (nodes == null) {

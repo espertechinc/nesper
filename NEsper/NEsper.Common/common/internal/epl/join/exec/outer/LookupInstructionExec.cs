@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             // Loop over all events for that stream
             for (; it.MoveNext();) {
                 var cursor = it.Current;
-                var lookupEvent = cursor.Event;
+                var lookupEvent = cursor.TheEvent;
                 var streamCount = 0;
 
                 // For that event, lookup in all required streams

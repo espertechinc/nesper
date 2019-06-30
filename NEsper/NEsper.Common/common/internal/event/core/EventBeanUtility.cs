@@ -292,7 +292,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="source">array</param>
         /// <param name="append">array</param>
         /// <returns>appended array</returns>
-        protected internal static EventBean[] Append(
+        public static EventBean[] Append(
             EventBean[] source,
             EventBean[] append)
         {

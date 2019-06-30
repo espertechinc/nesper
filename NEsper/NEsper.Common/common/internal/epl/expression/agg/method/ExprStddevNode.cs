@@ -27,9 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public override string AggregationFunctionName => "stddev";
 
-        internal override bool IsFilterExpressionAsLastParameter => true;
+        public override bool IsFilterExpressionAsLastParameter => true;
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             HasFilter = positionalParams.Length > 1;
             if (HasFilter) {
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return new AggregationFactoryMethodStddev(this, childType);
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             if (!(node is ExprStddevNode)) {
                 return false;

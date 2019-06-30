@@ -52,7 +52,7 @@ namespace NEsper.Avro.SelectExprRep
             object result = _getter.Get(@event);
             if (result != null && result.GetType().IsArray)
             {
-                return CompatExtensions.AsList((object[]) result);
+                return Arrays.AsList((object[]) result);
             }
 
             return null;

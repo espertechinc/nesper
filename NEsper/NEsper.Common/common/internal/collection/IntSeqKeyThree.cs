@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
@@ -90,8 +90,8 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         public static void Write(
-            IntSeqKeyThree key,
-            DataOutput output)
+            DataOutput output,
+            IntSeqKeyThree key)
         {
             output.WriteInt(key.One);
             output.WriteInt(key.Two);

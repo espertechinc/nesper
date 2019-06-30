@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.magic
         /// Initializes a new instance of the <see cref="MagicType"/> class.
         /// </summary>
         /// <param name="type">The type.</param>
-        public MagicType(Type type)
+        internal MagicType(Type type)
         {
             _type = type;
 
@@ -654,6 +654,11 @@ namespace com.espertech.esper.common.magic
 
         private static readonly Dictionary<Type, MagicType> TypeCacheTable =
             new Dictionary<Type, MagicType>();
+
+        public static MagicType GetCachedType<T>()
+        {
+            return GetCachedType(typeof(T));
+        }
 
         public static MagicType GetCachedType(Type t)
         {

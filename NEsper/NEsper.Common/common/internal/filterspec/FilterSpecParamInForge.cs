@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             var param = NewAnonymousClass(
                 method.Block, typeof(FilterSpecParam),
-                CompatExtensions.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+                Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             param.AddMethod("getFilterValue", getFilterValue);

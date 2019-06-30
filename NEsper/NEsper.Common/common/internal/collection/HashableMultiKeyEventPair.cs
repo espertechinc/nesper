@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public override string ToString()
         {
-            return "MultiKeyUntyped" + CompatExtensions.AsList(keys);
+            return "MultiKeyUntyped" + Arrays.AsList(keys);
         }
     }
 } // end of namespace

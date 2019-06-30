@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net461</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>NEsper.Common.Tests</AssemblyName>
+    <AssemblyTitle>NEsper.Common.Tests</AssemblyTitle>
+    <PackageId>NEsper.Common.Tests</PackageId>
+    <RootNamespace>com.espertech.esper.common</RootNamespace>
+    <Summary>Unit tests for NEsper.Common</Summary>
+    <Description>Unit tests for NEsper.Common</Description>
+    <PackageTags>NEsper Esper ESP CEP</PackageTags>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="internal\util\TestJavaClassHelper.cs" />
+    <Compile Remove="internal\util\TestSQLTypeMapUtil.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
+  </ItemGroup>
+</Project>

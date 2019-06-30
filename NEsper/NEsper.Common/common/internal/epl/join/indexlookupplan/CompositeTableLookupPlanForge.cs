@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
 
             rangeGetters.Block.MethodReturn(Ref("rangeGetters"));
 
-            return CompatExtensions.AsList(hashGetter, LocalMethod(rangeGetters));
+            return Arrays.AsList(hashGetter, LocalMethod(rangeGetters));
         }
 
         public override string ToString()

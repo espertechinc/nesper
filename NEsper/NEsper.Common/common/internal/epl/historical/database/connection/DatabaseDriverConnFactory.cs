@@ -21,14 +21,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="dbConfig">is the database provider configuration</param>
+        /// <param name="config">is the database provider configuration</param>
         /// <param name="connectionSettings">are connection-level settings</param>
         /// <throws>  DatabaseConfigException thrown if the driver class cannot be loaded </throws>
         public DatabaseDriverConnFactory(
-            DbDriverFactoryConnection dbConfig,
+            DriverConnectionFactoryDesc config,
             ConnectionSettings connectionSettings)
         {
-            Driver = dbConfig.Driver;
+            Driver = config.Driver;
             this.connectionSettings = connectionSettings;
         }
 

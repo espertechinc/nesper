@@ -320,7 +320,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="dependencyGraph">dependencies between historical streams</param>
         /// <param name="innerJoinGraph">inner join graph</param>
         /// <throws>ExprValidationException if the query planning failed</throws>
-        protected internal static void RecursiveBuild(
+        public static void RecursiveBuild(
             int streamNum,
             Stack<int> streamCallStack,
             QueryGraphForge queryGraph,
@@ -586,7 +586,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="numStreams">is the number of streams</param>
         /// <param name="outerJoinDescList">list of outer join stream numbers and property names</param>
         /// <returns>graph object</returns>
-        protected internal static OuterInnerDirectionalGraph GraphOuterJoins(
+        public static OuterInnerDirectionalGraph GraphOuterJoins(
             int numStreams,
             OuterJoinDesc[] outerJoinDescList)
         {

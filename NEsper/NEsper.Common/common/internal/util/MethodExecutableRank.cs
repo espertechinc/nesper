@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.util
 {
-    internal class MethodExecutableRank
+    public class MethodExecutableRank
     {
         private readonly bool varargs;
 

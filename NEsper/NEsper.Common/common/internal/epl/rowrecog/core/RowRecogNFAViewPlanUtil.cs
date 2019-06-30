@@ -462,7 +462,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             // get aggregation service per variable
             var aggServices = new AggregationServiceForgeDesc[allStreamNames.Length];
-            var declareds = CompatExtensions.AsList(@base.StatementSpec.DeclaredExpressions);
+            var declareds = Arrays.AsList(@base.StatementSpec.DeclaredExpressions);
             foreach (var entry in measureExprAggNodesPerStream) {
                 EventType[] typesPerStream = {allTypes[entry.Key]};
                 var desc = AggregationServiceFactoryFactory.GetService(

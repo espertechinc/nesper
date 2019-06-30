@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
         public override string AggregationFunctionName => functionName;
 
-        internal override bool IsFilterExpressionAsLastParameter => false;
+        public override bool IsFilterExpressionAsLastParameter => false;
 
         public AggregationTableReadDesc ValidateAggregationTableRead(
             ExprValidationContext validationContext,
@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             ValidatePositionals(validationContext);
             // validate using the context provided by the 'outside' streams to determine parameters
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             return factory;
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return false;
         }

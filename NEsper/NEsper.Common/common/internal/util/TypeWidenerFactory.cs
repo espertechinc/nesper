@@ -213,7 +213,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             public object Widen(object input)
             {
-                return input == null ? null : CompatExtensions.AsList((byte[]) input);
+                return input == null ? null : Arrays.AsList((byte[]) input);
             }
 
             public CodegenExpression WidenCodegen(
@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             public object Widen(object input)
             {
-                return input == null ? null : CompatExtensions.AsList((short[]) input);
+                return input == null ? null : Arrays.AsList((short[]) input);
             }
 
             public CodegenExpression WidenCodegen(
@@ -249,7 +249,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             public object Widen(object input)
             {
-                return input == null ? null : CompatExtensions.AsList((int[]) input);
+                return input == null ? null : Arrays.AsList((int[]) input);
             }
 
             public CodegenExpression WidenCodegen(
@@ -267,7 +267,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             public object Widen(object input)
             {
-                return input == null ? null : CompatExtensions.AsList((long[]) input);
+                return input == null ? null : Arrays.AsList((long[]) input);
             }
 
             public CodegenExpression WidenCodegen(
@@ -285,7 +285,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             public object Widen(object input)
             {
-                return input == null ? null : CompatExtensions.AsList((float[]) input);
+                return input == null ? null : Arrays.AsList((float[]) input);
             }
 
             public CodegenExpression WidenCodegen(
@@ -303,7 +303,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             public object Widen(object input)
             {
-                return input == null ? null : CompatExtensions.AsList((double[]) input);
+                return input == null ? null : Arrays.AsList((double[]) input);
             }
 
             public CodegenExpression WidenCodegen(
@@ -321,7 +321,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             public object Widen(object input)
             {
-                return input == null ? null : CompatExtensions.AsList((bool[]) input);
+                return input == null ? null : Arrays.AsList((bool[]) input);
             }
 
             public CodegenExpression WidenCodegen(
@@ -339,7 +339,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             public object Widen(object input)
             {
-                return input == null ? null : CompatExtensions.AsList((char[]) input);
+                return input == null ? null : Arrays.AsList((char[]) input);
             }
 
             public CodegenExpression WidenCodegen(

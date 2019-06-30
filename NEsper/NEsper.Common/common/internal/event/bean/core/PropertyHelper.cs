@@ -122,9 +122,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return result;
         }
 
-        private static void AddIntrospectProperties(
+        public static void AddIntrospectProperties(
             MagicType magicType,
-            List<PropertyStem> result)
+            IList<PropertyStem> result)
         {
             foreach (var propertyInfo in magicType.GetAllProperties(true).Where(p => p.GetMethod != null)) {
                 result.Add(
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         ///     Removed duplicate properties using the property name to find unique properties.
         /// </summary>
         /// <param name="properties">is a list of property descriptors</param>
-        protected internal static void RemoveDuplicateProperties(IList<PropertyStem> properties)
+        public static void RemoveDuplicateProperties(IList<PropertyStem> properties)
         {
             var set = new LinkedHashMap<string, PropertyStem>();
             var toRemove = new List<PropertyStem>();
@@ -197,7 +197,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// </summary>
         /// <param name="magicType">type to introspect</param>
         /// <param name="result">is the list to add to</param>
-        protected internal static void AddMappedProperties(
+        public static void AddMappedProperties(
             MagicType magicType,
             IList<PropertyStem> result)
         {

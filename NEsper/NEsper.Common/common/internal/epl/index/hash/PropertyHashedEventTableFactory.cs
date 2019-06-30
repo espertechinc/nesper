@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             return GetType().Name +
                    (Unique ? " unique" : " non-unique") +
                    " streamNum=" + StreamNum +
-                   " propertyNames=" + CompatExtensions.AsList(PropertyNames);
+                   " propertyNames=" + Arrays.AsList(PropertyNames);
         }
 
         public Type EventTableClass => Unique ? typeof(PropertyHashedEventTableUnique) : typeof(PropertyHashedEventTableUnadorned);

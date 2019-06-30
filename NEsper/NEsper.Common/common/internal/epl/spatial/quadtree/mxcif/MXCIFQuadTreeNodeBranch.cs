@@ -12,10 +12,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 {
     public class MXCIFQuadTreeNodeBranch<L> : MXCIFQuadTreeNode<L>
     {
-        internal MXCIFQuadTreeNode<L> Ne;
-        internal MXCIFQuadTreeNode<L> Nw;
-        internal MXCIFQuadTreeNode<L> Se;
-        internal MXCIFQuadTreeNode<L> Sw;
+        public MXCIFQuadTreeNode<L> Ne { get; internal set; }
+        public MXCIFQuadTreeNode<L> Nw { get; internal set; }
+        public MXCIFQuadTreeNode<L> Se { get; internal set; }
+        public MXCIFQuadTreeNode<L> Sw { get; internal set; }
 
         public MXCIFQuadTreeNodeBranch(
             BoundingBox bb,

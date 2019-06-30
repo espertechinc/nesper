@@ -269,7 +269,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     }
                     else {
                         subselectSpec.Raw.WhereClause = ExprNodeUtilityMake.ConnectExpressionsByLogicalAnd(
-                            CompatExtensions.AsList(subselectSpec.Raw.WhereClause, subselectSpec.Raw.HavingClause));
+                            Arrays.AsList(subselectSpec.Raw.WhereClause, subselectSpec.Raw.HavingClause));
                     }
 
                     subselectSpec.Raw.HavingClause = null;

@@ -40,8 +40,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <value></value>
         public virtual V this[K key] {
             get {
-                Pair<V, int> refValue = null;
-                if (!_refMap.TryGetValue(key, out refValue)) {
+                if (!_refMap.TryGetValue(key, out Pair<V, int> refValue)) {
                     return default(V);
                 }
 
@@ -62,6 +61,38 @@ namespace com.espertech.esper.common.@internal.collection
 
                 //return val;
             }
+        }
+
+        public bool TryGetValue(
+            K key,
+            out V value)
+        {
+            if (!_refMap.TryGetValue(key, out Pair<V, int> refValue)) {
+                value = default(V);
+                return false;
+            }
+
+            value = refValue.First;
+            return false;
+        }
+
+        public bool Contains(K key)
+        {
+            return _refMap.ContainsKey(key);
+        }
+
+        /// <summary>
+        /// Sets the given key in the dictionary.  If the key
+        /// already exists, then it is remapped to thenew value.
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+
+        public void Put(K key, V value)
+        {
+            this[key] = value;
         }
 
         /// <summary> Increase the reference count for a given key by one.

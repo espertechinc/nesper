@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns a boolean indicating auto-commit, or null if not set and default accepted.
         /// </summary>
         /// <returns>true for auto-commit on, false for auto-commit off, or null to accept the default</returns>
-        public bool AutoCommit { get; set; }
+        public bool? AutoCommit { get; set; }
 
         /// <summary>
         ///     Gets the name of the catalog to set on new database connections, or null for default.

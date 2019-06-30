@@ -32,9 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public bool HasFilter { get; private set; }
 
-        internal override bool IsFilterExpressionAsLastParameter => true;
+        public override bool IsFilterExpressionAsLastParameter => true;
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             HasFilter = positionalParams.Length > 1;
             if (HasFilter) {
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 this, childType, validationContext.ImportService.DefaultMathContext);
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             if (!(node is ExprAvgNode)) {
                 return false;

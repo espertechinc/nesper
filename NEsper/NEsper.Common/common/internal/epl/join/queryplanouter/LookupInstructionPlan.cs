@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         {
             for (var i = 0; i < LookupPlans.Length; i++) {
                 if (LookupPlans[i] != null) {
-                    usedIndexes.AddAll(CompatExtensions.AsList(LookupPlans[i].IndexNum));
+                    usedIndexes.AddAll(Arrays.AsList(LookupPlans[i].IndexNum));
                 }
             }
         }

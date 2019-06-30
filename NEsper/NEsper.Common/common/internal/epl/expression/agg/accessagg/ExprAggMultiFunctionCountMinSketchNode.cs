@@ -61,14 +61,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
         public CountMinSketchAggType AggType { get; }
 
-        internal override bool IsExprTextWildcardWhenNoParams => false;
+        protected internal override bool IsExprTextWildcardWhenNoParams => false;
 
         public ExprNodeRenderable EnumForgeRenderable => ForgeRenderableLocal;
 
         public ExprValidationException DeclaredWrongParameterExpr => new ExprValidationException(
             MessagePrefix + " expects either no parameter or a single json parameter object");
 
-        internal override bool IsFilterExpressionAsLastParameter => false;
+        public override bool IsFilterExpressionAsLastParameter => false;
 
         private string MessagePrefix => MSG_NAME + " aggregation function '" + AggType.GetFuncName() + "' ";
 
@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             return null;
         }
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             if (IsDistinct) {
                 throw new ExprValidationException(MessagePrefix + "is not supported with distinct");
@@ -216,7 +216,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 this, addOrFrequencyEvaluator, addOrFrequencyEvaluatorReturnType);
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return false;
         }

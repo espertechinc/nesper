@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.db;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.historical.database.core;
 using com.espertech.esper.common.@internal.epl.historical.datacache;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
+
 using ColumnSettings = com.espertech.esper.common.@internal.epl.historical.database.core.ColumnSettings;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.connection
@@ -48,25 +50,30 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         {
             // check if we already have a reference
             var factory = connectionFactories.Get(databaseName);
-            if (factory != null) {
+            if (factory != null)
+            {
                 return factory;
             }
 
             var config = mapDatabaseRef.Get(databaseName);
-            if (config == null) {
+            if (config == null)
+            {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
             }
 
             var settings = config.ConnectionSettings;
-            if (config.ConnectionFactoryDesc is DbDriverFactoryConnection) {
-                var dbConfig = (DbDriverFactoryConnection) config.ConnectionFactoryDesc;
+            if (config.ConnectionFactoryDesc is DriverConnectionFactoryDesc)
+            {
+                var dbConfig = (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc;
                 factory = new DatabaseDriverConnFactory(dbConfig, settings);
             }
-            else if (config.ConnectionFactoryDesc == null) {
+            else if (config.ConnectionFactoryDesc == null)
+            {
                 throw new DatabaseConfigException("No connection factory setting provided in configuration");
             }
-            else {
+            else
+            {
                 throw new DatabaseConfigException("Unknown connection factory setting provided in configuration");
             }
 
@@ -78,7 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         public ColumnSettings GetQuerySetting(string databaseName)
         {
             var config = mapDatabaseRef.Get(databaseName);
-            if (config == null) {
+            if (config == null)
+            {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
             }
@@ -96,7 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             int scheduleCallbackId)
         {
             var config = mapDatabaseRef.Get(databaseName);
-            if (config == null) {
+            if (config == null)
+            {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
             }
@@ -112,7 +121,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             IEnumerable<Attribute> contextAttributes)
         {
             var config = mapDatabaseRef.Get(databaseName);
-            if (config == null) {
+            if (config == null)
+            {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
             }
@@ -120,7 +130,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             var connectionFactory = GetConnectionFactory(databaseName);
 
             var retain = config.ConnectionLifecycleEnum.Equals(ConnectionLifecycleEnum.RETAIN);
-            if (retain) {
+            if (retain)
+            {
                 return new ConnectionCacheImpl(connectionFactory, preparedStatementText, contextAttributes);
             }
 

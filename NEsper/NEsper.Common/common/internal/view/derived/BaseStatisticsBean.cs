@@ -7,12 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.view.derived
 {
     /// <summary>
-    ///     Bean for performing statistical calculations. The bean keeps sums of X and Y datapoints and sums on squares
+    ///     Bean for performing statistical calculations. The bean keeps sums of X and Y data points and sums on squares
     ///     that can be reused by subclasses. The bean calculates standard deviation (sample and population), variance,
     ///     average and sum.
     /// </summary>
@@ -21,7 +20,7 @@ namespace com.espertech.esper.common.@internal.view.derived
     {
         /// <summary>
         ///     Calculates standard deviation for X based on the entire population given as arguments.
-        ///     Equivalent to Microsoft Excel formula STDEVPA.
+        ///     Equivalent to Microsoft Excel formula STDDEVPA.
         /// </summary>
         /// <value>standard deviation assuming population for X</value>
         public double XStandardDeviationPop {
@@ -37,7 +36,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         /// <summary>
         ///     Calculates standard deviation for Y based on the entire population given as arguments.
-        ///     Equivalent to Microsoft Excel formula STDEVPA.
+        ///     Equivalent to Microsoft Excel formula STDDEVPA.
         /// </summary>
         /// <value>standard deviation assuming population for Y</value>
         public double YStandardDeviationPop {
@@ -53,7 +52,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         /// <summary>
         ///     Calculates standard deviation for X based on the sample data points supplied.
-        ///     Equivalent to Microsoft Excel formula STDEV.
+        ///     Equivalent to Microsoft Excel formula STDDEV.
         /// </summary>
         /// <value>standard deviation assuming sample for X</value>
         public double XStandardDeviationSample {
@@ -69,7 +68,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         /// <summary>
         ///     Calculates standard deviation for Y based on the sample data points supplied.
-        ///     Equivalent to Microsoft Excel formula STDEV.
+        ///     Equivalent to Microsoft Excel formula STDDEV.
         /// </summary>
         /// <value>standard deviation assuming sample for Y</value>
         public double YStandardDeviationSample {
@@ -85,7 +84,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         /// <summary>
         ///     Calculates standard deviation for X based on the sample data points supplied.
-        ///     Equivalent to Microsoft Excel formula STDEV.
+        ///     Equivalent to Microsoft Excel formula STDDEV.
         /// </summary>
         /// <value>variance as the square of the sample standard deviation for X</value>
         public double XVariance {
@@ -100,7 +99,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         /// <summary>
         ///     Calculates standard deviation for Y based on the sample data points supplied.
-        ///     Equivalent to Microsoft Excel formula STDEV.
+        ///     Equivalent to Microsoft Excel formula STDDEV.
         /// </summary>
         /// <value>variance as the square of the sample standard deviation for Y</value>
         public double YVariance {
@@ -231,7 +230,6 @@ namespace com.espertech.esper.common.@internal.view.derived
                 }
 
                 var ssx = SumXSq - XSum * XSum / N;
-
                 if (ssx == 0) {
                     return double.NaN;
                 }
@@ -340,14 +338,32 @@ namespace com.espertech.esper.common.@internal.view.derived
             }
         }
 
+        public BaseStatisticsBean Clone()
+        {
+            return new BaseStatisticsBean {
+                N = N,
+                SumX = SumX,
+                SumXY = SumXY,
+                SumXSq = SumXSq,
+                SumY = SumY,
+                SumYSq = SumYSq
+            };
+        }
+
         public override string ToString()
         {
-            return "datapoints=" + N +
-                   "  sumX=" + XSum +
-                   "  sumXSq=" + SumXSq +
-                   "  sumY=" + YSum +
-                   "  sumYSq=" + SumYSq +
-                   "  sumXY=" + SumXY;
+            return "datapoints=" +
+                   N +
+                   "  sumX=" +
+                   XSum +
+                   "  sumXSq=" +
+                   SumXSq +
+                   "  sumY=" +
+                   YSum +
+                   "  sumYSq=" +
+                   SumYSq +
+                   "  sumXY=" +
+                   SumXY;
         }
     }
 } // end of namespace

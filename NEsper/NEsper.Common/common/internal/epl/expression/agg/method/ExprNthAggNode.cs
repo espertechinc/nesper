@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         {
         }
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             string message =
                 "The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant";
@@ -56,11 +56,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             get => "nth";
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprNthAggNode;
         }
 
-        internal override bool IsFilterExpressionAsLastParameter => false;
+        public override bool IsFilterExpressionAsLastParameter => false;
     }
 } // end of namespace

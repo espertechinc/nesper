@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         {
         }
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             if (optionalFilter == null && positionalParams.Length > 0) {
                 throw MakeExceptionExpectedParamNum(0, 0);
@@ -36,11 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             get => "leaving";
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprLeavingAggNode;
         }
 
-        internal override bool IsFilterExpressionAsLastParameter => true;
+        public override bool IsFilterExpressionAsLastParameter => true;
     }
 } // end of namespace

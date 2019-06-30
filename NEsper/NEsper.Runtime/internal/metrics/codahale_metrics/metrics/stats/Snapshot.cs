@@ -157,7 +157,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <returns>the entire set of values in the snapshot</returns>
         public double[] Values
         {
-            get => ArrayHelper.CopyOf(values, values.Length);
+            get => Arrays.CopyOf(values, values.Length);
         }
 
         /// <summary>

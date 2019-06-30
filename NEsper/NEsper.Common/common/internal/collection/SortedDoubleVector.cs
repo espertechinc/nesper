@@ -14,21 +14,21 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class SortedDoubleVector
     {
-        private readonly List<Double> _values;
+        private readonly List<double> _values;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public SortedDoubleVector()
         {
-            _values = new List<Double>();
+            _values = new List<double>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SortedDoubleVector"/> class.
         /// </summary>
         /// <param name="values">The values.</param>
-        public SortedDoubleVector(List<Double> values)
+        public SortedDoubleVector(List<double> values)
         {
             _values = values;
         }
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </param>
         public virtual void Add(double val)
         {
-            if (Double.IsNaN(val)) {
+            if (double.IsNaN(val)) {
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <throws>  IllegalStateException if the value has not been added </throws>
         public virtual void Remove(double val)
         {
-            if (Double.IsNaN(val)) {
+            if (double.IsNaN(val)) {
                 return;
             }
 
@@ -104,13 +104,11 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <returns>vector with double values</returns>
 
-        public IList<Double> Values {
+        public IList<double> Values {
             get { return _values; }
         }
 
-        /// <summary> Returns the index into which to insert to.
-        /// Proptected access level for convenient testing.
-        /// </summary>
+        /// <summary> Returns the index into which to insert to.</summary>
         /// <param name="val">to find insert index
         /// </param>
         /// <returns> position to insert the value to, or -1 to indicate to add to the end.

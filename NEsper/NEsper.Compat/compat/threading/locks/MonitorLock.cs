@@ -108,6 +108,13 @@ namespace com.espertech.esper.compat.threading.locks
         /// <summary>
         /// Initializes a new instance of the <see cref="MonitorLock"/> class.
         /// </summary>
+        public MonitorLock() : this(LockConstants.DefaultTimeout)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MonitorLock"/> class.
+        /// </summary>
         public MonitorLock(int lockTimeout)
         {
             _uLockId = Guid.NewGuid();

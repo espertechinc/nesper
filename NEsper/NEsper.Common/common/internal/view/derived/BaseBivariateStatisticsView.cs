@@ -45,12 +45,12 @@ namespace com.espertech.esper.common.@internal.view.derived
         protected internal readonly ViewFactory viewFactory;
         private EventBean lastNewEvent;
 
-        protected internal object[] lastValuesEventNew;
+        private object[] _lastValuesEventNew;
 
         /// <summary>
         ///     This bean can be overridden by subclasses providing extra values such as correlation, regression.
         /// </summary>
-        protected internal BaseStatisticsBean statisticsBean = new BaseStatisticsBean();
+        private BaseStatisticsBean _statisticsBean = new BaseStatisticsBean();
 
         /// <summary>
         ///     Constructor requires the name of the two fields to use in the parent view to compute the statistics.
@@ -78,11 +78,14 @@ namespace com.espertech.esper.common.@internal.view.derived
             this.additionalProps = additionalProps;
         }
 
-        public BaseStatisticsBean StatisticsBean => statisticsBean;
+        public BaseStatisticsBean StatisticsBean {
+            get => _statisticsBean;
+            internal set => _statisticsBean = value;
+        }
 
         public object[] LastValuesEventNew {
-            get => lastValuesEventNew;
-            set => lastValuesEventNew = value;
+            get => _lastValuesEventNew;
+            set => _lastValuesEventNew = value;
         }
 
         public StatViewAdditionalPropsEval AdditionalProps => additionalProps;
@@ -105,8 +108,8 @@ namespace com.espertech.esper.common.@internal.view.derived
             if (lastNewEvent == null) {
                 if (child != null) {
                     oldValues = PopulateMap(
-                        statisticsBean, agentInstanceContext.EventBeanTypedEventFactory, eventType, additionalProps,
-                        lastValuesEventNew);
+                        _statisticsBean, agentInstanceContext.EventBeanTypedEventFactory, eventType, additionalProps,
+                        _lastValuesEventNew);
                 }
             }
 
@@ -119,18 +122,18 @@ namespace com.espertech.esper.common.@internal.view.derived
                     if (xnum != null && ynum != null) {
                         double x = xnum.AsDouble();
                         double y = ynum.AsDouble();
-                        statisticsBean.AddPoint(x, y);
+                        _statisticsBean.AddPoint(x, y);
                     }
                 }
 
                 if (additionalProps != null && newData.Length != 0) {
                     var additionalEvals = additionalProps.GetAdditionalEvals();
-                    if (lastValuesEventNew == null) {
-                        lastValuesEventNew = new object[additionalEvals.Length];
+                    if (_lastValuesEventNew == null) {
+                        _lastValuesEventNew = new object[additionalEvals.Length];
                     }
 
                     for (var val = 0; val < additionalEvals.Length; val++) {
-                        lastValuesEventNew[val] = additionalEvals[val].Evaluate(
+                        _lastValuesEventNew[val] = additionalEvals[val].Evaluate(
                             eventsPerStream, true, agentInstanceContext);
                     }
                 }
@@ -145,7 +148,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                     if (xnum != null && ynum != null) {
                         double x = xnum.AsDouble();
                         double y = ynum.AsDouble();
-                        statisticsBean.RemovePoint(x, y);
+                        _statisticsBean.RemovePoint(x, y);
                     }
                 }
             }
@@ -153,8 +156,8 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If there are child view, fireStatementStopped update method
             if (child != null) {
                 var newDataMap = PopulateMap(
-                    statisticsBean, agentInstanceContext.EventBeanTypedEventFactory, eventType, additionalProps,
-                    lastValuesEventNew);
+                    _statisticsBean, agentInstanceContext.EventBeanTypedEventFactory, eventType, additionalProps,
+                    _lastValuesEventNew);
                 EventBean[] newEvents = {newDataMap};
                 EventBean[] oldEvents;
                 if (lastNewEvent == null) {
@@ -177,9 +180,9 @@ namespace com.espertech.esper.common.@internal.view.derived
         public override IEnumerator<EventBean> GetEnumerator()
         {
             EventBean value = PopulateMap(
-                statisticsBean,
+                _statisticsBean,
                 agentInstanceContext.EventBeanTypedEventFactory,
-                eventType, additionalProps, lastValuesEventNew);
+                eventType, additionalProps, _lastValuesEventNew);
             if (value != null) {
                 yield return value;
             }

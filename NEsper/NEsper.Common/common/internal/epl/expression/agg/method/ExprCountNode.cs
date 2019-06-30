@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
         {
         }
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             if (positionalParams.Length > 2 || positionalParams.Length == 0) {
                 throw MakeExceptionExpectedParamNum(1, 2);
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             get => hasFilter;
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             if (!(node is ExprCountNode)) {
                 return false;
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return true;
         }
 
-        internal override bool IsFilterExpressionAsLastParameter {
+        public override bool IsFilterExpressionAsLastParameter {
             get => true;
         }
 

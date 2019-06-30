@@ -20,12 +20,12 @@ namespace com.espertech.esper.common.@internal.collection
             Two = two;
         }
 
-        public int Length => 2;
-        public int Last => Two;
-
         public int One { get; }
 
         public int Two { get; }
+
+        public int Length => 2;
+        public int Last => Two;
 
         public bool IsParentTo(IntSeqKey other)
         {
@@ -53,8 +53,8 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         public static void Write(
-            IntSeqKeyTwo key,
-            DataOutput output)
+            DataOutput output,
+            IntSeqKeyTwo key)
         {
             output.WriteInt(key.One);
             output.WriteInt(key.Last);
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 

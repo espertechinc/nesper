@@ -66,10 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             return "QueryPlanIndexItem{" +
                    "unique=" + IsUnique +
-                   ", hashProps=" + CompatExtensions.AsList(HashProps) +
-                   ", rangeProps=" + CompatExtensions.AsList(RangeProps) +
-                   ", hashPropTypes=" + CompatExtensions.AsList(HashPropTypes) +
-                   ", rangePropTypes=" + CompatExtensions.AsList(RangePropTypes) +
+                   ", hashProps=" + Arrays.AsList(HashProps) +
+                   ", rangeProps=" + Arrays.AsList(RangeProps) +
+                   ", hashPropTypes=" + Arrays.AsList(HashPropTypes) +
+                   ", rangePropTypes=" + Arrays.AsList(RangePropTypes) +
                    ", advanced=" + AdvancedIndexProvisionDesc +
                    "}";
         }

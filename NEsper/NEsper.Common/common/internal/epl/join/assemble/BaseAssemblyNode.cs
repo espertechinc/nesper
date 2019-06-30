@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         ///     Returns an array of stream numbers that lists all child node's stream numbers.
         /// </summary>
         /// <value>child node stream numbers</value>
-        protected internal int[] Substreams {
+        public int[] Substreams {
             get {
                 IList<int> substreams = new List<int>();
                 RecusiveAddSubstreams(substreams);

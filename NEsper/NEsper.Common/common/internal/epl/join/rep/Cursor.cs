@@ -18,22 +18,22 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
     public class Cursor
     {
         /// <summary>Ctor. </summary>
-        /// <param name="theEvent">is the current event</param>
+        /// <param name="theTheEvent">is the current event</param>
         /// <param name="stream">is the current stream</param>
         /// <param name="node">is the node containing the set of events to which the event belongs to</param>
         public Cursor(
-            EventBean theEvent,
+            EventBean theTheEvent,
             int stream,
             Node node)
         {
-            Event = theEvent;
+            TheEvent = theTheEvent;
             Stream = stream;
             Node = node;
         }
 
         /// <summary>Supplies current event. </summary>
         /// <value>event</value>
-        public EventBean Event { get; private set; }
+        public EventBean TheEvent { get; private set; }
 
         /// <summary>Returns current stream the event belongs to. </summary>
         /// <value>stream number for event</value>

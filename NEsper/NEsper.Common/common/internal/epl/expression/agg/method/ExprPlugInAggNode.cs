@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             aggregationFunctionForge.FunctionName = functionName;
         }
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             Type[] parameterTypes = new Type[positionalParams.Length];
             object[] constant = new object[positionalParams.Length];
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             get => functionName;
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             if (!(node is ExprPlugInAggNode)) {
                 return false;
@@ -135,6 +135,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return other.AggregationFunctionName.Equals(this.AggregationFunctionName);
         }
 
-        internal override bool IsFilterExpressionAsLastParameter => false;
+        public override bool IsFilterExpressionAsLastParameter => false;
     }
 } // end of namespace

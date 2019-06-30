@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public bool IsFirst { get; }
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             if (positionalParams.Length > 2) {
                 throw MakeExceptionExpectedParamNum(0, 2);
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return new AggregationFactoryMethodFirstLastEver(this, resultType);
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             if (!(node is ExprFirstLastEverNode)) {
                 return false;
@@ -72,6 +72,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return other.IsFirst == IsFirst;
         }
 
-        internal override bool IsFilterExpressionAsLastParameter => true;
+        public override bool IsFilterExpressionAsLastParameter => true;
     }
 } // end of namespace

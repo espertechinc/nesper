@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.collection
 
             if (other is MultiKey<T>) {
                 MultiKey<T> otherKeys = (MultiKey<T>) other;
-                return ArrayHelper.AreEqual(_keys, otherKeys._keys);
+                return Arrays.AreEqual(_keys, otherKeys._keys);
             }
 
             return false;

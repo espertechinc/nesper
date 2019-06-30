@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public override string ToString()
         {
-            return "IntArrayKey" + CompatExtensions.AsList(keys);
+            return "IntArrayKey" + Arrays.AsList(keys);
         }
 
         public int[] GetKeys()

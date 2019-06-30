@@ -27,9 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public override string AggregationFunctionName => "countever";
 
-        internal override bool IsFilterExpressionAsLastParameter => true;
+        public override bool IsFilterExpressionAsLastParameter => true;
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             if (positionalParams.Length > 2) {
                 throw MakeExceptionExpectedParamNum(0, 2);
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return new AggregationFactoryMethodCountEver(this, ignoreNulls);
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprCountEverNode;
         }

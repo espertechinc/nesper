@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         ///     subStreamsPerChild[0] and subStreamsPerChild[1] combined, and
         ///     array[1] contains the streams for subStreamsPerChild[0], subStreamsPerChild[1] and subStreamsPerChild[2] combined
         /// </returns>
-        protected internal static int[][] ComputeCombined(int[][] subStreamsPerChild)
+        public static int[][] ComputeCombined(int[][] subStreamsPerChild)
         {
             if (subStreamsPerChild.Length < 3) {
                 return null;

@@ -78,8 +78,8 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         public static void Write(
-            IntSeqKeyMany key,
-            DataOutput output)
+            DataOutput output,
+            IntSeqKeyMany key)
         {
             var array = key.Array;
             output.WriteInt(array.Length);

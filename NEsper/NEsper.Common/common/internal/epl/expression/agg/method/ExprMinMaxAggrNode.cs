@@ -45,9 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public bool IsEver { get; }
 
-        internal override bool IsFilterExpressionAsLastParameter => true;
+        public override bool IsFilterExpressionAsLastParameter => true;
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             if (positionalParams.Length == 0 || positionalParams.Length > 2) {
                 throw new ExprValidationException(MinMaxTypeEnum + " node must have either 1 or 2 parameters");
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return new AggregationFactoryMethodMinMax(this, child.Forge.EvaluationType, hasDataWindows);
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             if (!(node is ExprMinMaxAggrNode)) {
                 return false;

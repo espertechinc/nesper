@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.@internal.collection
 
         protected abstract object GetValue(object keyValue);
 
-        protected MixedEventBeanAndCollectionEnumeratorBase(IEnumerable<object> keyEnumerator)
-            : this(keyEnumerator.GetEnumerator())
+        protected MixedEventBeanAndCollectionEnumeratorBase(IEnumerable<object> keyEnumerable)
+            : this(keyEnumerable.GetEnumerator())
         {
         }
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.collection
             ProcGetValue = procGetValue;
         }
 
-        public MixedEventBeanAndCollectionEnumerator(IEnumerable<object> keyEnumerator, Func<object, object> procGetValue) : base(keyEnumerator)
+        public MixedEventBeanAndCollectionEnumerator(IEnumerable<object> keyEnumerable, Func<object, object> procGetValue) : base(keyEnumerable)
         {
             ProcGetValue = procGetValue;
         }
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
         }
 
-        public MixedEventBeanAndCollectionEnumerator(IEnumerable<object> keyEnumerator) : base(keyEnumerator)
+        public MixedEventBeanAndCollectionEnumerator(IEnumerable<object> keyEnumerable) : base(keyEnumerable)
         {
         }
 

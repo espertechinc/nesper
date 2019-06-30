@@ -151,8 +151,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
         /// <summary>
         ///     Constructs an empty configuration. The auto import values
-        ///     are set by default to java.lang, java.math, java.text and
-        ///     java.util.
+        ///     are set by default to System and System.Text.
         /// </summary>
         public ConfigurationCommon()
         {

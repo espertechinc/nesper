@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public void AddIndexes(ISet<TableLookupIndexReqKey> usedIndexes)
         {
-            usedIndexes.AddAll(CompatExtensions.AsList(LookupStrategySpec.IndexNum));
+            usedIndexes.AddAll(Arrays.AsList(LookupStrategySpec.IndexNum));
         }
     }
 } // end of namespace

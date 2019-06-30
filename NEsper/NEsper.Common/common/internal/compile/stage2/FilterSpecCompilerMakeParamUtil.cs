@@ -703,7 +703,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             var expectedNumberOfConstants = constituent.ChildNodes.Length - 1;
             IList<FilterSpecParamInValueForge> listofValues = new List<FilterSpecParamInValueForge>();
-            IEnumerator<ExprNode> it = CompatExtensions.AsList(constituent.ChildNodes).GetEnumerator();
+            IEnumerator<ExprNode> it = Arrays.AsList(constituent.ChildNodes).GetEnumerator();
             it.MoveNext(); // ignore the first node as it's the identifier
             while (it.MoveNext()) {
                 var subNode = it.Current;

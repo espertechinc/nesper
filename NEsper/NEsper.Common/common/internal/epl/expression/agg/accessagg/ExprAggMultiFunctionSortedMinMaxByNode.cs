@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
         public bool IsMax { get; }
 
-        internal override bool IsFilterExpressionAsLastParameter => false;
+        public override bool IsFilterExpressionAsLastParameter => false;
 
         private string ErrorPrefix => "The '" + AggregationFunctionName + "' aggregation function";
 
@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             AggregationForgeFactoryAccessSorted factory;
 
@@ -348,7 +348,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             ExprNodeUtilityPrint.ToExpressionStringParams(writer, positionalParams);
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             if (!(node is ExprAggMultiFunctionSortedMinMaxByNode)) {
                 return false;

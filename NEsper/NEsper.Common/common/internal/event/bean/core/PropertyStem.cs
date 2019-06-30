@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public PropertyStem(
             string propertyName,
             MethodInfo readMethod,
-            EventPropertyType propertyType)
+            EventPropertyType? propertyType)
         {
             PropertyName = propertyName;
             ReadMethod = readMethod;
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         ///     Returns an enum indicating the type of property: simple, mapped, indexed.
         /// </summary>
         /// <returns>enum with property type info</returns>
-        public EventPropertyType PropertyType { get; }
+        public EventPropertyType? PropertyType { get; }
 
         /// <summary>
         ///     Returns the read method. Can return null if the property is backed by a field..

@@ -27,9 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public bool IsFilter { get; private set; }
 
-        internal override bool IsFilterExpressionAsLastParameter => true;
+        public override bool IsFilterExpressionAsLastParameter => true;
 
-        internal override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             IsFilter = positionalParams.Length > 1;
             if (IsFilter) {
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return new AggregationFactoryMethodSum(this, childType);
         }
 
-        internal override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprSumNode;
         }

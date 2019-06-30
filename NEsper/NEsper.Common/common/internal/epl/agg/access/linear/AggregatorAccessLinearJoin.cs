@@ -169,7 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             method.Block.IfRefNull(array)
                 .LocalMethod(initArray)
                 .BlockEnd()
-                .MethodReturn(StaticMethod(typeof(ArrayHelper), "Iterate", array));
+                .MethodReturn(StaticMethod(typeof(Arrays), "Iterate", array));
             return LocalMethod(method);
         }
 

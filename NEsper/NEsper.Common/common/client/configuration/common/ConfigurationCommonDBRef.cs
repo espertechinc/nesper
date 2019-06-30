@@ -11,9 +11,11 @@ using System.Collections.Generic;
 using System.Data;
 
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
@@ -274,6 +276,42 @@ namespace com.espertech.esper.common.client.configuration.common
                     "Unsupported type '" + desiredType.FullName + "' when expecting any of: " + supported);
             }
             DataTypesMapping[sqlType] = desiredType;
+        }
+
+        /// <summary>
+        /// Sets the database provider connection.
+        /// </summary>
+        /// <param name="container">The container.</param>
+        /// <param name="driverName">Name of the driver.</param>
+        /// <param name="properties">The properties.</param>
+
+        public void SetDatabaseDriver(IContainer container, String driverName, Properties properties)
+        {
+            var driver = DriverConnectionFactoryDesc.ResolveDriverFromName(
+                container, driverName);
+            driver.Properties = properties;
+
+            ConnectionFactoryDesc = new DriverConnectionFactoryDesc(driver);
+        }
+
+        /// <summary>
+        /// Sets the database driver.
+        /// </summary>
+        /// <param name="driverConnectionFactoryDesc">The db driver factory connection.</param>
+        public void SetDatabaseDriver(DriverConnectionFactoryDesc driverConnectionFactoryDesc)
+        {
+            ConnectionFactoryDesc = driverConnectionFactoryDesc;
+        }
+
+        /// <summary>
+        /// Sets the database driver.
+        /// </summary>
+        /// <param name="driverConnectionFactoryDesc">The db driver factory connection.</param>
+        /// <param name="properties">The properties.</param>
+        public void SetDatabaseDriver(DriverConnectionFactoryDesc driverConnectionFactoryDesc, Properties properties)
+        {
+            ConnectionFactoryDesc = new DriverConnectionFactoryDesc(
+                driverConnectionFactoryDesc.Driver);
         }
     }
 } // end of namespace

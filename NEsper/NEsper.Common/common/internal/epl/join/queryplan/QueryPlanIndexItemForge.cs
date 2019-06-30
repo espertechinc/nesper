@@ -115,10 +115,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             return "QueryPlanIndexItem{" +
                    "unique=" + IsUnique +
-                   ", hashProps=" + CompatExtensions.AsList(HashProps) +
-                   ", rangeProps=" + CompatExtensions.AsList(RangeProps) +
-                   ", hashTypes=" + CompatExtensions.AsList(HashTypes) +
-                   ", rangeTypes=" + CompatExtensions.AsList(RangeTypes) +
+                   ", hashProps=" + Arrays.AsList(HashProps) +
+                   ", rangeProps=" + Arrays.AsList(RangeProps) +
+                   ", hashTypes=" + Arrays.AsList(HashTypes) +
+                   ", rangeTypes=" + Arrays.AsList(RangeTypes) +
                    ", advanced=" + (AdvancedIndexProvisionDesc == null
                        ? null
                        : AdvancedIndexProvisionDesc.IndexDesc.IndexTypeName) +

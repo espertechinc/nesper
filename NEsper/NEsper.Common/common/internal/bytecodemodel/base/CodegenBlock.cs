@@ -391,7 +391,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenMethod methodNode,
             params CodegenExpression[] parameters)
         {
-            Expression(new CodegenExpressionLocalMethod(methodNode, CompatExtensions.AsList(parameters)));
+            Expression(new CodegenExpressionLocalMethod(methodNode, Arrays.AsList(parameters)));
             return this;
         }
 

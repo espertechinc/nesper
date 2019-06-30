@@ -17,13 +17,22 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class IterablesArrayEnumerator : IEnumerator<EventBean>
     {
-        private readonly EventTable[][] _tablesPerRow;
+        private readonly IEnumerable<EventBean>[][] _tablesPerRow;
         private IEnumerator<EventBean> _tablesPerRowEnumerator;
 
         public IterablesArrayEnumerator(EventTable[][] tablesPerRow)
         {
             _tablesPerRow = tablesPerRow;
-            _tablesPerRowEnumerator = _tablesPerRow
+            _tablesPerRowEnumerator = tablesPerRow
+                .Select(tables => tables[0])
+                .SelectMany(table => table)
+                .GetEnumerator();
+        }
+
+        public IterablesArrayEnumerator(IEnumerable<EventBean>[][] tablesPerRow)
+        {
+            _tablesPerRow = tablesPerRow;
+            _tablesPerRowEnumerator = tablesPerRow
                 .Select(tables => tables[0])
                 .SelectMany(table => table)
                 .GetEnumerator();

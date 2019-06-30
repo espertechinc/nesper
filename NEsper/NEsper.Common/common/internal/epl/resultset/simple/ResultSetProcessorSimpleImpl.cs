@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         REF_AGENTINSTANCECONTEXT))
                 .MethodReturn(
                     StaticMethod(
-                        typeof(ArrayHelper), "Iterate",
+                        typeof(Arrays), "Iterate",
                         Ref("orderedEvents")));
         }
 
@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 .BlockReturn(StaticMethod(typeof(Collections), "emptyIterator"))
                 .MethodReturn(
                     StaticMethod(
-                        typeof(ArrayHelper), "Iterate",
+                        typeof(Arrays), "Iterate",
                         Cast(typeof(EventBean[]), GetProperty(Ref("result"), "First"))));
         }
 

@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public string ToQueryPlan()
         {
-            return GetType().Name + " ranges=" + CompatExtensions.AsList(_expressions);
+            return GetType().Name + " ranges=" + Arrays.AsList(_expressions);
         }
     }
 } // end of namespace

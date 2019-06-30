@@ -93,11 +93,11 @@ namespace com.espertech.esper.common.@internal.view.previous
         }
 
         public IEnumerator<EventBean> WindowToEvent {
-            get => ArrayHelper.ReverseIterate(lastNewData).GetEnumerator();
+            get => Arrays.ReverseIterate(lastNewData).GetEnumerator();
         }
 
         public ICollection<EventBean> WindowToEventCollReadOnly {
-            get => CompatExtensions.AsList(lastNewData);
+            get => Arrays.AsList(lastNewData);
         }
 
         public int WindowToEventCount {

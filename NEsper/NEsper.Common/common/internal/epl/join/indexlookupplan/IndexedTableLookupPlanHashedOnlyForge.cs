@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         }
 
         public override TableLookupKeyDesc KeyDescriptor => new TableLookupKeyDesc(
-            CompatExtensions.AsList(HashKeys), Collections.GetEmptyList<QueryGraphValueEntryRangeForge>());
+            Arrays.AsList(HashKeys), Collections.GetEmptyList<QueryGraphValueEntryRangeForge>());
 
         public QueryGraphValueEntryHashKeyedForge[] HashKeys { get; }
 

@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             foreach (ExprNode node in allParameterExpressions) {
                 if (node is ExprNamedParameterNode) {
                     ExprNamedParameterNode namedNode = (ExprNamedParameterNode) node;
-                    named.Put(namedNode.ParameterName, CompatExtensions.AsList(namedNode.ChildNodes));
+                    named.Put(namedNode.ParameterName, Arrays.AsList(namedNode.ChildNodes));
                 }
             }
 

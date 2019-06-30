@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected internal static QueryPlanForge Build(
+        public static QueryPlanForge Build(
             QueryGraphForge queryGraph,
             EventType[] typesPerStream,
             HistoricalViewableDesc historicalViewableDesc,
@@ -208,7 +208,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="tablesPerStream">tables</param>
         /// <param name="streamJoinAnalysisResult">stream join analysis</param>
         /// <returns>NestedIterationNode with lookups attached underneath</returns>
-        protected internal static QueryPlanNodeForge CreateStreamPlan(
+        public static QueryPlanNodeForge CreateStreamPlan(
             int lookupStream,
             int[] bestChain,
             QueryGraphForge queryGraph,
@@ -497,7 +497,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="queryGraph">navigability between streams</param>
         /// <param name="dependencyGraph">dependencies between historical streams</param>
         /// <returns>chain and chain depth</returns>
-        protected internal static BestChainResult ComputeBestPath(
+        public static BestChainResult ComputeBestPath(
             int lookupStream,
             QueryGraphForge queryGraph,
             DependencyGraph dependencyGraph)
@@ -547,7 +547,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="permutation">permutation of lookups</param>
         /// <param name="dependencyGraph">dependencies</param>
         /// <returns>pass or fail indication</returns>
-        protected internal static bool IsDependencySatisfied(
+        public static bool IsDependencySatisfied(
             int lookupStream,
             int[] permutation,
             DependencyGraph dependencyGraph)
@@ -605,7 +605,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="nextStreams">list of stream numbers next in lookup</param>
         /// <param name="queryGraph">indexing information</param>
         /// <returns>value between 0 and (nextStreams.lenght - 1)</returns>
-        protected internal static int ComputeNavigableDepth(
+        public static int ComputeNavigableDepth(
             int lookupStream,
             int[] nextStreams,
             QueryGraphForge queryGraph)
@@ -637,7 +637,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <returns>
         ///     int array with all stream numbers starting at 0 to (numStreams - 1) leaving theforStream out
         /// </returns>
-        protected internal static int[] BuildDefaultNestingOrder(
+        public static int[] BuildDefaultNestingOrder(
             int numStreams,
             int forStream)
         {
