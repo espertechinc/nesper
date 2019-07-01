@@ -7,11 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Threading;
 using com.espertech.esper.compat;
 using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.core;
-using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.reporting;
-using Timer = com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.core.Timer;
 
 namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
 {
@@ -82,7 +79,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// </summary>
         /// <param name="klass">the class which owns the metric</param>
         /// <param name="name">the name of the metric</param>
-        /// <returns>a new <seealso cref="Counter"/></returns>
+        /// <returns>a new <seealso cref="Counter" /></returns>
         public static Counter NewCounter(
             Type klass,
             string name)
@@ -97,7 +94,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <param name="klass">the class which owns the metric</param>
         /// <param name="name">the name of the metric</param>
         /// <param name="scope">the scope of the metric</param>
-        /// <returns>a new <seealso cref="Counter"/></returns>
+        /// <returns>a new <seealso cref="Counter" /></returns>
         public static Counter NewCounter(
             Type klass,
             string name,
@@ -111,7 +108,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         ///     name.
         /// </summary>
         /// <param name="metricName">the name of the metric</param>
-        /// <returns>a new <seealso cref="Counter"/></returns>
+        /// <returns>a new <seealso cref="Counter" /></returns>
         public static Counter NewCounter(MetricName metricName)
         {
             return DEFAULT_REGISTRY.NewCounter(metricName);
@@ -124,7 +121,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <param name="klass">the class which owns the metric</param>
         /// <param name="name">the name of the metric</param>
         /// <param name="biased">whether or not the histogram should be biased</param>
-        /// <returns>a new <seealso cref="Histogram"/></returns>
+        /// <returns>a new <seealso cref="Histogram" /></returns>
         public static Histogram NewHistogram(
             Type klass,
             string name,
@@ -141,7 +138,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <param name="name">the name of the metric</param>
         /// <param name="scope">the scope of the metric</param>
         /// <param name="biased">whether or not the histogram should be biased</param>
-        /// <returns>a new <seealso cref="Histogram"/></returns>
+        /// <returns>a new <seealso cref="Histogram" /></returns>
         public static Histogram NewHistogram(
             Type klass,
             string name,
@@ -157,7 +154,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// </summary>
         /// <param name="metricName">the name of the metric</param>
         /// <param name="biased">whether or not the histogram should be biased</param>
-        /// <returns>a new <seealso cref="Histogram"/></returns>
+        /// <returns>a new <seealso cref="Histogram" /></returns>
         public static Histogram NewHistogram(
             MetricName metricName,
             bool biased)
@@ -171,7 +168,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// </summary>
         /// <param name="klass">the class which owns the metric</param>
         /// <param name="name">the name of the metric</param>
-        /// <returns>a new <seealso cref="Histogram"/></returns>
+        /// <returns>a new <seealso cref="Histogram" /></returns>
         public static Histogram NewHistogram(
             Type klass,
             string name)
@@ -186,7 +183,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <param name="klass">the class which owns the metric</param>
         /// <param name="name">the name of the metric</param>
         /// <param name="scope">the scope of the metric</param>
-        /// <returns>a new <seealso cref="Histogram"/></returns>
+        /// <returns>a new <seealso cref="Histogram" /></returns>
         public static Histogram NewHistogram(
             Type klass,
             string name,
@@ -200,7 +197,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         ///     given metric name.
         /// </summary>
         /// <param name="metricName">the name of the metric</param>
-        /// <returns>a new <seealso cref="Histogram"/></returns>
+        /// <returns>a new <seealso cref="Histogram" /></returns>
         public static Histogram NewHistogram(MetricName metricName)
         {
             return NewHistogram(metricName, false);
@@ -216,7 +213,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         ///     the plural name of the type of events the meter is measuring (e.g., {@code"requests"})
         /// </param>
         /// <param name="unit">the rate unit of the new meter</param>
-        /// <returns>a new <seealso cref="Meter"/></returns>
+        /// <returns>a new <seealso cref="Meter" /></returns>
         public static Meter NewMeter(
             Type klass,
             string name,
@@ -237,7 +234,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         ///     the plural name of the type of events the meter is measuring (e.g., {@code"requests"})
         /// </param>
         /// <param name="unit">the rate unit of the new meter</param>
-        /// <returns>a new <seealso cref="Meter"/></returns>
+        /// <returns>a new <seealso cref="Meter" /></returns>
         public static Meter NewMeter(
             Type klass,
             string name,
@@ -257,7 +254,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         ///     the plural name of the type of events the meter is measuring (e.g., {@code"requests"})
         /// </param>
         /// <param name="unit">the rate unit of the new meter</param>
-        /// <returns>a new <seealso cref="Meter"/></returns>
+        /// <returns>a new <seealso cref="Meter" /></returns>
         public static Meter NewMeter(
             MetricName metricName,
             string eventType,
@@ -274,7 +271,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <param name="name">the name of the metric</param>
         /// <param name="durationUnit">the duration scale unit of the new timer</param>
         /// <param name="rateUnit">the rate scale unit of the new timer</param>
-        /// <returns>a new <seealso cref="core.Timer"/></returns>
+        /// <returns>a new <seealso cref="core.Timer" /></returns>
         public static Timer NewTimer(
             Type klass,
             string name,
@@ -290,7 +287,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// </summary>
         /// <param name="klass">the class which owns the metric</param>
         /// <param name="name">the name of the metric</param>
-        /// <returns>a new <seealso cref="Timer"/></returns>
+        /// <returns>a new <seealso cref="Timer" /></returns>
         public static Timer NewTimer(
             Type klass,
             string name)
@@ -307,7 +304,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <param name="scope">the scope of the metric</param>
         /// <param name="durationUnit">the duration scale unit of the new timer</param>
         /// <param name="rateUnit">the rate scale unit of the new timer</param>
-        /// <returns>a new <seealso cref="Timer"/></returns>
+        /// <returns>a new <seealso cref="Timer" /></returns>
         public static Timer NewTimer(
             Type klass,
             string name,
@@ -325,7 +322,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <param name="klass">the class which owns the metric</param>
         /// <param name="name">the name of the metric</param>
         /// <param name="scope">the scope of the metric</param>
-        /// <returns>a new <seealso cref="Timer"/></returns>
+        /// <returns>a new <seealso cref="Timer" /></returns>
         public static Timer NewTimer(
             Type klass,
             string name,
@@ -341,7 +338,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <param name="metricName">the name of the metric</param>
         /// <param name="durationUnit">the duration scale unit of the new timer</param>
         /// <param name="rateUnit">the rate scale unit of the new timer</param>
-        /// <returns>a new <seealso cref="Timer"/></returns>
+        /// <returns>a new <seealso cref="Timer" /></returns>
         public static Timer NewTimer(
             MetricName metricName,
             TimeUnit durationUnit,

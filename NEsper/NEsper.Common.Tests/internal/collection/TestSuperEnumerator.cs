@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestSuperEnumerator : CommonTest
+    public class TestSuperEnumerator : AbstractTestBase
     {
         private IEnumerator<string> Make(string csv)
         {

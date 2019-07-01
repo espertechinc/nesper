@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 {
     [TestFixture]
-    public class TestAggregateNodeUtil : CommonTest
+    public class TestAggregateNodeUtil : AbstractTestBase
     {
         [Test]
         public void TestGetAggregatesBottomUp()

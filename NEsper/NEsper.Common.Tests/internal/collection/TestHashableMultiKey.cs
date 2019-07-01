@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestHashableMultiKey : CommonTest
+    public class TestHashableMultiKey : AbstractTestBase
     {
         private HashableMultiKey keys1 = new HashableMultiKey("a", "b");
         private HashableMultiKey keys2 = new HashableMultiKey("a", "b");

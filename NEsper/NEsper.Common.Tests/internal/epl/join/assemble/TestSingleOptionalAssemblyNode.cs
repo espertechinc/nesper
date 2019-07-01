@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
     [TestFixture]
-    public class TestSingleOptionalAssemblyNode : CommonTest
+    public class TestSingleOptionalAssemblyNode : AbstractTestBase
     {
         private SupportJoinProcNode parentNode;
         private BranchOptionalAssemblyNode optAssemblyNode;

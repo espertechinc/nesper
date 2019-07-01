@@ -7,7 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
+using com.espertech.esper.common.client.soda;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.runtime.client.linq

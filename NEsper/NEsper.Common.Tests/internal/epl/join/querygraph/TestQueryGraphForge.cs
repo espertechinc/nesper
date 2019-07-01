@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     [TestFixture]
-    public class TestQueryGraphForge : CommonTest
+    public class TestQueryGraphForge : AbstractTestBase
     {
         private QueryGraphForge queryGraph;
         private EventType[] types;

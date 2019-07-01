@@ -29,7 +29,7 @@ using static com.espertech.esper.common.@internal.supportunit.util.SupportExprNo
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestNStreamQueryPlanBuilder : CommonTest
+    public class TestNStreamQueryPlanBuilder : AbstractTestBase
     {
         private EventType[] typesPerStream;
         private QueryGraphForge queryGraph;

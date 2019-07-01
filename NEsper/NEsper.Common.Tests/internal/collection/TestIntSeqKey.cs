@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestIntSeqKey : CommonTest
+    public class TestIntSeqKey : AbstractTestBase
     {
         private readonly IntSeqKeyRoot _zero = IntSeqKeyRoot.INSTANCE;
         private readonly IntSeqKeyOne _one = new IntSeqKeyOne(1);

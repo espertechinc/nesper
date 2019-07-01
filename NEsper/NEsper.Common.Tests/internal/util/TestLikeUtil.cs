@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestLikeUtil : CommonTest
+    public class TestLikeUtil : AbstractTestBase
     {
         [Test]
         public void TestLike()

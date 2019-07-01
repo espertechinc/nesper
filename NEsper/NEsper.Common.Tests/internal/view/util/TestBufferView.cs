@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.view.util
 {
     [TestFixture]
-    public class TestBufferView : CommonTest
+    public class TestBufferView : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

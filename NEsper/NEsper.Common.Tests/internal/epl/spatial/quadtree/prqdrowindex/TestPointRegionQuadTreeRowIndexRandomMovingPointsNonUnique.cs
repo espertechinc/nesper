@@ -17,7 +17,7 @@ using static com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowin
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 {
     [TestFixture]
-    public class TestPointRegionQuadTreeRowIndexRandomMovingPointsNonUnique : CommonTest
+    public class TestPointRegionQuadTreeRowIndexRandomMovingPointsNonUnique : AbstractTestBase
     {
         [Test]
         public void TestNonUnique()

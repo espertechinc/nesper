@@ -12,18 +12,22 @@ using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.runtime.@internal.kernel.statement
 {
+    using UpdateEventHandler = EventHandler<UpdateEventArgs>;
+
     /// <summary>
     ///     Provides update listeners for use by statement instances, and the management methods around these.
     ///     <para>
     ///         The collection of update listeners is based on copy-on-write:
-    ///         When the runtime dispatches events to a set of listeners, then while iterating through the set there
-    ///         may be listeners added or removed (the listener may remove itself).
-    ///         Additionally, events may be dispatched by multiple threads to the same listener.
+    ///         When the runtime dispatches events to a set of listeners, then while iterating
+    ///         through the set there may be listeners added or removed (the listener may remove
+    ///         itself).  Additionally, events may be dispatched by multiple threads to the same
+    ///         listener.
     ///     </para>
     /// </summary>
-    public class EPStatementListenerSet
+    public class EPStatementListenerSet : EPStatementHandlerBase
     {
-        private static readonly UpdateListener[] EMPTY_UPDLISTEN_ARRAY = new UpdateListener[0];
+        private static readonly UpdateListener[] EMPTY_UPDATE_LISTENER_ARRAY = new UpdateListener[0];
+
         private volatile UpdateListener[] listeners;
 
         /// <summary>
@@ -31,7 +35,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         /// </summary>
         public EPStatementListenerSet()
         {
-            listeners = EMPTY_UPDLISTEN_ARRAY;
+            listeners = EMPTY_UPDATE_LISTENER_ARRAY;
         }
 
         public EPStatementListenerSet(UpdateListener[] listeners)
@@ -43,16 +47,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         ///     Returns the set of listeners to the statement.
         /// </summary>
         /// <returns>statement listeners</returns>
-        public UpdateListener[] Listeners => listeners;
-
-        /// <summary>
-        ///     Returns the subscriber instance.
-        /// </summary>
-        /// <returns>subscriber</returns>
-        public object Subscriber { get; private set; }
-
-        public string SubscriberMethodName { get; private set; }
-
+        public UpdateListener[] Listeners {
+            get => listeners;
+        }
+        
         /// <summary>
         ///     Set the update listener set to use.
         /// </summary>
@@ -116,21 +114,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         public void RemoveAllListeners()
         {
             lock (this) {
-                listeners = EMPTY_UPDLISTEN_ARRAY;
+                listeners = EMPTY_UPDATE_LISTENER_ARRAY;
             }
-        }
-
-        /// <summary>
-        ///     Sets a subscriber instance.
-        /// </summary>
-        /// <param name="subscriber">is the subscriber to set</param>
-        /// <param name="methodName">method name</param>
-        public void SetSubscriber(
-            object subscriber,
-            string methodName)
-        {
-            Subscriber = subscriber;
-            SubscriberMethodName = methodName;
         }
     }
 } // end of namespace

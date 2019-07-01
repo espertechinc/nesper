@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestMultiKey : CommonTest
+    public class TestMultiKey : AbstractTestBase
     {
         private MultiKey<string> keys1 = new MultiKey<string>(new string[] { "a", "b" });
         private MultiKey<string> keys2 = new MultiKey<string>(new string[] { "a", "b" });

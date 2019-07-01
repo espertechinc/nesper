@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestRelationalOpEnum : CommonTest
+    public class TestRelationalOpEnum : AbstractTestBase
     {
 #if FALSE
         private readonly bool[][] expected = {

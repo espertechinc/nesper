@@ -19,7 +19,7 @@ using static com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilt
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
     [TestFixture]
-    public class TestMXCIFQuadTreeFilterIndexScenarios : CommonTest
+    public class TestMxcifQuadTreeFilterIndexScenarios : AbstractTestBase
     {
         [Test]
         public void TestDimension()

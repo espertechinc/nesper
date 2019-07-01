@@ -30,7 +30,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.common.client.configuration
 {
-    public class TestConfigurationParser : CommonTest
+    public class TestConfigurationParser : AbstractTestBase
     {
         [Test]
         public void TestRegressionFileConfig()

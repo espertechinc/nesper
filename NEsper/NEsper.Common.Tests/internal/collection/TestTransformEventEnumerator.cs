@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestTransformEventEnumerator : CommonTest
+    public class TestTransformEventEnumerator : AbstractTestBase
     {
         private TransformEventEnumerator enumerator;
 

@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
     [TestFixture]
-    public class TestRootCartProdAssemblyNode : CommonTest
+    public class TestRootCartProdAssemblyNode : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

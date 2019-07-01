@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
 {
     [TestFixture]
-    public class TestTimeAbacusMicroseconds : CommonTest
+    public class TestTimeAbacusMicroseconds : AbstractTestBase
     {
         private TimeAbacus abacus = TimeAbacusMicroseconds.INSTANCE;
 

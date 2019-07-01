@@ -20,7 +20,7 @@ namespace com.espertech.esper.compat.concurrency
     /// mechanisms.
     /// </summary>
 
-    public class DefaultExecutorService : IExecutorService
+    public class DefaultExecutorService : IExecutorService, IDisposable
     {
         private readonly Guid _id;
         private readonly List<FutureBase> _futuresPending;
@@ -57,6 +57,13 @@ namespace com.espertech.esper.compat.concurrency
             _numSubmitted = 0;
             _numRecycled = 0;
             _taskFactory = taskFactory;
+        }
+
+        public void Dispose()
+        {
+            if (_taskFactory.Scheduler is IDisposable disposableScheduler) {
+                disposableScheduler.Dispose();
+            }
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestURIUtil : CommonTest
+    public class TestUriUtil : AbstractTestBase
     {
         private static void RunAssertion(
             Uri uriTested,

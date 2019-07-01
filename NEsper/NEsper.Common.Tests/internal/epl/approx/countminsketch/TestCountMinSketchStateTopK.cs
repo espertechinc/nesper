@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 {
     [TestFixture]
-    public class TestCountMinSketchStateTopK : CommonTest
+    public class TestCountMinSketchStateTopK : AbstractTestBase
     {
         private void UpdateAssert(
             CountMinSketchState state,

@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestSimpleTypeParserFactory : CommonTest
+    public class TestSimpleTypeParserFactory : AbstractTestBase
     {
         [Test]
         public void TestGetParser()

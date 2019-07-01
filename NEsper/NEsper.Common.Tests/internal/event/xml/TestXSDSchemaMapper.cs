@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     [TestFixture]
-    public class TestXSDSchemaMapper : CommonTest
+    public class TestXsdSchemaMapper : AbstractTestBase
     {
         private XmlSchemaType _schemaTypeId;
         private XmlSchemaType _schemaTypeString;

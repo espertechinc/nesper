@@ -67,19 +67,19 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             try {
-                Module module = EPLModuleUtil.ParseInternal(epl, null);
+                var module = EPLModuleUtil.ParseInternal(epl, null);
                 IList<Compilable> compilables = new List<Compilable>();
-                foreach (ModuleItem item in module.Items) {
-                    string stmtEpl = item.Expression;
+                foreach (var item in module.Items) {
+                    var stmtEpl = item.Expression;
                     compilables.Add(new CompilableEPL(stmtEpl));
                 }
 
                 // determine module name
-                string moduleName = DetermineModuleName(arguments.Options, module);
-                ICollection<string> moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
+                var moduleName = DetermineModuleName(arguments.Options, module);
+                var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
 
                 // get compile services
-                ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
+                var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
 
                 // compile
                 return CompilerHelperModuleProvider.Compile(
@@ -99,9 +99,9 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public EPCompilerSPIExpression ExpressionCompiler(Configuration configuration)
         {
-            CompilerArguments arguments = new CompilerArguments(configuration);
+            var arguments = new CompilerArguments(configuration);
             arguments.Configuration = configuration;
-            ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, null, null);
+            var compileTimeServices = GetCompileTimeServices(arguments, null, null);
             return new EPCompilerSPIExpressionImpl(compileTimeServices);
         }
 
@@ -110,12 +110,12 @@ namespace com.espertech.esper.compiler.@internal.util
             Configuration configuration)
         {
             try {
-                StatementSpecMapEnv mapEnv = new StatementSpecMapEnv(
+                var mapEnv = new StatementSpecMapEnv(
                     MakeImportService(configuration), VariableCompileTimeResolverEmpty.INSTANCE, configuration,
                     ExprDeclaredCompileTimeResolverEmpty.INSTANCE, ContextCompileTimeResolverEmpty.INSTANCE, TableCompileTimeResolverEmpty.INSTANCE,
                     ScriptCompileTimeResolverEmpty.INSTANCE, new CompilerServicesImpl());
-                StatementSpecRaw statementSpec = CompilerHelperSingleEPL.ParseWalk(stmtText, mapEnv);
-                StatementSpecUnMapResult unmapped = StatementSpecMapper.Unmap(statementSpec);
+                var statementSpec = CompilerHelperSingleEPL.ParseWalk(stmtText, mapEnv);
+                var unmapped = StatementSpecMapper.Unmap(statementSpec);
                 return unmapped.ObjectModel;
             }
             catch (StatementSpecCompileException ex) {
@@ -140,14 +140,14 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // determine module name
-            string moduleName = DetermineModuleName(arguments.Options, module);
-            ICollection<string> moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
+            var moduleName = DetermineModuleName(arguments.Options, module);
+            var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
 
             // get compile services
-            ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
+            var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
 
             if (module.Imports != null) {
-                foreach (string imported in module.Imports) {
+                foreach (var imported in module.Imports) {
                     try {
                         compileTimeServices.ImportServiceCompileTime.AddImport(imported);
                     }
@@ -158,7 +158,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             IList<Compilable> compilables = new List<Compilable>();
-            foreach (ModuleItem item in module.Items) {
+            foreach (var item in module.Items) {
                 if (item.IsCommentOnly) {
                     continue;
                 }
@@ -243,15 +243,15 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // determine module name
-            string moduleName = DetermineModuleName(arguments.Options, module);
-            ICollection<string> moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
+            var moduleName = DetermineModuleName(arguments.Options, module);
+            var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
 
-            ModuleCompileTimeServices moduleCompileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
+            var moduleCompileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
 
-            int statementNumber = 0;
+            var statementNumber = 0;
             try {
-                foreach (ModuleItem item in module.Items) {
-                    StatementCompileTimeServices services = new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
+                foreach (var item in module.Items) {
+                    var services = new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
                     if (item.IsCommentOnly) {
                         continue;
                     }
@@ -288,10 +288,10 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // determine module name
-            string moduleName = arguments.Options.ModuleName?.GetValue(new ModuleNameContext(null));
-            ISet<string> moduleUses = arguments.Options.ModuleUses?.GetValue(new ModuleUsesContext(moduleName, null));
+            var moduleName = arguments.Options.ModuleName?.GetValue(new ModuleNameContext(null));
+            var moduleUses = arguments.Options.ModuleUses?.GetValue(new ModuleUsesContext(moduleName, null));
 
-            ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
+            var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
             try {
                 return CompilerHelperFAFProvider.Compile(compilable, compileTimeServices, arguments);
             }

@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.client.configuration
 {
     [TestFixture]
-    public class TestConfigurationCommonDBRef : CommonTest
+    public class TestConfigurationAbstractDbRef : AbstractTestBase
     {
         private void TryInvalid(
             Type type,

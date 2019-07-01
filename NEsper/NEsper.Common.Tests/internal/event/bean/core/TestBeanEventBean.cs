@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     [TestFixture]
-    public class TestBeanEventBean : CommonTest
+    public class TestBeanEventBean : AbstractTestBase
     {
         private SupportBean testEvent;
 

@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestResourceLoader : CommonTest
+    public class TestResourceLoader : AbstractTestBase
     {
         private const string TEST_RESOURCE = "regression/esper.test.readconfig.cfg.xml";
 

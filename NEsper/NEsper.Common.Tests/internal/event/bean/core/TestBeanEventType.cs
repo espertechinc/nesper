@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     [TestFixture]
-    public class TestBeanEventType : CommonTest
+    public class TestBeanEventType : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

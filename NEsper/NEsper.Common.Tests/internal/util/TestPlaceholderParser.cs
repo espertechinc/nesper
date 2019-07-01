@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestPlaceholderParser : CommonTest
+    public class TestPlaceholderParser : AbstractTestBase
     {
         private void TryParseInvalid(string parseString)
         {

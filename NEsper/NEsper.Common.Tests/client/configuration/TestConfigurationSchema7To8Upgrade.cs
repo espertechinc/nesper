@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.client.configuration
 {
     [TestFixture]
-    public class TestConfigurationSchema7To8Upgrade : CommonTest
+    public class TestConfigurationSchema7To8Upgrade : AbstractTestBase
     {
         private static readonly string FILE_PREFIX = "regression/esper_version_7_old_configuration_file_";
         private static readonly string FILE_ONE = FILE_PREFIX + "one.xml";

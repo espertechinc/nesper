@@ -26,7 +26,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.map
 {
     [TestFixture]
-    public class TestMapEventType : CommonTest
+    public class TestMapEventType : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

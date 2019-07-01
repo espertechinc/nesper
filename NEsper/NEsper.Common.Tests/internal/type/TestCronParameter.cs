@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestCronParameter : CommonTest
+    public class TestCronParameter : AbstractTestBase
     {
         [Test]
         public void TestFormat()

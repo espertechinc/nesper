@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestListParameter : CommonTest
+    public class TestListParameter : AbstractTestBase
     {
         private ListParameter listParam;
 

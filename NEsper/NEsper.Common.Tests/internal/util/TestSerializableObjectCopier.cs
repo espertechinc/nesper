@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestSerializableObjectCopier : CommonTest
+    public class TestSerializableObjectCopier : AbstractTestBase
     {
         [Test]
         public void TestCopyEnum()

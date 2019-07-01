@@ -8,7 +8,6 @@
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.concurrency;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.core;
 
 namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.reporting
@@ -66,7 +65,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         }
 
         /// <summary>
-        /// The method called when a a poll is scheduled to occur.
+        /// The method called when a poll is scheduled to occur.
         /// </summary>
         public abstract void Run();
     }

@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
     [TestFixture]
-    public class TestSingleRequiredAssemblyNode : CommonTest
+    public class TestSingleRequiredAssemblyNode : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

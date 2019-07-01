@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestLevenshteinDistance : CommonTest
+    public class TestLevenshteinDistance : AbstractTestBase
     {
         [Test]
         public void TestDistance()

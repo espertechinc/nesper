@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestFlushedEventBuffer : CommonTest
+    public class TestFlushedEventBuffer : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

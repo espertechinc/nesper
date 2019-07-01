@@ -17,7 +17,7 @@ using static com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilte
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
 {
     [TestFixture]
-    public class TestPointRegionQuadTreeFilterIndexRandomAddThenRemove : CommonTest
+    public class TestPointRegionQuadTreeFilterIndexRandomAddThenRemove : AbstractTestBase
     {
         [Test]
         public void TestRun()

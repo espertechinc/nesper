@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.soda;
+
 namespace com.espertech.esper.runtime.client.linq
 {
     /// <summary>
@@ -16,10 +18,10 @@ namespace com.espertech.esper.runtime.client.linq
     public class EsperQuery<T>
     {
         /// <summary>
-        /// Gets the service provider associated with this request.
+        /// Gets the runtime associated with this request.
         /// </summary>
-        /// <value>The service provider.</value>
-        public EPServiceProvider ServiceProvider { get; private set; }
+        /// <value>The runtime.</value>
+        public EPRuntime Runtime { get; private set; }
 
         /// <summary>
         /// Gets the statement associated with this request.
@@ -48,7 +50,7 @@ namespace com.espertech.esper.runtime.client.linq
         {
             if (Statement == null)
             {
-                Statement = ServiceProvider.EPAdministrator.Create(ObjectModel);
+                Statement = Runtime.EPAdministrator.Create(ObjectModel);
             }
         }
 

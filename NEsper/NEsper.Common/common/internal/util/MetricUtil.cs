@@ -13,22 +13,22 @@ using System.Threading;
 namespace com.espertech.esper.common.@internal.util
 {
     /// <summary>
-    /// Utility for CPU and wall time metrics.
+    ///     Utility for CPU and wall time metrics.
     /// </summary>
     public class MetricUtil
     {
         [ThreadStatic] public static ProcessThread _currentProcessThread;
 
         /// <summary>
-        /// Gets the current process thread.
+        ///     Gets the current process thread.
         /// </summary>
         /// <value>The current process thread.</value>
         public static ProcessThread CurrentProcessThread {
             get {
                 if (_currentProcessThread == null) {
-                    int id = Thread.CurrentThread.ManagedThreadId;
+                    var id = Thread.CurrentThread.ManagedThreadId;
 
-                    Process process = Process.GetCurrentProcess();
+                    var process = Process.GetCurrentProcess();
                     foreach (ProcessThread processThread in process.Threads) {
                         if (processThread.Id == id) {
                             _currentProcessThread = processThread;
@@ -42,19 +42,15 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         /// <summary>
-        /// Gets the user processor time for the current thread.
+        ///     Gets the user processor time for the current thread.
         /// </summary>
         /// <value>The user processor time.</value>
-        public static TimeSpan UserProcessorTime {
-            get { return CurrentProcessThread != null ? CurrentProcessThread.UserProcessorTime : TimeSpan.Zero; }
-        }
+        public static TimeSpan UserProcessorTime => CurrentProcessThread != null ? CurrentProcessThread.UserProcessorTime : TimeSpan.Zero;
 
         /// <summary>
-        /// Gets the total processor time for the current thread.
+        ///     Gets the total processor time for the current thread.
         /// </summary>
         /// <value>The total processor time.</value>
-        public static TimeSpan TotalProcessorTime {
-            get { return CurrentProcessThread != null ? CurrentProcessThread.TotalProcessorTime : TimeSpan.Zero; }
-        }
+        public static TimeSpan TotalProcessorTime => CurrentProcessThread != null ? CurrentProcessThread.TotalProcessorTime : TimeSpan.Zero;
     }
 }

@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestPair : CommonTest
+    public class TestPair : AbstractTestBase
     {
         private Pair<string, string> pair1 = new Pair<string, string>("a", "b");
         private Pair<string, string> pair2 = new Pair<string, string>("a", "b");

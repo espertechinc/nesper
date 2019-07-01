@@ -13,11 +13,11 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
     /// </summary>
     public interface Metric
     {
-        /// <summary>Allow the given <seealso cref="MetricProcessor{T}" /> to process {@code this} as a metric.</summary>
+        /// <summary>Allow the given <seealso cref="MetricProcessor{T}" /> to process this as a metric.</summary>
         /// <typeparam name="T">the type of the context object</typeparam>
         /// <param name="processor">a <seealso cref="MetricProcessor{T}" /></param>
         /// <param name="name">the name of the current metric</param>
-        /// <param name="context">a given context which should be passed on to {@code processor}</param>
+        /// <param name="context">a given context which should be passed on to processor</param>
         /// <throws>Exception if something goes wrong</throws>
         void ProcessWith<T>(
             MetricProcessor<T> processor,

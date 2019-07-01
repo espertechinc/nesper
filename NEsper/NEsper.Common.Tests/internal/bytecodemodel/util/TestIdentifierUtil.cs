@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
     [TestFixture]
-    public class TestIdentifierUtil : CommonTest
+    public class TestIdentifierUtil : AbstractTestBase
     {
         private void AssertDiff(
             string expected,

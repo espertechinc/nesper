@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {
     [TestFixture]
-    public class TestMetricScheduleService : CommonTest
+    public class TestMetricScheduleService : AbstractTestBase
     {
         private MetricScheduleService svc;
         private SupportMetricExecution[] execs;

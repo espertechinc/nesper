@@ -19,7 +19,7 @@ using static com.espertech.esper.common.@internal.@event.core.EventBeanTypedEven
 namespace com.espertech.esper.common.@internal.@event.property
 {
     [TestFixture]
-    public class TestSimpleProperty : CommonTest
+    public class TestSimpleProperty : AbstractTestBase
     {
         private SimpleProperty prop;
         private SimpleProperty invalidPropMap;

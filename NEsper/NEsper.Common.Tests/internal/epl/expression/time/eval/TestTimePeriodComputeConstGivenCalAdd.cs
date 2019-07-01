@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
 {
     [TestFixture]
-    public class TestTimePeriodComputeConstGivenCalAdd : CommonTest
+    public class TestTimePeriodComputeConstGivenCalAdd : AbstractTestBase
     {
         [Test]
         public void TestComputeDelta()

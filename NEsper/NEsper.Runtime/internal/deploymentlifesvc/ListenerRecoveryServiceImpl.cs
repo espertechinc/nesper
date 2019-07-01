@@ -6,12 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.runtime.@internal.deploymentlifesvc
 {
+    using UpdateEventHandler = EventHandler<UpdateEventArgs>;
+
     public class ListenerRecoveryServiceImpl : ListenerRecoveryService
     {
         public static readonly ListenerRecoveryServiceImpl INSTANCE = new ListenerRecoveryServiceImpl();
@@ -19,11 +22,12 @@ namespace com.espertech.esper.runtime.@internal.deploymentlifesvc
         public void Put(
             int statementId,
             string statementName,
-            UpdateListener[] listeners)
+            UpdateEventHandler[] eventHandlers)
         {
         }
 
-        public IEnumerator<KeyValuePair<int, UpdateListener[]>> Listeners => EnumerationHelper.Empty<KeyValuePair<int, UpdateListener[]>>();
+        public IEnumerator<KeyValuePair<int, UpdateEventHandler[]>> EventHandlers =>
+            EnumerationHelper.Empty<KeyValuePair<int, UpdateEventHandler[]>>();
 
         public void Remove(int statementId)
         {

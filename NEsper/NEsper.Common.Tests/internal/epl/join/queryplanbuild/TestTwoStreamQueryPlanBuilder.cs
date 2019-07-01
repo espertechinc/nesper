@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestTwoStreamQueryPlanBuilder : CommonTest
+    public class TestTwoStreamQueryPlanBuilder : AbstractTestBase
     {
         private EventType[] typesPerStream;
 

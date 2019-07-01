@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
     [TestFixture]
-    public class TestAssemblyStrategyTreeBuilder : CommonTest
+    public class TestAssemblyStrategyTreeBuilder : AbstractTestBase
     {
         private void TryInvalidBuild(
             int rootStream,

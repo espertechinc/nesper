@@ -10,8 +10,8 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
 {
     /// <summary>
     ///     A gauge metric is an instantaneous reading of a particular value. To instrument a queue's depth,
-    ///     final Queue&lt;String&gt; queue = new ConcurrentLinkedQueue&lt;String&gt;();
-    ///     final Gauge&lt;Integer&gt; queueDepth = new Gauge&lt;Integer&gt;() {
+    ///     Queue&lt;String&gt; queue = new ConcurrentLinkedQueue&lt;String&gt;();
+    ///     Gauge&lt;Integer&gt; queueDepth = new Gauge&lt;Integer&gt;() {
     ///     public Integer value() {
     ///     return queue.size();
     ///     }

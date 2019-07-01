@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
     [TestFixture]
-    public class TestColumnNamedNodeSwapper : CommonTest
+    public class TestColumnNamedNodeSwapper : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

@@ -8,12 +8,9 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
-using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.core
 {
@@ -23,7 +20,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
     internal class ThreadPools
     {
         private readonly IDictionary<string, IScheduledExecutorService> threadPools =
-                new ConcurrentDictionary<string, IScheduledExecutorService>();
+            new ConcurrentDictionary<string, IScheduledExecutorService>();
 
         /// <summary>
         /// Creates a new scheduled thread pool of a given size with the given name, or returns an
@@ -34,7 +31,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// <returns>a new <seealso cref="IScheduledExecutorService" /></returns>
         public IScheduledExecutorService NewScheduledThreadPool(int poolSize, string name)
         {
-            IScheduledExecutorService existing = threadPools.Get(name);
+            var existing = threadPools.Get(name);
             if (IsValidExecutor(existing))
             {
                 return existing;
@@ -47,14 +44,14 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
                 // there while we weren't watching.
                 lock (this)
                 {
-                    IScheduledExecutorService lastChance = threadPools.Get(name);
+                    var lastChance = threadPools.Get(name);
                     if (IsValidExecutor(lastChance))
                     {
                         return lastChance;
                     }
-                    else {
-
-                        IScheduledExecutorService service = Executors.DefaultScheduledExecutorService();
+                    else
+                    {
+                        var service = Executors.DefaultScheduledExecutorService();
                         threadPools.Put(name, service);
                         return service;
                     }
@@ -74,7 +71,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         {
             lock (this)
             {
-                foreach (IExecutorService executor in threadPools.Values)
+                foreach (var executor in threadPools.Values)
                 {
                     executor.Shutdown();
                 }

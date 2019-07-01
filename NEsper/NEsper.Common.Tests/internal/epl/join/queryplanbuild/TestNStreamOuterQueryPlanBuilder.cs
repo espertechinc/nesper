@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestNStreamOuterQueryPlanBuilder : CommonTest
+    public class TestNStreamOuterQueryPlanBuilder : AbstractTestBase
     {
         private void TryVerifyJoinedPerStream(IDictionary<int, int[]> map)
         {

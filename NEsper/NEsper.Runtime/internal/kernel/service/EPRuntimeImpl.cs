@@ -548,12 +548,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 }
             }
 
-            // Listener Recovery
-            var listenerIterator = services.ListenerRecoveryService.Listeners;
-            while (listenerIterator.MoveNext()) {
-                var deployment = listenerIterator.Current;
+            // Event Handler Recovery
+            var eventHandlers = services.ListenerRecoveryService.EventHandlers;
+            while (eventHandlers.MoveNext()) {
+                var deployment = eventHandlers.Current;
                 var epStatement = services.StatementLifecycleService.GetStatementById(deployment.Key);
-                epStatement.RecoveryUpdateListeners(new EPStatementListenerSet(deployment.Value));
+                epStatement.RecoveryUpdateEventHandlers(new EPStatementEventHandlerSet(deployment.Value));
             }
 
             // Filter service init

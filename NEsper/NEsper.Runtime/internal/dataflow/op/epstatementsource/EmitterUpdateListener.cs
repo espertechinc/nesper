@@ -6,8 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-
+using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
@@ -25,11 +24,13 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
             this.submitEventBean = submitEventBean;
         }
 
-        public void Update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPRuntime runtime)
+        public void Update(
+            object sender,
+            UpdateEventArgs eventArgs)
         {
-            if (newEvents != null)
+            if (eventArgs.NewEvents != null)
             {
-                foreach (EventBean newEvent in newEvents)
+                foreach (var newEvent in eventArgs.NewEvents)
                 {
                     if (submitEventBean)
                     {
