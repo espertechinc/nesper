@@ -10,7 +10,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.supportunit.util
 {
@@ -21,8 +20,8 @@ namespace com.espertech.esper.common.@internal.supportunit.util
 
         public SupportStreamTypeSvc3Stream(SupportEventTypeFactory supportEventTypeFactory)
         {
-            _impl = new StreamTypeServiceImpl(EventTypes, StreamNames, new bool[10], false, false);
             _supportEventTypeFactory = supportEventTypeFactory;
+            _impl = new StreamTypeServiceImpl(EventTypes, StreamNames, new bool[10], false, false);
         }
 
         public string[] eventTypeNamees => new[] { "SupportBean", "SupportBean", "SupportBeanComplexProps" };

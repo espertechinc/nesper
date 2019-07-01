@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestInterchangeablePair : CommonTest
+    public class TestInterchangeablePair : AbstractTestBase
     {
         private InterchangeablePair<string, string> pair1a = new InterchangeablePair<string, string>("a", "b");
         private readonly InterchangeablePair<string, string> pair1b = new InterchangeablePair<string, string>("a", "c");

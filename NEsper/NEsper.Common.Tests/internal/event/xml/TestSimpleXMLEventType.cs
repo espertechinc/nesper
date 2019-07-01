@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     [TestFixture]
-    public class TestSimpleXMLEventType : CommonTest
+    public class TestSimpleXmlEventType : AbstractTestBase
     {
         private const string xml =
             "<simpleEvent>\n" +

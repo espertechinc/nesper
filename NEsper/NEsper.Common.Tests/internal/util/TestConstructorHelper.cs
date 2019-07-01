@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestConstructorHelper : CommonTest
+    public class TestConstructorHelper : AbstractTestBase
     {
         [Test]
         public void TestValidInvokeConstructor()

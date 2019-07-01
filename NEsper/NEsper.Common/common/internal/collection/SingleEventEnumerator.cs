@@ -11,13 +11,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.collection
 {
     public class SingleEventEnumerator : IEnumerator<EventBean>
     {
         private readonly EventBean _event;
-        private bool _hasEvent;
+        private State _consumerState;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SingleEventEnumerator " /> class.
@@ -26,7 +27,9 @@ namespace com.espertech.esper.common.@internal.collection
         public SingleEventEnumerator(EventBean @event)
         {
             _event = @event;
-            _hasEvent = _event != null;
+            _consumerState = _event != null
+                ? State.NOT_CONSUMED
+                : State.CONSUMED;
         }
 
         public void Dispose()
@@ -35,28 +38,45 @@ namespace com.espertech.esper.common.@internal.collection
 
         public bool MoveNext()
         {
-            if (!_hasEvent || _event == null) {
-                return false;
+            switch (_consumerState) {
+                case State.CONSUMED:
+                case State.CONSUMING:
+                    _consumerState = State.CONSUMED;
+                    return false;
+                default:
+                    _consumerState = State.CONSUMING;
+                    return true;
             }
-
-            return true;
         }
 
         public void Reset()
         {
-            _hasEvent = _event != null;
+            _consumerState = _event != null
+                ? State.NOT_CONSUMED
+                : State.CONSUMED;
         }
 
         object IEnumerator.Current => Current;
 
         public EventBean Current {
             get {
-                if (_event == null) {
-                    throw new InvalidOperationException();
+                switch (_consumerState)
+                {
+                    case State.CONSUMED:
+                        throw new InvalidOperationException();
+                    case State.CONSUMING:
+                        return _event;
+                    default:
+                        throw new IllegalStateException("enumerator has not been advanced");
                 }
-
-                return _event;
             }
+        }
+
+        enum State
+        {
+            NOT_CONSUMED,
+            CONSUMING,
+            CONSUMED
         }
     }
 }

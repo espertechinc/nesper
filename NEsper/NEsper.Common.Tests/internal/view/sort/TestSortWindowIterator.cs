@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.view.sort
 {
     [TestFixture]
-    public class TestSortWindowIterator : CommonTest
+    public class TestSortWindowIterator : AbstractTestBase
     {
         private IDictionary<string, EventBean> events;
         private SortedDictionary<object, object> testMap;

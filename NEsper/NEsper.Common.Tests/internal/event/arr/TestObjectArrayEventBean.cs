@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.arr
 {
     [TestFixture]
-    public class TestObjectArrayEventBean : CommonTest
+    public class TestObjectArrayEventBean : AbstractTestBase
     {
         private string[] testProps;
         private object[] testTypes;

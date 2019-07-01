@@ -58,23 +58,15 @@ namespace com.espertech.esper.runtime.@internal.support
         {
             Container = container;
 
-            BEAN_EVENT_TYPE_FACTORY = new BeanEventTypeFactoryPrivate(
-                new EventBeanTypedEventFactoryRuntime(null),
-                EventTypeFactoryImpl.GetInstance(container),
-                BEAN_STEM_SVC);
-
-            SUPPORTBEAN_EVENTTTPE = MakeType(typeof(SupportBean));
-            SUPPORTBEAN_S0_EVENTTTPE = MakeType(typeof(SupportBean_S0));
-            SUPPORTBEAN_S1_EVENTTTPE = MakeType(typeof(SupportBean_S1));
-            SUPPORTBEAN_S2_EVENTTTPE = MakeType(typeof(SupportBean_S2));
-            SUPPORTBEAN_A_EVENTTTPE = MakeType(typeof(SupportBean_A));
-            SUPPORTBEANCOMPLEXPROPS_EVENTTTPE = MakeType(typeof(SupportBeanComplexProps));
-            SUPPORTBEANSIMPLE_EVENTTTPE = MakeType(typeof(SupportBeanSimple));
+            STEM_BUILDER = new BeanEventTypeStemBuilder(null, PropertyResolutionStyle.CASE_SENSITIVE);
 
             BEAN_STEM_SVC = new BeanEventTypeStemService(
                 null, null, PropertyResolutionStyle.CASE_SENSITIVE, AccessorStyle.NATIVE);
 
-            STEM_BUILDER = new BeanEventTypeStemBuilder(null, PropertyResolutionStyle.CASE_SENSITIVE);
+            BEAN_EVENT_TYPE_FACTORY = new BeanEventTypeFactoryPrivate(
+                new EventBeanTypedEventFactoryRuntime(null),
+                EventTypeFactoryImpl.GetInstance(container),
+                BEAN_STEM_SVC);
 
             METADATA_CLASS = name => new EventTypeMetadata(
                 name, null,
@@ -84,6 +76,14 @@ namespace com.espertech.esper.runtime.@internal.support
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
+
+            SUPPORTBEAN_EVENTTTPE = MakeType(typeof(SupportBean));
+            SUPPORTBEAN_S0_EVENTTTPE = MakeType(typeof(SupportBean_S0));
+            SUPPORTBEAN_S1_EVENTTTPE = MakeType(typeof(SupportBean_S1));
+            SUPPORTBEAN_S2_EVENTTTPE = MakeType(typeof(SupportBean_S2));
+            SUPPORTBEAN_A_EVENTTTPE = MakeType(typeof(SupportBean_A));
+            SUPPORTBEANCOMPLEXPROPS_EVENTTTPE = MakeType(typeof(SupportBeanComplexProps));
+            SUPPORTBEANSIMPLE_EVENTTTPE = MakeType(typeof(SupportBeanSimple));
         }
 
         public BeanEventType CreateBeanType(Type clazz)

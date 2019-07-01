@@ -26,7 +26,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     [TestFixture]
-    public class TestPropertyHelper : CommonTest
+    public class TestPropertyHelper : AbstractTestBase
     {
         [Test]
         public void TestAddMappedProperties()

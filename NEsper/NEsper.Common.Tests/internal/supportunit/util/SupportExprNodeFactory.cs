@@ -97,8 +97,8 @@ namespace com.espertech.esper.common.@internal.supportunit.util
         public ExprEqualsNode MakeEqualsNode()
         {
             ExprEqualsNode topNode = new ExprEqualsNodeImpl(false, false);
-            ExprIdentNode i1_1 = new ExprIdentNodeImpl("intPrimitive", "s0");
-            ExprIdentNode i1_2 = new ExprIdentNodeImpl("intBoxed", "s1");
+            ExprIdentNode i1_1 = new ExprIdentNodeImpl("IntPrimitive", "s0");
+            ExprIdentNode i1_2 = new ExprIdentNodeImpl("IntBoxed", "s1");
             topNode.AddChildNode(i1_1);
             topNode.AddChildNode(i1_2);
 
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.supportunit.util
         {
             // Build :      s0.intPrimitive in (1, 2)
             ExprInNode inNode = new ExprInNodeImpl(isNotIn);
-            inNode.AddChildNode(MakeIdentNode("intPrimitive", "s0"));
+            inNode.AddChildNode(MakeIdentNode("IntPrimitive", "s0"));
             inNode.AddChildNode(new SupportExprNode(1));
             inNode.AddChildNode(new SupportExprNode(2));
             Validate3Stream(inNode);
@@ -127,11 +127,11 @@ namespace com.espertech.esper.common.@internal.supportunit.util
             // end
             var caseNode = new ExprCaseNode(false);
 
-            ExprNode node = MakeEqualsNode("intPrimitive", "s0", 1);
+            ExprNode node = MakeEqualsNode("IntPrimitive", "s0", 1);
             caseNode.AddChildNode(node);
             caseNode.AddChildNode(new SupportExprNode("a"));
 
-            node = MakeEqualsNode("intPrimitive", "s0", 2);
+            node = MakeEqualsNode("IntPrimitive", "s0", 2);
             caseNode.AddChildNode(node);
             caseNode.AddChildNode(new SupportExprNode("b"));
 
@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.supportunit.util
             //   else "c"
             // end
             var caseNode = new ExprCaseNode(true);
-            caseNode.AddChildNode(MakeIdentNode("intPrimitive", "s0"));
+            caseNode.AddChildNode(MakeIdentNode("IntPrimitive", "s0"));
 
             caseNode.AddChildNode(new SupportExprNode(1));
             caseNode.AddChildNode(new SupportExprNode("a"));
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.supportunit.util
         {
             // Build :      s0.string regexp "[a-z][a-z]"  (with not)
             var node = new ExprRegexpNode(isNot);
-            node.AddChildNode(MakeIdentNode("theString", "s0"));
+            node.AddChildNode(MakeIdentNode("TheString", "s0"));
             node.AddChildNode(new SupportExprNode("[a-z][a-z]"));
             Validate3Stream(node);
             return node;
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.supportunit.util
         {
             // Build :      s0.string like "%abc__"  (with or witout escape)
             var node = new ExprLikeNode(isNot);
-            node.AddChildNode(MakeIdentNode("theString", "s0"));
+            node.AddChildNode(MakeIdentNode("TheString", "s0"));
             node.AddChildNode(new SupportExprNode("%abc__"));
             if (optionalEscape != null) {
                 node.AddChildNode(new SupportExprNode(optionalEscape));
@@ -209,13 +209,13 @@ namespace com.espertech.esper.common.@internal.supportunit.util
             topNode.AddChildNode(e1);
             topNode.AddChildNode(e2);
 
-            ExprIdentNode i1_1 = new ExprIdentNodeImpl("intPrimitive", "s0");
-            ExprIdentNode i1_2 = new ExprIdentNodeImpl("intBoxed", "s1");
+            ExprIdentNode i1_1 = new ExprIdentNodeImpl("IntPrimitive", "s0");
+            ExprIdentNode i1_2 = new ExprIdentNodeImpl("IntBoxed", "s1");
             e1.AddChildNode(i1_1);
             e1.AddChildNode(i1_2);
 
-            ExprIdentNode i2_1 = new ExprIdentNodeImpl("theString", "s1");
-            ExprIdentNode i2_2 = new ExprIdentNodeImpl("theString", "s0");
+            ExprIdentNode i2_1 = new ExprIdentNodeImpl("TheString", "s1");
+            ExprIdentNode i2_2 = new ExprIdentNodeImpl("TheString", "s0");
             e2.AddChildNode(i2_1);
             e2.AddChildNode(i2_2);
 
@@ -234,18 +234,18 @@ namespace com.espertech.esper.common.@internal.supportunit.util
                 topNode.AddChildNode(equalNodes[i]);
             }
 
-            ExprIdentNode i1_1 = new ExprIdentNodeImpl("intPrimitive", "s0");
-            ExprIdentNode i1_2 = new ExprIdentNodeImpl("intBoxed", "s1");
+            ExprIdentNode i1_1 = new ExprIdentNodeImpl("IntPrimitive", "s0");
+            ExprIdentNode i1_2 = new ExprIdentNodeImpl("IntBoxed", "s1");
             equalNodes[0].AddChildNode(i1_1);
             equalNodes[0].AddChildNode(i1_2);
 
-            ExprIdentNode i2_1 = new ExprIdentNodeImpl("theString", "s1");
-            ExprIdentNode i2_2 = new ExprIdentNodeImpl("theString", "s0");
+            ExprIdentNode i2_1 = new ExprIdentNodeImpl("TheString", "s1");
+            ExprIdentNode i2_2 = new ExprIdentNodeImpl("TheString", "s0");
             equalNodes[1].AddChildNode(i2_1);
             equalNodes[1].AddChildNode(i2_2);
 
-            ExprIdentNode i3_1 = new ExprIdentNodeImpl("boolBoxed", "s0");
-            ExprIdentNode i3_2 = new ExprIdentNodeImpl("boolPrimitive", "s1");
+            ExprIdentNode i3_1 = new ExprIdentNodeImpl("BoolBoxed", "s0");
+            ExprIdentNode i3_2 = new ExprIdentNodeImpl("BoolPrimitive", "s1");
             equalNodes[2].AddChildNode(i3_1);
             equalNodes[2].AddChildNode(i3_2);
 
@@ -256,8 +256,8 @@ namespace com.espertech.esper.common.@internal.supportunit.util
 
         public ExprNode MakeMathNode()
         {
-            ExprIdentNode node1 = new ExprIdentNodeImpl("intBoxed", "s0");
-            ExprIdentNode node2 = new ExprIdentNodeImpl("intPrimitive", "s0");
+            ExprIdentNode node1 = new ExprIdentNodeImpl("IntBoxed", "s0");
+            ExprIdentNode node2 = new ExprIdentNodeImpl("IntPrimitive", "s0");
             var mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY, false, false);
             mathNode.AddChildNode(node1);
             mathNode.AddChildNode(node2);

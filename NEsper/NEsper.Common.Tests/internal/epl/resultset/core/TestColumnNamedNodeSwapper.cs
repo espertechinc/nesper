@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
     [TestFixture]
-    public class TestColumnNamedNodeSwapper : CommonTest
+    public class TestColumnNamedNodeSwapper : AbstractTestBase
     {
         [SetUp]
         public void SetUp()
@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public static ExprEqualsNode MakeEqualsNode()
         {
             ExprEqualsNode topNode = new ExprEqualsNodeImpl(false, false);
-            ExprIdentNode i1_1 = new ExprIdentNodeImpl("intPrimitive");
-            ExprIdentNode i1_2 = new ExprIdentNodeImpl("intBoxed");
+            ExprIdentNode i1_1 = new ExprIdentNodeImpl("IntPrimitive");
+            ExprIdentNode i1_2 = new ExprIdentNodeImpl("IntBoxed");
             topNode.AddChildNode(i1_1);
             topNode.AddChildNode(i1_2);
             return topNode;
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public void TestPartReplaced()
         {
             exprTree = MakeEqualsNode();
-            alias = "intPrimitive";
+            alias = "IntPrimitive";
             resultingTree = ColumnNamedNodeSwapper.Swap(exprTree, alias, fullExpr);
 
             Assert.IsTrue(resultingTree == exprTree);
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             Assert.IsTrue(childNodes[1] == oldChildNodes[1]);
 
             exprTree = resultingTree;
-            alias = "intBoxed";
+            alias = "IntBoxed";
             resultingTree = ColumnNamedNodeSwapper.Swap(exprTree, alias, fullExpr);
             childNodes = resultingTree.ChildNodes;
             Assert.IsTrue(childNodes.Length == 2);

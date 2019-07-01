@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     [TestFixture]
-    public class TestExprIdentNode : CommonTest
+    public class TestExprIdentNode : AbstractTestBase
     {
         private ExprIdentNode[] identNodes;
         private SupportStreamTypeSvc3Stream streamTypeService;
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             identNodes[0] = new ExprIdentNodeImpl("mapped('a')");
             identNodes[1] = new ExprIdentNodeImpl("nestedValue", "nested");
             identNodes[2] = new ExprIdentNodeImpl("indexed[1]", "s2");
-            identNodes[3] = new ExprIdentNodeImpl("intPrimitive", "s0");
+            identNodes[3] = new ExprIdentNodeImpl("IntPrimitive", "s0");
 
             streamTypeService = new SupportStreamTypeSvc3Stream(supportEventTypeFactory);
         }
@@ -102,14 +102,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             identNodes[3].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             Assert.AreEqual(0, identNodes[3].StreamId);
             Assert.AreEqual(typeof(int?), identNodes[3].Forge.EvaluationType);
-            Assert.AreEqual("intPrimitive", identNodes[3].ResolvedPropertyName);
+            Assert.AreEqual("IntPrimitive", identNodes[3].ResolvedPropertyName);
 
             TryInvalidValidate(new ExprIdentNodeImpl(""));
             TryInvalidValidate(new ExprIdentNodeImpl("dummy"));
             TryInvalidValidate(new ExprIdentNodeImpl("nested", "s0"));
             TryInvalidValidate(new ExprIdentNodeImpl("dummy", "s2"));
-            TryInvalidValidate(new ExprIdentNodeImpl("intPrimitive", "s2"));
-            TryInvalidValidate(new ExprIdentNodeImpl("intPrimitive", "s3"));
+            TryInvalidValidate(new ExprIdentNodeImpl("IntPrimitive", "s2"));
+            TryInvalidValidate(new ExprIdentNodeImpl("IntPrimitive", "s3"));
         }
 
         [Test]

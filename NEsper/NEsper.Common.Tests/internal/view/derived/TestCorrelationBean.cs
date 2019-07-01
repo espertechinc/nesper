@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.view.derived
 {
     [TestFixture]
-    public class TestCorrelationBean : CommonTest
+    public class TestCorrelationBean : AbstractTestBase
     {
         private readonly int PRECISION_DIGITS = 6;
 

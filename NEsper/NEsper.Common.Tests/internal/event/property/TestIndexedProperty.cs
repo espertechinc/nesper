@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.property
 {
     [TestFixture]
-    public class TestIndexedProperty : CommonTest
+    public class TestIndexedProperty : AbstractTestBase
     {
         private IndexedProperty[] indexed;
         private EventBean theEvent;
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             indexed[3] = new IndexedProperty("arrayProperty", 1);
 
             theEvent = SupportEventBeanFactory.CreateObject(
-                supportEventTypeFactory, 
+                supportEventTypeFactory,
                 SupportBeanComplexProps.MakeDefaultBean());
             eventType = (BeanEventType) theEvent.EventType;
         }

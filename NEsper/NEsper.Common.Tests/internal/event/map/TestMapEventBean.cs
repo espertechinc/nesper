@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.map
 {
     [TestFixture]
-    public class TestMapEventBean : CommonTest
+    public class TestMapEventBean : AbstractTestBase
     {
         private IDictionary<string, object> testTypesMap;
         private IDictionary<string, object> testValuesMap;

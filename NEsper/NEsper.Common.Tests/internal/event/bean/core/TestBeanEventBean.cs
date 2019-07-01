@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     [TestFixture]
-    public class TestBeanEventBean : CommonTest
+    public class TestBeanEventBean : AbstractTestBase
     {
         private SupportBean testEvent;
 
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual(eventType, eventBean.EventType);
             Assert.AreEqual(testEvent, eventBean.Underlying);
 
-            Assert.AreEqual(10, eventBean.Get("intPrimitive"));
+            Assert.AreEqual(10, eventBean.Get("IntPrimitive"));
 
             // Test wrong property name
             try {

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using com.espertech.esper.common.client.soda;
 
 namespace com.espertech.esper.runtime.client.linq
 {

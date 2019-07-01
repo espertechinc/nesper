@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestFrequencyParameter : CommonTest
+    public class TestFrequencyParameter : AbstractTestBase
     {
         [Test]
         public void TestInvalid()

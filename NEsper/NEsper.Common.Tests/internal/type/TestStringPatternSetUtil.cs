@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestStringPatternSetUtil : CommonTest
+    public class TestStringPatternSetUtil : AbstractTestBase
     {
         private readonly IList<Pair<StringPatternSet, bool>> patterns = new List<Pair<StringPatternSet, bool>>();
 

@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
     [TestFixture]
-    public class TestCartesianUtil : CommonTest
+    public class TestCartesianUtil : AbstractTestBase
     {
         private const int NUM_COL = 4;
 

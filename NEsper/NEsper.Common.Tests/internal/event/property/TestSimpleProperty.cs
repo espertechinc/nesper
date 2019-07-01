@@ -19,7 +19,7 @@ using static com.espertech.esper.common.@internal.@event.core.EventBeanTypedEven
 namespace com.espertech.esper.common.@internal.@event.property
 {
     [TestFixture]
-    public class TestSimpleProperty : CommonTest
+    public class TestSimpleProperty : AbstractTestBase
     {
         private SimpleProperty prop;
         private SimpleProperty invalidPropMap;
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         [SetUp]
         public void SetUp()
         {
-            prop = new SimpleProperty("simpleProperty");
+            prop = new SimpleProperty("SimpleProperty");
             invalidPropMap = new SimpleProperty("mapped");
             invalidPropIndexed = new SimpleProperty("indexed");
             invalidDummy = new SimpleProperty("dummy");

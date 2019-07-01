@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestSortedDoubleVector : CommonTest
+    public class TestSortedDoubleVector : AbstractTestBase
     {
         private SortedDoubleVector vector = new SortedDoubleVector();
 

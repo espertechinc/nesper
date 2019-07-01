@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.schedule
 {
     [TestFixture]
-    public class TestScheduleComputeHelper : CommonTest
+    public class TestScheduleComputeHelper : AbstractTestBase
     {
         private static readonly SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

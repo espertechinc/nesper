@@ -18,7 +18,7 @@ using static com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowin
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 {
     [TestFixture]
-    public class TestPointRegionQuadTreeRowIndexScenarios : CommonTest
+    public class TestPointRegionQuadTreeRowIndexScenarios : AbstractTestBase
     {
         [Test]
         public void TestSubdivideAdd()

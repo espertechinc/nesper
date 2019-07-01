@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     {
         public ExprMathNodeForge(
             ExprMathNode parent,
-            MathArithTypeEnum.Computer arithTypeEnumComputer,
+            MathArithType.Computer arithTypeEnumComputer,
             Type resultType)
         {
             ForgeRenderable = parent;
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             EvaluationType = resultType;
         }
 
-        internal MathArithTypeEnum.Computer ArithTypeEnumComputer { get; }
+        internal MathArithType.Computer ArithTypeEnumComputer { get; }
 
         public ExprMathNode ForgeRenderable { get; }
 
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(GetType(), this, "ExprMath", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
-                .Qparam(Constant(ForgeRenderable.MathArithTypeEnum.ExpressionText)).Build();
+                .Qparam(Constant(ForgeRenderable.MathArithTypeEnum.GetExpressionText())).Build();
         }
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;

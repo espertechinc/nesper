@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     [TestFixture]
-    public class TestExprInstanceOfNode : CommonTest
+    public class TestExprInstanceOfNode : AbstractTestBase
     {
         [SetUp]
         public void SetUp()
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             instanceofNodes[0] = new ExprInstanceofNode(new[] { "long" });
             instanceofNodes[0].AddChildNode(new SupportExprNode(1l, typeof(long?)));
 
-            instanceofNodes[1] = new ExprInstanceofNode(new[] { typeof(SupportBean).Name, "int", "string" });
+            instanceofNodes[1] = new ExprInstanceofNode(new[] { typeof(SupportBean).FullName, "int", "string" });
             instanceofNodes[1].AddChildNode(new SupportExprNode("", typeof(string)));
 
             instanceofNodes[2] = new ExprInstanceofNode(new[] { "string" });
@@ -36,11 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             instanceofNodes[3] = new ExprInstanceofNode(new[] { "string", "char" });
             instanceofNodes[3].AddChildNode(new SupportExprNode(new SupportBean(), typeof(object)));
 
-            instanceofNodes[4] = new ExprInstanceofNode(new[] { "int", "float", typeof(SupportBean).Name });
+            instanceofNodes[4] = new ExprInstanceofNode(new[] { "int", "float", typeof(SupportBean).FullName });
             instanceofNodes[4].AddChildNode(new SupportExprNode(new SupportBean(), typeof(object)));
         }
 
-        private IContainer container;
         private ExprInstanceofNode[] instanceofNodes;
 
         [Test]

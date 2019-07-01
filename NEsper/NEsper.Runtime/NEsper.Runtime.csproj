@@ -19,6 +19,10 @@
     <NoWarn>CS1591;</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(NetFramework)'!='true'">
     <Compile Remove="epl\db\drivers\DbDriverODBC.cs" />
     <Compile Remove="epl\db\drivers\DbDriverOleDb.cs" />

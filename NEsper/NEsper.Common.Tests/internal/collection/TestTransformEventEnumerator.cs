@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestTransformEventEnumerator : CommonTest
+    public class TestTransformEventEnumerator : AbstractTestBase
     {
         private TransformEventEnumerator enumerator;
 
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
             enumerator = MakeIterator(new int[] { 10 });
             Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(10, enumerator.Current.Get("id"));
+            Assert.AreEqual(10, enumerator.Current.Get("Id"));
             Assert.IsFalse(enumerator.MoveNext());
         }
 
@@ -43,9 +43,9 @@ namespace com.espertech.esper.common.@internal.collection
         {
             enumerator = MakeIterator(new int[] { 10, 20 });
             Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(10, enumerator.Current.Get("id"));
+            Assert.AreEqual(10, enumerator.Current.Get("Id"));
             Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(20, enumerator.Current.Get("id"));
+            Assert.AreEqual(20, enumerator.Current.Get("Id"));
             Assert.IsFalse(enumerator.MoveNext());
         }
 
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.collection
 
             public EventBean Transform(EventBean theEvent)
             {
-                int value = theEvent.Get("intPrimitive").AsInt();
+                int value = theEvent.Get("IntPrimitive").AsInt();
                 return SupportEventBeanFactory.CreateObject(supportEventTypeFactory, new SupportBean_S0(value));
             }
 

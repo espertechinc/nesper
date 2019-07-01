@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestGraphUtil : CommonTest
+    public class TestGraphUtil : AbstractTestBase
     {
         private void TryInvalid(
             IDictionary<string, ICollection<string>> graph,

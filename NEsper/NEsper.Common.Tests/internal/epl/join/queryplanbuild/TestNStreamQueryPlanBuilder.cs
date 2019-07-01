@@ -29,7 +29,7 @@ using static com.espertech.esper.common.@internal.supportunit.util.SupportExprNo
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestNStreamQueryPlanBuilder : CommonTest
+    public class TestNStreamQueryPlanBuilder : AbstractTestBase
     {
         private EventType[] typesPerStream;
         private QueryGraphForge queryGraph;
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         [Test]
         public void TestComputeNavigableDepth()
         {
-            ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("theString", "s0");
+            ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("TheString", "s0");
             queryGraph.AddStrictEquals(3, "p30", fake, 2, "p20", fake);
             queryGraph.AddStrictEquals(2, "p30", fake, 1, "p20", fake);
 

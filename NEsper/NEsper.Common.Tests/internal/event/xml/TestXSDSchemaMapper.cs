@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     [TestFixture]
-    public class TestXSDSchemaMapper : CommonTest
+    public class TestXsdSchemaMapper : AbstractTestBase
     {
         private XmlSchemaType _schemaTypeId;
         private XmlSchemaType _schemaTypeString;
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var nested4 = nested3.ComplexElements[0];
             VerifyComplexElement(nested4, "nested4", true);
             VerifySizes(nested4, 1, 4, 0);
-            Assert.AreEqual("id", nested4.Attributes[0].Name);
+            Assert.AreEqual("Id", nested4.Attributes[0].Name);
             Assert.AreEqual(_schemaTypeId, nested4.Attributes[0].SimpleType);
             VerifySimpleElement(nested4.SimpleElements[0], "prop5", _schemaTypeString);
             VerifySimpleElement(nested4.SimpleElements[1], "prop6", _schemaTypeString);
@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(1, nested4Element.Attributes.Count);
             Assert.AreEqual(1, nested4Element.SimpleElements.Count);
             Assert.AreEqual(0, nested4Element.ComplexElements.Count);
-            Assert.AreEqual("id", nested4Element.Attributes[0].Name);
+            Assert.AreEqual("Id", nested4Element.Attributes[0].Name);
             Assert.AreEqual(schemaTypeId, nested4Element.Attributes[0].SimpleType);
             Assert.IsTrue(nested4Element.IsArray);
             Assert.IsNull(nested4Element.OptionalSimpleType);

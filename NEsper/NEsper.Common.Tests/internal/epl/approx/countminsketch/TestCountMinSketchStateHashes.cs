@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 {
     [TestFixture]
-    public class TestCountMinSketchStateHashes : CommonTest
+    public class TestCountMinSketchStateHashes : AbstractTestBase
     {
         public static CountMinSketchSpecHashes DefaultSpec
         {

@@ -30,7 +30,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.common.client.configuration
 {
-    public class TestConfigurationParser : CommonTest
+    public class TestConfigurationParser : AbstractTestBase
     {
         [Test]
         public void TestRegressionFileConfig()
@@ -166,15 +166,15 @@ namespace com.espertech.esper.common.client.configuration
 
             // assert auto imports
             Assert.AreEqual(8, common.Imports.Count);
-            Assert.AreEqual("java.lang.*", common.Imports[0]);
-            Assert.AreEqual("java.math.*", common.Imports[1]);
-            Assert.AreEqual("java.text.*", common.Imports[2]);
-            Assert.AreEqual("java.util.*", common.Imports[3]);
-            Assert.AreEqual("com.espertech.esper.common.client.annotation.*", common.Imports[4]);
-            Assert.AreEqual("com.espertech.esper.common.internal.epl.dataflow.ops.*", common.Imports[5]);
-            Assert.AreEqual("com.mycompany.myapp.*", common.Imports[6]);
+            Assert.AreEqual("System", common.Imports[0]);
+            Assert.AreEqual("System.Math", common.Imports[1]);
+            Assert.AreEqual("System.Text", common.Imports[2]);
+            //Assert.AreEqual("java.util.*", common.Imports[3]);
+            Assert.AreEqual("com.espertech.esper.common.client.annotation", common.Imports[4]);
+            Assert.AreEqual("com.espertech.esper.common.internal.epl.dataflow.ops", common.Imports[5]);
+            Assert.AreEqual("com.mycompany.myapp", common.Imports[6]);
             Assert.AreEqual("com.mycompany.myapp.ClassOne", common.Imports[7]);
-            Assert.AreEqual("com.mycompany.myapp.annotations.*", common.AnnotationImports[0]);
+            Assert.AreEqual("com.mycompany.myapp.annotations", common.AnnotationImports[0]);
             Assert.AreEqual("com.mycompany.myapp.annotations.ClassOne", common.AnnotationImports[1]);
 
             // assert XML DOM - no schema

@@ -8,14 +8,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.runtime.client.linq
 {
-    using Expression = esper.client.soda.Expression;
+    using Expression = esper.common.client.soda.Expression;
 
     public class LinqToSoda
     {
@@ -269,9 +272,9 @@ namespace com.espertech.esper.runtime.client.linq
         private static Expression UnmasqProperty(System.Linq.Expressions.Expression propertyNameExpr)
         {
             var propertyNameConst = LinqToSodaExpression(propertyNameExpr);
-            if (propertyNameConst is esper.client.soda.ConstantExpression)
+            if (propertyNameConst is esper.common.client.soda.ConstantExpression)
             {
-                var propertyName = ((esper.client.soda.ConstantExpression) propertyNameConst).Constant;
+                var propertyName = ((esper.common.client.soda.ConstantExpression) propertyNameConst).Constant;
                 if (propertyName is string)
                 {
                     return Expressions.Property((string) propertyName);

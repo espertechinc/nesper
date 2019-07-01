@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {
     [TestFixture]
-    public class TestStatementMetricArray : CommonTest
+    public class TestStatementMetricArray : AbstractTestBase
     {
         [Test]
         public void TestFlowReportActive()

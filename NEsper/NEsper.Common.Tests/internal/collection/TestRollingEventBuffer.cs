@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestRollingEventBuffer : CommonTest
+    public class TestRollingEventBuffer : AbstractTestBase
     {
         private RollingEventBuffer bufferOne;
         private RollingEventBuffer bufferTwo;

@@ -16,16 +16,16 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.analyze
 {
     [TestFixture]
-    public class TestOuterJoinAnalyzer : CommonTest
+    public class TestOuterJoinAnalyzer : AbstractTestBase
     {
         [Test]
         public void TestAnalyze()
         {
             var descList = new OuterJoinDesc[2];
             descList[0] = SupportOuterJoinDescFactory.MakeDesc(
-                container, "intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT);
+                container, "IntPrimitive", "s0", "IntBoxed", "s1", OuterJoinType.LEFT);
             descList[1] = SupportOuterJoinDescFactory.MakeDesc(
-                container, "simpleProperty", "s2", "theString", "s1", OuterJoinType.LEFT);
+                container, "SimpleProperty", "s2", "TheString", "s1", OuterJoinType.LEFT);
             // simpleProperty in s2
 
             var graph = new QueryGraphForge(3, null, false);
@@ -34,13 +34,13 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
 
             Assert.IsTrue(graph.IsNavigableAtAll(0, 1));
             Assert.AreEqual(1, SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 0, 1).Length);
-            Assert.AreEqual("intPrimitive", SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 0, 1)[0]);
+            Assert.AreEqual("IntPrimitive", SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 0, 1)[0]);
             Assert.AreEqual(1, SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 1, 0).Length);
-            Assert.AreEqual("intBoxed", SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 1, 0)[0]);
+            Assert.AreEqual("IntBoxed", SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 1, 0)[0]);
 
             Assert.IsTrue(graph.IsNavigableAtAll(1, 2));
-            Assert.AreEqual("theString", SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 1, 2)[0]);
-            Assert.AreEqual("simpleProperty", SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 2, 1)[0]);
+            Assert.AreEqual("TheString", SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 1, 2)[0]);
+            Assert.AreEqual("SimpleProperty", SupportQueryGraphTestUtil.GetStrictKeyProperties(graph, 2, 1)[0]);
         }
     }
 } // end of namespace

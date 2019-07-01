@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestDatabaseTypeEnum : CommonTest
+    public class TestDatabaseTypeEnum : AbstractTestBase
     {
         [Test]
         public void TestLookup()

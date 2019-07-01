@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.property
 {
     [TestFixture]
-    public class TestMappedProperty : CommonTest
+    public class TestMappedProperty : AbstractTestBase
     {
         private MappedProperty[] mapped;
         private EventBean theEvent;
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             mapped[0] = new MappedProperty("mapped", "keyOne");
             mapped[1] = new MappedProperty("mapped", "keyTwo");
 
-            theEvent = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, 
+            theEvent = SupportEventBeanFactory.CreateObject(supportEventTypeFactory,
                 SupportBeanComplexProps.MakeDefaultBean());
             eventType = (BeanEventType) theEvent.EventType;
         }

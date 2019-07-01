@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.introspect
 {
     [TestFixture]
-    public class TestPropertyListBuilderExplicit : CommonTest
+    public class TestPropertyListBuilderExplicit : AbstractTestBase
     {
         private PropertyListBuilderExplicit builder;
 
@@ -70,10 +70,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
         public void TestInvalid()
         {
             TryInvalidField("x", typeof(SupportBean));
-            TryInvalidField("intPrimitive", typeof(SupportBean));
+            TryInvalidField("IntPrimitive", typeof(SupportBean));
 
             TryInvalidMethod("x", typeof(SupportBean));
-            TryInvalidMethod("intPrimitive", typeof(SupportBean));
+            TryInvalidMethod("IntPrimitive", typeof(SupportBean));
         }
 
         private void TryInvalidMethod(string methodName, Type clazz)

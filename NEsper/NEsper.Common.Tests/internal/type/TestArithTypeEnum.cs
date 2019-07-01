@@ -16,13 +16,13 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestArithTypeEnum : CommonTest
+    public class TestArithTypeEnum : AbstractTestBase
     {
         private void TryInvalid(Type clazz)
         {
             try
             {
-                MathArithTypeEnum.ADD.GetComputer(clazz, clazz, clazz, false, false, null);
+                MathArithType.GetComputer(MathArithTypeEnum.ADD, clazz, clazz, clazz, false, false, null);
                 Assert.Fail();
             }
             catch (ArgumentException)
@@ -34,7 +34,8 @@ namespace com.espertech.esper.common.@internal.type
         [Test]
         public void TestAddDouble()
         {
-            var computer = MathArithTypeEnum.ADD.GetComputer(typeof(double?), typeof(double?), typeof(double?), false, false, null);
+            var computer = MathArithType.GetComputer(
+                MathArithTypeEnum.ADD, typeof(double?), typeof(double?), typeof(double?), false, false, null);
             Assert.AreEqual(12.1d, computer.Compute(5.5, 6.6));
         }
 
@@ -49,7 +50,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 foreach (MathArithTypeEnum type in EnumHelper.GetValues<MathArithTypeEnum>())
                 {
-                    var computer = type.GetComputer(clazz, clazz, clazz, false, false, null);
+                    var computer = MathArithType.GetComputer(type, clazz, clazz, clazz, false, false, null);
                     var result = computer.Compute(3, 4);
 
                     if (type == MathArithTypeEnum.ADD)
@@ -130,14 +131,14 @@ namespace com.espertech.esper.common.@internal.type
                 var rhs = parameters[i][3];
                 var expected = parameters[i][4];
 
-                MathArithTypeEnum.Computer computer;
+                MathArithType.Computer computer;
                 if (isBigDec)
                 {
-                    computer = e.GetComputer(typeof(decimal), lhs.GetType(), rhs.GetType(), false, false, null);
+                    computer = MathArithType.GetComputer(e, typeof(decimal), lhs.GetType(), rhs.GetType(), false, false, null);
                 }
                 else
                 {
-                    computer = e.GetComputer(typeof(BigInteger), lhs.GetType(), rhs.GetType(), false, false, null);
+                    computer = MathArithType.GetComputer(e, typeof(BigInteger), lhs.GetType(), rhs.GetType(), false, false, null);
                 }
 
                 object result = null;

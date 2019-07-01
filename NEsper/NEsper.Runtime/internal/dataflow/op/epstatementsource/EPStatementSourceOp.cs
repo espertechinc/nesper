@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.dataflow.util;
@@ -69,27 +70,35 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
 
         public void Open(DataFlowOpOpenContext openContext)
         {
-            lock (this) {
+            lock (this)
+            {
                 // start observing statement management
-                EPRuntimeSPI spi = (EPRuntimeSPI) agentInstanceContext.Runtime;
+                var spi = (EPRuntimeSPI) agentInstanceContext.Runtime;
                 spi.DeploymentService.AddDeploymentStateListener(this);
 
-                if (statementDeploymentId != null && statementName != null) {
-                    EPStatement stmt = spi.DeploymentService.GetStatement(statementDeploymentId, statementName);
-                    if (stmt != null) {
+                if (statementDeploymentId != null && statementName != null)
+                {
+                    var stmt = spi.DeploymentService.GetStatement(statementDeploymentId, statementName);
+                    if (stmt != null)
+                    {
                         AddStatement(stmt);
                     }
                 }
-                else {
-                    string[] deployments = spi.DeploymentService.Deployments;
-                    foreach (string deploymentId in deployments) {
-                        EPDeployment info = spi.DeploymentService.GetDeployment(deploymentId);
-                        if (info == null) {
+                else
+                {
+                    var deployments = spi.DeploymentService.Deployments;
+                    foreach (var deploymentId in deployments)
+                    {
+                        var info = spi.DeploymentService.GetDeployment(deploymentId);
+                        if (info == null)
+                        {
                             continue;
                         }
 
-                        foreach (EPStatement stmt in info.Statements) {
-                            if (statementFilter.Pass(ToContext(stmt))) {
+                        foreach (var stmt in info.Statements)
+                        {
+                            if (statementFilter.Pass(ToContext(stmt)))
+                            {
                                 AddStatement(stmt);
                             }
                         }
@@ -100,7 +109,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
 
         public void OnDeployment(DeploymentStateEventDeployed @event)
         {
-            foreach (EPStatement stmt in @event.Statements)
+            foreach (var stmt in @event.Statements)
             {
                 if (statementFilter == null)
                 {
@@ -121,7 +130,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
 
         public void OnUndeployment(DeploymentStateEventUndeployed @event)
         {
-            foreach (EPStatement stmt in @event.Statements)
+            foreach (var stmt in @event.Statements)
             {
                 if (listeners.TryRemove(stmt, out var listener))
                 {
@@ -132,7 +141,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
 
         public void Close(DataFlowOpCloseContext openContext)
         {
-            foreach (KeyValuePair<EPStatement, UpdateListener> entry in listeners)
+            foreach (var entry in listeners)
             {
                 try
                 {
@@ -163,7 +172,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
             }
             else
             {
-                LocalEmitter emitterForCollector = new LocalEmitter(emittables);
+                var emitterForCollector = new LocalEmitter(emittables);
                 listener = new EmitterCollectorUpdateListener(collector, emitterForCollector, factory.IsSubmitEventBean);
             }
             stmt.AddListener(listener);

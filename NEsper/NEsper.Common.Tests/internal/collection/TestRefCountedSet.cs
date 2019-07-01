@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestRefCountedSet : CommonTest
+    public class TestRefCountedSet : AbstractTestBase
     {
         private RefCountedSet<string> refSet;
 

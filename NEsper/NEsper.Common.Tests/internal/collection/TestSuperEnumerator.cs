@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestSuperEnumerator : CommonTest
+    public class TestSuperEnumerator : AbstractTestBase
     {
         private IEnumerator<string> Make(string csv)
         {
@@ -32,7 +32,6 @@ namespace com.espertech.esper.common.@internal.collection
         {
             var it = SuperEnumerator.For(Make(null), Make(null));
             Assert.IsFalse(it.MoveNext());
-            Assert.That(() => it.Current, Throws.InstanceOf<NoSuchElementException>());
         }
 
         [Test]

@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.client.configuration
 {
     [TestFixture]
-    public class TestConfiguration : CommonTest
+    public class TestConfiguration : AbstractTestBase
     {
         public const string ESPER_TEST_CONFIG = "regression/esper.test.readconfig.cfg.xml";
 
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.client.configuration
         }
 
         [Test]
-        public void TestAddeventTypeName()
+        public void TestAddEventTypeName()
         {
             ConfigurationCommon common = config.Common;
             common.AddEventType("AEventType", "BClassName");

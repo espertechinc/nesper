@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestNumberSetPermutationEnumeration : CommonTest
+    public class TestNumberSetPermutationEnumeration : AbstractTestBase
     {
         private void TryPermutation(
             int[] numberSet,

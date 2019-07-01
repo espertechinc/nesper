@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.streamtype
 {
     [TestFixture]
-    public class TestStreamTypeServiceImpl : CommonTest
+    public class TestStreamTypeServiceImpl : AbstractTestBase
     {
         private StreamTypeServiceImpl serviceRegular;
         private StreamTypeServiceImpl serviceStreamZeroUnambigous;
@@ -63,8 +63,8 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         public void TestResolveByPropertyName()
         {
             TryResolveByPropertyName(serviceRegular);
-            serviceStreamZeroUnambigous.ResolveByPropertyName("boolPrimitive", false);
-            serviceRequireStreamName.ResolveByPropertyName("boolPrimitive", false);
+            serviceStreamZeroUnambigous.ResolveByPropertyName("BoolPrimitive", false);
+            serviceRequireStreamName.ResolveByPropertyName("BoolPrimitive", false);
 
             try
             {
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
 
             try
             {
-                service.ResolveByPropertyName("boolPrimitive", false);
+                service.ResolveByPropertyName("BoolPrimitive", false);
                 Assert.Fail();
             }
             catch (DuplicatePropertyException ex)

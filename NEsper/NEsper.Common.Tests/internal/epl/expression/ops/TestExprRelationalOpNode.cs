@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     [TestFixture]
-    public class TestExprRelationalOpNode : CommonTest
+    public class TestExprRelationalOpNode : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

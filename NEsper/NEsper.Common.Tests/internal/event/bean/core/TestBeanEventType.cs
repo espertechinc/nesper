@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     [TestFixture]
-    public class TestBeanEventType : CommonTest
+    public class TestBeanEventType : AbstractTestBase
     {
         [SetUp]
         public void SetUp()
@@ -201,7 +201,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             EPAssertionUtil.AssertEqualsAnyOrder(
                 new object[] {
-                    new EventPropertyDescriptor("simpleProperty", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("SimpleProperty", typeof(string), null, false, false, false, false, false),
                     new EventPropertyDescriptor("mapProperty", typeof(IDictionary<string, object>), typeof(string), false, false, false, true, false),
                     new EventPropertyDescriptor("mapped", typeof(string), typeof(object), false, true, false, true, false),
                     new EventPropertyDescriptor("indexed", typeof(int), null, true, false, true, false, false),
@@ -255,7 +255,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             IList<PropTestDesc> tests = new List<PropTestDesc>();
 
             tests = new List<PropTestDesc>();
-            tests.Add(new PropTestDesc("simpleProperty", true, typeof(string), true, "simple"));
+            tests.Add(new PropTestDesc("SimpleProperty", true, typeof(string), true, "simple"));
             tests.Add(new PropTestDesc("dummy", false, null, false, null));
             tests.Add(new PropTestDesc("indexed", false, null, false, null));
             tests.Add(new PropTestDesc("indexed[1]", true, typeof(int), true, 2));

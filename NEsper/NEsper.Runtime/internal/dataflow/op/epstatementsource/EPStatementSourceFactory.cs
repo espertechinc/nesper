@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.dataflow.util;
@@ -23,7 +24,8 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
 
         public IDictionary<string, object> Collector { set; get; }
 
-        public bool SubmitEventBean {
+        public bool SubmitEventBean
+        {
             set => IsSubmitEventBean = value;
         }
 
@@ -45,7 +47,8 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
             var collectorInstance = DataFlowParameterResolution
                 .ResolveOptionalInstance<EPDataFlowIRStreamCollector>("collector", Collector, context);
 
-            if (statementNameParam == null && statementFilterInstance == null) {
+            if (statementNameParam == null && statementFilterInstance == null)
+            {
                 throw new EPException("Failed to find required 'statementName' or 'statementFilter' parameter");
             }
 

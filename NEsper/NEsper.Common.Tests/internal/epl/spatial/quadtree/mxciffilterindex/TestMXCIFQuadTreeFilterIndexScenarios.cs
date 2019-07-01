@@ -19,7 +19,7 @@ using static com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilt
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
     [TestFixture]
-    public class TestMXCIFQuadTreeFilterIndexScenarios : CommonTest
+    public class TestMxcifQuadTreeFilterIndexScenarios : AbstractTestBase
     {
         [Test]
         public void TestDimension()
@@ -288,7 +288,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double height,
             MXCIFQuadTree<object> tree)
         {
-            Delete(x, y, width, height, tree);
+            MXCIFQuadTreeFilterIndexDelete<object>.Delete(x, y, width, height, tree);
         }
     }
 } // end of namespace

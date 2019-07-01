@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
     [TestFixture]
-    public class TestNestedPropertyGetter : CommonTest
+    public class TestNestedPropertyGetter : AbstractTestBase
     {
         private NestedPropertyGetter getter;
         private NestedPropertyGetter getterNull;

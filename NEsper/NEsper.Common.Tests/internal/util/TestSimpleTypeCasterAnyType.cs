@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestSimpleTypeCasterAnyType : CommonTest
+    public class TestSimpleTypeCasterAnyType : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

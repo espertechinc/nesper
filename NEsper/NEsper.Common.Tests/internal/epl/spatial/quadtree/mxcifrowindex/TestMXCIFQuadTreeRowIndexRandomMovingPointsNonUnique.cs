@@ -17,7 +17,7 @@ using static com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowi
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex
 {
     [TestFixture]
-    public class TestMXCIFQuadTreeRowIndexRandomMovingPointsNonUnique : CommonTest
+    public class TestMxcifQuadTreeRowIndexRandomMovingPointsNonUnique : AbstractTestBase
     {
         [Test]
         public void TestNonUnique()

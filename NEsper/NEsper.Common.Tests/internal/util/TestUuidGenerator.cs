@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestUuidGenerator : CommonTest
+    public class TestUuidGenerator : AbstractTestBase
     {
         [Test]
         public void TestGenerate()

@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     [TestFixture]
-    public class TestQueryGraphForge : CommonTest
+    public class TestQueryGraphForge : AbstractTestBase
     {
         private QueryGraphForge queryGraph;
         private EventType[] types;
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         [Test]
         public void TestIsNavigable()
         {
-            ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("theString", "s0");
+            ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("TheString", "s0");
 
             Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 1));
             Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         [Test]
         public void TestGetNavigableStreams()
         {
-            ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("theString", "s0");
+            ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("TheString", "s0");
 
             queryGraph = new QueryGraphForge(5, null, false);
             queryGraph.AddStrictEquals(3, "p3", fake, 4, "p4", fake);

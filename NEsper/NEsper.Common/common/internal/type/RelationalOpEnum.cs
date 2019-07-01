@@ -194,8 +194,8 @@ namespace com.espertech.esper.common.@internal.type
             RelationalOpEnum op)
         {
             return Op(
-                MathArithTypeEnum.CodegenAsLong(lhs, lhsType), op.ExpressionText,
-                MathArithTypeEnum.CodegenAsLong(rhs, rhsType));
+                MathArithType.CodegenAsLong(lhs, lhsType), op.ExpressionText,
+                MathArithType.CodegenAsLong(rhs, rhsType));
         }
 
         private static CodegenExpression CodegenDecimal(
@@ -206,8 +206,8 @@ namespace com.espertech.esper.common.@internal.type
             RelationalOpEnum op)
         {
             return Op(
-                MathArithTypeEnum.CodegenAsDecimal(lhs, lhsType), op.ExpressionText,
-                MathArithTypeEnum.CodegenAsDecimal(rhs, rhsType));
+                MathArithType.CodegenAsDecimal(lhs, lhsType), op.ExpressionText,
+                MathArithType.CodegenAsDecimal(rhs, rhsType));
         }
 
         private static CodegenExpression CodegenDouble(
@@ -218,8 +218,8 @@ namespace com.espertech.esper.common.@internal.type
             RelationalOpEnum op)
         {
             return Op(
-                MathArithTypeEnum.CodegenAsDouble(lhs, lhsType), op.ExpressionText,
-                MathArithTypeEnum.CodegenAsDouble(rhs, rhsType));
+                MathArithType.CodegenAsDouble(lhs, lhsType), op.ExpressionText,
+                MathArithType.CodegenAsDouble(rhs, rhsType));
         }
 
         private static CodegenExpression CodegenFloat(
@@ -230,8 +230,8 @@ namespace com.espertech.esper.common.@internal.type
             RelationalOpEnum op)
         {
             return Op(
-                MathArithTypeEnum.CodegenAsFloat(lhs, lhsType), op.ExpressionText,
-                MathArithTypeEnum.CodegenAsFloat(rhs, rhsType));
+                MathArithType.CodegenAsFloat(lhs, lhsType), op.ExpressionText,
+                MathArithType.CodegenAsFloat(rhs, rhsType));
         }
 
         private static CodegenExpression CodegenInt(
@@ -242,8 +242,8 @@ namespace com.espertech.esper.common.@internal.type
             RelationalOpEnum op)
         {
             return Op(
-                MathArithTypeEnum.CodegenAsInt(lhs, lhsType), op.ExpressionText,
-                MathArithTypeEnum.CodegenAsInt(rhs, rhsType));
+                MathArithType.CodegenAsInt(lhs, lhsType), op.ExpressionText,
+                MathArithType.CodegenAsInt(rhs, rhsType));
         }
 
         private static CodegenExpression CodegenStringCompare(

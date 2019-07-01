@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.core
 {
     [TestFixture]
-    public class TestEventBeanUtility : CommonTest
+    public class TestEventBeanUtility : AbstractTestBase
     {
         [Test]
         public void TestArrayOp()
@@ -199,8 +199,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             EventType eventType = supportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             var getters = new EventPropertyGetter[2];
-            getters[0] = eventType.GetGetter("theString");
-            getters[1] = eventType.GetGetter("intPrimitive");
+            getters[0] = eventType.GetGetter("TheString");
+            getters[1] = eventType.GetGetter("IntPrimitive");
             return getters;
         }
 

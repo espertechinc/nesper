@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestIterablesArrayIterator : CommonTest
+    public class TestIterablesArrayIterator : AbstractTestBase
     {
         private IDictionary<string, EventBean> events;
 

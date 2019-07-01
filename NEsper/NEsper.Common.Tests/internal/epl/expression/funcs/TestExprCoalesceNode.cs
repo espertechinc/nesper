@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     [TestFixture]
-    public class TestExprCoalesceNode : CommonTest
+    public class TestExprCoalesceNode : AbstractTestBase
     {
         [SetUp]
         public void SetUp()
@@ -48,7 +48,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             coalesceNodes[4].AddChildNode(new SupportExprNode(null, typeof(double?)));
         }
 
-        private IContainer container;
         private ExprCoalesceNode[] coalesceNodes;
 
         [Test]

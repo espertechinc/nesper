@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 {
     [TestFixture]
-    public class TestXYPointMultiType : CommonTest
+    public class TestXyPointMultiType : AbstractTestBase
     {
         private void AssertValues(
             string expected,

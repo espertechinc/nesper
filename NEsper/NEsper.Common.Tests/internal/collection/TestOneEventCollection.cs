@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestOneEventCollection : CommonTest
+    public class TestOneEventCollection : AbstractTestBase
     {
         private OneEventCollection list;
         private EventBean[] events;

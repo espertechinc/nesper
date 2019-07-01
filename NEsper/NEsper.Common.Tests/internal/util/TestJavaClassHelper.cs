@@ -870,8 +870,8 @@ namespace com.espertech.esper.common.@internal.util
 	                {"listUndefined", null},
 	                {"iterable", typeof(int?)},
 	                {"nested", typeof(MyClassWithGetters)},
-	                {"intPrimitive", null},
-	                {"intBoxed", null},
+	                {"IntPrimitive", null},
+	                {"IntBoxed", null},
 	        };
 
 	        for (int i = 0; i < testcases.Length; i++) {

@@ -6,19 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestSingleEventEnumerator : CommonTest
+    public class TestSingleEventEnumerator : AbstractTestBase
     {
         private SingleEventEnumerator enumerator;
         private EventBean eventBean;
@@ -31,18 +30,20 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         [Test]
-        public void TestNext()
+        public void TestMoveNext()
         {
-            Assert.AreEqual(eventBean, enumerator.MoveNext());
-            Assert.That(() => enumerator.Current, Throws.InstanceOf<NoSuchElementException>());
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current, Is.Not.Null);
+            Assert.That(enumerator.MoveNext(), Is.False);
         }
 
         [Test]
-        public void TestHasNext()
+        public void TestCurrent()
         {
-            Assert.IsTrue(enumerator.MoveNext());
+            Assert.That(enumerator.MoveNext(), Is.True);
             Assert.That(() => enumerator.Current, Throws.Nothing);
-            Assert.IsFalse(enumerator.MoveNext());
+            Assert.That(enumerator.MoveNext(), Is.False);
+            Assert.That(() => enumerator.Current, Throws.InstanceOf<InvalidOperationException>());
         }
     }
 } // end of namespace

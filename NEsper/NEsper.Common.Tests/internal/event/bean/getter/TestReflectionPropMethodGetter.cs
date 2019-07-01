@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
     [TestFixture]
-    public class TestReflectionPropMethodGetter : CommonTest
+    public class TestReflectionPropMethodGetter : AbstractTestBase
     {
         private EventBean unitTestBean;
 

@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     [TestFixture]
-    public class TestExprCaseNode : CommonTest
+    public class TestExprCaseNode : AbstractTestBase
     {
         private void TryInvalidValidate(ExprCaseNode exprCaseNode)
         {

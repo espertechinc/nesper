@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestRelationalOpEnum : CommonTest
+    public class TestRelationalOpEnum : AbstractTestBase
     {
 #if FALSE
         private readonly bool[][] expected = {
@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.type
                 {
                     var result = op
                         .GetComputer(
-                            typeof(long?), 
+                            typeof(long?),
                             typeof(long?),
                             typeof(long))
                         .Compare(
@@ -184,8 +184,8 @@ namespace com.espertech.esper.common.@internal.type
                 {
                     var result = op
                         .GetComputer(
-                            typeof(string), 
-                            typeof(string), 
+                            typeof(string),
+                            typeof(string),
                             typeof(string))
                         .Compare(
                             parameters[i][0],

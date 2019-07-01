@@ -24,7 +24,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestQueryPlanBuilder : CommonTest
+    public class TestQueryPlanBuilder : AbstractTestBase
     {
         private EventType[] typesPerStream;
         private DependencyGraph dependencyGraph;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         {
             OuterJoinDesc[] descList = {
                 SupportOuterJoinDescFactory.MakeDesc(
-                    container, "intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT)
+                    container, "IntPrimitive", "s0", "IntBoxed", "s1", OuterJoinType.LEFT)
             };
 
             var queryGraph = new QueryGraphForge(2, null, false);

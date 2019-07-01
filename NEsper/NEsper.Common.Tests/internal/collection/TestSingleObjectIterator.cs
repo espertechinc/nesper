@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
@@ -15,16 +16,16 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestSingleObjectIterator : CommonTest
+    public class TestSingleObjectIterator : AbstractTestBase
     {
         [Test]
         public void TestNext()
         {
             IEnumerator<string> it = EnumerationHelper.Singleton("a");
-            Assert.IsTrue(it.MoveNext());
-            Assert.AreEqual("a", it.Current);
-            Assert.IsFalse(it.MoveNext());
-            Assert.That(() => it.Current, Throws.InstanceOf<NoSuchElementException>());
+            Assert.That(it.MoveNext(), Is.True);
+            Assert.That(it.Current, Is.EqualTo("a"));
+            Assert.That(it.MoveNext(), Is.False);
+            //Assert.That(() => it.Current, Throws.InstanceOf<InvalidOperationException>());
         }
     }
 } // end of namespace

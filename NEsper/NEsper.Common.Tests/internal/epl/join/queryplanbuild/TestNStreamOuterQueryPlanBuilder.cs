@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestNStreamOuterQueryPlanBuilder : CommonTest
+    public class TestNStreamOuterQueryPlanBuilder : AbstractTestBase
     {
         private void TryVerifyJoinedPerStream(IDictionary<int, int[]> map)
         {
@@ -69,9 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         {
             var descList = new OuterJoinDesc[2];
             descList[0] = SupportOuterJoinDescFactory.MakeDesc(
-                container, "intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.RIGHT);
+                container, "IntPrimitive", "s0", "IntBoxed", "s1", OuterJoinType.RIGHT);
             descList[1] = SupportOuterJoinDescFactory.MakeDesc(
-                container, "simpleProperty", "s2", "theString", "s1", OuterJoinType.FULL);
+                container, "SimpleProperty", "s2", "TheString", "s1", OuterJoinType.FULL);
 
             var graph = NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, descList);
 
@@ -80,9 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             AssertOuters(new[] {new[] {1}, new[] {2}, new[] {1}}, graph);
 
             descList[0] = SupportOuterJoinDescFactory.MakeDesc(
-                container, "intPrimitive", "s1", "intBoxed", "s0", OuterJoinType.LEFT);
+                container, "IntPrimitive", "s1", "IntBoxed", "s0", OuterJoinType.LEFT);
             descList[1] = SupportOuterJoinDescFactory.MakeDesc(
-                container, "simpleProperty", "s2", "theString", "s1", OuterJoinType.RIGHT);
+                container, "SimpleProperty", "s2", "TheString", "s1", OuterJoinType.RIGHT);
 
             graph = NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, descList);
 
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             var requiredPerStream = new bool[6];
 
             outerInnerGraph.Add(3, 2).Add(2, 1).Add(4, 3).Add(1, 0).Add(3, 5);
-            var fake = supportExprNodeFactory.MakeIdentNode("theString", "s0");
+            var fake = supportExprNodeFactory.MakeIdentNode("TheString", "s0");
             queryGraph.AddStrictEquals(2, "", fake, 3, "", fake);
             queryGraph.AddStrictEquals(3, "", fake, 4, "", fake);
             queryGraph.AddStrictEquals(3, "", fake, 5, "", fake);

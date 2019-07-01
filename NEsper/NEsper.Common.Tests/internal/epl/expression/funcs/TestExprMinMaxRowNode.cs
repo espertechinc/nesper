@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     [TestFixture]
-    public class TestExprMinMaxRowNode : CommonTest
+    public class TestExprMinMaxRowNode : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

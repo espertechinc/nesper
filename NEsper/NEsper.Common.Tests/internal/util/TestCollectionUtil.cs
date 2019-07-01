@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestCollectionUtil : CommonTest
+    public class TestCollectionUtil : AbstractTestBase
     {
         private void RunAssertionShrink(
             string expected,

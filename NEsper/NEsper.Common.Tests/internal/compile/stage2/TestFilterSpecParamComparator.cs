@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
     [TestFixture]
-    public class TestFilterSpecParamComparator : CommonTest
+    public class TestFilterSpecParamComparator : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

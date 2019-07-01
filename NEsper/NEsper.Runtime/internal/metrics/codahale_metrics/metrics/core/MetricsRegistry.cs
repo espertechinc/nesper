@@ -9,11 +9,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
-using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.core
 {
@@ -22,9 +20,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
     /// </summary>
     public class MetricsRegistry
     {
-        private const int EXPECTED_METRIC_COUNT = 1024;
         private readonly Clock clock;
-        private readonly IList<MetricsRegistryListener> listeners;
         private readonly ConcurrentDictionary<MetricName, Metric> metrics;
         private readonly ThreadPools threadPools;
 
@@ -45,7 +41,6 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
             this.clock = clock;
             metrics = NewMetricsMap();
             threadPools = new ThreadPools();
-            listeners = new CopyOnWriteList<MetricsRegistryListener>();
         }
 
         /// <summary>
@@ -485,28 +480,14 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         }
 
         /// <summary>
-        ///     Adds a <seealso cref="MetricsRegistryListener" /> to a collection of listeners that will be notified on
-        ///     metric creation.  Listeners will be notified in the order in which they are added.
-        ///     <b>N.B.:</b> The listener will be notified of all existing metrics when it first registers.
+        /// Called when a metric has been added to the <seealso cref="MetricsRegistry" />.
         /// </summary>
-        /// <param name="listener">the listener that will be notified</param>
-        public void AddListener(MetricsRegistryListener listener)
-        {
-            listeners.Add(listener);
-            foreach (KeyValuePair<MetricName, Metric> entry in metrics)
-            {
-                listener.OnMetricAdded(entry.Key, entry.Value);
-            }
-        }
+        public event EventHandler<MetricsRegistryEventArgs> MetricAdded;
 
         /// <summary>
-        ///     Removes a <seealso cref="MetricsRegistryListener" /> from this registry's collection of listeners.
+        /// Called when a metric has been removed from the <seealso cref="MetricsRegistry" />.
         /// </summary>
-        /// <param name="listener">the listener that will be removed</param>
-        public void RemoveListener(MetricsRegistryListener listener)
-        {
-            listeners.Remove(listener);
-        }
+        public event EventHandler<MetricsRegistryEventArgs> MetricRemoved;
 
         /// <summary>
         ///     Override to customize how <seealso cref="MetricName" />s are created.
@@ -573,20 +554,14 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
 
         private void NotifyMetricRemoved(MetricName name)
         {
-            foreach (var listener in listeners)
-            {
-                listener.OnMetricRemoved(name);
-            }
+            MetricRemoved?.Invoke(this, new MetricsRegistryEventArgs(name));
         }
 
         private void NotifyMetricAdded(
             MetricName name,
             Metric metric)
         {
-            foreach (var listener in listeners)
-            {
-                listener.OnMetricAdded(name, metric);
-            }
+            MetricAdded?.Invoke(this, new MetricsRegistryEventArgs(name, metric));
         }
     }
 } // end of namespace

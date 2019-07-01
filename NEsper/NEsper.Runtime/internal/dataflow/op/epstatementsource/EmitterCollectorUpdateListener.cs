@@ -26,15 +26,15 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
         }
 
         public void Update(
-            EventBean[] newEvents,
-            EventBean[] oldEvents)
+            object sender,
+            UpdateEventArgs eventArgs)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public void Update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPRuntime runtime)
-        {
-            EPDataFlowIRStreamCollectorContext holder = new EPDataFlowIRStreamCollectorContext(emitterForCollector, submitEventBean, newEvents, oldEvents, statement, runtime);
+            var holder = new EPDataFlowIRStreamCollectorContext(
+                emitterForCollector, submitEventBean, 
+                eventArgs.NewEvents,
+                eventArgs.OldEvents, 
+                eventArgs.Statement, 
+                eventArgs.Runtime);
             collector.Collect(holder);
         }
     }

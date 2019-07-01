@@ -20,7 +20,7 @@ using static com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilte
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
 {
     [TestFixture]
-    public class TestPointRegionQuadTreeFilterIndexScenarios : CommonTest
+    public class TestPointRegionQuadTreeFilterIndexScenarios : AbstractTestBase
     {
         [Test]
         public void TestSubdivideAddMany()

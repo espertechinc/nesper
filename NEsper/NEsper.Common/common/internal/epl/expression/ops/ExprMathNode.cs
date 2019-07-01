@@ -120,8 +120,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            var arithTypeEnumComputer = MathArithTypeEnum.GetComputer(
-                resultType, lhsType, rhsType, isIntegerDivision, isDivisionByZeroReturnsNull,
+            var arithTypeEnumComputer = MathArithType.GetComputer(
+                MathArithTypeEnum, resultType, lhsType, rhsType, isIntegerDivision, isDivisionByZeroReturnsNull,
                 validationContext.ImportService.DefaultMathContext);
             forge = new ExprMathNodeForge(this, arithTypeEnumComputer, resultType);
             return null;
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ChildNodes[0].ToEPL(writer, Precedence);
-            writer.Write(MathArithTypeEnum.ExpressionText);
+            writer.Write(MathArithTypeEnum.GetExpressionText());
             ChildNodes[1].ToEPL(writer, Precedence);
         }
 

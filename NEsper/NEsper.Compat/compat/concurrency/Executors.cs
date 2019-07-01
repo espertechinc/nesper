@@ -29,6 +29,17 @@ namespace com.espertech.esper.compat.concurrency
         }
 
         /// <summary>
+        /// Creates an executor tied to an explicit pool of threads.
+        /// </summary>
+        /// <returns></returns>
+        public static DefaultExecutorService NewMultiThreadedExecutor(int numThreads)
+        {
+            return new DefaultExecutorService(
+                new TaskFactory(
+                    new MultiThreadedTaskScheduler(numThreads)));
+        }
+
+        /// <summary>
         /// Creates a new thread pool and returns the executor.
         /// </summary>
         /// <returns></returns>

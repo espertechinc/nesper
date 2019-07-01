@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestQueryPlanIndexBuilder : CommonTest
+    public class TestQueryPlanIndexBuilder : AbstractTestBase
     {
         [SetUp]
         public void SetUp()

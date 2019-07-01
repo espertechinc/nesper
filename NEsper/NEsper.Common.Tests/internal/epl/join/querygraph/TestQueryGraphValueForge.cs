@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     [TestFixture]
-    public class TestQueryGraphValueForge : CommonTest
+    public class TestQueryGraphValueForge : AbstractTestBase
     {
         private ExprIdentNode MakeIdent(string prop)
         {

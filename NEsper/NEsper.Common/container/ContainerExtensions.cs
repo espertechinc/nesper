@@ -120,18 +120,19 @@ namespace com.espertech.esper.container
             throw new ArgumentException("unable to create an instance of type " + viewFactoryClass.FullName);
         }
 
-        public static T ResolveSingleton<T>(this IContainer container, Supplier<T> instanceSupplier)
+        public static T ResolveSingleton<T>(
+            this IContainer container,
+            Supplier<T> instanceSupplier)
             where T : class
         {
             container.CheckContainer();
 
-            T instance = container.Resolve<T>();
-            if (instance == null)
-            {
-                instance = instanceSupplier.Invoke();
-                container.Register<T>(instance, Lifespan.Singleton, null);
+            if (container.Has<T>()) {
+                return container.Resolve<T>();
             }
 
+            var instance = instanceSupplier.Invoke();
+            container.Register<T>(instance, Lifespan.Singleton, null);
             return instance;
         }
     }

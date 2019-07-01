@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestClassIndentifierWArray : CommonTest
+    public class TestClassIndentifierWArray : AbstractTestBase
     {
         [Test]
         public void TestParse()

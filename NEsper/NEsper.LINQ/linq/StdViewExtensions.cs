@@ -9,6 +9,8 @@
 using System;
 using System.Linq;
 
+using com.espertech.esper.common.client.soda;
+
 namespace com.espertech.esper.runtime.client.linq
 {
     public static class StdViewExtensions
@@ -32,8 +34,12 @@ namespace com.espertech.esper.runtime.client.linq
                 throw new ArgumentException("at least one property must be provided");
             }
 
-            return esperQuery.FilterView(() => View.Create("unique",
-                properties.Select(p => new PropertyValueExpression(p)).Cast<Expression>().ToArray()));
+            return esperQuery
+                .FilterView(() => View
+                    .Create("unique", properties
+                        .Select(p => new PropertyValueExpression(p))
+                        .Cast<Expression>()
+                        .ToArray()));
         }
 
         /// <summary>

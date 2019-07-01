@@ -15,7 +15,7 @@ using static com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilt
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
     [TestFixture]
-    public class TestMXCIFQuadTreeFilterIndexSimple : CommonTest
+    public class TestMxcifQuadTreeFilterIndexSimple : AbstractTestBase
     {
         [TearDown]
         public void TearDown()

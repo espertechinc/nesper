@@ -30,7 +30,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         /// <value>the statement viewable</value>
         Viewable ParentView { get; set; }
 
-        void RecoveryUpdateListeners(EPStatementListenerSet listenerSet);
+        void RecoveryUpdateEventHandlers(EPStatementEventHandlerSet eventHandlerSet);
 
         UpdateDispatchView DispatchChildView { get; }
 

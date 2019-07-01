@@ -2217,7 +2217,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             if (expr is ArithmaticExpression) {
                 var arith = (ArithmaticExpression) expr;
                 return new ExprMathNode(
-                    MathArithTypeEnum.ParseOperator(arith.Operator),
+                    MathArithTypeEnumExtensions.ParseOperator(arith.Operator),
                     mapContext.Configuration.Compiler.Expression.IsIntegerDivision,
                     mapContext.Configuration.Compiler.Expression.IsDivisionByZeroReturnsNull);
             }
@@ -2844,7 +2844,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is ExprMathNode) {
                 var math = (ExprMathNode) expr;
-                return new ArithmaticExpression(math.MathArithTypeEnum.ExpressionText);
+                return new ArithmaticExpression(math.MathArithTypeEnum.GetExpressionText());
             }
             else if (expr is ExprVariableNode) {
                 var prop = (ExprVariableNode) expr;

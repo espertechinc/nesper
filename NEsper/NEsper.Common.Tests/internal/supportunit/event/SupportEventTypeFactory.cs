@@ -34,6 +34,31 @@ namespace com.espertech.esper.common.@internal.supportunit.@event
         {
             _container = container;
 
+            STEM_BUILDER = new BeanEventTypeStemBuilder(
+                null,
+                PropertyResolutionStyle.CASE_SENSITIVE);
+
+            BEAN_STEM_SVC = new BeanEventTypeStemService(
+                null,
+                null,
+                PropertyResolutionStyle.CASE_SENSITIVE,
+                AccessorStyle.NATIVE);
+
+            BEAN_EVENT_TYPE_FACTORY = new BeanEventTypeFactoryPrivate(
+                new EventBeanTypedEventFactoryRuntime(null),
+                EventTypeFactoryImpl.GetInstance(container),
+                BEAN_STEM_SVC);
+
+            METADATA_CLASS = name => new EventTypeMetadata(
+                name,
+                null,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.CLASS,
+                NameAccessModifier.PROTECTED,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
+
             SUPPORTBEAN_EVENTTTPE = MakeType(typeof(SupportBean));
             SUPPORTBEAN_S0_EVENTTTPE = MakeType(typeof(SupportBean_S0));
             SUPPORTBEAN_S1_EVENTTTPE = MakeType(typeof(SupportBean_S1));
@@ -51,31 +76,6 @@ namespace com.espertech.esper.common.@internal.supportunit.@event
             SUPPORTBEANITERABLEPROPS_EVENTTTPE = MakeType(typeof(SupportBeanIterableProps));
             SUPPORTABCDEEVENT_EVENTTTPE = MakeType(typeof(SupportABCDEEvent));
             SUPPORTBEANITERABLEPROPSCONTAINER_EVENTTYPE = MakeType(typeof(SupportBeanIterablePropsContainer));
-
-            BEAN_STEM_SVC = new BeanEventTypeStemService(
-                null,
-                null,
-                PropertyResolutionStyle.CASE_SENSITIVE,
-                AccessorStyle.NATIVE);
-
-            BEAN_EVENT_TYPE_FACTORY = new BeanEventTypeFactoryPrivate(
-                new EventBeanTypedEventFactoryRuntime(null),
-                EventTypeFactoryImpl.GetInstance(container),
-                BEAN_STEM_SVC);
-
-            STEM_BUILDER = new BeanEventTypeStemBuilder(
-                null,
-                PropertyResolutionStyle.CASE_SENSITIVE);
-
-            METADATA_CLASS = name => new EventTypeMetadata(
-                name,
-                null,
-                EventTypeTypeClass.STREAM,
-                EventTypeApplicationType.CLASS,
-                NameAccessModifier.PROTECTED,
-                EventTypeBusModifier.NONBUS,
-                false,
-                EventTypeIdPair.Unassigned());
         }
 
         public static SupportEventTypeFactory GetInstance(IContainer container)
