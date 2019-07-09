@@ -90,5 +90,77 @@ namespace com.espertech.esper.compiler.client
         /// </summary>
         /// <returns>callback returning the module uses</returns>
         public ModuleUsesOption ModuleUses { get; set; }
+
+        public CompilerOptions SetAccessModifierEventType(AccessModifierEventTypeOption value)
+        {
+            AccessModifierEventType = value;
+            return this;
+        }
+
+        public CompilerOptions SetStatementUserObject(StatementUserObjectOption value)
+        {
+            StatementUserObject = value;
+            return this;
+        }
+
+        public CompilerOptions SetBusModifierEventType(BusModifierEventTypeOption value)
+        {
+            BusModifierEventType = value;
+            return this;
+        }
+
+        public CompilerOptions SetAccessModifierContext(AccessModifierContextOption value)
+        {
+            AccessModifierContext = value;
+            return this;
+        }
+
+        public CompilerOptions SetAccessModifierVariable(AccessModifierVariableOption value)
+        {
+            AccessModifierVariable = value;
+            return this;
+        }
+
+        public CompilerOptions SetAccessModifierExpression(AccessModifierExpressionOption value)
+        {
+            AccessModifierExpression = value;
+            return this;
+        }
+
+        public CompilerOptions SetAccessModifierTable(AccessModifierTableOption value)
+        {
+            AccessModifierTable = value;
+            return this;
+        }
+
+        public CompilerOptions SetStatementName(StatementNameOption value)
+        {
+            StatementName = value;
+            return this;
+        }
+
+        public CompilerOptions SetAccessModifierNamedWindow(AccessModifierNamedWindowOption value)
+        {
+            AccessModifierNamedWindow = value;
+            return this;
+        }
+
+        public CompilerOptions SetAccessModifierScript(AccessModifierScriptOption value)
+        {
+            AccessModifierScript = value;
+            return this;
+        }
+
+        public CompilerOptions SetModuleName(ModuleNameOption value)
+        {
+            ModuleName = value;
+            return this;
+        }
+
+        public CompilerOptions SetModuleUses(ModuleUsesOption value)
+        {
+            ModuleUses = value;
+            return this;
+        }
     }
 } // end of namespace

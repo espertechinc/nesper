@@ -63,6 +63,10 @@ namespace com.espertech.esper.compat.threading.locks
             get { return _uLockDepth; }
         }
 
+        public MonitorSlimLock() : this(LockConstants.DefaultTimeout)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MonitorSlimLock"/> class.
         /// </summary>

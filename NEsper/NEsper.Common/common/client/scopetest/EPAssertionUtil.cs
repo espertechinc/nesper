@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
                 ScopeTestHelper.AssertTrue(Collections.AreEqual(actual[i], expected[i]));
             }
@@ -61,14 +61,14 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
-                object[] propertiesThisRow = expected[i];
-                for (int j = 0; j < propertiesThisRow.Length; j++)
+                var propertiesThisRow = expected[i];
+                for (var j = 0; j < propertiesThisRow.Length; j++)
                 {
-                    string name = propertyNames[j];
-                    object value = propertiesThisRow[j];
-                    object eventProp = actual[i][j];
+                    var name = propertyNames[j];
+                    var value = propertiesThisRow[j];
+                    var eventProp = actual[i][j];
                     ScopeTestHelper.AssertEquals("Error asserting property named " + name, value, eventProp);
                 }
             }
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.client.scopetest
             string[] propertyNames,
             object[][] expected)
         {
-            object[][] arr = actual.ToArray();
+            var arr = actual.ToArray();
             AssertEqualsExactOrder(arr, propertyNames, expected);
         }
 
@@ -186,16 +186,16 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
-                object[] receivedThisRow = actual[i];
-                object[] propertiesThisRow = expected[i];
+                var receivedThisRow = actual[i];
+                var propertiesThisRow = expected[i];
                 ScopeTestHelper.AssertEquals(receivedThisRow.Length, propertiesThisRow.Length);
 
-                for (int j = 0; j < propertiesThisRow.Length; j++)
+                for (var j = 0; j < propertiesThisRow.Length; j++)
                 {
-                    object expectedValue = propertiesThisRow[j];
-                    object receivedValue = receivedThisRow[j];
+                    var expectedValue = propertiesThisRow[j];
+                    var receivedValue = receivedThisRow[j];
                     ScopeTestHelper.AssertEquals("Error asserting property", expectedValue, receivedValue);
                 }
             }
@@ -206,7 +206,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="actual">is the actual values</param>
         public static void AssertEqualsExactOrder(
             object[] expected,
-            object[] actual)
+            IDictionary<string, object>[] actual)
         {
             if (CompareCount(expected, actual))
             {
@@ -223,10 +223,10 @@ namespace com.espertech.esper.common.client.scopetest
                 expected = new object[0];
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
                 object value = actual[i];
-                object expectedValue = expected[i];
+                var expectedValue = expected[i];
                 AssertEqualsAllowArray("Failed to assert at element " + i, expectedValue, value);
             }
         }
@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
                 ScopeTestHelper.AssertSame("at element " + i, expected[i], actual[i]);
             }
@@ -273,7 +273,7 @@ namespace com.espertech.esper.common.client.scopetest
                 ScopeTestHelper.Fail("actual was null; expected was not");
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
                 AssertEqualsExactOrder(expected[i], actual[i]);
             }
@@ -306,7 +306,7 @@ namespace com.espertech.esper.common.client.scopetest
                 ScopeTestHelper.Fail("actual was null; expected was not");
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
                 ScopeTestHelper.AssertEquals(expected[i], actual[i]);
             }
@@ -324,7 +324,7 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
                 ScopeTestHelper.AssertNotNull(actual[i]);
                 ScopeTestHelper.AssertEquals(expected[i], actual[i].Value);
@@ -389,11 +389,11 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            foreach (T anExpected in expected)
+            foreach (var anExpected in expected)
             {
                 if (anExpected is ICollection collection)
                 {
-                    bool containsExpected = transposeActual.Any(i => SmartEquals(i, anExpected));
+                    var containsExpected = transposeActual.Any(i => SmartEquals(i, anExpected));
                     ScopeTestHelper.AssertTrue("not found: " + collection.RenderAny(), containsExpected);
                 }
                 else
@@ -439,7 +439,7 @@ namespace com.espertech.esper.common.client.scopetest
             }
 
             var received = new LinkedList<T>(actual);
-            foreach (T expectedObject in expected)
+            foreach (var expectedObject in expected)
             {
                 var node = received.FirstNode(value => SmartEquals(value, expectedObject));
                 if (node == null)
@@ -525,7 +525,7 @@ namespace com.espertech.esper.common.client.scopetest
             object[][] expected)
         {
             ScopeTestHelper.AssertEquals(received.Count, expected.Length);
-            for (int row = 0; row < received.Count; row++)
+            for (var row = 0; row < received.Count; row++)
             {
                 AssertProps(container, received[row], propertyNames, expected[row]);
             }
@@ -545,14 +545,14 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
-                object[] propertiesThisRow = expected[i];
-                for (int j = 0; j < propertiesThisRow.Length; j++)
+                var propertiesThisRow = expected[i];
+                for (var j = 0; j < propertiesThisRow.Length; j++)
                 {
-                    string name = propertyNames[j];
-                    object value = propertiesThisRow[j];
-                    object eventProp = actual[i].Get(name);
+                    var name = propertyNames[j];
+                    var value = propertiesThisRow[j];
+                    var eventProp = actual[i].Get(name);
                     ScopeTestHelper.AssertEquals("Error asserting property named " + name, value, eventProp);
                 }
             }
@@ -586,16 +586,16 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
-                object[] propertiesThisRow = expected[i];
+                var propertiesThisRow = expected[i];
                 ScopeTestHelper.AssertEquals("Number of properties expected mismatches for row " + i, propertyNames.Length, propertiesThisRow.Length);
-                for (int j = 0; j < propertiesThisRow.Length; j++)
+                for (var j = 0; j < propertiesThisRow.Length; j++)
                 {
-                    string name = propertyNames[j];
-                    object value = propertiesThisRow[j];
-                    object eventProp = actual[i].Get(name);
-                    StringWriter writer = new StringWriter();
+                    var name = propertyNames[j];
+                    var value = propertiesThisRow[j];
+                    var eventProp = actual[i].Get(name);
+                    var writer = new StringWriter();
                     writer.Write("Error asserting property named ");
                     writer.Write(name);
                     writer.Write(" for row ");
@@ -631,11 +631,11 @@ namespace com.espertech.esper.common.client.scopetest
 
             // build received
             var receivedArray = new object[actual.Length];
-            for (int i = 0; i < actual.Length; i++)
+            for (var i = 0; i < actual.Length; i++)
             {
                 var data = new object[propertyNames.Length];
                 receivedArray[i] = data;
-                for (int j = 0; j < propertyNames.Length; j++)
+                for (var j = 0; j < propertyNames.Length; j++)
                 {
                     var name = propertyNames[j];
                     var eventProp = actual[i].Get(name);
@@ -670,11 +670,11 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            for (int j = 0; j < expected.Length; j++)
+            for (var j = 0; j < expected.Length; j++)
             {
-                string name = propertyNames[j].Trim();
-                object value = expected[j];
-                object eventProp = received.Get(name);
+                var name = propertyNames[j].Trim();
+                var value = expected[j];
+                var eventProp = received.Get(name);
                 AssertEqualsAllowArray("Failed to assert property '" + name + "'", value, eventProp);
             }
         }
@@ -720,10 +720,10 @@ namespace com.espertech.esper.common.client.scopetest
             object[] expectedInsert,
             object[] expectedRemoved)
         {
-            object[] propsInsert = EventsToObjectArr(received.First, propertyName);
+            var propsInsert = EventsToObjectArr(received.First, propertyName);
             AssertEqualsExactOrder(expectedInsert, propsInsert);
 
-            object[] propsRemove = EventsToObjectArr(received.Second, propertyName);
+            var propsRemove = EventsToObjectArr(received.Second, propertyName);
             AssertEqualsExactOrder(expectedRemoved, propsRemove);
         }
 
@@ -736,13 +736,13 @@ namespace com.espertech.esper.common.client.scopetest
             object[] expectedUnderlyingInsert,
             object[] expectedUnderlyingRemove)
         {
-            EventBean[] newEvents = received.First;
-            EventBean[] oldEvents = received.Second;
+            var newEvents = received.First;
+            var oldEvents = received.Second;
 
             if (expectedUnderlyingInsert != null)
             {
                 ScopeTestHelper.AssertEquals(expectedUnderlyingInsert.Length, newEvents.Length);
-                for (int i = 0; i < expectedUnderlyingInsert.Length; i++)
+                for (var i = 0; i < expectedUnderlyingInsert.Length; i++)
                 {
                     ScopeTestHelper.AssertSame(expectedUnderlyingInsert[i], newEvents[i].Underlying);
                 }
@@ -755,7 +755,7 @@ namespace com.espertech.esper.common.client.scopetest
             if (expectedUnderlyingRemove != null)
             {
                 ScopeTestHelper.AssertEquals(expectedUnderlyingRemove.Length, oldEvents.Length);
-                for (int i = 0; i < expectedUnderlyingRemove.Length; i++)
+                for (var i = 0; i < expectedUnderlyingRemove.Length; i++)
                 {
                     ScopeTestHelper.AssertSame(expectedUnderlyingRemove[i], oldEvents[i].Underlying);
                 }
@@ -792,7 +792,7 @@ namespace com.espertech.esper.common.client.scopetest
                 Array.Copy(propertyNames, 0, propertyNamesSorted, 0, propertyNames.Length);
                 Array.Sort(propertyNamesSorted);
 
-                for (int j = 0; j < expected.Length; j++)
+                for (var j = 0; j < expected.Length; j++)
                 {
                     var name = propertyNamesSorted[j].Trim();
                     var value = expected[j];
@@ -822,11 +822,11 @@ namespace com.espertech.esper.common.client.scopetest
 
             if (expected != null)
             {
-                for (int j = 0; j < expected.Length; j++)
+                for (var j = 0; j < expected.Length; j++)
                 {
-                    string name = propertyNames[j].Trim();
-                    object value = expected[j];
-                    object eventProp = received.Get(name);
+                    var name = propertyNames[j].Trim();
+                    var value = expected[j];
+                    var eventProp = received.Get(name);
                     AssertEqualsAllowArray("Error asserting property named '" + name + "'", value, eventProp);
                 }
             }
@@ -856,11 +856,11 @@ namespace com.espertech.esper.common.client.scopetest
 
             if (expected != null)
             {
-                for (int j = 0; j < expected.Length; j++)
+                for (var j = 0; j < expected.Length; j++)
                 {
-                    string name = propertyNames[j].Trim();
-                    object value = expected[j];
-                    object eventProp = received.Get(name);
+                    var name = propertyNames[j].Trim();
+                    var value = expected[j];
+                    var eventProp = received.Get(name);
                     AssertEqualsAllowArray("Error asserting property named '" + name + "'", value, eventProp);
                 }
             }
@@ -889,11 +889,11 @@ namespace com.espertech.esper.common.client.scopetest
 
             if (expected != null)
             {
-                for (int j = 0; j < expected.Length; j++)
+                for (var j = 0; j < expected.Length; j++)
                 {
-                    string name = propertyNames[j].Trim();
-                    object value = expected[j];
-                    object eventProp = received[j];
+                    var name = propertyNames[j].Trim();
+                    var value = expected[j];
+                    var eventProp = received[j];
                     ScopeTestHelper.AssertEquals("Error asserting property named '" + name + "'", value, eventProp);
                 }
             }
@@ -914,10 +914,10 @@ namespace com.espertech.esper.common.client.scopetest
             // For each expected object find a received object
             var numMatches = 0;
             var foundReceived = new bool[actual.Length];
-            foreach (EventBean[] expectedObject in expected)
+            foreach (var expectedObject in expected)
             {
-                bool found = false;
-                for (int i = 0; i < actual.Length; i++)
+                var found = false;
+                for (var i = 0; i < actual.Length; i++)
                 {
                     // Ignore found received objects
                     if (foundReceived[i])
@@ -925,7 +925,7 @@ namespace com.espertech.esper.common.client.scopetest
                         continue;
                     }
 
-                    bool match = CompareEqualsExactOrder(actual[i], expectedObject);
+                    var match = CompareEqualsExactOrder(actual[i], expectedObject);
                     if (match)
                     {
                         found = true;
@@ -963,10 +963,10 @@ namespace com.espertech.esper.common.client.scopetest
             // For each expected object find a received object
             var numMatches = 0;
             var foundReceived = new bool[actual.Length];
-            foreach (object[] expectedArr in expected)
+            foreach (var expectedArr in expected)
             {
-                bool found = false;
-                for (int i = 0; i < actual.Length; i++)
+                var found = false;
+                for (var i = 0; i < actual.Length; i++)
                 {
                     // Ignore found received objects
                     if (foundReceived[i])
@@ -974,7 +974,7 @@ namespace com.espertech.esper.common.client.scopetest
                         continue;
                     }
 
-                    bool match = CompareRefExactOrder(actual[i], expectedArr);
+                    var match = CompareRefExactOrder(actual[i], expectedArr);
                     if (match)
                     {
                         found = true;
@@ -988,7 +988,7 @@ namespace com.espertech.esper.common.client.scopetest
                 if (!found)
                 {
                     Log.Error(".assertEqualsAnyOrder Not found in received results is expected=" + expectedArr.Render());
-                    for (int j = 0; j < actual.Length; j++)
+                    for (var j = 0; j < actual.Length; j++)
                     {
                         Log.Error(".assertEqualsAnyOrder received (" + j + "):" + actual[j].Render());
                     }
@@ -1005,7 +1005,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="objects">values to assert that they are all true</param>
         public static void AssertAllBooleanTrue(object[] objects)
         {
-            foreach (object @object in objects)
+            foreach (var @object in objects)
             {
                 ScopeTestHelper.AssertTrue(@object.AsBoolean());
             }
@@ -1020,7 +1020,7 @@ namespace com.espertech.esper.common.client.scopetest
         {
             ScopeTestHelper.AssertEquals(classes.Length, objects.Length);
             var resultClasses = new Type[objects.Length];
-            for (int i = 0; i < objects.Length; i++)
+            for (var i = 0; i < objects.Length; i++)
             {
                 resultClasses[i] = objects[i].GetType();
             }
@@ -1072,7 +1072,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// </returns>
         public static int EnumeratorCount<T>(IEnumerator<T> enumerator)
         {
-            int count = 0;
+            var count = 0;
             while (enumerator.MoveNext())
             {
                 count++;
@@ -1100,7 +1100,7 @@ namespace com.espertech.esper.common.client.scopetest
             else
             {
                 ScopeTestHelper.AssertEquals(expected.Count, received.Length);
-                for (int i = 0; i < expected.Count; i++)
+                for (var i = 0; i < expected.Count; i++)
                 {
                     AssertProps(received[i], expected[i]);
                 }
@@ -1156,25 +1156,25 @@ namespace com.espertech.esper.common.client.scopetest
             object[][] first,
             params object[][][] more)
         {
-            int len = first.Length;
-            for (int i = 0; i < more.Length; i++)
+            var len = first.Length;
+            for (var i = 0; i < more.Length; i++)
             {
-                object[][] next = more[i];
+                var next = more[i];
                 len += next.Length;
             }
 
             var result = new object[len][];
-            int count = 0;
-            for (int i = 0; i < first.Length; i++)
+            var count = 0;
+            for (var i = 0; i < first.Length; i++)
             {
                 result[count] = first[i];
                 count++;
             }
 
-            for (int i = 0; i < more.Length; i++)
+            for (var i = 0; i < more.Length; i++)
             {
-                object[][] next = more[i];
-                for (int j = 0; j < next.Length; j++)
+                var next = more[i];
+                for (var j = 0; j < next.Length; j++)
                 {
                     result[count] = next[j];
                     count++;
@@ -1190,9 +1190,9 @@ namespace com.espertech.esper.common.client.scopetest
         public static object[] ConcatenateArray(params object[][] more)
         {
             var list = new List<object>();
-            for (int i = 0; i < more.Length; i++)
+            for (var i = 0; i < more.Length; i++)
             {
-                for (int j = 0; j < more[i].Length; j++)
+                for (var j = 0; j < more[i].Length; j++)
                 {
                     list.Add(more[i][j]);
                 }
@@ -1239,7 +1239,7 @@ namespace com.espertech.esper.common.client.scopetest
             params string[] values)
         {
             ICollection<string> set = new HashSet<string>(stringSet);
-            foreach (string value in values)
+            foreach (var value in values)
             {
                 ScopeTestHelper.AssertFalse(set.Contains(value));
             }
@@ -1253,7 +1253,7 @@ namespace com.espertech.esper.common.client.scopetest
             params string[] values)
         {
             ICollection<string> set = new HashSet<string>(stringSet);
-            foreach (string value in values)
+            foreach (var value in values)
             {
                 ScopeTestHelper.AssertFalse(set.Contains(value));
             }
@@ -1267,7 +1267,7 @@ namespace com.espertech.esper.common.client.scopetest
             params string[] values)
         {
             ICollection<string> set = new HashSet<string>(stringSet);
-            foreach (string value in values)
+            foreach (var value in values)
             {
                 ScopeTestHelper.AssertTrue(set.Contains(value));
             }
@@ -1281,7 +1281,7 @@ namespace com.espertech.esper.common.client.scopetest
             params string[] values)
         {
             ICollection<string> set = new HashSet<string>(stringSet);
-            foreach (string value in values)
+            foreach (var value in values)
             {
                 ScopeTestHelper.AssertTrue(set.Contains(value));
             }
@@ -1293,7 +1293,7 @@ namespace com.espertech.esper.common.client.scopetest
         public static object[] GetUnderlying(EventBean[] events)
         {
             var arr = new object[events.Length];
-            for (int i = 0; i < events.Length; i++)
+            for (var i = 0; i < events.Length; i++)
             {
                 arr[i] = events[i].Underlying;
             }
@@ -1310,7 +1310,7 @@ namespace com.espertech.esper.common.client.scopetest
             string[] propertyNames,
             object expected)
         {
-            foreach (string field in propertyNames)
+            foreach (var field in propertyNames)
             {
                 ScopeTestHelper.AssertEquals("Field " + field, expected, received.Get(field));
             }
@@ -1330,7 +1330,7 @@ namespace com.espertech.esper.common.client.scopetest
             }
 
             var objects = new object[events.Length];
-            for (int i = 0; i < events.Length; i++)
+            for (var i = 0; i < events.Length; i++)
             {
                 objects[i] = events[i].Get(propertyName);
             }
@@ -1411,7 +1411,7 @@ namespace com.espertech.esper.common.client.scopetest
                 return false;
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
                 if ((actual[i] == null) && (expected[i] == null))
                 {
@@ -1450,7 +1450,7 @@ namespace com.espertech.esper.common.client.scopetest
                 return false;
             }
 
-            for (int i = 0; i < expected.Length; i++)
+            for (var i = 0; i < expected.Length; i++)
             {
                 if (expected[i] != actual[i])
                 {
@@ -1475,7 +1475,7 @@ namespace com.espertech.esper.common.client.scopetest
             object[][] expected)
         {
             ScopeTestHelper.AssertEquals(received.Length, expected.Length);
-            for (int row = 0; row < received.Length; row++)
+            for (var row = 0; row < received.Length; row++)
             {
                 AssertProps(container, received[row], propertyNames, expected[row]);
             }
@@ -1526,7 +1526,7 @@ namespace com.espertech.esper.common.client.scopetest
 
             var size = asArray.Length;
             var val = new object[size];
-            for (int i = 0; i < size; i++)
+            for (var i = 0; i < size; i++)
             {
                 val[i] = asArray.GetValue(i);
             }
@@ -1545,8 +1545,8 @@ namespace com.espertech.esper.common.client.scopetest
         {
             if ((expected != null) && (expected.GetType().IsArray) && (actual != null) && (actual.GetType().IsArray))
             {
-                object[] valueArray = ToObjectArray(expected);
-                object[] eventPropArray = ToObjectArray(actual);
+                var valueArray = ToObjectArray(expected);
+                var eventPropArray = ToObjectArray(actual);
                 AssertEqualsExactOrder(valueArray, eventPropArray);
                 return;
             }
@@ -1561,10 +1561,10 @@ namespace com.espertech.esper.common.client.scopetest
             EventBean received,
             IDictionary<string, object> expected)
         {
-            foreach (KeyValuePair<string, object> entry in expected)
+            foreach (var entry in expected)
             {
-                object valueExpected = entry.Value;
-                object property = received.Get(entry.Key);
+                var valueExpected = entry.Value;
+                var property = received.Get(entry.Key);
 
                 ScopeTestHelper.AssertEquals(valueExpected, property);
             }
@@ -1591,8 +1591,8 @@ namespace com.espertech.esper.common.client.scopetest
             else
             {
                 var expectedArray = expected as Array;
-                int expectedLength = expectedArray.Length;
-                int actualLength = actual.Count;
+                var expectedLength = expectedArray.Length;
+                var actualLength = actual.Count;
                 ScopeTestHelper.AssertEquals("Mismatch in the number of expected and actual length", expectedLength, actualLength);
             }
 
@@ -1618,8 +1618,8 @@ namespace com.espertech.esper.common.client.scopetest
                 ScopeTestHelper.AssertNull("Actual is null but expected is not null", expected);
             }
 
-            int expectedLength = expected.Count;
-            int actualLength = actual.Count;
+            var expectedLength = expected.Count;
+            var actualLength = actual.Count;
             ScopeTestHelper.AssertEquals("Mismatch in the number of expected and actual length", expectedLength, actualLength);
 
             return false;
@@ -1648,8 +1648,8 @@ namespace com.espertech.esper.common.client.scopetest
             }
             else
             {
-                int expectedLength = expectedArray.Length;
-                int actualLength = actualArray.Length;
+                var expectedLength = expectedArray.Length;
+                var actualLength = actualArray.Length;
                 ScopeTestHelper.AssertEquals("Mismatch in the number of expected and actual number of values asserted", expectedLength, actualLength);
             }
 
@@ -1663,8 +1663,8 @@ namespace com.espertech.esper.common.client.scopetest
             string expected,
             string received)
         {
-            string expectedClean = RemoveNewline(expected);
-            string receivedClean = RemoveNewline(received);
+            var expectedClean = RemoveNewline(expected);
+            var receivedClean = RemoveNewline(received);
             if (expectedClean != receivedClean)
             {
                 Log.Error("Expected: " + expectedClean);
@@ -1692,17 +1692,17 @@ namespace com.espertech.esper.common.client.scopetest
 
             ScopeTestHelper.AssertEquals(map.Count, keys.Length);
 
-            for (int i = 0; i < keys.Length; i++)
+            for (var i = 0; i < keys.Length; i++)
             {
                 var value = (ICollection) map.Get(keys[i]);
-                string[] itemsExpected = expectedList[i].Split(',');
+                var itemsExpected = expectedList[i].Split(',');
                 ScopeTestHelper.AssertEquals(itemsExpected.Length, value.Count);
 
-                IEnumerator it = value.GetEnumerator();
-                for (int j = 0; j < itemsExpected.Length; j++)
+                var it = value.GetEnumerator();
+                for (var j = 0; j < itemsExpected.Length; j++)
                 {
                     ScopeTestHelper.AssertTrue(it.MoveNext());
-                    string received = collectionValue.ExtractValue(it.Current);
+                    var received = collectionValue.Invoke(it.Current);
                     ScopeTestHelper.AssertEquals(itemsExpected[j], received);
                 }
             }
@@ -1722,6 +1722,31 @@ namespace com.espertech.esper.common.client.scopetest
             );
         }
 
+        /// <summary>
+        /// Assert that the event properties match the name-value pairs for each event
+        /// </summary>
+        /// <param name="lastData">array of events</param>
+        /// <param name="namesAndValues">array of pairs with the first element the event property
+        /// name and the second element the expected value</param>
+        public static void AssertNameValuePairs(
+            EventBean[] lastData,
+            object[][] namesAndValues)
+        {
+            if (namesAndValues != null) {
+                ScopeTestHelper.AssertEquals(1, lastData.Length);
+
+                var newEvent = lastData[0];
+                for (var i = 0; i < namesAndValues.Length; i++) {
+                    var name = (string) namesAndValues[i][0];
+                    var value = namesAndValues[i][1];
+                    ScopeTestHelper.AssertEquals("newEvent property named " + name, value, newEvent.Get(name));
+                }
+            }
+            else {
+                ScopeTestHelper.AssertNull(lastData);
+            }
+        }
+
         private static string RemoveNewline(string raw)
         {
             raw = raw.Replace("\t", "");
@@ -1731,31 +1756,8 @@ namespace com.espertech.esper.common.client.scopetest
         }
 
         /// <summary>Callback for extracting individual collection items for assertion. </summary>
-        public interface AssertionCollectionValueString
-        {
-            /// <summary>Extract value. </summary>
-            /// <param name="collectionItem">to extract from</param>
-            /// <returns>extracted value</returns>
-            string ExtractValue(object collectionItem);
-        }
-
-        public class ProxyAssertionCollectionValueString : AssertionCollectionValueString
-        {
-            public Func<object, string> ProcExtractValue { get; set; }
-
-            public ProxyAssertionCollectionValueString(Func<object, string> procExtractValue)
-            {
-                ProcExtractValue = procExtractValue;
-            }
-
-            public ProxyAssertionCollectionValueString()
-            {
-            }
-
-            public string ExtractValue(object collectionItem)
-            {
-                return ProcExtractValue.Invoke(collectionItem);
-            }
-        }
+        /// <param name="collectionItem">to extract from</param>
+        /// <returns>extracted value</returns>
+        public delegate string AssertionCollectionValueString(object collectionItem);
     }
 }

@@ -87,7 +87,7 @@ namespace com.espertech.esper.runtime.client
         /// Returns the current subscriber instance that receives statement results.
         /// </summary>
         /// <returns>subscriber object, or null to indicate that no subscriber is attached</returns>
-        object Subscriber { get; }
+        object Subscriber { get; set; }
 
         /// <summary>
         /// Returns the application defined user data object associated with the statement at compile time, or null if none

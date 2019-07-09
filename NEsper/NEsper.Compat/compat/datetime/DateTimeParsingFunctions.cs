@@ -29,6 +29,16 @@ namespace com.espertech.esper.compat.datetime
             return ParseDefaultEx(dateTimeString).DateTime;
         }
 
+        public static DateTimeEx ParseIso8601Ex(string dateTimeString)
+        {
+            var timeZone = dateTimeString.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
+            if (DateTimeOffset.TryParseExact(dateTimeString, "s", null, DateTimeStyles.None, out var dateTime)) {
+                return DateTimeEx.GetInstance(timeZone, dateTime);
+            }
+
+            throw new ArgumentException(nameof(dateTimeString));
+        }
+
         public static DateTimeEx ParseDefaultEx(string dateTimeString)
         {
             DateTimeOffset dateTime;

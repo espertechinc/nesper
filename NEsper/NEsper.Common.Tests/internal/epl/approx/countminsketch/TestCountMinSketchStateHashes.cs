@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             }
 
             Console.Out.WriteLine("Found " + errors + " errors at space " + space + " sent " + points);
-            Assert.IsTrue(eps * points > errors);
+            Assert.That(eps * points, Is.GreaterThan(errors));
         }
     }
 } // end of namespace

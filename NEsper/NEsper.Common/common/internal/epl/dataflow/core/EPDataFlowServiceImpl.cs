@@ -43,17 +43,18 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             }
         }
 
-        public DeploymentIdNamePair[] GetDataFlows()
-        {
-            lock (this) {
-                IList<DeploymentIdNamePair> ids = new List<DeploymentIdNamePair>();
-                foreach (KeyValuePair<string, DataflowDeployment> deployment in deployments) {
-                    foreach (KeyValuePair<string, DataflowDesc> entry in deployment.Value.Dataflows) {
-                        ids.Add(new DeploymentIdNamePair(deployment.Key, entry.Key));
+        public DeploymentIdNamePair[] DataFlows {
+            get {
+                lock (this) {
+                    IList<DeploymentIdNamePair> ids = new List<DeploymentIdNamePair>();
+                    foreach (KeyValuePair<string, DataflowDeployment> deployment in deployments) {
+                        foreach (KeyValuePair<string, DataflowDesc> entry in deployment.Value.Dataflows) {
+                            ids.Add(new DeploymentIdNamePair(deployment.Key, entry.Key));
+                        }
                     }
-                }
 
-                return ids.ToArray();
+                    return ids.ToArray();
+                }
             }
         }
 
@@ -105,11 +106,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             }
         }
 
-        public string[] GetSavedInstances()
-        {
-            lock (this) {
-                var instanceids = instances.Keys;
-                return instanceids.ToArray();
+        public string[] SavedInstances {
+            get {
+                lock (this) {
+                    var instanceids = instances.Keys;
+                    return instanceids.ToArray();
+                }
             }
         }
 
@@ -179,10 +181,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             }
         }
 
-        public string[] GetSavedConfigurations()
-        {
-            lock (this) {
-                return configurationState.SavedConfigNames;
+        public string[] SavedConfigurations {
+            get {
+                lock (this) {
+                    return configurationState.SavedConfigNames;
+                }
             }
         }
 

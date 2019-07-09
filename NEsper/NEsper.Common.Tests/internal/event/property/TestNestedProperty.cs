@@ -7,13 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.@event.property
@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         public void SetUp()
         {
             nested = new NestedProperty[2];
-            nested[0] = MakeProperty(new string[] { "nested", "nestedValue" });
-            nested[1] = MakeProperty(new string[] { "nested", "nestedNested", "nestedNestedValue" });
+            nested[0] = MakeProperty(new string[] { "Nested", "NestedValue" });
+            nested[1] = MakeProperty(new string[] { "Nested", "NestedNested", "NestedNestedValue" });
 
             theEvent = SupportEventBeanFactory.CreateObject(
                 supportEventTypeFactory, SupportBeanComplexProps.MakeDefaultBean());
@@ -38,12 +38,13 @@ namespace com.espertech.esper.common.@internal.@event.property
         [Test]
         public void TestGetGetter()
         {
-            EventPropertyGetter getter = nested[0].GetGetter((BeanEventType) theEvent.EventType, EventBeanTypedEventFactoryCompileTime.INSTANCE,
+            EventPropertyGetter getter = nested[0].GetGetter((BeanEventType) theEvent.EventType,
+                EventBeanTypedEventFactoryCompileTime.INSTANCE,
                 supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
-            Assert.AreEqual("nestedValue", getter.Get(theEvent));
+            Assert.AreEqual("NestedValue", getter.Get(theEvent));
 
             getter = nested[1].GetGetter((BeanEventType) theEvent.EventType, EventBeanTypedEventFactoryCompileTime.INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
-            Assert.AreEqual("nestedNestedValue", getter.Get(theEvent));
+            Assert.AreEqual("NestedNestedValue", getter.Get(theEvent));
         }
 
         [Test]

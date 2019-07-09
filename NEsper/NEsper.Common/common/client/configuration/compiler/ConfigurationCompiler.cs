@@ -216,6 +216,17 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED, filterOptimizable);
         }
 
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            Type clazz,
+            string methodName,
+            ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable)
+        {
+            AddPlugInSingleRowFunction(
+                functionName, clazz.FullName, methodName,
+                ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED, filterOptimizable);
+        }
+
         /// <summary>
         ///     Add single-row function with configurations.
         /// </summary>
@@ -232,6 +243,16 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable)
         {
             AddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, false);
+        }
+
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            Type clazz,
+            string methodName,
+            ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum valueCache,
+            ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable)
+        {
+            AddPlugInSingleRowFunction(functionName, clazz.FullName, methodName, valueCache, filterOptimizable, false);
         }
 
         /// <summary>
@@ -259,6 +280,22 @@ namespace com.espertech.esper.common.client.configuration.compiler
             entry.FilterOptimizable = filterOptimizable;
             entry.RethrowExceptions = rethrowExceptions;
             AddPlugInSingleRowFunction(entry);
+        }
+
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            Type clazz,
+            string methodName,
+            ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum valueCache,
+            ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable,
+            bool rethrowExceptions)
+        {
+            AddPlugInSingleRowFunction(
+                functionName,
+                clazz.FullName,
+                methodName,
+                valueCache,
+                filterOptimizable);
         }
 
         /// <summary>

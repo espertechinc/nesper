@@ -6,29 +6,22 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.runtime.client.option
 {
     /// <summary>
-    /// Implement this interface to provide values for substitution parameters.
+    ///     Implement this interface to provide values for substitution parameters.
     /// </summary>
+
+    public delegate void StatementSubstitutionParameterOption(StatementSubstitutionParameterContext value);
+
+#if DEPRECATED_INTERFACE
     public interface StatementSubstitutionParameterOption
     {
         /// <summary>
-        /// Set statement substitution parameters.
+        ///     Set statement substitution parameters.
         /// </summary>
         /// <param name="value">provides the setObject method and provides information about the statement</param>
         void SetStatementParameters(StatementSubstitutionParameterContext value);
     }
-
-    public class ProxyStatementSubstitutionParameterOption : StatementSubstitutionParameterOption
-    {
-        public Action<StatementSubstitutionParameterContext> ProcSetStatementParameters { get; set; }
-        public void SetStatementParameters(StatementSubstitutionParameterContext value)
-        {
-            ProcSetStatementParameters?.Invoke(value);
-        }
-    }
-
+#endif
 } // end of namespace

@@ -13,6 +13,9 @@ namespace com.espertech.esper.compiler.client.option
     /// <summary>
     ///     Implement this interface to provide or override the access modifier for a script.
     /// </summary>
+    public delegate NameAccessModifier AccessModifierScriptOption(AccessModifierScriptContext env);
+
+#if DEPRECATED_INTERFACE
     public interface AccessModifierScriptOption
     {
         /// <summary>
@@ -22,4 +25,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>modifier</returns>
         NameAccessModifier GetValue(AccessModifierScriptContext env);
     }
+#endif
 } // end of namespace

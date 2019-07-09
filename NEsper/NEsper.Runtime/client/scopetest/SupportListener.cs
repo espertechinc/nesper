@@ -34,8 +34,8 @@ namespace com.espertech.esper.runtime.client.scopetest
         /// <summary>
         /// Returns true if the listener was invoked at least once.
         /// </summary>
-        /// <returns>invoked flag</returns>
-        bool IsInvoked();
+        /// <value>invoked flag</value>
+        bool IsInvoked { get; }
 
         /// <summary>
         /// Asserts that exactly one insert stream event was received and no remove stream events, resets the listener clearing all state and returns the received event.
@@ -53,19 +53,19 @@ namespace com.espertech.esper.runtime.client.scopetest
         /// Returns true if the listener was invoked at least once and clears the invocation flag.
         /// </summary>
         /// <returns>invoked flag</returns>
-        bool IsInvokedAndReset { get; }
+        bool IsInvokedAndReset();
 
         /// <summary>
         /// Returns the last array of events (insert stream) that were received and resets the listener.
         /// </summary>
         /// <returns>insert stream events or null if either a null value was received or when no events have been received since the last reset</returns>
-        EventBean[] AndResetLastNewData { get; }
+        EventBean[] GetAndResetLastNewData();
 
         /// <summary>
         /// Returns the last array of events (insert stream) that were received and resets the listener.
         /// </summary>
         /// <returns>insert stream events or null if either a null value was received or when no events have been received since the last reset</returns>
-        EventBean[] AndResetLastOldData { get; }
+        EventBean[] GetAndResetLastOldData();
 
         /// <summary>
         /// Get a list of all insert-stream event arrays received.
@@ -88,7 +88,7 @@ namespace com.espertech.esper.runtime.client.scopetest
         /// Returns true if the listener was invoked at least once and clears the invocation flag.
         /// </summary>
         /// <returns>invoked flag</returns>
-        bool AndClearIsInvoked { get; }
+        bool GetAndClearIsInvoked();
 
         /// <summary>
         /// Returns the last array of remove-stream events that were received.
@@ -99,7 +99,7 @@ namespace com.espertech.esper.runtime.client.scopetest
         /// <summary>
         /// Returns an event array that represents all insert-stream events received so far.
         /// </summary>
-        /// <returns>event array</returns>
+        /// <value>event array</value>
         EventBean[] NewDataListFlattened { get; }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace com.espertech.esper.runtime.client.scopetest
         /// Returns a pair of insert and remove stream event arrays considering the all invocations, and resets the listener.
         /// </summary>
         /// <returns>pair of event arrays, the first in the pair is the insert stream data, the second in the pair is the remove stream data</returns>
-        UniformPair<EventBean[]> AndResetDataListsFlattened { get; }
+        UniformPair<EventBean[]> GetAndResetDataListsFlattened();
 
         /// <summary>
         /// Asserts name-value pairs of insert and remove stream events
@@ -143,7 +143,7 @@ namespace com.espertech.esper.runtime.client.scopetest
         /// Returns a pair of last-invocation insert and remove stream events and resets
         /// </summary>
         /// <returns>pair of events</returns>
-        UniformPair<EventBean[]> AndResetIRPair { get; }
+        UniformPair<EventBean[]> GetAndResetIRPair();
 
         /// <summary>
         /// Returns a pair of insert and remove stream event arrays considering the all invocations.

@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.supportunit.util
 
         public ExprInNode MakeInSetNode(bool isNotIn)
         {
-            // Build :      s0.intPrimitive in (1, 2)
+            // Build :      s0.IntPrimitive in (1, 2)
             ExprInNode inNode = new ExprInNodeImpl(isNotIn);
             inNode.AddChildNode(MakeIdentNode("IntPrimitive", "s0"));
             inNode.AddChildNode(new SupportExprNode(1));
@@ -121,8 +121,8 @@ namespace com.espertech.esper.common.@internal.supportunit.util
         public ExprCaseNode MakeCaseSyntax1Node()
         {
             // Build (case 1 expression):
-            // case when s0.intPrimitive = 1 then "a"
-            //      when s0.intPrimitive = 2 then "b"
+            // case when s0.IntPrimitive = 1 then "a"
+            //      when s0.IntPrimitive = 2 then "b"
             //      else "c"
             // end
             var caseNode = new ExprCaseNode(false);
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.supportunit.util
         public ExprCaseNode MakeCaseSyntax2Node()
         {
             // Build (case 2 expression):
-            // case s0.intPrimitive
+            // case s0.IntPrimitive
             //   when 1 then "a"
             //   when 2 then "b"
             //   else "c"

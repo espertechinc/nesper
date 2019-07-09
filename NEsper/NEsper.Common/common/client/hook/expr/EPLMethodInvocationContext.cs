@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.client.hook.expr
         /// </summary>
         /// <param name="statementName">the statement name</param>
         /// <param name="contextPartitionId">context partition id if using contexts, or -1 if not using context partitions</param>
-        /// <param name="engineURI">the engine URI</param>
+        /// <param name="runtimeUri">the engine URI</param>
         /// <param name="functionName">
         ///     the name of the plug-in single row function, or the method name if not a plug-in single row
         ///     function
@@ -30,14 +30,14 @@ namespace com.espertech.esper.common.client.hook.expr
         public EPLMethodInvocationContext(
             string statementName,
             int contextPartitionId,
-            string engineURI,
+            string runtimeUri,
             string functionName,
             Object statementUserObject,
             EventBeanService eventBeanService)
         {
             StatementName = statementName;
             ContextPartitionId = contextPartitionId;
-            EngineURI = engineURI;
+            RuntimeURI = runtimeUri;
             FunctionName = functionName;
             StatementUserObject = statementUserObject;
             EventBeanService = eventBeanService;
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.client.hook.expr
         ///     Returns the engine URI
         /// </summary>
         /// <value>engine URI</value>
-        public string EngineURI { get; private set; }
+        public string RuntimeURI { get; private set; }
 
         /// <summary>
         ///     Returns the function name that appears in the EPL statement.

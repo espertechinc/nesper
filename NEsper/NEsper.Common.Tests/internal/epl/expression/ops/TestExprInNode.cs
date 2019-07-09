@@ -89,8 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestToExpressionString()
         {
-            Assert.AreEqual("s0.intPrimitive in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNormal));
-            Assert.AreEqual("s0.intPrimitive not in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNotIn));
+            Assert.AreEqual("s0.IntPrimitive in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNormal));
+            Assert.AreEqual("s0.IntPrimitive not in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNotIn));
         }
 
         [Test]

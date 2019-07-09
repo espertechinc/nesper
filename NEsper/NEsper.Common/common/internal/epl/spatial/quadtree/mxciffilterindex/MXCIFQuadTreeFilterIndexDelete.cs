@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return branch;
             }
 
-            var collection = new LinkedList<XYWHRectangleWValue<TL>>();
+            var collection = new List<XYWHRectangleWValue<TL>>();
             var count = MergeChildNodes(collection, branch.Data);
             count += MergeChildNodes(collection, nwLeaf.Data);
             count += MergeChildNodes(collection, neLeaf.Data);

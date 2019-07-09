@@ -8,13 +8,15 @@
 
 using System;
 using System.Linq;
+using System.Numerics;
+
+using com.espertech.esper.common.client.scopetest;
 
 namespace com.espertech.esper.common.@internal.support
 {
     [Serializable]
     public class SupportBean
     {
-        private decimal? _decimalBoxed;
         private bool? _boolBoxed;
         private bool _boolPrimitive;
         private byte? _byteBoxed;
@@ -26,6 +28,11 @@ namespace com.espertech.esper.common.@internal.support
         private SupportEnum _enumValue;
         private float? _floatBoxed;
         private float _floatPrimitive;
+
+        private decimal _decimalPrimitive;
+        private decimal? _decimalBoxed;
+
+        private BigInteger _bigInteger;
 
         private int? _intBoxed;
         private int _intPrimitive;
@@ -48,102 +55,110 @@ namespace com.espertech.esper.common.@internal.support
         }
 
         public string TheString {
-            get { return _theString; }
-            set { _theString = value; }
+            get => _theString;
+            set => _theString = value;
         }
 
         public bool BoolPrimitive {
-            get { return _boolPrimitive; }
-            set { _boolPrimitive = value; }
+            get => _boolPrimitive;
+            set => _boolPrimitive = value;
         }
 
         public int IntPrimitive {
-            get { return _intPrimitive; }
-            set { _intPrimitive = value; }
+            get => _intPrimitive;
+            set => _intPrimitive = value;
         }
 
         public long LongPrimitive {
-            get { return _longPrimitive; }
-            set { _longPrimitive = value; }
+            get => _longPrimitive;
+            set => _longPrimitive = value;
         }
 
         public char CharPrimitive {
-            get { return _charPrimitive; }
-            set { _charPrimitive = value; }
+            get => _charPrimitive;
+            set => _charPrimitive = value;
         }
 
         public short ShortPrimitive {
-            get { return _shortPrimitive; }
-            set { _shortPrimitive = value; }
+            get => _shortPrimitive;
+            set => _shortPrimitive = value;
         }
 
         public byte BytePrimitive {
-            get { return _bytePrimitive; }
-            set { _bytePrimitive = value; }
+            get => _bytePrimitive;
+            set => _bytePrimitive = value;
         }
 
         public float FloatPrimitive {
-            get { return _floatPrimitive; }
-            set { _floatPrimitive = value; }
+            get => _floatPrimitive;
+            set => _floatPrimitive = value;
         }
 
         public double DoublePrimitive {
-            get { return _doublePrimitive; }
-            set { _doublePrimitive = value; }
+            get => _doublePrimitive;
+            set => _doublePrimitive = value;
         }
 
         public bool? BoolBoxed {
-            get { return _boolBoxed; }
-            set { _boolBoxed = value; }
+            get => _boolBoxed;
+            set => _boolBoxed = value;
         }
 
         public int? IntBoxed {
-            get { return _intBoxed; }
-            set { _intBoxed = value; }
+            get => _intBoxed;
+            set => _intBoxed = value;
         }
 
         public long? LongBoxed {
-            get { return _longBoxed; }
-            set { _longBoxed = value; }
+            get => _longBoxed;
+            set => _longBoxed = value;
         }
 
         public char? CharBoxed {
-            get { return _charBoxed; }
-            set { _charBoxed = value; }
+            get => _charBoxed;
+            set => _charBoxed = value;
         }
 
         public short? ShortBoxed {
-            get { return _shortBoxed; }
-            set { _shortBoxed = value; }
+            get => _shortBoxed;
+            set => _shortBoxed = value;
         }
 
         public byte? ByteBoxed {
-            get { return _byteBoxed; }
-            set { _byteBoxed = value; }
+            get => _byteBoxed;
+            set => _byteBoxed = value;
         }
 
         public float? FloatBoxed {
-            get { return _floatBoxed; }
-            set { _floatBoxed = value; }
+            get => _floatBoxed;
+            set => _floatBoxed = value;
         }
 
         public double? DoubleBoxed {
-            get { return _doubleBoxed; }
-            set { _doubleBoxed = value; }
+            get => _doubleBoxed;
+            set => _doubleBoxed = value;
         }
 
         public SupportEnum EnumValue {
-            get { return _enumValue; }
-            set { _enumValue = value; }
+            get => _enumValue;
+            set => _enumValue = value;
         }
 
-        public SupportBean This {
-            get { return this; }
-        }
+        public SupportBean This => this;
 
         public decimal? DecimalBoxed {
-            get { return _decimalBoxed; }
-            set { _decimalBoxed = value; }
+            get => _decimalBoxed;
+            set => _decimalBoxed = value;
+        }
+
+        public decimal DecimalPrimitive {
+            get => _decimalPrimitive;
+            set => _decimalPrimitive = value;
+        }
+
+        public BigInteger BigInteger {
+            get => _bigInteger;
+            set => _bigInteger = value;
         }
 
         public int? GetIntBoxed()
@@ -207,7 +222,9 @@ namespace com.espertech.esper.common.@internal.support
         {
             return string.Format(
                 "{0}({1}, {2})",
-                GetType().Name, _theString, _intPrimitive);
+                GetType().Name,
+                _theString,
+                _intPrimitive);
         }
 
         public static SupportBean[] GetBeansPerIndex(
@@ -236,6 +253,172 @@ namespace com.espertech.esper.common.@internal.support
             return arr
                 .Select(v => new object[] {v.TheString, v.IntPrimitive})
                 .ToArray();
+        }
+
+        public static SupportBean MakeBean(string @string, int intPrimitive, long longPrimitive)
+        {
+            return MakeBean(@string, intPrimitive, longPrimitive, 0);
+        }
+
+        public static SupportBean MakeBean(string @string, int intPrimitive, long longPrimitive, double doublePrimitive)
+        {
+            return MakeBean(@string, intPrimitive, longPrimitive, doublePrimitive, false);
+        }
+
+        public static SupportBean MakeBean(
+            string @string,
+            int intPrimitive,
+            long longPrimitive,
+            double doublePrimitive,
+            bool boolPrimitive)
+        {
+            SupportBean @event = new SupportBean(@string, intPrimitive);
+            @event.LongPrimitive = longPrimitive;
+            @event.DoublePrimitive = doublePrimitive;
+            @event.BoolPrimitive = boolPrimitive;
+            return @event;
+        }
+
+        public static SupportBean MakeBean(string @string)
+        {
+            return new SupportBean(@string, -1);
+        }
+
+        public static SupportBean MakeBean(string @string, int intPrimitive)
+        {
+            return new SupportBean(@string, intPrimitive);
+        }
+
+        public static SupportBean MakeBeanWBoxed(string @string, int intPrimitive, double? doubleBoxed, long? longBoxed)
+        {
+            SupportBean @event = new SupportBean(@string, intPrimitive);
+            @event.DoubleBoxed = doubleBoxed;
+            @event.LongBoxed = longBoxed;
+            return @event;
+        }
+
+        public static void Compare(
+            object[] others,
+            string[] split,
+            object[][] objects)
+        {
+            ScopeTestHelper.AssertEquals(others.Length, objects.Length);
+            for (int i = 0; i < others.Length; i++) {
+                Compare((SupportBean) others[i], split, objects[i]);
+            }
+        }
+
+        public static void Compare(
+            object other,
+            string theString,
+            int intPrimitive)
+        {
+            SupportBean that = (SupportBean) other;
+            ScopeTestHelper.AssertEquals(that.TheString, theString);
+            ScopeTestHelper.AssertEquals(that.IntPrimitive, intPrimitive);
+        }
+
+        public static void Compare(
+            SupportBean received,
+            string[] split,
+            object[] objects)
+        {
+            ScopeTestHelper.AssertEquals(split.Length, objects.Length);
+            for (int i = 0; i < split.Length; i++) {
+                Compare(received, split[i], objects[i]);
+            }
+        }
+
+        public static void Compare(
+            SupportBean received,
+            string property,
+            object expected)
+        {
+            switch (property) {
+                case "intPrimitive":
+                    ScopeTestHelper.AssertEquals(expected, received.IntPrimitive);
+                    break;
+
+                case "intBoxed":
+                    ScopeTestHelper.AssertEquals(expected, received.IntBoxed);
+                    break;
+
+                case "boolPrimitive":
+                    ScopeTestHelper.AssertEquals(expected, received.BoolPrimitive);
+                    break;
+
+                case "boolBoxed":
+                    ScopeTestHelper.AssertEquals(expected, received.BoolBoxed);
+                    break;
+
+                case "shortPrimitive":
+                    ScopeTestHelper.AssertEquals(expected, received.ShortPrimitive);
+                    break;
+
+                case "shortBoxed":
+                    ScopeTestHelper.AssertEquals(expected, received.ShortBoxed);
+                    break;
+
+                case "longPrimitive":
+                    ScopeTestHelper.AssertEquals(expected, received.LongPrimitive);
+                    break;
+
+                case "longBoxed":
+                    ScopeTestHelper.AssertEquals(expected, received.LongBoxed);
+                    break;
+
+                case "charPrimitive":
+                    ScopeTestHelper.AssertEquals(expected, received.CharPrimitive);
+                    break;
+
+                case "charBoxed":
+                    ScopeTestHelper.AssertEquals(expected, received.CharBoxed);
+                    break;
+
+                case "bytePrimitive":
+                    ScopeTestHelper.AssertEquals(expected, received.BytePrimitive);
+                    break;
+
+                case "byteBoxed":
+                    ScopeTestHelper.AssertEquals(expected, received.ByteBoxed);
+                    break;
+
+                case "floatPrimitive":
+                    ScopeTestHelper.AssertEquals(expected, received.FloatPrimitive);
+                    break;
+
+                case "floatBoxed":
+                    ScopeTestHelper.AssertEquals(expected, received.FloatBoxed);
+                    break;
+
+                case "doublePrimitive":
+                    ScopeTestHelper.AssertEquals(expected, received.DoublePrimitive);
+                    break;
+
+                case "doubleBoxed":
+                    ScopeTestHelper.AssertEquals(expected, received.DoubleBoxed);
+                    break;
+
+                case "decimalPrimitive":
+                    ScopeTestHelper.AssertEquals(expected, received.DecimalPrimitive);
+                    break;
+
+                case "decimalBoxed":
+                    ScopeTestHelper.AssertEquals(expected, received.DecimalBoxed);
+                    break;
+
+                case "enumValue":
+                    ScopeTestHelper.AssertEquals(expected, received.EnumValue);
+                    break;
+
+                case "theString":
+                    ScopeTestHelper.AssertEquals(expected, received.TheString);
+                    break;
+
+                default:
+                    ScopeTestHelper.Fail("Assertion not found for '" + property + "'");
+                    break;
+            }
         }
     }
 }

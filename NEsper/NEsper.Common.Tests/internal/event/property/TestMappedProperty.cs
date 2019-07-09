@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         public void SetUp()
         {
             mapped = new MappedProperty[2];
-            mapped[0] = new MappedProperty("mapped", "keyOne");
-            mapped[1] = new MappedProperty("mapped", "keyTwo");
+            mapped[0] = new MappedProperty("Mapped", "keyOne");
+            mapped[1] = new MappedProperty("Mapped", "keyTwo");
 
             theEvent = SupportEventBeanFactory.CreateObject(supportEventTypeFactory,
                 SupportBeanComplexProps.MakeDefaultBean());

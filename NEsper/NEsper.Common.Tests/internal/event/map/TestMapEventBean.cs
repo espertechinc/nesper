@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.AreEqual("test", eventBean.Get("aString"));
             Assert.AreEqual(10, eventBean.Get("anInt"));
 
-            Assert.AreEqual("nestedValue", eventBean.Get("myComplexBean.nested.nestedValue"));
+            Assert.AreEqual("NestedValue", eventBean.Get("myComplexBean.Nested.NestedValue"));
 
             // test wrong property name
             try

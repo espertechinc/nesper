@@ -235,6 +235,16 @@ namespace com.espertech.esper.compat.concurrency
             }
 
             /// <summary>
+            /// Gets the value.  If a value is not available this method throw a InvalidOperationException.
+            /// </summary>
+            /// <returns></returns>
+            /// <exception cref="InvalidOperationException"></exception>
+            public object Get()
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <summary>
             /// Gets the value.
             /// </summary>
             /// <param name="units">The units.</param>

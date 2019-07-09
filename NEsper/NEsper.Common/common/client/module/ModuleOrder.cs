@@ -8,36 +8,28 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.module
 {
     /// <summary>
-    /// Holds an ordered list of modules considering each module's uses-dependencies on other modules.
+    ///     Holds an ordered list of modules considering each module's uses-dependencies on other modules.
     /// </summary>
     [Serializable]
     public class ModuleOrder
     {
-        private IList<Module> ordered;
-
         /// <summary>
-        /// Cotr.
+        ///     Cotr.
         /// </summary>
         /// <param name="ordered">list of modules</param>
         public ModuleOrder(IList<Module> ordered)
         {
-            this.ordered = ordered;
+            Ordered = ordered;
         }
 
         /// <summary>
-        /// Returns the list of modules.
+        ///     Returns the list of modules.
         /// </summary>
-        /// <returns>modules</returns>
-        public IList<Module> GetOrdered()
-        {
-            return ordered;
-        }
+        /// <value>modules</value>
+        public IList<Module> Ordered { get; }
     }
 } // end of namespace

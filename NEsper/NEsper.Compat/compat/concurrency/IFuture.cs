@@ -19,6 +19,12 @@ namespace com.espertech.esper.compat.concurrency
         bool HasValue { get; }
 
         /// <summary>
+        /// Gets the value.  If a value is not available this method throw a InvalidOperationException.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        T Get();
+
+        /// <summary>
         /// Gets the value. If a value is not available before the timeout expires,
         /// a TimeoutException will be thrown.
         /// </summary>

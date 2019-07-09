@@ -72,10 +72,10 @@ namespace com.espertech.esper.runtime.client
         ///         For patterns, if no pattern sub-expression is active for such event, the event is also unmatched.
         ///     </para>
         /// </summary>
-        /// <param name="listener">
-        ///     is the listener to receive notification of unmatched events, or null to unregister a previously registered listener
-        /// </param>
-        void SetUnmatchedListener(UnmatchedListener listener);
+        /// <value>
+        ///   is the listener to receive notification of unmatched events, or null to unregister a previously registered listener
+        /// </value>
+        UnmatchedListener UnmatchedListener { get; set; }
 
         /// <summary>
         ///     Number of events evaluated over the lifetime of the event stream processing runtime,

@@ -13,6 +13,11 @@ namespace com.espertech.esper.compiler.client.option
     /// <summary>
     ///     Implement this interface to provide or override the access modifier a context.
     /// </summary>
+
+    public delegate NameAccessModifier AccessModifierContextOption(
+        AccessModifierContextContext env);
+
+#if DEPRECATED_INTERFACE
     public interface AccessModifierContextOption
     {
         /// <summary>
@@ -22,4 +27,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>modifier</returns>
         NameAccessModifier GetValue(AccessModifierContextContext env);
     }
+#endif
 } // end of namespace

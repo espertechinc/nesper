@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.util
         public void TestResolveMethodStaticOnly()
         {
             Type declClass = typeof(Math);
-            string methodName = "max";
+            string methodName = "Max";
             Type[] args = new Type[] { typeof(int), typeof(int) };
             var expected = typeof(Math).GetMethod(methodName, args);
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null));
@@ -56,13 +56,13 @@ namespace com.espertech.esper.common.@internal.util
         {
             bool[] allowEventBeanType = new bool[10];
             Type declClass = typeof(Math);
-            string methodName = "max";
+            string methodName = "Max";
             Type[] args = new Type[] { typeof(int), typeof(int) };
             var expected = typeof(Math).GetMethod(methodName, args);
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, true, null, null));
 
             declClass = typeof(string);
-            methodName = "trim";
+            methodName = "Trim";
             args = new Type[0];
             expected = typeof(string).GetMethod(methodName, args);
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, true, null, null));

@@ -29,9 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public void SetUp()
         {
             identNodes = new ExprIdentNode[4];
-            identNodes[0] = new ExprIdentNodeImpl("mapped('a')");
-            identNodes[1] = new ExprIdentNodeImpl("nestedValue", "nested");
-            identNodes[2] = new ExprIdentNodeImpl("indexed[1]", "s2");
+            identNodes[0] = new ExprIdentNodeImpl("Mapped('a')");
+            identNodes[1] = new ExprIdentNodeImpl("NestedValue", "Nested");
+            identNodes[2] = new ExprIdentNodeImpl("Indexed[1]", "s2");
             identNodes[3] = new ExprIdentNodeImpl("IntPrimitive", "s0");
 
             streamTypeService = new SupportStreamTypeSvc3Stream(supportEventTypeFactory);
@@ -87,17 +87,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             identNodes[0].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             Assert.AreEqual(2, identNodes[0].StreamId);
             Assert.AreEqual(typeof(string), identNodes[0].Forge.EvaluationType);
-            Assert.AreEqual("mapped('a')", identNodes[0].ResolvedPropertyName);
+            Assert.AreEqual("Mapped('a')", identNodes[0].ResolvedPropertyName);
 
             identNodes[1].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             Assert.AreEqual(2, identNodes[1].StreamId);
             Assert.AreEqual(typeof(string), identNodes[1].Forge.EvaluationType);
-            Assert.AreEqual("nested.nestedValue", identNodes[1].ResolvedPropertyName);
+            Assert.AreEqual("Nested.NestedValue", identNodes[1].ResolvedPropertyName);
 
             identNodes[2].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             Assert.AreEqual(2, identNodes[2].StreamId);
             Assert.AreEqual(typeof(int?), identNodes[2].Forge.EvaluationType);
-            Assert.AreEqual("indexed[1]", identNodes[2].ResolvedPropertyName);
+            Assert.AreEqual("Indexed[1]", identNodes[2].ResolvedPropertyName);
 
             identNodes[3].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             Assert.AreEqual(0, identNodes[3].StreamId);
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             TryInvalidValidate(new ExprIdentNodeImpl(""));
             TryInvalidValidate(new ExprIdentNodeImpl("dummy"));
-            TryInvalidValidate(new ExprIdentNodeImpl("nested", "s0"));
+            TryInvalidValidate(new ExprIdentNodeImpl("Nested", "s0"));
             TryInvalidValidate(new ExprIdentNodeImpl("dummy", "s2"));
             TryInvalidValidate(new ExprIdentNodeImpl("IntPrimitive", "s2"));
             TryInvalidValidate(new ExprIdentNodeImpl("IntPrimitive", "s3"));
@@ -157,10 +157,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             {
                 identNodes[i].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             }
-            Assert.AreEqual("mapped('a')", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[0]));
-            Assert.AreEqual("nested.nestedValue", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[1]));
-            Assert.AreEqual("s2.indexed[1]", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[2]));
-            Assert.AreEqual("s0.intPrimitive", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[3]));
+            Assert.AreEqual("Mapped('a')", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[0]));
+            Assert.AreEqual("Nested.NestedValue", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[1]));
+            Assert.AreEqual("s2.Indexed[1]", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[2]));
+            Assert.AreEqual("s0.IntPrimitive", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[3]));
         }
 
         [Test]

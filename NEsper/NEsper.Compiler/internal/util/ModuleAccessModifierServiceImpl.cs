@@ -33,49 +33,49 @@ namespace com.espertech.esper.compiler.@internal.util
 
 	    public NameAccessModifier GetAccessModifierEventType(StatementRawInfo raw, string eventTypeName) {
 	        return GetModifier(raw.Annotations,
-	            opts => opts.AccessModifierEventType?.GetValue(new AccessModifierEventTypeContext(raw, eventTypeName)),
+	            opts => opts.AccessModifierEventType?.Invoke(new AccessModifierEventTypeContext(raw, eventTypeName)),
                 conf => conf.AccessModifierEventType);
 	    }
 
 	    public NameAccessModifier GetAccessModifierVariable(StatementBaseInfo @base, string variableName) {
 	        return GetModifier(@base.StatementRawInfo.Annotations,
-	            opts => opts.AccessModifierVariable?.GetValue(new AccessModifierVariableContext(@base, variableName)),
+	            opts => opts.AccessModifierVariable?.Invoke(new AccessModifierVariableContext(@base, variableName)),
                 conf => conf.AccessModifierVariable);
 	    }
 
 	    public NameAccessModifier GetAccessModifierContext(StatementBaseInfo @base, string contextName) {
 	        return GetModifier(@base.StatementRawInfo.Annotations,
-	            opts => opts.AccessModifierContext?.GetValue(new AccessModifierContextContext(@base, contextName)),
+	            opts => opts.AccessModifierContext?.Invoke(new AccessModifierContextContext(@base, contextName)),
                 conf => conf.AccessModifierContext);
 	    }
 
 	    public NameAccessModifier GetAccessModifierExpression(StatementBaseInfo @base, string expressionName) {
 	        return GetModifier(@base.StatementRawInfo.Annotations,
-	            opts => opts.AccessModifierExpression?.GetValue(new AccessModifierExpressionContext(@base, expressionName)),
+	            opts => opts.AccessModifierExpression?.Invoke(new AccessModifierExpressionContext(@base, expressionName)),
                 conf => conf.AccessModifierExpression);
 	    }
 
 	    public NameAccessModifier GetAccessModifierTable(StatementBaseInfo @base, string tableName) {
 	        return GetModifier(@base.StatementRawInfo.Annotations,
-	            opts => opts.AccessModifierTable?.GetValue(new AccessModifierTableContext(@base, tableName)),
+	            opts => opts.AccessModifierTable?.Invoke(new AccessModifierTableContext(@base, tableName)),
                 conf => conf.AccessModifierTable);
 	    }
 
 	    public NameAccessModifier GetAccessModifierNamedWindow(StatementBaseInfo @base, string namedWindowName) {
 	        return GetModifier(@base.StatementRawInfo.Annotations,
-	            opts => opts.AccessModifierNamedWindow?.GetValue(new AccessModifierNamedWindowContext(@base, namedWindowName)),
+	            opts => opts.AccessModifierNamedWindow?.Invoke(new AccessModifierNamedWindowContext(@base, namedWindowName)),
                 conf => conf.AccessModifierNamedWindow);
 	    }
 
 	    public NameAccessModifier GetAccessModifierScript(StatementBaseInfo @base, string scriptName, int numParameters) {
 	        return GetModifier(@base.StatementRawInfo.Annotations,
-	            opts => opts.AccessModifierScript?.GetValue(new AccessModifierScriptContext(@base, scriptName, numParameters)),
+	            opts => opts.AccessModifierScript?.Invoke(new AccessModifierScriptContext(@base, scriptName, numParameters)),
 	            conf => conf.AccessModifierScript);
 	    }
 
 	    public EventTypeBusModifier GetBusModifierEventType(StatementRawInfo raw, string eventTypeName) {
 	        if (options.BusModifierEventType != null) {
-	            var result = options.BusModifierEventType.GetValue(new BusModifierEventTypeContext(raw, eventTypeName));
+	            var result = options.BusModifierEventType.Invoke(new BusModifierEventTypeContext(raw, eventTypeName));
 	            if (result != null) {
 	                return result.Value;
 	            }

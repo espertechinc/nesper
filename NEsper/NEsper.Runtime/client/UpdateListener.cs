@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.runtime.client
@@ -51,5 +53,30 @@ namespace com.espertech.esper.runtime.client
             EPStatement statement,
             EPRuntime runtime);
 #endif
+    }
+
+    public class ProxyUpdateListener : UpdateListener
+    {
+        public Action<object, UpdateEventArgs> ProcUpdate { get; set; }
+
+        public void Update(
+            object sender,
+            UpdateEventArgs eventArgs) => ProcUpdate?.Invoke(sender, eventArgs);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProxyUpdateListener"/> class.
+        /// </summary>
+        /// <param name="procUpdate">The proc update.</param>
+        public ProxyUpdateListener(Action<object, UpdateEventArgs> procUpdate)
+        {
+            ProcUpdate = procUpdate;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProxyUpdateListener"/> class.
+        /// </summary>
+        public ProxyUpdateListener()
+        {
+        }
     }
 }

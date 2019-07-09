@@ -9,8 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.client;
-
 namespace com.espertech.esperio
 {
     /// <summary>

@@ -50,6 +50,13 @@ namespace com.espertech.esper.common.client.module
             ModuleText = moduleText;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Module"/> class.
+        /// </summary>
+        public Module()
+        {
+        }
+
         /// <summary>Returns the name of the archive this module originated from, or null if not applicable. </summary>
         /// <value>archive name</value>
         public string ArchiveName { get; set; }

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.runtime.client
 {
     /// <summary>
@@ -24,5 +26,14 @@ namespace com.espertech.esper.runtime.client
         /// </summary>
         /// <param name="event">undeployment information</param>
         void OnUndeployment(DeploymentStateEventUndeployed @event);
+    }
+
+    public class ProxyDeploymentStateListener : DeploymentStateListener
+    {
+        public Action<DeploymentStateEventDeployed> ProcOnDeployment { get; set; }
+        public void OnDeployment(DeploymentStateEventDeployed @event) => ProcOnDeployment?.Invoke(@event);
+
+        public Action<DeploymentStateEventUndeployed> ProcOnUndeployment { get; set; }
+        public void OnUndeployment(DeploymentStateEventUndeployed @event) => ProcOnUndeployment?.Invoke(@event);
     }
 } // end of namespace

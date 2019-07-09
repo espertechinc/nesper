@@ -18,21 +18,21 @@ namespace com.espertech.esper.common.client.hook.expr
         /// </summary>
         /// <param name="statementName">Name of the statement.</param>
         /// <param name="contextPartitionId">The context partition identifier.</param>
-        /// <param name="engineURI">The engine URI.</param>
+        /// <param name="runtimeUri">The engine URI.</param>
         /// <param name="statementUserObject">The statement user object.</param>
         public EPLExpressionEvaluationContext(
             string statementName,
             int contextPartitionId,
-            string engineURI,
+            string runtimeUri,
             object statementUserObject)
         {
             StatementName = statementName;
             ContextPartitionId = contextPartitionId;
-            EngineURI = engineURI;
+            RuntimeURI = runtimeUri;
             StatementUserObject = statementUserObject;
         }
 
-        public string EngineURI { get; private set; }
+        public string RuntimeURI { get; private set; }
 
         public string StatementName { get; private set; }
 

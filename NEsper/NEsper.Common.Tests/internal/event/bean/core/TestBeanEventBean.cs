@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested), fragmentTypeOne.FragmentType.UnderlyingType);
 
             var theEvent = (EventBean) eventBean.GetFragment(propertyName);
-            Assert.AreEqual(value, theEvent.Get("nestedValue"));
+            Assert.AreEqual(value, theEvent.Get("NestedValue"));
         }
 
         private void AssertNestedCollection(
@@ -57,8 +57,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             var events = (EventBean[]) eventBean.GetFragment(propertyName);
             Assert.AreEqual(2, events.Length);
-            Assert.AreEqual(prefix + "N1", events[0].Get("nestedValue"));
-            Assert.AreEqual(prefix + "N2", events[1].Get("nestedValue"));
+            Assert.AreEqual(prefix + "N1", events[0].Get("NestedValue"));
+            Assert.AreEqual(prefix + "N2", events[1].Get("NestedValue"));
         }
 
         private static void TryInvalidGet(
@@ -119,15 +119,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var eventCombined = SupportBeanCombinedProps.MakeDefaultBean();
             var eventBean = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, eventCombined);
 
-            Assert.AreEqual("0ma0", eventBean.Get("indexed[0].mapped('0ma').value"));
-            Assert.AreEqual(typeof(string), eventBean.EventType.GetPropertyType("indexed[0].mapped('0ma').value"));
-            Assert.IsNotNull(eventBean.EventType.GetGetter("indexed[0].mapped('0ma').value"));
-            Assert.AreEqual("0ma1", eventBean.Get("indexed[0].mapped('0mb').value"));
-            Assert.AreEqual("1ma0", eventBean.Get("indexed[1].mapped('1ma').value"));
-            Assert.AreEqual("1ma1", eventBean.Get("indexed[1].mapped('1mb').value"));
+            Assert.AreEqual("0ma0", eventBean.Get("Indexed[0].Mapped('0ma').value"));
+            Assert.AreEqual(typeof(string), eventBean.EventType.GetPropertyType("Indexed[0].Mapped('0ma').value"));
+            Assert.IsNotNull(eventBean.EventType.GetGetter("Indexed[0].Mapped('0ma').value"));
+            Assert.AreEqual("0ma1", eventBean.Get("Indexed[0].Mapped('0mb').value"));
+            Assert.AreEqual("1ma0", eventBean.Get("Indexed[1].Mapped('1ma').value"));
+            Assert.AreEqual("1ma1", eventBean.Get("Indexed[1].Mapped('1mb').value"));
 
-            Assert.AreEqual("0ma0", eventBean.Get("array[0].mapped('0ma').value"));
-            Assert.AreEqual("1ma1", eventBean.Get("array[1].mapped('1mb').value"));
+            Assert.AreEqual("0ma0", eventBean.Get("array[0].Mapped('0ma').value"));
+            Assert.AreEqual("1ma1", eventBean.Get("array[1].Mapped('1mb').value"));
             Assert.AreEqual("0ma0", eventBean.Get("array[0].mapprop('0ma').value"));
             Assert.AreEqual("1ma1", eventBean.Get("array[1].mapprop('1mb').value"));
 
@@ -137,10 +137,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             TryInvalidGet(eventBean, "dummy.dummy1");
 
             // indexed getter
-            TryInvalidGetFragment(eventBean, "indexed");
+            TryInvalidGetFragment(eventBean, "Indexed");
             Assert.AreEqual(
                 typeof(SupportBeanCombinedProps.NestedLevOne),
-                ((EventBean) eventBean.GetFragment("indexed[0]")).EventType.UnderlyingType);
+                ((EventBean) eventBean.GetFragment("Indexed[0]")).EventType.UnderlyingType);
             Assert.AreEqual("abc", ((EventBean) eventBean.GetFragment("array[0]")).Get("nestLevOneVal"));
             Assert.AreEqual("abc", ((EventBean) eventBean.GetFragment("array[2]?")).Get("nestLevOneVal"));
             Assert.IsNull(eventBean.GetFragment("array[3]?"));
@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             var eventComplex = SupportBeanComplexProps.MakeDefaultBean();
             eventBean = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, eventComplex);
-            Assert.AreEqual("nestedValue", ((EventBean) eventBean.GetFragment("nested")).Get("nestedValue"));
+            Assert.AreEqual("NestedValue", ((EventBean) eventBean.GetFragment("Nested")).Get("NestedValue"));
         }
 
         [Test]

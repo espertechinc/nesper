@@ -11,6 +11,10 @@ namespace com.espertech.esper.compiler.client.option
     /// <summary>
     ///     Implement this interface to provide or override the module name at compile-time.
     /// </summary>
+
+    public delegate string ModuleNameOption(ModuleNameContext env);
+
+#if DEPRECATED_INTERFACE
     public interface ModuleNameOption
     {
         /// <summary>
@@ -20,4 +24,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>module name or null if none needs to be assigned</returns>
         string GetValue(ModuleNameContext env);
     }
+#endif
 } // end of namespace

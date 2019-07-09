@@ -78,8 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestToExpressionString()
         {
-            Assert.AreEqual("s0.theString regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNormal));
-            Assert.AreEqual("s0.theString not regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNot));
+            Assert.AreEqual("s0.TheString regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNormal));
+            Assert.AreEqual("s0.TheString not regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNot));
         }
 
         [Test]

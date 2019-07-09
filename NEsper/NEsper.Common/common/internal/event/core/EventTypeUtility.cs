@@ -1672,7 +1672,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         public static void ValidateEventBeanClassVisibility(Type clazz)
         {
             if (!clazz.IsPublic) {
-                throw new EventAdapterException("Event class '" + clazz.Name + "' does not have public visibility");
+                throw new EventAdapterException("Event class '" + clazz.FullName + "' does not have public visibility");
             }
         }
 

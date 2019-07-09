@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
             // test pool max
             var newMax = poolCount.IncrementAndGet();
             if (newMax > maxPoolCountConfigured && maxPoolCountConfigured >= 0) {
-                var counts = GetCounts();
+                var counts = Counts;
                 agentInstanceContext.StatementContext.ExceptionHandlingService.HandleCondition(
                     new ConditionPatternRuntimeSubexpressionMax(maxPoolCountConfigured, counts),
                     agentInstanceContext.StatementContext);
@@ -124,20 +124,21 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
             }
         }
 
-        private IDictionary<string, long?> GetCounts()
-        {
-            IDictionary<string, long?> counts = new Dictionary<string, long?>();
-            foreach (var context in patternContexts) {
-                var count = counts.Get(context.StatementName);
-                if (count == null) {
-                    count = 0L;
+        private IDictionary<string, long> Counts {
+            get {
+                IDictionary<string, long> counts = new Dictionary<string, long>();
+                foreach (var context in patternContexts) {
+                    if (!counts.TryGetValue(context.StatementName, out var count))
+                    { 
+                        count = 0L;
+                    }
+
+                    count += context.StmtCounts.Count;
+                    counts.Put(context.StatementName, count);
                 }
 
-                count += context.StmtCounts.Count;
-                counts.Put(context.StatementName, count);
+                return counts;
             }
-
-            return counts;
         }
 
         public class StatementEntry

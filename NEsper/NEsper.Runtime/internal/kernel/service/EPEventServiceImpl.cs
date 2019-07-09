@@ -358,9 +358,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             InitThreadLocals();
         }
 
-        public void SetUnmatchedListener(UnmatchedListener listener)
-        {
-            _unmatchedListener = listener;
+        public UnmatchedListener UnmatchedListener {
+            get => _unmatchedListener;
+            set => _unmatchedListener = value;
         }
 
         public long CurrentTime => _services.SchedulingService.Time;

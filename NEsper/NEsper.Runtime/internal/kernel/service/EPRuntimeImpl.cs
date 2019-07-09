@@ -505,26 +505,23 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     ProcGetUserObject = env => entry.Value.UserObjectsRuntime.Get(env.StatementId)
                 };
 
-                StatementNameRuntimeOption statementNameResolver = new ProxyStatementNameRuntimeOption {
-                    ProcGetStatementName = env => entry.Value.StatementNamesWhenProvidedByAPI.Get(env.StatementId)
-                };
+                StatementNameRuntimeOption statementNameResolver =
+                    env => entry.Value.StatementNamesWhenProvidedByAPI.Get(env.StatementId);
 
-                StatementSubstitutionParameterOption substitutionParameterResolver = new ProxyStatementSubstitutionParameterOption {
-                    ProcSetStatementParameters = env => {
-                        var param = entry.Value.SubstitutionParameters.Get(env.StatementId);
-                        if (param == null) {
-                            return;
-                        }
+                StatementSubstitutionParameterOption substitutionParameterResolver = env => {
+                    var param = entry.Value.SubstitutionParameters.Get(env.StatementId);
+                    if (param == null) {
+                        return;
+                    }
 
-                        if (env.SubstitutionParameterNames != null) {
-                            foreach (var name in env.SubstitutionParameterNames) {
-                                env.SetObject(name.Key, param.Get(name.Value));
-                            }
+                    if (env.SubstitutionParameterNames != null) {
+                        foreach (var name in env.SubstitutionParameterNames) {
+                            env.SetObject(name.Key, param.Get(name.Value));
                         }
-                        else {
-                            for (var i = 0; i < env.SubstitutionParameterTypes.Length; i++) {
-                                env.SetObject(i + 1, param.Get(i + 1));
-                            }
+                    }
+                    else {
+                        for (var i = 0; i < env.SubstitutionParameterTypes.Length; i++) {
+                            env.SetObject(i + 1, param.Get(i + 1));
                         }
                     }
                 };

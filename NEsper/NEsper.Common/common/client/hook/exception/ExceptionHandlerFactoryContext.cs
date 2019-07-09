@@ -12,19 +12,19 @@ namespace com.espertech.esper.common.client.hook.exception
 {
     /// <summary>
     /// Context provided to <see cref="ExceptionHandlerFactory"/> implementations 
-    /// providing engine contextual information.
+    /// providing runtime contextual information.
     /// </summary>
     public class ExceptionHandlerFactoryContext
     {
         /// <summary>Ctor. </summary>
-        /// <param name="engineURI">engine URI</param>
-        public ExceptionHandlerFactoryContext(string engineURI)
+        /// <param name="runtimeUri">runtime URI</param>
+        public ExceptionHandlerFactoryContext(string runtimeUri)
         {
-            EngineURI = engineURI;
+            RuntimeURI = runtimeUri;
         }
 
-        /// <summary>Returns the engine URI. </summary>
-        /// <value>engine URI</value>
-        public string EngineURI { get; private set; }
+        /// <summary>Returns the runtime URI. </summary>
+        /// <value>runtime URI</value>
+        public string RuntimeURI { get; private set; }
     }
 }

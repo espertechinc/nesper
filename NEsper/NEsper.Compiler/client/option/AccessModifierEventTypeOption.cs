@@ -13,6 +13,11 @@ namespace com.espertech.esper.compiler.client.option
     /// <summary>
     ///     Implement this interface to provide or override the access modifier for an event type.
     /// </summary>
+
+    public delegate NameAccessModifier AccessModifierEventTypeOption(
+        AccessModifierEventTypeContext env);
+
+#if DEPRECATED_INTERFACE
     public interface AccessModifierEventTypeOption
     {
         /// <summary>
@@ -22,4 +27,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>modifier</returns>
         NameAccessModifier GetValue(AccessModifierEventTypeContext env);
     }
+#endif
 } // end of namespace

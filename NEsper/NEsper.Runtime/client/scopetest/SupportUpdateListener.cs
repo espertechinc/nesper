@@ -9,18 +9,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
+
+using static com.espertech.esper.common.client.scopetest.ScopeTestHelper;
 
 namespace com.espertech.esper.runtime.client.scopetest
 {
     /// <summary>
     ///     Update listener that retains the events it receives for use in assertions.
     /// </summary>
-    public class SupportUpdateListener
+    public class SupportUpdateListener : UpdateListener, SupportListener
     {
+        private bool _isInvokedAndReset;
+
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -28,6 +33,11 @@ namespace com.espertech.esper.runtime.client.scopetest
         {
             NewDataList = new List<EventBean[]>();
             OldDataList = new List<EventBean[]>();
+        }
+
+        public void AssertInvokedFlagAndReset(bool expected)
+        {
+            AssertEquals(expected, IsInvokedAndReset());
         }
 
         /// <summary>
@@ -55,11 +65,11 @@ namespace com.espertech.esper.runtime.client.scopetest
 
         /// <summary>Get a list of all insert-stream event arrays received. </summary>
         /// <value>list of event arrays</value>
-        public List<EventBean[]> NewDataList { get; }
+        public IList<EventBean[]> NewDataList { get; }
 
         /// <summary>Get a list of all remove-stream event arrays received. </summary>
         /// <value>list of event arrays</value>
-        public List<EventBean[]> OldDataList { get; }
+        public IList<EventBean[]> OldDataList { get; }
 
         /// <summary>Returns true if the listener was invoked at least once. </summary>
         /// <value>invoked flag</value>
@@ -120,10 +130,10 @@ namespace com.espertech.esper.runtime.client.scopetest
                 if (DateTimeHelper.CurrentTimeMillis - startTime > msecWait) {
                     throw new EPException(
                         "No events or less then the number of expected events received, expected " + numberOfNewEvents + " received " +
-                        GetNewDataListFlattened().Length);
+                        NewDataListFlattened.Length);
                 }
 
-                var events = GetNewDataListFlattened();
+                var events = NewDataListFlattened;
                 if (events.Length >= numberOfNewEvents) {
                     return;
                 }
@@ -137,12 +147,13 @@ namespace com.espertech.esper.runtime.client.scopetest
             }
         }
 
-        public void update(
-            EventBean[] newData,
-            EventBean[] oldData,
-            EPStatement statement,
-            EPRuntime runtime)
+        public void Update(
+            object sender,
+            UpdateEventArgs eventArgs)
         {
+            var newData = eventArgs.NewEvents;
+            var oldData = eventArgs.OldEvents;
+
             OldDataList.Add(oldData);
             NewDataList.Add(newData);
 
@@ -200,17 +211,17 @@ namespace com.espertech.esper.runtime.client.scopetest
         public EventBean AssertOneGetNewAndReset()
         {
             lock (this) {
-                ScopeTestHelper.AssertTrue("Listener invocation not received but expected", IsInvoked);
+                AssertTrue("Listener invocation not received but expected", IsInvoked);
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
 
                 if (LastNewData == null) {
-                    ScopeTestHelper.Fail("No new-data events received");
+                    Fail("No new-data events received");
                 }
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of new-data events", 1, LastNewData.Length);
-                ScopeTestHelper.AssertNull("No old-data events are expected but some were received", LastOldData);
+                AssertEquals("Mismatch in the number of new-data events", 1, LastNewData.Length);
+                AssertNull("No old-data events are expected but some were received", LastOldData);
 
                 var lastNew = LastNewData[0];
                 Reset();
@@ -226,17 +237,17 @@ namespace com.espertech.esper.runtime.client.scopetest
         public EventBean AssertOneGetOldAndReset()
         {
             lock (this) {
-                ScopeTestHelper.AssertTrue("Listener invocation not received but expected", IsInvoked);
+                AssertTrue("Listener invocation not received but expected", IsInvoked);
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
 
                 if (LastOldData == null) {
-                    ScopeTestHelper.Fail("No old-data events received");
+                    Fail("No old-data events received");
                 }
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of old-data events", 1, LastOldData.Length);
-                ScopeTestHelper.AssertNull("Expected no new-data events", LastNewData);
+                AssertEquals("Mismatch in the number of old-data events", 1, LastOldData.Length);
+                AssertNull("Expected no new-data events", LastNewData);
 
                 var lastNew = LastOldData[0];
                 Reset();
@@ -252,21 +263,21 @@ namespace com.espertech.esper.runtime.client.scopetest
         public UniformPair<EventBean> AssertPairGetIRAndReset()
         {
             lock (this) {
-                ScopeTestHelper.AssertTrue("Listener invocation not received but expected", IsInvoked);
+                AssertTrue("Listener invocation not received but expected", IsInvoked);
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
 
                 if (LastNewData == null) {
-                    ScopeTestHelper.Fail("No new-data events received");
+                    Fail("No new-data events received");
                 }
 
                 if (LastOldData == null) {
-                    ScopeTestHelper.Fail("No old-data events received");
+                    Fail("No old-data events received");
                 }
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of new-data events", 1, LastNewData.Length);
-                ScopeTestHelper.AssertEquals("Mismatch in the number of old-data events", 1, LastOldData.Length);
+                AssertEquals("Mismatch in the number of new-data events", 1, LastNewData.Length);
+                AssertEquals("Mismatch in the number of old-data events", 1, LastOldData.Length);
 
                 var lastNew = LastNewData[0];
                 var lastOld = LastOldData[0];
@@ -283,16 +294,16 @@ namespace com.espertech.esper.runtime.client.scopetest
         public EventBean AssertOneGetNew()
         {
             lock (this) {
-                ScopeTestHelper.AssertTrue("Listener invocation not received but expected", IsInvoked);
+                AssertTrue("Listener invocation not received but expected", IsInvoked);
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
 
                 if (LastNewData == null) {
-                    ScopeTestHelper.Fail("No new-data events received");
+                    Fail("No new-data events received");
                 }
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of new-data events", 1, LastNewData.Length);
+                AssertEquals("Mismatch in the number of new-data events", 1, LastNewData.Length);
                 return LastNewData[0];
             }
         }
@@ -305,16 +316,16 @@ namespace com.espertech.esper.runtime.client.scopetest
         public EventBean AssertOneGetOld()
         {
             lock (this) {
-                ScopeTestHelper.AssertTrue("Listener invocation not received but expected", IsInvoked);
+                AssertTrue("Listener invocation not received but expected", IsInvoked);
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
-                ScopeTestHelper.AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, NewDataList.Count);
+                AssertEquals("Mismatch in the number of invocations", 1, OldDataList.Count);
 
                 if (LastOldData == null) {
-                    ScopeTestHelper.Fail("No old-data events received");
+                    Fail("No old-data events received");
                 }
 
-                ScopeTestHelper.AssertEquals("Mismatch in the number of old-data events", 1, LastOldData.Length);
+                AssertEquals("Mismatch in the number of old-data events", 1, LastOldData.Length);
                 return LastOldData[0];
             }
         }
@@ -342,20 +353,22 @@ namespace com.espertech.esper.runtime.client.scopetest
         }
 
         /// <summary>Returns an event array that represents all insert-stream events received so far. </summary>
-        /// <returns>event array</returns>
-        public EventBean[] GetNewDataListFlattened()
-        {
-            lock (this) {
-                return Flatten(NewDataList);
+        /// <value>event array</value>
+        public EventBean[] NewDataListFlattened {
+            get {
+                lock (this) {
+                    return Flatten(NewDataList);
+                }
             }
         }
 
         /// <summary>Returns an event array that represents all remove-stream events received so far. </summary>
-        /// <returns>event array</returns>
-        public EventBean[] GetOldDataListFlattened()
-        {
-            lock (this) {
-                return Flatten(OldDataList);
+        /// <value>event array</value>
+        public EventBean[] OldDataListFlattened {
+            get {
+                lock (this) {
+                    return Flatten(OldDataList);
+                }
             }
         }
 
@@ -375,9 +388,9 @@ namespace com.espertech.esper.runtime.client.scopetest
         public UniformPair<EventBean[]> AssertInvokedAndReset()
         {
             lock (this) {
-                ScopeTestHelper.AssertTrue("Listener invocation not received but expected", IsInvoked);
-                ScopeTestHelper.AssertEquals("Received more then one invocation", 1, NewDataList.Count);
-                ScopeTestHelper.AssertEquals("Received more then one invocation", 1, OldDataList.Count);
+                AssertTrue("Listener invocation not received but expected", IsInvoked);
+                AssertEquals("Received more then one invocation", 1, NewDataList.Count);
+                AssertEquals("Received more then one invocation", 1, OldDataList.Count);
                 var newEvents = LastNewData;
                 var oldEvents = LastOldData;
                 Reset();
@@ -386,14 +399,15 @@ namespace com.espertech.esper.runtime.client.scopetest
         }
 
         /// <summary>Returns a pair of insert and remove stream event arrays considering the all invocations. </summary>
-        /// <returns>
-        ///     pair of event arrays, the first in the pair is the insert stream data, the second in the pair is the remove
-        ///     stream data
-        /// </returns>
-        public UniformPair<EventBean[]> GetDataListsFlattened()
-        {
-            lock (this) {
-                return new UniformPair<EventBean[]>(Flatten(NewDataList), Flatten(OldDataList));
+        /// <value>
+        ///   pair of event arrays, the first in the pair is the insert stream data, the second in the pair is the remove
+        ///   stream data
+        /// </value>
+        public UniformPair<EventBean[]> DataListsFlattened {
+            get {
+                lock (this) {
+                    return new UniformPair<EventBean[]>(Flatten(NewDataList), Flatten(OldDataList));
+                }
             }
         }
 
@@ -408,7 +422,7 @@ namespace com.espertech.esper.runtime.client.scopetest
         public UniformPair<EventBean[]> GetAndResetDataListsFlattened()
         {
             lock (this) {
-                var pair = GetDataListsFlattened();
+                var pair = DataListsFlattened;
                 Reset();
                 return pair;
             }
@@ -428,6 +442,41 @@ namespace com.espertech.esper.runtime.client.scopetest
 
             return listeners;
         }
+
+        public void AssertNewOldData(
+            object[][] nameAndValuePairsIStream,
+            object[][] nameAndValuePairsRStream)
+        {
+            AssertEquals(1, NewDataList.Count);
+            AssertEquals(1, OldDataList.Count);
+            EPAssertionUtil.AssertNameValuePairs(LastNewData, nameAndValuePairsIStream);
+            EPAssertionUtil.AssertNameValuePairs(LastOldData, nameAndValuePairsRStream);
+            Reset();
+        }
+
+        public UniformPair<EventBean> AssertGetAndResetIRPair()
+        {
+            AssertTrue(IsInvoked);
+            AssertEquals(1, NewDataList.Count);
+            AssertEquals(1, OldDataList.Count);
+            AssertNotNull(NewDataList[0]);
+            AssertEquals(1, NewDataList[0].Length);
+            AssertNotNull(OldDataList[0]);
+            AssertEquals(1, OldDataList[0].Length);
+            EventBean newEvent = NewDataList[0][0];
+            EventBean oldEvent = OldDataList[0][0];
+            Reset();
+            return new UniformPair<EventBean>(newEvent, oldEvent);
+        }
+
+        public UniformPair<EventBean[]> GetAndResetIRPair()
+        {
+            EventBean[] newData = LastNewData;
+            EventBean[] oldData = LastOldData;
+            Reset();
+            return new UniformPair<EventBean[]>(newData, oldData);
+        }
+
     }
 
 #if REVISIT

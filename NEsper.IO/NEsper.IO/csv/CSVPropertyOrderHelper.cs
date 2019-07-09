@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using com.espertech.esper.client;
+
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-
 
 namespace com.espertech.esperio.csv
 {
     /// <summary>
     /// A utility for resolving property order information based on a
-    /// propertyTypes map and the first record of a CSV file (which 
+    /// propertyTypes map and the first record of a CSV file (which
     /// might represent the title row).
     /// </summary>
-    
+
     public class CSVPropertyOrderHelper
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

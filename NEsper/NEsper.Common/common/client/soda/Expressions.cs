@@ -508,6 +508,21 @@ namespace com.espertech.esper.common.client.soda
             return new NotExpression(inner);
         }
 
+        public static StaticMethodExpression StaticMethod<T>(
+            string method,
+            params object[] parameters)
+        {
+            return new StaticMethodExpression(typeof(T).FullName, method, parameters);
+        }
+
+        public static StaticMethodExpression StaticMethod(
+            Type clazz,
+            string method,
+            params object[] parameters)
+        {
+            return new StaticMethodExpression(clazz.FullName, method, parameters);
+        }
+
         /// <summary>
         /// Static method invocation.
         /// </summary>

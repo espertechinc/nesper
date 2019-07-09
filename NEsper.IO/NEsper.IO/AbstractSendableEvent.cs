@@ -8,8 +8,6 @@
 
 using System;
 
-using com.espertech.esper.schedule;
-
 namespace com.espertech.esperio
 {
     /// <summary>

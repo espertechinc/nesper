@@ -23,6 +23,6 @@ namespace com.espertech.esper.common.client.context
 
         /// <summary>Returns the context partition id. </summary>
         /// <value>context partition id</value>
-        public int? ContextPartitionId { get; set; }
+        public int ContextPartitionId { get; set; }
     }
 }

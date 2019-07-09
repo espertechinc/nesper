@@ -13,6 +13,10 @@ namespace com.espertech.esper.compiler.client.option
     /// <summary>
     ///     Implement this interface to provide or override the module-uses at compile-time.
     /// </summary>
+
+    public delegate ISet<string> ModuleUsesOption(ModuleUsesContext env);
+
+#if DEPRECATED_INTERFACE
     public interface ModuleUsesOption
     {
         /// <summary>
@@ -22,4 +26,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>module-uses or null if none needs to be assigned</returns>
         ISet<string> GetValue(ModuleUsesContext env);
     }
+#endif
 } // end of namespace

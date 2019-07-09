@@ -7,22 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.container;
-using com.espertech.esper.core.service;
-using com.espertech.esper.events;
-using com.espertech.esper.events.map;
-using com.espertech.esper.util;
 
 namespace com.espertech.esperio.csv
 {
@@ -84,7 +78,6 @@ namespace com.espertech.esperio.csv
         public CSVInputAdapter(IContainer container, EPServiceProvider epService, AdapterInputSource adapterInputSource, String eventTypeName)
             : this(container, epService, new CSVInputAdapterSpec(adapterInputSource, eventTypeName))
         {
-            
         }
 
         /// <summary>
@@ -144,7 +137,7 @@ namespace com.espertech.esperio.csv
                 if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
                 {
                     Log.Debug(".read reached end of CSV file");
-                } 
+                }
                 _atEOF = true;
                 if (StateManager.State == AdapterState.STARTED)
                 {
@@ -160,8 +153,7 @@ namespace com.espertech.esperio.csv
 
         public override EPServiceProvider EPService
         {
-            set
-            {
+            set {
                 base.EPService = value;
                 FinishInitialization(value, _adapterSpec);
             }
@@ -177,7 +169,7 @@ namespace com.espertech.esperio.csv
         }
 
         /// <summary>
-        /// Remove the first member of eventsToSend. If there isanother record in the CSV file, 
+        /// Remove the first member of eventsToSend. If there isanother record in the CSV file,
         /// insert the event createdfrom it into eventsToSend.
         /// </summary>
 
@@ -210,7 +202,7 @@ namespace com.espertech.esperio.csv
         {
             AssertValidParameters(epService, spec);
 
-            var spi = (EPServiceProviderSPI)epService;
+            var spi = (EPServiceProviderSPI) epService;
 
             ScheduleSlot = spi.SchedulingMgmtService.AllocateBucket().AllocateSlot();
 
@@ -269,14 +261,14 @@ namespace com.espertech.esperio.csv
         /// <typeparam name="T"></typeparam>
         /// <param name="input">The input.</param>
         /// <returns></returns>
-        private static Object EasyParser<T>( String input )
+        private static Object EasyParser<T>(String input)
         {
-            var result = Convert.ChangeType(input, typeof (T));
+            var result = Convert.ChangeType(input, typeof(T));
             return result;
         }
 
         /// <summary>
-        /// Retrieves the object factory for a given type. 
+        /// Retrieves the object factory for a given type.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
@@ -284,17 +276,17 @@ namespace com.espertech.esperio.csv
         {
             ObjectFactory<String> factoryObj;
 
-            lock (((ICollection)StaticTypeTable).SyncRoot)
+            lock (((ICollection) StaticTypeTable).SyncRoot)
             {
                 if (!StaticTypeTable.TryGetValue(type, out factoryObj))
                 {
                     var constructor = type.GetConstructor(ParameterTypes);
-                    if ( constructor == null )
+                    if (constructor == null)
                     {
                         throw new EPException("unable to find a usable constructor for " + type.FullName);
                     }
 
-                    factoryObj = (input => constructor.Invoke(new Object[] {input}));
+                    factoryObj = (input => constructor.Invoke(new Object[] { input }));
 
                     StaticTypeTable[type] = factoryObj;
                 }
@@ -306,11 +298,11 @@ namespace com.espertech.esperio.csv
         private static IDictionary<String, ObjectFactory<String>> CreatePropertyConstructors(IDictionary<String, Type> propertyTypes)
         {
             var factories = new NullableDictionary<String, ObjectFactory<String>>();
-            
-            foreach( var entry in propertyTypes )
+
+            foreach (var entry in propertyTypes)
             {
-            	var property = entry.Key;
-            	var propertyType = entry.Value;
+                var property = entry.Key;
+                var propertyType = entry.Value;
 
                 Log.Debug(".CreatePropertyConstructors property==" + property + ", type==" + propertyType);
 
@@ -381,39 +373,53 @@ namespace com.espertech.esperio.csv
                 throw new EPException("Event type " + eventTypeName + " has already been declared with a different number of parameters");
             }
 
-            foreach (var property in eventType.PropertyNames) {
+            foreach (var property in eventType.PropertyNames)
+            {
                 Type type;
-                try {
+                try
+                {
                     type = eventType.GetPropertyType(property);
                 }
-                catch (PropertyAccessException e) {
+                catch (PropertyAccessException e)
+                {
                     // thrown if trying to access an invalid property on an EventBean
                     throw new EPException(e);
                 }
 
-                if (propertyTypesGiven != null && propertyTypesGiven.Get(property) == null) {
+                if (propertyTypesGiven != null && propertyTypesGiven.Get(property) == null)
+                {
                     throw new EPException("Event type " + eventTypeName +
                                           "has already been declared with different parameters");
                 }
-                if (propertyTypesGiven != null && !Equals(propertyTypesGiven.Get(property), type)) {
+                if (propertyTypesGiven != null && !Equals(propertyTypesGiven.Get(property), type))
+                {
                     throw new EPException("Event type " + eventTypeName +
                                           "has already been declared with a different type for property " + property);
                 }
                 // we can't set read-only properties for bean
-                if (eventType.UnderlyingType != typeof (DataMap)) {
+                if (eventType.UnderlyingType != typeof(DataMap))
+                {
                     var magicType = MagicType.GetCachedType(_beanType);
                     var magicProperty = magicType.ResolveProperty(property, PropertyResolutionStyle.CASE_SENSITIVE);
-                    if (magicProperty == null) continue;
+                    if (magicProperty == null)
+                    {
+                        continue;
+                    }
+
                     if (!magicProperty.CanWrite)
-                        if (propertyTypesGiven == null) {
+                    {
+                        if (propertyTypesGiven == null)
+                        {
                             continue;
                         }
-                        else {
+                        else
+                        {
                             throw new EPException("Event type " + eventTypeName + "property " + property +
                                                   " is read only");
                         }
+                    }
                 }
-            
+
                 propertyTypes[property] = type;
             }
 
@@ -425,36 +431,42 @@ namespace com.espertech.esperio.csv
                 var type = prop.Value;
                 var asType = type as Type;
 
-                if ((asType != null) && 
-                    (asType.IsGenericStringDictionary()) && 
+                if ((asType != null) &&
+                    (asType.IsGenericStringDictionary()) &&
                     (eventType is MapEventType))
                 {
                     var mapEventType = (MapEventType) eventType;
                     var nested = (DataMap) mapEventType.Types.Get(name);
-                    foreach (var nestedProperty in nested.Keys) {
+                    foreach (var nestedProperty in nested.Keys)
+                    {
                         flattenPropertyTypes.Put(name + "." + nestedProperty, nested.Get(nestedProperty));
                     }
                 }
                 else if (asType != null)
                 {
-                    if (asType.IsNullable()) {
+                    if (asType.IsNullable())
+                    {
                         asType = Nullable.GetUnderlyingType(asType);
                     }
 
                     if ((!asType.IsPrimitive) && (asType != typeof(string)))
                     {
                         var magicType = MagicType.GetCachedType(asType);
-                        foreach(var magicProperty in magicType.GetAllProperties(false)) {
-                            if (magicProperty.CanWrite) {
+                        foreach (var magicProperty in magicType.GetAllProperties(false))
+                        {
+                            if (magicProperty.CanWrite)
+                            {
                                 flattenPropertyTypes[name + '.' + magicProperty.Name] = magicProperty.PropertyType;
                             }
                         }
                     }
-                    else {
+                    else
+                    {
                         flattenPropertyTypes[name] = type;
                     }
                 }
-                else {
+                else
+                {
                     flattenPropertyTypes[name] = type;
                 }
             }
@@ -472,7 +484,8 @@ namespace com.espertech.esperio.csv
             else if (_adapterSpec.TimestampColumn != null)
             {
                 var timestamp = ResolveTimestamp(map);
-                if (timestamp == null) {
+                if (timestamp == null)
+                {
                     throw new EPException("Couldn't resolve the timestamp for record " + map.Render());
                 }
                 else if (timestamp < 0)
@@ -508,7 +521,7 @@ namespace com.espertech.esperio.csv
                 var value = map.Get(_adapterSpec.TimestampColumn);
                 return Int64.Parse(value.ToString());
             }
-            
+
             return null;
         }
 
@@ -522,16 +535,21 @@ namespace com.espertech.esperio.csv
             var regex = new Regex(@"\s");
 
             var result = new Dictionary<string, object>();
-            for (var i = 0; i < _propertyOrder.Length; i++) {
+            for (var i = 0; i < _propertyOrder.Length; i++)
+            {
                 var name = _propertyOrder[i];
-                var type = typeof (string);
-                if (name.Contains(" ")) {
+                var type = typeof(string);
+                if (name.Contains(" "))
+                {
                     var typeAndName = regex.Split(name);
-                    try {
+                    try
+                    {
                         name = typeAndName[1];
                         type = TypeHelper.ResolveType(TypeHelper.GetBoxedTypeName(typeAndName[0]));
                         _propertyOrder[i] = name;
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e)
+                    {
                         Log.Warn("Unable to use given type for property, will default to String: " + _propertyOrder[i], e);
                     }
                 }
@@ -555,15 +573,14 @@ namespace com.espertech.esperio.csv
         /// Gets the first row.
         /// </summary>
         /// <value>The first row.</value>
-        
+
         private String[] FirstRow
         {
-            get
-            {
+            get {
                 String[] firstRow;
                 try
                 {
-                	firstRow = _reader.GetNextRecord();
+                    firstRow = _reader.GetNextRecord();
                 }
                 catch (EndOfStreamException)
                 {
@@ -610,7 +627,7 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        private static readonly Type[] ParameterTypes = new [] { typeof(String) };
+        private static readonly Type[] ParameterTypes = new[] { typeof(String) };
         private static readonly Dictionary<Type, ObjectFactory<String>> StaticTypeTable;
 
         static CSVInputAdapter()
@@ -648,7 +665,10 @@ namespace com.espertech.esperio.csv
         private static IContainer GetContainer(EPServiceProvider epService)
         {
             if (epService is EPServiceProviderSPI spi)
+            {
                 return spi.Container;
+            }
+
             throw new ArgumentException("Container is missing");
         }
     }

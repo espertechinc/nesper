@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public void TestGetType()
         {
             // Template expression is:
-            // case when (so.floatPrimitive>s1.shortBoxed) then count(5) when (so.LongPrimitive>s1.intPrimitive) then (25 + 130.5) else (3*3) end
+            // case when (so.FloatPrimitive>s1.ShortBoxed) then count(5) when (so.LongPrimitive>s1.IntPrimitive) then (25 + 130.5) else (3*3) end
             var caseNode = supportExprNodeFactory.MakeCaseSyntax1Node();
             Assert.AreEqual(typeof(string), caseNode.Forge.EvaluationType);
 
@@ -89,12 +89,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             var _caseNode = supportExprNodeFactory.MakeCaseSyntax1Node();
             Assert.AreEqual(
-                "case when s0.intPrimitive=1 then \"a\" when s0.intPrimitive=2 then \"b\" else \"c\" end",
+                "case when s0.IntPrimitive=1 then \"a\" when s0.IntPrimitive=2 then \"b\" else \"c\" end",
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_caseNode));
 
             _caseNode = supportExprNodeFactory.MakeCaseSyntax2Node();
             Assert.AreEqual(
-                "case s0.intPrimitive when 1 then \"a\" when 2 then \"b\" else \"c\" end",
+                "case s0.IntPrimitive when 1 then \"a\" when 2 then \"b\" else \"c\" end",
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_caseNode));
         }
 

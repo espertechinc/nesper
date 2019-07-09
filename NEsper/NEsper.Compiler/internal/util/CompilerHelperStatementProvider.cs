@@ -93,7 +93,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 var statementNameProvided = GetNameFromAnnotation(annotations);
                 if (compilerOptions.StatementName != null)
                 {
-                    var assignedName = compilerOptions.StatementName.GetValue(
+                    var assignedName = compilerOptions.StatementName.Invoke(
                         new StatementNameContext(
                             () => compilable.ToEPL(),
                             statementNameProvided, 
@@ -167,7 +167,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 object userObjectCompileTime = null;
                 if (compilerOptions.StatementUserObject != null)
                 {
-                    userObjectCompileTime = compilerOptions.StatementUserObject.GetValue(
+                    userObjectCompileTime = compilerOptions.StatementUserObject.Invoke(
                         new StatementUserObjectContext(
                             () => compilable.ToEPL(), statementName, optionalModuleName, annotations, statementNumber));
                 }

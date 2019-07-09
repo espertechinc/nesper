@@ -62,6 +62,24 @@ namespace com.espertech.esper.common.client.module
             CharPosEnd = charPosEnd;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModuleItem"/> class.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        public ModuleItem(string expression)
+        {
+            Expression = expression;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModuleItem"/> class.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        public ModuleItem(EPStatementObjectModel model)
+        {
+            Model = model;
+        }
+
         /// <summary>Returns the EPL. </summary>
         /// <value>expression</value>
         public string Expression { get; set; }

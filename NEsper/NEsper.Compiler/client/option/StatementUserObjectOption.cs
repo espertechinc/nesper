@@ -9,8 +9,13 @@
 namespace com.espertech.esper.compiler.client.option
 {
     /// <summary>
-    ///     Implement this interface to provide a custom user object at compile-time for the statements when they are compiled.
+    ///     Implement this interface to provide a custom user object at compile-time for
+    ///     the statements when they are compiled.
     /// </summary>
+
+    public delegate object StatementUserObjectOption(StatementUserObjectContext env);
+
+#if DEPRECATED_INTERFACE
     public interface StatementUserObjectOption
     {
         /// <summary>
@@ -23,4 +28,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>user object or null if none needs to be assigned</returns>
         object GetValue(StatementUserObjectContext env);
     }
+#endif
 } // end of namespace

@@ -780,7 +780,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 forge.GetType().GetCustomAttributes().UnwrapIntoArray<Attribute>());
 
             foreach (var annotation in annotations) {
-                OutputTypesAttributes outputTypes = (OutputTypesAttributes) annotation;
+                OutputTypesAttribute outputTypes = (OutputTypesAttribute) annotation;
 
                 // create local event type for the declared type
                 IDictionary<string, object> propertiesRaw = new LinkedHashMap<string, object>();

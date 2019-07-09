@@ -13,7 +13,6 @@ using System.Reflection;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.util;
 
 namespace com.espertech.esperio.csv
 {
@@ -46,34 +45,62 @@ namespace com.espertech.esperio.csv
         private static Func<string, object> CreateTypeFactory(Type t)
         {
             if (t == typeof(string))
+            {
                 return s => s;
-            if (t == typeof(int?))
-                return s => s == null ? (int?) null : Int32.Parse(s);
-            if (t == typeof(long?))
-                return s => s == null ? (long?)null : Int64.Parse(s);
-            if (t == typeof(short?))
-                return s => s == null ? (short?)null : Int16.Parse(s);
-            if (t == typeof(float?))
-                return s => s == null ? (float?)null : Single.Parse(s);
-            if (t == typeof(double?))
-                return s => s == null ? (double?)null : Double.Parse(s);
-            if (t == typeof(decimal?))
-                return s => s == null ? (decimal?)null : Decimal.Parse(s);
-            if (t == typeof(DateTime?))
-                return s => s == null ? (DateTime?)null : DateTime.Parse(s);
-            if (t == typeof(Guid?))
-                return s => s == null ? (Guid?)null : new Guid(s);
+            }
 
-            var constructor = t.GetConstructor(new[] {typeof (string)});
-            if (constructor != null) {
+            if (t == typeof(int?))
+            {
+                return s => s == null ? (int?) null : Int32.Parse(s);
+            }
+
+            if (t == typeof(long?))
+            {
+                return s => s == null ? (long?) null : Int64.Parse(s);
+            }
+
+            if (t == typeof(short?))
+            {
+                return s => s == null ? (short?) null : Int16.Parse(s);
+            }
+
+            if (t == typeof(float?))
+            {
+                return s => s == null ? (float?) null : Single.Parse(s);
+            }
+
+            if (t == typeof(double?))
+            {
+                return s => s == null ? (double?) null : Double.Parse(s);
+            }
+
+            if (t == typeof(decimal?))
+            {
+                return s => s == null ? (decimal?) null : Decimal.Parse(s);
+            }
+
+            if (t == typeof(DateTime?))
+            {
+                return s => s == null ? (DateTime?) null : DateTime.Parse(s);
+            }
+
+            if (t == typeof(Guid?))
+            {
+                return s => s == null ? (Guid?) null : new Guid(s);
+            }
+
+            var constructor = t.GetConstructor(new[] { typeof(string) });
+            if (constructor != null)
+            {
                 var eParam = Expression.Parameter(typeof(string), "arg");
                 var eConstructor = Expression.New(constructor, eParam);
                 var eLambda = Expression.Lambda<Func<string, object>>(eConstructor, eParam);
                 return eLambda.Compile();
             }
 
-            var parser = t.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new []{ typeof(string)}, null);
-            if (parser != null) {
+            var parser = t.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
+            if (parser != null)
+            {
                 var eParam = Expression.Parameter(typeof(string), "arg");
                 var eMethod = Expression.Call(parser, eParam);
                 var eLambda = Expression.Lambda<Func<string, object>>(eMethod, eParam);
@@ -96,10 +123,11 @@ namespace com.espertech.esperio.csv
                 lock (_typeFactoryTable)
                 {
                     var factory = _typeFactoryTable.Get(propertyType);
-                    if (factory == null) {
+                    if (factory == null)
+                    {
                         _typeFactoryTable[propertyType] = factory = CreateTypeFactory(propertyType);
                     }
-                 
+
                     factories[property] = factory;
                 }
             }

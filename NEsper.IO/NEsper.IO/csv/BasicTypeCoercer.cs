@@ -15,14 +15,14 @@ namespace com.espertech.esperio.csv
     /// <summary>
     /// Coercer for using the constructor to perform the coercion.
     /// </summary>
-    public class BasicTypeCoercer : AbstractTypeCoercer {
-    
+    public class BasicTypeCoercer : AbstractTypeCoercer
+    {
         public override Object Coerce(String property, String source)
         {
             var factory = propertyFactories.Get(property);
             var value = factory != null ? factory.Invoke(source) : Int64.Parse(source);
-    
+
             return value;
-    	}
+        }
     }
 }

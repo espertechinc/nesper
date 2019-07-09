@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -135,6 +136,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         public Attribute[] Annotations
         {
             get => statementContext.Annotations;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public IEnumerator<EventBean> GetEnumerator()
@@ -341,6 +347,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         public object Subscriber
         {
             get => statementEventHandlerSet.Subscriber;
+            set => SetSubscriber(value);
         }
 
         public object GetProperty(StatementProperty field)

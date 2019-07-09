@@ -8,6 +8,8 @@
 
 using System.Threading.Tasks;
 
+using com.espertech.esper.compat.threading;
+
 namespace com.espertech.esper.compat.concurrency
 {
     /// <summary>
@@ -56,6 +58,27 @@ namespace com.espertech.esper.compat.concurrency
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
         public static IScheduledExecutorService DefaultScheduledExecutorService()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Creates a fixed thread pool executor.
+        /// </summary>
+        /// <param name="numThread">The number threads.</param>
+        /// <param name="threadFactory">the thread factory.</param>
+        /// <returns></returns>
+        public static IExecutorService NewFixedThreadPool(int numThread, ThreadFactory threadFactory)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Returns (or creates) a cached thread pool executor.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public static IExecutorService NewCachedThreadPool()
         {
             throw new System.NotImplementedException();
         }

@@ -5,22 +5,22 @@ using com.espertech.esper.container;
 
 namespace com.espertech.esperio.csv
 {
-	/// <summary>
-	/// A wrapper for a Stream or a TextReader.
-	/// </summary>
+    /// <summary>
+    /// A wrapper for a Stream or a TextReader.
+    /// </summary>
 
-	public class CSVSource
-	{
-		private readonly AdapterInputSource _source; // source of data
-		private TextReader _reader; // reader from where data comes
-		private Stream _stream;     // stream from where data comes
+    public class CSVSource
+    {
+        private readonly AdapterInputSource _source; // source of data
+        private TextReader _reader; // reader from where data comes
+        private Stream _stream;     // stream from where data comes
 
-	    private int _eMarkIndex; // end index
-	    private int _wMarkIndex; // write index
-	    private int _rMarkIndex; // read index
-	    private int[] _markData; // backing store for reading data when marked
+        private int _eMarkIndex; // end index
+        private int _wMarkIndex; // write index
+        private int _rMarkIndex; // read index
+        private int[] _markData; // backing store for reading data when marked
 
-	    private IContainer _container;
+        private readonly IContainer _container;
 
         /// <summary>
         /// Ctor.
@@ -37,29 +37,29 @@ namespace com.espertech.esperio.csv
             _eMarkIndex = -1;
             _markData = new int[2];
 
-			_stream = source.GetAsStream(_container) ;
-			if ( _stream == null )
-			{
-				_reader = source.GetAsReader() ;
-			}
+            _stream = source.GetAsStream(_container);
+            if (_stream == null)
+            {
+                _reader = source.GetAsReader();
+            }
 
-			this._source = source;
-		}
-		
-		/// <summary>Close the underlying resource.</summary>
-		/// <throws>IOException to indicate an io error</throws>
+            this._source = source;
+        }
 
-		public void Close()
-		{
-			if (_stream != null)
-			{
-				_stream.Close();
-			}
-			else
-			{
-				_reader.Close();
-			}
-		}
+        /// <summary>Close the underlying resource.</summary>
+        /// <throws>IOException to indicate an io error</throws>
+
+        public void Close()
+        {
+            if (_stream != null)
+            {
+                _stream.Close();
+            }
+            else
+            {
+                _reader.Close();
+            }
+        }
 
         private int ReadFromBase()
         {
@@ -98,28 +98,28 @@ namespace com.espertech.esperio.csv
             }
         }
 
-	    /// <summary>Read from the underlying resource.</summary>
-		/// <returns>the result of the read</returns>
-		/// <throws>IOException for io errors</throws>
+        /// <summary>Read from the underlying resource.</summary>
+        /// <returns>the result of the read</returns>
+        /// <throws>IOException for io errors</throws>
 
         public int Read()
-		{
+        {
             int value;
 
             // Check to see if we are supposed to be reading from
             // somewhere within the markData.  If we are, make sure
             // that we return data from the markData buffer.
-		    if (_rMarkIndex >= 0)
-		    {
-		        int index = _rMarkIndex++;
-		        if (_eMarkIndex > index)
-		        {
-		            value = _markData[index];
-		            IncrementWriteMark();
-		        }
+            if (_rMarkIndex >= 0)
+            {
+                int index = _rMarkIndex++;
+                if (_eMarkIndex > index)
+                {
+                    value = _markData[index];
+                    IncrementWriteMark();
+                }
                 else
-		        {
-		            value = ReadFromBase();
+                {
+                    value = ReadFromBase();
 
                     // Can this value be written to the pushback buffer or have
                     // we consumed more data that was specified for the lookahead?
@@ -139,7 +139,7 @@ namespace com.espertech.esperio.csv
                         _wMarkIndex = -1;
                         _rMarkIndex = -1;
                     }
-		        }
+                }
             }
             // We are not reading from the mark buffer which means we
             // need to read one value.  If we are marking, then we need
@@ -149,47 +149,48 @@ namespace com.espertech.esperio.csv
                 value = ReadFromBase();
                 WriteToMark(value);
             }
-            
-		    return value;
-		}
 
-	    /// <summary>Return true if the underlying resource is resettable.</summary>
-		/// <returns>true if resettable, false otherwise</returns>
+            return value;
+        }
 
-		public bool IsResettable
-		{
-			get { return _source.IsResettable; }
-		}
-		
-		/// <summary>Reset to the last mark position.</summary>
-		/// <throws>IOException for io errors</throws>
+        /// <summary>Return true if the underlying resource is resettable.</summary>
+        /// <returns>true if resettable, false otherwise</returns>
 
-		public void ResetToMark()
-		{
-		    _rMarkIndex = 0;
-		    _eMarkIndex =
-		        _eMarkIndex > _wMarkIndex
-		            ? _eMarkIndex
-		            : _wMarkIndex;
+        public bool IsResettable
+        {
+            get { return _source.IsResettable; }
+        }
 
-		    _wMarkIndex = 0;
-		}
+        /// <summary>Reset to the last mark position.</summary>
+        /// <throws>IOException for io errors</throws>
+
+        public void ResetToMark()
+        {
+            _rMarkIndex = 0;
+            _eMarkIndex =
+                _eMarkIndex > _wMarkIndex
+                    ? _eMarkIndex
+                    : _wMarkIndex;
+
+            _wMarkIndex = 0;
+        }
 
         /// <summary>Set the mark position.</summary>
-		/// <param name="readAheadLimit">is the maximum number of read-ahead events</param>
-		/// <throws>IOException when an io error occurs</throws>
+        /// <param name="readAheadLimit">is the maximum number of read-ahead events</param>
+        /// <throws>IOException when an io error occurs</throws>
 
-		public void Mark(int readAheadLimit)
-		{
+        public void Mark(int readAheadLimit)
+        {
             // Set a new mark ...
             // - Have we consumed data that is currently in the pushback buffer?
 
-            switch( _rMarkIndex )
+            switch (_rMarkIndex)
             {
                 case -1:
                 case 0:
                     _wMarkIndex = 0;
                     break;
+
                 case 1:
                     _markData[0] = _markData[1];
                     _markData[1] = 0;
@@ -197,37 +198,38 @@ namespace com.espertech.esperio.csv
                     _eMarkIndex--;
                     _wMarkIndex = 0;
                     break;
+
                 case 2:
                     _rMarkIndex = -1;
                     _wMarkIndex = 0;
                     _eMarkIndex = 0;
                     break;
             }
-		}
-		
-		/// <summary>Reset to the beginning of the resource.</summary>
+        }
 
-		public void Reset()
-		{
-			if(!IsResettable)
-			{
-				throw new UnsupportedOperationException("Reset not supported: underlying source cannot be reset");
-			}
-			
-			if(_stream != null)
-			{
-				_stream = _source.GetAsStream(_container);
-			}
-			else
-			{
-				_reader = _source.GetAsReader();
-			}
+        /// <summary>Reset to the beginning of the resource.</summary>
 
-		    _rMarkIndex = -1;
-		    _wMarkIndex = -1;
-		    _eMarkIndex = -1;
-		    _markData[0] = 0;
-		    _markData[1] = 0;
-		}
-	}
+        public void Reset()
+        {
+            if (!IsResettable)
+            {
+                throw new UnsupportedOperationException("Reset not supported: underlying source cannot be reset");
+            }
+
+            if (_stream != null)
+            {
+                _stream = _source.GetAsStream(_container);
+            }
+            else
+            {
+                _reader = _source.GetAsReader();
+            }
+
+            _rMarkIndex = -1;
+            _wMarkIndex = -1;
+            _eMarkIndex = -1;
+            _markData[0] = 0;
+            _markData[1] = 0;
+        }
+    }
 }

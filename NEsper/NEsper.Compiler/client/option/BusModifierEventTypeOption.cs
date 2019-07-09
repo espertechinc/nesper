@@ -13,6 +13,10 @@ namespace com.espertech.esper.compiler.client.option
     /// <summary>
     ///     Implement this interface to provide or override the bus modifier for an event type.
     /// </summary>
+    public delegate EventTypeBusModifier? BusModifierEventTypeOption(
+        BusModifierEventTypeContext env);
+
+#if DEPRECATED_INTERFACE
     public interface BusModifierEventTypeOption
     {
         /// <summary>
@@ -22,4 +26,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>modifier</returns>
         EventTypeBusModifier? GetValue(BusModifierEventTypeContext env);
     }
+#endif
 } // end of namespace

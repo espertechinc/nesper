@@ -55,6 +55,18 @@ namespace NEsper.Avro.Core
         private static readonly JObject ARRAY_OF_REQ_FLOAT = TypeBuilder.Array("float");
         private static readonly JObject ARRAY_OF_OPT_FLOAT = TypeBuilder.Array(new JArray("null", "float"));
 
+        /// <summary>
+        /// Resolves the avro schema for an event type.  Note, this is a code-generation invoked
+        /// method and as such, the name and parameter order matters.
+        /// </summary>
+        /// <param name="eventType">Type of the event.</param>
+        /// <returns></returns>
+        public static Schema ResolveAvroSchema(EventType eventType)
+        {
+            return ((AvroEventType) eventType).SchemaAvro;
+        }
+
+
         internal static JArray Required(JArray array, string name, string type)
         {
             array.Add(TypeBuilder.Field(name, type));

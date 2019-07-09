@@ -75,5 +75,23 @@ namespace com.espertech.esper.compiler.client
         /// </summary>
         /// <returns>options</returns>
         public CompilerOptions Options { get; set; }
+
+        public CompilerArguments SetPath(CompilerPath value)
+        {
+            Path = value;
+            return this;
+        }
+
+        public CompilerArguments SetConfiguration(Configuration value)
+        {
+            Configuration = value;
+            return this;
+        }
+
+        public CompilerArguments SetOptions(CompilerOptions value)
+        {
+            Options = value;
+            return this;
+        }
     }
 } // end of namespace

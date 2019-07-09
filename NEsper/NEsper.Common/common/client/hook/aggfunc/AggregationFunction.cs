@@ -31,8 +31,8 @@ namespace com.espertech.esper.common.client.hook.aggfunc
         /// <summary>
         /// Returns the current value held.
         /// </summary>
-        /// <returns>current value</returns>
-        object GetValue();
+        /// <value>current value</value>
+        object Value { get; }
 
         /// <summary>
         /// Clear out the collection.

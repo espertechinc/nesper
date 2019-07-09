@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.client.dataflow.annotations
     /// Annotation for use with data flow operator forges to provide output type information
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class OutputTypesAttributes : Attribute
+    public class OutputTypesAttribute : Attribute
     {
         /// <summary>
         /// Types
@@ -30,18 +30,18 @@ namespace com.espertech.esper.common.client.dataflow.annotations
         /// <returns>port number</returns>
         public int PortNumber { get; set; }
 
-        public OutputTypesAttributes()
+        public OutputTypesAttribute()
         {
             Value = new OutputTypeAttribute[0];
             PortNumber = 0;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OutputTypesAttributes"/> class.
+        /// Initializes a new instance of the <see cref="OutputTypesAttribute"/> class.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="portNumber">The port number.</param>
-        public OutputTypesAttributes(
+        public OutputTypesAttribute(
             OutputTypeAttribute[] value,
             int portNumber)
         {

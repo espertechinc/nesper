@@ -13,6 +13,9 @@ namespace com.espertech.esper.runtime.client.option
     /// <summary>
     /// Implement this interface to provide a statement name at runtime for statements when they are deployed.
     /// </summary>
+    public delegate string StatementNameRuntimeOption(StatementNameRuntimeContext env);
+
+#if DEPRECATED_INTERFACE
     public interface StatementNameRuntimeOption
     {
         /// <summary>
@@ -25,13 +28,6 @@ namespace com.espertech.esper.runtime.client.option
         /// <returns>statement name or null if none needs to be assigned</returns>
         string GetStatementName(StatementNameRuntimeContext env);
     }
+#endif
 
-    public class ProxyStatementNameRuntimeOption : StatementNameRuntimeOption
-    {
-        public Func<StatementNameRuntimeContext, string> ProcGetStatementName { get; set; }
-        public string GetStatementName(StatementNameRuntimeContext env)
-        {
-            return ProcGetStatementName?.Invoke(env);
-        }
-    }
 } // end of namespace

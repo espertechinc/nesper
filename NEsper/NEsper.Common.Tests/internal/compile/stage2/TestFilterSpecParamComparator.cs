@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             Assert.AreEqual(FilterOperator.BOOLEAN_EXPRESSION, sorted.Last());
             Assert.AreEqual(
                 "[EQUAL, IS, IN_LIST_OF_VALUES, ADVANCED_INDEX, RANGE_OPEN, RANGE_HALF_OPEN, RANGE_HALF_CLOSED, RANGE_CLOSED, LESS, LESS_OR_EQUAL, GREATER_OR_EQUAL, GREATER, NOT_RANGE_CLOSED, NOT_RANGE_HALF_CLOSED, NOT_RANGE_HALF_OPEN, NOT_RANGE_OPEN, NOT_IN_LIST_OF_VALUES, NOT_EQUAL, IS_NOT, BOOLEAN_EXPRESSION]",
-                sorted.ToString());
+                sorted.RenderAny());
 
             log.Debug(".testCompareAll " + sorted.RenderAny());
         }

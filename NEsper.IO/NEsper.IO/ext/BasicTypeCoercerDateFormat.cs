@@ -17,14 +17,14 @@ namespace com.espertech.esperio.ext
     /// </summary>
     public class BasicTypeCoercerDateFormat : BasicTypeCoercer
     {
-    	public override Object Coerce(String property, String source)
+        public override Object Coerce(String property, String source)
         {
-    	    DateTime dateTime;
+            DateTime dateTime;
             if (DateTime.TryParse(source, out dateTime))
             {
                 return dateTime;
             }
-    	    return base.Coerce(property, source);
-    	}
+            return base.Coerce(property, source);
+        }
     }
 }

@@ -18,17 +18,17 @@ namespace com.espertech.esper.common.client.hook.condition
     public class ConditionHandlerContext
     {
         /// <summary>Ctor. </summary>
-        /// <param name="engineURI">engine URI</param>
+        /// <param name="runtimeUri">engine URI</param>
         /// <param name="statementName">statement name</param>
         /// <param name="deploymentId">statement deployment id</param>
         /// <param name="engineCondition">condition reported</param>
         public ConditionHandlerContext(
-            string engineURI,
+            string runtimeUri,
             string statementName,
             string deploymentId,
             BaseCondition engineCondition)
         {
-            EngineURI = engineURI;
+            RuntimeURI = runtimeUri;
             StatementName = statementName;
             DeploymentId = deploymentId;
             EngineCondition = engineCondition;
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.client.hook.condition
 
         /// <summary>Returns the engine URI. </summary>
         /// <value>engine URI</value>
-        public string EngineURI { get; }
+        public string RuntimeURI { get; }
 
         /// <summary>
         ///     Returns the statement name, if provided, or the statement id assigned to the statement if no name was

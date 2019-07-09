@@ -535,7 +535,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 var handler = new DeployerSubstitutionParameterHandler(deploymentId, lightweight, providedAllStmt, substitutionTypes, paramNames);
 
                 try {
-                    substitutionParameterResolver.SetStatementParameters(handler);
+                    substitutionParameterResolver.Invoke(handler);
                 }
                 catch (EPException) {
                     throw;
@@ -807,7 +807,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             var statementName = informationals.StatementNameCompileTime;
             if (statementNameResolverRuntime != null) {
-                var statementNameAssigned = statementNameResolverRuntime.GetStatementName(
+                var statementNameAssigned = statementNameResolverRuntime.Invoke(
                     new StatementNameRuntimeContext(
                         deploymentId, statementName, statementId, (string) informationals.Properties.Get(StatementProperty.EPL),
                         informationals.Annotations));

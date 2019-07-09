@@ -49,5 +49,24 @@ namespace com.espertech.esper.common.client.render
         /// </summary>
         /// <value>The renderer.</value>
         public EventPropertyRenderer Renderer { get; set; }
+
+        public XMLRenderingOptions SetPreventLooping(bool value)
+        {
+            PreventLooping = value;
+            return this;
+        }
+
+        public XMLRenderingOptions SetIsDefaultAsAttribute(bool value)
+        {
+            IsDefaultAsAttribute = value;
+            return this;
+        }
+
+        public XMLRenderingOptions SetRenderer(EventPropertyRenderer value)
+        {
+            Renderer = value;
+            return this;
+        }
+
     }
 }

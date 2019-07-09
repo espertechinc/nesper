@@ -16,14 +16,14 @@ namespace com.espertech.esper.common.client.hook.condition
     public class ConditionHandlerFactoryContext
     {
         /// <summary>Ctor. </summary>
-        /// <param name="engineURI">engine URI</param>
-        public ConditionHandlerFactoryContext(string engineURI)
+        /// <param name="runtimeUri">engine URI</param>
+        public ConditionHandlerFactoryContext(string runtimeUri)
         {
-            EngineURI = engineURI;
+            RuntimeURI = runtimeUri;
         }
 
         /// <summary>Returns the engine URI. </summary>
         /// <value>engine URI</value>
-        public string EngineURI { get; private set; }
+        public string RuntimeURI { get; private set; }
     }
 }

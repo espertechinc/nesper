@@ -13,6 +13,11 @@ namespace com.espertech.esper.compiler.client.option
     /// <summary>
     ///     Implement this interface to provide or override the access modifier for a variable.
     /// </summary>
+
+    public delegate NameAccessModifier AccessModifierVariableOption(
+        AccessModifierVariableContext env);
+
+#if DEPRECATED_INTERFACE
     public interface AccessModifierVariableOption
     {
         /// <summary>
@@ -22,4 +27,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>modifier</returns>
         NameAccessModifier GetValue(AccessModifierVariableContext env);
     }
+#endif
 } // end of namespace

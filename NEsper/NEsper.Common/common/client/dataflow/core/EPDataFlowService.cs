@@ -31,8 +31,8 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <summary>
         /// Returns the names of all declared data flows.
         /// </summary>
-        /// <returns>data flow names</returns>
-        DeploymentIdNamePair[] GetDataFlows();
+        /// <value>data flow names</value>
+        DeploymentIdNamePair[] DataFlows { get; }
 
         /// <summary>
         /// Instantiate a data flow.
@@ -71,8 +71,8 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <summary>
         /// Returns the instance names of a saved data flow instances.
         /// </summary>
-        /// <returns>data flow instance names</returns>
-        string[] GetSavedInstances();
+        /// <value>data flow instance names</value>
+        string[] SavedInstances { get; }
 
         /// <summary>
         /// Returns a specific saved data flow instance, or null if it has not been found
@@ -106,8 +106,8 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <summary>
         /// Returns the names of a saved data flow configurations.
         /// </summary>
-        /// <returns>data flow configuration names</returns>
-        string[] GetSavedConfigurations();
+        /// <value>data flow configuration names</value>
+        string[] SavedConfigurations { get; }
 
         /// <summary>
         /// Returns a saved dataflow configuration or null if it is not found.

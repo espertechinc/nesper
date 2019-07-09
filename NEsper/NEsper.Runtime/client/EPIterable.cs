@@ -17,8 +17,9 @@ namespace com.espertech.esper.runtime.client
     /// <summary>
     ///     Interface to iterate over events.
     /// </summary>
-    public interface EPIterable
+    public interface EPIterable : IEnumerable<EventBean>
     {
+#if DEPRECATED
         /// <summary>
         ///     Returns a concurrency-unsafe enumerator over events representing statement results (pull API).
         ///     <para>
@@ -37,6 +38,7 @@ namespace com.espertech.esper.runtime.client
         /// </summary>
         /// <returns>event enumerator</returns>
         IEnumerator<EventBean> GetEnumerator();
+#endif
 
         /// <summary>
         ///     Returns a concurrency-safe enumerator that iterates over events representing statement results (pull API)

@@ -84,10 +84,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestToExpressionString()
         {
-            Assert.AreEqual("s0.theString like \"%abc__\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(likeNodeNormal));
-            Assert.AreEqual("s0.theString not like \"%abc__\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(likeNodeNot));
+            Assert.AreEqual("s0.TheString like \"%abc__\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(likeNodeNormal));
+            Assert.AreEqual("s0.TheString not like \"%abc__\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(likeNodeNot));
             Assert.AreEqual(
-                "s0.theString like \"%abc__\" escape \"!\"",
+                "s0.TheString like \"%abc__\" escape \"!\"",
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(likeNodeNormalEscaped));
         }
 

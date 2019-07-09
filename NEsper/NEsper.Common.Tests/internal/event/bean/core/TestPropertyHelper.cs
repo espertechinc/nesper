@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
 
             Assert.AreEqual(9, result.Count); // for "class" is also in there
-            Assert.AreEqual("indexed", result[8].PropertyName);
+            Assert.AreEqual("Indexed", result[8].PropertyName);
             Assert.IsNotNull(result[8].ReadMethod);
         }
 

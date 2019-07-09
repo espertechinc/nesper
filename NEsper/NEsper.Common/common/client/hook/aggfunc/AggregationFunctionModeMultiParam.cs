@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.client.hook.aggfunc
         ///     Returns the injection strategy for the aggregation function factory
         /// </summary>
         /// <returns>strategy</returns>
-        public InjectionStrategy InjectionStrategyAggregationFunctionFactory { get; private set; }
+        public InjectionStrategy InjectionStrategyAggregationFunctionFactory { get; set; }
 
         /// <summary>
         ///     Returns indicator whether a serializer-deserialize to provide read and write methods is provided by

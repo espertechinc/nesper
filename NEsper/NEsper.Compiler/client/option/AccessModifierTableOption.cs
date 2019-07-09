@@ -13,6 +13,10 @@ namespace com.espertech.esper.compiler.client.option
     /// <summary>
     ///     Implement this interface to provide or override the access modifier for a table.
     /// </summary>
+    public delegate NameAccessModifier AccessModifierTableOption(
+        AccessModifierTableContext env);
+
+#if DEPRECATED_INTERFACE
     public interface AccessModifierTableOption
     {
         /// <summary>
@@ -22,4 +26,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>modifier</returns>
         NameAccessModifier GetValue(AccessModifierTableContext env);
     }
+#endif
 } // end of namespace

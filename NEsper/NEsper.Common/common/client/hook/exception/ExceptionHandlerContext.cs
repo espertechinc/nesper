@@ -20,35 +20,46 @@ namespace com.espertech.esper.common.client.hook.exception
     public class ExceptionHandlerContext
     {
         /// <summary>Ctor. </summary>
-        /// <param name="engineURI">engine URI</param>
+        /// <param name="runtimeUri">engine URI</param>
         /// <param name="exception">exception</param>
+        /// <param name="deploymentId">the deployment id</param>
         /// <param name="statementName">statement name</param>
         /// <param name="epl">statement EPL expression text</param>
         /// <param name="exceptionType"></param>
         /// <param name="currentEvent"></param>
         public ExceptionHandlerContext(
-            string engineURI,
+            string runtimeUri,
             Exception exception,
+            string deploymentId,
             string statementName,
             string epl,
             ExceptionHandlerExceptionType exceptionType,
             EventBean currentEvent)
         {
-            EngineURI = engineURI;
+            RuntimeURI = runtimeUri;
             Exception = exception;
             StatementName = statementName;
             Epl = epl;
             ExceptionType = exceptionType;
             CurrentEvent = currentEvent;
+            DeploymentId = deploymentId;
         }
 
-        /// <summary>Returns the engine URI. </summary>
-        /// <value>engine URI</value>
-        public string EngineURI { get; private set; }
+        /// <summary>Returns the runtime URI. </summary>
+        /// <value>runtime URI</value>
+        public string RuntimeURI { get; private set; }
 
         /// <summary>Returns the exception. </summary>
         /// <value>exception</value>
         public Exception Exception { get; private set; }
+
+        /// <summary>
+        /// Returns the deployment identifier.
+        /// </summary>
+        /// <value>
+        /// The deployment identifier.
+        /// </value>
+        public string DeploymentId { get; private set; }
 
         /// <summary>Returns the statement name, if provided, or the statement id assigned to the statement if no name was provided. </summary>
         /// <value>statement name or id</value>

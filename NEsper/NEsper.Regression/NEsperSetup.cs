@@ -7,13 +7,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using com.espertech.esper.compat.logger;
+
+using com.espertech.esper.compat.logging;
 
 using NEsper.Avro.Extensions;
+
 using NLog;
+
 #if NETSTANDARD2_0
 #else
-using NEsper.Scripting.ClearScript;
 #endif
 
 using NUnit.Framework;
@@ -30,7 +32,7 @@ namespace com.espertech.esper
         {
 #if NETSTANDARD2_0
 #else
-            var clearScript = typeof(ScriptingEngineJScript);
+            //var clearScript = typeof(ScriptingEngineJScript);
 #endif
 
             // Ensure that AVRO support is loaded before we change directories

@@ -133,7 +133,8 @@ namespace com.espertech.esper.common.@internal.settings
             if (UnhandledException != null) {
                 UnhandledException(
                     this, new ExceptionHandlerEventArgs {
-                        Context = new ExceptionHandlerContext(RuntimeURI, ex, statementName, epl, type, optionalCurrentEvent)
+                        Context = new ExceptionHandlerContext(
+                            RuntimeURI, ex, deploymentId, statementName, epl, type, optionalCurrentEvent)
                     });
             }
         }

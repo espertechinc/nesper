@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.support
@@ -26,6 +27,22 @@ namespace com.espertech.esper.common.@internal.support
 
     public static class EventRepresentationChoiceExtensions
     {
+        public static string GetUndName(this EventRepresentationChoice enumValue)
+        {
+            switch (enumValue) {
+                case EventRepresentationChoice.ARRAY:
+                    return "ARRAY";
+                case EventRepresentationChoice.MAP:
+                    return "MAP";
+                case EventRepresentationChoice.AVRO:
+                    return "AVRO";
+                case EventRepresentationChoice.DEFAULT:
+                    return "";
+            }
+
+            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
+        }
+
         public static string GetAnnotationText(this EventRepresentationChoice enumValue)
         {
             switch (enumValue) {
@@ -55,7 +72,7 @@ namespace com.espertech.esper.common.@internal.support
                     return "";
             }
 
-            throw new ArgumentException("invalid value for enumValue", "enumValue");
+            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
         }
 
         public static string GetOutputTypeClassName(this EventRepresentationChoice enumValue)
@@ -88,7 +105,7 @@ namespace com.espertech.esper.common.@internal.support
                     return EventUnderlyingType.GetDefault();
             }
 
-            throw new ArgumentException("invalid value for enumValue", "enumValue");
+            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
         }
 
 

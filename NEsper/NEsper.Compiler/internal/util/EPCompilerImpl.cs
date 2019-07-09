@@ -11,12 +11,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.compile.stage1;
-using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -35,14 +36,14 @@ using com.espertech.esper.compiler.client.option;
 using static com.espertech.esper.compiler.@internal.util.CompilerHelperServices;
 using static com.espertech.esper.compiler.@internal.util.CompilerHelperSingleEPL;
 
+using Module = com.espertech.esper.common.client.module.Module;
+using Stream = System.IO.Stream;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
-    using Stream = System.IO.Stream;
-
     public class EPCompilerImpl : EPCompilerSPI
     {
-
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public EPCompiled CompileQuery(
             string fireAndForgetEPLQuery,
@@ -83,14 +84,20 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 // compile
                 return CompilerHelperModuleProvider.Compile(
-                    compilables, moduleName,
-                    new EmptyDictionary<ModuleProperty, object>(), compileTimeServices, arguments.Options);
+                    compilables,
+                    moduleName,
+                    new EmptyDictionary<ModuleProperty, object>(),
+                    compileTimeServices,
+                    arguments.Options);
             }
             catch (EPCompileException) {
                 throw;
             }
             catch (ParseException t) {
-                throw new EPCompileException("Failed to parse: " + t.Message, t, new EmptyList<EPCompileExceptionItem>());
+                throw new EPCompileException(
+                    "Failed to parse: " + t.Message,
+                    t,
+                    new EmptyList<EPCompileExceptionItem>());
             }
             catch (Exception ex) {
                 throw new EPCompileException(ex.Message, ex, new EmptyList<EPCompileExceptionItem>());
@@ -111,10 +118,15 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             try {
                 var mapEnv = new StatementSpecMapEnv(
-                    MakeImportService(configuration), VariableCompileTimeResolverEmpty.INSTANCE, configuration,
-                    ExprDeclaredCompileTimeResolverEmpty.INSTANCE, ContextCompileTimeResolverEmpty.INSTANCE, TableCompileTimeResolverEmpty.INSTANCE,
-                    ScriptCompileTimeResolverEmpty.INSTANCE, new CompilerServicesImpl());
-                var statementSpec = CompilerHelperSingleEPL.ParseWalk(stmtText, mapEnv);
+                    MakeImportService(configuration),
+                    VariableCompileTimeResolverEmpty.INSTANCE,
+                    configuration,
+                    ExprDeclaredCompileTimeResolverEmpty.INSTANCE,
+                    ContextCompileTimeResolverEmpty.INSTANCE,
+                    TableCompileTimeResolverEmpty.INSTANCE,
+                    ScriptCompileTimeResolverEmpty.INSTANCE,
+                    new CompilerServicesImpl());
+                var statementSpec = ParseWalk(stmtText, mapEnv);
                 var unmapped = StatementSpecMapper.Unmap(statementSpec);
                 return unmapped.ObjectModel;
             }
@@ -174,7 +186,8 @@ namespace com.espertech.esper.compiler.@internal.util
                     compilables.Add(new CompilableSODA(item.Model));
                 }
                 else {
-                    throw new EPCompileException("Module item has neither an EPL expression nor a statement object model");
+                    throw new EPCompileException(
+                        "Module item has neither an EPL expression nor a statement object model");
                 }
             }
 
@@ -186,10 +199,18 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             AddModuleProperty(moduleProperties, ModuleProperty.USEROBJECT, module.UserObjectCompileTime);
-            AddModuleProperty(moduleProperties, ModuleProperty.USES, module.Uses == null || module.Uses.IsEmpty() ? null : module.Uses.ToArray());
+            AddModuleProperty(
+                moduleProperties,
+                ModuleProperty.USES,
+                module.Uses == null || module.Uses.IsEmpty() ? null : module.Uses.ToArray());
 
             // compile
-            return CompilerHelperModuleProvider.Compile(compilables, moduleName, moduleProperties, compileTimeServices, arguments.Options);
+            return CompilerHelperModuleProvider.Compile(
+                compilables,
+                moduleName,
+                moduleProperties,
+                compileTimeServices,
+                arguments.Options);
         }
 
         public Module ReadModule(
@@ -257,7 +278,8 @@ namespace com.espertech.esper.compiler.@internal.util
                     }
 
                     if (item.Expression != null && item.Model != null) {
-                        throw new EPCompileException("Module item has both an EPL expression and a statement object model");
+                        throw new EPCompileException(
+                            "Module item has both an EPL expression and a statement object model");
                     }
 
                     if (item.Expression != null) {
@@ -268,7 +290,8 @@ namespace com.espertech.esper.compiler.@internal.util
                         item.Model.ToEPL();
                     }
                     else {
-                        throw new EPCompileException("Module item has neither an EPL expression nor a statement object model");
+                        throw new EPCompileException(
+                            "Module item has neither an EPL expression nor a statement object model");
                     }
 
                     statementNumber++;
@@ -288,15 +311,18 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // determine module name
-            var moduleName = arguments.Options.ModuleName?.GetValue(new ModuleNameContext(null));
-            var moduleUses = arguments.Options.ModuleUses?.GetValue(new ModuleUsesContext(moduleName, null));
+            var moduleName = arguments.Options.ModuleName?.Invoke(new ModuleNameContext(null));
+            var moduleUses = arguments.Options.ModuleUses?.Invoke(new ModuleUsesContext(moduleName, null));
 
             var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
             try {
                 return CompilerHelperFAFProvider.Compile(compilable, compileTimeServices, arguments);
             }
             catch (Exception ex) {
-                throw new EPCompileException(ex.Message + " [" + compilable.ToEPL() + "]", ex, new EmptyList<EPCompileExceptionItem>());
+                throw new EPCompileException(
+                    ex.Message + " [" + compilable.ToEPL() + "]",
+                    ex,
+                    new EmptyList<EPCompileExceptionItem>());
             }
         }
 
@@ -316,7 +342,9 @@ namespace com.espertech.esper.compiler.@internal.util
             CompilerOptions options,
             Module module)
         {
-            return options.ModuleName != null ? options.ModuleName.GetValue(new ModuleNameContext(module.Name)) : module.Name;
+            return options.ModuleName != null
+                ? options.ModuleName.Invoke(new ModuleNameContext(module.Name))
+                : module.Name;
         }
 
         private ICollection<string> DetermineModuleUses(
@@ -324,8 +352,8 @@ namespace com.espertech.esper.compiler.@internal.util
             CompilerOptions options,
             Module module)
         {
-            return options.ModuleUses != null 
-                ? options.ModuleUses.GetValue(new ModuleUsesContext(moduleName, module.Uses))
+            return options.ModuleUses != null
+                ? options.ModuleUses.Invoke(new ModuleUsesContext(moduleName, module.Uses))
                 : module.Uses;
         }
     }

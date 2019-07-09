@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         public void SetUp()
         {
             prop = new SimpleProperty("SimpleProperty");
-            invalidPropMap = new SimpleProperty("mapped");
-            invalidPropIndexed = new SimpleProperty("indexed");
+            invalidPropMap = new SimpleProperty("Mapped");
+            invalidPropIndexed = new SimpleProperty("Indexed");
             invalidDummy = new SimpleProperty("dummy");
             theEvent = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, SupportBeanComplexProps.MakeDefaultBean());
             eventType = (BeanEventType) theEvent.EventType;

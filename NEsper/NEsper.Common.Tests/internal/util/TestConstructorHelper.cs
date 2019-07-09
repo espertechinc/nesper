@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
@@ -38,18 +40,18 @@ namespace com.espertech.esper.common.@internal.util
         {
             // No Ctor
             Assert.That(
-                ConstructorHelper.InvokeConstructor(typeof(SupportCtorNone), new object[0]),
-                Is.Null);
+                () => ConstructorHelper.InvokeConstructor(typeof(SupportCtorNone), new object[0]),
+                Throws.InstanceOf<MissingMethodException>());
 
             // Not matching Ctor - number of params
             Assert.That(
-                ConstructorHelper.InvokeConstructor(typeof(SupportCtorInt), new object[0]),
-                Is.Null);
+                () => ConstructorHelper.InvokeConstructor(typeof(SupportCtorInt), new object[0]),
+                Throws.InstanceOf<MissingMethodException>());
 
             // Type not matching
             Assert.That(
-                ConstructorHelper.InvokeConstructor(typeof(SupportCtorInt), new object[] {"a"}),
-                Is.Null);
+                () => ConstructorHelper.InvokeConstructor(typeof(SupportCtorInt), new object[] {"a"}),
+                Throws.InstanceOf<MissingMethodException>());
         }
     }
 } // end of namespace

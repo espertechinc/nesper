@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.property
         public void SetUp()
         {
             indexed = new IndexedProperty[4];
-            indexed[0] = new IndexedProperty("indexed", 0);
-            indexed[1] = new IndexedProperty("indexed", 1);
+            indexed[0] = new IndexedProperty("Indexed", 0);
+            indexed[1] = new IndexedProperty("Indexed", 1);
             indexed[2] = new IndexedProperty("arrayProperty", 0);
             indexed[3] = new IndexedProperty("arrayProperty", 1);
 

@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
     /// <summary>
     /// Scripting implementations must implement the ScriptingEngine interface.
     /// </summary>
-    internal interface ScriptingEngine
+    public interface ScriptingEngine
     {
         /// <summary>
         /// Gets the language associated with this engine.  e.g. Javascript

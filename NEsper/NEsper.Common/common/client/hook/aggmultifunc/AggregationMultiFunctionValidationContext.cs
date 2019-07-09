@@ -6,37 +6,27 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using com.espertech.esper.common.client;
+
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
     /// <summary>
-    /// Context for use with <seealso cref="com.espertech.esper.common.client.hook.aggfunc.AggregationFunctionForge" /> provides
-    /// information about an aggregation function at the time of validation.
-    /// <para />At validation time the event type information, parameter expressions
-    /// and other statement-specific services are available.
+    ///     Context for use with <seealso cref="com.espertech.esper.common.client.hook.aggfunc.AggregationFunctionForge" />
+    ///     provides
+    ///     information about an aggregation function at the time of validation.
+    ///     <para />
+    ///     At validation time the event type information, parameter expressions
+    ///     and other statement-specific services are available.
     /// </summary>
     public class AggregationMultiFunctionValidationContext
     {
-        private readonly string functionName;
-        private readonly EventType[] eventTypes;
-        private readonly ExprNode[] parameterExpressions;
-        private readonly string statementName;
-        private readonly ExprValidationContext validationContext;
-        private readonly ConfigurationCompilerPlugInAggregationMultiFunction config;
-        private readonly TableMetadataColumnAggregation optionalTableColumnRead;
-        private readonly ExprNode[] allParameterExpressions;
-        private readonly ExprNode optionalFilterExpression;
-
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="functionName">function name</param>
         /// <param name="eventTypes">event types</param>
@@ -58,108 +48,88 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             ExprNode[] allParameterExpressions,
             ExprNode optionalFilterExpression)
         {
-            this.functionName = functionName;
-            this.eventTypes = eventTypes;
-            this.parameterExpressions = parameterExpressions;
-            this.statementName = statementName;
-            this.validationContext = validationContext;
-            this.config = config;
-            this.optionalTableColumnRead = optionalTableColumnRead;
-            this.allParameterExpressions = allParameterExpressions;
-            this.optionalFilterExpression = optionalFilterExpression;
+            FunctionName = functionName;
+            EventTypes = eventTypes;
+            ParameterExpressions = parameterExpressions;
+            StatementName = statementName;
+            ValidationContext = validationContext;
+            Config = config;
+            OptionalTableColumnRead = optionalTableColumnRead;
+            AllParameterExpressions = allParameterExpressions;
+            OptionalFilterExpression = optionalFilterExpression;
         }
 
         /// <summary>
-        /// Returns the aggregation function name
+        ///     Returns the aggregation function name
         /// </summary>
         /// <returns>aggregation function name</returns>
-        public string FunctionName {
-            get => functionName;
-        }
+        public string FunctionName { get; }
 
         /// <summary>
-        /// Returns the event types of all events in the select clause
+        ///     Returns the event types of all events in the select clause
         /// </summary>
-        /// <returns>types</returns>
-        public EventType[] GetEventTypes()
-        {
-            return eventTypes;
-        }
+        /// <value>types</value>
+        public EventType[] EventTypes { get; }
 
         /// <summary>
-        /// Returns positional parameters expressions to this aggregation function.
-        /// Use {@link #getAllParameterExpressions()} for a list of all parameters including non-positional parameters.
+        ///     Returns positional parameters expressions to this aggregation function.
+        ///     Use <seealso cref="AllParameterExpressions" /> for a list of all parameters including non-positional parameters.
         /// </summary>
-        /// <returns>positional parameter expressions</returns>
-        public ExprNode[] GetParameterExpressions()
-        {
-            return parameterExpressions;
-        }
+        /// <value>positional parameter expressions</value>
+        public ExprNode[] ParameterExpressions { get; }
 
         /// <summary>
-        /// Returns the statement name.
+        ///     Returns the statement name.
         /// </summary>
         /// <returns>statement name</returns>
-        public string StatementName {
-            get => statementName;
-        }
+        public string StatementName { get; }
 
         /// <summary>
-        /// Returns additional validation contextual services.
+        ///     Returns additional validation contextual services.
         /// </summary>
         /// <returns>validation context</returns>
-        public ExprValidationContext ValidationContext {
-            get => validationContext;
-        }
+        public ExprValidationContext ValidationContext { get; }
 
         /// <summary>
-        /// Returns the original configuration object for the aggregation multi-function
+        ///     Returns the original configuration object for the aggregation multi-function
         /// </summary>
         /// <returns>config</returns>
-        public ConfigurationCompilerPlugInAggregationMultiFunction Config {
-            get => config;
-        }
+        public ConfigurationCompilerPlugInAggregationMultiFunction Config { get; }
 
         /// <summary>
-        /// Returns positional and non-positional parameters.
+        ///     Returns positional and non-positional parameters.
         /// </summary>
-        /// <returns>all parameters</returns>
-        public ExprNode[] GetAllParameterExpressions()
-        {
-            return allParameterExpressions;
-        }
+        /// <value>all parameters</value>
+        public ExprNode[] AllParameterExpressions { get; }
 
         /// <summary>
-        /// Returns the filter expression when provided
+        ///     Returns the filter expression when provided
         /// </summary>
         /// <returns>filter expression</returns>
-        public ExprNode OptionalFilterExpression {
-            get => optionalFilterExpression;
-        }
+        public ExprNode OptionalFilterExpression { get; }
 
         /// <summary>
-        /// Returns table column information when used with tables
+        ///     Returns table column information when used with tables
         /// </summary>
         /// <returns>table column</returns>
-        public TableMetadataColumnAggregation OptionalTableColumnRead {
-            get => optionalTableColumnRead;
-        }
+        public TableMetadataColumnAggregation OptionalTableColumnRead { get; }
 
         /// <summary>
-        /// Gets the named parameters as a list
+        ///     Gets the named parameters as a list
         /// </summary>
-        /// <returns>named params</returns>
-        public LinkedHashMap<string, IList<ExprNode>> GetNamedParameters()
-        {
-            LinkedHashMap<string, IList<ExprNode>> named = new LinkedHashMap<string, IList<ExprNode>>();
-            foreach (ExprNode node in allParameterExpressions) {
-                if (node is ExprNamedParameterNode) {
-                    ExprNamedParameterNode namedNode = (ExprNamedParameterNode) node;
-                    named.Put(namedNode.ParameterName, Arrays.AsList(namedNode.ChildNodes));
+        /// <value>named params</value>
+        public LinkedHashMap<string, IList<ExprNode>> NamedParameters {
+            get {
+                var named = new LinkedHashMap<string, IList<ExprNode>>();
+                foreach (var node in AllParameterExpressions) {
+                    if (node is ExprNamedParameterNode) {
+                        var namedNode = (ExprNamedParameterNode) node;
+                        named.Put(namedNode.ParameterName, Arrays.AsList(namedNode.ChildNodes));
+                    }
                 }
-            }
 
-            return named;
+                return named;
+            }
         }
     }
 } // end of namespace

@@ -815,15 +815,15 @@ namespace com.espertech.esper.common.@internal.util
             return result;
         }
 
-        public static IDictionary<object, object> BuildMap(object[][] entries)
+        public static IDictionary<string, object> BuildMap(object[][] entries)
         {
-            IDictionary<object, object> result = new Dictionary<object, object>();
+            IDictionary<string, object> result = new Dictionary<string, object>();
             if (entries == null) {
                 return result;
             }
 
             for (var i = 0; i < entries.Length; i++) {
-                result.Put(entries[i][0], entries[i][1]);
+                result.Put((string) entries[i][0], entries[i][1]);
             }
 
             return result;

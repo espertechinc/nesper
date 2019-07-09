@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public void TestToExpressionString()
         {
             Assert.AreEqual(
-                "instanceof(\"\"," + typeof(SupportBean).Name + ",int,string)",
+                "instanceof(\"\"," + typeof(SupportBean).FullName + ",int,string)",
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(instanceofNodes[1]));
         }
 

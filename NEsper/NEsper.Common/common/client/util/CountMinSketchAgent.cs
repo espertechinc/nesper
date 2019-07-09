@@ -18,14 +18,6 @@ namespace com.espertech.esper.common.client.util
     public interface CountMinSketchAgent
     {
         /// <summary>
-        /// Returns an array of types that the agent can handle, for validation purposes.
-        /// For example, an agent that accepts byte-array type values should return "new Class[] {typeof(String)}".
-        /// Interfaces and supertype classes can also be part of the class array.
-        /// </summary>
-        /// <value>class array of acceptable type</value>
-        Type[] AcceptableValueTypes { get; }
-
-        /// <summary>
         /// Add a value to the Count-min sketch.
         /// Implementations typically check for null value, convert the value object to a byte-array
         /// and invoke a method on the state object to add the byte-array value.

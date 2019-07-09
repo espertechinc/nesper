@@ -869,7 +869,7 @@ namespace com.espertech.esper.common.@internal.util
 	                {"listObject", typeof(object)},
 	                {"listUndefined", null},
 	                {"iterable", typeof(int?)},
-	                {"nested", typeof(MyClassWithGetters)},
+	                {"Nested", typeof(MyClassWithGetters)},
 	                {"IntPrimitive", null},
 	                {"IntBoxed", null},
 	        };

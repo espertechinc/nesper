@@ -170,32 +170,32 @@ namespace com.espertech.esper.runtime.client.scopetest
         }
 
         /// <summary>Returns an event array that represents all insert-stream events received so far. </summary>
-        /// <returns>event array</returns>
-        public object[] GetNewDataListFlattened()
-        {
-            lock (this)
-            {
-                return Flatten(_newDataList);
+        /// <value>event array</value>
+        public object[] NewDataListFlattened {
+            get {
+                lock (this) {
+                    return Flatten(_newDataList);
+                }
             }
         }
 
         /// <summary>Returns an event array that represents all remove-stream events received so far. </summary>
-        /// <returns>event array</returns>
-        public object[] GetOldDataListFlattened()
-        {
-            lock (this)
-            {
-                return Flatten(_oldDataList);
+        /// <value>event array</value>
+        public object[] OldDataListFlattened {
+            get {
+                lock (this) {
+                    return Flatten(_oldDataList);
+                }
             }
         }
 
         /// <summary>Returns a pair of insert and remove stream event arrays considering the all invocations. </summary>
-        /// <returns>pair of event arrays, the first in the pair is the insert stream data, the second in the pair is the remove stream data</returns>
-        public UniformPair<object[]> GetDataListsFlattened()
-        {
-            lock (this)
-            {
-                return new UniformPair<object[]>(Flatten(_newDataList), Flatten(_oldDataList));
+        /// <value>pair of event arrays, the first in the pair is the insert stream data, the second in the pair is the remove stream data</value>
+        public UniformPair<object[]> DataListsFlattened {
+            get {
+                lock (this) {
+                    return new UniformPair<object[]>(Flatten(_newDataList), Flatten(_oldDataList));
+                }
             }
         }
 

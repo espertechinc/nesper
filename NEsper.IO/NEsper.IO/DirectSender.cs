@@ -12,18 +12,21 @@ using System.Collections.Generic;
 namespace com.espertech.esperio
 {
     /// <summary>Sender that sends without a threadpool. </summary>
-    public class DirectSender : AbstractSender {
-    
-    	public override void SendEvent(AbstractSendableEvent theEvent, Object beanToSend) {
-    		Runtime.SendEvent(beanToSend);
-    	}
-    
-    	public override void SendEvent(AbstractSendableEvent theEvent, IDictionary<string, object> mapToSend, String eventTypeName) {
-    		Runtime.SendEvent(mapToSend, eventTypeName);
-    	}
-    
-    	public override void OnFinish() {
-    		// do nothing
-    	}
+    public class DirectSender : AbstractSender
+    {
+        public override void SendEvent(AbstractSendableEvent theEvent, Object beanToSend)
+        {
+            Runtime.SendEvent(beanToSend);
+        }
+
+        public override void SendEvent(AbstractSendableEvent theEvent, IDictionary<string, object> mapToSend, String eventTypeName)
+        {
+            Runtime.SendEvent(mapToSend, eventTypeName);
+        }
+
+        public override void OnFinish()
+        {
+            // do nothing
+        }
     }
 }

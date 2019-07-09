@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
     public class DefaultSupportCaptureOp<T> : DataFlowOperator
         , EPDataFlowSignalHandler
-        , IFuture<Object[]>
+        , IFuture<object[]>
     {
         private IList<IList<T>> _received = new List<IList<T>>();
         private IList<T> _current = new List<T>();
@@ -105,10 +105,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             }
         }
 
-        public Object[] GetCurrentAndReset()
+        public object[] GetCurrentAndReset()
         {
             using (_iLock.Acquire()) {
-                Object[] currentArray = _current.UnwrapIntoArray<object>();
+                object[] currentArray = _current.UnwrapIntoArray<object>();
                 _current.Clear();
                 return currentArray;
             }
@@ -123,12 +123,21 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             return _numRowLatch.Count <= 0;
         }
 
+        public object[] Get()
+        {
+            if (!HasValue) {
+                throw new InvalidOperationException();
+            }
+
+            return Current;
+        }
+
         public object[] GetValueOrDefault()
         {
             return !IsDone() ? null : Current;
         }
 
-        public Object[] GetValue(TimeSpan timeOut)
+        public object[] GetValue(TimeSpan timeOut)
         {
             bool result = _numRowLatch.Await(timeOut);
             if (!result) {
@@ -145,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             return GetValue(TimeUnitHelper.ToTimeSpan(units, timeUnit));
         }
 
-        public Object[] GetPunctuated()
+        public object[] GetPunctuated()
         {
             var result = _numRowLatch.Await(TimeSpan.FromSeconds(1));
             if (!result) {

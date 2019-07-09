@@ -11,6 +11,10 @@ namespace com.espertech.esper.compiler.client.option
     /// <summary>
     ///     Implement this interface to provide a custom user object at compile-time for the statements when they are compiled.
     /// </summary>
+
+    public delegate string StatementNameOption(StatementNameContext env);
+
+#if DEPRECATED_INTERFACE
     public interface StatementNameOption
     {
         /// <summary>
@@ -23,4 +27,5 @@ namespace com.espertech.esper.compiler.client.option
         /// <returns>statement name or null if none needs to be assigned</returns>
         string GetValue(StatementNameContext env);
     }
+#endif
 } // end of namespace

@@ -13,9 +13,14 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
     /// <summary>
-    /// Marker interface for use with multi-function aggregation to indicate whether aggregation functions share state
+    /// Marker interface for use with multi-function aggregation to indicate whether
+    /// aggregation functions share state
     /// </summary>
     public interface AggregationMultiFunctionStateKey
+    {
+    }
+
+    public class ProxyAggregationMultiFunctionStateKey : AggregationMultiFunctionStateKey
     {
     }
 } // end of namespace
