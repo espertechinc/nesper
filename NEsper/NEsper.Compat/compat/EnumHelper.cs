@@ -77,7 +77,7 @@ namespace com.espertech.esper.compat
         /// Gets the name associated with the value presented in enumValue.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="enumValue">The enum value.</param>
+        /// <param name="EnumValue">The enum value.</param>
         /// <returns></returns>
         public static string GetName<T>( this T enumValue )
         {

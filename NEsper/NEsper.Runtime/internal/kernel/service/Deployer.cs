@@ -96,7 +96,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             epRuntime.ServicesContext.VariableManagementService.SetLocalVersion();
 
             return DeploySafe(
-                epRuntime.ServicesContext.Container,
+                epRuntime.Container,
                 recovery, 
                 deploymentId, 
                 statementIdFirstStatement, 
@@ -257,7 +257,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             IList<string> pathExprDecl = new List<string>(2);
             IList<NameAndParamNum> pathScripts = new List<NameAndParamNum>();
             foreach (var entry in moduleNamedWindows) {
-                if (entry.Value.EventType.Metadata.AccessModifier.IsNonPrivateNonTransient) {
+                if (entry.Value.EventType.Metadata.AccessModifier.IsNonPrivateNonTransient()) {
                     try {
                         services.NamedWindowPathRegistry.Add(entry.Key, moduleName, entry.Value, deploymentId);
                     }
@@ -270,7 +270,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             foreach (var entry in moduleTables) {
-                if (entry.Value.TableVisibility.IsNonPrivateNonTransient) {
+                if (entry.Value.TableVisibility.IsNonPrivateNonTransient()) {
                     try {
                         services.TablePathRegistry.Add(entry.Key, moduleName, entry.Value, deploymentId);
                     }
@@ -292,7 +292,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                         throw new IllegalStateException("Unrecognized public visibility type in deployment");
                     }
                 }
-                else if (eventTypeMetadata.AccessModifier.IsNonPrivateNonTransient) {
+                else if (eventTypeMetadata.AccessModifier.IsNonPrivateNonTransient()) {
                     if (eventTypeMetadata.BusModifier == EventTypeBusModifier.BUS) {
                         eventTypeSPI.SetMetadataId(nameTypeId, -1);
                         services.EventTypeRepositoryBus.AddType(eventTypeSPI);
@@ -312,7 +312,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     eventTypeSPI.SetMetadataId(deploymentIdCrc32, nameTypeId);
                 }
 
-                if (eventTypeMetadata.AccessModifier.IsNonPrivateNonTransient) {
+                if (eventTypeMetadata.AccessModifier.IsNonPrivateNonTransient()) {
                     pathEventTypes.Add(entry.Key);
                 }
 
@@ -325,7 +325,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             foreach (var entry in moduleContexts) {
-                if (entry.Value.ContextVisibility.IsNonPrivateNonTransient) {
+                if (entry.Value.ContextVisibility.IsNonPrivateNonTransient()) {
                     try {
                         services.ContextPathRegistry.Add(entry.Key, moduleName, entry.Value, deploymentId);
                     }
@@ -338,7 +338,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             foreach (var entry in moduleVariables) {
-                if (entry.Value.VariableVisibility.IsNonPrivateNonTransient) {
+                if (entry.Value.VariableVisibility.IsNonPrivateNonTransient()) {
                     try {
                         services.VariablePathRegistry.Add(entry.Key, moduleName, entry.Value, deploymentId);
                     }
@@ -351,7 +351,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             foreach (var entry in moduleExpressions) {
-                if (entry.Value.Visibility.IsNonPrivateNonTransient) {
+                if (entry.Value.Visibility.IsNonPrivateNonTransient()) {
                     try {
                         services.ExprDeclaredPathRegistry.Add(entry.Key, moduleName, entry.Value, deploymentId);
                     }
@@ -364,7 +364,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             foreach (var entry in moduleScripts) {
-                if (entry.Value.Visibility.IsNonPrivateNonTransient) {
+                if (entry.Value.Visibility.IsNonPrivateNonTransient()) {
                     try {
                         services.ScriptPathRegistry.Add(entry.Key, moduleName, entry.Value, deploymentId);
                     }

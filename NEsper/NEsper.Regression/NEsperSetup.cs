@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
 
 using com.espertech.esper.compat.logging;
 
@@ -14,16 +15,13 @@ using NEsper.Avro.Extensions;
 
 using NLog;
 
+using NUnit.Framework;
 #if NETSTANDARD2_0
 #else
 #endif
 
-using NUnit.Framework;
-
 namespace com.espertech.esper
 {
-    using Directory = System.IO.Directory;
-
     [SetUpFixture]
     public class NEsperSetup
     {
@@ -39,8 +37,7 @@ namespace com.espertech.esper
             SchemaBuilder.Record("dummy");
 
             var dir = TestContext.CurrentContext.TestDirectory;
-            if (dir != null)
-            {
+            if (dir != null) {
                 Environment.CurrentDirectory = dir;
                 Directory.SetCurrentDirectory(dir);
             }

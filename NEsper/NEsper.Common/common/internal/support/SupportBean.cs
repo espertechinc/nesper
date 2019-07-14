@@ -335,83 +335,83 @@ namespace com.espertech.esper.common.@internal.support
             object expected)
         {
             switch (property) {
-                case "intPrimitive":
+                case "IntPrimitive":
                     ScopeTestHelper.AssertEquals(expected, received.IntPrimitive);
                     break;
 
-                case "intBoxed":
+                case "IntBoxed":
                     ScopeTestHelper.AssertEquals(expected, received.IntBoxed);
                     break;
 
-                case "boolPrimitive":
+                case "BoolPrimitive":
                     ScopeTestHelper.AssertEquals(expected, received.BoolPrimitive);
                     break;
 
-                case "boolBoxed":
+                case "BoolBoxed":
                     ScopeTestHelper.AssertEquals(expected, received.BoolBoxed);
                     break;
 
-                case "shortPrimitive":
+                case "ShortPrimitive":
                     ScopeTestHelper.AssertEquals(expected, received.ShortPrimitive);
                     break;
 
-                case "shortBoxed":
+                case "ShortBoxed":
                     ScopeTestHelper.AssertEquals(expected, received.ShortBoxed);
                     break;
 
-                case "longPrimitive":
+                case "LongPrimitive":
                     ScopeTestHelper.AssertEquals(expected, received.LongPrimitive);
                     break;
 
-                case "longBoxed":
+                case "LongBoxed":
                     ScopeTestHelper.AssertEquals(expected, received.LongBoxed);
                     break;
 
-                case "charPrimitive":
+                case "CharPrimitive":
                     ScopeTestHelper.AssertEquals(expected, received.CharPrimitive);
                     break;
 
-                case "charBoxed":
+                case "CharBoxed":
                     ScopeTestHelper.AssertEquals(expected, received.CharBoxed);
                     break;
 
-                case "bytePrimitive":
+                case "BytePrimitive":
                     ScopeTestHelper.AssertEquals(expected, received.BytePrimitive);
                     break;
 
-                case "byteBoxed":
+                case "ByteBoxed":
                     ScopeTestHelper.AssertEquals(expected, received.ByteBoxed);
                     break;
 
-                case "floatPrimitive":
+                case "FloatPrimitive":
                     ScopeTestHelper.AssertEquals(expected, received.FloatPrimitive);
                     break;
 
-                case "floatBoxed":
+                case "FloatBoxed":
                     ScopeTestHelper.AssertEquals(expected, received.FloatBoxed);
                     break;
 
-                case "doublePrimitive":
+                case "DoublePrimitive":
                     ScopeTestHelper.AssertEquals(expected, received.DoublePrimitive);
                     break;
 
-                case "doubleBoxed":
+                case "DoubleBoxed":
                     ScopeTestHelper.AssertEquals(expected, received.DoubleBoxed);
                     break;
 
-                case "decimalPrimitive":
+                case "DecimalPrimitive":
                     ScopeTestHelper.AssertEquals(expected, received.DecimalPrimitive);
                     break;
 
-                case "decimalBoxed":
+                case "DecimalBoxed":
                     ScopeTestHelper.AssertEquals(expected, received.DecimalBoxed);
                     break;
 
-                case "enumValue":
+                case "EnumValue":
                     ScopeTestHelper.AssertEquals(expected, received.EnumValue);
                     break;
 
-                case "theString":
+                case "TheString":
                     ScopeTestHelper.AssertEquals(expected, received.TheString);
                     break;
 

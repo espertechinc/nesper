@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.view.firstlength
         }
 
         public string ViewName {
-            get => ViewEnum.FIRST_LENGTH_WINDOW.Name;
+            get => ViewEnum.FIRST_LENGTH_WINDOW.GetViewName();
         }
     }
 } // end of namespace

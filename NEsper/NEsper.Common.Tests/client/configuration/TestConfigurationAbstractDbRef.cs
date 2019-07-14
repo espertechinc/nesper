@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.client.configuration
             try
             {
                 var config = new ConfigurationCommonDBRef();
-                config.AddSqlTypeBinding(typeof(int), type);
+                config.AddTypeBinding(typeof(int), type);
             }
             catch (ConfigurationException ex)
             {
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.client.configuration
                 "Unsupported type 'Console' when expecting any of: [String, Decimal, Boolean, Byte, Short, Int, Long, Float, Double, ByteArray]");
 
             var config = new ConfigurationCommonDBRef();
-            config.AddSqlTypeBinding(typeof(long), typeof(int));
+            config.AddTypeBinding(typeof(long), typeof(int));
         }
     }
 } // end of namespace

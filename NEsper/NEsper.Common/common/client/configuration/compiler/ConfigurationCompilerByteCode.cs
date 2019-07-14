@@ -236,7 +236,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
         private void CheckModifier(NameAccessModifier modifier)
         {
-            if (!modifier.IsModuleProvidedAccessModifier) {
+            if (!modifier.IsModuleProvidedAccessModifier()) {
                 throw new ConfigurationException("Access modifier configuration allows private, protected or public");
             }
         }

@@ -7,21 +7,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
     public class FilterSpecParamDeployTimeConstParamForge : FilterSpecParamForge
     {
-        private readonly ExprNodeDeployTimeConst deployTimeConstant;
-        private readonly SimpleNumberCoercer numberCoercer;
-        private readonly Type returnType;
+        private readonly ExprNodeDeployTimeConst _deployTimeConstant;
+        private readonly SimpleNumberCoercer _numberCoercer;
+        private readonly Type _returnType;
 
         public FilterSpecParamDeployTimeConstParamForge(
             ExprFilterSpecLookupableForge lookupable,
@@ -30,11 +32,12 @@ namespace com.espertech.esper.common.@internal.filterspec
             Type returnType,
             SimpleNumberCoercer numberCoercer)
             : base(
-                lookupable, filterOperator)
+                lookupable,
+                filterOperator)
         {
-            this.deployTimeConstant = deployTimeConstant;
-            this.returnType = returnType;
-            this.numberCoercer = numberCoercer;
+            _deployTimeConstant = deployTimeConstant;
+            _returnType = returnType;
+            _numberCoercer = numberCoercer;
         }
 
         public override CodegenMethod MakeCodegen(
@@ -46,18 +49,21 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             method.Block
                 .DeclareVar(
-                    typeof(ExprFilterSpecLookupable), "lookupable",
+                    typeof(ExprFilterSpecLookupable),
+                    "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar(typeof(FilterOperator), "op", EnumValue(filterOperator));
 
             var param = NewAnonymousClass(
-                method.Block, typeof(FilterSpecParam), Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+                method.Block,
+                typeof(FilterSpecParam),
+                Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             param.AddMethod("getFilterValue", getFilterValue);
-            var value = deployTimeConstant.CodegenGetDeployTimeConstValue(classScope);
-            if (numberCoercer != null) {
-                value = numberCoercer.CoerceCodegenMayNullBoxed(value, returnType, method, classScope);
+            var value = _deployTimeConstant.CodegenGetDeployTimeConstValue(classScope);
+            if (_numberCoercer != null) {
+                value = _numberCoercer.CoerceCodegenMayNullBoxed(value, _returnType, method, classScope);
             }
 
             getFilterValue.Block.MethodReturn(value);

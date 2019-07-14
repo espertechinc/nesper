@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.thread;
 
@@ -20,6 +21,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         void PostInitialize();
 
         void Initialize(long? currentTime);
+
+        IContainer Container { get; }
 
         EPServicesContext ServicesContext { get; }
 

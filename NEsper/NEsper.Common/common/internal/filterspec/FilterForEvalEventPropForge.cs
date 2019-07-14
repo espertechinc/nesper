@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
 
@@ -62,9 +64,11 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             method.Block
                 .DeclareVar(
-                    typeof(EventBean), "event",
+                    typeof(EventBean),
+                    "event",
                     ExprDotMethod(Ref("matchedEvents"), "getMatchingEventByTag", Constant(_resultEventAsName)))
-                .IfRefNull(Ref("event")).BlockThrow(
+                .IfRefNull(Ref("event"))
+                .BlockThrow(
                     NewInstance<IllegalStateException>(
                         Constant("Matching event named '" + _resultEventAsName + "' not found in event result set")))
                 .DeclareVar(typeof(object), "value", get);
@@ -73,7 +77,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 method.Block.AssignRef(
                     "value",
                     TypeHelper.CoerceNumberBoxedToBoxedCodegen(
-                        Cast(typeof(object), Ref("value")), typeof(object), ReturnType));
+                        Cast(typeof(object), Ref("value")),
+                        typeof(object),
+                        ReturnType));
             }
 
             method.Block.MethodReturn(Ref("value"));

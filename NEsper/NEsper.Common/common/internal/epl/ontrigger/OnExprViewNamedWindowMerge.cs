@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.diagnostics;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
@@ -128,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 var metricHandle = rootView.AgentInstanceContext.StatementContext.EpStatementHandle.MetricsHandle;
                 if (metricHandle.IsEnabled && !newData.IsEmpty()) {
                     agentInstanceContext.MetricReportingService.AccountTime(
-                        metricHandle, 0L, 0L, newData.ToArray().Length);
+                        metricHandle, default(PerformanceMetrics), newData.ToArray().Length);
                 }
 
                 var statementResultService = agentInstanceContext.StatementResultService;

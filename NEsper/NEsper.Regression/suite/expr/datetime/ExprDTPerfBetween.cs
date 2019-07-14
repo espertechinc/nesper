@@ -1,0 +1,54 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using com.espertech.esper.compat;
+using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
+
+using NUnit.Framework;
+
+namespace com.espertech.esper.regressionlib.suite.expr.datetime
+{
+    public class ExprDTPerfBetween : RegressionExecution
+    {
+        public void Run(RegressionEnvironment env)
+        {
+            var path = new RegressionPath();
+            env.CompileDeploy("create window AWindow#keepall as A", path);
+            env.CompileDeploy("insert into AWindow select * from A", path);
+
+            // preload
+            for (var i = 0; i < 10000; i++) {
+                env.SendEventBean(SupportTimeStartEndA.Make("A" + i, "2002-05-30T09:00:00.000", 100), "A");
+            }
+
+            env.SendEventBean(SupportTimeStartEndA.Make("AEarlier", "2002-05-30T08:00:00.000", 100), "A");
+            env.SendEventBean(SupportTimeStartEndA.Make("ALater", "2002-05-30T10:00:00.000", 100), "A");
+
+            var epl =
+                "@Name('s0') select a.key as c0 from SupportDateTime unidirectional, AWindow as a where longdate.between(longdateStart, longdateEnd, false, true)";
+            env.CompileDeploy(epl, path).AddListener("s0");
+
+            // query
+            var startTime = PerformanceObserver.MilliTime;
+            for (var i = 0; i < 1000; i++) {
+                env.SendEventBean(SupportDateTime.Make("2002-05-30T08:00:00.050"));
+                Assert.AreEqual("AEarlier", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+            }
+
+            var endTime = PerformanceObserver.MilliTime;
+            var delta = endTime - startTime;
+            Assert.IsTrue(delta < 500, "Delta=" + delta / 1000d);
+
+            env.SendEventBean(SupportDateTime.Make("2002-05-30T10:00:00.050"));
+            Assert.AreEqual("ALater", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+
+            env.UndeployAll();
+        }
+    }
+} // end of namespace

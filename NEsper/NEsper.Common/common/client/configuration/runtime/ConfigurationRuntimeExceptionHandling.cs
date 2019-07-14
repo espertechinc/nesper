@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat.collections;
@@ -21,9 +22,8 @@ namespace com.espertech.esper.common.client.configuration.runtime
     public class ConfigurationRuntimeExceptionHandling
     {
         /// <summary>
-        ///     Returns the policy to instruct the runtimewhether a module un-deploy rethrows runtime exceptions that are
-        ///     encountered
-        ///     during the undeploy. By default we are logging exceptions.
+        ///     Returns the policy to instruct the runtime whether a module un-deploy rethrows runtime exceptions
+        ///     that are encountered during the undeploy. By default we are logging exceptions.
         /// </summary>
         /// <returns>indicator</returns>
         public UndeployRethrowPolicy UndeployRethrowPolicy { get; set; } = UndeployRethrowPolicy.WARN;
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// <param name="exceptionHandlerFactoryClass">class of implementation</param>
         public void AddClass(Type exceptionHandlerFactoryClass)
         {
-            AddClass(exceptionHandlerFactoryClass.Name);
+            AddClass(exceptionHandlerFactoryClass.FullName);
         }
     }
 } // end of namespace

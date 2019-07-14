@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.TIME_WINDOW.Name;
+        public string ViewName => ViewEnum.TIME_WINDOW.GetViewName();
 
         public void Init(
             ViewFactoryContext viewFactoryContext,

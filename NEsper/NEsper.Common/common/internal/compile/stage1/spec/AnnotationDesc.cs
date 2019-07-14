@@ -8,13 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>
-    /// Describes an annotation.
+    ///     Describes an annotation.
     /// </summary>
     [Serializable]
     public class AnnotationDesc
@@ -22,41 +23,44 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         // Map of Identifier and value={constant, array of value (Object[]), AnnotationDesc} (exclusive with value)
 
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="name">name of annotation</param>
         /// <param name="attributes">are the attribute values</param>
         public AnnotationDesc(
-            String name,
-            IList<Pair<String, Object>> attributes)
+            string name,
+            IList<Pair<string, object>> attributes)
         {
             Name = name;
             Attributes = attributes;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AnnotationDesc"/> class.
+        ///     Initializes a new instance of the <see cref="AnnotationDesc" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
         public AnnotationDesc(
-            String name,
-            String value)
-            : this(name, Collections.SingletonList<Pair<String, Object>>(new Pair<String, Object>("Value", value)))
+            string name,
+            string value)
+            : this(
+                name,
+                Collections.SingletonList(
+                    new Pair<string, object>("Value", value)))
         {
         }
 
         /// <summary>
-        /// Returns annotation interface class name.
+        ///     Returns annotation interface class name.
         /// </summary>
         /// <returns>
-        /// name of class, can be fully qualified
+        ///     name of class, can be fully qualified
         /// </returns>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
-        /// Returns annotation attributes.
+        ///     Returns annotation attributes.
         /// </summary>
-        public IList<Pair<string, object>> Attributes { get; private set; }
+        public IList<Pair<string, object>> Attributes { get; }
     }
 }

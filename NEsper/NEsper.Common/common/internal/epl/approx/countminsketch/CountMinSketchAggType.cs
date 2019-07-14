@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
                     return "countMinSketchTopk";
             }
 
-            throw new ArgumentException("invalid value for enum value", "enumValue");
+            throw new ArgumentException("invalid value for enum value", nameof(enumValue));
         }
 
         public static CountMinSketchAggType? FromNameMayMatch(string name)

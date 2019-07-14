@@ -8,10 +8,9 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -19,16 +18,9 @@ namespace com.espertech.esper.common.@internal.filterspec
     public abstract class ExprNodeAdapterBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        internal readonly FilterSpecParamExprNode factory;
         internal readonly ExprEvaluatorContext evaluatorContext;
 
-        /// <summary>
-        /// Evaluate the boolean expression given the event as a stream zero event.
-        /// </summary>
-        /// <param name="theEvent">is the stream zero event (current event)</param>
-        /// <returns>boolean result of the expression</returns>
-        public abstract bool Evaluate(EventBean theEvent);
+        internal readonly FilterSpecParamExprNode factory;
 
         public ExprNodeAdapterBase(
             FilterSpecParamExprNode factory,
@@ -38,10 +30,29 @@ namespace com.espertech.esper.common.@internal.filterspec
             this.evaluatorContext = evaluatorContext;
         }
 
+        public string StatementName => evaluatorContext.StatementName;
+
+        public int StatementId => evaluatorContext.StatementId;
+
+        public int FilterBoolExprNum => factory.FilterBoolExprId;
+
+        public ExprEvaluatorContext EvaluatorContext => evaluatorContext;
+
+        public int StatementIdBoolExpr => factory.StatementIdBooleanExpr;
+
+        public string Expression => factory.ExprText;
+
+        /// <summary>
+        ///     Evaluate the boolean expression given the event as a stream zero event.
+        /// </summary>
+        /// <param name="theEvent">is the stream zero event (current event)</param>
+        /// <returns>boolean result of the expression</returns>
+        public abstract bool Evaluate(EventBean theEvent);
+
         protected bool EvaluatePerStream(EventBean[] eventsPerStream)
         {
             try {
-                var result = factory.ExprNode.Evaluate(eventsPerStream, true, this.evaluatorContext);
+                var result = factory.ExprNode.Evaluate(eventsPerStream, true, evaluatorContext);
                 if (result == null) {
                     return false;
                 }
@@ -52,45 +63,31 @@ namespace com.espertech.esper.common.@internal.filterspec
                 throw;
             }
             catch (Exception ex) {
-                string message = "Error evaluating expression '" + factory.ExprText + "' statement '" + StatementName +
-                                 "': " + ex.Message;
+                var message = "Error evaluating expression '" +
+                              factory.ExprText +
+                              "' statement '" +
+                              StatementName +
+                              "': " +
+                              ex.Message;
                 Log.Error(message, ex);
                 throw new EPException(message, ex);
             }
         }
 
-        public string StatementName {
-            get => evaluatorContext.StatementName;
-        }
-
-        public int StatementId {
-            get => evaluatorContext.StatementId;
-        }
-
-        public int FilterBoolExprNum {
-            get => factory.FilterBoolExprId;
-        }
-
-        public ExprEvaluatorContext EvaluatorContext {
-            get => evaluatorContext;
-        }
-
-        public int StatementIdBoolExpr {
-            get => factory.StatementIdBooleanExpr;
-        }
-
-        public string Expression {
-            get => factory.ExprText;
-        }
-
         /// <summary>
-        /// NOTE: Overridden by subclasses as additional information is required for multistream-equals
+        ///     NOTE: Overridden by subclasses as additional information is required for multistream-equals
         /// </summary>
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
-            ExprNodeAdapterBase that = (ExprNodeAdapterBase) o;
+            if (this == o) {
+                return true;
+            }
+
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
+
+            var that = (ExprNodeAdapterBase) o;
             return evaluatorContext.StatementId == that.evaluatorContext.StatementId &&
                    evaluatorContext.AgentInstanceId == that.evaluatorContext.AgentInstanceId &&
                    factory.FilterBoolExprId == that.factory.FilterBoolExprId;
@@ -98,7 +95,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override int GetHashCode()
         {
-            int result = evaluatorContext.StatementId;
+            var result = evaluatorContext.StatementId;
             result = 31 * result + evaluatorContext.AgentInstanceId;
             result = 31 * result + factory.FilterBoolExprId;
             return result;

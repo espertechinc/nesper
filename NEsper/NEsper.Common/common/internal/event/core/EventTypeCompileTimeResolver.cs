@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     return null;
                 }
 
-                if (!NameAccessModifier.Visible(
+                if (!NameAccessModifierExtensions.Visible(
                     typeAndModule.First.Metadata.AccessModifier, typeAndModule.Second, moduleName)) {
                     return null;
                 }

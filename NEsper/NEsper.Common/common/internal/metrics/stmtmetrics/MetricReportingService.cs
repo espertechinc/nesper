@@ -10,6 +10,7 @@ using System;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.compat.diagnostics;
 
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {
@@ -30,16 +31,14 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         void ProcessTimeEvent(long currentTime);
 
         /// <summary>
-        ///     Account for statement CPU and wall time.
+        ///     Account for statement performance metrics.
         /// </summary>
         /// <param name="metricsHandle">statement handle</param>
-        /// <param name="cpuTime">cpu time</param>
-        /// /// <param name="wallTime">wall time</param>
+        /// <param name="performanceMetric">performance metrics.</param>
         /// <param name="numInput">number of input rows</param>
         void AccountTime(
             StatementMetricHandle metricsHandle,
-            long cpuTime,
-            long wallTime,
+            PerformanceMetrics performanceMetric,
             int numInput);
 
         /// <summary>

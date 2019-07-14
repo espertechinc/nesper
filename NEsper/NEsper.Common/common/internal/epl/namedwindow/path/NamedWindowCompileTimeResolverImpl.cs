@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
             try {
                 var pair = path.GetAnyModuleExpectSingle(namedWindowName, moduleUses);
                 if (pair != null) {
-                    if (!NameAccessModifier.Visible(pair.First.EventType.Metadata.AccessModifier, pair.First.NamedWindowModuleName, moduleName)) {
+                    if (!NameAccessModifierExtensions.Visible(pair.First.EventType.Metadata.AccessModifier, pair.First.NamedWindowModuleName, moduleName)) {
                         return null;
                     }
 

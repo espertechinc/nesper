@@ -79,16 +79,16 @@ namespace com.espertech.esper.common.@internal.support
         {
             switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
-                    return EventUnderlyingType.OBJECTARRAY.UnderlyingClassName;
+                    return EventUnderlyingType.OBJECTARRAY.GetUnderlyingClassName();
                 case EventRepresentationChoice.MAP:
-                    return EventUnderlyingType.MAP.UnderlyingClassName;
+                    return EventUnderlyingType.MAP.GetUnderlyingClassName();
                 case EventRepresentationChoice.AVRO:
-                    return EventUnderlyingType.AVRO.UnderlyingClassName;
+                    return EventUnderlyingType.AVRO.GetUnderlyingClassName();
                 case EventRepresentationChoice.DEFAULT:
-                    return EventUnderlyingType.GetDefault().UnderlyingClassName;
+                    return EventUnderlyingTypeExtensions.GetDefault().GetUnderlyingClassName();
             }
 
-            throw new ArgumentException("invalid value for enumValue", "enumValue");
+            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
         }
 
 
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.support
                 case EventRepresentationChoice.AVRO:
                     return EventUnderlyingType.AVRO;
                 case EventRepresentationChoice.DEFAULT:
-                    return EventUnderlyingType.GetDefault();
+                    return EventUnderlyingTypeExtensions.GetDefault();
             }
 
             throw new ArgumentException("invalid value for enumValue", nameof(enumValue));

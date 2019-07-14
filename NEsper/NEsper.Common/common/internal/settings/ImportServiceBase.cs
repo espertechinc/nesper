@@ -25,29 +25,28 @@ namespace com.espertech.esper.common.@internal.settings
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly IList<string> annotationImports = new List<string>();
-        private readonly ISet<string> eventTypeAutoNames;
+        private readonly ISet<string> _eventTypeAutoNames;
+        private readonly IList<Import> _annotationImports = new List<Import>();
+        private readonly IList<Import> _imports = new List<Import>();
 
-        private readonly IList<string> imports = new List<string>();
+        private readonly IDictionary<string, object> _transientConfiguration;
 
-        private readonly IDictionary<string, object> transientConfiguration;
-
-        public ImportServiceBase(
+        protected ImportServiceBase(
             IContainer container,
             IDictionary<string, object> transientConfiguration,
             TimeAbacus timeAbacus,
             ISet<string> eventTypeAutoNames)
         {
             Container = container;
-            this.transientConfiguration = transientConfiguration;
+            _transientConfiguration = transientConfiguration;
             TimeAbacus = timeAbacus;
-            this.eventTypeAutoNames = eventTypeAutoNames;
+            _eventTypeAutoNames = eventTypeAutoNames;
         }
 
         public IContainer Container { get; }
 
         public ClassLoader ClassLoader => TransientConfigurationResolver
-            .ResolveClassLoader(Container, transientConfiguration)
+            .ResolveClassLoader(Container, _transientConfiguration)
             .GetClassLoader();
 
         public TimeAbacus TimeAbacus { get; }
@@ -68,7 +67,7 @@ namespace com.espertech.esper.common.@internal.settings
         }
 
         public ClassForNameProvider ClassForNameProvider =>
-            TransientConfigurationResolver.ResolveClassForNameProvider(transientConfiguration);
+            TransientConfigurationResolver.ResolveClassForNameProvider(_transientConfiguration);
 
         public Type ResolveClassForBeanEventType(string fullyQualClassName)
         {
@@ -78,7 +77,7 @@ namespace com.espertech.esper.common.@internal.settings
             catch (TypeLoadException ex) {
                 // Attempt to resolve from auto-name packages
                 Type clazz = null;
-                foreach (var javaPackageName in eventTypeAutoNames) {
+                foreach (var javaPackageName in _eventTypeAutoNames) {
                     var generatedClassName = javaPackageName + "." + fullyQualClassName;
                     try {
                         var resolvedClass = ClassForNameProvider.ClassForName(generatedClassName);
@@ -158,14 +157,14 @@ namespace com.espertech.esper.common.@internal.settings
             }
         }
 
-        public void AddImport(string importName)
+        public void AddImport(Import import)
         {
-            ValidateImportAndAdd(importName, imports);
+            ValidateImportAndAdd(import, _imports);
         }
 
-        public void AddAnnotationImport(string importName)
+        public void AddAnnotationImport(Import import)
         {
-            ValidateImportAndAdd(importName, annotationImports);
+            ValidateImportAndAdd(import, _annotationImports);
         }
 
         /// <summary>
@@ -206,14 +205,14 @@ namespace com.espertech.esper.common.@internal.settings
 
             // check annotation-specific imports first
             if (forAnnotationUse) {
-                var clazzInner = CheckImports(annotationImports, requireAnnotation, className);
+                var clazzInner = CheckImports(_annotationImports, requireAnnotation, className);
                 if (clazzInner != null) {
                     return clazzInner;
                 }
             }
 
             // check all imports
-            var clazz = CheckImports(imports, requireAnnotation, className);
+            var clazz = CheckImports(_imports, requireAnnotation, className);
             if (clazz != null) {
                 return clazz;
             }
@@ -223,27 +222,47 @@ namespace com.espertech.esper.common.@internal.settings
         }
 
         private Type CheckImports(
-            IList<string> imports,
+            IList<Import> imports,
             bool requireAnnotation,
             string className)
         {
             // Try all the imports
-            foreach (var importName in imports) {
-                var isClassName = IsClassName(importName);
-                var containsPackage = importName.IndexOf('.') != -1;
+            foreach (var import in imports) {
+                var clazz = import.Resolve(className, ClassForNameProvider);
+                if (clazz != null) {
+                    if (requireAnnotation) {
+                        if (clazz.IsAttribute()) {
+                            return clazz;
+                        }
+
+                        Log.Warn(
+                            "Resolved class {0}, but class was not an attribute as required",
+                            className);
+                    }
+                    else {
+                        return clazz;
+                    }
+                } // class not found with this import
+            }
+
+#if false
+            // Try all the imports
+            foreach (var import in imports) {
+                var isClassName = IsClassName(import);
+                var containsPackage = import.IndexOf('.') != -1;
                 var classNameWithDot = "." + className;
                 var classNameWithDollar = "$" + className;
 
                 // Import is a class name
                 if (isClassName) {
-                    if (containsPackage && importName.EndsWith(classNameWithDot) ||
-                        containsPackage && importName.EndsWith(classNameWithDollar) ||
-                        !containsPackage && importName.Equals(className) ||
-                        !containsPackage && importName.EndsWith(classNameWithDollar)) {
-                        return ClassForNameProvider.ClassForName(importName);
+                    if (containsPackage && import.EndsWith(classNameWithDot) ||
+                        containsPackage && import.EndsWith(classNameWithDollar) ||
+                        !containsPackage && import.Equals(className) ||
+                        !containsPackage && import.EndsWith(classNameWithDollar)) {
+                        return ClassForNameProvider.ClassForName(import);
                     }
 
-                    var prefixedClassName = importName + '$' + className;
+                    var prefixedClassName = import + '$' + className;
                     try {
                         var clazz = ClassForNameProvider.ClassForName(prefixedClassName);
                         if (!requireAnnotation || clazz.IsAttribute()) {
@@ -257,7 +276,7 @@ namespace com.espertech.esper.common.@internal.settings
                     }
                 }
                 else {
-                    if (requireAnnotation && importName.Equals(ConfigurationCommon.ANNOTATION_IMPORT)) {
+                    if (requireAnnotation && import.Equals(ConfigurationCommon.ANNOTATION_NAMESPACE)) {
                         var clazz = BuiltinAnnotation.BUILTIN.Get(className.ToLowerInvariant());
                         if (clazz != null) {
                             return clazz;
@@ -265,7 +284,7 @@ namespace com.espertech.esper.common.@internal.settings
                     }
 
                     // Import is a package name
-                    var prefixedClassName = GetPackageName(importName) + '.' + className;
+                    var prefixedClassName = GetPackageName(import) + '.' + className;
                     try {
                         var clazz = ClassForNameProvider.ClassForName(prefixedClassName);
                         if (!requireAnnotation || clazz.IsAttribute()) {
@@ -279,40 +298,20 @@ namespace com.espertech.esper.common.@internal.settings
                     }
                 }
             }
+#endif
 
-            return null;
-        }
-
-        public static bool IsClassName(string importName)
-        {
-            var classNameRegEx = "(\\w+\\.)*\\w+(\\$\\w+)?";
-            return importName.Matches(classNameRegEx);
-        }
-
-        public static string GetPackageName(string importName)
-        {
-            return importName.Substring(0, importName.Length - 2);
-        }
-
-        public static bool IsPackageName(string importName)
-        {
-            var classNameRegEx = "(\\w+\\.)+\\*";
-            return importName.Matches(classNameRegEx);
+                return null;
         }
 
         protected void ValidateImportAndAdd(
-            string importName,
-            IList<string> imports)
+            Import import,
+            IList<Import> imports)
         {
-            if (!IsClassName(importName) && !IsPackageName(importName)) {
-                throw new ImportException("Invalid import name '" + importName + "'");
-            }
-
             if (Log.IsDebugEnabled) {
-                Log.Debug("Adding import " + importName);
+                Log.Debug("Adding import " + import);
             }
 
-            imports.Add(importName);
+            imports.Add(import);
         }
 
         protected ImportException MakeClassNotFoundEx(
@@ -394,6 +393,13 @@ namespace com.espertech.esper.common.@internal.settings
             }
 
             return new ImportException(message, e);
+        }
+
+
+        public static bool IsClassName(string importName)
+        {
+            var classNameRegEx = "(\\w+\\.)*\\w+(\\$\\w+)?";
+            return importName.Matches(classNameRegEx);
         }
     }
 } // end of namespace

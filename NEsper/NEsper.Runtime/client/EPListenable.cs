@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 namespace com.espertech.esper.runtime.client
 {
@@ -28,6 +29,11 @@ namespace com.espertech.esper.runtime.client
         void RemoveAllEventHandlers();
 
         /// <summary>
+        /// Removes all listeners.
+        /// </summary>
+        void RemoveAllListeners();
+
+        /// <summary>
         ///     Add a listener that observes events.
         /// </summary>
         /// <param name="listener">to add</param>
@@ -41,6 +47,11 @@ namespace com.espertech.esper.runtime.client
         void RemoveListener(UpdateListener listener);
 
         /// <summary>
+        /// Returns any listeners that have been registered.
+        /// </summary>
+        IEnumerable<UpdateListener> UpdateListeners { get; }
+
+        /// <summary>
         ///     Add an update listener replaying current statement results to the listener.
         ///     <para>
         ///         The listener receives current statement results as the first call to the update method
@@ -52,9 +63,9 @@ namespace com.espertech.esper.runtime.client
         ///         Current statement results are the events returned by the iterator or safeIterator methods.
         ///     </para>
         ///     <para>
-        ///         Delivery of current statement results in the first call is performed by the same thread invoking
-        ///         this method, while subsequent calls to the listener may deliver statement results by the same or
-        ///         other threads.
+        ///         Delivery of current statement results in the first call is performed by the same thread
+        ///         invoking this method, while subsequent calls to the listener may deliver statement results
+        ///         by the same or other threads.
         ///     </para>
         ///     <para>
         ///         Note: this is a blocking call, delivery is atomic: Events occurring during iteration and

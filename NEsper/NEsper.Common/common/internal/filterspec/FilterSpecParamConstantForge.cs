@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -23,19 +25,19 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public sealed class FilterSpecParamConstantForge : FilterSpecParamForge
     {
-        private readonly object _filterConstant;
-
         public FilterSpecParamConstantForge(
             ExprFilterSpecLookupableForge lookupable,
             FilterOperator filterOperator,
             object filterConstant)
             : base(lookupable, filterOperator)
         {
-            this._filterConstant = filterConstant;
+            FilterConstant = filterConstant;
 
             if (filterOperator.IsRangeOperator()) {
                 throw new ArgumentException(
-                    "Illegal filter operator " + filterOperator + " supplied to " +
+                    "Illegal filter operator " +
+                    filterOperator +
+                    " supplied to " +
                     "constant filter parameter");
             }
         }
@@ -44,7 +46,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         ///     Returns the constant value.
         /// </summary>
         /// <returns>constant value</returns>
-        public object FilterConstant => _filterConstant;
+        public object FilterConstant { get; }
 
         public override CodegenMethod MakeCodegen(
             CodegenClassScope classScope,
@@ -53,15 +55,20 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             var method = parent.MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
             method.Block
-                .DeclareVar(typeof(ExprFilterSpecLookupable), "lookupable", LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
+                .DeclareVar(
+                    typeof(ExprFilterSpecLookupable),
+                    "lookupable",
+                    LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             var inner = NewAnonymousClass(
-                method.Block, typeof(FilterSpecParam),
+                method.Block,
+                typeof(FilterSpecParam),
                 Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
-            var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope).AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
+            var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
+                .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             inner.AddMethod("getFilterValue", getFilterValue);
-            getFilterValue.Block.MethodReturn(Constant(_filterConstant));
+            getFilterValue.Block.MethodReturn(Constant(FilterConstant));
 
             method.Block.MethodReturn(inner);
             return method;
@@ -69,7 +76,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override string ToString()
         {
-            return base.ToString() + " filterConstant=" + _filterConstant;
+            return base.ToString() + " filterConstant=" + FilterConstant;
         }
 
         public override bool Equals(object o)
@@ -88,7 +95,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             var that = (FilterSpecParamConstantForge) o;
 
-            if (_filterConstant != null ? !_filterConstant.Equals(that._filterConstant) : that._filterConstant != null) {
+            if (FilterConstant != null ? !FilterConstant.Equals(that.FilterConstant) : that.FilterConstant != null) {
                 return false;
             }
 
@@ -98,7 +105,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             var result = base.GetHashCode();
-            result = 31 * result + (_filterConstant != null ? _filterConstant.GetHashCode() : 0);
+            result = 31 * result + (FilterConstant != null ? FilterConstant.GetHashCode() : 0);
             return result;
         }
     }

@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
 
@@ -46,11 +47,14 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
             method.Block
                 .DeclareVar(
-                    typeof(EventBean[]), "events",
+                    typeof(EventBean[]),
+                    "events",
                     Cast(
                         typeof(EventBean[]),
                         ExprDotMethod(
-                            Ref("matchedEvents"), "getMatchingEventAsObjectByTag", Constant(_resultEventAsName))))
+                            Ref("matchedEvents"),
+                            "getMatchingEventAsObjectByTag",
+                            Constant(_resultEventAsName))))
                 .DeclareVar(typeof(object), "value", ConstantNull())
                 .IfRefNotNull("events")
                 .AssignRef(
@@ -58,7 +62,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                     Cast(
                         typeof(object),
                         getterSPI.EventBeanGetCodegen(
-                            ArrayAtIndex(Ref("events"), Constant(_resultEventIndex)), method, classScope)))
+                            ArrayAtIndex(Ref("events"), Constant(_resultEventIndex)),
+                            method,
+                            classScope)))
                 .BlockEnd()
                 .IfRefNullReturnNull("value")
                 .MethodReturn(ExprDotMethod(Ref("value"), "doubleValue"));

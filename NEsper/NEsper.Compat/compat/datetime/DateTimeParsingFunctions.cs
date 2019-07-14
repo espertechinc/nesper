@@ -19,7 +19,7 @@ namespace com.espertech.esper.compat.datetime
             return ParseDefaultEx(dateTimeString).TimeInMillis;
         }
 
-        public static DateTimeOffset ParseDefaultDate(string dateTimeString)
+        public static DateTimeOffset ParseDefaultDateTimeOffset(string dateTimeString)
         {
             return ParseDefaultEx(dateTimeString).DateTime;
         }

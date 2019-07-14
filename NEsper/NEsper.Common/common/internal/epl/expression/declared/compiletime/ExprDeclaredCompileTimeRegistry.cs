@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
@@ -21,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
         public void NewExprDeclared(ExpressionDeclItem detail)
         {
-            if (!detail.Visibility.IsModuleProvidedAccessModifier) {
+            if (!detail.Visibility.IsModuleProvidedAccessModifier()) {
                 throw new IllegalStateException("Invalid visibility for contexts");
             }
 

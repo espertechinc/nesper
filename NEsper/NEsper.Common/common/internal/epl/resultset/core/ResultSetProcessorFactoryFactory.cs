@@ -431,7 +431,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         new[] {selectExprProcessorForge},
                         join,
                         hasOutputLimit,
-                        outputConditionType.Value,
+                        outputConditionType,
                         hasOutputLimitSnapshot,
                         resultEventType, false,
                         aggregationServiceForgeDesc,

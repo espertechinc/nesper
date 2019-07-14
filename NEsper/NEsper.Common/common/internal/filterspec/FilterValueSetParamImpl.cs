@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -50,9 +51,13 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override string ToString()
         {
             return "FilterValueSetParamImpl{" +
-                   "lookupable='" + Lookupable + '\'' +
-                   ", filterOperator=" + FilterOperator +
-                   ", filterValue=" + FilterForValue +
+                   "lookupable='" +
+                   Lookupable +
+                   '\'' +
+                   ", filterOperator=" +
+                   FilterOperator +
+                   ", filterValue=" +
+                   FilterForValue +
                    '}';
         }
     }

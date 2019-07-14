@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,16 +16,17 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
     public class FilterSpecLookupableAdvancedIndexForge : ExprFilterSpecLookupableForge
     {
-        private readonly EventPropertyGetterSPI height;
-        private readonly EventPropertyGetterSPI width;
-        private readonly EventPropertyGetterSPI x;
-        private readonly EventPropertyGetterSPI y;
+        private readonly EventPropertyGetterSPI _height;
+        private readonly EventPropertyGetterSPI _width;
+        private readonly EventPropertyGetterSPI _x;
+        private readonly EventPropertyGetterSPI _y;
 
         public FilterSpecLookupableAdvancedIndexForge(
             string expression,
@@ -39,20 +41,20 @@ namespace com.espertech.esper.common.@internal.filterspec
             : base(expression, getter, returnType, true)
         {
             QuadTreeConfig = quadTreeConfig;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
+            _x = x;
+            _y = y;
+            _width = width;
+            _height = height;
             IndexType = indexType;
         }
 
-        public EventPropertyGetter X => x;
+        public EventPropertyGetter X => _x;
 
-        public EventPropertyGetter Y => y;
+        public EventPropertyGetter Y => _y;
 
-        public EventPropertyGetter Width => width;
+        public EventPropertyGetter Width => _width;
 
-        public EventPropertyGetter Height => height;
+        public EventPropertyGetter Height => _height;
 
         public AdvancedIndexConfigContextPartitionQuadTree QuadTreeConfig { get; }
 
@@ -64,23 +66,32 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(FilterSpecLookupableAdvancedIndex), typeof(FilterSpecLookupableAdvancedIndexForge), classScope);
+                typeof(FilterSpecLookupableAdvancedIndex),
+                typeof(FilterSpecLookupableAdvancedIndexForge),
+                classScope);
             Func<EventPropertyGetterSPI, CodegenExpression> toEval = getter =>
                 EventTypeUtility.CodegenGetterWCoerce(getter, typeof(double?), null, method, GetType(), classScope);
             method.Block
                 .DeclareVar(
-                    typeof(FilterSpecLookupableAdvancedIndex), "lookupable", NewInstance<FilterSpecLookupableAdvancedIndex>(
-                        Constant(expression), ConstantNull(), EnumValue(returnType, "class")))
+                    typeof(FilterSpecLookupableAdvancedIndex),
+                    "lookupable",
+                    NewInstance<FilterSpecLookupableAdvancedIndex>(
+                        Constant(expression),
+                        ConstantNull(),
+                        EnumValue(returnType, "class")))
                 .SetProperty(Ref("lookupable"), "QuadTreeConfig", QuadTreeConfig.Make())
-                .SetProperty(Ref("lookupable"), "X", toEval.Invoke(x))
-                .SetProperty(Ref("lookupable"), "Y", toEval.Invoke(y))
-                .SetProperty(Ref("lookupable"), "Width", toEval.Invoke(width))
-                .SetProperty(Ref("lookupable"), "Height", toEval.Invoke(height))
+                .SetProperty(Ref("lookupable"), "X", toEval.Invoke(_x))
+                .SetProperty(Ref("lookupable"), "Y", toEval.Invoke(_y))
+                .SetProperty(Ref("lookupable"), "Width", toEval.Invoke(_width))
+                .SetProperty(Ref("lookupable"), "Height", toEval.Invoke(_height))
                 .SetProperty(Ref("lookupable"), "IndexType", Constant(IndexType))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY).Add(
-                            "registerLookupable", symbols.GetAddEventType(method), Ref("lookupable")))
+                        .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
+                        .Add(
+                            "registerLookupable",
+                            symbols.GetAddEventType(method),
+                            Ref("lookupable")))
                 .MethodReturn(Ref("lookupable"));
             return method;
         }

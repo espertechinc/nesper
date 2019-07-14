@@ -30,15 +30,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(EPStatementImpl));
 
-        private readonly EPStatementEventHandlerSet statementEventHandlerSet =
-            new EPStatementEventHandlerSet();
+        private readonly EPStatementListenerSet statementListenerSet =
+            new EPStatementListenerSet();
 
-        protected readonly StatementContext statementContext;
-        protected readonly UpdateDispatchView dispatchChildView;
-        protected readonly StatementResultServiceImpl statementResultService;
-        protected StatementDestroyCallback stopCallback;
-        protected Viewable parentView;
-        protected bool destroyed;
+        private readonly StatementContext statementContext;
+        private readonly UpdateDispatchView dispatchChildView;
+        private readonly StatementResultServiceImpl statementResultService;
+        private StatementDestroyCallback stopCallback;
+        private Viewable parentView;
+        private bool destroyed;
 
         public event UpdateEventHandler Events
         {
@@ -51,44 +51,56 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             this.statementContext = args.StatementContext;
             this.dispatchChildView = args.DispatchChildView;
             this.statementResultService = args.StatementResultService;
-            this.statementResultService.SetUpdateEventHandlers(statementEventHandlerSet, false);
+            this.statementResultService.SetUpdateListeners(statementListenerSet, false);
         }
 
+        /// <summary>
+        /// Removes all event handlers.
+        /// </summary>
         public void RemoveAllEventHandlers()
         {
-            statementEventHandlerSet.RemoveAllEventHandlers();
+            statementListenerSet.RemoveAllListeners();
+            statementResultService.SetUpdateListeners(statementListenerSet, true);
         }
 
-#if DEPRECATED
+        /// <summary>
+        /// Removes all listeners.
+        /// </summary>
+        public void RemoveAllListeners()
+        {
+            statementListenerSet.RemoveAllListeners();
+            statementResultService.SetUpdateListeners(statementListenerSet, true);
+        }
+
+        /// <summary>
+        /// Add a listener that observes events.
+        /// </summary>
+        /// <param name="listener">to add</param>
+        /// <throws>IllegalStateException when attempting to add a listener to a destroyed statement</throws>
         public void AddListener(UpdateListener listener)
         {
-            if (listener == null) {
-                throw new ArgumentNullException(nameof(listener), "Null listener reference supplied");
+            if (listener == null)
+            {
+                throw new ArgumentNullException(nameof(listener), "Null listener supplied");
             }
 
             CheckDestroyed();
             statementListenerSet.AddListener(listener);
-            statementResultService.SetUpdateEventHandlers(statementListenerSet, false);
+            statementResultService.SetUpdateListeners(statementListenerSet, false);
         }
-#else
 
-        public void AddListener(UpdateListener listener)
+        /// <summary>
+        /// Returns any listeners that have been registered.
+        /// </summary>
+        /// <value></value>
+        public IEnumerable<UpdateListener> UpdateListeners
         {
-            AddEventHandler(listener.Update);
+            get => Collections.List(statementListenerSet.Listeners);
         }
-
-#endif
 
         public void AddEventHandler(UpdateEventHandler eventHandler)
         {
-            if (eventHandler == null)
-            {
-                throw new ArgumentNullException(nameof(eventHandler), "Null event handler supplied");
-            }
-
-            CheckDestroyed();
-            statementEventHandlerSet.AddEventHandler(eventHandler);
-            statementResultService.SetUpdateEventHandlers(statementEventHandlerSet, false);
+            AddListener(new DelegateUpdateListener(eventHandler));
         }
 
         public StatementDestroyCallback DestroyCallback
@@ -122,10 +134,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             get => destroyed;
         }
 
-        public void RecoveryUpdateEventHandlers(EPStatementEventHandlerSet eventHandlerSet)
+        public void RecoveryUpdateEventHandlers(EPStatementListenerSet listenerSet)
         {
-            statementEventHandlerSet.SetEventHandlers(eventHandlerSet);
-            statementResultService.SetUpdateEventHandlers(eventHandlerSet, true);
+            statementListenerSet.SetListeners(listenerSet);
+            statementResultService.SetUpdateListeners(listenerSet, true);
         }
 
         public EventType EventType
@@ -209,34 +221,16 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             }
         }
 
-#if DEPRECATED
         public void RemoveListener(UpdateListener listener)
         {
             if (listener == null) {
                 throw new ArgumentNullException(nameof(listener), "Null listener reference supplied");
             }
 
+            CheckDestroyed();
             statementListenerSet.RemoveListener(listener);
-            statementResultService.SetUpdateEventHandlers(statementListenerSet, true);
+            statementResultService.SetUpdateListeners(statementListenerSet, true);
         }
-
-        public void RemoveAllListeners()
-        {
-            statementListenerSet.RemoveAllListeners();
-            statementResultService.SetUpdateEventHandlers(statementListenerSet, true);
-        }
-
-        public IEnumerator<UpdateListener> UpdateListeners {
-            get => Collections.List(statementListenerSet.Listeners).GetEnumerator();
-        }
-#else
-
-        public void RemoveListener(UpdateListener listener)
-        {
-            RemoveEventHandler(listener.Update);
-        }
-
-#endif
 
         public void RemoveEventHandler(UpdateEventHandler eventHandler)
         {
@@ -246,8 +240,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             }
 
             CheckDestroyed();
-            statementEventHandlerSet.RemoveEventHandler(eventHandler);
-            statementResultService.SetUpdateEventHandlers(statementEventHandlerSet, false);
+            statementListenerSet.RemoveListener(new DelegateUpdateListener(eventHandler));
+            statementResultService.SetUpdateListeners(statementListenerSet, false);
         }
 
         public Viewable ParentView
@@ -340,13 +334,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         {
             CheckAllowSubscriber();
             CheckDestroyed();
-            statementEventHandlerSet.SetSubscriber(subscriber, methodName);
-            statementResultService.SetUpdateEventHandlers(statementEventHandlerSet, false);
+            statementListenerSet.SetSubscriber(subscriber, methodName);
+            statementResultService.SetUpdateListeners(statementListenerSet, false);
         }
 
         public object Subscriber
         {
-            get => statementEventHandlerSet.Subscriber;
+            get => statementListenerSet.Subscriber;
             set => SetSubscriber(value);
         }
 
@@ -366,17 +360,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             {
                 throw new ArgumentNullException(nameof(listener));
             }
-
-            AddEventHandlerWithReplay(listener.Update);
-        }
-
-        public void AddEventHandlerWithReplay(UpdateEventHandler eventHandler)
-        {
-            if (eventHandler == null)
-            {
-                throw new ArgumentNullException(nameof(eventHandler));
-            }
-
             CheckDestroyed();
             if (statementContext.StatementInformationals.OptionalContextName != null)
             {
@@ -386,33 +369,16 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             var runtime = (EPRuntime) statementContext.Runtime;
             var holder = statementContext.StatementCPCacheService.StatementResourceService.ResourcesUnpartitioned;
             var @lock = holder.AgentInstanceContext.AgentInstanceLock;
+
             @lock.AcquireReadLock();
 
             try
             {
                 // Add listener - listener not receiving events from this statement, as the statement is locked
-                statementEventHandlerSet.AddEventHandler(eventHandler);
-                this.statementResultService.SetUpdateEventHandlers(statementEventHandlerSet, false);
+                statementListenerSet.AddListener(listener);
+                statementResultService.SetUpdateListeners(statementListenerSet, false);
 
                 var it = GetEnumerator();
-                if (it == null)
-                {
-                    try
-                    {
-                        eventHandler.Invoke(this, new UpdateEventArgs(runtime, this, null, null));
-                    }
-                    catch (Exception ex)
-                    {
-                        var message = string.Format(
-                            "Unexpected exception invoking delegate for replay on '{0}' : {1} : {2}",
-                            eventHandler.GetType().Name,
-                            ex.GetType().Name,
-                            ex.Message);
-                        Log.Error(message, ex);
-                    }
-
-                    return;
-                }
 
                 var events = new List<EventBean>();
                 while (it.MoveNext())
@@ -424,13 +390,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
                 {
                     try
                     {
-                        eventHandler.Invoke(this, new UpdateEventArgs(runtime, this, null, null));
+                        listener.Update(this, new UpdateEventArgs(runtime, this, null, null));
                     }
                     catch (Exception ex)
                     {
                         var message = string.Format(
                             "Unexpected exception invoking delegate for replay on '{0}' : {1} : {2}",
-                            eventHandler.GetType().Name,
+                            listener.GetType().FullName,
                             ex.GetType().Name,
                             ex.Message);
                         Log.Error(message, ex);
@@ -441,13 +407,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
                     var iteratorResult = events.ToArray();
                     try
                     {
-                        eventHandler.Invoke(this, new UpdateEventArgs(runtime, this, iteratorResult, null));
+                        listener.Update(this, new UpdateEventArgs(runtime, this, iteratorResult, null));
                     }
                     catch (Exception ex)
                     {
                         var message = string.Format(
                             "Unexpected exception invoking delegate for replay on '{0}' : {1} : {2}",
-                            eventHandler.GetType().Name,
+                            listener.GetType().FullName,
                             ex.GetType().Name,
                             ex.Message);
                         Log.Error(message, ex);
@@ -463,6 +429,16 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
 
                 @lock.ReleaseReadLock();
             }
+        }
+
+        public void AddEventHandlerWithReplay(UpdateEventHandler eventHandler)
+        {
+            if (eventHandler == null)
+            {
+                throw new ArgumentNullException(nameof(eventHandler));
+            }
+
+            AddListenerWithReplay(new DelegateUpdateListener(eventHandler));
         }
 
         public object UserObjectCompileTime

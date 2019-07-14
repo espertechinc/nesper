@@ -1,0 +1,545 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System.Collections.Generic;
+
+using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
+
+using NUnit.Framework;
+
+using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
+
+namespace com.espertech.esper.regressionlib.suite.epl.subselect
+{
+    public class EPLSubselectIn
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInSelect());
+            execs.Add(new EPLSubselectInSelectOM());
+            execs.Add(new EPLSubselectInSelectCompile());
+            execs.Add(new EPLSubselectInSelectWhere());
+            execs.Add(new EPLSubselectInSelectWhereExpressions());
+            execs.Add(new EPLSubselectInFilterCriteria());
+            execs.Add(new EPLSubselectInWildcard());
+            execs.Add(new EPLSubselectInNullable());
+            execs.Add(new EPLSubselectInNullableCoercion());
+            execs.Add(new EPLSubselectInNullRow());
+            execs.Add(new EPLSubselectInSingleIndex());
+            execs.Add(new EPLSubselectInMultiIndex());
+            execs.Add(new EPLSubselectNotInNullRow());
+            execs.Add(new EPLSubselectNotInSelect());
+            execs.Add(new EPLSubselectNotInNullableCoercion());
+            execs.Add(new EPLSubselectInvalid());
+            return execs;
+        }
+
+        private static void RunTestInSelect(RegressionEnvironment env)
+        {
+            env.SendEventBean(new SupportBean_S0(2));
+            Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+            env.SendEventBean(new SupportBean_S1(-1));
+            env.SendEventBean(new SupportBean_S0(2));
+            Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+            env.SendEventBean(new SupportBean_S0(-1));
+            Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+            env.SendEventBean(new SupportBean_S1(5));
+            env.SendEventBean(new SupportBean_S0(4));
+            Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+            env.SendEventBean(new SupportBean_S0(5));
+            Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+        }
+
+        private static void SendBean(
+            RegressionEnvironment env,
+            string theString,
+            int? intBoxed,
+            long? longBoxed)
+        {
+            var bean = new SupportBean();
+            bean.TheString = theString;
+            bean.IntBoxed = intBoxed;
+            bean.LongBoxed = longBoxed;
+            env.SendEventBean(bean);
+        }
+
+        internal class EPLSubselectInSelect : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@Name('s0') select id in (select id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+                AssertStatelessStmt(env, "s0", false);
+
+                RunTestInSelect(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectInSelectOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var subquery = new EPStatementObjectModel();
+                subquery.SelectClause = SelectClause.Create("id");
+                subquery.FromClause =
+                    FromClause.Create(
+                        FilterStream.Create("SupportBean_S1")
+                            .AddView(View.Create("length", Expressions.Constant(1000))));
+
+                var model = new EPStatementObjectModel();
+                model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
+                model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryIn("id", subquery), "value");
+                model = env.CopyMayFail(model);
+
+                var stmtText = "select id in (select id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                Assert.AreEqual(stmtText, model.ToEPL());
+
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0").Milestone(0);
+
+                RunTestInSelect(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectInSelectCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@Name('s0') select id in (select id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                env.EplToModelCompileDeploy(stmtText).AddListener("s0");
+
+                RunTestInSelect(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        public class EPLSubselectInFilterCriteria : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string[] fields = {"id"};
+                var text = "@Name('s0') select id from SupportBean_S0(id in (select id from SupportBean_S1#length(2)))";
+                env.CompileDeployAddListenerMileZero(text, "s0");
+
+                env.SendEventBean(new SupportBean_S0(1));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.SendEventBean(new SupportBean_S1(10));
+
+                env.SendEventBean(new SupportBean_S0(10));
+                EPAssertionUtil.AssertProps(
+                    env.Listener("s0").AssertOneGetNewAndReset(),
+                    fields,
+                    new object[] {10});
+                env.SendEventBean(new SupportBean_S0(11));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.Milestone(1);
+
+                env.SendEventBean(new SupportBean_S0(10));
+                EPAssertionUtil.AssertProps(
+                    env.Listener("s0").AssertOneGetNewAndReset(),
+                    fields,
+                    new object[] {10});
+                env.SendEventBean(new SupportBean_S0(11));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.SendEventBean(new SupportBean_S1(11));
+                env.SendEventBean(new SupportBean_S0(11));
+                EPAssertionUtil.AssertProps(
+                    env.Listener("s0").AssertOneGetNewAndReset(),
+                    fields,
+                    new object[] {11});
+
+                env.Milestone(2);
+
+                env.SendEventBean(new SupportBean_S0(11));
+                EPAssertionUtil.AssertProps(
+                    env.Listener("s0").AssertOneGetNewAndReset(),
+                    fields,
+                    new object[] {11});
+
+                env.SendEventBean(new SupportBean_S1(12)); //pushing 10 out
+
+                env.Milestone(3);
+
+                env.SendEventBean(new SupportBean_S0(10));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.SendEventBean(new SupportBean_S0(11));
+                EPAssertionUtil.AssertProps(
+                    env.Listener("s0").AssertOneGetNewAndReset(),
+                    fields,
+                    new object[] {11});
+                env.SendEventBean(new SupportBean_S0(12));
+                EPAssertionUtil.AssertProps(
+                    env.Listener("s0").AssertOneGetNewAndReset(),
+                    fields,
+                    new object[] {12});
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectInSelectWhere : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@Name('s0') select id in (select id from SupportBean_S1#length(1000) where id > 0) as value from SupportBean_S0";
+
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                env.SendEventBean(new SupportBean_S0(2));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S1(-1));
+                env.SendEventBean(new SupportBean_S0(2));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S0(-1));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S1(5));
+                env.SendEventBean(new SupportBean_S0(4));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S0(5));
+                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectInSelectWhereExpressions : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@Name('s0') select 3*id in (select 2*id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                env.SendEventBean(new SupportBean_S0(2));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S1(-1));
+                env.SendEventBean(new SupportBean_S0(2));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S0(-1));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S1(6));
+                env.SendEventBean(new SupportBean_S0(4));
+                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectInWildcard : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@Name('s0') select s0.anyObject in (select * from SupportBean_S1#length(1000)) as value from SupportBeanArrayCollMap s0";
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                var s1 = new SupportBean_S1(100);
+                var arrayBean = new SupportBeanArrayCollMap(s1);
+                env.SendEventBean(s1);
+                env.SendEventBean(arrayBean);
+                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                var s2 = new SupportBean_S2(100);
+                arrayBean.AnyObject = s2;
+                env.SendEventBean(s2);
+                env.SendEventBean(arrayBean);
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectInNullable : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@Name('s0') select id from SupportBean_S0 as s0 where p00 in (select p10 from SupportBean_S1#length(1000))";
+
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                env.SendEventBean(new SupportBean_S0(1, "a"));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.SendEventBean(new SupportBean_S0(2, null));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.SendEventBean(new SupportBean_S1(-1, "A"));
+                env.SendEventBean(new SupportBean_S0(3, null));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.SendEventBean(new SupportBean_S0(4, "A"));
+                Assert.AreEqual(4, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+
+                env.SendEventBean(new SupportBean_S1(-2, null));
+                env.SendEventBean(new SupportBean_S0(5, null));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectInNullableCoercion : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@Name('s0') select longBoxed from SupportBean(theString='A') as s0 " +
+                               "where longBoxed in " +
+                               "(select intBoxed from SupportBean(theString='B')#length(1000))";
+
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                SendBean(env, "A", 0, 0L);
+                SendBean(env, "A", null, null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "B", null, null);
+
+                SendBean(env, "A", 0, 0L);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                SendBean(env, "A", null, null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "B", 99, null);
+
+                SendBean(env, "A", null, null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                SendBean(env, "A", null, 99L);
+                Assert.AreEqual(99L, env.Listener("s0").AssertOneGetNewAndReset().Get("LongBoxed"));
+
+                SendBean(env, "B", 98, null);
+
+                SendBean(env, "A", null, 98L);
+                Assert.AreEqual(98L, env.Listener("s0").AssertOneGetNewAndReset().Get("LongBoxed"));
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectInNullRow : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@Name('s0') select intBoxed from SupportBean(theString='A') as s0 " +
+                               "where intBoxed in " +
+                               "(select longBoxed from SupportBean(theString='B')#length(1000))";
+
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                SendBean(env, "B", 1, 1L);
+
+                SendBean(env, "A", null, null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "A", 1, 1L);
+                Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("IntBoxed"));
+
+                SendBean(env, "B", null, null);
+
+                SendBean(env, "A", null, null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "A", 1, 1L);
+                Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("IntBoxed"));
+
+                env.UndeployAll();
+            }
+        }
+
+        public class EPLSubselectInSingleIndex : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@Name('s0') select (select p00 from SupportBean_S0#keepall() as s0 where s0.p01 in (s1.p10, s1.p11)) as c0 from SupportBean_S1 as s1";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                for (var i = 0; i < 10; i++) {
+                    env.SendEventBean(new SupportBean_S0(i, "v" + i, "p00_" + i));
+                }
+
+                env.Milestone(0);
+
+                for (var i = 0; i < 5; i++) {
+                    var index = i + 4;
+                    env.SendEventBean(new SupportBean_S1(index, "x", "p00_" + index));
+                    Assert.AreEqual("v" + index, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                }
+
+                env.UndeployAll();
+            }
+        }
+
+        public class EPLSubselectInMultiIndex : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@Name('s0') select (select p00 from SupportBean_S0#keepall() as s0 where s1.p11 in (s0.p00, s0.p01)) as c0 from SupportBean_S1 as s1";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                for (var i = 0; i < 10; i++) {
+                    env.SendEventBean(new SupportBean_S0(i, "v" + i, "p00_" + i));
+                }
+
+                env.Milestone(0);
+
+                for (var i = 0; i < 5; i++) {
+                    var index = i + 4;
+                    env.SendEventBean(new SupportBean_S1(index, "x", "p00_" + index));
+                    Assert.AreEqual("v" + index, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                }
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectNotInNullRow : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@Name('s0') select intBoxed from SupportBean(theString='A') as s0 " +
+                               "where intBoxed not in " +
+                               "(select longBoxed from SupportBean(theString='B')#length(1000))";
+
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                SendBean(env, "B", 1, 1L);
+
+                SendBean(env, "A", null, null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "A", 1, 1L);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "B", null, null);
+
+                SendBean(env, "A", null, null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "A", 1, 1L);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectNotInSelect : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@Name('s0') select not id in (select id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                env.SendEventBean(new SupportBean_S0(2));
+                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S1(-1));
+                env.SendEventBean(new SupportBean_S0(2));
+                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S0(-1));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S1(5));
+                env.SendEventBean(new SupportBean_S0(4));
+                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.SendEventBean(new SupportBean_S0(5));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectNotInNullableCoercion : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@Name('s0') select longBoxed from SupportBean(theString='A') as s0 " +
+                               "where longBoxed not in " +
+                               "(select intBoxed from SupportBean(theString='B')#length(1000))";
+
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                SendBean(env, "A", 0, 0L);
+                Assert.AreEqual(0L, env.Listener("s0").AssertOneGetNewAndReset().Get("LongBoxed"));
+
+                SendBean(env, "A", null, null);
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("LongBoxed"));
+
+                SendBean(env, "B", null, null);
+
+                SendBean(env, "A", 1, 1L);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                SendBean(env, "A", null, null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "B", 99, null);
+
+                SendBean(env, "A", null, null);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                SendBean(env, "A", null, 99L);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "B", 98, null);
+
+                SendBean(env, "A", null, 98L);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                SendBean(env, "A", null, 97L);
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                TryInvalidCompile(
+                    env,
+                    "@Name('s0') select intArr in (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+            }
+        }
+    }
+} // end of namespace

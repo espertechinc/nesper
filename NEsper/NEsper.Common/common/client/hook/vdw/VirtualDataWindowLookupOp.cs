@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.client.hook.vdw
                 case VirtualDataWindowLookupOp.NOT_RANGE_HALF_CLOSED:
                     return ("-(,]");
                 default:
-                    throw new ArgumentException("invalid value", "enumValue");
+                    throw new ArgumentException("invalid value", nameof(enumValue));
             }
         }
 

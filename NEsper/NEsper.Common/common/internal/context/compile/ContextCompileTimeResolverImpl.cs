@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.context.compile
             try {
                 Pair<ContextMetaData, string> pair = path.GetAnyModuleExpectSingle(contextName, moduleUses);
                 if (pair != null) {
-                    if (!NameAccessModifier.Visible(pair.First.ContextVisibility, pair.First.ContextModuleName, moduleName)) {
+                    if (!NameAccessModifierExtensions.Visible(pair.First.ContextVisibility, pair.First.ContextModuleName, moduleName)) {
                         return null;
                     }
 

@@ -1695,7 +1695,7 @@ namespace com.espertech.esper.common.client.scopetest
             for (var i = 0; i < keys.Length; i++)
             {
                 var value = (ICollection) map.Get(keys[i]);
-                var itemsExpected = expectedList[i].Split(',');
+                var itemsExpected = expectedList[i].SplitCsv();
                 ScopeTestHelper.AssertEquals(itemsExpected.Length, value.Count);
 
                 var it = value.GetEnumerator();

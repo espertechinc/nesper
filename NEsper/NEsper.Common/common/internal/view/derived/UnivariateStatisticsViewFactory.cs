@@ -54,6 +54,6 @@ namespace com.espertech.esper.common.@internal.view.derived
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.UNIVARIATE_STATISTICS.Name;
+        public string ViewName => ViewEnum.UNIVARIATE_STATISTICS.GetViewName();
     }
 } // end of namespace

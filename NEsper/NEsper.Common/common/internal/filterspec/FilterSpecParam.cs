@@ -8,11 +8,13 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -30,9 +32,12 @@ namespace com.espertech.esper.common.@internal.filterspec
             new CodegenExpressionRef("stmtCtxFilterEnv");
 
         public static readonly IList<CodegenNamedParam> GET_FILTER_VALUE_FP = CodegenNamedParam.From(
-            typeof(MatchedEventMap), REF_MATCHEDEVENTMAP.Ref,
-            typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref,
-            typeof(StatementContextFilterEvalEnv), REF_STMTCTXFILTEREVALENV.Ref);
+            typeof(MatchedEventMap),
+            REF_MATCHEDEVENTMAP.Ref,
+            typeof(ExprEvaluatorContext),
+            REF_EXPREVALCONTEXT.Ref,
+            typeof(StatementContextFilterEvalEnv),
+            REF_STMTCTXFILTEREVALENV.Ref);
 
         public static readonly CodegenExpression[] GET_FILTER_VALUE_REFS = {
             REF_MATCHEDEVENTMAP,
@@ -65,8 +70,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override string ToString()
         {
             return "FilterSpecParam" +
-                   " lookupable=" + lookupable +
-                   " filterOp=" + FilterOperator;
+                   " lookupable=" +
+                   lookupable +
+                   " filterOp=" +
+                   FilterOperator;
         }
 
         public static FilterSpecParam[] ToArray(ICollection<FilterSpecParam> coll)

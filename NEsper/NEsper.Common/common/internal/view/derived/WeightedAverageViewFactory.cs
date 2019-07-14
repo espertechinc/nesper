@@ -59,6 +59,6 @@ namespace com.espertech.esper.common.@internal.view.derived
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.WEIGHTED_AVERAGE.Name;
+        public string ViewName => ViewEnum.WEIGHTED_AVERAGE.GetViewName();
     }
 } // end of namespace

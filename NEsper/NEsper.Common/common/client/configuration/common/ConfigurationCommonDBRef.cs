@@ -170,48 +170,48 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the connection factory to use to obtain a connection.
         /// </summary>
         /// <param name="className">is the driver class name</param>
-        /// <param name="url">is the URL</param>
+        /// <param name="connectionString">is the URL</param>
         /// <param name="connectionArgs">are optional connection arguments</param>
         public void SetDriverManagerConnection(
             string className,
-            string url,
+            string connectionString,
             Properties connectionArgs)
         {
-            ConnectionFactoryDesc = new DriverManagerConnection(className, url, connectionArgs);
+            ConnectionFactoryDesc = new DriverManagerConnection(className, connectionString, connectionArgs);
         }
 
         /// <summary>
         ///     Sets the connection factory to use to obtain a connection.
         /// </summary>
         /// <param name="className">is the driver class name</param>
-        /// <param name="url">is the URL</param>
+        /// <param name="connectionString">is the URL</param>
         /// <param name="username">is the username to obtain a connection</param>
         /// <param name="password">is the password to obtain a connection</param>
         public void SetDriverManagerConnection(
             string className,
-            string url,
+            string connectionString,
             string username,
             string password)
         {
-            ConnectionFactoryDesc = new DriverManagerConnection(className, url, username, password);
+            ConnectionFactoryDesc = new DriverManagerConnection(className, connectionString, username, password);
         }
 
         /// <summary>
         ///     Sets the connection factory to use to obtain a connection.
         /// </summary>
         /// <param name="className">is the driver class name</param>
-        /// <param name="url">is the URL</param>
+        /// <param name="connectionString">is the URL</param>
         /// <param name="username">is the username to obtain a connection</param>
         /// <param name="password">is the password to obtain a connection</param>
         /// <param name="connectionArgs">are optional connection arguments</param>
         public void SetDriverManagerConnection(
             string className,
-            string url,
+            string connectionString,
             string username,
             string password,
             Properties connectionArgs)
         {
-            ConnectionFactoryDesc = new DriverManagerConnection(className, url, username, password, connectionArgs);
+            ConnectionFactoryDesc = new DriverManagerConnection(className, connectionString, username, password, connectionArgs);
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="sqlType">Type of the SQL.</param>
         /// <param name="desiredType">The desired type.</param>
-        public void AddSqlTypeBinding(Type sqlType, Type desiredType)
+        public void AddTypeBinding(Type sqlType, Type desiredType)
         {
             var typeEnum = DatabaseTypeEnum.GetEnum(desiredType.FullName);
             if (typeEnum == null)

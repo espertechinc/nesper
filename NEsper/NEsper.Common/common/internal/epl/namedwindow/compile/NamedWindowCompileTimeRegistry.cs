@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
@@ -22,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.compile
         public void NewNamedWindow(NamedWindowMetaData detail)
         {
             var eventType = detail.EventType;
-            if (!eventType.Metadata.AccessModifier.IsModuleProvidedAccessModifier) {
+            if (!eventType.Metadata.AccessModifier.IsModuleProvidedAccessModifier()) {
                 throw new IllegalStateException("Invalid visibility for named window");
             }
 

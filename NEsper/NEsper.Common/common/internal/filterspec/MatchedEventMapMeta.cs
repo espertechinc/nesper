@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -108,11 +110,14 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(MatchedEventMapMeta), GetType(), classScope);
             method.Block.DeclareVar(typeof(string[]), "tagsPerIndex", Constant(TagsPerIndex))
                 .DeclareVar(
-                    typeof(EventType[]), "eventTypes",
+                    typeof(EventType[]),
+                    "eventTypes",
                     EventTypeUtility.ResolveTypeArrayCodegen(EventTypes, symbols.GetAddInitSvc(method)))
                 .MethodReturn(
                     NewInstance<MatchedEventMapMeta>(
-                        Ref("tagsPerIndex"), Ref("eventTypes"), Constant(ArrayTags)));
+                        Ref("tagsPerIndex"),
+                        Ref("eventTypes"),
+                        Constant(ArrayTags)));
             return method;
         }
 

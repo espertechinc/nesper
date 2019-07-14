@@ -563,7 +563,7 @@ namespace com.espertech.esper.common.client.configuration.common
                 config = new ConfigurationCommonEventTypeMap();
                 if (superTypesList != null) {
                     var value = superTypesList.InnerText;
-                    var names = value.Split(',');
+                    var names = value.SplitCsv();
                     foreach (var superTypeName in names) {
                         config.SuperTypes.Add(superTypeName.Trim());
                     }
@@ -627,7 +627,7 @@ namespace com.espertech.esper.common.client.configuration.common
             XmlElement element)
         {
             var name = GetRequiredAttribute(element, "import-name");
-            configuration.AddImport(name);
+            configuration.AddImportNamespace(name);
         }
 
         private static void HandleAutoImportAnnotations(
@@ -635,7 +635,7 @@ namespace com.espertech.esper.common.client.configuration.common
             XmlElement element)
         {
             var name = GetRequiredAttribute(element, "import-name");
-            configuration.AddAnnotationImport(name);
+            configuration.AddAnnotationImportType(name);
         }
 
         private static void HandleMethodReference(

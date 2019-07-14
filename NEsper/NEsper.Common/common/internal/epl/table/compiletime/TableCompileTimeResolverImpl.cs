@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 var data = pathTables.GetAnyModuleExpectSingle(tableName, moduleUses);
                 if (data != null)
                 {
-                    if (!NameAccessModifier.Visible(data.First.TableVisibility, data.First.TableModuleName, moduleName))
+                    if (!NameAccessModifierExtensions.Visible(data.First.TableVisibility, data.First.TableModuleName, moduleName))
                     {
                         return null;
                     }

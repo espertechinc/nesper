@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
                     return null;
                 }
 
-                if (!NameAccessModifier.Visible(pair.First.VariableVisibility, pair.First.VariableModuleName, moduleName))
+                if (!NameAccessModifierExtensions.Visible(pair.First.VariableVisibility, pair.First.VariableModuleName, moduleName))
                 {
                     return null;
                 }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -28,8 +30,8 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterSpecParamEventPropIndexedForge : FilterSpecParamForge
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        [NonSerialized] private readonly SimpleNumberCoercer numberCoercer;
-        private readonly string statementName;
+        [NonSerialized] private readonly SimpleNumberCoercer _numberCoercer;
+        private readonly string _statementName;
 
         /// <summary>
         ///     Constructor.
@@ -63,13 +65,15 @@ namespace com.espertech.esper.common.@internal.filterspec
             ResultEventProperty = resultEventProperty;
             EventType = eventType;
             IsMustCoerce = isMustCoerce;
-            this.numberCoercer = numberCoercer;
+            _numberCoercer = numberCoercer;
             CoercionType = coercionType;
-            this.statementName = statementName;
+            _statementName = statementName;
 
             if (filterOperator.IsRangeOperator()) {
                 throw new ArgumentException(
-                    "Illegal filter operator " + filterOperator + " supplied to " +
+                    "Illegal filter operator " +
+                    filterOperator +
+                    " supplied to " +
                     "event property filter parameter");
             }
         }
@@ -116,35 +120,46 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             method.Block
                 .DeclareVar(
-                    typeof(ExprFilterSpecLookupable), "lookupable",
+                    typeof(ExprFilterSpecLookupable),
+                    "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar(typeof(FilterOperator), "op", EnumValue(filterOperator));
 
             var param = NewAnonymousClass(
-                method.Block, typeof(FilterSpecParam), Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+                method.Block,
+                typeof(FilterSpecParam),
+                Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             param.AddMethod("getFilterValue", getFilterValue);
             getFilterValue.Block
                 .DeclareVar(
-                    typeof(EventBean[]), "events",
+                    typeof(EventBean[]),
+                    "events",
                     Cast(
                         typeof(EventBean[]),
                         ExprDotMethod(
-                            Ref("matchedEvents"), "getMatchingEventAsObjectByTag", Constant(ResultEventAsName))))
+                            Ref("matchedEvents"),
+                            "getMatchingEventAsObjectByTag",
+                            Constant(ResultEventAsName))))
                 .DeclareVar(typeof(object), "value", ConstantNull())
                 .IfRefNotNull("events")
                 .AssignRef(
                     "value",
                     getterSPI.EventBeanGetCodegen(
-                        ArrayAtIndex(Ref("events"), Constant(ResultEventIndex)), method, classScope))
+                        ArrayAtIndex(Ref("events"), Constant(ResultEventIndex)),
+                        method,
+                        classScope))
                 .BlockEnd();
 
             if (IsMustCoerce) {
                 getFilterValue.Block.AssignRef(
                     "value",
-                    numberCoercer.CoerceCodegenMayNullBoxed(
-                        Cast(typeof(object), Ref("value")), typeof(object), method, classScope));
+                    _numberCoercer.CoerceCodegenMayNullBoxed(
+                        Cast(typeof(object), Ref("value")),
+                        typeof(object),
+                        method,
+                        classScope));
             }
 
             getFilterValue.Block.MethodReturn(Ref("value"));
@@ -156,8 +171,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override string ToString()
         {
             return base.ToString() +
-                   " resultEventAsName=" + ResultEventAsName +
-                   " resultEventProperty=" + ResultEventProperty;
+                   " resultEventAsName=" +
+                   ResultEventAsName +
+                   " resultEventProperty=" +
+                   ResultEventProperty;
         }
 
         public override bool Equals(object obj)

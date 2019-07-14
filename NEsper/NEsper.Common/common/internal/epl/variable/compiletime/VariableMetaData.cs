@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
             string variableModuleName,
             NameAccessModifier variableVisibility,
             string optionalContextName,
-            NameAccessModifier optionalContextVisibility,
+            NameAccessModifier? optionalContextVisibility,
             string optionalContextModule,
             Type type,
             EventType eventType,
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 
         public bool IsPreconfigured { get; }
 
-        public NameAccessModifier OptionalContextVisibility { get; }
+        public NameAccessModifier? OptionalContextVisibility { get; }
 
         public string OptionalContextModule { get; }
 
@@ -78,7 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
             return NewInstance<VariableMetaData>(
                 Constant(VariableName), Constant(VariableModuleName),
                 Constant(VariableVisibility),
-                Constant(OptionalContextName), Constant(OptionalContextVisibility), Constant(OptionalContextModule),
+                Constant(OptionalContextName),
+                Constant(OptionalContextVisibility),
+                Constant(OptionalContextModule),
                 Constant(Type),
                 EventType == null ? ConstantNull() : EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc),
                 Constant(IsPreconfigured), Constant(IsConstant), Constant(IsCompileTimeConstant),

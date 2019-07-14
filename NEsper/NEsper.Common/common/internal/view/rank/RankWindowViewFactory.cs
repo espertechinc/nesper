@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         public Type[] UniqueTypes { get; set; }
 
-        public string ViewName => ViewEnum.RANK_WINDOW.Name;
+        public string ViewName => ViewEnum.RANK_WINDOW.GetViewName();
 
         public void Init(
             ViewFactoryContext viewFactoryContext,

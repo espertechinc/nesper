@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             }
 
             var contextName = statementSpec.Raw.OptionalContextName;
-            NameAccessModifier contextVisibility = null;
+            NameAccessModifier? contextVisibility = null;
             string contextModuleName = null;
             if (contextName != null) {
                 var contextDetail = services.ContextCompileTimeResolver.GetContextInfo(contextName);

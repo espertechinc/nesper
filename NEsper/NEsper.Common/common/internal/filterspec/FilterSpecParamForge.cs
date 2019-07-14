@@ -8,12 +8,14 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -63,16 +65,23 @@ namespace com.espertech.esper.common.@internal.filterspec
             var symbolsWithType = new SAIFFInitializeSymbolWEventType();
             var method = parent
                 .MakeChildWithScope(
-                    typeof(FilterSpecParam[][]), typeof(FilterSpecParamForge), symbolsWithType, classScope)
-                .AddParam(typeof(EventType), SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref).AddParam(
-                    typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
+                    typeof(FilterSpecParam[][]),
+                    typeof(FilterSpecParamForge),
+                    symbolsWithType,
+                    classScope)
+                .AddParam(typeof(EventType), SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref)
+                .AddParam(
+                    typeof(EPStatementInitServices),
+                    SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
             method.Block.DeclareVar(
-                typeof(FilterSpecParam[][]), "params",
+                typeof(FilterSpecParam[][]),
+                "params",
                 NewArrayByLength(typeof(FilterSpecParam[]), Constant(forges.Length)));
 
             for (var i = 0; i < forges.Length; i++) {
                 method.Block.AssignArrayElement(
-                    "params", Constant(i),
+                    "params",
+                    Constant(i),
                     LocalMethod(MakeParamArrayCodegen(forges[i], classScope, method, symbolsWithType)));
             }
 
@@ -88,7 +97,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             var method = parent.MakeChild(typeof(FilterSpecParam[]), typeof(FilterSpecParamForge), classScope);
             method.Block.DeclareVar(
-                typeof(FilterSpecParam[]), "items", NewArrayByLength(typeof(FilterSpecParam), Constant(forges.Length)));
+                typeof(FilterSpecParam[]),
+                "items",
+                NewArrayByLength(typeof(FilterSpecParam), Constant(forges.Length)));
             for (var i = 0; i < forges.Length; i++) {
                 var makeParam = forges[i].MakeCodegen(classScope, method, symbolsWithType);
                 method.Block.AssignArrayElement("items", Constant(i), LocalMethod(makeParam));

@@ -22,12 +22,12 @@ namespace com.espertech.esper.runtime.@internal.deploymentlifesvc
         public void Put(
             int statementId,
             string statementName,
-            UpdateEventHandler[] eventHandlers)
+            UpdateListener[] eventHandlers)
         {
         }
 
-        public IEnumerator<KeyValuePair<int, UpdateEventHandler[]>> EventHandlers =>
-            EnumerationHelper.Empty<KeyValuePair<int, UpdateEventHandler[]>>();
+        public IEnumerator<KeyValuePair<int, UpdateListener[]>> Listeners =>
+            EnumerationHelper.Empty<KeyValuePair<int, UpdateListener[]>>();
 
         public void Remove(int statementId)
         {

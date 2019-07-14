@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.EXT_TIMED_BATCH.Name;
+        public string ViewName => ViewEnum.EXT_TIMED_BATCH.GetViewName();
 
         PreviousGetterStrategy DataWindowViewWithPrevious.MakePreviousGetter()
         {

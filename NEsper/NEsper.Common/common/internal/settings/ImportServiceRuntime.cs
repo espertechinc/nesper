@@ -28,24 +28,23 @@ namespace com.espertech.esper.common.@internal.settings
             ISet<string> eventTypeAutoNames,
             TimeZoneInfo timeZone,
             IDictionary<string, ConfigurationCommonMethodRef> methodInvocationRef,
-            IList<string> imports,
-            IList<string> annotationImports)
+            IList<Import> imports,
+            IList<Import> annotationImports)
             : base(container, transientConfiguration, timeAbacus, eventTypeAutoNames)
-
         {
             TimeZone = timeZone;
             this.methodInvocationRef = methodInvocationRef;
 
             try
             {
-                foreach (var importName in imports)
+                foreach (var import in imports)
                 {
-                    AddImport(importName);
+                    AddImport(import);
                 }
 
-                foreach (var importName in annotationImports)
+                foreach (var import in annotationImports)
                 {
-                    AddAnnotationImport(importName);
+                    AddAnnotationImport(import);
                 }
             }
             catch (ImportException ex)

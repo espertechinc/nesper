@@ -250,7 +250,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsTrue(avroOne.SuperTypes.IsEmpty());
             var avroTwo = common.EventTypesAvro.Get("MyAvroEventTwo");
             Assert.AreEqual(
-                "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}",
+                "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"String\"}}]}",
                 avroTwo.AvroSchemaText);
             Assert.AreEqual("startts", avroTwo.StartTimestampPropertyName);
             Assert.AreEqual("endts", avroTwo.EndTimestampPropertyName);

@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             // reset time
             if (val.UtcMillis() != time) {
-                val = time.FromMillis();
+                val = time.TimeFromMillis();
             }
             // ----------------- Fix for LANG-59 ----------------------- END ----------------
 

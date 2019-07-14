@@ -50,13 +50,16 @@ namespace com.espertech.esper.compat
         public IFormatProvider FormatProvider { get; }
 
         /// <summary>
-        ///     Formats the specified date time.
+        /// Formats the specified date time.
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
+        /// <param name="timeInMillis">The time in milliseconds.</param>
         /// <returns></returns>
-        public string Format(DateTime dateTime)
+        public string Format(long? timeInMillis)
         {
-            return dateTime.ToString(FormatString, FormatProvider);
+            if (timeInMillis == null) {
+                return null;
+            }
+            return Format(timeInMillis.Value.TimeFromMillis());
         }
 
         /// <summary>
@@ -64,9 +67,19 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="dateTime">The date time.</param>
         /// <returns></returns>
-        public string Format(DateTimeOffset dateTime)
+        public string Format(DateTime? dateTime)
         {
-            return dateTime.ToString(FormatString, FormatProvider);
+            return dateTime?.ToString(FormatString, FormatProvider);
+        }
+
+        /// <summary>
+        ///     Formats the specified date time.
+        /// </summary>
+        /// <param name="dateTime">The date time.</param>
+        /// <returns></returns>
+        public string Format(DateTimeOffset? dateTime)
+        {
+            return dateTime?.ToString(FormatString, FormatProvider);
         }
 
         /// <summary>

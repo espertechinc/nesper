@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             return new GroupByViewImpl(this, agentInstanceViewFactoryContext);
         }
 
-        public string ViewName => ViewEnum.GROUP_PROPERTY.Name;
+        public string ViewName => ViewEnum.GROUP_PROPERTY.GetViewName();
 
         public void Init(
             ViewFactoryContext viewFactoryContext,

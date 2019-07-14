@@ -15,17 +15,24 @@ namespace com.espertech.esper.compat
         /// <summary>
         /// Formats the specified date time.
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
+        /// <param name="timeInMillis">The time in millis.</param>
         /// <returns></returns>
-        string Format(DateTime dateTime);
+        string Format(long? timeInMillis);
         
         /// <summary>
         /// Formats the specified date time.
         /// </summary>
         /// <param name="dateTime">The date time.</param>
         /// <returns></returns>
-        string Format(DateTimeOffset dateTime);
- 
+        string Format(DateTime? dateTime);
+        
+        /// <summary>
+        /// Formats the specified date time.
+        /// </summary>
+        /// <param name="dateTime">The date time.</param>
+        /// <returns></returns>
+        string Format(DateTimeOffset? dateTime);
+        
         /// <summary>
         /// Formats the specified date time.
         /// </summary>

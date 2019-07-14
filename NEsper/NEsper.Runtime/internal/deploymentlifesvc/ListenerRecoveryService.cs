@@ -6,23 +6,20 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.runtime.@internal.deploymentlifesvc
 {
-    using UpdateEventHandler = EventHandler<UpdateEventArgs>;
-
     public interface ListenerRecoveryService
     {
+        IEnumerator<KeyValuePair<int, UpdateListener[]>> Listeners { get; }
+
         void Put(
             int statementId,
             string statementName,
-            UpdateEventHandler[] eventHandlersEventHandlers);
-
-        IEnumerator<KeyValuePair<int, UpdateEventHandler[]>> EventHandlers { get; }
+            UpdateListener[] updateListeners);
 
         void Remove(int statementId);
     }

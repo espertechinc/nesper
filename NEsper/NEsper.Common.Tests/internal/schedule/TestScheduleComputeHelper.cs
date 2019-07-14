@@ -70,10 +70,10 @@ namespace com.espertech.esper.common.@internal.schedule
             {
                 Log.Debug(".checkCorrect Difference in result found, spec=" + spec);
                 Log.Debug(
-                    ".checkCorrect      now=" + timeFormat.Format(nowDate.FromMillis()) +
+                    ".checkCorrect      now=" + timeFormat.Format(nowDate.TimeFromMillis()) +
                     " long=" + nowDate);
                 Log.Debug(
-                    ".checkCorrect expected=" + timeFormat.Format(expectedDate.FromMillis()) +
+                    ".checkCorrect expected=" + timeFormat.Format(expectedDate.TimeFromMillis()) +
                     " long=" + expectedDate);
                 Log.Debug(
                     ".checkCorrect   result=" + timeFormat.Format(resultDate) +

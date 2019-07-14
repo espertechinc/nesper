@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.TIME_BATCH.Name;
+        public string ViewName => ViewEnum.TIME_BATCH.GetViewName();
 
         public PreviousGetterStrategy MakePreviousGetter()
         {

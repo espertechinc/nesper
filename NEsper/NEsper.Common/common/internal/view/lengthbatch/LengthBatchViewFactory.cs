@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.LENGTH_BATCH.Name;
+        public string ViewName => ViewEnum.LENGTH_BATCH.GetViewName();
 
         public PreviousGetterStrategy MakePreviousGetter()
         {

@@ -56,6 +56,6 @@ namespace com.espertech.esper.common.@internal.view.length
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.LENGTH_WINDOW.Name;
+        public string ViewName => ViewEnum.LENGTH_WINDOW.GetViewName();
     }
 } // end of namespace

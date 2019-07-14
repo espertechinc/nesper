@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.view.unique
             set => criteriaTypes = value;
         }
 
-        public string ViewName => ViewEnum.UNIQUE_BY_PROPERTY.Name;
+        public string ViewName => ViewEnum.UNIQUE_BY_PROPERTY.GetViewName();
 
         public void Init(
             ViewFactoryContext viewFactoryContext,

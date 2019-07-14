@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -226,43 +227,43 @@ namespace com.espertech.esper.compiler.@internal.util
                 var deploymentId = "D" + deploymentNumber;
                 try {
                     foreach (var type in moduleTypes) {
-                        if (type.Value.Metadata.AccessModifier.IsNonPrivateNonTransient) {
+                        if (type.Value.Metadata.AccessModifier.IsNonPrivateNonTransient()) {
                             pathEventTypes.Add(type.Key, unitModuleName, type.Value, deploymentId);
                         }
                     }
 
                     foreach (var entry in moduleNamedWindows) {
-                        if (entry.Value.EventType.Metadata.AccessModifier.IsNonPrivateNonTransient) {
+                        if (entry.Value.EventType.Metadata.AccessModifier.IsNonPrivateNonTransient()) {
                             pathNamedWindows.Add(entry.Key, unitModuleName, entry.Value, deploymentId);
                         }
                     }
 
                     foreach (var entry in moduleTables) {
-                        if (entry.Value.TableVisibility.IsNonPrivateNonTransient) {
+                        if (entry.Value.TableVisibility.IsNonPrivateNonTransient()) {
                             pathTables.Add(entry.Key, unitModuleName, entry.Value, deploymentId);
                         }
                     }
 
                     foreach (var entry in moduleContexts) {
-                        if (entry.Value.ContextVisibility.IsNonPrivateNonTransient) {
+                        if (entry.Value.ContextVisibility.IsNonPrivateNonTransient()) {
                             pathContexts.Add(entry.Key, unitModuleName, entry.Value, deploymentId);
                         }
                     }
 
                     foreach (var entry in moduleVariables) {
-                        if (entry.Value.VariableVisibility.IsNonPrivateNonTransient) {
+                        if (entry.Value.VariableVisibility.IsNonPrivateNonTransient()) {
                             pathVariables.Add(entry.Key, unitModuleName, entry.Value, deploymentId);
                         }
                     }
 
                     foreach (var entry in moduleExprDeclareds) {
-                        if (entry.Value.Visibility.IsNonPrivateNonTransient) {
+                        if (entry.Value.Visibility.IsNonPrivateNonTransient()) {
                             pathExprDeclared.Add(entry.Key, unitModuleName, entry.Value, deploymentId);
                         }
                     }
 
                     foreach (var entry in moduleScripts) {
-                        if (entry.Value.Visibility.IsNonPrivateNonTransient) {
+                        if (entry.Value.Visibility.IsNonPrivateNonTransient()) {
                             pathScript.Add(entry.Key, unitModuleName, entry.Value, deploymentId);
                         }
                     }

@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -110,7 +111,11 @@ namespace com.espertech.esper.common.@internal.filterspec
             MatchedEventMap matchedEvents,
             AgentInstanceContext agentInstanceContext)
         {
-            return EvaluateValueSet(parameters, matchedEvents, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
+            return EvaluateValueSet(
+                parameters,
+                matchedEvents,
+                agentInstanceContext,
+                agentInstanceContext.StatementContextFilterEvalEnv);
         }
 
         public static FilterValueSetParam[][] EvaluateValueSet(
@@ -140,7 +145,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             foreach (var specParam in specParams) {
                 var filterForValue = specParam.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
                 valueList[count] = new FilterValueSetParamImpl(
-                    specParam.Lookupable, specParam.FilterOperator, filterForValue);
+                    specParam.Lookupable,
+                    specParam.FilterOperator,
+                    filterForValue);
                 count++;
             }
         }

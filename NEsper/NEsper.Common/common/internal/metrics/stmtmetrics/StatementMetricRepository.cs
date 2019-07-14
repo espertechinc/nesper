@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.diagnostics;
 
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {
@@ -117,20 +118,18 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         ///     Account statement times.
         /// </summary>
         /// <param name="handle">statement handle</param>
-        /// <param name="cpu">cpu time</param>
-        /// <param name="wall">wall time</param>
+        /// <param name="performanceMetrics">performance metrics</param>
         /// <param name="numInput">number of input rows</param>
         public void AccountTimes(
             StatementMetricHandle handle,
-            long cpu,
-            long wall,
+            PerformanceMetrics performanceMetrics,
             int numInput)
         {
             var array = groupMetrics[handle.GroupNum];
             using (array.RWLock.AcquireDisposableReadLock())
             {
                 var metric = array.GetAddMetric(handle.Index);
-                metric.IncrementTime(cpu, wall);
+                metric.AddMetrics(performanceMetrics);
                 metric.AddNumInput(numInput);
             }
         }

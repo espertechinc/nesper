@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.support
                     };
             }
 
-            throw new ArgumentException("value out of bounds", "enumValue");
+            throw new ArgumentException("value out of bounds", nameof(enumValue));
         }
 
         public static SupportEventTypeAssertionEnum[] GetSetWithFragment()

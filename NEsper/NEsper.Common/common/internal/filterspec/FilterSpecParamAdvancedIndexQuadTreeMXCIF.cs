@@ -34,10 +34,10 @@ namespace com.espertech.esper.common.@internal.filterspec
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
-            double x = XEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
-            double y = YEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
-            double width = WidthEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
-            double height = HeightEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+            var x = XEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+            var y = YEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+            var width = WidthEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+            var height = HeightEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             return new XYWHRectangle(x, y, width, height);
         }
 
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             unchecked {
-                var hashCode = (XEval != null ? XEval.GetHashCode() : 0);
+                var hashCode = XEval != null ? XEval.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ (YEval != null ? YEval.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (WidthEval != null ? WidthEval.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (HeightEval != null ? HeightEval.GetHashCode() : 0);

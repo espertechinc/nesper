@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         }
 
         public string ViewName {
-            get => ViewEnum.REGRESSION_LINEST.Name;
+            get => ViewEnum.REGRESSION_LINEST.GetViewName();
         }
     }
 } // end of namespace

@@ -21,15 +21,15 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Ctor.
         /// </summary>
         /// <param name="className">is the driver class name</param>
-        /// <param name="url">is the database URL</param>
+        /// <param name="connectionString">is the database URL</param>
         /// <param name="optionalProperties">is connection properties</param>
         public DriverManagerConnection(
             string className,
-            string url,
+            string connectionString,
             Properties optionalProperties)
         {
             ClassName = className;
-            Url = url;
+            ConnectionString = connectionString;
             OptionalProperties = optionalProperties;
         }
 
@@ -37,17 +37,17 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Ctor.
         /// </summary>
         /// <param name="className">is the driver class name</param>
-        /// <param name="url">is the database URL</param>
+        /// <param name="connectionString">is the database URL</param>
         /// <param name="optionalUserName">is a user name for connecting</param>
         /// <param name="optionalPassword">is a password for connecting</param>
         public DriverManagerConnection(
             string className,
-            string url,
+            string connectionString,
             string optionalUserName,
             string optionalPassword)
         {
             ClassName = className;
-            Url = url;
+            ConnectionString = connectionString;
             OptionalUserName = optionalUserName;
             OptionalPassword = optionalPassword;
         }
@@ -56,19 +56,19 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Ctor.
         /// </summary>
         /// <param name="className">is the driver class name</param>
-        /// <param name="url">is the database URL</param>
+        /// <param name="connectionString">is the database URL</param>
         /// <param name="optionalUserName">is a user name for connecting</param>
         /// <param name="optionalPassword">is a password for connecting</param>
         /// <param name="optionalProperties">is connection properties</param>
         public DriverManagerConnection(
             string className,
-            string url,
+            string connectionString,
             string optionalUserName,
             string optionalPassword,
             Properties optionalProperties)
         {
             ClassName = className;
-            Url = url;
+            ConnectionString = connectionString;
             OptionalUserName = optionalUserName;
             OptionalPassword = optionalPassword;
             OptionalProperties = optionalProperties;
@@ -81,10 +81,9 @@ namespace com.espertech.esper.common.client.configuration.common
         public string ClassName { get; }
 
         /// <summary>
-        ///     Returns the database URL to use to obtains connections.
+        ///     Returns the database connection string.
         /// </summary>
-        /// <returns>URL</returns>
-        public string Url { get; }
+        public string ConnectionString { get; }
 
         /// <summary>
         ///     Returns the user name to connect to the database, or null if none supplied,

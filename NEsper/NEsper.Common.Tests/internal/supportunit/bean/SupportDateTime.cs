@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             }
 
             // expected : 2002-05-30T09:00:00
-            var dto = DateTimeParsingFunctions.ParseDefaultDate(datestr);
+            var dto = DateTimeParsingFunctions.ParseDefaultDateTimeOffset(datestr);
             var dtx = DateTimeEx.GetInstance(TimeZoneInfo.Local, dto);
             dtx.SetMillis(0);
 
