@@ -30,22 +30,22 @@ namespace com.espertech.esper.common.@internal.filterspec
             EventPropertyGetterSPI getter,
             string propertyName)
         {
-            this._getter = getter;
-            this._propertyName = propertyName;
+            _getter = getter;
+            _propertyName = propertyName;
         }
 
         public CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent)
         {
-            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
+            var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
 
             method.Block
                 .DeclareVar(typeof(EventBean), "props", ExprDotMethod(REF_EXPREVALCONTEXT, "getContextProperties"))
-                .IfRefNullReturnNull(@Ref("props"))
-                .DeclareVar(typeof(object), "result", _getter.EventBeanGetCodegen(@Ref("props"), method, classScope))
+                .IfRefNullReturnNull(Ref("props"))
+                .DeclareVar(typeof(object), "result", _getter.EventBeanGetCodegen(Ref("props"), method, classScope))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(ExprDotMethod(Cast(typeof(object), @Ref("result")), "doubleValue"));
+                .MethodReturn(ExprDotMethod(Cast(typeof(object), Ref("result")), "doubleValue"));
 
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
         }
@@ -61,14 +61,12 @@ namespace com.espertech.esper.common.@internal.filterspec
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (exprEvaluatorContext.ContextProperties == null)
-            {
+            if (exprEvaluatorContext.ContextProperties == null) {
                 return null;
             }
 
-            object @object = _getter.Get(exprEvaluatorContext.ContextProperties);
-            if (@object == null)
-            {
+            var @object = _getter.Get(exprEvaluatorContext.ContextProperties);
+            if (@object == null) {
                 return null;
             }
 
@@ -84,17 +82,15 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override bool Equals(object o)
         {
-            if (this == o)
-            {
+            if (this == o) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType())
-            {
+            if (o == null || GetType() != o.GetType()) {
                 return false;
             }
 
-            FilterForEvalContextPropDoubleForge that = (FilterForEvalContextPropDoubleForge) o;
+            var that = (FilterForEvalContextPropDoubleForge) o;
 
             return _propertyName.Equals(that._propertyName);
         }

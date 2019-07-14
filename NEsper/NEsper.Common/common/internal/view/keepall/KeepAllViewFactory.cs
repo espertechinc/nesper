@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.view.keepall
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.KEEPALL_WINDOW.Name;
+        public string ViewName => ViewEnum.KEEPALL_WINDOW.GetViewName();
 
         public PreviousGetterStrategy MakePreviousGetter()
         {

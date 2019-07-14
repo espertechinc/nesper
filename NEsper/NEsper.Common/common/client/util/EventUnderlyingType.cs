@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.@internal.@event.avro;
 
@@ -14,40 +15,48 @@ namespace com.espertech.esper.common.client.util
     /// <summary>
     ///     Enumeration of event representation.
     /// </summary>
-    public class EventUnderlyingType
+    public enum EventUnderlyingType
     {
         /// <summary>
         ///     Event representation is object-array (Object[]).
         /// </summary>
-        public static readonly EventUnderlyingType OBJECTARRAY = new EventUnderlyingType();
+        OBJECTARRAY,
 
         /// <summary>
         ///     Event representation is Map (any java.util.Map interface implementation).
         /// </summary>
-        public static readonly EventUnderlyingType MAP = new EventUnderlyingType();
+        MAP,
 
         /// <summary>
         ///     Event representation is Avro (GenericData.Record).
         /// </summary>
-        public static readonly EventUnderlyingType AVRO = new EventUnderlyingType();
+        AVRO
+    }
 
-
+    public static class EventUnderlyingTypeExtensions
+    {
         private static readonly string OA_TYPE_NAME = typeof(object[]).FullName;
         private static readonly string MAP_TYPE_NAME = typeof(IDictionary<string, object>).FullName;
         private static readonly string AVRO_TYPE_NAME = AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME;
-
-        static EventUnderlyingType()
-        {
-            OBJECTARRAY.UnderlyingClassName = OA_TYPE_NAME;
-            MAP.UnderlyingClassName = MAP_TYPE_NAME;
-            AVRO.UnderlyingClassName = AVRO_TYPE_NAME;
-        }
 
         /// <summary>
         ///     Returns the class name of the default underlying type.
         /// </summary>
         /// <returns>default underlying type class name</returns>
-        public string UnderlyingClassName { get; private set; }
+        public static string GetUnderlyingClassName(this EventUnderlyingType underlyingType)
+        {
+            switch (underlyingType)
+            {
+                case EventUnderlyingType.OBJECTARRAY:
+                    return OA_TYPE_NAME;
+                case EventUnderlyingType.MAP:
+                    return MAP_TYPE_NAME;
+                case EventUnderlyingType.AVRO:
+                    return AVRO_TYPE_NAME;
+            }
+
+            throw new ArgumentException("invalid value", nameof(underlyingType));
+        }
 
         /// <summary>
         ///     Returns the default underlying type.
@@ -55,7 +64,7 @@ namespace com.espertech.esper.common.client.util
         /// <returns>default underlying type</returns>
         public static EventUnderlyingType GetDefault()
         {
-            return MAP;
+            return EventUnderlyingType.MAP;
         }
     }
 } // end of namespace

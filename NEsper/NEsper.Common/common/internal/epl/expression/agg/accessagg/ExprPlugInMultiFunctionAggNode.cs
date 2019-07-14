@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         {
             ValidatePositionals(validationContext);
             // validate using the context provided by the 'outside' streams to determine parameters
-            // at this time 'inside' expressions like 'window(intPrimitive)' are not handled
+            // at this time 'inside' expressions like 'window(IntPrimitive)' are not handled
             ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, ChildNodes, validationContext);
             var ctx = new AggregationMultiFunctionValidationContext(
                 functionName, validationContext.StreamTypeService.EventTypes, positionalParams,

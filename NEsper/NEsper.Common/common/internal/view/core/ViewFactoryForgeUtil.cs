@@ -301,8 +301,8 @@ namespace com.espertech.esper.common.@internal.view.core
             // A grouping view requires a merge view and cannot be last since it would not group sub-views
             if (specifications.Count > 0) {
                 ViewSpec lastView = specifications[specifications.Count - 1];
-                var viewEnum = ViewEnum.ForName(lastView.ObjectNamespace, lastView.ObjectName);
-                if (viewEnum != null && viewEnum.MergeView != null) {
+                var viewEnum = ViewEnumExtensions.ForName(lastView.ObjectNamespace, lastView.ObjectName);
+                if (viewEnum != null && viewEnum.Value.GetMergeView() != null) {
                     throw new ViewProcessingException(
                         "Invalid use of the '" +
                         lastView.ObjectName +
@@ -313,7 +313,7 @@ namespace com.espertech.esper.common.@internal.view.core
             LinkedList<ViewSpec> mergeViewSpecs = new LinkedList<ViewSpec>();
             var foundMerge = false;
             foreach (var spec in specifications) {
-                var viewEnum = ViewEnum.ForName(spec.ObjectNamespace, spec.ObjectName);
+                var viewEnum = ViewEnumExtensions.ForName(spec.ObjectNamespace, spec.ObjectName);
                 if (viewEnum == ViewEnum.GROUP_MERGE) {
                     foundMerge = true;
                     break;
@@ -325,18 +325,20 @@ namespace com.espertech.esper.common.@internal.view.core
             }
 
             foreach (var spec in specifications) {
-                var viewEnum = ViewEnum.ForName(spec.ObjectNamespace, spec.ObjectName);
+                var viewEnum = ViewEnumExtensions.ForName(spec.ObjectNamespace, spec.ObjectName);
                 if (viewEnum == null) {
                     continue;
                 }
 
-                if (viewEnum.MergeView == null) {
+                if (viewEnum.Value.GetMergeView() == null) {
                     continue;
                 }
 
                 // The merge view gets the same parameters as the view that requires the merge
+                var mergeView = viewEnum.Value.GetMergeView();
                 var mergeViewSpec = new ViewSpec(
-                    viewEnum.MergeView.Namespace, viewEnum.MergeView.Name,
+                    mergeView?.GetNamespace(),
+                    mergeView?.GetViewName(),
                     spec.ObjectParameters);
 
                 // The merge views are added to the beginning of the list.

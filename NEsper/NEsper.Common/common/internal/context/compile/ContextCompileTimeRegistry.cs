@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -19,7 +21,7 @@ namespace com.espertech.esper.common.@internal.context.compile
 
         public void NewContext(ContextMetaData detail)
         {
-            if (!detail.ContextVisibility.IsModuleProvidedAccessModifier) {
+            if (!detail.ContextVisibility.IsModuleProvidedAccessModifier()) {
                 throw new IllegalStateException("Invalid visibility for contexts");
             }
 

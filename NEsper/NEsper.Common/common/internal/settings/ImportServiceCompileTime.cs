@@ -127,8 +127,21 @@ namespace com.espertech.esper.common.@internal.settings
             }
             catch (TypeLoadException e)
             {
-                throw new ImportException(
-                    "Could not load annotation class by name '" + className + "', please check imports", e);
+                if (!className.EndsWith("Attribute")) {
+                    try {
+                        clazz = ResolveClassInternal(className + "Attribute", true, true);
+                    }
+                    catch (TypeLoadException) {
+                        throw new ImportException(
+                            "Could not load annotation class by name '" + className + "', please check imports",
+                            e);
+                    }
+                }
+                else {
+                    throw new ImportException(
+                        "Could not load annotation class by name '" + className + "', please check imports",
+                        e);
+                }
             }
 
             return clazz;

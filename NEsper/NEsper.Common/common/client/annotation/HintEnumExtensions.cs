@@ -427,7 +427,7 @@ namespace com.espertech.esper.common.client.annotation
                 return valMixed.Substring(val.IndexOf('=') + 1);
             }
 
-            var hints = valMixed.Split(',');
+            var hints = valMixed.SplitCsv();
             foreach (var hint in hints) {
                 var indexOfEquals = hint.IndexOf('=');
                 if (indexOfEquals == -1) {

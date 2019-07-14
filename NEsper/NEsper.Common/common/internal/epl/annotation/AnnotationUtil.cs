@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
@@ -154,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             // obtain Annotation class properties
             var annotationAttributeLists = GetAttributes(annotationClass);
             ISet<string> allAttributes = new HashSet<string>();
-            ISet<string> requiredAttributes = new LinkedHashSet<string>();
+            ISet<string> requiredAttributes = new HashSet<string>();
             foreach (var annotationAttribute in annotationAttributeLists) {
                 allAttributes.Add(annotationAttribute.Name);
                 if (annotationAttribute.DefaultValue != null) {
@@ -169,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             // for all attributes determine value
-            IDictionary<string, object> properties = new LinkedHashMap<string, object>();
+            IDictionary<string, object> properties = new Dictionary<string, object>();
             foreach (var annotationAttribute in annotationAttributeLists) {
                 // find value pair for this attribute
                 var attributeName = annotationAttribute.Name;
@@ -323,9 +324,40 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             return array;
         }
 
+        public static object GetDefaultValue(Type t)
+        {
+            if (t.IsValueType && Nullable.GetUnderlyingType(t) == null)
+            {
+                return Activator.CreateInstance(t);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private static IList<AnnotationAttribute> GetAttributes(Type annotationClass)
         {
             var props = new List<AnnotationAttribute>();
+
+#if true
+            var clazzProperties = annotationClass.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            if (clazzProperties.Length == 0) {
+                return Collections.GetEmptyList<AnnotationAttribute>();
+            }
+
+            foreach (var clazzProperty in clazzProperties
+                .Where(c => c.DeclaringType != typeof(Attribute))
+                .Where(c => c.CanRead)) {
+
+                var annotationAttribute = new AnnotationAttribute(
+                    clazzProperty.Name,
+                    clazzProperty.PropertyType,
+                    GetDefaultValue(clazzProperty.PropertyType));
+
+                props.Add(annotationAttribute);
+            }
+#else
             var methods = annotationClass.GetMethods();
             if (methods.Length == 0) {
                 return Collections.GetEmptyList<AnnotationAttribute>();
@@ -352,6 +384,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
                 props.Add(new AnnotationAttribute(method.Name, method.ReturnType, null)); // TBD: method.DefaultValue
             }
+#endif
 
             props.Sort((o1, o2) => o1.Name.CompareTo(o2.Name));
             return props;
@@ -370,7 +403,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             foreach (var anno in annotations) {
-                if (TypeHelper.IsImplementsInterface(anno.GetType(), annotationClass)) {
+                if (TypeHelper.IsSubclassOrImplementsInterface(anno.GetType(), annotationClass)) {
                     return anno;
                 }
             }

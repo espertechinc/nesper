@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -29,7 +30,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             // handle table evaluator context
             if (node.IsTableAccess) {
                 exprEvaluatorContext = new ExprEvaluatorContextWTableAccess(
-                    exprEvaluatorContext, filterEvalEnv.TableExprEvaluatorContext);
+                    exprEvaluatorContext,
+                    filterEvalEnv.TableExprEvaluatorContext);
             }
 
             ExprNodeAdapterBase adapter;
@@ -37,8 +39,12 @@ namespace com.espertech.esper.common.@internal.filterspec
                 // if a subquery is present in a filter stream acquire the agent instance lock
                 if (node.IsFilterStreamSubquery) {
                     adapter = GetLockableSingle(
-                        node, exprEvaluatorContext, filterEvalEnv.VariableManagementService,
-                        filterEvalEnv.ImportServiceRuntime, filterEvalEnv.Annotations, agentInstanceId);
+                        node,
+                        exprEvaluatorContext,
+                        filterEvalEnv.VariableManagementService,
+                        filterEvalEnv.ImportServiceRuntime,
+                        filterEvalEnv.Annotations,
+                        agentInstanceId);
                 }
                 else if (!node.IsVariable) {
                     // no-variable no-prior event evaluation
@@ -47,7 +53,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 else {
                     // with-variable no-prior event evaluation
                     adapter = new ExprNodeAdapterSSVariables(
-                        node, exprEvaluatorContext, filterEvalEnv.VariableManagementService);
+                        node,
+                        exprEvaluatorContext,
+                        filterEvalEnv.VariableManagementService);
                 }
             }
             else {
@@ -55,8 +63,13 @@ namespace com.espertech.esper.common.@internal.filterspec
                 var variableServiceToUse = node.IsVariable ? filterEvalEnv.VariableManagementService : null;
                 if (node.IsFilterStreamSubquery) {
                     adapter = GetLockableMultiStream(
-                        node, exprEvaluatorContext, variableServiceToUse, filterEvalEnv.ImportServiceRuntime,
-                        events, filterEvalEnv.Annotations, agentInstanceId);
+                        node,
+                        exprEvaluatorContext,
+                        variableServiceToUse,
+                        filterEvalEnv.ImportServiceRuntime,
+                        events,
+                        filterEvalEnv.Annotations,
+                        agentInstanceId);
                 }
                 else {
                     if (node.IsUseLargeThreadingProfile) {
@@ -74,7 +87,10 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             // handle table
             return new ExprNodeAdapterWTableAccess(
-                node, exprEvaluatorContext, adapter, filterEvalEnv.TableExprEvaluatorContext);
+                node,
+                exprEvaluatorContext,
+                adapter,
+                filterEvalEnv.TableExprEvaluatorContext);
         }
 
         protected ExprNodeAdapterBase GetLockableSingle(

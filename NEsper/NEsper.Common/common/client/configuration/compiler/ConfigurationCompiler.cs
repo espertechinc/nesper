@@ -134,6 +134,13 @@ namespace com.espertech.esper.common.client.configuration.compiler
             PlugInAggregationFunctions.Add(entry);
         }
 
+        public void AddPlugInAggregationFunctionForge(
+            string functionName,
+            Type aggregationForgeClass)
+        {
+            AddPlugInAggregationFunctionForge(functionName, aggregationForgeClass.FullName);
+        }
+
         /// <summary>
         ///     Adds a plug-in aggregation multi-function.
         /// </summary>
@@ -171,6 +178,16 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED);
         }
 
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            Type clazz,
+            string methodName)
+        {
+            AddPlugInSingleRowFunction(
+                functionName, clazz.FullName, methodName,
+                ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED);
+        }
+
         /// <summary>
         ///     Adds a plug-in single-row function given a EPL function name, a class name, method name and setting for value-cache
         ///     behavior.
@@ -189,6 +206,17 @@ namespace com.espertech.esper.common.client.configuration.compiler
         {
             AddPlugInSingleRowFunction(
                 functionName, className, methodName, valueCache,
+                ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED);
+        }
+
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            Type clazz,
+            string methodName,
+            ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum valueCache)
+        {
+            AddPlugInSingleRowFunction(
+                functionName, clazz.FullName, methodName, valueCache,
                 ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED);
         }
 
@@ -316,6 +344,14 @@ namespace com.espertech.esper.common.client.configuration.compiler
             PlugInViews.Add(configurationPlugInView);
         }
 
+        public void AddPlugInView(
+            string @namespace,
+            string name,
+            Type viewForgeClass)
+        {
+            AddPlugInView(@namespace, name, viewForgeClass.FullName);
+        }
+
         /// <summary>
         ///     Add a virtual data window for plug-in.
         /// </summary>
@@ -328,6 +364,14 @@ namespace com.espertech.esper.common.client.configuration.compiler
             string forgeClass)
         {
             AddPlugInVirtualDataWindow(@namespace, name, forgeClass, null);
+        }
+
+        public void AddPlugInVirtualDataWindow(
+            string @namespace,
+            string name,
+            Type forgeClass)
+        {
+            AddPlugInVirtualDataWindow(@namespace, name, forgeClass.FullName, null);
         }
 
         /// <summary>
@@ -351,13 +395,23 @@ namespace com.espertech.esper.common.client.configuration.compiler
             PlugInVirtualDataWindows.Add(configurationPlugInVirtualDataWindow);
         }
 
+        public void AddPlugInVirtualDataWindow(
+            string @namespace,
+            string name,
+            Type forgeClass,
+            object customConfigurationObject)
+        {
+            AddPlugInVirtualDataWindow(@namespace, name, forgeClass.FullName, customConfigurationObject);
+        }
+
+
         /// <summary>
-        ///     Add a pattern event observer for plug-in.
-        /// </summary>
-        /// <param name="namespace">is the namespace the observer should be available under</param>
-        /// <param name="name">is the name of the observer</param>
-        /// <param name="observerForgeClass">is the observer forge class to use</param>
-        public void AddPlugInPatternObserver(
+            ///     Add a pattern event observer for plug-in.
+            /// </summary>
+            /// <param name="namespace">is the namespace the observer should be available under</param>
+            /// <param name="name">is the name of the observer</param>
+            /// <param name="observerForgeClass">is the observer forge class to use</param>
+            public void AddPlugInPatternObserver(
             string @namespace,
             string name,
             string observerForgeClass)
@@ -387,6 +441,14 @@ namespace com.espertech.esper.common.client.configuration.compiler
             entry.ForgeClassName = guardForgeClass;
             entry.PatternObjectType = PatternObjectType.GUARD;
             PlugInPatternObjects.Add(entry);
+        }
+
+        public void AddPlugInPatternGuard(
+            string @namespace,
+            string name,
+            Type guardForgeClass)
+        {
+            AddPlugInPatternGuard(@namespace, name, guardForgeClass.FullName);
         }
 
         /// <summary>

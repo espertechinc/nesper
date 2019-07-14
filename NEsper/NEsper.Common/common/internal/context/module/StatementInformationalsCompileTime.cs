@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.context.module
         private readonly int _numScheduleCallbacks;
         private readonly string _optionalContextModuleName;
         private readonly string _optionalContextName;
-        private readonly NameAccessModifier _optionalContextVisibility;
+        private readonly NameAccessModifier? _optionalContextVisibility;
         private readonly CodegenNamespaceScope _namespaceScope;
         private readonly bool _preemptive;
         private readonly int _priority;
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.context.module
             bool alwaysSynthesizeOutputEvents,
             string optionalContextName,
             string optionalContextModuleName,
-            NameAccessModifier optionalContextVisibility,
+            NameAccessModifier? optionalContextVisibility,
             bool canSelfJoin,
             bool hasSubquery,
             bool needDedup,

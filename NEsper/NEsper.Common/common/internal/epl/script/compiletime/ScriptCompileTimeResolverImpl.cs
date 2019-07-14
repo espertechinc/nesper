@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
                     new NameAndParamNum(name, numParameters), moduleUses);
                 if (expression != null)
                 {
-                    if (!NameAccessModifier.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName))
+                    if (!NameAccessModifierExtensions.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName))
                     {
                         return null;
                     }

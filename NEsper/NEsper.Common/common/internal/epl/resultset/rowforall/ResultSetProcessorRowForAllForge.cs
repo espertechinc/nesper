@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 
@@ -28,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
     /// </summary>
     public class ResultSetProcessorRowForAllForge : ResultSetProcessorFactoryForge
     {
-        private readonly ResultSetProcessorOutputConditionType outputConditionType;
+        private readonly ResultSetProcessorOutputConditionType? outputConditionType;
         private readonly SelectExprProcessorForge selectExprProcessorForge;
 
         public ResultSetProcessorRowForAllForge(
@@ -40,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             bool isHistoricalOnly,
             OutputLimitSpec outputLimitSpec,
             bool hasOrderBy,
-            ResultSetProcessorOutputConditionType outputConditionType)
+            ResultSetProcessorOutputConditionType? outputConditionType)
         {
             ResultEventType = resultEventType;
             this.selectExprProcessorForge = selectExprProcessorForge;

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -17,7 +18,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     [Serializable]
     public class DoubleRange : Range
     {
-        private readonly int hashCode;
+        private readonly int _hashCode;
 
         /// <summary>
         ///     Constructor - takes range endpoints.
@@ -38,15 +39,15 @@ namespace com.espertech.esper.common.@internal.filterspec
                 }
             }
 
-            hashCode = 7;
+            _hashCode = 7;
             if (min != null) {
-                hashCode = 31 * hashCode;
-                hashCode ^= min.GetHashCode();
+                _hashCode = 31 * _hashCode;
+                _hashCode ^= min.GetHashCode();
             }
 
             if (max != null) {
-                hashCode = 31 * hashCode;
-                hashCode ^= max.GetHashCode();
+                _hashCode = 31 * _hashCode;
+                _hashCode ^= max.GetHashCode();
             }
         }
 
@@ -83,14 +84,16 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override int GetHashCode()
         {
-            return hashCode;
+            return _hashCode;
         }
 
         public override string ToString()
         {
             return "DoubleRange" +
-                   " min=" + Min +
-                   " max=" + Max;
+                   " min=" +
+                   Min +
+                   " max=" +
+                   Max;
         }
     }
 } // end of namespace

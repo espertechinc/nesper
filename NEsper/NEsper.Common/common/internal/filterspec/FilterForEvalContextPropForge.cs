@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
@@ -24,10 +26,10 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public class FilterForEvalContextPropForge : FilterSpecParamInValueForge
     {
-        [NonSerialized] private readonly EventPropertyGetterSPI getter;
-        [NonSerialized] private readonly SimpleNumberCoercer numberCoercer;
-        private readonly string propertyName;
-        [NonSerialized] private readonly Type returnType;
+        [NonSerialized] private readonly EventPropertyGetterSPI _getter;
+        [NonSerialized] private readonly SimpleNumberCoercer _numberCoercer;
+        private readonly string _propertyName;
+        [NonSerialized] private readonly Type _returnType;
 
         public FilterForEvalContextPropForge(
             string propertyName,
@@ -35,10 +37,10 @@ namespace com.espertech.esper.common.@internal.filterspec
             SimpleNumberCoercer coercer,
             Type returnType)
         {
-            this.propertyName = propertyName;
-            this.getter = getter;
-            numberCoercer = coercer;
-            this.returnType = returnType;
+            _propertyName = propertyName;
+            _getter = getter;
+            _numberCoercer = coercer;
+            _returnType = returnType;
         }
 
         public CodegenExpression MakeCodegen(
@@ -50,12 +52,15 @@ namespace com.espertech.esper.common.@internal.filterspec
             method.Block
                 .DeclareVar(typeof(EventBean), "props", ExprDotMethod(REF_EXPREVALCONTEXT, "getContextProperties"))
                 .IfRefNullReturnNull(Ref("props"))
-                .DeclareVar(typeof(object), "result", getter.EventBeanGetCodegen(Ref("props"), method, classScope));
-            if (numberCoercer != null) {
+                .DeclareVar(typeof(object), "result", _getter.EventBeanGetCodegen(Ref("props"), method, classScope));
+            if (_numberCoercer != null) {
                 method.Block.AssignRef(
                     "result",
-                    numberCoercer.CoerceCodegenMayNullBoxed(
-                        Cast(typeof(object), Ref("result")), typeof(object), method, classScope));
+                    _numberCoercer.CoerceCodegenMayNullBoxed(
+                        Cast(typeof(object), Ref("result")),
+                        typeof(object),
+                        method,
+                        classScope));
             }
 
             method.Block.MethodReturn(Ref("result"));
@@ -63,7 +68,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
         }
 
-        public Type ReturnType => returnType;
+        public Type ReturnType => _returnType;
 
         public bool IsConstant => false;
 
@@ -75,13 +80,13 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return null;
             }
 
-            var result = getter.Get(evaluatorContext.ContextProperties);
+            var result = _getter.Get(evaluatorContext.ContextProperties);
 
-            if (numberCoercer == null) {
+            if (_numberCoercer == null) {
                 return result;
             }
 
-            return numberCoercer.CoerceBoxed(result);
+            return _numberCoercer.CoerceBoxed(result);
         }
 
         public override bool Equals(object o)
@@ -96,7 +101,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             var that = (FilterForEvalContextPropForge) o;
 
-            if (!propertyName.Equals(that.propertyName)) {
+            if (!_propertyName.Equals(that._propertyName)) {
                 return false;
             }
 
@@ -105,7 +110,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override int GetHashCode()
         {
-            return propertyName.GetHashCode();
+            return _propertyName.GetHashCode();
         }
     }
 } // end of namespace

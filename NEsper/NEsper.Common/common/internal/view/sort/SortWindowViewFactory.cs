@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             set => useCollatorSort = value;
         }
 
-        public string ViewName => ViewEnum.SORT_WINDOW.Name;
+        public string ViewName => ViewEnum.SORT_WINDOW.GetViewName();
 
         public void Init(
             ViewFactoryContext viewFactoryContext,

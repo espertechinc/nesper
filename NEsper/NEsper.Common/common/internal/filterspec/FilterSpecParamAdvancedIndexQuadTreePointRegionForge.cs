@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -25,7 +26,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             FilterSpecParamFilterForEvalDoubleForge xEval,
             FilterSpecParamFilterForEvalDoubleForge yEval)
             : base(
-                lookupable, filterOperator)
+                lookupable,
+                filterOperator)
         {
             _xEval = xEval;
             _yEval = yEval;
@@ -37,20 +39,26 @@ namespace com.espertech.esper.common.@internal.filterspec
             SAIFFInitializeSymbolWEventType symbols)
         {
             var method = parent.MakeChild(
-                typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion), GetType(), classScope);
+                typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion),
+                GetType(),
+                classScope);
             method.Block
                 .DeclareVar(
-                    typeof(ExprFilterSpecLookupable), "lookupable",
+                    typeof(ExprFilterSpecLookupable),
+                    "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
                 .DeclareVar(
-                    typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion), "fpai",
+                    typeof(FilterSpecParamAdvancedIndexQuadTreePointRegion),
+                    "fpai",
                     NewInstance<FilterSpecParamAdvancedIndexQuadTreePointRegion>(Ref("lookupable"), Ref("op")))
                 .SetProperty(
-                    Ref("fpai"), "xEval",
+                    Ref("fpai"),
+                    "xEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_xEval, GetType(), classScope, method))
                 .SetProperty(
-                    Ref("fpai"), "yEval",
+                    Ref("fpai"),
+                    "yEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_yEval, GetType(), classScope, method))
                 .MethodReturn(Ref("fpai"));
             return method;

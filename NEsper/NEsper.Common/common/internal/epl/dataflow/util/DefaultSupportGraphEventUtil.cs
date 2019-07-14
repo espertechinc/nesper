@@ -32,16 +32,20 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public static readonly string EVENTTYPENAME = typeof(MyDefaultSupportGraphEvent).GetSimpleName();
 
-        public static void AddTypeConfiguration(IContainer container, Configuration configuration)
+        public static void AddTypeConfiguration(Configuration configuration)
         {
-            IDictionary<string, object> propertyTypes = new LinkedHashMap<string, object>();
+            var container = configuration.Container;
+            var propertyTypes = new Dictionary<string, object>();
             propertyTypes.Put("myDouble", typeof(double?));
             propertyTypes.Put("myInt", typeof(int?));
             propertyTypes.Put("myString", typeof(string));
             configuration.Common.AddEventType("MyMapEvent", propertyTypes);
             configuration.Common.AddEventType(
-                "MyOAEvent", "myDouble,myInt,myString".Split(','),
-                new object[] { typeof(double?), typeof(int?), typeof(string) });
+                "MyOAEvent",
+                "myDouble,myInt,myString".SplitCsv(),
+                new object[] {
+                    typeof(double?), typeof(int?), typeof(string)
+                });
             configuration.Common.AddEventType(typeof(MyDefaultSupportGraphEvent));
             configuration.Common.AddEventType("MyXMLEvent", GetConfig(container.ResourceManager()));
         }
@@ -50,8 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
             var xmlEvents = GetXMLEvents();
             var xmls = new SendableEvent[xmlEvents.Length];
-            for (var i = 0; i < xmlEvents.Length; i++)
-            {
+            for (var i = 0; i < xmlEvents.Length; i++) {
                 xmls[i] = new SendableEventXML((XmlNode) xmlEvents[i], "MyXMLEvent");
             }
 
@@ -62,8 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
             var oaEvents = GetOAEvents();
             var oas = new SendableEvent[oaEvents.Length];
-            for (var i = 0; i < oaEvents.Length; i++)
-            {
+            for (var i = 0; i < oaEvents.Length; i++) {
                 oas[i] = new SendableEventObjectArray((object[]) oaEvents[i], "MyOAEvent");
             }
 
@@ -74,8 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
             var mapEvents = GetMapEvents();
             var sendables = new SendableEvent[mapEvents.Length];
-            for (var i = 0; i < mapEvents.Length; i++)
-            {
+            for (var i = 0; i < mapEvents.Length; i++) {
                 sendables[i] = new SendableEventMap((IDictionary<string, object>) mapEvents[i], "MyMapEvent");
             }
 
@@ -86,8 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
             var pojoEvents = GetPONOEvents();
             var sendables = new SendableEvent[pojoEvents.Length];
-            for (var i = 0; i < pojoEvents.Length; i++)
-            {
+            for (var i = 0; i < pojoEvents.Length; i++) {
                 sendables[i] = new SendableEventBean(pojoEvents[i], EVENTTYPENAME);
             }
 
@@ -96,17 +96,17 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public static object[] GetXMLEvents()
         {
-            return new object[] { MakeXMLEvent(1.1d, 1, "one"), MakeXMLEvent(2.2d, 2, "two") };
+            return new object[] {MakeXMLEvent(1.1d, 1, "one"), MakeXMLEvent(2.2d, 2, "two")};
         }
 
         public static object[] GetOAEvents()
         {
-            return new object[] { new object[] { 1.1d, 1, "one" }, new object[] { 2.2d, 2, "two" } };
+            return new object[] {new object[] {1.1d, 1, "one"}, new object[] {2.2d, 2, "two"}};
         }
 
         public static object[] GetMapEvents()
         {
-            return new object[] { MakeMapEvent(1.1, 1, "one"), MakeMapEvent(2.2d, 2, "two") };
+            return new object[] {MakeMapEvent(1.1, 1, "one"), MakeMapEvent(2.2d, 2, "two")};
         }
 
         public static object[] GetPONOEvents()
@@ -121,8 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             eventTypeMeta.RootElementName = "rootelement";
 
             var schemaStream = resourceManager.GetResourceAsStream(CLASSLOADER_SCHEMA_URI);
-            if (schemaStream == null)
-            {
+            if (schemaStream == null) {
                 throw new IllegalStateException("Failed to load schema '" + CLASSLOADER_SCHEMA_URI + "'");
             }
 
@@ -141,14 +140,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             xml = xml.RegexReplaceAll("VAL_INT", Convert.ToString(myInt));
             xml = xml.RegexReplaceAll("VAL_STR", myString);
 
-            try
-            {
+            try {
                 var document = new XmlDocument();
                 document.LoadXml(xml);
                 return document.DocumentElement;
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new EPRuntimeException("Failed to parse '" + xml + "' as XML: " + e.Message, e);
             }
         }

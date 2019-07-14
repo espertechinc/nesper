@@ -92,7 +92,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPRuntimeSPI epRuntime,
             Configuration configs)
         {
-            var container = epRuntime.ServicesContext.Container;
+            var container = epRuntime.Container;
             var runtimeEnvContext = new RuntimeEnvContext();
             var eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock", false);
             var deploymentLifecycleService = new DeploymentLifecycleServiceImpl();
@@ -209,7 +209,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var eventTableIndexService = MakeEventTableIndexService(epServicesHA.RuntimeExtensionServices);
             var expressionResultCacheSharable = new ExpressionResultCacheService(
                 configs.Runtime.Execution.DeclaredExprValueCacheSize,
-                epRuntime.ServicesContext.Container.ThreadLocalManager());
+                epRuntime.Container.ThreadLocalManager());
 
             var resultSetProcessorHelperFactory = MakeResultSetProcessorHelperFactory(epServicesHA.RuntimeExtensionServices);
 
@@ -228,7 +228,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var variablePathRegistry = new PathRegistry<string, VariableMetaData>(PathRegistryObjectType.VARIABLE);
 
             var tableExprEvaluatorContext = new TableExprEvaluatorContext(
-                epRuntime.ServicesContext.Container.ThreadLocalManager());
+                epRuntime.Container.ThreadLocalManager());
             var tableManagementService = MakeTableManagementService(epServicesHA.RuntimeExtensionServices, tableExprEvaluatorContext);
             var tablePathRegistry = new PathRegistry<string, TableMetaData>(PathRegistryObjectType.TABLE);
 

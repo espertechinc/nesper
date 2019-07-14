@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         }
 
         public string ViewName {
-            get => ViewEnum.CORRELATION.Name;
+            get => ViewEnum.CORRELATION.GetViewName();
         }
     }
 } // end of namespace

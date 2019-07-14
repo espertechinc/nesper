@@ -13,6 +13,7 @@ using System.Reflection;
 
 using Antlr4.Runtime;
 
+using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -94,7 +95,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             ISet<string> uses = new LinkedHashSet<string>();
-            ISet<string> imports = new LinkedHashSet<string>();
+            ISet<Import> imports = new HashSet<Import>();
             count = 0;
             foreach (var node in nodes)
             {
@@ -122,7 +123,13 @@ namespace com.espertech.esper.compiler.@internal.util
                         throw new ParseException(message);
                     }
 
-                    imports.Add(parseNodeImport.Imported);
+                    if (IsNamespaceWildcard(parseNodeImport.Imported)) {
+                        imports.Add(new ImportNamespace(parseNodeImport.Imported));
+                    }
+                    else {
+                        imports.Add(new ImportType(parseNodeImport.Imported));
+                    }
+
                     continue;
                 }
 
@@ -519,6 +526,17 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             return -1;
+        }
+
+        public static string GetPackageName(string importName)
+        {
+            return importName.Substring(0, importName.Length - 2);
+        }
+
+        public static bool IsNamespaceWildcard(string importName)
+        {
+            var classNameRegEx = "(\\w+\\.)+\\*";
+            return importName.Matches(classNameRegEx);
         }
     }
 } // end of namespace

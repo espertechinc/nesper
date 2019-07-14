@@ -269,9 +269,9 @@ namespace com.espertech.esper.compat
             if (value is DateTime)
                 return (DateTime) value;
             if (value is int)
-                return DateTimeHelper.FromMillis((int) value);
+                return DateTimeHelper.TimeFromMillis((int) value);
             if (value is long)
-                return DateTimeHelper.FromMillis((long) value);
+                return DateTimeHelper.TimeFromMillis((long) value);
 
             throw new ArgumentException("invalid value for datetime", nameof(value));
         }

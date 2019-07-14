@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.util;
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
 
         public void NewScript(ExpressionScriptProvided detail)
         {
-            if (!detail.Visibility.IsModuleProvidedAccessModifier)
+            if (!detail.Visibility.IsModuleProvidedAccessModifier())
             {
                 throw new IllegalStateException("Invalid visibility for contexts");
             }

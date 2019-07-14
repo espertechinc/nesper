@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.TIME_ACCUM.Name;
+        public string ViewName => ViewEnum.TIME_ACCUM.GetViewName();
 
         public PreviousGetterStrategy MakePreviousGetter()
         {

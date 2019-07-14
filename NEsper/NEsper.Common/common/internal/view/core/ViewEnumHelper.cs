@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
@@ -18,9 +19,12 @@ namespace com.espertech.esper.common.@internal.view.core
         static ViewEnumHelper()
         {
             BuiltinViews = new PluggableObjectCollection();
-            foreach (var viewEnum in ViewEnum.Values) {
+            foreach (var viewEnum in EnumHelper.GetValues<ViewEnum>()) {
                 BuiltinViews.AddObject(
-                    viewEnum.Namespace, viewEnum.Name, viewEnum.FactoryClass, PluggableObjectType.VIEW);
+                    viewEnum.GetNamespace(),
+                    viewEnum.GetViewName(),
+                    viewEnum.GetFactoryClass(), 
+                    PluggableObjectType.VIEW);
             }
         }
 

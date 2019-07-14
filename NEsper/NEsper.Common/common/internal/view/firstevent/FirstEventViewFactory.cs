@@ -34,6 +34,6 @@ namespace com.espertech.esper.common.@internal.view.firstevent
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.FIRST_EVENT.Name;
+        public string ViewName => ViewEnum.FIRST_EVENT.GetViewName();
     }
 } // end of namespace

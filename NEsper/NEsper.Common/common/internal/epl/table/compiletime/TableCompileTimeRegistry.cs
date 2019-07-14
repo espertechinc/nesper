@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -24,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public void NewTable(TableMetaData metaData)
         {
-            if (!metaData.TableVisibility.IsModuleProvidedAccessModifier) {
+            if (!metaData.TableVisibility.IsModuleProvidedAccessModifier()) {
                 throw new IllegalStateException("Invalid visibility for tables");
             }
 

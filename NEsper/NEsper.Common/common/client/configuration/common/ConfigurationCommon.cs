@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.epl.dataflow.ops;
 using com.espertech.esper.common.@internal.@event.core;
@@ -25,34 +26,34 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Import name of the package that hosts the annotation classes.
         /// </summary>
-        public static readonly string ANNOTATION_IMPORT = typeof(NameAttribute).Namespace + ".*";
+        public static readonly string ANNOTATION_NAMESPACE = typeof(NameAttribute).Namespace;
 
         /// <summary>
         ///     Import package for data flow operator forges.
         /// </summary>
-        public static readonly string DATAFLOWOPERATOR_IMPORT = typeof(BeaconSourceForge).Namespace + ".*";
+        public static readonly string DATAFLOWOPERATOR_NAMESPACE = typeof(BeaconSourceForge).Namespace;
 
         /// <summary>
         ///     For annotations only, the class and package name imports that
         ///     will be used to resolve partial class names (not available in EPL statements unless used in an annotation).
         /// </summary>
-        protected IList<string> annotationImports;
+        private IList<Import> annotationImports;
 
         /// <summary>
         ///     The class and package name imports that
         ///     will be used to resolve partial class names.
         /// </summary>
-        protected IDictionary<string, ConfigurationCommonDBRef> databaseReferences;
+        private IDictionary<string, ConfigurationCommonDBRef> databaseReferences;
 
         /// <summary>
         ///     Map of event name and fully-qualified class name.
         /// </summary>
-        protected IDictionary<string, string> eventClasses;
+        private IDictionary<string, string> eventClasses;
 
         /// <summary>
         ///     Event type common configuration
         /// </summary>
-        protected ConfigurationCommonEventTypeMeta eventMeta;
+        private ConfigurationCommonEventTypeMeta eventMeta;
 
         /// <summary>
         ///     Event type auto-name packages.
@@ -62,92 +63,94 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Map of event type name and XML DOM configuration.
         /// </summary>
-        protected IDictionary<string, ConfigurationCommonEventTypeAvro> eventTypesAvro;
+        private IDictionary<string, ConfigurationCommonEventTypeAvro> eventTypesAvro;
 
         /// <summary>
         ///     Map of event type name and bean-type event configuration.
         /// </summary>
-        protected IDictionary<string, ConfigurationCommonEventTypeBean> eventTypesBean;
+        private IDictionary<string, ConfigurationCommonEventTypeBean> eventTypesBean;
 
         /// <summary>
         ///     Map of event type name and XML DOM configuration.
         /// </summary>
-        protected IDictionary<string, ConfigurationCommonEventTypeXMLDOM> eventTypesXMLDOM;
+        private IDictionary<string, ConfigurationCommonEventTypeXMLDOM> eventTypesXMLDOM;
 
         /// <summary>
         ///     Execution-related configuration
         /// </summary>
-        protected ConfigurationCommonExecution execution;
+        private ConfigurationCommonExecution execution;
 
         /// <summary>
         ///     The class and package name imports that
         ///     will be used to resolve partial class names.
         /// </summary>
-        protected IList<string> imports;
+        private IList<Import> imports;
 
         /// <summary>
         ///     Logging configuration.
         /// </summary>
-        protected ConfigurationCommonLogging logging;
+        private ConfigurationCommonLogging logging;
 
         /// <summary>
         ///     The type names for events that are backed by java.util.Map,
         ///     not containing strongly-typed nested maps.
         /// </summary>
-        protected IDictionary<string, Properties> mapNames;
+        private IDictionary<string, Properties> mapNames;
 
         /// <summary>
         ///     Map event types additional configuration information.
         /// </summary>
-        protected IDictionary<string, ConfigurationCommonEventTypeMap> mapTypeConfigurations;
+        private IDictionary<string, ConfigurationCommonEventTypeMap> mapTypeConfigurations;
 
         /// <summary>
         ///     Map of class name and configuration for method invocations on that class.
         /// </summary>
-        protected IDictionary<string, ConfigurationCommonMethodRef> methodInvocationReferences;
+        private IDictionary<string, ConfigurationCommonMethodRef> methodInvocationReferences;
 
         /// <summary>
-        ///     The type names for events that are backed by java.util.Map,
-        ///     possibly containing strongly-typed nested maps.
-        ///     <para />
-        ///     Each entrie's value must be either a Class or a Map&lt;String,Object&gt; to
-        ///     define nested maps.
+        ///     The type names for events that are backed by IDictionary, possibly containing
+        ///     strongly-typed nested maps.
+        ///     <para>
+        ///         Each entries value must be either a Type or Dictionary to
+        ///         define nested maps.
+        ///     </para>
         /// </summary>
-        protected IDictionary<string, IDictionary<string, object>> nestableMapNames;
+        private IDictionary<string, IDictionary<string, object>> nestableMapNames;
 
         /// <summary>
-        ///     The type names for events that are backed by java.util.Map,
-        ///     possibly containing strongly-typed nested maps.
-        ///     <para />
-        ///     Each entrie's value must be either a Class or a Map&lt;String,Object&gt; to
-        ///     define nested maps.
+        ///     The type names for events that are backed by IDictionary, possibly containing
+        ///     strongly-typed nested maps.
+        ///     <para>
+        ///         Each entries value must be either a Type or Dictionary to
+        ///         define nested maps.
+        ///     </para>
         /// </summary>
-        protected IDictionary<string, IDictionary<string, object>> nestableObjectArrayNames;
+        private IDictionary<string, IDictionary<string, object>> nestableObjectArrayNames;
 
         /// <summary>
         ///     Map event types additional configuration information.
         /// </summary>
-        protected IDictionary<string, ConfigurationCommonEventTypeObjectArray> objectArrayTypeConfigurations;
+        private IDictionary<string, ConfigurationCommonEventTypeObjectArray> objectArrayTypeConfigurations;
 
         /// <summary>
         ///     Time source configuration
         /// </summary>
-        protected ConfigurationCommonTimeSource timeSource;
+        private ConfigurationCommonTimeSource timeSource;
 
         /// <summary>
         ///     Transient configuration.
         /// </summary>
-        [NonSerialized] protected IDictionary<string, object> transientConfiguration;
+        [NonSerialized] private IDictionary<string, object> transientConfiguration;
 
         /// <summary>
         ///     Map of variables.
         /// </summary>
-        protected IDictionary<string, ConfigurationCommonVariable> variables;
+        private IDictionary<string, ConfigurationCommonVariable> variables;
 
         /// <summary>
         ///     Variant streams allow events of disparate types to be treated the same.
         /// </summary>
-        protected IDictionary<string, ConfigurationCommonVariantStream> variantStreams;
+        private IDictionary<string, ConfigurationCommonVariantStream> variantStreams;
 
         /// <summary>
         ///     Constructs an empty configuration. The auto import values
@@ -183,7 +186,8 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the object-array event types.
         /// </summary>
         /// <value>object-array event types</value>
-        public IDictionary<string, IDictionary<string, object>> EventTypesNestableObjectArrayEvents => nestableObjectArrayNames;
+        public IDictionary<string, IDictionary<string, object>> EventTypesNestableObjectArrayEvents =>
+            nestableObjectArrayNames;
 
         /// <summary>
         ///     Returns the mapping of event type name to XML DOM event type information.
@@ -207,13 +211,13 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the imports
         /// </summary>
         /// <value>imports</value>
-        public IList<string> Imports => imports;
+        public IList<Import> Imports => imports;
 
         /// <summary>
         ///     Returns the annotation imports
         /// </summary>
         /// <value>annotation imports</value>
-        public IList<string> AnnotationImports => annotationImports;
+        public IList<Import> AnnotationImports => annotationImports;
 
         /// <summary>
         ///     Returns the database names
@@ -225,7 +229,8 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the object-array event type configurations.
         /// </summary>
         /// <value>type configs</value>
-        public IDictionary<string, ConfigurationCommonEventTypeObjectArray> ObjectArrayTypeConfigurations => objectArrayTypeConfigurations;
+        public IDictionary<string, ConfigurationCommonEventTypeObjectArray> ObjectArrayTypeConfigurations =>
+            objectArrayTypeConfigurations;
 
         /// <summary>
         ///     Returns the preconfigured variables
@@ -237,7 +242,8 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the method-invocation-names for use in joins
         /// </summary>
         /// <value>method-invocation-names</value>
-        public IDictionary<string, ConfigurationCommonMethodRef> MethodInvocationReferences => methodInvocationReferences;
+        public IDictionary<string, ConfigurationCommonMethodRef> MethodInvocationReferences =>
+            methodInvocationReferences;
 
         /// <summary>
         ///     Returns for each Map event type name the set of supertype event type names (Map types only).
@@ -306,12 +312,12 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <unknown>@since 2.1</unknown>
         public bool IsEventTypeExists(string eventTypeName)
         {
-            return eventClasses.ContainsKey(eventTypeName)
-                   || mapNames.ContainsKey(eventTypeName)
-                   || nestableMapNames.ContainsKey(eventTypeName)
-                   || nestableObjectArrayNames.ContainsKey(eventTypeName)
-                   || eventTypesXMLDOM.ContainsKey(eventTypeName)
-                   || eventTypesAvro.ContainsKey(eventTypeName);
+            return eventClasses.ContainsKey(eventTypeName) ||
+                   mapNames.ContainsKey(eventTypeName) ||
+                   nestableMapNames.ContainsKey(eventTypeName) ||
+                   nestableObjectArrayNames.ContainsKey(eventTypeName) ||
+                   eventTypesXMLDOM.ContainsKey(eventTypeName) ||
+                   eventTypesAvro.ContainsKey(eventTypeName);
         }
 
         /// <summary>
@@ -339,7 +345,7 @@ namespace com.espertech.esper.common.client.configuration.common
             string eventTypeName,
             Type eventClass)
         {
-            AddEventType(eventTypeName, eventClass.Name);
+            AddEventType(eventTypeName, eventClass.FullName);
         }
 
         /// <summary>
@@ -349,7 +355,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="eventClass">is the event class for which to add the name</param>
         public void AddEventType(Type eventClass)
         {
-            AddEventType(eventClass.Name, eventClass.Name);
+            AddEventType(eventClass.Name, eventClass.FullName);
         }
 
         /// <summary>
@@ -593,58 +599,126 @@ namespace com.espertech.esper.common.client.configuration.common
             eventTypesBean.Put(eventTypeName, beanEventTypeDesc);
         }
 
-        /// <summary>
-        ///     Adds a package or class to the list of automatically-imported classes and packages.
-        ///     <para />
-        ///     To import a single class offering a static method, simply supply the fully-qualified name of the class
-        ///     and use the syntax {@code classname.methodname(...)}
-        ///     <para />
-        ///     To import a whole package and use the {@code classname.methodname(...)} syntax, specify a package
-        ///     with wildcard, such as {@code com.mycompany.staticlib.*}.
-        /// </summary>
-        /// <param name="autoImport">is a fully-qualified class name or a package name with wildcard</param>
-        public void AddImport(string autoImport)
+        public void AddEventType(
+            string eventTypeName,
+            Type eventClass,
+            ConfigurationCommonEventTypeBean beanEventTypeDesc)
         {
-            imports.Add(autoImport);
+            eventClasses.Put(eventTypeName, eventClass.FullName);
+            eventTypesBean.Put(eventTypeName, beanEventTypeDesc);
         }
 
         /// <summary>
-        ///     Adds a class to the list of automatically-imported classes.
-        ///     <para />
-        ///     Use #addImport(String) to import a package.
+        ///     Adds a namespace to the list of automatically-imported classes and packages.
+        /// </summary>
+        /// <param name="autoImportNamespace">is a fully-qualified class name or a package name with wildcard</param>
+        public void AddImportNamespace(string autoImportNamespace)
+        {
+            if (autoImportNamespace == ANNOTATION_NAMESPACE) {
+                imports.Add(new ImportBuiltinAnnotations());
+            }
+            else {
+                imports.Add(new ImportNamespace(autoImportNamespace));
+            }
+        }
+
+        /// <summary>
+        ///     Adds a namespace to the list of automatically-imported classes and packages.
+        /// </summary>
+        /// <param name="typeInNamespace">is a fully-qualified class name within a namespace</param>
+        public void AddImportNamespace(Type typeInNamespace)
+        {
+            AddImportNamespace(typeInNamespace.Namespace);
+        }
+
+        /// <summary>
+        ///     Adds a Type to the list of automatically-imported classes.
+        /// </summary>
+        /// <param name="autoImportTypeName">a type to import</param>
+        public void AddImportType(string autoImportTypeName)
+        {
+            imports.Add(new ImportType(autoImportTypeName));
+        }
+
+        /// <summary>
+        ///     Adds a Type to the list of automatically-imported classes.
         /// </summary>
         /// <param name="autoImport">is a class to import</param>
-        public void AddImport(Type autoImport)
+        public void AddImportType(Type autoImport)
         {
-            AddImport(autoImport.Name);
-        }
-
-        /// <summary>
-        ///     Adds a package or class to the list of automatically-imported classes and packages for use by annotations only.
-        /// </summary>
-        /// <param name="importName">import such as package name, class name, or package with ".*".</param>
-        /// <throws>ConfigurationException if incorrect package or class names are encountered</throws>
-        public void AddAnnotationImport(string importName)
-        {
-            annotationImports.Add(importName);
-        }
-
-        /// <summary>
-        ///     Add a class to the imports available for annotations only
-        /// </summary>
-        /// <param name="autoImport">class to add</param>
-        public void AddAnnotationImport(Type autoImport)
-        {
-            AddAnnotationImport(autoImport.Name);
+            imports.Add(new ImportType(autoImport.FullName));
         }
 
         /// <summary>
         ///     Remove an import.
         /// </summary>
-        /// <param name="name">to remove</param>
-        public void RemoveImport(string name)
+        /// <param name="import">the import to remove</param>
+        public void RemoveImport(Import import)
         {
-            imports.Remove(name);
+            imports.Remove(import);
+        }
+
+        /// <summary>
+        ///     Remove a type import.
+        /// </summary>
+        /// <param name="typeName">the type</param>
+        public void RemoveImportType(string typeName)
+        {
+            imports.Remove(new ImportType(typeName));
+        }
+
+        /// <summary>
+        ///     Remove a type import.
+        /// </summary>
+        /// <param name="type">the type</param>
+        public void RemoveImportType(Type type)
+        {
+            imports.Remove(new ImportType(type.FullName));
+        }
+
+        /// <summary>
+        ///     Remove a namespace import.
+        /// </summary>
+        /// <param name="namespace">the namespace</param>
+        public void RemoveImportNamespace(string @namespace)
+        {
+            imports.Remove(new ImportNamespace(@namespace));
+        }
+
+        /// <summary>
+        ///     Adds a namespace to the list of automatically-imports use by annotations only.
+        /// </summary>
+        /// <param name="namespace">namespace to import.</param>
+        public void AddAnnotationImportNamespace(string @namespace)
+        {
+            annotationImports.Add(new ImportNamespace(@namespace));
+        }
+
+        /// <summary>
+        ///     Adds a namespace to the list of automatically-imports use by annotations only.
+        /// </summary>
+        /// <param name="typeInNamespace">type within the namespace.</param>
+        public void AddAnnotationImportNamespace(Type typeInNamespace)
+        {
+            annotationImports.Add(new ImportNamespace(typeInNamespace.Namespace));
+        }
+
+        /// <summary>
+        ///     Add a type name to the imports available for annotations only
+        /// </summary>
+        /// <param name="autoImportTypeName">fully qualified type name to add</param>
+        public void AddAnnotationImportType(string autoImportTypeName)
+        {
+            annotationImports.Add(new ImportType(autoImportTypeName));
+        }
+
+        /// <summary>
+        ///     Add a type to the imports available for annotations only
+        /// </summary>
+        /// <param name="autoImportType">type to add</param>
+        public void AddAnnotationImportType(Type autoImportType)
+        {
+            annotationImports.Add(new ImportType(autoImportType.FullName));
         }
 
         /// <summary>
@@ -668,7 +742,7 @@ namespace com.espertech.esper.common.client.configuration.common
             Type clazz,
             ConfigurationCommonMethodRef methodInvocationConfig)
         {
-            methodInvocationReferences.Put(clazz.Name, methodInvocationConfig);
+            methodInvocationReferences.Put(clazz.FullName, methodInvocationConfig);
         }
 
         /// <summary>
@@ -693,7 +767,7 @@ namespace com.espertech.esper.common.client.configuration.common
             Type type,
             object initializationValue)
         {
-            AddVariable(variableName, type.Name, initializationValue, false);
+            AddVariable(variableName, type.FullName, initializationValue, false);
         }
 
         /// <summary>
@@ -709,7 +783,7 @@ namespace com.espertech.esper.common.client.configuration.common
             object initializationValue,
             bool constant)
         {
-            AddVariable(variableName, type.Name, initializationValue, constant);
+            AddVariable(variableName, type.FullName, initializationValue, constant);
         }
 
         /// <summary>
@@ -815,8 +889,8 @@ namespace com.espertech.esper.common.client.configuration.common
             eventTypesAvro = new LinkedHashMap<string, ConfigurationCommonEventTypeAvro>();
             eventTypesBean = new LinkedHashMap<string, ConfigurationCommonEventTypeBean>();
             databaseReferences = new Dictionary<string, ConfigurationCommonDBRef>();
-            imports = new List<string>();
-            annotationImports = new List<string>();
+            imports = new List<Import>();
+            annotationImports = new List<Import>();
             AddDefaultImports();
             variables = new Dictionary<string, ConfigurationCommonVariable>();
             methodInvocationReferences = new Dictionary<string, ConfigurationCommonMethodRef>();
@@ -852,12 +926,10 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         private void AddDefaultImports()
         {
-            imports.Add("java.lang.*");
-            imports.Add("java.math.*");
-            imports.Add("java.text.*");
-            imports.Add("java.util.*");
-            imports.Add(ANNOTATION_IMPORT);
-            imports.Add(DATAFLOWOPERATOR_IMPORT);
+            imports.Add(new ImportNamespace("System"));
+            imports.Add(new ImportNamespace("System.Text"));
+            imports.Add(new ImportNamespace(DATAFLOWOPERATOR_NAMESPACE));
+            imports.Add(new ImportBuiltinAnnotations()); // ANNOTATION_NAMESPACE
         }
     }
 } // end of namespace

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 return Build(packageName, classPostfix, services);
             }
             catch (ExprValidationException ex) {
-                throw ex;
+                throw;
             }
             catch (Exception t) {
                 throw new ExprValidationException(
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
             // determine context information
             var contextName = @base.StatementRawInfo.ContextName;
-            NameAccessModifier contextVisibility = null;
+            NameAccessModifier? contextVisibility = null;
             string contextModuleName = null;
             if (contextName != null) {
                 var contextDetail = services.ContextCompileTimeResolver.GetContextInfo(contextName);

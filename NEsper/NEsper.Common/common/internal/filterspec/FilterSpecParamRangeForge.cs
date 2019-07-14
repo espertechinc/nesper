@@ -7,12 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -40,12 +41,14 @@ namespace com.espertech.esper.common.@internal.filterspec
             FilterSpecParamFilterForEvalForge max)
             : base(lookupable, filterOperator)
         {
-            this._min = min;
-            this._max = max;
+            _min = min;
+            _max = max;
 
             if (!filterOperator.IsRangeOperator() && !filterOperator.IsInvertedRangeOperator()) {
                 throw new ArgumentException(
-                    "Illegal filter operator " + filterOperator + " supplied to " +
+                    "Illegal filter operator " +
+                    filterOperator +
+                    " supplied to " +
                     "range filter parameter");
             }
         }
@@ -88,12 +91,15 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
             method.Block
                 .DeclareVar(
-                    typeof(ExprFilterSpecLookupable), "lookupable",
+                    typeof(ExprFilterSpecLookupable),
+                    "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar(typeof(FilterOperator), "op", EnumValue(filterOperator));
 
             var param = NewAnonymousClass(
-                method.Block, typeof(FilterSpecParam), Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+                method.Block,
+                typeof(FilterSpecParam),
+                Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             param.AddMethod("getFilterValue", getFilterValue);

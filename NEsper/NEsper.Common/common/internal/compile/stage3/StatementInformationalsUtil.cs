@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             string contextName = null;
             string contextModuleName = null;
-            NameAccessModifier contextVisibility = null;
+            NameAccessModifier? contextVisibility = null;
             if (allowContext) {
                 ContextCompileTimeDescriptor descriptor = @base.StatementRawInfo.OptionalContextDescriptor;
                 if (descriptor != null) {

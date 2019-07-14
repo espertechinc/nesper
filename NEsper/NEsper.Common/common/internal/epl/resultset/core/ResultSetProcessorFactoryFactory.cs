@@ -431,7 +431,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         new[] {selectExprProcessorForge},
                         join,
                         hasOutputLimit,
-                        outputConditionType.Value,
+                        outputConditionType,
                         hasOutputLimitSnapshot,
                         resultEventType, false,
                         aggregationServiceForgeDesc,
@@ -484,11 +484,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     Log.Debug(".getProcessor Using ResultSetProcessorRowForAll");
                     var allForge = new ResultSetProcessorRowForAllForge(
                         resultEventType, selectExprProcessorForge, optionalHavingForge, isSelectRStream,
-                        isUnidirectional, isHistoricalOnly, outputLimitSpec, hasOrderBy, outputConditionType.Value);
+                        isUnidirectional, isHistoricalOnly, outputLimitSpec, hasOrderBy, outputConditionType);
                     return new ResultSetProcessorDesc(
-                        allForge, ResultSetProcessorType.FULLYAGGREGATED_UNGROUPED, new[] {selectExprProcessorForge},
-                        join, hasOutputLimit, outputConditionType.Value, hasOutputLimitSnapshot, resultEventType, false,
-                        aggregationServiceForgeDesc, orderByProcessorFactory, selectSubscriberDescriptor);
+                        allForge,
+                        ResultSetProcessorType.FULLYAGGREGATED_UNGROUPED,
+                        new[] {selectExprProcessorForge},
+                        join,
+                        hasOutputLimit,
+                        outputConditionType,
+                        hasOutputLimitSnapshot,
+                        resultEventType, false,
+                        aggregationServiceForgeDesc, 
+                        orderByProcessorFactory, 
+                        selectSubscriberDescriptor);
                 }
 
                 // (4)

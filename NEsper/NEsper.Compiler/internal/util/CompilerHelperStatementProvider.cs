@@ -306,7 +306,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
             catch (StatementSpecCompileException ex)
             {
-                throw ex;
+                throw;
             }
             catch (ExprValidationException ex)
             {
@@ -318,7 +318,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
             catch (Exception ex)
             {
-                var text = ex.Message == null ? ex.GetType().Name : ex.Message;
+                var text = ex.Message == null ? ex.GetType().FullName : ex.Message;
                 throw new StatementSpecCompileException(text, ex, compilable.ToEPL());
             }
         }

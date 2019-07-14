@@ -133,7 +133,7 @@ namespace com.espertech.esper.compat
             return new DateTime(MicrosToTicks(micros + DateTimeConstants.Boundary * 1000), DateTimeKind.Utc);
         }
 
-        public static DateTime FromMillis(this long millis)
+        public static DateTime TimeFromMillis(this long millis)
         {
             return UtcFromMillis(millis).ToLocalTime();
         }

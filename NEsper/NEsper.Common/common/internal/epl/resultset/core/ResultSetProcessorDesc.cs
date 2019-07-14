@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             SelectExprProcessorForge[] selectExprProcessorForges,
             bool join,
             bool hasOutputLimit,
-            ResultSetProcessorOutputConditionType outputConditionType,
+            ResultSetProcessorOutputConditionType? outputConditionType,
             bool hasOutputLimitSnapshot,
             EventType resultEventType,
             bool rollup,
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
         public bool HasOutputLimit { get; }
 
-        public ResultSetProcessorOutputConditionType OutputConditionType { get; }
+        public ResultSetProcessorOutputConditionType? OutputConditionType { get; }
 
         public bool HasOutputLimitSnapshot { get; }
 

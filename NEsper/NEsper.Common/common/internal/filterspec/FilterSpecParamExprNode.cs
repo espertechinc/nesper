@@ -6,31 +6,19 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
     /// <summary>
-    /// This class represents an arbitrary expression node returning a boolean value as a filter parameter in an <seealso cref="FilterSpecActivatable" /> filter specification.
+    ///     This class represents an arbitrary expression node returning a boolean value as a filter parameter in an
+    ///     <seealso cref="FilterSpecActivatable" /> filter specification.
     /// </summary>
     public abstract class FilterSpecParamExprNode : FilterSpecParam
     {
-        private ExprEvaluator exprNode;
-        private string exprText;
-        private EventBeanTypedEventFactory eventBeanTypedEventFactory;
         protected FilterBooleanExpressionFactory filterBooleanExpressionFactory; // subclasses by generated code
-        private bool hasVariable;
-        private bool useLargeThreadingProfile;
-        private bool hasFilterStreamSubquery;
-        private bool hasTableAccess;
-        private int statementIdBooleanExpr;
-        private int filterBoolExprId;
-        private EventType[] eventTypesProvidedBy;
 
         public FilterSpecParamExprNode(
             ExprFilterSpecLookupable lookupable,
@@ -40,74 +28,49 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public bool HasVariable {
-            set { this.hasVariable = value; }
+            set => IsVariable = value;
         }
 
         public bool HasFilterStreamSubquery {
-            set { this.hasFilterStreamSubquery = value; }
+            set => IsFilterStreamSubquery = value;
         }
 
         public bool HasTableAccess {
-            set { this.hasTableAccess = value; }
+            set => IsTableAccess = value;
         }
 
-        public ExprEvaluator ExprNode {
-            get => exprNode;
-            set { this.exprNode = value; }
+        public ExprEvaluator ExprNode { get; set; }
+
+        public int FilterBoolExprId { get; private set; }
+
+        public EventBeanTypedEventFactory EventBeanTypedEventFactory { get; set; }
+
+        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory {
+            get => filterBooleanExpressionFactory;
+            set => filterBooleanExpressionFactory = value;
         }
 
-        public int FilterBoolExprId {
-            get => filterBoolExprId;
+        public bool IsVariable { get; private set; }
+
+        public bool IsUseLargeThreadingProfile { get; private set; }
+
+        public bool IsFilterStreamSubquery { get; private set; }
+
+        public bool IsTableAccess { get; private set; }
+
+        public string ExprText { get; set; }
+
+        public EventType[] EventTypesProvidedBy { get; set; }
+
+        public int StatementIdBooleanExpr { get; set; }
+
+        public bool UseLargeThreadingProfile {
+            set => IsUseLargeThreadingProfile = value;
         }
 
         public void SetFilterBoolExprId(int filterBoolExprId)
         {
-            this.filterBoolExprId = filterBoolExprId;
-        }
-
-        public EventBeanTypedEventFactory EventBeanTypedEventFactory {
-            get => eventBeanTypedEventFactory;
-            set { this.eventBeanTypedEventFactory = value; }
-        }
-
-        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory {
-            get => filterBooleanExpressionFactory;
-            set { this.filterBooleanExpressionFactory = value; }
-        }
-
-        public bool IsVariable {
-            get => hasVariable;
-        }
-
-        public bool IsUseLargeThreadingProfile {
-            get => useLargeThreadingProfile;
-        }
-
-        public bool IsFilterStreamSubquery {
-            get => hasFilterStreamSubquery;
-        }
-
-        public bool IsTableAccess {
-            get => hasTableAccess;
-        }
-
-        public string ExprText {
-            get => exprText;
-            set { this.exprText = value; }
-        }
-
-        public EventType[] EventTypesProvidedBy {
-            get => eventTypesProvidedBy;
-            set { this.eventTypesProvidedBy = value; }
-        }
-
-        public int StatementIdBooleanExpr {
-            get => statementIdBooleanExpr;
-            set { this.statementIdBooleanExpr = value; }
-        }
-
-        public bool UseLargeThreadingProfile {
-            set { this.useLargeThreadingProfile = value; }
+            FilterBoolExprId = filterBoolExprId;
         }
     }
 } // end of namespace

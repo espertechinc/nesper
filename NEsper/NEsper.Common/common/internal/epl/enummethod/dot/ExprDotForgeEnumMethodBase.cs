@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public void Visit(ExprDotEvalVisitor visitor)
         {
-            visitor.VisitEnumeration(enumMethodEnum.NameCamel);
+            visitor.VisitEnumeration(enumMethodEnum.GetNameCamel());
         }
 
         public ExprDotEval DotEvaluator => new ExprDotForgeEnumMethodEval(
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             };
 
             DotMethodFP footprint = DotMethodUtil.ValidateParametersDetermineFootprint(
-                enumMethodEnum.Footprints, DotMethodTypeEnum.ENUM, enumMethodUsedName, footprintProvided,
+                enumMethodEnum.GetFootprints(), DotMethodTypeEnum.ENUM, enumMethodUsedName, footprintProvided,
                 inputTypeMatcher);
 
             // validate input criteria met for this footprint

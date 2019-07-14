@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.compat.collections;
 
@@ -35,7 +36,8 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// <param name="className">class name of condition handler factory</param>
         public void AddClass(string className)
         {
-            if (HandlerFactories == null) {
+            if (HandlerFactories == null)
+            {
                 HandlerFactories = new List<string>();
             }
 
@@ -48,7 +50,8 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// <param name="classNames">to add</param>
         public void AddClasses(IList<string> classNames)
         {
-            if (HandlerFactories == null) {
+            if (HandlerFactories == null)
+            {
                 HandlerFactories = new List<string>();
             }
 
@@ -64,7 +67,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// <param name="clazz">class of implementation</param>
         public void AddClass(Type clazz)
         {
-            AddClass(clazz.Name);
+            AddClass(clazz.FullName);
         }
     }
 } // end of namespace

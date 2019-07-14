@@ -93,14 +93,14 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary>
         ///     Lock write lock.
         /// </summary>
-        public void AcquireWriteLock()
+        private void AcquireWriteLock()
         {
             if (ThreadLogUtil.ENABLED_TRACE)
             {
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write " + _name, Lock);
             }
 
-            Lock.WriteLock.Acquire();
+            _writerLock = Lock.WriteLock.Acquire();
 
             if (ThreadLogUtil.ENABLED_TRACE)
             {
@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.util
                 ThreadLogUtil.TraceLock(RELEASE_TEXT + " write " + _name, Lock);
             }
 
-            if (_writerLock != null) {
+            if (_writerLock == null) {
                 throw new IllegalStateException("write lock not acquired");
             }
 
@@ -202,16 +202,13 @@ namespace com.espertech.esper.common.@internal.util
                 ThreadLogUtil.TraceLock(RELEASE_TEXT + " read " + _name, Lock);
             }
 
-            if (_readerLock != null)
+            if (_readerLock == null)
             {
                 throw new IllegalStateException("reader lock not acquired");
             }
 
             _readerLock.Dispose();
             _readerLock = null;
-
-
-            Lock.ReadLock.Release();
 
             if (ThreadLogUtil.ENABLED_TRACE)
             {

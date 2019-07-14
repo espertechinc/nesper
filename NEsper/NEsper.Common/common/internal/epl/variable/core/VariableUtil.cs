@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -34,10 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             Type variableType,
             Type initValueClass)
         {
-            return "Variable '" + variableName
-                                + "' of declared type " + variableType.GetCleanName() +
-                                " cannot be assigned a value of type " +
-                                initValueClass.GetCleanName();
+            return "Variable '" +
+                   variableName +
+                   "' of declared type " +
+                   variableType.GetCleanName() +
+                   " cannot be assigned a value of type " +
+                   initValueClass.GetCleanName();
         }
 
         public static void ConfigureVariables(
@@ -58,9 +61,20 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 try {
                     var variableType = ClassIdentifierWArray.ParseSODA(entry.Value.VariableType);
                     meta = GetTypeInfo(
-                        entry.Key, null, NameAccessModifier.PRECONFIGURED, null, null, null, variableType, true,
-                        entry.Value.IsConstant, entry.Value.IsConstant, entry.Value.InitializationValue,
-                        importService, eventBeanTypedEventFactory, eventTypeRepositoryPreconfigured,
+                        entry.Key,
+                        null,
+                        NameAccessModifier.PRECONFIGURED,
+                        null,
+                        null,
+                        null,
+                        variableType,
+                        true,
+                        entry.Value.IsConstant,
+                        entry.Value.IsConstant,
+                        entry.Value.InitializationValue,
+                        importService,
+                        eventBeanTypedEventFactory,
+                        eventTypeRepositoryPreconfigured,
                         beanEventTypeFactory);
                 }
                 catch (Exception t) {
@@ -76,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             string variableModuleName,
             NameAccessModifier variableVisibility,
             string optionalContextName,
-            NameAccessModifier optionalContextVisibility,
+            NameAccessModifier? optionalContextVisibility,
             string optionalModuleName,
             ClassIdentifierWArray variableType,
             bool isConstant,
@@ -89,10 +103,21 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             try {
                 return GetTypeInfo(
-                    variableName, variableModuleName, variableVisibility, optionalContextName,
-                    optionalContextVisibility, optionalModuleName, variableType, false, isConstant, compileTimeConstant,
-                    initializationValue, importService, eventBeanTypedEventFactory,
-                    eventTypeRepositoryPreconfigured, beanEventTypeFactory);
+                    variableName,
+                    variableModuleName,
+                    variableVisibility,
+                    optionalContextName,
+                    optionalContextVisibility,
+                    optionalModuleName,
+                    variableType,
+                    false,
+                    isConstant,
+                    compileTimeConstant,
+                    initializationValue,
+                    importService,
+                    eventBeanTypedEventFactory,
+                    eventTypeRepositoryPreconfigured,
+                    beanEventTypeFactory);
             }
             catch (VariableTypeException t) {
                 throw new ExprValidationException(t.Message, t);
@@ -108,16 +133,23 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             if (optionalStatementContextName == null) {
                 if (variableMetaData.OptionalContextName != null) {
-                    return "Variable '" + variableMetaData.VariableName + "' defined for use with context '" +
-                           variableMetaData.OptionalContextName + "' can only be accessed within that context";
+                    return "Variable '" +
+                           variableMetaData.VariableName +
+                           "' defined for use with context '" +
+                           variableMetaData.OptionalContextName +
+                           "' can only be accessed within that context";
                 }
             }
             else {
                 if (variableMetaData.OptionalContextName != null &&
                     !variableMetaData.OptionalContextName.Equals(optionalStatementContextName)) {
-                    return "Variable '" + variableMetaData.VariableName + "' defined for use with context '" +
-                           variableMetaData.OptionalContextName + "' is not available for use with context '" +
-                           optionalStatementContextName + "'";
+                    return "Variable '" +
+                           variableMetaData.VariableName +
+                           "' defined for use with context '" +
+                           variableMetaData.OptionalContextName +
+                           "' is not available for use with context '" +
+                           optionalStatementContextName +
+                           "'";
                 }
             }
 
@@ -129,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             string variableModuleName,
             NameAccessModifier variableVisibility,
             string optionalContextName,
-            NameAccessModifier optionalContextVisibility,
+            NameAccessModifier? optionalContextVisibility,
             string optionalContextModule,
             ClassIdentifierWArray variableTypeWArray,
             bool preconfigured,
@@ -171,14 +203,20 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
                 if (type == null) {
                     throw new VariableTypeException(
-                        "Cannot create variable '" + variableName + "', type '" +
-                        variableTypeWArray.ClassIdentifier + "' is not a recognized type");
+                        "Cannot create variable '" +
+                        variableName +
+                        "', type '" +
+                        variableTypeWArray.ClassIdentifier +
+                        "' is not a recognized type");
                 }
 
                 if (variableTypeWArray.ArrayDimensions > 0 && eventType != null) {
                     throw new VariableTypeException(
-                        "Cannot create variable '" + variableName + "', type '" +
-                        variableTypeWArray.ClassIdentifier + "' cannot be declared as an array type");
+                        "Cannot create variable '" +
+                        variableName +
+                        "', type '" +
+                        variableTypeWArray.ClassIdentifier +
+                        "' cannot be declared as an array type");
                 }
             }
             else {
@@ -186,8 +224,11 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     if (variableTypeWArray.IsArrayOfPrimitive) {
                         if (primitiveType == null) {
                             throw new VariableTypeException(
-                                "Cannot create variable '" + variableName + "', type '" +
-                                variableTypeWArray.ClassIdentifier + "' is not a primitive type");
+                                "Cannot create variable '" +
+                                variableName +
+                                "', type '" +
+                                variableTypeWArray.ClassIdentifier +
+                                "' is not a primitive type");
                         }
 
                         arrayType = TypeHelper.GetArrayType(primitiveType, variableTypeWArray.ArrayDimensions);
@@ -198,11 +239,16 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 }
             }
 
-            if (eventType == null && !type.IsBuiltinDataType() && type != typeof(object) &&
-                !type.IsArray && !type.IsEnum) {
+            if (eventType == null &&
+                !type.IsBuiltinDataType() &&
+                type != typeof(object) &&
+                !type.IsArray &&
+                !type.IsEnum) {
                 if (variableTypeWArray.ArrayDimensions > 0) {
                     throw new VariableTypeException(
-                        "Cannot create variable '" + variableName + "', type '" +
+                        "Cannot create variable '" +
+                        variableName +
+                        "', type '" +
                         variableTypeWArray.ClassIdentifier +
                         "' cannot be declared as an array, only scalar types can be array");
                 }
@@ -216,8 +262,19 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
             var coerced = GetCoercedValue(valueAsProvided, eventType, variableName, type, eventBeanTypedEventFactory);
             return new VariableMetaData(
-                variableName, variableModuleName, variableVisibility, optionalContextName, optionalContextVisibility,
-                optionalContextModule, type, eventType, preconfigured, constant, compileTimeConstant, coerced, true);
+                variableName,
+                variableModuleName,
+                variableVisibility,
+                optionalContextName,
+                optionalContextVisibility,
+                optionalContextModule,
+                type,
+                eventType,
+                preconfigured,
+                constant,
+                compileTimeConstant,
+                coerced,
+                true);
         }
 
         private static object GetCoercedValue(
@@ -230,13 +287,20 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             var coercedValue = value;
 
             if (eventType != null) {
-                if (value != null && !TypeHelper.IsSubclassOrImplementsInterface(
-                        value.GetType(), eventType.UnderlyingType)) {
+                if (value != null &&
+                    !TypeHelper.IsSubclassOrImplementsInterface(
+                        value.GetType(),
+                        eventType.UnderlyingType)) {
                     throw new VariableTypeException(
-                        "Variable '" + variableName
-                                     + "' of declared event type '" + eventType.Name + "' underlying type '" +
-                                     eventType.UnderlyingType.Name +
-                                     "' cannot be assigned a value of type '" + value.GetType().Name + "'");
+                        "Variable '" +
+                        variableName +
+                        "' of declared event type '" +
+                        eventType.Name +
+                        "' underlying type '" +
+                        eventType.UnderlyingType.Name +
+                        "' cannot be assigned a value of type '" +
+                        value.GetType().Name +
+                        "'");
                 }
 
                 if (eventBeanTypedEventFactory != EventBeanTypedEventFactoryCompileTime.INSTANCE) {
@@ -254,10 +318,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     }
                     catch (Exception ex) {
                         throw new VariableTypeException(
-                            "Variable '" + variableName
-                                         + "' of declared type " +
-                                         variableType.GetCleanName() +
-                                         " cannot be initialized by value '" + coercedValue + "': " + ex);
+                            "Variable '" +
+                            variableName +
+                            "' of declared type " +
+                            variableType.GetCleanName() +
+                            " cannot be initialized by value '" +
+                            coercedValue +
+                            "': " +
+                            ex);
                     }
                 }
 
@@ -286,10 +354,12 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             Type initValueClass)
         {
             return new VariableTypeException(
-                "Variable '" + variableName
-                             + "' of declared type " + variableType.GetCleanName() +
-                             " cannot be initialized by a value of type " +
-                             initValueClass.GetCleanName());
+                "Variable '" +
+                variableName +
+                "' of declared type " +
+                variableType.GetCleanName() +
+                " cannot be initialized by a value of type " +
+                initValueClass.GetCleanName());
         }
     }
 } // end of namespace

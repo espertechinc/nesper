@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             string optionalEventTypeName,
             ExprValidationContext validationContext)
         {
-            if (modifiedChain.IsEmpty() || !EnumMethodEnum.IsEnumerationMethod(modifiedChain[0].Name)) {
+            if (modifiedChain.IsEmpty() || !EnumMethodEnumExtensions.IsEnumerationMethod(modifiedChain[0].Name)) {
                 return null;
             }
 

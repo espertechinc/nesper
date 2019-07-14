@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public static bool IsDatetimeOrEnumMethod(string name)
         {
-            return EnumMethodEnum.IsEnumerationMethod(name) || DateTimeMethodEnum.IsDateTimeMethod(name);
+            return EnumMethodEnumExtensions.IsEnumerationMethod(name) || DateTimeMethodEnum.IsDateTimeMethod(name);
         }
 
         public static ExprDotEnumerationSourceForge GetEnumerationSource(
@@ -245,7 +245,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             IList<ExprDotForge> methodForges = new List<ExprDotForge>();
             EPType currentInputType = inputType;
-            EnumMethodEnum lastLambdaFunc = null;
+            EnumMethodEnum? lastLambdaFunc = null;
             ExprChainedSpec lastElement = chainSpec.IsEmpty() ? null : chainSpec[chainSpec.Count - 1];
             FilterExprAnalyzerAffector filterAnalyzerDesc = null;
 
@@ -306,15 +306,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     }
                 }
 
-                if (EnumMethodEnum.IsEnumerationMethod(chainElement.Name)
+                if (EnumMethodEnumExtensions.IsEnumerationMethod(chainElement.Name)
                     && (!matchingMethod
                         || methodTarget.IsArray
                         || methodTarget.IsGenericCollection()))
                 {
-                    EnumMethodEnum enumerationMethod = EnumMethodEnum.FromName(chainElement.Name);
-                    ExprDotForgeEnumMethod eval = TypeHelper.Instantiate<ExprDotForgeEnumMethod>(enumerationMethod.Implementation);
+                    EnumMethodEnum? enumerationMethod = EnumMethodEnumExtensions.FromName(chainElement.Name);
+                    if (enumerationMethod == null) {
+                        throw new EPException("unable to determine enumeration method from name");
+                    }
+
+                    ExprDotForgeEnumMethod eval = TypeHelper.Instantiate<ExprDotForgeEnumMethod>(
+                        enumerationMethod.Value.GetImplementation());
                     eval.Init(
-                        streamOfProviderIfApplicable, enumerationMethod, chainElement.Name, currentInputType, chainElement.Parameters,
+                        streamOfProviderIfApplicable, 
+                        enumerationMethod.Value, 
+                        chainElement.Name, 
+                        currentInputType, 
+                        chainElement.Parameters,
                         validationContext);
                     currentInputType = eval.TypeInfo;
                     if (currentInputType == null)
@@ -379,7 +388,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         {
                             // if followed by an enumeration method, convert array to collection
                             if (desc.ReflectionMethod.ReturnType.IsArray && !chainSpecStack.IsEmpty() &&
-                                EnumMethodEnum.IsEnumerationMethod(chainSpecStack.First.Name))
+                                EnumMethodEnumExtensions.IsEnumerationMethod(chainSpecStack.First.Name))
                             {
                                 forge = new ExprDotMethodForgeNoDuck(
                                     validationContext.StatementName, desc.ReflectionMethod, paramForges, ExprDotMethodForgeNoDuck.DuckType.WRAPARRAY);

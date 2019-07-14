@@ -52,15 +52,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 throw new EPRuntimeDestroyedException(runtime.URI);
             }
 
-            try {
-                options.DeploymentLockStrategy.Acquire(services.EventProcessingRWLock);
-            }
-            catch (Exception e) {
-                throw new EPDeployLockException(e.Message, e);
-            }
-
             DeploymentInternal deployerResult;
-            try {
+
+            using (options.DeploymentLockStrategy.Acquire(services.EventProcessingRWLock)) {
                 var statementIdRecovery = services.EpServicesHA.StatementIdRecoveryService;
                 var currentStatementId = statementIdRecovery.CurrentStatementId ?? 1;
 
@@ -77,15 +71,17 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 }
 
                 deployerResult = Deployer.DeployFresh(
-                    deploymentId, currentStatementId, compiled, options.StatementNameRuntime, options.StatementUserObjectRuntime,
-                    options.StatementSubstitutionParameter, runtime);
+                    deploymentId,
+                    currentStatementId,
+                    compiled,
+                    options.StatementNameRuntime,
+                    options.StatementUserObjectRuntime,
+                    options.StatementSubstitutionParameter,
+                    runtime);
                 statementIdRecovery.CurrentStatementId = currentStatementId + deployerResult.Statements.Length;
 
                 // dispatch event
                 DispatchOnDeploymentEvent(deployerResult);
-            }
-            finally {
-                options.DeploymentLockStrategy.Release(services.EventProcessingRWLock);
             }
 
             var copy = new EPStatement[deployerResult.Statements.Length];
@@ -267,14 +263,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 options = new UndeploymentOptions();
             }
 
-            try {
-                options.UndeploymentLockStrategy.Acquire(services.EventProcessingRWLock);
-            }
-            catch (Exception e) {
-                throw new EPUndeployLockException(e.Message, e);
-            }
-
-            try {
+            using (options.UndeploymentLockStrategy.Acquire(services.EventProcessingRWLock)) {
                 // build list of statements in reverse order
                 var reverted = new StatementContext[statements.Length];
                 var count = reverted.Length - 1;
@@ -302,7 +291,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 // undeploy statements
                 Exception undeployException = null;
                 try {
-                    Undeployer.Undeploy(deploymentId, deployment.DeploymentTypes, reverted, deployment.ModuleProvider, services);
+                    Undeployer.Undeploy(
+                        deploymentId,
+                        deployment.DeploymentTypes,
+                        reverted,
+                        deployment.ModuleProvider,
+                        services);
                 }
                 catch (Exception ex) {
                     Log.Error("Exception encountered during undeploy: " + ex.Message, ex);
@@ -316,14 +310,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 DispatchOnUndeploymentEvent(deployment);
 
                 // rethrow exception if configured
-                if (undeployException != null && services.ConfigSnapshot.Runtime.ExceptionHandling.UndeployRethrowPolicy == UndeployRethrowPolicy.RETHROW_FIRST) {
-                    throw new EPUndeployException("Undeploy completed with an exception: " + undeployException.Message, undeployException);
+                if (undeployException != null &&
+                    services.ConfigSnapshot.Runtime.ExceptionHandling.UndeployRethrowPolicy ==
+                    UndeployRethrowPolicy.RETHROW_FIRST) {
+                    throw new EPUndeployException(
+                        "Undeploy completed with an exception: " + undeployException.Message,
+                        undeployException);
                 }
 
                 ((EPEventServiceSPI) runtime.EventService).ClearCaches();
-            }
-            finally {
-                options.UndeploymentLockStrategy.Release(services.EventProcessingRWLock);
             }
         }
 

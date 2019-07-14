@@ -77,7 +77,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public int StatementId => epStatement.StatementContext.StatementId;
 
-        public EPStatementEventHandlerSet StatementEventHandlerSet { get; private set; }
+        public EPStatementListenerSet StatementListenerSet { get; private set; }
 
         public IThreadLocal<StatementDispatchTLEntry> DispatchTL => statementDispatchTL;
 
@@ -152,8 +152,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             this.groupDeliveryExpressions = groupDeliveryExpressions;
         }
 
-        public void SetUpdateEventHandlers(
-            EPStatementEventHandlerSet eventHandlers,
+        public void SetUpdateListeners(
+            EPStatementListenerSet listenerSet,
             bool isRecovery)
         {
             // indicate that listeners were updated for potential persistence of listener set, once the statement context is known
@@ -163,17 +163,17 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     epServicesContext.EpServicesHA.ListenerRecoveryService.Put(
                         stmtCtx.StatementId, 
                         stmtCtx.StatementName, 
-                        eventHandlers.EventHandlers);
+                        listenerSet.Listeners);
                 }
             }
 
-            StatementEventHandlerSet = eventHandlers;
+            StatementListenerSet = listenerSet;
 
-            IsMakeNatural = StatementEventHandlerSet.Subscriber != null;
-            IsMakeSynthetic = StatementEventHandlerSet.EventHandlers.Length != 0 
+            IsMakeNatural = StatementListenerSet.Subscriber != null;
+            IsMakeSynthetic = StatementListenerSet.Listeners.Length != 0 
                               || statementInformationals.IsAlwaysSynthesizeOutputEvents;
 
-            if (StatementEventHandlerSet.Subscriber == null) {
+            if (StatementListenerSet.Subscriber == null) {
                 statementResultNaturalStrategy = null;
                 IsMakeNatural = false;
                 return;
@@ -182,8 +182,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             try {
                 statementResultNaturalStrategy = ResultDeliveryStrategyFactory.Create(
                     epStatement,
-                    StatementEventHandlerSet.Subscriber, 
-                    StatementEventHandlerSet.SubscriberMethodName,
+                    StatementListenerSet.Subscriber, 
+                    StatementListenerSet.SubscriberMethodName,
                     selectClauseTypes, 
                     selectClauseColumnNames, 
                     runtime.URI, 
@@ -322,9 +322,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var oldEventArr = events?.Second;
             var updateEventArgs = new UpdateEventArgs(runtime, epStatement, newEventArr, oldEventArr);
 
-            foreach (var listener in StatementEventHandlerSet.EventHandlers) {
+            foreach (var listener in StatementListenerSet.Listeners) {
                 try {
-                    listener.Invoke(epStatement, updateEventArgs);
+                    listener.Update(epStatement, updateEventArgs);
                 }
                 catch (Exception ex) {
                     var message = string.Format(

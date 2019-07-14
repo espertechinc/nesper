@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -114,24 +115,6 @@ namespace com.espertech.esper.common.@internal.filterspec
             return MatchingEvents[index];
         }
 
-        public override string ToString()
-        {
-            StringBuilder buffer = new StringBuilder();
-            var count = 0;
-
-            for (var i = 0; i < MatchingEvents.Length; i++) {
-                buffer.Append(" (");
-                buffer.Append(count++);
-                buffer.Append(") ");
-                buffer.Append("tag=");
-                buffer.Append(Meta.TagsPerIndex[i]);
-                buffer.Append("  event=");
-                buffer.Append(MatchingEvents[i]);
-            }
-
-            return buffer.ToString();
-        }
-
         /// <summary>
         ///     Make a shallow copy of this collection.
         /// </summary>
@@ -166,6 +149,24 @@ namespace com.espertech.esper.common.@internal.filterspec
 
                 return map;
             }
+        }
+
+        public override string ToString()
+        {
+            var buffer = new StringBuilder();
+            var count = 0;
+
+            for (var i = 0; i < MatchingEvents.Length; i++) {
+                buffer.Append(" (");
+                buffer.Append(count++);
+                buffer.Append(") ");
+                buffer.Append("tag=");
+                buffer.Append(Meta.TagsPerIndex[i]);
+                buffer.Append("  event=");
+                buffer.Append(MatchingEvents[i]);
+            }
+
+            return buffer.ToString();
         }
     }
 } // end of namespace

@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.EXT_TIMED_WINDOW.Name;
+        public string ViewName => ViewEnum.EXT_TIMED_WINDOW.GetViewName();
 
         PreviousGetterStrategy DataWindowViewWithPrevious.MakePreviousGetter()
         {

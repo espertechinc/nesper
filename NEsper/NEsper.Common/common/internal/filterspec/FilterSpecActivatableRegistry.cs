@@ -18,6 +18,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class ProxyFilterSpecActivatableRegistry : FilterSpecActivatableRegistry
     {
         public Action<FilterSpecActivatable> ProcRegister { get; set; }
+
         public void Register(FilterSpecActivatable filterSpecActivatable)
         {
             ProcRegister?.Invoke(filterSpecActivatable);

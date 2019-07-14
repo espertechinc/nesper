@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
 
@@ -54,13 +55,16 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             method.Block
                 .DeclareVar(
-                    typeof(EventBean), "event",
+                    typeof(EventBean),
+                    "event",
                     ExprDotMethod(Ref("matchedEvents"), "getMatchingEventByTag", Constant(ResultEventAsName)))
-                .IfRefNull(Ref("event")).BlockThrow(
+                .IfRefNull(Ref("event"))
+                .BlockThrow(
                     NewInstance<IllegalStateException>(
                         Constant("Matching event named '" + ResultEventAsName + "' not found in event result set")))
                 .DeclareVar(typeof(object), "value", Cast(typeof(object), get))
-                .IfRefNull("value").BlockReturn(ConstantNull())
+                .IfRefNull("value")
+                .BlockReturn(ConstantNull())
                 .MethodReturn(ExprDotMethod(Ref("value"), "doubleValue"));
 
             return LocalMethod(method, GET_FILTER_VALUE_REFS);

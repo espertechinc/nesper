@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.client.configuration.common;
+
 namespace com.espertech.esper.common.client.module
 {
     /// <summary>
@@ -38,7 +40,7 @@ namespace com.espertech.esper.common.client.module
             string name,
             string uri,
             ICollection<string> uses,
-            ICollection<string> imports,
+            ICollection<Import> imports,
             IList<ModuleItem> items,
             string moduleText)
         {
@@ -83,7 +85,7 @@ namespace com.espertech.esper.common.client.module
 
         /// <summary>Returns the imports defined by the module. </summary>
         /// <value>module imports</value>
-        public ICollection<string> Imports { get; set; }
+        public ICollection<Import> Imports { get; set; }
 
         /// <summary>Returns module text. </summary>
         /// <value>text</value>

@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -45,23 +46,37 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(FilterSpecParamAdvancedIndexQuadTreeMXCIF), GetType(), classScope);
             method.Block
                 .DeclareVar(
-                    typeof(ExprFilterSpecLookupable), "lookupable",
+                    typeof(ExprFilterSpecLookupable),
+                    "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
-                .DeclareVar<FilterSpecParamAdvancedIndexQuadTreeMXCIF>("fpai",
+                .DeclareVar<FilterSpecParamAdvancedIndexQuadTreeMXCIF>(
+                    "fpai",
                     NewInstance<FilterSpecParamAdvancedIndexQuadTreeMXCIF>(Ref("lookupable"), Ref("op")))
                 .SetProperty(
-                    Ref("fpai"), "xEval",
+                    Ref("fpai"),
+                    "xEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_xEval, GetType(), classScope, method))
                 .SetProperty(
-                    Ref("fpai"), "yEval",
+                    Ref("fpai"),
+                    "yEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_yEval, GetType(), classScope, method))
                 .SetProperty(
-                    Ref("fpai"), "WidthEval",
-                    FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_widthEval, GetType(), classScope, method))
+                    Ref("fpai"),
+                    "WidthEval",
+                    FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(
+                        _widthEval,
+                        GetType(),
+                        classScope,
+                        method))
                 .SetProperty(
-                    Ref("fpai"), "HeightEval",
-                    FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_heightEval, GetType(), classScope, method))
+                    Ref("fpai"),
+                    "HeightEval",
+                    FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(
+                        _heightEval,
+                        GetType(),
+                        classScope,
+                        method))
                 .MethodReturn(Ref("fpai"));
             return method;
         }
@@ -88,16 +103,16 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         protected bool Equals(FilterSpecParamAdvancedIndexQuadTreeMXCIFForge other)
         {
-            return Equals(_heightEval, other._heightEval) 
-                   && Equals(_widthEval, other._widthEval) 
-                   && Equals(_xEval, other._xEval) 
-                   && Equals(_yEval, other._yEval);
+            return Equals(_heightEval, other._heightEval) &&
+                   Equals(_widthEval, other._widthEval) &&
+                   Equals(_xEval, other._xEval) &&
+                   Equals(_yEval, other._yEval);
         }
 
         public override int GetHashCode()
         {
             unchecked {
-                var hashCode = (_heightEval != null ? _heightEval.GetHashCode() : 0);
+                var hashCode = _heightEval != null ? _heightEval.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ (_widthEval != null ? _widthEval.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (_xEval != null ? _xEval.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (_yEval != null ? _yEval.GetHashCode() : 0);

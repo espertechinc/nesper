@@ -8,6 +8,8 @@
 
 using System.Threading;
 
+using com.espertech.esper.compat.diagnostics;
+
 namespace com.espertech.esper.common.client.metric
 {
     /// <summary>
@@ -15,12 +17,7 @@ namespace com.espertech.esper.common.client.metric
     /// </summary>
     public class StatementMetric : MetricEvent
     {
-#if DEBUG_STATEMENT_METRIC
-        private readonly Guid _id = Guid.NewGuid();
-#endif
-
-        private long _cpuTime;
-        private long _wallTime;
+        private PerformanceMetrics _performanceMetrics;
         private long _numOutputRStream;
         private long _numOutputIStream;
         private long _numInput;
@@ -39,8 +36,7 @@ namespace com.espertech.esper.common.client.metric
         {
             DeploymentId = deploymentId;
             StatementName = statementName;
-            _wallTime = 0L;
-            _cpuTime = 0L;
+            _performanceMetrics = default(PerformanceMetrics);
             _numOutputIStream = 0L;
             _numOutputRStream = 0L;
             _numInput = 0L;
@@ -57,9 +53,10 @@ namespace com.espertech.esper.common.client.metric
         /// <returns>statement name</returns>
         public string StatementName { get; }
 
-        public double CpuTime => Interlocked.Read(ref _cpuTime);
-
-        public double WallTime => Interlocked.Read(ref _wallTime);
+        /// <summary>
+        /// Returns the performance metrics.
+        /// </summary>
+        public PerformanceMetrics PerformanceMetrics => _performanceMetrics;
 
         /// <summary>Returns number of output rows in remove stream. </summary>
         /// <returns>number of output rows in remove stream</returns>
@@ -74,9 +71,6 @@ namespace com.espertech.esper.common.client.metric
         public void AddNumOutputIStream(int numIStream)
         {
             Interlocked.Add(ref _numOutputIStream, numIStream);
-#if DEBUG_STATEMENT_METRIC
-            Debug.WriteLine("{0}: Reporting num output istream {1}, {2}", _id, outputIStreamCount, numIStream);
-#endif
         }
 
         /// <summary>Adds number of output rows in remove stream. </summary>
@@ -84,20 +78,15 @@ namespace com.espertech.esper.common.client.metric
         public void AddNumOutputRStream(int numRStream)
         {
             Interlocked.Add(ref _numOutputRStream, numRStream);
-#if DEBUG_STATEMENT_METRIC
-            Debug.WriteLine("{0}: Reporting num output rstream {1}, {2}", _id, outputRStreamCount, numRStream);
-#endif
         }
 
-        public void IncrementTime(
-            long pCpuTime,
-            long pWallTime)
+        public void AddMetrics(PerformanceMetrics performanceMetrics)
         {
-            Interlocked.Add(ref _cpuTime, pCpuTime);
-            Interlocked.Add(ref _wallTime, pWallTime);
-#if DEBUG_STATEMENT_METRIC
-            Debug.WriteLine("{0}: Reporting time {1}/{2}, {3}/{4}", _id, pCpuTime, cpuTime, pWallTime, wallTime);
-#endif
+            lock (this) {
+                _performanceMetrics.UserTime += performanceMetrics.UserTime;
+                _performanceMetrics.PrivTime += performanceMetrics.PrivTime;
+                _performanceMetrics.TotalTime += performanceMetrics.TotalTime;
+            }
         }
 
         public long NumInput => Interlocked.Read(ref _numInput);

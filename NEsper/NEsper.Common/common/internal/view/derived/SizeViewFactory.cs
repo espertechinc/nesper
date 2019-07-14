@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         }
 
         public string ViewName {
-            get => ViewEnum.SIZE.Name;
+            get => ViewEnum.SIZE.GetViewName();
         }
     }
 } // end of namespace

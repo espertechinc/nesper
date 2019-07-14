@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.runtime.client.util
 {
@@ -24,12 +27,15 @@ namespace com.espertech.esper.runtime.client.util
         {
         }
 
-        public void Acquire(ManagedReadWriteLock runtimeWideLock)
+        public IDisposable Acquire(ManagedReadWriteLock runtimeWideLock)
         {
+            return new VoidDisposable();
         }
 
+#if false
         public void Release(ManagedReadWriteLock runtimeWideLock)
         {
         }
+#endif
     }
 } // end of namespace

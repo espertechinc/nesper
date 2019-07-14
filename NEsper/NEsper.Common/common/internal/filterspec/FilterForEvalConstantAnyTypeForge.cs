@@ -7,45 +7,51 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
     /// <summary>
-    /// Constant value in a list of values following an in-keyword.
+    ///     Constant value in a list of values following an in-keyword.
     /// </summary>
     public class FilterForEvalConstantAnyTypeForge : FilterSpecParamInValueForge
     {
-        private object _constant;
-
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="constant">is the constant value</param>
         public FilterForEvalConstantAnyTypeForge(object constant)
         {
-            this._constant = constant;
-        }
-
-        public Type ReturnType {
-            get => _constant == null ? null : _constant.GetType();
-        }
-
-        public bool IsConstant {
-            get { return true; }
+            Constant = constant;
         }
 
         /// <summary>
-        /// Returns the constant value.
+        ///     Returns the constant value.
         /// </summary>
         /// <returns>constant</returns>
-        public object Constant {
-            get => _constant;
+        public object Constant { get; }
+
+        public Type ReturnType => Constant == null ? null : Constant.GetType();
+
+        public bool IsConstant => true;
+
+        public object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext evaluatorContext)
+        {
+            return Constant;
+        }
+
+        public CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent)
+        {
+            return Constant(Constant);
         }
 
         public override bool Equals(object o)
@@ -58,9 +64,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            FilterForEvalConstantAnyTypeForge that = (FilterForEvalConstantAnyTypeForge) o;
+            var that = (FilterForEvalConstantAnyTypeForge) o;
 
-            if (_constant != null ? !_constant.Equals(that._constant) : that._constant != null) {
+            if (Constant != null ? !Constant.Equals(that.Constant) : that.Constant != null) {
                 return false;
             }
 
@@ -69,21 +75,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override int GetHashCode()
         {
-            return _constant != null ? _constant.GetHashCode() : 0;
-        }
-
-        public object GetFilterValue(
-            MatchedEventMap matchedEvents,
-            ExprEvaluatorContext evaluatorContext)
-        {
-            return _constant;
-        }
-
-        public CodegenExpression MakeCodegen(
-            CodegenClassScope classScope,
-            CodegenMethodScope parent)
-        {
-            return Constant(_constant);
+            return Constant != null ? Constant.GetHashCode() : 0;
         }
     }
 } // end of namespace

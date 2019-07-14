@@ -18,9 +18,7 @@ namespace com.espertech.esper.runtime.client.util
     /// </summary>
     public class LockStrategyWTimeout : LockStrategy
     {
-        private readonly long timeout;
-        private readonly TimeUnit unit;
-        private readonly TimeSpan timespan;
+        private readonly TimeSpan _timespan;
         private IDisposable _lockDisposable;
 
         /// <summary>
@@ -30,24 +28,25 @@ namespace com.espertech.esper.runtime.client.util
         /// <param name="unit">unit</param>
         public LockStrategyWTimeout(long timeout, TimeUnit unit)
         {
-            this.timeout = timeout;
-            this.unit = unit;
-            this.timespan = TimeUnitHelper.ToTimeSpan(timeout, unit);
+            _timespan = TimeUnitHelper.ToTimeSpan(timeout, unit);
         }
 
-        public void Acquire(ManagedReadWriteLock runtimeWideLock)
+        public IDisposable Acquire(ManagedReadWriteLock runtimeWideLock)
         {
             try {
-                _lockDisposable = runtimeWideLock.Lock.WriteLock.Acquire((long) timespan.TotalMilliseconds);
+                _lockDisposable = runtimeWideLock.Lock.WriteLock.Acquire((long) _timespan.TotalMilliseconds);
+                return _lockDisposable;
             } catch (TimeoutException) { 
                 throw new LockStrategyException("Failed to obtain write lock of runtime-wide processing read-write lock");
             }
         }
 
+#if false
         public void Release(ManagedReadWriteLock runtimeWideLock)
         {
             _lockDisposable?.Dispose();
             //runtimeWideLock.Lock.WriteLock.Release();
         }
+#endif
     }
 } // end of namespace

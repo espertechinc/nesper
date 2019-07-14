@@ -48,6 +48,6 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             set => eventType = value;
         }
 
-        public string ViewName => ViewEnum.UNIQUE_FIRST_BY_PROPERTY.Name;
+        public string ViewName => ViewEnum.UNIQUE_FIRST_BY_PROPERTY.GetViewName();
     }
 } // end of namespace

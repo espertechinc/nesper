@@ -126,6 +126,14 @@ namespace com.espertech.esper.common.client.configuration.runtime
             AddPluginLoader(loaderName, className, configuration, null);
         }
 
+        public void AddPluginLoader(
+            string loaderName,
+            Type clazz,
+            Properties configuration)
+        {
+            AddPluginLoader(loaderName, clazz.FullName, configuration, null);
+        }
+
         /// <summary>
         ///     Add a plugin loader (f.e. an input/output adapter loader) without any additional loader configuration
         ///     <p>The class is expected to implement the PluginLoader interface.</p>.

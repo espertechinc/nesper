@@ -21,14 +21,14 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public FilterForEvalDeployTimeConstStringForge(ExprNodeDeployTimeConst deployTimeConst)
         {
-            this._deployTimeConst = deployTimeConst;
+            _deployTimeConst = deployTimeConst;
         }
 
         public CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent)
         {
-            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
+            var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
             method.Block
                 .MethodReturn(Cast(typeof(string), _deployTimeConst.CodegenGetDeployTimeConstValue(classScope)));
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
@@ -57,17 +57,15 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override bool Equals(object o)
         {
-            if (this == o)
-            {
+            if (this == o) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType())
-            {
+            if (o == null || GetType() != o.GetType()) {
                 return false;
             }
 
-            FilterForEvalDeployTimeConstStringForge that = (FilterForEvalDeployTimeConstStringForge) o;
+            var that = (FilterForEvalDeployTimeConstStringForge) o;
 
             return _deployTimeConst.Equals(that._deployTimeConst);
         }

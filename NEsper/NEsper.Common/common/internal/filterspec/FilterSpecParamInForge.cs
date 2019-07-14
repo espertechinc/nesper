@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -29,10 +31,10 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public sealed class FilterSpecParamInForge : FilterSpecParamForge
     {
-        private readonly IList<FilterSpecParamInValueForge> _listOfValues;
         private readonly FilterSpecParamInAdder[] _adders;
         private readonly bool _hasCollMapOrArray;
         private readonly object[] _inListConstantsOnly;
+        private readonly IList<FilterSpecParamInValueForge> _listOfValues;
 
         /// <summary>
         ///     Ctor.
@@ -50,7 +52,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             _listOfValues = listofValues;
 
             foreach (var value in listofValues) {
-                Type returnType = value.ReturnType;
+                var returnType = value.ReturnType;
                 if (returnType.IsCollectionMapOrArray()) {
                     _hasCollMapOrArray = true;
                     break;
@@ -60,7 +62,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             if (_hasCollMapOrArray) {
                 _adders = new FilterSpecParamInAdder[listofValues.Count];
                 for (var i = 0; i < listofValues.Count; i++) {
-                    Type returnType = listofValues[i].ReturnType;
+                    var returnType = listofValues[i].ReturnType;
                     if (returnType == null) {
                         _adders[i] = InValueAdderPlain.INSTANCE;
                     }
@@ -94,7 +96,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             if (filterOperator != FilterOperator.IN_LIST_OF_VALUES &&
                 filterOperator != FilterOperator.NOT_IN_LIST_OF_VALUES) {
                 throw new ArgumentException(
-                    "Illegal filter operator " + filterOperator + " supplied to " +
+                    "Illegal filter operator " +
+                    filterOperator +
+                    " supplied to " +
                     "in-values filter parameter");
             }
         }
@@ -137,7 +141,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            if (!CompatExtensions.DeepEquals(_listOfValues.ToArray(), other._listOfValues.ToArray())) {
+            if (!_listOfValues.ToArray().DeepEquals(other._listOfValues.ToArray())) {
                 return false;
             }
 
@@ -159,14 +163,17 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
             method.Block
                 .DeclareVar(
-                    typeof(ExprFilterSpecLookupable), "lookupable",
+                    typeof(ExprFilterSpecLookupable),
+                    "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar(
-                    typeof(FilterOperator), "op",
-                    EnumValue(typeof(FilterOperator), EnumHelper.GetName(filterOperator)));
+                    typeof(FilterOperator),
+                    "op",
+                    EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             var param = NewAnonymousClass(
-                method.Block, typeof(FilterSpecParam),
+                method.Block,
+                typeof(FilterSpecParam),
                 Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
@@ -176,18 +183,24 @@ namespace com.espertech.esper.common.@internal.filterspec
             }
             else if (!_hasCollMapOrArray) {
                 getFilterValue.Block.DeclareVar(
-                    typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(_listOfValues.Count)));
+                    typeof(object[]),
+                    "values",
+                    NewArrayByLength(typeof(object), Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {
-                    FilterSpecParamInValueForge forge = _listOfValues[i];
+                    var forge = _listOfValues[i];
                     getFilterValue.Block.AssignArrayElement(
-                        Ref("values"), Constant(i), forge.MakeCodegen(classScope, method));
+                        Ref("values"),
+                        Constant(i),
+                        forge.MakeCodegen(classScope, method));
                 }
 
                 getFilterValue.Block.MethodReturn(NewInstance<HashableMultiKey>(Ref("values")));
             }
             else {
                 getFilterValue.Block.DeclareVar(
-                    typeof(ArrayDeque<object>), "values", NewInstance<ArrayDeque<object>>(Constant(_listOfValues.Count)));
+                    typeof(ArrayDeque<object>),
+                    "values",
+                    NewInstance<ArrayDeque<object>>(Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {
                     var valueName = "value" + i;
                     var adderName = "adder" + i;
@@ -221,10 +234,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return constantsX;
             }
 
-            ArrayDeque<object> constants = new ArrayDeque<object>(_listOfValues.Count);
+            var constants = new ArrayDeque<object>(_listOfValues.Count);
             var count = 0;
             foreach (var valuePlaceholder in _listOfValues) {
-                object value = valuePlaceholder.GetFilterValue(matchedEvents, exprEvaluatorContext);
+                var value = valuePlaceholder.GetFilterValue(matchedEvents, exprEvaluatorContext);
                 if (value != null) {
                     _adders[count].Add(constants, value);
                 }

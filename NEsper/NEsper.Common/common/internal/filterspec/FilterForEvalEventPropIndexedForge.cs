@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
 
@@ -65,24 +67,28 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
             method.Block
                 .DeclareVar(
-                    typeof(EventBean[]), "events",
+                    typeof(EventBean[]),
+                    "events",
                     Cast(
                         typeof(EventBean[]),
                         ExprDotMethod(
-                            Ref("matchedEvents"), "getMatchingEventAsObjectByTag",
+                            Ref("matchedEvents"),
+                            "getMatchingEventAsObjectByTag",
                             CodegenExpressionBuilder.Constant(ResultEventAsName))))
                 .DeclareVar(typeof(object), "value", ConstantNull())
                 .IfRefNotNull("events")
                 .AssignRef(
                     "value",
                     getterSPI.EventBeanGetCodegen(
-                        ArrayAtIndex(Ref("events"), CodegenExpressionBuilder.Constant(_resultEventIndex)), method,
+                        ArrayAtIndex(Ref("events"), CodegenExpressionBuilder.Constant(_resultEventIndex)),
+                        method,
                         classScope))
                 .BlockEnd();
 
             if (_isMustCoerce) {
                 method.Block.AssignRef(
-                    "value", TypeHelper.CoerceNumberToBoxedCodegen(Ref("value"), typeof(object), ReturnType));
+                    "value",
+                    TypeHelper.CoerceNumberToBoxedCodegen(Ref("value"), typeof(object), ReturnType));
             }
 
             method.Block.MethodReturn(Ref("value"));

@@ -18,6 +18,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class ProxyFilterSharedBoolExprRegistery : FilterSharedBoolExprRegistery
     {
         public Action<FilterSpecParamExprNode> ProcRegisterBoolExpr { get; set; }
+
         public void RegisterBoolExpr(FilterSpecParamExprNode node)
         {
             ProcRegisterBoolExpr?.Invoke(node);

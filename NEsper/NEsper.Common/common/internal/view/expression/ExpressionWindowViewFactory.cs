@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.view.expression
 {
     public class ExpressionWindowViewFactory : ExpressionViewFactoryBase
     {
-        public override string ViewName => ViewEnum.EXPRESSION_WINDOW.Name;
+        public override string ViewName => ViewEnum.EXPRESSION_WINDOW.GetViewName();
 
         public override View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {

@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 var expression = path.GetAnyModuleExpectSingle(name, moduleUses);
                 if (expression != null)
                 {
-                    if (!NameAccessModifier.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName))
+                    if (!NameAccessModifierExtensions.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName))
                     {
                         return null;
                     }

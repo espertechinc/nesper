@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
 
         public bool IsStartEager => isStartEager;
 
-        public string ViewName => ViewEnum.TIME_LENGTH_BATCH.Name;
+        public string ViewName => ViewEnum.TIME_LENGTH_BATCH.GetViewName();
 
         public PreviousGetterStrategy MakePreviousGetter()
         {

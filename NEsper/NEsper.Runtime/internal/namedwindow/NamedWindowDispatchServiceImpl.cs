@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.diagnostics;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
@@ -88,24 +89,24 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
                     InstrumentationHelper.Get().QNamedWindowDispatch(exceptionHandlingService.RuntimeURI);
                 }
 
-                eventProcessingRWLock.AcquireReadLock();
-                try {
-                    // since dispatches can cause dispatches, copy the contents
-                    dispatchesTL.Current.AddAll(dispatchesTL.Dispatches);
-                    dispatchesTL.Dispatches.Clear();
-                    ProcessDispatches(dispatchesTL.Current, dispatchesTL.Work, dispatchesTL.DispatchesPerStmt);
-                }
-                catch (EPException) {
-                    throw;
-                }
-                catch (Exception ex) {
-                    throw new EPException(ex);
-                }
-                finally {
-                    dispatchesTL.Current.Clear();
-                    eventProcessingRWLock.ReleaseReadLock();
-                    if (InstrumentationHelper.ENABLED) {
-                        InstrumentationHelper.Get().ANamedWindowDispatch();
+                using (eventProcessingRWLock.AcquireDisposableReadLock()) {
+                    try {
+                        // since dispatches can cause dispatches, copy the contents
+                        dispatchesTL.Current.AddAll(dispatchesTL.Dispatches);
+                        dispatchesTL.Dispatches.Clear();
+                        ProcessDispatches(dispatchesTL.Current, dispatchesTL.Work, dispatchesTL.DispatchesPerStmt);
+                    }
+                    catch (EPException) {
+                        throw;
+                    }
+                    catch (Exception ex) {
+                        throw new EPException(ex);
+                    }
+                    finally {
+                        dispatchesTL.Current.Clear();
+                        if (InstrumentationHelper.ENABLED) {
+                            InstrumentationHelper.Get().ANamedWindowDispatch();
+                        }
                     }
                 }
             }
@@ -133,9 +134,7 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
                                     () => ProcessHandle(handle, entry.Value, newData, oldData), 1);
                                 metricReportingService.AccountTime(
                                     handle.StatementHandle.MetricsHandle,
-                                    performanceMetric.ExecTime,
-                                    performanceMetric.WallTime,
-                                    performanceMetric.NumInput);
+                                    performanceMetric, performanceMetric.NumInput);
                             }
                             else {
                                 ProcessHandle(handle, entry.Value, newData, oldData);
@@ -250,9 +249,7 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
 
                                 metricReportingService.AccountTime(
                                     handle.StatementHandle.MetricsHandle, 
-                                    performanceMetric.ExecTime,
-                                    performanceMetric.WallTime,
-                                    performanceMetric.NumInput);
+                                    performanceMetric, performanceMetric.NumInput);
                             }
                             else {
                                 var entries = unit.DispatchTo;
@@ -276,9 +273,7 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
                                 () => ProcessHandleMultiple(handle, deltaPerConsumer));
                             metricReportingService.AccountTime(
                                 handle.StatementHandle.MetricsHandle, 
-                                performanceMetric.ExecTime,
-                                performanceMetric.WallTime,
-                                performanceMetric.NumInput);
+                                performanceMetric, performanceMetric.NumInput);
                         }
                         else {
                             ProcessHandleMultiple(handle, deltaPerConsumer);

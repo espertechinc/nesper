@@ -30,9 +30,13 @@ namespace com.espertech.esper.common.client.configuration
     /// The format of an Esper XML configuration file is defined in
     /// <tt>esper-configuration-(version).xsd</tt>.
     /// </summary>
+    [Serializable]
     public class Configuration
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        [NonSerialized]
+        private IContainer _container;
 
         /// <summary>
         /// Default name of the configuration file.
@@ -42,7 +46,10 @@ namespace com.espertech.esper.common.client.configuration
         /// <summary>
         /// Gets or sets the container.
         /// </summary>
-        public IContainer Container { get; set; }
+        public IContainer Container {
+            get => _container;
+            set => _container = value;
+        }
 
         /// <summary>
         /// Gets the resource manager.

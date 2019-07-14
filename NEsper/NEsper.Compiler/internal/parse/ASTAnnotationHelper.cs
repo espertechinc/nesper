@@ -37,7 +37,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             if (ctx.elementValueEnum() != null)
             {
                 var value = WalkValue(ctx.elementValueEnum(), importService);
-                values.Add(new Pair<string, object>("value", value));
+                values.Add(new Pair<string, object>("Value", value));
             }
             else if (ctx.elementValuePairsEnum() != null)
             {

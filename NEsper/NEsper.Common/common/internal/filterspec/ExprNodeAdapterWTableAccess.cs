@@ -14,8 +14,8 @@ namespace com.espertech.esper.common.@internal.filterspec
 {
     public sealed class ExprNodeAdapterWTableAccess : ExprNodeAdapterBase
     {
-        private readonly ExprNodeAdapterBase evalBase;
-        private readonly TableExprEvaluatorContext tableExprEvaluatorContext;
+        private readonly ExprNodeAdapterBase _evalBase;
+        private readonly TableExprEvaluatorContext _tableExprEvaluatorContext;
 
         public ExprNodeAdapterWTableAccess(
             FilterSpecParamExprNode factory,
@@ -25,17 +25,17 @@ namespace com.espertech.esper.common.@internal.filterspec
             : base(factory, evaluatorContext)
 
         {
-            this.evalBase = evalBase;
-            this.tableExprEvaluatorContext = tableExprEvaluatorContext;
+            _evalBase = evalBase;
+            _tableExprEvaluatorContext = tableExprEvaluatorContext;
         }
 
         public override bool Evaluate(EventBean theEvent)
         {
             try {
-                return evalBase.Evaluate(theEvent);
+                return _evalBase.Evaluate(theEvent);
             }
             finally {
-                tableExprEvaluatorContext.ReleaseAcquiredLocks();
+                _tableExprEvaluatorContext.ReleaseAcquiredLocks();
             }
         }
     }

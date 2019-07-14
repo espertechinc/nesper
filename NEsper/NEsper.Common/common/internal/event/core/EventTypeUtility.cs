@@ -1671,7 +1671,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public static void ValidateEventBeanClassVisibility(Type clazz)
         {
-            if (!clazz.IsPublic) {
+            if (!clazz.IsPublic && !clazz.IsNestedPublic) {
                 throw new EventAdapterException("Event class '" + clazz.FullName + "' does not have public visibility");
             }
         }
@@ -1805,7 +1805,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventTypeBusModifier eventBusVisibility,
             NameAccessModifier nameAccessModifier)
         {
-            if (nameAccessModifier.IsPrivateOrTransient && eventBusVisibility == EventTypeBusModifier.BUS) {
+            if (nameAccessModifier.IsPrivateOrTransient() && eventBusVisibility == EventTypeBusModifier.BUS) {
                 throw new ExprValidationException(
                     "Event type '" + eventTypeName +
                     "' with bus-visibility requires protected or public access modifiers");

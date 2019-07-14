@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
     {
         public static string ResolveContextDeploymentId(
             string contextModuleName,
-            NameAccessModifier contextVisibility,
+            NameAccessModifier? contextVisibility,
             string contextName,
             string myDeploymentId,
             PathRegistry<string, ContextMetaData> pathContextRegistry)
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         public static EPException FailedToFind(
             string contextModuleName,
-            NameAccessModifier visibility,
+            NameAccessModifier? visibility,
             string contextName)
         {
             bool protectedVisibility = visibility == NameAccessModifier.PRIVATE;

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -30,8 +31,10 @@ namespace com.espertech.esper.common.@internal.filterspec
             anonymousClass.AddMethod("GetFilterValueDouble", getFilterValueDouble);
             getFilterValueDouble.Block.MethodReturn(
                 CodegenExpressionBuilder.Cast(
-                    typeof(double), eval.MakeCodegen(
-                        classScope, getFilterValueDouble)));
+                    typeof(double),
+                    eval.MakeCodegen(
+                        classScope,
+                        getFilterValueDouble)));
 
             var getFilterValue = CodegenMethod
                 .MakeParentNode(typeof(object), originator, classScope)
@@ -39,7 +42,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             anonymousClass.AddMethod("GetFilterValue", getFilterValue);
             getFilterValue.Block.MethodReturn(
                 CodegenExpressionBuilder.ExprDotMethod(
-                    CodegenExpressionBuilder.Ref("this"), "GetFilterValueDouble", 
+                    CodegenExpressionBuilder.Ref("this"),
+                    "GetFilterValueDouble",
                     FilterSpecParam.REF_MATCHEDEVENTMAP,
                     ExprForgeCodegenNames.REF_EXPREVALCONTEXT,
                     FilterSpecParam.REF_STMTCTXFILTEREVALENV));

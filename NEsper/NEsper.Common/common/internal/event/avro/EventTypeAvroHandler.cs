@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.avro
 
     public class EventTypeAvroHandlerConstants
     {
-        public const string RUNTIME_NONHA_HANDLER_IMPL = "com.espertech.esper.common.@internal.avro.core.EventTypeAvroHandlerImpl";
+        public const string RUNTIME_NONHA_HANDLER_IMPL = "NEsper.Avro.Core.EventTypeAvroHandlerImpl";
         public const string COMPILE_TIME_HANDLER_IMPL = RUNTIME_NONHA_HANDLER_IMPL;
     }
 } // end of namespace

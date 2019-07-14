@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             // determine if there are enumeration method expressions in the chain
             var hasEnumerationMethod = false;
             foreach (var chain in ChainSpec) {
-                if (EnumMethodEnum.IsEnumerationMethod(chain.Name)) {
+                if (EnumMethodEnumExtensions.IsEnumerationMethod(chain.Name)) {
                     hasEnumerationMethod = true;
                     break;
                 }

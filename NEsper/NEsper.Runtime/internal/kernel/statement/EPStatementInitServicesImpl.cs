@@ -198,7 +198,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             if (variable.OptionalContextName != null) {
                 contextDeploymentId = ContextDeployTimeResolver.ResolveContextDeploymentId(
                     variable.OptionalContextModule,
-                    variable.OptionalContextVisibility, variable.OptionalContextName,
+                    variable.OptionalContextVisibility,
+                    variable.OptionalContextName,
                     DeploymentId, ServicesContext.ContextPathRegistry);
             }
 

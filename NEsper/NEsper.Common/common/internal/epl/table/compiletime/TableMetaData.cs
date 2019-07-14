@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
@@ -34,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             string tableModuleName,
             NameAccessModifier tableVisibility,
             string optionalContextName,
-            NameAccessModifier optionalContextVisibility,
+            NameAccessModifier? optionalContextVisibility,
             string optionalContextModule,
             EventType internalEventType,
             EventType publicEventType,
@@ -68,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public string OptionalContextName { get; set; }
 
-        public NameAccessModifier OptionalContextVisibility { get; set; }
+        public NameAccessModifier? OptionalContextVisibility { get; set; }
 
         public string OptionalContextModule { get; set; }
 
@@ -95,20 +97,24 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public void Init()
         {
             // add index multi-key for implicit primary-key index
-            if (KeyColumns == null || KeyColumns.Length == 0) {
+            if (KeyColumns == null || KeyColumns.Length == 0)
+            {
                 return;
             }
 
             var props = new IndexedPropDesc[KeyColumns.Length];
-            for (var i = 0; i < props.Length; i++) {
+            for (var i = 0; i < props.Length; i++)
+            {
                 props[i] = new IndexedPropDesc(KeyColumns[i], KeyTypes[i]);
             }
 
             KeyIndexMultiKey = new IndexMultiKey(true, props, new IndexedPropDesc[0], null);
-            try {
+            try
+            {
                 IndexMetadata.AddIndexExplicit(true, KeyIndexMultiKey, TableName, TableModuleName, null, "");
             }
-            catch (ExprValidationException e) {
+            catch (ExprValidationException e)
+            {
                 throw new EPException("Failed to add primary key index: " + e.Message, e);
             }
         }
@@ -150,9 +156,11 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 EventTypeUtility.ResolveTypeCodegen(PublicEventType, addInitSvc));
         }
 
-        public ISet<string> UniquenessAsSet {
+        public ISet<string> UniquenessAsSet
+        {
             get {
-                if (KeyColumns == null || KeyColumns.Length == 0) {
+                if (KeyColumns == null || KeyColumns.Length == 0)
+                {
                     return Collections.GetEmptySet<string>();
                 }
 

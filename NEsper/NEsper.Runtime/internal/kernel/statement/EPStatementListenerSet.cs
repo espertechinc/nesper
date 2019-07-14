@@ -7,13 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
+
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.runtime.@internal.kernel.statement
 {
-    using UpdateEventHandler = EventHandler<UpdateEventArgs>;
-
     /// <summary>
     ///     Provides update listeners for use by statement instances, and the management methods around these.
     ///     <para>
@@ -115,6 +115,16 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         {
             lock (this) {
                 listeners = EMPTY_UPDATE_LISTENER_ARRAY;
+            }
+        }
+
+        /// <summary>
+        ///     Remove all listeners to a statement.
+        /// </summary>
+        public void RemoveAllListeners(Func<UpdateListener, bool> listenerPredicate)
+        {
+            lock (this) {
+                listeners = listeners.Where(listenerPredicate).ToArray();
             }
         }
     }

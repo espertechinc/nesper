@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             _classPropertyResolutionStyle = PropertyResolutionStyle.DEFAULT;
             _defaultAccessorStyle = AccessorStyle.NATIVE;
-            _defaultEventRepresentation = EventUnderlyingType.GetDefault();
+            _defaultEventRepresentation = EventUnderlyingTypeExtensions.GetDefault();
             _avroSettings = new AvroSettingsConfig();
         }
 
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.client.configuration.common
             }
 
             /// <summary>
-            ///     Returns indicator whether for String-type values to use the "avro.java.string=String" (true by default)
+            ///     Returns indicator whether for String-type values to use the "avro.string=String" (true by default)
             /// </summary>
             /// <value>indicator</value>
             public bool IsEnableNativeString {

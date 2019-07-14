@@ -76,6 +76,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 throw new ArgumentNullException(nameof(configuration), "Unexpected null value received for configuration");
             }
 
+            this.Container = configuration.Container;
             this.runtimes = runtimes;
             URI = runtimeURI ?? throw new ArgumentNullException(nameof(runtimeURI), "runtime URI should not be null at this stage");
 
@@ -436,8 +437,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             if (epServicesContextFactoryClassName == null) {
-                epServicesContextFactory = new EPServicesContextFactoryDefault(
-                    ServicesContext.Container);
+                epServicesContextFactory = new EPServicesContextFactoryDefault(Container);
             }
             else {
                 Type clazz;
@@ -463,6 +463,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPServicesContext services;
             try {
                 services = epServicesContextFactory.CreateServicesContext(this, configLastProvided);
+            }
+            catch (EPException) {
+                throw;
             }
             catch (Exception ex) {
                 throw new ConfigurationException("Failed runtime startup: " + ex.Message, ex);
@@ -546,11 +549,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             // Event Handler Recovery
-            var eventHandlers = services.ListenerRecoveryService.EventHandlers;
+            var eventHandlers = services.ListenerRecoveryService.Listeners;
             while (eventHandlers.MoveNext()) {
                 var deployment = eventHandlers.Current;
                 var epStatement = services.StatementLifecycleService.GetStatementById(deployment.Key);
-                epStatement.RecoveryUpdateEventHandlers(new EPStatementEventHandlerSet(deployment.Value));
+                epStatement.RecoveryUpdateEventHandlers(new EPStatementListenerSet(deployment.Value));
             }
 
             // Filter service init
@@ -702,9 +705,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     // no need to clear, it is marked as transient
                 }
 
-                var copy = SerializableObjectCopier
+                Configuration copy = SerializableObjectCopier
                     .GetInstance(Container)
                     .Copy(configuration);
+                copy.Container = Container;
 
                 // Restore transient
                 if (transients != null) {
@@ -743,6 +747,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
         }
 
-        public IContainer Container => ServicesContext.Container;
+        public IContainer Container { get; }
     }
 } // end of namespace

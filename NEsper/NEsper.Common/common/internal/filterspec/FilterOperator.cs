@@ -11,16 +11,22 @@ using System;
 namespace com.espertech.esper.common.@internal.filterspec
 {
     /// <summary>
-    /// Defines the different operator types available for event filters.
-    /// <para>
-    /// Mathematical notation for defining ranges of floating point numbers is used as defined below:
-    /// <list>
-    /// <item>[a,b] a closed range from value a to value b with the end-points a and b included in the range</item>
-    /// <item>(a,b) an open range from value a to value b with the end-points a and b not included in the range</item>
-    /// <item>[a,b) a half-open range from value a to value b with the end-point a included and end-point b not included in the range</item>
-    /// <item>(a,b] a half-open range from value a to value b with the end-point a not included and end-point b included in the range</item>
-    /// </list>
-    /// </para>
+    ///     Defines the different operator types available for event filters.
+    ///     <para>
+    ///         Mathematical notation for defining ranges of floating point numbers is used as defined below:
+    ///         <list>
+    ///             <item>[a,b] a closed range from value a to value b with the end-points a and b included in the range</item>
+    ///             <item>(a,b) an open range from value a to value b with the end-points a and b not included in the range</item>
+    ///             <item>
+    ///                 [a,b) a half-open range from value a to value b with the end-point a included and end-point b not
+    ///                 included in the range
+    ///             </item>
+    ///             <item>
+    ///                 (a,b] a half-open range from value a to value b with the end-point a not included and end-point b
+    ///                 included in the range
+    ///             </item>
+    ///         </list>
+    ///     </para>
     /// </summary>
     public enum FilterOperator
     {
@@ -83,22 +89,23 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         /// <summary> Boolean expression filter operator</summary>
         BOOLEAN_EXPRESSION
-    };
+    }
 
     /// <summary>
-    /// Contains static methods useful for help with FilterOperators.
+    ///     Contains static methods useful for help with FilterOperators.
     /// </summary>
     public static class FilterOperatorExtensions
     {
         /// <summary> Returns true for all range operators, false if not a range operator.</summary>
-        /// <returns> true for ranges, false for anyting else
+        /// <returns>
+        ///     true for ranges, false for anyting else
         /// </returns>
         public static bool IsRangeOperator(this FilterOperator op)
         {
-            if ((op == FilterOperator.RANGE_CLOSED) ||
-                (op == FilterOperator.RANGE_OPEN) ||
-                (op == FilterOperator.RANGE_HALF_OPEN) ||
-                (op == FilterOperator.RANGE_HALF_CLOSED)) {
+            if (op == FilterOperator.RANGE_CLOSED ||
+                op == FilterOperator.RANGE_OPEN ||
+                op == FilterOperator.RANGE_HALF_OPEN ||
+                op == FilterOperator.RANGE_HALF_CLOSED) {
                 return true;
             }
 
@@ -106,15 +113,15 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         /// <summary>
-        /// Returns true for inverted range operators, false if not an inverted range operator.
+        ///     Returns true for inverted range operators, false if not an inverted range operator.
         /// </summary>
         /// <returns>true for inverted ranges, false for anyting else</returns>
         public static bool IsInvertedRangeOperator(this FilterOperator op)
         {
-            if ((op == FilterOperator.NOT_RANGE_CLOSED) ||
-                (op == FilterOperator.NOT_RANGE_OPEN) ||
-                (op == FilterOperator.NOT_RANGE_HALF_OPEN) ||
-                (op == FilterOperator.NOT_RANGE_HALF_CLOSED)) {
+            if (op == FilterOperator.NOT_RANGE_CLOSED ||
+                op == FilterOperator.NOT_RANGE_OPEN ||
+                op == FilterOperator.NOT_RANGE_HALF_OPEN ||
+                op == FilterOperator.NOT_RANGE_HALF_CLOSED) {
                 return true;
             }
 
@@ -122,14 +129,15 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         /// <summary> Returns true for relational comparison operators which excludes the = equals operator, else returns false.</summary>
-        /// <returns> true for lesser or greater -type operators, false for anyting else
+        /// <returns>
+        ///     true for lesser or greater -type operators, false for anyting else
         /// </returns>
         public static bool IsComparisonOperator(this FilterOperator op)
         {
-            if ((op == FilterOperator.LESS) ||
-                (op == FilterOperator.LESS_OR_EQUAL) ||
-                (op == FilterOperator.GREATER) ||
-                (op == FilterOperator.GREATER_OR_EQUAL)) {
+            if (op == FilterOperator.LESS ||
+                op == FilterOperator.LESS_OR_EQUAL ||
+                op == FilterOperator.GREATER ||
+                op == FilterOperator.GREATER_OR_EQUAL) {
                 return true;
             }
 
@@ -137,13 +145,13 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         /// <summary>
-        /// Parse the range operator from booleans describing whether the Start or end values are exclusive.
+        ///     Parse the range operator from booleans describing whether the Start or end values are exclusive.
         /// </summary>
         /// <param name="isInclusiveFirst">true if low endpoint is inclusive, false if not</param>
         /// <param name="isInclusiveLast">true if high endpoint is inclusive, false if not</param>
         /// <param name="isNot">if set to <c>true</c> [is not].</param>
         /// <returns>
-        /// FilterOperator for the combination inclusive or exclusive
+        ///     FilterOperator for the combination inclusive or exclusive
         /// </returns>
         public static FilterOperator ParseRangeOperator(
             bool isInclusiveFirst,
@@ -169,45 +177,64 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             switch (op) {
                 case FilterOperator.EQUAL:
-                    return ("=");
+                    return "=";
+
                 case FilterOperator.NOT_EQUAL:
-                    return ("!=");
+                    return "!=";
+
                 case FilterOperator.IS:
-                    return ("is");
+                    return "is";
+
                 case FilterOperator.IS_NOT:
-                    return ("is not");
+                    return "is not";
+
                 case FilterOperator.LESS:
-                    return ("<");
+                    return "<";
+
                 case FilterOperator.LESS_OR_EQUAL:
-                    return ("<=");
+                    return "<=";
+
                 case FilterOperator.GREATER_OR_EQUAL:
-                    return (">=");
+                    return ">=";
+
                 case FilterOperator.GREATER:
-                    return (">");
+                    return ">";
+
                 case FilterOperator.RANGE_OPEN:
-                    return (": return(,)");
+                    return ": return(,)";
+
                 case FilterOperator.RANGE_CLOSED:
-                    return ("[,]");
+                    return "[,]";
+
                 case FilterOperator.RANGE_HALF_OPEN:
-                    return ("[,)");
+                    return "[,)";
+
                 case FilterOperator.RANGE_HALF_CLOSED:
-                    return (": return(,]");
+                    return ": return(,]";
+
                 case FilterOperator.NOT_RANGE_OPEN:
-                    return ("-: return(,)");
+                    return "-: return(,)";
+
                 case FilterOperator.NOT_RANGE_CLOSED:
-                    return ("-[,]");
+                    return "-[,]";
+
                 case FilterOperator.NOT_RANGE_HALF_OPEN:
-                    return ("-[,)");
+                    return "-[,)";
+
                 case FilterOperator.NOT_RANGE_HALF_CLOSED:
-                    return ("-: return(,]");
+                    return "-: return(,]";
+
                 case FilterOperator.IN_LIST_OF_VALUES:
-                    return ("in");
+                    return "in";
+
                 case FilterOperator.NOT_IN_LIST_OF_VALUES:
-                    return ("!in");
+                    return "!in";
+
                 case FilterOperator.ADVANCED_INDEX:
-                    return ("ai");
+                    return "ai";
+
                 case FilterOperator.BOOLEAN_EXPRESSION:
-                    return ("boolean_expr");
+                    return "boolean_expr";
             }
 
             throw new ArgumentException();
@@ -218,10 +245,13 @@ namespace com.espertech.esper.common.@internal.filterspec
             switch (op) {
                 case FilterOperator.LESS:
                     return FilterOperator.GREATER;
+
                 case FilterOperator.LESS_OR_EQUAL:
                     return FilterOperator.GREATER_OR_EQUAL;
+
                 case FilterOperator.GREATER:
                     return FilterOperator.LESS;
+
                 case FilterOperator.GREATER_OR_EQUAL:
                     return FilterOperator.LESS_OR_EQUAL;
             }
