@@ -37,13 +37,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fieldsWin = "theString,intPrimitive".SplitCsv();
+                var fieldsWin = "theString,IntPrimitive".SplitCsv();
                 var fieldsSelect = "c0".SplitCsv();
                 var path = new RegressionPath();
 
                 var eplCreate = namedWindow
                     ? "@Name('create') create window MyInfra#keepall as SupportBean"
-                    : "@Name('create') create table MyInfra (theString string primary key, IntPrimitive int primary key)";
+                    : "@Name('create') create table MyInfra (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
 
                 env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean", path);

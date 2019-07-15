@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a,b".SplitCsv();
             var text = "@Name('s0') select * from MyVariantType#keepall " +
                        "match_recognize (" +
-                       "  measures A.id? as a, B.id? as b" +
+                       "  measures A.Id? as a, B.Id? as b" +
                        "  pattern (A B) " +
                        "  define " +
                        "    A as typeof(A) = 'SupportBean_S0'," +
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                       "// Simple pattern to match ST0 ST1 pairs\n" +
                       "select * from MyVariantType#time(1 min)\n" +
                       "match_recognize (\n" +
-                      "measures A.id? as a, B.id? as b\n" +
+                      "measures A.Id? as a, B.Id? as b\n" +
                       "pattern (A B)\n" +
                       "define\n" +
                       "A as typeof(A) = 'ST0',\n" +

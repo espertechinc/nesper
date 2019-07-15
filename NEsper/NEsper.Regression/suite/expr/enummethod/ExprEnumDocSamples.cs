@@ -125,11 +125,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 Assert.AreEqual("Z1", zones[0].Name);
 
                 // subquery with event as input
-                var epl = "create schema SettlementEvent (symbol string, price double);" +
-                          "create schema PriceEvent (symbol string, price double);\n" +
+                var epl = "create schema SettlementEvent (Symbol string, price double);" +
+                          "create schema PriceEvent (Symbol string, price double);\n" +
                           "create schema OrderEvent (orderId string, pricedata PriceEvent);\n" +
                           "select (select pricedata from OrderEvent#unique(orderId))\n" +
-                          ".anyOf(v => v.symbol = 'GE') as has_ge from SettlementEvent(symbol = 'GE')";
+                          ".anyOf(v => v.Symbol = 'GE') as has_ge from SettlementEvent(Symbol = 'GE')";
                 env.CompileDeploy(epl);
 
                 // subquery with aggregation
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select za.items.except(zb.items) as itemsCompared from LocationReport as za unidirectional, LocationReport#length(10) as zb");
+                    "select za.items.except(zb.items) as itemsCompared from LocationReport as za unIdirectional, LocationReport#length(10) as zb");
 
                 env.UndeployAll();
             }

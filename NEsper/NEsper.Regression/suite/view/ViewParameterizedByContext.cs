@@ -53,16 +53,16 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var milestone = new AtomicLong();
                 RunAssertionWindow(env, "length_batch(context.miewl.intSize)", milestone);
                 RunAssertionWindow(env, "time(context.miewl.intSize)", milestone);
-                RunAssertionWindow(env, "ext_timed(longPrimitive, context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "ext_timed(LongPrimitive, context.miewl.intSize)", milestone);
                 RunAssertionWindow(env, "time_batch(context.miewl.intSize)", milestone);
-                RunAssertionWindow(env, "ext_timed_batch(longPrimitive, context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "ext_timed_batch(LongPrimitive, context.miewl.intSize)", milestone);
                 RunAssertionWindow(env, "time_length_batch(context.miewl.intSize, context.miewl.intSize)", milestone);
                 RunAssertionWindow(env, "time_accum(context.miewl.intSize)", milestone);
                 RunAssertionWindow(env, "firstlength(context.miewl.intSize)", milestone);
                 RunAssertionWindow(env, "firsttime(context.miewl.intSize)", milestone);
                 RunAssertionWindow(env, "sort(context.miewl.intSize, IntPrimitive)", milestone);
-                RunAssertionWindow(env, "rank(theString, context.miewl.intSize, theString)", milestone);
-                RunAssertionWindow(env, "time_order(longPrimitive, context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "rank(TheString, context.miewl.intSize, TheString)", milestone);
+                RunAssertionWindow(env, "time_order(LongPrimitive, context.miewl.intSize)", milestone);
             }
         }
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var epl =
                     "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-                    "@Name('s0') context CtxInitToTerm select context.miewl.id as id, count(*) as cnt from SupportBean(theString=context.miewl.id)#length(context.miewl.intSize)";
+                    "@Name('s0') context CtxInitToTerm select context.miewl.Id as Id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.intSize)";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = "id,cnt".SplitCsv();
 
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var epl =
                     "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-                    "@Name('s0') context CtxInitToTerm select context.miewl.id as id, count(*) as cnt from SupportBean(theString=context.miewl.id)#length(context.miewl.intSize);\n";
+                    "@Name('s0') context CtxInitToTerm select context.miewl.Id as Id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.intSize);\n";
                 env.CompileDeploy(epl).Milestone(0);
 
                 env.SendEventBean(new SupportContextInitEventWLength("P1", 2));

@@ -63,8 +63,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // XML
             Pair<object, object>[] xmlTests = {
                 new Pair<object, object>("", NotExists()),
-                new Pair<object, object>("<id>10</id>", Exists("10")),
-                new Pair<object, object>("<id>abc</id>", Exists("abc"))
+                new Pair<object, object>("<Id>10</Id>", Exists("10")),
+                new Pair<object, object>("<Id>abc</Id>", Exists("abc"))
             };
             RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode));
 
@@ -92,18 +92,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] tests,
             Type expectedPropertyType)
         {
-            var stmtText = "@Name('s0') select id? as myid, exists(id?) as exists_myid from " + typename;
+            var stmtText = "@Name('s0') select Id? as myId, exists(Id?) as exists_myId from " + typename;
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            Assert.AreEqual(expectedPropertyType, env.Statement("s0").EventType.GetPropertyType("myid"));
-            Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("exists_myid"));
+            Assert.AreEqual(expectedPropertyType, env.Statement("s0").EventType.GetPropertyType("myId"));
+            Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("exists_myId"));
 
             foreach (var pair in tests) {
                 send.Invoke(env, pair.First, typename);
                 var @event = env.Listener("s0").AssertOneGetNewAndReset();
                 AssertValueMayConvert(
                     @event,
-                    "myid",
+                    "myId",
                     (ValueWithExistsFlag) pair.Second,
                     optionalValueConversion);
             }

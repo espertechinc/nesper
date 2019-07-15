@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     new GameDesc(
                         "GA01",
                         "Castlevania",
-                        "Eidos",
+                        "EIdos",
                         new[] {
                             new Review(100, "best game ever"),
                             new Review(101, "good platformer")

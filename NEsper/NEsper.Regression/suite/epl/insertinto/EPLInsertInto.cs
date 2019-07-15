@@ -241,16 +241,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                          ";\n";
             }
             else if (rep.IsMapEvent()) {
-                schema = "@Name('schema1') create map schema S0 as (theString string);\n" +
-                         "@Name('schema2') create map schema S1 as (id string);\n";
+                schema = "@Name('schema1') create map schema S0 as (TheString string);\n" +
+                         "@Name('schema2') create map schema S1 as (Id string);\n";
             }
             else if (rep.IsObjectArrayEvent()) {
-                schema = "@Name('schema1') create objectarray schema S0 as (theString string);\n" +
-                         "@Name('schema2') create objectarray schema S1 as (id string);\n";
+                schema = "@Name('schema1') create objectarray schema S0 as (TheString string);\n" +
+                         "@Name('schema2') create objectarray schema S1 as (Id string);\n";
             }
             else if (rep.IsAvroEvent()) {
-                schema = "@Name('schema1') create avro schema S0 as (theString string);\n" +
-                         "@Name('schema2') create avro schema S1 as (id string);\n";
+                schema = "@Name('schema1') create avro schema S0 as (TheString string);\n" +
+                         "@Name('schema2') create avro schema S1 as (Id string);\n";
             }
             else {
                 schema = null;
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                           (bean ? "" : rep.GetAnnotationText()) +
                           "insert into event2 select * " +
                           "from S0#length(100) as s0, S1#length(5) as s1 " +
-                          "where s0.TheString = s1.id";
+                          "where s0.TheString = s1.Id";
             env.CompileDeploy(textOne, path).AddListener("s1");
 
             var textTwo = "@Name('s2') " + (bean ? "" : rep.GetAnnotationText()) + "select * from event2#length(10)";
@@ -445,7 +445,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 var epl = "@Name('s0') insert rstream into Event_1_RSOM " +
-                          "select IntPrimitive, intBoxed " +
+                          "select IntPrimitive, IntBoxed " +
                           "from SupportBean";
                 Assert.AreEqual(epl, model.ToEPL());
 
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                "select IntPrimitive - IntBoxed as deltaTag, IntPrimitive * IntBoxed as productTag " +
                                "from SupportBean#length(100) as s0," +
                                "SupportBean_A#length(100) as s1 " +
-                               " where s0.TheString = s1.id";
+                               " where s0.TheString = s1.Id";
 
                 TryAssertsVariant(env, stmtText, null, "Event_1J");
                 env.UndeployAll();
@@ -567,7 +567,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                "select * " +
                                "from SupportBean#length(100) as s0," +
                                "SupportBean_A#length(100) as s1 " +
-                               " where s0.TheString = s1.id";
+                               " where s0.TheString = s1.Id";
 
                 try {
                     env.CompileWCheckedEx(stmtText);
@@ -631,7 +631,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                "select IntPrimitive - IntBoxed as delta, IntPrimitive * IntBoxed as product " +
                                "from SupportBean#length(100) as s0," +
                                "SupportBean_A#length(100) as s1 " +
-                               " where s0.TheString = s1.id";
+                               " where s0.TheString = s1.Id";
 
                 TryAssertsVariant(env, stmtText, null, "Event_1_2J");
 
@@ -815,8 +815,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 var fields = "p0,p1".SplitCsv();
                 var epl =
-                    "insert into AStream (p0, p1) select IntPrimitive as somename, theString from SupportBean(intPrimitive between 0 and 10);\n" +
-                    "insert into AStream (p0) select IntPrimitive as somename from SupportBean(intPrimitive > 10);\n" +
+                    "insert into AStream (p0, p1) select IntPrimitive as somename, TheString from SupportBean(IntPrimitive between 0 and 10);\n" +
+                    "insert into AStream (p0) select IntPrimitive as somename from SupportBean(IntPrimitive > 10);\n" +
                     "@Name('s0') select * from AStream;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -843,9 +843,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // NOTICE: we are inserting the RSTREAM (removed events)
                 var path = new RegressionPath();
                 var stmtText = "insert rstream into StockTicks(mySymbol, myPrice) " +
-                               "select symbol, price from SupportMarketDataBean#time(60) " +
+                               "select Symbol, price from SupportMarketDataBean#time(60) " +
                                "output every 5 seconds " +
-                               "order by symbol asc";
+                               "order by Symbol asc";
                 env.CompileDeploy(stmtText, path);
 
                 stmtText = "@Name('s0') select mySymbol, sum(myPrice) as.Pricesum from StockTicks#length(100)";
@@ -1022,22 +1022,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var text = "insert into S0 select irstream symbol, 0 as val from SupportMarketDataBean";
+                var text = "insert into S0 select irstream Symbol, 0 as val from SupportMarketDataBean";
                 env.CompileDeploy(text, path);
 
                 env.Milestone(0);
 
-                text = "insert into S1 select irstream symbol, 1 as val from S0";
+                text = "insert into S1 select irstream Symbol, 1 as val from S0";
                 env.CompileDeploy(text, path);
 
                 env.Milestone(1);
 
-                text = "insert into S2 select irstream symbol, 2 as val from S1";
+                text = "insert into S2 select irstream Symbol, 2 as val from S1";
                 env.CompileDeploy(text, path);
 
                 env.Milestone(2);
 
-                text = "@Name('s0') insert into S3 select irstream symbol, 3 as val from S2";
+                text = "@Name('s0') insert into S3 select irstream Symbol, 3 as val from S2";
                 env.CompileDeploy(text, path).AddListener("s0");
 
                 env.Milestone(3);

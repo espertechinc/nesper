@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 log.Info("Started event send for write");
 
                 try {
-                    var eplInto = "into table varagg select window(*) as theEvents from SupportBean(theString='E" +
+                    var eplInto = "into table varagg select window(*) as theEvents from SupportBean(TheString='E" +
                                   threadNum +
                                   "')#length(3)";
                     env.CompileDeploy(eplInto, path);

@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy("create variable int lower", path);
                 env.CompileDeploy("create variable int upper", path);
                 env.CompileDeploy(
-                    "on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed",
+                    "on SupportBean set queryvar_int=IntPrimitive, queryvar_bool=BoolPrimitive, lower=IntPrimitive,upper=IntBoxed",
                     path);
 
                 // Test int and singlerow
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     "@Name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.mybigint between ${?} and ${queryvar_int+?}'] order by myint",
-                    "EPL substitution parameters are not allowed in SQL ${...} expressions, consider using a variable instead");
+                    "EPL substitution parameters are not allowed in SQL ${...} expressions, consIder using a variable instead");
             }
         }
 
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy("create variable int lower", path);
                 env.CompileDeploy("create variable int upper", path);
                 env.CompileDeploy(
-                    "on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed",
+                    "on SupportBean set queryvar_int=IntPrimitive, queryvar_bool=BoolPrimitive, lower=IntPrimitive,upper=IntBoxed",
                     path);
 
                 // Test int and singlerow

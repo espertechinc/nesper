@@ -33,18 +33,18 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('window') create window MyWindow#keepall as select TheString, longPrimitive from SupportBean",
+                "@Name('window') create window MyWindow#keepall as select TheString, LongPrimitive from SupportBean",
                 path);
             var listenerWindow = new SupportMTUpdateListener();
             env.Statement("window").AddListener(listenerWindow);
 
             env.CompileDeploy(
-                "insert into MyWindow(theString, longPrimitive) " +
-                " select symbol, volume \n" +
+                "insert into MyWindow(TheString, LongPrimitive) " +
+                " select Symbol, Volume \n" +
                 " from SupportMarketDataBean",
                 path);
 
-            var stmtTextDelete = "on SupportBean_A as s0 delete from MyWindow as win where win.TheString = s0.id";
+            var stmtTextDelete = "on SupportBean_A as s0 delete from MyWindow as win where win.TheString = s0.Id";
             env.CompileDeploy(stmtTextDelete, path);
 
             TrySend(env, path, listenerWindow, 4, 1000, 8);
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numConsumers)
         {
             var listenerConsumers = new SupportMTUpdateListener[numConsumers];
-            var compiled = env.Compile("select TheString, longPrimitive from MyWindow", path);
+            var compiled = env.Compile("select TheString, LongPrimitive from MyWindow", path);
             for (var i = 0; i < listenerConsumers.Length; i++) {
                 var stmtName = "c" + i;
                 try {

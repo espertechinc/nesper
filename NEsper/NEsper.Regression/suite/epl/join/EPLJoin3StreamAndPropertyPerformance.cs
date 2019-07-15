@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                            "SupportBean_A()#length(1000000) s1," +
                            "SupportBean_B()#length(1000000) s2," +
                            "SupportBean_C()#length(1000000) s3" +
-                           " where s1.id=s2.id and s2.id=s3.id and s1.id=s3.id";
+                           " where s1.Id=s2.Id and s2.Id=s3.Id and s1.Id=s3.Id";
                 TryJoinPerf3Streams(env, stmt);
             }
         }
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                            "SupportBean_A#length(1000000) s1," +
                            "SupportBean_B#length(1000000) s2," +
                            "SupportBean_C#length(1000000) s3" +
-                           " where s1.id=s2.id and s2.id=s3.id"; // ==> therefore s1.id = s3.id
+                           " where s1.Id=s2.Id and s2.Id=s3.Id"; // ==> therefore s1.Id = s3.Id
                 TryJoinPerf3Streams(env, stmt);
             }
         }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                           "SupportBean_A#length(1000000) s1," +
                           "SupportBean_B#length(1000000) s2," +
                           "SupportBean_C#length(1000000) s3" +
-                          " where s1.id=s2.id"; // ==> stream s3 no properties supplied, full s3 scan
+                          " where s1.Id=s2.Id"; // ==> stream s3 no properties supplied, full s3 scan
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // preload s3 with just 1 event

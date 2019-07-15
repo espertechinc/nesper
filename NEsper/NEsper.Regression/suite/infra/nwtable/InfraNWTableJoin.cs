@@ -40,10 +40,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
 
                 // create window
-                var stmtTextCreate = "create schema MyEvent(cid string);\n";
+                var stmtTextCreate = "create schema MyEvent(cId string);\n";
                 stmtTextCreate += namedWindow
                     ? "create window MyInfra.win:keepall() as MyEvent"
-                    : "create table MyInfra(cid string primary key)";
+                    : "create table MyInfra(cId string primary key)";
                 env.CompileDeployWBusPublicType(stmtTextCreate, path);
 
                 // create insert into
@@ -52,8 +52,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create join
                 var stmtTextJoin =
-                    "@Name('s0') select ce.cid as c0, sb.IntPrimitive as c1 from MyInfra as ce, SupportBean#keepall() as sb" +
-                    " where sb.TheString = ce.cid";
+                    "@Name('s0') select ce.cId as c0, sb.IntPrimitive as c1 from MyInfra as ce, SupportBean#keepall() as sb" +
+                    " where sb.TheString = ce.cId";
                 env.CompileDeploy(stmtTextJoin, path).AddListener("s0");
 
                 SendMyEvent(env, "C1");
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RegressionEnvironment env,
                 string c1)
             {
-                env.SendEventMap(Collections.SingletonDataMap("cid", c1), "MyEvent");
+                env.SendEventMap(Collections.SingletonDataMap("cId", c1), "MyEvent");
             }
         }
     }

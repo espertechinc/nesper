@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream symbol, price from SupportMarketDataBean#unique(symbol) order by symbol";
+                    "@Name('s0') select irstream Symbol, price from SupportMarketDataBean#unique(Symbol) order by Symbol";
                 if (optionalAnnotation != null) {
                     text = optionalAnnotation + text;
                 }
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream symbol, feed, price from  SupportMarketDataBean#unique(symbol, feed) order by symbol, feed";
+                    "@Name('s0') select irstream Symbol, Feed, price from  SupportMarketDataBean#unique(Symbol, Feed) order by Symbol, Feed";
                 if (optionalAnnotation != null) {
                     text = optionalAnnotation + text;
                 }
@@ -359,14 +359,14 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream * from SupportBean#unique(intBoxed)";
+                var epl = "@Name('s0') select irstream * from SupportBean#unique(IntBoxed)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var beanOne = new SupportBean("E1", 1);
                 env.SendEventBean(beanOne);
                 env.Listener("s0").AssertOneGetNewAndReset();
 
-                var eplTwo = "@Name('s1') select irstream * from SupportBean#unique(intBoxed)";
+                var eplTwo = "@Name('s1') select irstream * from SupportBean#unique(IntBoxed)";
                 env.CompileDeployAddListenerMile(eplTwo, "s1", 1);
 
                 var beanTwo = new SupportBean("E2", 2);

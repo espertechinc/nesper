@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select varargsOnlyInt(1, null) from SupportBean",
-                "Failed to validate select-clause expression 'varargsOnlyInt(1,null)': Could not find static method");
+                "Failed to valIdate select-clause expression 'varargsOnlyInt(1,null)': Could not find static method");
 
             RunVarargAssertion(
                 env,

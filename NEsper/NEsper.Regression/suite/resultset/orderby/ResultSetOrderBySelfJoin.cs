@@ -38,14 +38,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"prio", "cnt"};
-                var epl = "@Name('s0') select c1.event_criteria_id as ecid, " +
+                var epl = "@Name('s0') select c1.event_criteria_Id as ecId, " +
                           "c1.priority as priority, " +
                           "c2.priority as prio, cast(count(*), int) as cnt from " +
                           "SupportHierarchyEvent#lastevent as c1, " +
-                          "SupportHierarchyEvent#groupwin(event_criteria_id)#lastevent as c2, " +
-                          "SupportHierarchyEvent#groupwin(event_criteria_id)#lastevent as p " +
-                          "where c2.event_criteria_id in (c1.event_criteria_id,2,1) " +
-                          "and p.event_criteria_id in (c1.parent_event_criteria_id, c1.event_criteria_id) " +
+                          "SupportHierarchyEvent#groupwin(event_criteria_Id)#lastevent as c2, " +
+                          "SupportHierarchyEvent#groupwin(event_criteria_Id)#lastevent as p " +
+                          "where c2.event_criteria_Id in (c1.event_criteria_Id,2,1) " +
+                          "and p.event_criteria_Id in (c1.parent_event_criteria_Id, c1.event_criteria_Id) " +
                           "order by c2.priority asc";
                 env.CompileDeploy(epl).AddListener("s0");
 

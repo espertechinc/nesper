@@ -74,8 +74,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select IntPrimitive from SupportBean(theString='A') as s0 where IntPrimitive in (" +
-                    "select longBoxed from SupportBean(theString='B')#length(10000) where s0.IntPrimitive = longBoxed)";
+                    "@Name('s0') select IntPrimitive from SupportBean(TheString='A') as s0 where IntPrimitive in (" +
+                    "select LongBoxed from SupportBean(TheString='B')#length(10000) where s0.IntPrimitive = LongBoxed)";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select id from SupportBean_S0 as s0 where p00 in (" +
+                var stmtText = "@Name('s0') select Id from SupportBean_S0 as s0 where p00 in (" +
                                "select p10 from SupportBean_S1#length(10000) where s0.p00 = p10)";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 

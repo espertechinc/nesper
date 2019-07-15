@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var fields = "theString, p1".SplitCsv();
                 var path = new RegressionPath();
                 var epl = "create table MyTable as (p0 string primary key, p1 int);\n" +
-                          "@Name('s0') select TheString, p1 from SupportBean unidirectional left outer join MyTable on theString = p0;\n";
+                          "@Name('s0') select TheString, p1 from SupportBean unIdirectional left outer join MyTable on TheString = p0;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 env.CompileExecuteFAF("insert into MyTable select 'a' as p0, 10 as p1", path);
 
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "create table varagg as (k0 string primary key, k1 int primary key, v1 string, total sum(long))";
                 var eplPopulate =
                     "into table varagg select sum(LongPrimitive) as total from SupportBean group by TheString, IntPrimitive";
-                var eplQuery = "select total as value from SupportBean_S0 as s0 unidirectional";
+                var eplQuery = "select total as value from SupportBean_S0 as s0 unIdirectional";
 
                 string[] createIndexEmpty = { };
                 object[] preloadedEventsTwo = {
@@ -284,23 +284,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     new[] {
                         // primary index found
                         new IndexAssertion(
-                            "k1 = id and k0 = p00",
+                            "k1 = Id and k0 = p00",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         new IndexAssertion(
-                            "k0 = p00 and k1 = id",
+                            "k0 = p00 and k1 = Id",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         new IndexAssertion(
-                            "k0 = p00 and k1 = id and v1 is null",
+                            "k0 = p00 and k1 = Id and v1 is null",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         // no index found
                         new IndexAssertion(
-                            "k1 = id",
+                            "k1 = Id",
                             "varagg",
                             typeof(FullTableScanUniquePerKeyLookupPlanForge),
                             eventSendAssertionHash)
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 );
 
                 // one secondary hash index on single field
-                string[] createIndexHashSingleK1 = {"create index idx_k1 on varagg (k1)"};
+                string[] createIndexHashSingleK1 = {"create index Idx_k1 on varagg (k1)"};
                 AssertIndexChoice(
                     env,
                     eplDeclare,
@@ -320,13 +320,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     new[] {
                         // primary index found
                         new IndexAssertion(
-                            "k1 = id and k0 = p00",
+                            "k1 = Id and k0 = p00",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         // secondary index found
                         new IndexAssertion(
-                            "k1 = id",
+                            "k1 = Id",
                             "idx_k1",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // two secondary hash indexes on one field each
                 string[] createIndexHashTwoDiscrete =
-                    {"create index idx_k1 on varagg (k1)", "create index idx_k0 on varagg (k0)"};
+                    {"create index Idx_k1 on varagg (k1)", "create index Idx_k0 on varagg (k0)"};
                 AssertIndexChoice(
                     env,
                     eplDeclare,
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     new[] {
                         // primary index found
                         new IndexAssertion(
-                            "k1 = id and k0 = p00",
+                            "k1 = Id and k0 = p00",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
@@ -369,12 +369,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         new IndexAssertion(
-                            "k1 = id",
+                            "k1 = Id",
                             "idx_k1",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         new IndexAssertion(
-                            "v1 is null and k1 = id",
+                            "v1 is null and k1 = Id",
                             "idx_k1",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 );
 
-                string[] createIndexHashSingleK0 = {"create index idx_k0 on varagg (k0)"};
+                string[] createIndexHashSingleK0 = {"create index Idx_k0 on varagg (k0)"};
                 // in-keyword single-directional use
                 AssertIndexChoice(
                     env,
@@ -531,7 +531,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var eplDeclare = "create table varagg as (k0 int primary key, total sum(long))";
                 var eplPopulate =
                     "into table varagg select sum(LongPrimitive) as total from SupportBean group by IntPrimitive";
-                var eplQuery = "select total as value from SupportBeanRange unidirectional";
+                var eplQuery = "select total as value from SupportBeanRange unIdirectional";
 
                 string[] createIndexEmpty = { };
                 object[] preloadedEvents = {

@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0".SplitCsv();
                 var eplFragment =
-                    "@Name('s0') select contained.selectFrom(x => key0).sequenceEqual(contained.selectFrom(y => id)) as val0 " +
+                    "@Name('s0') select contained.selectFrom(x => key0).sequenceEqual(contained.selectFrom(y => Id)) as val0 " +
                     "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'window(*).sequenceEqual(strvals)': Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection'");
+                    "Failed to valIdate select-clause expression 'window(*).sequenceEqual(strvals)': InvalId input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection'");
             }
         }
     }

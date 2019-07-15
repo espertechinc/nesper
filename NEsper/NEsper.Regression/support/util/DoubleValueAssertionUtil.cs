@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.support.util
             int precision)
         {
             if (precision < 1) {
-                throw new ArgumentException("Invalid precision value of " + precision + " supplied");
+                throw new ArgumentException("InvalId precision value of " + precision + " supplied");
             }
 
             var actualIsNaN = double.IsNaN(valueActual);

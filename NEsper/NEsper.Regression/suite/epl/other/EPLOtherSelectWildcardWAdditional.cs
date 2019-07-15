@@ -260,7 +260,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                        "#length(5) as eventOne, " +
                        eventNameTwo +
                        "#length(5) as eventTwo " +
-                       "where eventOne.myString = eventTwo.symbol";
+                       "where eventOne.myString = eventTwo.Symbol";
                 env.CompileDeploy(text).AddListener("s0");
 
                 AssertNoCommonProperties(env);
@@ -275,7 +275,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var eventNameOne = typeof(SupportBean_A).Name;
                 var eventNameTwo = typeof(SupportBean_B).Name;
-                var text = "@Name('s0') select *, eventOne.id||eventTwo.id as concat " +
+                var text = "@Name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
                            "from " +
                            eventNameOne +
                            "#length(5) as eventOne, " +
@@ -287,13 +287,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployAll();
 
-                text = "@Name('s0') select *, eventOne.id||eventTwo.id as concat " +
+                text = "@Name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
                        "from " +
                        eventNameOne +
                        "#length(5) as eventOne, " +
                        eventNameTwo +
                        "#length(5) as eventTwo " +
-                       "where eventOne.id = eventTwo.id";
+                       "where eventOne.Id = eventTwo.Id";
                 env.CompileDeploy(text).AddListener("s0");
 
                 AssertCommonProperties(env);
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select *, theString||TheString as concat from MyMapEventIntString#length(5)";
+                var text = "@Name('s0') select *, TheString||TheString as concat from MyMapEventIntString#length(5)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // The map to send into the eventService

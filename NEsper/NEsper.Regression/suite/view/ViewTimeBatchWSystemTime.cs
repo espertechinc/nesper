@@ -27,9 +27,9 @@ namespace com.espertech.esper.regressionlib.suite.view
         public void Run(RegressionEnvironment env)
         {
             // Set up a 2 second time window
-            var epl = "@Name('s0') select * from SupportMarketDataBean(symbol='" +
+            var epl = "@Name('s0') select * from SupportMarketDataBean(Symbol='" +
                       SYMBOL +
-                      "')#time_batch(2)#uni(volume)";
+                      "')#time_batch(2)#uni(Volume)";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             CheckMeanIterator(env, double.NaN);

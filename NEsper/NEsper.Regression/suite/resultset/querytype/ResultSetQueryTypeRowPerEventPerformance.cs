@@ -31,11 +31,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 var text = "@Name('s" +
                            i +
-                           "') select symbol, min(price) " +
-                           "from SupportMarketDataBean(id='${id}')#time(${secondsWindowSpan})\n" +
+                           "') select Symbol, min(price) " +
+                           "from SupportMarketDataBean(Id='${Id}')#time(${secondsWindowSpan})\n" +
                            "having price >= min(price) * ${percent}";
 
-                text = text.Replace("${id}", Convert.ToString(id));
+                text = text.Replace("${Id}", Convert.ToString(id));
                 text = text.Replace("${secondsWindowSpan}", Convert.ToString(secondsWindowSpan));
                 text = text.Replace("${percent}", Convert.ToString(percent));
 

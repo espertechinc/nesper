@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var startA = "2002-05-30T09:00:00.000";
             var epl = " create schema SupportBeanXXX as " +
                       typeof(SupportBean).Name +
-                      " starttimestamp longPrimitive endtimestamp longBoxed;\n";
+                      " starttimestamp LongPrimitive endtimestamp LongBoxed;\n";
             epl += "@Name('s0') select a.Get('month') as val0 from SupportBeanXXX a;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 

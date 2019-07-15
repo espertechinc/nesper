@@ -44,15 +44,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             runtime.Initialize();
 
             string[] epls = {
-                "select sa.id,sb.id,sc.id,sd.id from pattern [(sa=S0(id=0)->sb=S0(id=1)) or (sc=S0(id=1)->sd=S0(id=0))]",
-                "select sa.id,sb.id,sc.id,sd.id from pattern [(sa=S0(id=1)->sb=S0(id=2)) or (sc=S0(id=2)->sd=S0(id=1))]",
-                "select sa.id,sb.id,sc.id,sd.id from pattern [(sa=S0(id=2)->sb=S0(id=3)) or (sc=S0(id=3)->sd=S0(id=2))]",
-                "select sa.id,sb.id,sc.id,sd.id from pattern [(sa=S0(id=3)->sb=S0(id=4)) or (sc=S0(id=4)->sd=S0(id=3))]",
-                "select sa.id,sb.id,sc.id,sd.id from pattern [(sa=S0(id=4)->sb=S0(id=5)) or (sc=S0(id=5)->sd=S0(id=4))]",
-                "select sa.id,sb.id,sc.id,sd.id from pattern [(sa=S0(id=5)->sb=S0(id=6)) or (sc=S0(id=6)->sd=S0(id=5))]",
-                "select sa.id,sb.id,sc.id,sd.id from pattern [(sa=S0(id=6)->sb=S0(id=7)) or (sc=S0(id=7)->sd=S0(id=6))]",
-                "select sa.id,sb.id,sc.id,sd.id from pattern [(sa=S0(id=7)->sb=S0(id=8)) or (sc=S0(id=8)->sd=S0(id=7))]",
-                "select sa.id,sb.id,sc.id,sd.id from pattern [(sa=S0(id=8)->sb=S0(id=9)) or (sc=S0(id=9)->sd=S0(id=8))]"
+                "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=0)->sb=S0(Id=1)) or (sc=S0(Id=1)->sd=S0(Id=0))]",
+                "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=1)->sb=S0(Id=2)) or (sc=S0(Id=2)->sd=S0(Id=1))]",
+                "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=2)->sb=S0(Id=3)) or (sc=S0(Id=3)->sd=S0(Id=2))]",
+                "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=3)->sb=S0(Id=4)) or (sc=S0(Id=4)->sd=S0(Id=3))]",
+                "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=4)->sb=S0(Id=5)) or (sc=S0(Id=5)->sd=S0(Id=4))]",
+                "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=5)->sb=S0(Id=6)) or (sc=S0(Id=6)->sd=S0(Id=5))]",
+                "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=6)->sb=S0(Id=7)) or (sc=S0(Id=7)->sd=S0(Id=6))]",
+                "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=7)->sb=S0(Id=8)) or (sc=S0(Id=8)->sd=S0(Id=7))]",
+                "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=8)->sb=S0(Id=9)) or (sc=S0(Id=9)->sd=S0(Id=8))]"
             };
 
             for (var i = 0; i < 20; i++) {
@@ -84,10 +84,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 for (int j = 0; j < events.length; j++) {
                     EventBean out = events[j];
                     /*
-                    System.out.println(" sa=" + getNull(out.get("sa.id")) +
-                                       " sb=" + getNull(out.get("sb.id")) +
-                                       " sc=" + getNull(out.get("sc.id")) +
-                                       " sd=" + getNull(out.get("sd.id")));
+                    System.out.println(" sa=" + getNull(out.get("sa.Id")) +
+                                       " sb=" + getNull(out.get("sb.Id")) +
+                                       " sc=" + getNull(out.get("sc.Id")) +
+                                       " sd=" + getNull(out.get("sd.Id")));
                 }
                  */
                 Assert.AreEqual(9, events.Length);

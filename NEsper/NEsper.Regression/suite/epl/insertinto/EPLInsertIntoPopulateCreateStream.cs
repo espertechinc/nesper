@@ -72,16 +72,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             EventRepresentationChoice type)
         {
             var path = new RegressionPath();
-            var schemaEPL = "create " + type.GetOutputTypeCreateSchemaName() + " schema XmlNode(nid string)";
+            var schemaEPL = "create " + type.GetOutputTypeCreateSchemaName() + " schema XmlNode(nId string)";
             env.CompileDeployWBusPublicType(schemaEPL, path);
 
-            env.CompileDeploy("create window NodeWindow#unique(nid) as Node", path);
+            env.CompileDeploy("create window NodeWindow#unique(nId) as Node", path);
             env.CompileDeploy("insert into NodeWindow select * from Node", path);
             env.CompileDeploy(
-                "create " + type.GetOutputTypeCreateSchemaName() + " schema NodePlus(npid string, node Node)",
+                "create " + type.GetOutputTypeCreateSchemaName() + " schema NodePlus(npId string, node Node)",
                 path);
             env.CompileDeploy(
-                    "@Name('s0') insert into NodePlus select 'E1' as npid, n1 as node from NodeWindow n1",
+                    "@Name('s0') insert into NodePlus select 'E1' as npId, n1 as node from NodeWindow n1",
                     path)
                 .AddListener("s0");
 
@@ -89,12 +89,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventObjectArray(new object[] {"n1"}, "Node");
             }
             else if (type.IsMapEvent()) {
-                env.SendEventMap(Collections.SingletonDataMap("nid", "n1"), "Node");
+                env.SendEventMap(Collections.SingletonDataMap("nId", "n1"), "Node");
             }
             else if (type.IsAvroEvent()) {
                 var genericRecord = new GenericRecord(
-                    SchemaBuilder.Record("name", TypeBuilder.RequiredString("nid")));
-                genericRecord.Put("nid", "n1");
+                    SchemaBuilder.Record("name", TypeBuilder.RequiredString("nId")));
+                genericRecord.Put("nId", "n1");
                 env.SendEventAvro(genericRecord, "Node");
             }
             else {
@@ -102,8 +102,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
 
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("E1", @event.Get("npid"));
-            Assert.AreEqual("n1", @event.Get("node.nid"));
+            Assert.AreEqual("E1", @event.Get("npId"));
+            Assert.AreEqual("n1", @event.Get("node.nId"));
             var fragment = (EventBean) @event.GetFragment("node");
             Assert.AreEqual("Node", fragment.EventType.Name);
 

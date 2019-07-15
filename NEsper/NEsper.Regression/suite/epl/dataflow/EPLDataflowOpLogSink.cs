@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             TryInvalidCompile(
                 env,
                 "create dataflow DF1 LogSink => s1 {}",
-                "Failed to obtain operator 'LogSink': LogSink operator does not provide an output stream");
+                "Failed to obtain operator 'LogSink': LogSink operator does not provIde an output stream");
 
             var docSmple = "@Name('flow') create dataflow MyDataFlow\n" +
                            "  BeaconSource => instream {}\n" +
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                            "    format : 'json',\n" +
                            "    layout : '%t [%e]',\n" +
                            "    log : false,\n" +
-                           "    linefeed : true,\n" +
+                           "    lineFeed : true,\n" +
                            "    title : 'My Custom Title:'\n" +
                            "  }";
             env.CompileDeploy(docSmple);
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                         (log == null ? "" : "  log: " + log + ",\n") +
                         (layout == null ? "" : "  layout: '" + layout + "',\n") +
                         (title == null ? "" : "  title: '" + title + "',\n") +
-                        (linefeed == null ? "" : "  linefeed: " + linefeed + ",\n") +
+                        (linefeed == null ? "" : "  lineFeed: " + linefeed + ",\n") +
                         "}";
             env.CompileDeploy(graph);
 

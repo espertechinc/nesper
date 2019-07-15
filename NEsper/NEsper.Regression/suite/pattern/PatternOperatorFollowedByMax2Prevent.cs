@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var handler = SupportConditionHandlerFactory.LastHandler;
 
             var expression =
-                "@Name('A') select a.id as a, b.id as b from pattern [every a=SupportBean_A => b=SupportBean_B]";
+                "@Name('A') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A => b=SupportBean_B]";
             env.CompileDeploy(expression).AddListener("A");
 
             env.SendEventBean(new SupportBean_A("A1"));

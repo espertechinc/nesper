@@ -127,11 +127,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplCreateTable, path);
 
                 var eplIntoTable =
-                    "@Name('Insert-Into-Table') insert into MyTable select IntPrimitive as pkey1, longPrimitive as c0, TheString as pkey0 from SupportBean";
+                    "@Name('Insert-Into-Table') insert into MyTable select IntPrimitive as pkey1, LongPrimitive as c0, TheString as pkey0 from SupportBean";
                 env.CompileDeploy(eplIntoTable, path);
 
                 var eplDeleteTable =
-                    "@Name('Delete-Table') on SupportBean_S0 delete from MyTable where pkey1 = id and pkey0 = p00";
+                    "@Name('Delete-Table') on SupportBean_S0 delete from MyTable where pkey1 = Id and pkey0 = p00";
                 env.CompileDeploy(eplDeleteTable, path);
 
                 env.Milestone(1);
@@ -203,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var fields = "TheString".SplitCsv();
-                var epl = "@Name('create') create table MyTableSM(theString string);\n" +
+                var epl = "@Name('create') create table MyTableSM(TheString string);\n" +
                           "@Name('tbl-insert') insert into MyTableSM select TheString from SupportBean;\n";
                 env.CompileDeploy(epl);
 
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 env.CompileDeploy("@Name('create') create table MyTableIISA(pkey string primary key)", path);
                 env.CompileDeploy(
-                    "insert into MyTableIISA select TheString as pkey from SupportBean where MyTableIISA[theString] is null",
+                    "insert into MyTableIISA select TheString as pkey from SupportBean where MyTableIISA[TheString] is null",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -443,7 +443,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var fields = "TheString".SplitCsv();
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('create') create table MyTableIIU(theString string)", path);
+                env.CompileDeploy("@Name('create') create table MyTableIIU(TheString string)", path);
                 env.CompileDeploy("@Name('tbl-insert') insert into MyTableIIU select TheString from SupportBean", path);
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("create"), fields, new object[0][]);
@@ -488,7 +488,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                           "pkey string primary key," +
                           "thesum sum(int));\n";
                 epl += "insert into MyTableIIK select TheString as pkey from SupportBean;\n";
-                epl += "into table MyTableIIK select sum(id) as thesum from SupportBean_S0 group by p00;\n";
+                epl += "into table MyTableIIK select sum(Id) as thesum from SupportBean_S0 group by p00;\n";
                 epl += "on SupportBean_S1 insert into MyTableIIK select p10 as pkey;\n";
                 epl +=
                     "on SupportBean_S2 merge MyTableIIK where p20 = pkey when not matched then insert into MyTableIIK select p20 as pkey;\n";

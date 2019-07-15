@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select sorted(theString desc, IntPrimitive desc) as c0 from SupportBean#keepall";
+                var epl = "@Name('s0') select sorted(TheString desc, IntPrimitive desc) as c0 from SupportBean#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("C", 10));
@@ -201,13 +201,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 var epl = "@Name('s0') select " +
                           "window(*) as c0, " +
-                          "sorted(intPrimitive desc) as c1, " +
-                          "sorted(intPrimitive asc) as c2, " +
+                          "sorted(IntPrimitive desc) as c1, " +
+                          "sorted(IntPrimitive asc) as c2, " +
                           "maxby(IntPrimitive) as c3, " +
                           "minby(IntPrimitive) as c4, " +
                           "maxbyever(IntPrimitive) as c5, " +
                           "minbyever(IntPrimitive) as c6 " +
-                          "from SupportBean#groupwin(longPrimitive)#length(3) " +
+                          "from SupportBean#groupwin(LongPrimitive)#length(3) " +
                           "group by LongPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -223,13 +223,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // test join
                 var eplJoin = "@Name('s0') select " +
                               "window(sb.*) as c0, " +
-                              "sorted(intPrimitive desc) as c1, " +
-                              "sorted(intPrimitive asc) as c2, " +
+                              "sorted(IntPrimitive desc) as c1, " +
+                              "sorted(IntPrimitive asc) as c2, " +
                               "maxby(IntPrimitive) as c3, " +
                               "minby(IntPrimitive) as c4, " +
                               "maxbyever(IntPrimitive) as c5, " +
                               "minbyever(IntPrimitive) as c6 " +
-                              "from SupportBean_S0#lastevent, SupportBean#groupwin(longPrimitive)#length(3) as sb " +
+                              "from SupportBean_S0#lastevent, SupportBean#groupwin(LongPrimitive)#length(3) as sb " +
                               "group by LongPrimitive";
                 env.CompileDeploy(eplJoin).AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(1, "p00"));
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // test join multirow
                 var fields = "c0".SplitCsv();
                 var joinMultirow =
-                    "@Name('s0') select sorted(intPrimitive desc) as c0 from SupportBean_S0#keepall, SupportBean#length(2)";
+                    "@Name('s0') select sorted(IntPrimitive desc) as c0 from SupportBean_S0#keepall, SupportBean#length(2)";
                 env.CompileDeploy(joinMultirow).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "S1"));
@@ -283,16 +283,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "maxbyever(longPrimitive) as c0, " +
-                          "minbyever(longPrimitive) as c1, " +
-                          "maxby(longPrimitive).longPrimitive as c2, " +
-                          "maxby(longPrimitive).TheString as c3, " +
-                          "maxby(longPrimitive).IntPrimitive as c4, " +
-                          "maxby(longPrimitive) as c5, " +
-                          "minby(longPrimitive).longPrimitive as c6, " +
-                          "minby(longPrimitive).TheString as c7, " +
-                          "minby(longPrimitive).IntPrimitive as c8, " +
-                          "minby(longPrimitive) as c9 " +
+                          "maxbyever(LongPrimitive) as c0, " +
+                          "minbyever(LongPrimitive) as c1, " +
+                          "maxby(LongPrimitive).LongPrimitive as c2, " +
+                          "maxby(LongPrimitive).TheString as c3, " +
+                          "maxby(LongPrimitive).IntPrimitive as c4, " +
+                          "maxby(LongPrimitive) as c5, " +
+                          "minby(LongPrimitive).LongPrimitive as c6, " +
+                          "minby(LongPrimitive).TheString as c7, " +
+                          "minby(LongPrimitive).IntPrimitive as c8, " +
+                          "minby(LongPrimitive) as c9 " +
                           "from SupportBean#length(5)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "minby(IntPrimitive)," +
                           "maxbyever(IntPrimitive).TheString, " +
                           "minbyever(IntPrimitive)," +
-                          "sorted(intPrimitive asc, theString desc)" +
+                          "sorted(IntPrimitive asc, TheString desc)" +
                           " from SupportBean#time(10)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -372,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 Assert.AreEqual("minby(IntPrimitive)", props[1].PropertyName);
                 Assert.AreEqual("maxbyever(IntPrimitive).TheString()", props[2].PropertyName);
                 Assert.AreEqual("minbyever(IntPrimitive)", props[3].PropertyName);
-                Assert.AreEqual("sorted(intPrimitive,theString desc)", props[4].PropertyName);
+                Assert.AreEqual("sorted(IntPrimitive,TheString desc)", props[4].PropertyName);
 
                 env.UndeployAll();
             }
@@ -384,14 +384,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "maxbyever(IntPrimitive).longPrimitive as c0," +
-                          "maxbyever(TheString).longPrimitive as c1," +
-                          "minbyever(IntPrimitive).longPrimitive as c2," +
-                          "minbyever(TheString).longPrimitive as c3," +
-                          "maxby(IntPrimitive).longPrimitive as c4," +
-                          "maxby(TheString).longPrimitive as c5," +
-                          "minby(IntPrimitive).longPrimitive as c6," +
-                          "minby(TheString).longPrimitive as c7 " +
+                          "maxbyever(IntPrimitive).LongPrimitive as c0," +
+                          "maxbyever(TheString).LongPrimitive as c1," +
+                          "minbyever(IntPrimitive).LongPrimitive as c2," +
+                          "minbyever(TheString).LongPrimitive as c3," +
+                          "maxby(IntPrimitive).LongPrimitive as c4," +
+                          "maxby(TheString).LongPrimitive as c5," +
+                          "minby(IntPrimitive).LongPrimitive as c6," +
+                          "minby(TheString).LongPrimitive as c7 " +
                           "from SupportBean#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -463,10 +463,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // test sorted multiple criteria
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "sorted(theString desc, IntPrimitive desc) as c0," +
+                      "sorted(TheString desc, IntPrimitive desc) as c0," +
                       "sorted(TheString, IntPrimitive) as c1," +
-                      "sorted(theString asc, IntPrimitive asc) as c2," +
-                      "sorted(theString desc, IntPrimitive asc) as c3 " +
+                      "sorted(TheString asc, IntPrimitive asc) as c2," +
+                      "sorted(TheString desc, IntPrimitive asc) as c3 " +
                       "from SupportBean#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -527,14 +527,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // test min/max
                 var fieldsTwo = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "maxbyever(intPrimitive, theString).longPrimitive as c0," +
-                      "minbyever(intPrimitive, theString).longPrimitive as c1," +
-                      "maxbyever(TheString, IntPrimitive).longPrimitive as c2," +
-                      "minbyever(TheString, IntPrimitive).longPrimitive as c3," +
-                      "maxby(intPrimitive, theString).longPrimitive as c4," +
-                      "minby(intPrimitive, theString).longPrimitive as c5," +
-                      "maxby(TheString, IntPrimitive).longPrimitive as c6," +
-                      "minby(TheString, IntPrimitive).longPrimitive as c7 " +
+                      "maxbyever(IntPrimitive, TheString).LongPrimitive as c0," +
+                      "minbyever(IntPrimitive, TheString).LongPrimitive as c1," +
+                      "maxbyever(TheString, IntPrimitive).LongPrimitive as c2," +
+                      "minbyever(TheString, IntPrimitive).LongPrimitive as c3," +
+                      "maxby(IntPrimitive, TheString).LongPrimitive as c4," +
+                      "minby(IntPrimitive, TheString).LongPrimitive as c5," +
+                      "maxby(TheString, IntPrimitive).LongPrimitive as c6," +
+                      "minby(TheString, IntPrimitive).LongPrimitive as c7 " +
                       "from SupportBean#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -630,12 +630,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 TryInvalidCompile(
                     env,
                     "select maxBy(p00||p10) from SupportBean_S0#lastevent, SupportBean_S1#lastevent",
-                    "Failed to validate select-clause expression 'maxby(p00||p10)': The 'maxby' aggregation function requires that any parameter expressions evaluate properties of the same stream");
+                    "Failed to valIdate select-clause expression 'maxby(p00||p10)': The 'maxby' aggregation function requires that any parameter expressions evaluate properties of the same stream");
 
                 TryInvalidCompile(
                     env,
                     "select sorted(p00) from SupportBean_S0",
-                    "Failed to validate select-clause expression 'sorted(p00)': The 'sorted' aggregation function requires that a data window is declared for the stream");
+                    "Failed to valIdate select-clause expression 'sorted(p00)': The 'sorted' aggregation function requires that a data window is declared for the stream");
             }
         }
     }

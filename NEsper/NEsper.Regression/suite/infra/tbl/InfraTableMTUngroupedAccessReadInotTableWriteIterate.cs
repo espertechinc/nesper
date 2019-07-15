@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplInto = "into table vartotal select sum(IntPrimitive) as s0, " +
-                          "sum(doublePrimitive) as s1, sum(LongPrimitive) as s2 from SupportBean";
+                          "sum(DoublePrimitive) as s1, sum(LongPrimitive) as s2 from SupportBean";
             env.CompileDeploy(eplInto, path);
             env.SendEventBean(MakeSupportBean("E", 1, 1, 1));
 

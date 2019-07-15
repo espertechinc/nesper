@@ -31,8 +31,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "theString = 'A' and (IntPrimitive = 0 or longPrimitive = 0)",
-                "theString = 'A' and (IntPrimitive = 0 or longPrimitive = 0)",
+                "theString = 'A' and (IntPrimitive = 0 or LongPrimitive = 0)",
+                "theString = 'A' and (IntPrimitive = 0 or LongPrimitive = 0)",
                 MakeItem(MakeBean("A", 0, 1), true, true),
                 MakeItem(MakeBean("A", 1, 0), true, true),
                 MakeItem(MakeBean("A", 1, 1), false, false),

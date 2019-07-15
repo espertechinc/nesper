@@ -35,14 +35,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var path = new RegressionPath();
             var schemas = "create schema MyUpdateEvent as (key string, intupd int);\n" +
-                          "create schema MySchema as (theString string, intval int);\n";
+                          "create schema MySchema as (TheString string, intval int);\n";
             env.CompileDeployWBusPublicType(schemas, path);
 
             env.CompileDeploy("@Name('window') create window MyWindow#keepall as MySchema", path);
             env.CompileDeploy(
                 "on MyUpdateEvent mue merge MyWindow mw " +
                 "where mw.TheString = mue.key " +
-                "when not matched then insert select key as theString, intupd as intval " +
+                "when not matched then insert select key as TheString, intupd as intval " +
                 "when matched then delete",
                 path);
             env.CompileDeploy(

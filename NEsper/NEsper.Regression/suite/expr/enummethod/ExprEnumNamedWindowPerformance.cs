@@ -47,16 +47,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                       "  x => (select * from Win where IntPrimitive = x.p00)" +
                       "}" +
                       "select " +
-                      "q(st0).where(x => theString = key0) as val0, " +
-                      "q(st0).where(x => theString = key0) as val1, " +
-                      "q(st0).where(x => theString = key0) as val2, " +
-                      "q(st0).where(x => theString = key0) as val3, " +
-                      "q(st0).where(x => theString = key0) as val4, " +
-                      "q(st0).where(x => theString = key0) as val5, " +
-                      "q(st0).where(x => theString = key0) as val6, " +
-                      "q(st0).where(x => theString = key0) as val7, " +
-                      "q(st0).where(x => theString = key0) as val8, " +
-                      "q(st0).where(x => theString = key0) as val9 " +
+                      "q(st0).where(x => TheString = key0) as val0, " +
+                      "q(st0).where(x => TheString = key0) as val1, " +
+                      "q(st0).where(x => TheString = key0) as val2, " +
+                      "q(st0).where(x => TheString = key0) as val3, " +
+                      "q(st0).where(x => TheString = key0) as val4, " +
+                      "q(st0).where(x => TheString = key0) as val5, " +
+                      "q(st0).where(x => TheString = key0) as val6, " +
+                      "q(st0).where(x => TheString = key0) as val7, " +
+                      "q(st0).where(x => TheString = key0) as val8, " +
+                      "q(st0).where(x => TheString = key0) as val9 " +
                       "from SupportBean_ST0 st0";
             env.CompileDeploy(epl, path).AddListener("s0");
 

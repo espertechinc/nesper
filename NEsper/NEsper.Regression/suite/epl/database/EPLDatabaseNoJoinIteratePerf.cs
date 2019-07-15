@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             env.CompileDeploy("create variable int lower", path);
             env.CompileDeploy("create variable int upper", path);
             env.CompileDeploy(
-                "on SupportBean set queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed",
+                "on SupportBean set queryvar_bool=BoolPrimitive, lower=IntPrimitive,upper=IntBoxed",
                 path);
 
             var stmtText =

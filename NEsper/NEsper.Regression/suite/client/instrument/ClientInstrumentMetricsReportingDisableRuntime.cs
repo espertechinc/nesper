@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             statements[1].AddListener(env.ListenerNew());
 
             statements[2] = env.CompileDeploy(
-                    "@Name('stmt-1') select * from SupportBean(intPrimitive=1)#keepall where MyMetricFunctions.takeCPUTime(longPrimitive)")
+                    "@Name('stmt-1') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.takeCPUTime(LongPrimitive)")
                 .Statement("stmt-1");
             SendEvent(env, "E1", 1, CPUGOALONENANO);
 

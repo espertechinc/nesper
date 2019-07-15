@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             }
 
             var epl = "@Name('flow')create dataflow VWAPSample\r\n" +
-                      "create objectarray schema TradeQuoteType as (type string, ticker string, price double, volume long, askprice double, asksize long),\n" +
+                      "create objectarray schema TradeQuoteType as (type string, ticker string, price double, Volume long, askprice double, asksize long),\n" +
                       "MyObjectArrayGraphSource => TradeQuoteStream<TradeQuoteType> {}\r\n" +
                       "Filter(TradeQuoteStream) => TradeStream {\r\n" +
                       "filter: type=\"trade\"\r\n" +
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                       "filter: type=\"quote\"\r\n" +
                       "}\r\n" +
                       "Select(TradeStream) => VwapTrades {\r\n" +
-                      "select: (select ticker, sum(price*volume)/sum(volume) as vwap, min(price) as minprice from TradeStream#groupwin(ticker)#length(4) group by ticker)\r\n" +
+                      "select: (select ticker, sum(price*Volume)/sum(Volume) as vwap, min(price) as minprice from TradeStream#groupwin(ticker)#length(4) group by ticker)\r\n" +
                       "}\r\n" +
                       "Select(VwapTrades as T, QuoteStream as Q) => BargainIndex {\r\n" +
                       "select: " +

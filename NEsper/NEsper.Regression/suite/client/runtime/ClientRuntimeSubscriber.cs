@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
     public class ClientRuntimeSubscriber : RegressionExecution
     {
-        private static readonly string[] FIELDS = "theString,intPrimitive".SplitCsv();
+        private static readonly string[] FIELDS = "theString,IntPrimitive".SplitCsv();
 
         public void Run(RegressionEnvironment env)
         {
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         private void RunAssertionBindings(RegressionEnvironment env)
         {
             // just wildcard
-            var stmtJustWildcard = env.CompileDeploy("@Name('s0') select * from SupportBean(theString='E2')")
+            var stmtJustWildcard = env.CompileDeploy("@Name('s0') select * from SupportBean(TheString='E2')")
                 .Statement("s0");
             TryAssertionJustWildcard(env, stmtJustWildcard, new SupportSubscriberRowByRowSpecificNStmt());
             TryAssertionJustWildcard(env, stmtJustWildcard, new SupportSubscriberRowByRowSpecificWStmt());
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
             // wildcard with props
             var stmtWildcardWProps =
-                env.CompileDeploy("@Name('s0') select *, IntPrimitive + 2, 'x'||theString||'x' from SupportBean")
+                env.CompileDeploy("@Name('s0') select *, IntPrimitive + 2, 'x'||TheString||'x' from SupportBean")
                     .Statement("s0");
             TryAssertionWildcardWProps(env, stmtWildcardWProps, new SupportSubscriberRowByRowSpecificNStmt());
             TryAssertionWildcardWProps(env, stmtWildcardWProps, new SupportSubscriberRowByRowSpecificWStmt());
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             env.UndeployAll();
 
             // null-typed select value
-            var stmtNullSelected = env.CompileDeploy("@Name('s0') select null, longBoxed from SupportBean")
+            var stmtNullSelected = env.CompileDeploy("@Name('s0') select null, LongBoxed from SupportBean")
                 .Statement("s0");
             TryAssertionNullSelected(env, stmtNullSelected, new SupportSubscriberRowByRowSpecificNStmt());
             TryAssertionNullSelected(env, stmtNullSelected, new SupportSubscriberRowByRowSpecificWStmt());
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             RegressionEnvironment env,
             SupportSubscriberRowByRowFullBase subscriber)
         {
-            var stmtText = "@Name('s0') select irstream theString, IntPrimitive from SupportBean" + "#length_batch(2)";
+            var stmtText = "@Name('s0') select irstream TheString, IntPrimitive from SupportBean" + "#length_batch(2)";
             var stmt = env.CompileDeploy(stmtText).Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberMultirowObjectArrayBase subscriber)
         {
             var stmtText = eventRepresentationEnum.GetAnnotationText() +
-                           " @name('s0') select irstream theString, IntPrimitive from SupportBean" +
+                           " @name('s0') select irstream TheString, IntPrimitive from SupportBean" +
                            "#length_batch(2)";
             var stmt = env.CompileDeploy(stmtText).Statement("s0");
             stmt.SetSubscriber(subscriber);
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberMultirowMapBase subscriber)
         {
             var stmtText = eventRepresentationEnum.GetAnnotationText() +
-                           " @name('s0') select irstream theString, IntPrimitive from SupportBean" +
+                           " @name('s0') select irstream TheString, IntPrimitive from SupportBean" +
                            "#length_batch(2)";
             var stmt = env.CompileDeploy(stmtText).Statement("s0");
             stmt.SetSubscriber(subscriber);
@@ -333,7 +333,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             var stmt = env.CompileDeploy(
                     eventRepresentationEnum.GetAnnotationText() +
-                    " @name('s0') select bytePrimitive, IntPrimitive, longPrimitive, floatPrimitive from SupportBean(theString='E1')")
+                    " @name('s0') select BytePrimitive, IntPrimitive, LongPrimitive, FloatPrimitive from SupportBean(TheString='E1')")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             var stmt = env.CompileDeploy(
                     eventRepresentationEnum.GetAnnotationText() +
-                    " @name('s0') select irstream theString, IntPrimitive from SupportBean#unique(TheString)")
+                    " @name('s0') select irstream TheString, IntPrimitive from SupportBean#unique(TheString)")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -458,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    "@Name('s0') select null, s1, s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.symbol")
+                    "@Name('s0') select null, s1, s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -478,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    "@Name('s0') select * from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.symbol")
+                    "@Name('s0') select * from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -498,7 +498,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    "@Name('s0') select TheString || '<', s1.* as s1, s0.* as s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.symbol")
+                    "@Name('s0') select TheString || '<', s1.* as s1, s0.* as s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -555,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    "@Name('s0') select TheString, IntPrimitive from SupportBean#keepall, SupportMarketDataBean#keepall where symbol = theString output every 2 events")
+                    "@Name('s0') select TheString, IntPrimitive from SupportBean#keepall, SupportMarketDataBean#keepall where Symbol = TheString output every 2 events")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -690,7 +690,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         private void RunAssertionBindWildcardJoin(RegressionEnvironment env)
         {
             var stmtOne = env.CompileDeploy("@Name('s0') select * from SupportBean").Statement("s0");
-            TryInvalid(this, stmtOne, "Subscriber object does not provide a public method by name 'update'");
+            TryInvalid(this, stmtOne, "Subscriber object does not provIde a public method by name 'update'");
             TryInvalid(
                 new DummySubscriberEmptyUpd(),
                 stmtOne,
@@ -706,7 +706,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             TryInvalid(
                 new DummySubscriberPrivateUpd(),
                 stmtOne,
-                "Subscriber object does not provide a public method by name 'update'");
+                "Subscriber object does not provIde a public method by name 'update'");
             env.UndeployModuleContaining("s0");
 
             var stmtTwo = env.CompileDeploy("@Name('s0') select IntPrimitive from SupportBean").Statement("s0");
@@ -779,7 +779,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             stmt.SetSubscriber(subscriberCreateVariable);
 
             var subscriberSetVariable = new SubscriberMap();
-            var stmtTextSet = "@Name('s1') on SupportBean set myvar = theString";
+            var stmtTextSet = "@Name('s1') on SupportBean set myvar = TheString";
             stmt = env.CompileDeploy(stmtTextSet, path).Statement("s1");
             stmt.SetSubscriber(subscriberSetVariable);
 
@@ -832,7 +832,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             // test on-delete
             var subscriberDelete = new SubscriberMap();
             var stmtTextDelete =
-                "@Name('ondelete') on SupportMarketDataBean s0 delete from MyWindow s1 where s0.symbol = s1.key";
+                "@Name('ondelete') on SupportMarketDataBean s0 delete from MyWindow s1 where s0.Symbol = s1.key";
             stmt = env.CompileDeploy(stmtTextDelete, path).Statement("ondelete");
             stmt.SetSubscriber(subscriberDelete);
 
@@ -932,7 +932,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         private void RunAssertionPerformanceSyntheticUndelivered(RegressionEnvironment env)
         {
             var numLoop = 100000;
-            env.CompileDeploy("select TheString, IntPrimitive from SupportBean(intPrimitive > 10)");
+            env.CompileDeploy("select TheString, IntPrimitive from SupportBean(IntPrimitive > 10)");
 
             var start = PerformanceObserver.MilliTime;
             for (var i = 0; i < numLoop; i++) {
@@ -949,7 +949,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             var numLoop = 100000;
             var stmt = env
-                .CompileDeploy("@Name('s0') select TheString, IntPrimitive from SupportBean(intPrimitive > 10)")
+                .CompileDeploy("@Name('s0') select TheString, IntPrimitive from SupportBean(IntPrimitive > 10)")
                 .Statement("s0");
             IList<object[]> results = new List<object[]>();
 

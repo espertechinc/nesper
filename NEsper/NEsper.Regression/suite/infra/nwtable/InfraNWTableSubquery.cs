@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create infra
                 var stmtTextCreate = namedWindow
                     ? "@Name('Create') create window MyInfra.win:keepall() as SupportBean"
-                    : "@Name('Create') create table MyInfra(theString string primary key, IntPrimitive int)";
+                    : "@Name('Create') create table MyInfra(TheString string primary key, IntPrimitive int)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("Create");
 
                 // create insert into
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create subquery
                 var stmtSubquery =
-                    "@Name('Subq') select (select IntPrimitive from MyInfra where theString = s0.p00) as c0 from SupportBean_S0 as s0";
+                    "@Name('Subq') select (select IntPrimitive from MyInfra where TheString = s0.p00) as c0 from SupportBean_S0 as s0";
                 env.CompileDeploy(stmtSubquery, path).AddListener("Subq");
 
                 env.Milestone(0);
@@ -149,18 +149,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@Name('create') create window MyInfraUCS#keepall as select TheString as a, longPrimitive as b from SupportBean"
+                    ? "@Name('create') create window MyInfraUCS#keepall as select TheString as a, LongPrimitive as b from SupportBean"
                     : "@Name('create') create table MyInfraUCS(a string primary key, b long)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "insert into MyInfraUCS select TheString as a, longPrimitive as b from SupportBean";
+                    "insert into MyInfraUCS select TheString as a, LongPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // create consumer
                 var stmtTextSelectOne =
-                    "select irstream (select sum(b) from MyInfraUCS) as value, symbol from SupportMarketDataBean";
+                    "select irstream (select sum(b) from MyInfraUCS) as value, Symbol from SupportMarketDataBean";
                 env.CompileDeploy("@Name('selectOne')" + stmtTextSelectOne, path).AddListener("selectOne");
 
                 SendMarketBean(env, "M1");
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? "create window MyInfraIS#keepall as SupportBean"
-                    : "create table MyInfraIS(theString string)";
+                    : "create table MyInfraIS(TheString string)";
                 env.CompileDeploy(eplCreate, path);
 
                 try {
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // delete
-                var stmtTextDelete = "@Name('delete') on SupportBean delete from MyInfra where key = theString";
+                var stmtTextDelete = "@Name('delete') on SupportBean delete from MyInfra where key = TheString";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // create insert into
@@ -409,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 // Add delete
-                var stmtTextDelete = "@Name('delete') on SupportBean_A delete from MyInfraSSS where key = id";
+                var stmtTextDelete = "@Name('delete') on SupportBean_A delete from MyInfraSSS where key = Id";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // delete E2

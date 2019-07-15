@@ -493,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11, s2.id, s2.p20, s2.p21".SplitCsv();
+                var fields = "s0.Id, s0.p00, s0.p01, s1.Id, s1.p10, s1.p11, s2.Id, s2.p20, s2.p21".SplitCsv();
 
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as s0 " +
@@ -658,7 +658,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error validating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause");
+                    "Error valIdating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause");
 
                 epl = "@Name('s0') select * from " +
                       "SupportBean_S0#length(1000) as s0 " +
@@ -667,7 +667,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error validating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause [");
+                    "Error valIdating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause [");
             }
         }
     }

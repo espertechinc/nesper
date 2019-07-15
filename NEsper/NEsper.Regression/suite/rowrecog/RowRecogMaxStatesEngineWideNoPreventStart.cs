@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             var epl = "@Name('s0') select * from SupportBean " +
                       "match_recognize (" +
-                      "  partition by theString " +
+                      "  partition by TheString " +
                       "  measures P1.TheString as c0" +
                       "  pattern (P1 P2) " +
                       "  define " +

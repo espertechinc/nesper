@@ -203,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "@Name('ctx') create context MyContext " +
                     "context ContextPosNeg group by IntPrimitive > 0 as pos, group by IntPrimitive < 0 as neg from SupportBean, " +
-                    "context ByString partition by theString from SupportBean",
+                    "context ByString partition by TheString from SupportBean",
                     path);
                 var depIdCtx = env.DeploymentId("ctx");
                 listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));

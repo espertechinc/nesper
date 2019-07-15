@@ -48,14 +48,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportCarEvent("opel", "germany", 7000));
 
                 epl =
-                    "@Name('s0') select name, place, sum(count), grouping(name), grouping(place), grouping_id(name, place) as gid " +
+                    "@Name('s0') select name, place, sum(count), grouping(name), grouping(place), grouping_Id(name, place) as gId " +
                     "from CarWindow group by grouping sets((name, place),name, place,())";
                 var result = env.CompileExecuteFAF(epl, path);
 
                 Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("grouping(name)"));
-                Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("gid"));
+                Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("gId"));
 
-                string[] fields = {"name", "place", "sum(count)", "grouping(name)", "grouping(place)", "gid"};
+                string[] fields = {"name", "place", "sum(count)", "grouping(name)", "grouping(place)", "gId"};
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
                     fields,
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // try simple
                 var epl =
-                    "@Name('s0') select name, place, sum(count), grouping(name), grouping(place), grouping_id(name,place) as gid " +
+                    "@Name('s0') select name, place, sum(count), grouping(name), grouping(place), grouping_Id(name,place) as gId " +
                     "from SupportCarEvent group by grouping sets((name, place), name, place, ())";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 RegressionEnvironment env,
                 AtomicLong milestone)
             {
-                string[] fields = {"name", "place", "sum(count)", "grouping(name)", "grouping(place)", "gid"};
+                string[] fields = {"name", "place", "sum(count)", "grouping(name)", "grouping(place)", "gId"};
                 env.SendEventBean(new SupportCarEvent("skoda", "france", 100));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // test uncorrelated subquery and expression-declaration and single-row func
                 var epl = "create expression myExpr {x=> '|' || x.name || '|'};\n" +
                           "@Name('s0') select myfunc(" +
-                          "  name, place, sum(count), grouping(name), grouping(place), grouping_id(name, place)," +
+                          "  name, place, sum(count), grouping(name), grouping(place), grouping_Id(name, place)," +
                           "  (select refId from SupportCarInfoEvent#lastevent), " +
                           "  myExpr(ce)" +
                           "  )" +
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // invalid use of function
                 var expected =
-                    "Failed to validate select-clause expression 'grouping(TheString)': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select grouping(TheString) from SupportBean]";
+                    "Failed to valIdate select-clause expression 'grouping(TheString)': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select grouping(TheString) from SupportBean]";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select grouping(TheString) from SupportBean",
@@ -208,11 +208,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select TheString, sum(IntPrimitive) from SupportBean(grouping(TheString) = 1) group by rollup(TheString)",
-                    "Failed to validate filter expression 'grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean(grouping(TheString) = 1) group by rollup(TheString)]");
+                    "Failed to valIdate filter expression 'grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean(grouping(TheString) = 1) group by rollup(TheString)]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select TheString, sum(IntPrimitive) from SupportBean where grouping(TheString) = 1 group by rollup(TheString)",
-                    "Failed to validate filter expression 'grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean where grouping(TheString) = 1 group by rollup(TheString)]");
+                    "Failed to valIdate filter expression 'grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean where grouping(TheString) = 1 group by rollup(TheString)]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select TheString, sum(IntPrimitive) from SupportBean group by rollup(grouping(TheString))",
@@ -221,17 +221,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // invalid parameters
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select TheString, sum(IntPrimitive), grouping(longPrimitive) from SupportBean group by rollup(TheString)",
-                    "Failed to find expression 'longPrimitive' among group-by expressions");
+                    "select TheString, sum(IntPrimitive), grouping(LongPrimitive) from SupportBean group by rollup(TheString)",
+                    "Failed to find expression 'LongPrimitive' among group-by expressions");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select TheString, sum(IntPrimitive), grouping(theString||'x') from SupportBean group by rollup(TheString)",
-                    "Failed to find expression 'theString||\"x\"' among group-by expressions [select TheString, sum(IntPrimitive), grouping(theString||'x') from SupportBean group by rollup(TheString)]");
+                    "select TheString, sum(IntPrimitive), grouping(TheString||'x') from SupportBean group by rollup(TheString)",
+                    "Failed to find expression 'TheString||\"x\"' among group-by expressions [select TheString, sum(IntPrimitive), grouping(TheString||'x') from SupportBean group by rollup(TheString)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select TheString, sum(IntPrimitive), grouping_id(TheString, TheString) from SupportBean group by rollup(TheString)",
-                    "Duplicate expression 'theString' among grouping function parameters [select TheString, sum(IntPrimitive), grouping_id(TheString, TheString) from SupportBean group by rollup(TheString)]");
+                    "select TheString, sum(IntPrimitive), grouping_Id(TheString, TheString) from SupportBean group by rollup(TheString)",
+                    "Duplicate expression 'TheString' among grouping function parameters [select TheString, sum(IntPrimitive), grouping_Id(TheString, TheString) from SupportBean group by rollup(TheString)]");
             }
         }
 

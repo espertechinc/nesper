@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select id from SupportBean_S0 where (select true from SupportBean_S1#length(1000))";
+                    "@Name('s0') select Id from SupportBean_S0 where (select true from SupportBean_S1#length(1000))";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean_S0(2));
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select id from SupportBean_S0 where (select true from SupportBean_S1#length(1000))";
+                    "@Name('s0') select Id from SupportBean_S0 where (select true from SupportBean_S1#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select id from SupportBean_S0 where (select p10='X' from SupportBean_S1#length(1000))";
+                    "@Name('s0') select Id from SupportBean_S0 where (select p10='X' from SupportBean_S1#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select id from SupportBean_S3#length(1000)) as idS3, (select id from SupportBean_S4#length(1000)) as idS4 from SupportBean_S0#keepall as s0, SupportBean_S1#keepall as s1 where s0.id = s1.id";
+                    "@Name('s0') select (select Id from SupportBean_S3#length(1000)) as IdS3, (select Id from SupportBean_S4#length(1000)) as IdS4 from SupportBean_S0#keepall as s0, SupportBean_S1#keepall as s1 where s0.Id = s1.Id";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -284,53 +284,53 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select (select id from SupportBean_S1) from SupportBean_S0",
-                    "Failed to plan subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consider declaring a length or time window (applies to correlated or non-fully-aggregated subqueries) [");
+                    "select (select Id from SupportBean_S1) from SupportBean_S0",
+                    "Failed to plan subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consIder declaring a length or time window (applies to correlated or non-fully-aggregated subqueries) [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select (select dummy from SupportBean_S1#lastevent) as idS1 from SupportBean_S0",
-                    "Failed to plan subquery number 1 querying SupportBean_S1: Failed to validate select-clause expression 'dummy': Property named 'dummy' is not valid in any stream [select (select dummy from SupportBean_S1#lastevent) as idS1 from SupportBean_S0]");
+                    "select (select dummy from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0",
+                    "Failed to plan subquery number 1 querying SupportBean_S1: Failed to valIdate select-clause expression 'dummy': Property named 'dummy' is not valId in any stream [select (select dummy from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select (select (select id from SupportBean_S1#lastevent) id from SupportBean_S1#lastevent) as idS1 from SupportBean_S0",
-                    "Invalid nested subquery, subquery-within-subquery is not supported [select (select (select id from SupportBean_S1#lastevent) id from SupportBean_S1#lastevent) as idS1 from SupportBean_S0]");
+                    "select (select (select Id from SupportBean_S1#lastevent) Id from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0",
+                    "InvalId nested subquery, subquery-within-subquery is not supported [select (select (select Id from SupportBean_S1#lastevent) Id from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select (select id from SupportBean_S1#lastevent where (sum(id) = 5)) as idS1 from SupportBean_S0",
-                    "Failed to plan subquery number 1 querying SupportBean_S1: Aggregation functions are not supported within subquery filters, consider using a having-clause or insert-into instead [select (select id from SupportBean_S1#lastevent where (sum(id) = 5)) as idS1 from SupportBean_S0]");
+                    "select (select Id from SupportBean_S1#lastevent where (sum(Id) = 5)) as IdS1 from SupportBean_S0",
+                    "Failed to plan subquery number 1 querying SupportBean_S1: Aggregation functions are not supported within subquery filters, consIder using a having-clause or insert-into instead [select (select Id from SupportBean_S1#lastevent where (sum(Id) = 5)) as IdS1 from SupportBean_S0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportBean_S0(id=5 and (select id from SupportBean_S1))",
-                    "Failed to validate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select * from SupportBean_S0(id=5 and (select id from SupportBean_S1))]");
+                    "select * from SupportBean_S0(Id=5 and (select Id from SupportBean_S1))",
+                    "Failed to valIdate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consIder declaring a length or time window [select * from SupportBean_S0(Id=5 and (select Id from SupportBean_S1))]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportBean_S0 group by id + (select id from SupportBean_S1)",
-                    "Subselects not allowed within group-by [select * from SupportBean_S0 group by id + (select id from SupportBean_S1)]");
+                    "select * from SupportBean_S0 group by Id + (select Id from SupportBean_S1)",
+                    "Subselects not allowed within group-by [select * from SupportBean_S0 group by Id + (select Id from SupportBean_S1)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportBean_S0 order by (select id from SupportBean_S1) asc",
-                    "Subselects not allowed within order-by clause [select * from SupportBean_S0 order by (select id from SupportBean_S1) asc]");
+                    "select * from SupportBean_S0 order by (select Id from SupportBean_S1) asc",
+                    "Subselects not allowed within order-by clause [select * from SupportBean_S0 order by (select Id from SupportBean_S1) asc]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select (select id from SupportBean_S1#lastevent where 'a') from SupportBean_S0",
-                    "Failed to plan subquery number 1 querying SupportBean_S1: Subselect filter expression must return a boolean value [select (select id from SupportBean_S1#lastevent where 'a') from SupportBean_S0]");
+                    "select (select Id from SupportBean_S1#lastevent where 'a') from SupportBean_S0",
+                    "Failed to plan subquery number 1 querying SupportBean_S1: Subselect filter expression must return a boolean value [select (select Id from SupportBean_S1#lastevent where 'a') from SupportBean_S0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select (select id from SupportBean_S1#lastevent where id = p00) from SupportBean_S0",
-                    "Failed to plan subquery number 1 querying SupportBean_S1: Failed to validate filter expression 'id=p00': Property named 'p00' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [select (select id from SupportBean_S1#lastevent where id = p00) from SupportBean_S0]");
+                    "select (select Id from SupportBean_S1#lastevent where Id = p00) from SupportBean_S0",
+                    "Failed to plan subquery number 1 querying SupportBean_S1: Failed to valIdate filter expression 'Id=p00': Property named 'p00' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [select (select Id from SupportBean_S1#lastevent where Id = p00) from SupportBean_S0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0",
-                    "Failed to validate select-clause expression subquery number 1 querying SupportBean_S1: Implicit conversion from datatype 'SupportBean_S1' to 'Integer' is not allowed [select id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0]");
+                    "select Id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0",
+                    "Failed to valIdate select-clause expression subquery number 1 querying SupportBean_S1: Implicit conversion from datatype 'SupportBean_S1' to 'Integer' is not allowed [select Id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0]");
             }
         }
 
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 model = env.CopyMayFail(model);
 
                 var stmtText =
-                    "select (select prior(0,id) from SupportBean_S1#length(1000)) as idS1 from SupportBean_S0";
+                    "select (select prior(0,Id) from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
                 Assert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -364,7 +364,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select prior(0,id) from SupportBean_S1#length(1000)) as idS1 from SupportBean_S0";
+                    "@Name('s0') select (select prior(0,Id) from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
                 RunUnfilteredStreamPrior(env);
                 env.UndeployAll();
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var stmtText = "@Name('s0') select (select " +
                                typeof(SupportStaticMethodLib).Name +
-                               ".minusOne(id) from SupportBean_S1#length(1000)) as idS1 from SupportBean_S0";
+                               ".minusOne(Id) from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select 100*(select id from SupportBean_S1#length(1000)) as idS1 from SupportBean_S0";
+                    "@Name('s0') select 100*(select Id from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select id from SupportBean_S1(p10='A')#length(1000)) as idS1 from SupportBean_S0";
+                    "@Name('s0') select (select Id from SupportBean_S1(p10='A')#length(1000)) as IdS1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -456,7 +456,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select id from SupportBean_S1#length(1000)) as idS1 from SupportBean_S0";
+                    "@Name('s0') select (select Id from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
                 TryAssertMultiRowUnfiltered(env, stmtText, "idS1");
             }
         }
@@ -466,7 +466,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select id from SupportBean_S1#length(2)) as idS1 from SupportBean_S0";
+                    "@Name('s0') select (select Id from SupportBean_S1#length(2)) as IdS1 from SupportBean_S0";
                 TryAssertMultiRowUnfiltered(env, stmtText, "idS1");
             }
         }
@@ -476,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select id from SupportBean_S1#lastevent) as idS1 from SupportBean_S0";
+                    "@Name('s0') select (select Id from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0";
                 TryAssertSingleRowUnfiltered(env, stmtText, "idS1");
             }
         }
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select id as myId from SupportBean_S1#lastevent) from SupportBean_S0";
+                    "@Name('s0') select (select Id as myId from SupportBean_S1#lastevent) from SupportBean_S0";
                 TryAssertSingleRowUnfiltered(env, stmtText, "myId");
             }
         }
@@ -495,7 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select (select id from SupportBean_S1#lastevent) from SupportBean_S0";
+                var stmtText = "@Name('s0') select (select Id from SupportBean_S1#lastevent) from SupportBean_S0";
                 TryAssertSingleRowUnfiltered(env, stmtText, "id");
             }
         }
@@ -576,8 +576,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select (select id+1 as myId from SupportBean_S1#lastevent) as idS1_0, " +
-                               "(select id+2 as myId from SupportBean_S1#lastevent) as idS1_1 from SupportBean_S0";
+                var stmtText = "@Name('s0') select (select Id+1 as myId from SupportBean_S1#lastevent) as IdS1_0, " +
+                               "(select Id+2 as myId from SupportBean_S1#lastevent) as IdS1_1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 

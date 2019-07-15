@@ -476,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 RegressionEnvironment env,
                 EventRepresentationChoice eventRepresentationEnum)
             {
-                var fields = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11, s2.id, s2.p20, s2.p21".SplitCsv();
+                var fields = "s0.Id, s0.p00, s0.p01, s1.Id, s1.p10, s1.p11, s2.Id, s2.p20, s2.p21".SplitCsv();
 
                 var epl = eventRepresentationEnum.GetAnnotationText() +
                           " @name('s0') select * from " +

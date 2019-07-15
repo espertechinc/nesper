@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             foreach (var events in delivered) {
                 var idE1 = events[0].Get("e1.instance").AsLong();
                 var idE2 = events[0].Get("e2.instance").AsLong();
-                // comment-in when needed: System.out.println("Received " + idE1 + " " + idE2);
+                // comment-in when needed: System.out.println("Received " + IdE1 + " " + IdE2);
 
                 if (previousIdE1 != null) {
                     var incorrect = idE1 != previousIdE1 && idE2 != previousIdE2;

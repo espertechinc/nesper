@@ -26,20 +26,20 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).Name;
 
         private static readonly string[] EPL = {
-            "select * from " + EVENT_NAME + " where symbol = 'IBM'",
-            "select * from " + EVENT_NAME + " (symbol = 'IBM')",
+            "select * from " + EVENT_NAME + " where Symbol = 'IBM'",
+            "select * from " + EVENT_NAME + " (Symbol = 'IBM')",
             "select * from " + EVENT_NAME + " (price>1)",
-            "select * from " + EVENT_NAME + " (feed='RT')",
-            "select * from " + EVENT_NAME + " (symbol='IBM', price>1, feed='RT')",
-            "select * from " + EVENT_NAME + " (price>1, feed='RT')",
-            "select * from " + EVENT_NAME + " (symbol='IBM', feed='RT')",
-            "select * from " + EVENT_NAME + " (symbol='IBM', feed='RT') where price between 0 and 1000",
-            "select * from " + EVENT_NAME + " (symbol='IBM') where price between 0 and 1000 and feed='RT'",
-            "select * from " + EVENT_NAME + " (symbol='IBM') where 'a'='a'",
-            "select a.* from pattern[every a=" + EVENT_NAME + "(symbol='IBM')]",
-            "select a.* from pattern[every a=" + EVENT_NAME + "(symbol='IBM', price < 1000)]",
-            "select a.* from pattern[every a=" + EVENT_NAME + "(feed='RT', price < 1000)]",
-            "select a.* from pattern[every a=" + EVENT_NAME + "(symbol='IBM', feed='RT')]"
+            "select * from " + EVENT_NAME + " (Feed='RT')",
+            "select * from " + EVENT_NAME + " (Symbol='IBM', price>1, Feed='RT')",
+            "select * from " + EVENT_NAME + " (price>1, Feed='RT')",
+            "select * from " + EVENT_NAME + " (Symbol='IBM', Feed='RT')",
+            "select * from " + EVENT_NAME + " (Symbol='IBM', Feed='RT') where price between 0 and 1000",
+            "select * from " + EVENT_NAME + " (Symbol='IBM') where price between 0 and 1000 and Feed='RT'",
+            "select * from " + EVENT_NAME + " (Symbol='IBM') where 'a'='a'",
+            "select a.* from pattern[every a=" + EVENT_NAME + "(Symbol='IBM')]",
+            "select a.* from pattern[every a=" + EVENT_NAME + "(Symbol='IBM', price < 1000)]",
+            "select a.* from pattern[every a=" + EVENT_NAME + "(Feed='RT', price < 1000)]",
+            "select a.* from pattern[every a=" + EVENT_NAME + "(Symbol='IBM', Feed='RT')]"
         };
 
         public void Run(RegressionEnvironment env)

@@ -47,14 +47,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select instanceof(theString, string) as t0, " +
-                          " instanceof(intBoxed, int) as t1, " +
-                          " instanceof(floatBoxed, System.Float) as t2, " +
-                          " instanceof(theString, System.Float, char, byte) as t3, " +
-                          " instanceof(intPrimitive, System.Integer) as t4, " +
-                          " instanceof(intPrimitive, long) as t5, " +
-                          " instanceof(intPrimitive, long, long, System.Number) as t6, " +
-                          " instanceof(floatBoxed, long, float) as t7 " +
+                var epl = "@Name('s0') select instanceof(TheString, string) as t0, " +
+                          " instanceof(IntBoxed, int) as t1, " +
+                          " instanceof(FloatBoxed, System.Float) as t2, " +
+                          " instanceof(TheString, System.Float, char, byte) as t3, " +
+                          " instanceof(IntPrimitive, System.Integer) as t4, " +
+                          " instanceof(IntPrimitive, long) as t5, " +
+                          " instanceof(IntPrimitive, long, long, System.Number) as t6, " +
+                          " instanceof(FloatBoxed, long, float) as t7 " +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -84,8 +84,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "select instanceof(theString,string) as t0, " +
-                               "instanceof(theString,float,string,int) as t1 " +
+                var stmtText = "select instanceof(TheString,string) as t0, " +
+                               "instanceof(TheString,float,string,int) as t1 " +
                                "from SupportBean";
 
                 var model = new EPStatementObjectModel();
@@ -117,8 +117,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select instanceof(theString,string) as t0, " +
-                          "instanceof(theString,float,string,int) as t1 " +
+                var epl = "@Name('s0') select instanceof(TheString,string) as t0, " +
+                          "instanceof(TheString,float,string,int) as t1 " +
                           "from SupportBean";
                 env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 

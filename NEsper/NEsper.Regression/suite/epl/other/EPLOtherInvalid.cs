@@ -78,13 +78,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 TryInvalidCompile(
                     env,
-                    "select count(theString, theString, theString) from SupportBean",
-                    "Failed to validate select-clause expression 'count(theString,theString,theString)': The 'count' function expects at least 1 and up to 2 parameters");
+                    "select count(TheString, TheString, TheString) from SupportBean",
+                    "Failed to valIdate select-clause expression 'count(TheString,TheString,TheString)': The 'count' function expects at least 1 and up to 2 parameters");
 
                 TryInvalidCompile(
                     env,
                     "select leaving(TheString) from SupportBean",
-                    "Failed to validate select-clause expression 'leaving(TheString)': The 'leaving' function expects no parameters");
+                    "Failed to valIdate select-clause expression 'leaving(TheString)': The 'leaving' function expects no parameters");
             }
         }
 
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean(1=2=3)",
-                    "Failed to validate filter expression '1=2': Invalid use of equals, expecting left-hand side and right-hand side but received 3 expressions");
+                    "Failed to valIdate filter expression '1=2': InvalId use of equals, expecting left-hand sIde and right-hand sIde but received 3 expressions");
             }
         }
 
@@ -142,63 +142,63 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                    " where ";
 
                 TryInvalid(env, streamDef + "sa.IntPrimitive = sb.TheString");
-                TryValid(env, streamDef + "sa.IntPrimitive = sb.intBoxed");
+                TryValid(env, streamDef + "sa.IntPrimitive = sb.IntBoxed");
                 TryValid(env, streamDef + "sa.IntPrimitive = sb.IntPrimitive");
-                TryValid(env, streamDef + "sa.IntPrimitive = sb.longBoxed");
+                TryValid(env, streamDef + "sa.IntPrimitive = sb.LongBoxed");
 
-                TryInvalid(env, streamDef + "sa.IntPrimitive = sb.IntPrimitive and sb.intBoxed = sa.boolPrimitive");
-                TryValid(env, streamDef + "sa.IntPrimitive = sb.IntPrimitive and sb.boolBoxed = sa.boolPrimitive");
+                TryInvalid(env, streamDef + "sa.IntPrimitive = sb.IntPrimitive and sb.IntBoxed = sa.BoolPrimitive");
+                TryValid(env, streamDef + "sa.IntPrimitive = sb.IntPrimitive and sb.BoolBoxed = sa.BoolPrimitive");
 
                 TryInvalid(
                     env,
                     streamDef +
-                    "sa.IntPrimitive = sb.IntPrimitive and sb.intBoxed = sa.IntPrimitive and sa.TheString=sX.TheString");
+                    "sa.IntPrimitive = sb.IntPrimitive and sb.IntBoxed = sa.IntPrimitive and sa.TheString=sX.TheString");
                 TryValid(
                     env,
                     streamDef +
-                    "sa.IntPrimitive = sb.IntPrimitive and sb.intBoxed = sa.IntPrimitive and sa.TheString=sb.TheString");
+                    "sa.IntPrimitive = sb.IntPrimitive and sb.IntBoxed = sa.IntPrimitive and sa.TheString=sb.TheString");
 
                 TryInvalid(env, streamDef + "sa.IntPrimitive = sb.IntPrimitive or sa.TheString=sX.TheString");
-                TryValid(env, streamDef + "sa.IntPrimitive = sb.IntPrimitive or sb.intBoxed = sa.IntPrimitive");
+                TryValid(env, streamDef + "sa.IntPrimitive = sb.IntPrimitive or sb.IntBoxed = sa.IntPrimitive");
 
                 // try constants
                 TryValid(env, streamDef + "sa.IntPrimitive=5");
                 TryValid(env, streamDef + "sa.TheString='4'");
                 TryValid(env, streamDef + "sa.TheString=\"4\"");
-                TryValid(env, streamDef + "sa.boolPrimitive=false");
-                TryValid(env, streamDef + "sa.longPrimitive=-5L");
-                TryValid(env, streamDef + "sa.doubleBoxed=5.6d");
-                TryValid(env, streamDef + "sa.floatPrimitive=-5.6f");
+                TryValid(env, streamDef + "sa.BoolPrimitive=false");
+                TryValid(env, streamDef + "sa.LongPrimitive=-5L");
+                TryValid(env, streamDef + "sa.DoubleBoxed=5.6d");
+                TryValid(env, streamDef + "sa.FloatPrimitive=-5.6f");
 
                 TryInvalid(env, streamDef + "sa.IntPrimitive='5'");
                 TryInvalid(env, streamDef + "sa.TheString=5");
-                TryInvalid(env, streamDef + "sa.boolBoxed=f");
+                TryInvalid(env, streamDef + "sa.BoolBoxed=f");
                 TryInvalid(env, streamDef + "sa.IntPrimitive=x");
                 TryValid(env, streamDef + "sa.IntPrimitive=5.5");
 
                 // try addition and subtraction
-                TryValid(env, streamDef + "sa.IntPrimitive=sa.intBoxed + 5");
-                TryValid(env, streamDef + "sa.IntPrimitive=2*sa.intBoxed - sa.IntPrimitive/10 + 1");
-                TryValid(env, streamDef + "sa.IntPrimitive=2*(sa.intBoxed - sa.IntPrimitive)/(10 + 1)");
-                TryInvalid(env, streamDef + "sa.IntPrimitive=2*(sa.intBoxed");
+                TryValid(env, streamDef + "sa.IntPrimitive=sa.IntBoxed + 5");
+                TryValid(env, streamDef + "sa.IntPrimitive=2*sa.IntBoxed - sa.IntPrimitive/10 + 1");
+                TryValid(env, streamDef + "sa.IntPrimitive=2*(sa.IntBoxed - sa.IntPrimitive)/(10 + 1)");
+                TryInvalid(env, streamDef + "sa.IntPrimitive=2*(sa.IntBoxed");
 
                 // try comparison
-                TryValid(env, streamDef + "sa.IntPrimitive > sa.intBoxed and sb.doublePrimitive < sb.doubleBoxed");
-                TryValid(env, streamDef + "sa.IntPrimitive >= sa.intBoxed and sa.doublePrimitive <= sa.doubleBoxed");
-                TryValid(env, streamDef + "sa.IntPrimitive > (sa.intBoxed + sb.doublePrimitive)");
+                TryValid(env, streamDef + "sa.IntPrimitive > sa.IntBoxed and sb.DoublePrimitive < sb.DoubleBoxed");
+                TryValid(env, streamDef + "sa.IntPrimitive >= sa.IntBoxed and sa.DoublePrimitive <= sa.DoubleBoxed");
+                TryValid(env, streamDef + "sa.IntPrimitive > (sa.IntBoxed + sb.DoublePrimitive)");
                 TryInvalid(env, streamDef + "sa.IntPrimitive >= sa.TheString");
-                TryInvalid(env, streamDef + "sa.boolBoxed >= sa.boolPrimitive");
+                TryInvalid(env, streamDef + "sa.BoolBoxed >= sa.BoolPrimitive");
 
                 // Try some nested
-                TryValid(env, streamDef + "(sa.IntPrimitive=3) or (sa.intBoxed=3 and sa.IntPrimitive=1)");
-                TryValid(env, streamDef + "((sa.IntPrimitive>3) or (sa.intBoxed<3)) and sa.boolBoxed=false");
+                TryValid(env, streamDef + "(sa.IntPrimitive=3) or (sa.IntBoxed=3 and sa.IntPrimitive=1)");
+                TryValid(env, streamDef + "((sa.IntPrimitive>3) or (sa.IntBoxed<3)) and sa.BoolBoxed=false");
                 TryValid(
                     env,
                     streamDef +
-                    "(sa.IntPrimitive<=3 and sa.IntPrimitive>=1) or (sa.boolBoxed=false and sa.boolPrimitive=true)");
-                TryInvalid(env, streamDef + "sa.IntPrimitive=3 or (sa.intBoxed=2");
-                TryInvalid(env, streamDef + "sa.IntPrimitive=3 or sa.intBoxed=2)");
-                TryInvalid(env, streamDef + "sa.IntPrimitive=3 or ((sa.intBoxed=2)");
+                    "(sa.IntPrimitive<=3 and sa.IntPrimitive>=1) or (sa.BoolBoxed=false and sa.BoolPrimitive=true)");
+                TryInvalid(env, streamDef + "sa.IntPrimitive=3 or (sa.IntBoxed=2");
+                TryInvalid(env, streamDef + "sa.IntPrimitive=3 or sa.IntBoxed=2)");
+                TryInvalid(env, streamDef + "sa.IntPrimitive=3 or ((sa.IntBoxed=2)");
 
                 // Try some without stream name
                 TryInvalid(env, streamDef + "IntPrimitive=3");
@@ -209,17 +209,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                    "SupportBean#length(3) as sa " +
                                    "left outer join " +
                                    "SupportBean#length(3) as sb ";
-                TryValid(env, outerJoinDef + "on sa.IntPrimitive = sb.intBoxed");
+                TryValid(env, outerJoinDef + "on sa.IntPrimitive = sb.IntBoxed");
                 TryInvalid(env, outerJoinDef + "on sa.IntPrimitive = sb.XX");
                 TryInvalid(env, outerJoinDef + "on sa.XX = sb.XX");
-                TryInvalid(env, outerJoinDef + "on sa.XX = sb.intBoxed");
-                TryInvalid(env, outerJoinDef + "on sa.boolBoxed = sb.intBoxed");
-                TryValid(env, outerJoinDef + "on sa.boolPrimitive = sb.boolBoxed");
-                TryInvalid(env, outerJoinDef + "on sa.boolPrimitive = sb.TheString");
-                TryInvalid(env, outerJoinDef + "on sa.IntPrimitive <= sb.intBoxed");
-                TryInvalid(env, outerJoinDef + "on sa.IntPrimitive = sa.intBoxed");
-                TryInvalid(env, outerJoinDef + "on sb.IntPrimitive = sb.intBoxed");
-                TryValid(env, outerJoinDef + "on sb.IntPrimitive = sa.intBoxed");
+                TryInvalid(env, outerJoinDef + "on sa.XX = sb.IntBoxed");
+                TryInvalid(env, outerJoinDef + "on sa.BoolBoxed = sb.IntBoxed");
+                TryValid(env, outerJoinDef + "on sa.BoolPrimitive = sb.BoolBoxed");
+                TryInvalid(env, outerJoinDef + "on sa.BoolPrimitive = sb.TheString");
+                TryInvalid(env, outerJoinDef + "on sa.IntPrimitive <= sb.IntBoxed");
+                TryInvalid(env, outerJoinDef + "on sa.IntPrimitive = sa.IntBoxed");
+                TryInvalid(env, outerJoinDef + "on sb.IntPrimitive = sb.IntBoxed");
+                TryValid(env, outerJoinDef + "on sb.IntPrimitive = sa.IntBoxed");
 
                 env.UndeployAll();
             }

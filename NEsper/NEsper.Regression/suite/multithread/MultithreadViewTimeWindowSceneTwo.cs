@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 var annotation = string.Format("@Name('%s')", "stmt_" + i);
                 symbols[i] = "S" + i;
                 var epl = annotation +
-                          "select symbol, sum(volume) as sumVol from SupportMarketDataBean(symbol='" +
+                          "select Symbol, sum(Volume) as sumVol from SupportMarketDataBean(Symbol='" +
                           symbols[i] +
                           "')#time(" +
                           timeWindowSize +

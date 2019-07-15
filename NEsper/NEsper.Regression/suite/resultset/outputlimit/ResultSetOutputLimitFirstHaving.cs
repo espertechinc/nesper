@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var query =
-                    "@Name('s0') select doublePrimitive from SupportBean having doublePrimitive > 1 output first every 2 events";
+                    "@Name('s0') select DoublePrimitive from SupportBean having DoublePrimitive > 1 output first every 2 events";
                 env.CompileDeploy(query).AddListener("s0");
 
                 TryAssertion2Events(env);
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 // test joined
                 query =
-                    "@Name('s0') select doublePrimitive from SupportBean#lastevent,SupportBean_ST0#lastevent st0 having doublePrimitive > 1 output first every 2 events";
+                    "@Name('s0') select DoublePrimitive from SupportBean#lastevent,SupportBean_ST0#lastevent st0 having DoublePrimitive > 1 output first every 2 events";
                 env.CompileDeploy(query).AddListener("s0");
                 env.SendEventBean(new SupportBean_ST0("ID", 1));
                 TryAssertion2Events(env);
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 var fields = "val0".SplitCsv();
                 var query =
-                    "@Name('s0') select sum(doublePrimitive) as val0 from SupportBean#length(5) having sum(doublePrimitive) > 100 output first every 2 seconds";
+                    "@Name('s0') select sum(DoublePrimitive) as val0 from SupportBean#length(5) having sum(DoublePrimitive) > 100 output first every 2 seconds";
                 env.CompileDeploy(query).AddListener("s0");
 
                 SendBeanEvent(env, 10);
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var query =
-                    "@Name('s0') select doublePrimitive, avg(doublePrimitive) from SupportBean having doublePrimitive > 2*avg(doublePrimitive) output first every 2 minutes";
+                    "@Name('s0') select DoublePrimitive, avg(DoublePrimitive) from SupportBean having DoublePrimitive > 2*avg(DoublePrimitive) output first every 2 minutes";
                 env.CompileDeploy(query).AddListener("s0");
 
                 SendBeanEvent(env, 1);

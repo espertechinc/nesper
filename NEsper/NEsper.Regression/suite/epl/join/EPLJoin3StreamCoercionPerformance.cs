@@ -47,10 +47,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select s1.IntBoxed as value from " +
-                               "SupportBean(theString='A')#length(1000000) s1," +
-                               "SupportBean(theString='B')#length(1000000) s2," +
-                               "SupportBean(theString='C')#length(1000000) s3" +
-                               " where s1.intBoxed=s2.longBoxed and s1.intBoxed=s3.doubleBoxed";
+                               "SupportBean(TheString='A')#length(1000000) s1," +
+                               "SupportBean(TheString='B')#length(1000000) s2," +
+                               "SupportBean(TheString='C')#length(1000000) s3" +
+                               " where s1.IntBoxed=s2.LongBoxed and s1.IntBoxed=s3.DoubleBoxed";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload
@@ -79,10 +79,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select s1.IntBoxed as value from " +
-                               "SupportBean(theString='A')#length(1000000) s1," +
-                               "SupportBean(theString='B')#length(1000000) s2," +
-                               "SupportBean(theString='C')#length(1000000) s3" +
-                               " where s1.intBoxed=s2.longBoxed and s1.intBoxed=s3.doubleBoxed";
+                               "SupportBean(TheString='A')#length(1000000) s1," +
+                               "SupportBean(TheString='B')#length(1000000) s2," +
+                               "SupportBean(TheString='C')#length(1000000) s3" +
+                               " where s1.IntBoxed=s2.LongBoxed and s1.IntBoxed=s3.DoubleBoxed";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload
@@ -111,10 +111,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select s1.IntBoxed as value from " +
-                               "SupportBean(theString='A')#length(1000000) s1," +
-                               "SupportBean(theString='B')#length(1000000) s2," +
-                               "SupportBean(theString='C')#length(1000000) s3" +
-                               " where s1.intBoxed=s2.longBoxed and s1.intBoxed=s3.doubleBoxed";
+                               "SupportBean(TheString='A')#length(1000000) s1," +
+                               "SupportBean(TheString='B')#length(1000000) s2," +
+                               "SupportBean(TheString='C')#length(1000000) s3" +
+                               " where s1.IntBoxed=s2.LongBoxed and s1.IntBoxed=s3.DoubleBoxed";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload

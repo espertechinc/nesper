@@ -104,8 +104,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create schema IncomingEvent(id int);\n" +
-                          "create schema RetainedEvent(id int);\n" +
+                var epl = "create schema IncomingEvent(Id int);\n" +
+                          "create schema RetainedEvent(Id int);\n" +
                           "insert into RetainedEvent select * from IncomingEvent#expr_batch(current_count >= 10000);\n" +
                           "create window RetainedEventWindow#keepall as RetainedEvent;\n" +
                           "insert into RetainedEventWindow select * from RetainedEvent;\n";

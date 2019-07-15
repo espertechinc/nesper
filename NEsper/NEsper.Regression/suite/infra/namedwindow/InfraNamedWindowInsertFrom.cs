@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
 
                 var epl = "@Name('window') create window MyWindowIWT#keepall as SupportBean;\n" +
-                          "insert into MyWindowIWT select * from SupportBean(intPrimitive > 0);\n";
+                          "insert into MyWindowIWT select * from SupportBean(IntPrimitive > 0);\n";
                 env.CompileDeploy(epl, path).AddListener("window");
 
                 env.Milestone(0);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window with keep-all and filter
                 var stmtTextCreateThree =
-                    "@Name('windowThree') create window MyWindowThree#keepall as MyWindowIWT insert where theString like 'A%'";
+                    "@Name('windowThree') create window MyWindowThree#keepall as MyWindowIWT insert where TheString like 'A%'";
                 env.CompileDeploy(stmtTextCreateThree, path).AddListener("windowThree");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("windowThree"),
@@ -161,10 +161,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 Assert.AreEqual(2, GetCount(env, path, "windowFour", "MyWindowFour"));
 
-                env.CompileDeploy("insert into MyWindowIWT select * from SupportBean(theString like 'A%')", path);
-                env.CompileDeploy("insert into MyWindowTwo select * from SupportBean(theString like 'B%')", path);
-                env.CompileDeploy("insert into MyWindowThree select * from SupportBean(theString like 'C%')", path);
-                env.CompileDeploy("insert into MyWindowFour select * from SupportBean(theString like 'D%')", path);
+                env.CompileDeploy("insert into MyWindowIWT select * from SupportBean(TheString like 'A%')", path);
+                env.CompileDeploy("insert into MyWindowTwo select * from SupportBean(TheString like 'B%')", path);
+                env.CompileDeploy("insert into MyWindowThree select * from SupportBean(TheString like 'C%')", path);
+                env.CompileDeploy("insert into MyWindowFour select * from SupportBean(TheString like 'D%')", path);
                 Assert.IsFalse(
                     env.Listener("window").IsInvoked ||
                     env.Listener("windowTwo").IsInvoked ||

@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 env.AdvanceTime(0);
                 var expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, 1 sec) a=SupportBean(theString like 'A%')]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, 1 sec) a=SupportBean(TheString like 'A%')]";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 env.Milestone(0);
@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var expression = "@Name('s0') select * from pattern [every-distinct(IntPrimitive) a=SupportBean]";
                 RunEveryDistinctOverFilter(env, expression, milestone);
 
-                expression = "@Name('s0') select * from pattern [every-distinct(intPrimitive,2 minutes) a=SupportBean]";
+                expression = "@Name('s0') select * from pattern [every-distinct(IntPrimitive,2 minutes) a=SupportBean]";
                 RunEveryDistinctOverFilter(env, expression, milestone);
             }
 
@@ -572,11 +572,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 var expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, b.IntPrimitive) (a=SupportBean(theString like 'A%') and b=SupportBean(theString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, b.IntPrimitive) (a=SupportBean(TheString like 'A%') and b=SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverAnd(env, expression, milestone);
 
                 expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, b.IntPrimitive, 1 hour) (a=SupportBean(theString like 'A%') and b=SupportBean(theString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, b.IntPrimitive, 1 hour) (a=SupportBean(TheString like 'A%') and b=SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverAnd(env, expression, milestone);
             }
 
@@ -655,11 +655,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 var expression =
-                    "@Name('s0') select * from pattern [every-distinct(coalesce(a.IntPrimitive, 0) + coalesce(b.IntPrimitive, 0)) (a=SupportBean(theString like 'A%') or b=SupportBean(theString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(coalesce(a.IntPrimitive, 0) + coalesce(b.IntPrimitive, 0)) (a=SupportBean(TheString like 'A%') or b=SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverOr(env, expression, milestone);
 
                 expression =
-                    "@Name('s0') select * from pattern [every-distinct(coalesce(a.IntPrimitive, 0) + coalesce(b.IntPrimitive, 0), 1 hour) (a=SupportBean(theString like 'A%') or b=SupportBean(theString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(coalesce(a.IntPrimitive, 0) + coalesce(b.IntPrimitive, 0), 1 hour) (a=SupportBean(TheString like 'A%') or b=SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverOr(env, expression, milestone);
             }
 
@@ -728,11 +728,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 var expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive) (a=SupportBean(theString like 'A%') and not SupportBean(theString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive) (a=SupportBean(TheString like 'A%') and not SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverNot(env, expression, milestone);
 
                 expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, 1 hour) (a=SupportBean(theString like 'A%') and not SupportBean(theString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, 1 hour) (a=SupportBean(TheString like 'A%') and not SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverNot(env, expression, milestone);
             }
 
@@ -793,11 +793,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 var expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive) (a=SupportBean(theString like 'A%') => b=SupportBean(theString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive) (a=SupportBean(TheString like 'A%') => b=SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverFollowedBy(env, expression, milestone);
 
                 expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive, 1 hour) (a=SupportBean(theString like 'A%') => b=SupportBean(theString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive, 1 hour) (a=SupportBean(TheString like 'A%') => b=SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverFollowedBy(env, expression, milestone);
             }
 
@@ -857,11 +857,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 var expression =
-                    "@Name('s0') select * from pattern [(every-distinct(a.IntPrimitive) a=SupportBean(theString like 'A%')) => b=SupportBean(intPrimitive=a.IntPrimitive)]";
+                    "@Name('s0') select * from pattern [(every-distinct(a.IntPrimitive) a=SupportBean(TheString like 'A%')) => b=SupportBean(IntPrimitive=a.IntPrimitive)]";
                 RunEveryDistinctWithinFollowedBy(env, expression, milestone);
 
                 expression =
-                    "@Name('s0') select * from pattern [(every-distinct(a.IntPrimitive, 2 hours 1 minute) a=SupportBean(theString like 'A%')) => b=SupportBean(intPrimitive=a.IntPrimitive)]";
+                    "@Name('s0') select * from pattern [(every-distinct(a.IntPrimitive, 2 hours 1 minute) a=SupportBean(TheString like 'A%')) => b=SupportBean(IntPrimitive=a.IntPrimitive)]";
                 RunEveryDistinctWithinFollowedBy(env, expression, milestone);
             }
 
@@ -935,11 +935,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 var expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive) a=SupportBean(theString like 'A%') => every-distinct(b.IntPrimitive) b=SupportBean(theString like 'B%')]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive) a=SupportBean(TheString like 'A%') => every-distinct(b.IntPrimitive) b=SupportBean(TheString like 'B%')]";
                 RunFollowedByWithDistinct(env, expression, milestone);
 
                 expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, 1 day) a=SupportBean(theString like 'A%') => every-distinct(b.IntPrimitive) b=SupportBean(theString like 'B%')]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, 1 day) a=SupportBean(TheString like 'A%') => every-distinct(b.IntPrimitive) b=SupportBean(TheString like 'B%')]";
                 RunFollowedByWithDistinct(env, expression, milestone);
             }
 
@@ -1019,12 +1019,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 TryInvalid(
                     env,
                     "a=SupportBean_A=>every-distinct(a.IntPrimitive) SupportBean_B",
-                    "Failed to validate pattern every-distinct expression 'a.IntPrimitive': Failed to resolve property 'a.IntPrimitive' to a stream or nested property in a stream");
+                    "Failed to valIdate pattern every-distinct expression 'a.IntPrimitive': Failed to resolve property 'a.IntPrimitive' to a stream or nested property in a stream");
 
                 TryInvalid(
                     env,
                     "every-distinct(dummy) SupportBean_A",
-                    "Failed to validate pattern every-distinct expression 'dummy': Property named 'dummy' is not valid in any stream ");
+                    "Failed to valIdate pattern every-distinct expression 'dummy': Property named 'dummy' is not valId in any stream ");
 
                 TryInvalid(
                     env,
@@ -1040,7 +1040,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = "a.TheString,a.IntPrimitive".SplitCsv();
 
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
-                var epl = "@Name('s0') select * from pattern [every-distinct(theString, 1 month) a=SupportBean]";
+                var epl = "@Name('s0') select * from pattern [every-distinct(TheString, 1 month) a=SupportBean]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));

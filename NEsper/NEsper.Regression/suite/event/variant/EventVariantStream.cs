@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
         private static void AssertEventTypeDefault(EventType eventType)
         {
-            var expected = "theString,boolBoxed,intPrimitive,LongPrimitive,doublePrimitive,enumValue".SplitCsv();
+            var expected = "theString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue".SplitCsv();
             var propertyNames = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
@@ -67,31 +67,31 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
             EPAssertionUtil.AssertEqualsAnyOrder(
                 new object[] {
                     new EventPropertyDescriptor(
-                        "TheString", 
-                        typeof(string), 
-                        null, 
-                        false, 
-                        false, 
-                        false, 
-                        false, 
+                        "TheString",
+                        typeof(string),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
                         false),
                     new EventPropertyDescriptor(
-                        "BoolBoxed", 
+                        "BoolBoxed",
                         typeof(bool?),
-                        null, 
-                        false, 
-                        false, 
-                        false, 
-                        false, 
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
                         false),
                     new EventPropertyDescriptor(
-                        "IntPrimitive", 
+                        "IntPrimitive",
                         typeof(int?),
-                        null, 
-                        false, 
-                        false, 
-                        false, 
-                        false, 
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
                         false),
                     new EventPropertyDescriptor(
                         "LongPrimitive",
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create variant schema MyVariantWJ as *;\n" +
-                          "insert into MyVariantWJ select * from SupportBean sb unidirectional, SupportBean_S0#keepall as s0;\n" +
+                          "insert into MyVariantWJ select * from SupportBean sb unIdirectional, SupportBean_S0#keepall as s0;\n" +
                           "@Name('s0') select * from MyVariantWJ";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"sb.TheString", "s0.id"},
+                    new[] {"sb.TheString", "s0.Id"},
                     new object[] {"E1", 10});
 
                 env.UndeployAll();
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
                 env.Milestone(0);
 
-                var epl = "@Name('s0') select irstream id? as id from " + variantStreamName + "#length(2)";
+                var epl = "@Name('s0') select irstream Id? as Id from " + variantStreamName + "#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.CompileDeploy("insert into " + variantStreamName + " select * from SupportBean_A");
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                     typeof(EventVariantStream).Name +
                     ".preProcessEvent(event) from MyVariantTwoTypedSBVariant as event",
                     path);
-                env.CompileDeploy("@Name('s0') select * from MainEventWindow where theString = 'E'", path);
+                env.CompileDeploy("@Name('s0') select * from MainEventWindow where TheString = 'E'", path);
                 env.Statement("s0").AddListenerWithReplay(env.ListenerNew());
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
                 env.UndeployModuleContaining("s0");
 
-                fields = "theString,boolBoxed,intPrimitive,LongPrimitive,doublePrimitive,enumValue";
+                fields = "theString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue";
                 env.CompileDeploy("@Name('s0') select " + fields + " from MyVariantTwoTypedSB").AddListener("s0");
                 AssertEventTypeDefault(env.Statement("s0").EventType);
 
@@ -325,13 +325,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 // make sure a property is not known since the property is not found on SupportBeanVariantStream
                 TryInvalidCompile(
                     env,
-                    "select charBoxed from MyVariantTwoTypedSB",
-                    "Failed to validate select-clause expression 'charBoxed': Property named 'charBoxed' is not valid in any stream");
+                    "select CharBoxed from MyVariantTwoTypedSB",
+                    "Failed to valIdate select-clause expression 'CharBoxed': Property named 'CharBoxed' is not valId in any stream");
 
                 // try dynamic property: should exists but not show up as a declared property
                 fields = "v1,v2,v3";
                 env.CompileDeploy(
-                        "@Name('s0') select longBoxed? as v1,charBoxed? as v2,doubleBoxed? as v3 from MyVariantTwoTypedSB")
+                        "@Name('s0') select LongBoxed? as v1,CharBoxed? as v2,DoubleBoxed? as v3 from MyVariantTwoTypedSB")
                     .AddListener("s0");
 
                 bean = new SupportBean();
@@ -473,7 +473,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
                 // test subquery
                 env.CompileDeploy(
-                    "@Name('s0') select * from SupportBean_A as a where exists(select * from MyVariantStreamFour#lastevent as b where b.TheString=a.id)");
+                    "@Name('s0') select * from SupportBean_A as a where exists(select * from MyVariantStreamFour#lastevent as b where b.TheString=a.Id)");
                 env.AddListener("s0");
                 events = new object[]
                     {new SupportBean("E1", -1), new SupportBeanVariantStream("E2"), new SupportBean_A("E2")};
@@ -497,12 +497,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 TryInvalidCompile(
                     env,
                     "insert into MyVariantStreamFive select * from SupportBean_A",
-                    "Selected event type is not a valid event type of the variant stream 'MyVariantStreamFive'");
+                    "Selected event type is not a valId event type of the variant stream 'MyVariantStreamFive'");
 
                 TryInvalidCompile(
                     env,
                     "insert into MyVariantStreamFive select IntPrimitive as k0 from SupportBean",
-                    "Selected event type is not a valid event type of the variant stream 'MyVariantStreamFive' ");
+                    "Selected event type is not a valId event type of the variant stream 'MyVariantStreamFive' ");
             }
         }
 
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy("insert into VarStreamAny select * from SupportBeanVariantStream");
                 env.CompileDeploy("insert into VarStreamAny select * from SupportBean_A");
                 env.CompileDeploy(
-                    "insert into VarStreamAny select symbol as theString, volume as IntPrimitive, feed as id from SupportMarketDataBean");
+                    "insert into VarStreamAny select Symbol as TheString, Volume as IntPrimitive, Feed as Id from SupportMarketDataBean");
                 env.CompileDeploy("@Name('s0') select * from VarStreamAny").AddListener("s0");
                 Assert.AreEqual(0, env.Statement("s0").EventType.PropertyNames.Length);
 
@@ -566,14 +566,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
                 env.UndeployModuleContaining("s0");
 
-                env.CompileDeploy("@Name('s0') select TheString,id,intPrimitive from VarStreamAny").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select TheString,Id,IntPrimitive from VarStreamAny").AddListener("s0");
 
                 var eventType = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(object), eventType.GetPropertyType("TheString"));
                 Assert.AreEqual(typeof(object), eventType.GetPropertyType("id"));
                 Assert.AreEqual(typeof(object), eventType.GetPropertyType("IntPrimitive"));
 
-                var fields = "theString,id,intPrimitive".SplitCsv();
+                var fields = "theString,Id,IntPrimitive".SplitCsv();
                 env.SendEventBean(new SupportBeanVariantStream("E1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -619,8 +619,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                     new[] {"abc"},
                     new[] {new object[] {"E1"}});
 
-                env.CompileDeploy("insert into MyStream2 select feed from SupportMarketDataBean", path);
-                env.CompileDeploy("insert into VarStreamMD select feed as abc from MyStream2", path);
+                env.CompileDeploy("insert into MyStream2 select Feed from SupportMarketDataBean", path);
+                env.CompileDeploy("insert into VarStreamMD select Feed as abc from MyStream2", path);
 
                 env.SendEventBean(new SupportMarketDataBean("IBM", 1, 1L, "E2"));
 

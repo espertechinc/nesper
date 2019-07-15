@@ -18,11 +18,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmt = "@Name('s0') select request.symbol as symbol_a, symbol as symbol_b from StockQuoteSimpleConfig";
+            var stmt = "@Name('s0') select request.Symbol as Symbol_a, Symbol as Symbol_b from StockQuoteSimpleConfig";
             env.CompileDeploy(stmt).AddListener("s0");
 
             var xml =
-                "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";
+                "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:Symbol>IBM</m0:Symbol></m0:request></m0:getQuote>";
             SendXMLEvent(env, xml, "StockQuoteSimpleConfig");
 
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();

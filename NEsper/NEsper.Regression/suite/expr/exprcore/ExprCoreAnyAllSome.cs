@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "IntPrimitive!=all(1,IntBoxed) as neq, " +
                           "IntPrimitive<>all(1,IntBoxed) as sqlneq, " +
                           "not IntPrimitive=all(1,IntBoxed) as nneq " +
-                          "from SupportBean(theString like \"E%\")";
+                          "from SupportBean(TheString like \"E%\")";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 // in the format IntPrimitive, intBoxed
@@ -153,11 +153,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "eq,neq,sqlneq,nneq".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "IntPrimitive = any (1, intBoxed) as eq, " +
-                          "IntPrimitive != any (1, intBoxed) as neq, " +
-                          "IntPrimitive <> any (1, intBoxed) as sqlneq, " +
-                          "not IntPrimitive = any (1, intBoxed) as nneq " +
-                          " from SupportBean(theString like 'E%')";
+                          "IntPrimitive = any (1, IntBoxed) as eq, " +
+                          "IntPrimitive != any (1, IntBoxed) as neq, " +
+                          "IntPrimitive <> any (1, IntBoxed) as sqlneq, " +
+                          "not IntPrimitive = any (1, IntBoxed) as nneq " +
+                          " from SupportBean(TheString like 'E%')";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 // in the format IntPrimitive, intBoxed
@@ -325,9 +325,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 string epl;
 
                 epl = "@Name('s0') select " +
-                      "intBoxed >= all ({doubleBoxed, longBoxed}) as vall, " +
-                      "intBoxed >= any ({doubleBoxed, longBoxed}) as vany " +
-                      " from SupportBean(theString like 'E%')";
+                      "intBoxed >= all ({DoubleBoxed, LongBoxed}) as vall, " +
+                      "intBoxed >= any ({DoubleBoxed, LongBoxed}) as vany " +
+                      " from SupportBean(TheString like 'E%')";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E3", null, null, null);
@@ -362,9 +362,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // test fields
                 fields = "vall,vany".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "intBoxed >= all (doubleBoxed, longBoxed) as vall, " +
-                      "intBoxed >= any (doubleBoxed, longBoxed) as vany " +
-                      " from SupportBean(theString like 'E%')";
+                      "intBoxed >= all (DoubleBoxed, LongBoxed) as vall, " +
+                      "intBoxed >= any (DoubleBoxed, LongBoxed) as vany " +
+                      " from SupportBean(TheString like 'E%')";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 SendEvent(env, "E3", null, null, null);
@@ -457,7 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "IntPrimitive >= all (1, 3, 4) as ge, " +
                           "IntPrimitive < all (1, 3, 4) as l, " +
                           "IntPrimitive <= all (1, 3, 4) as le " +
-                          " from SupportBean(theString like 'E%')";
+                          " from SupportBean(TheString like 'E%')";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 object[][] result = {
@@ -488,7 +488,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "IntPrimitive >= some (1, 3, 4) as ge, " +
                           "IntPrimitive < any (1, 3, 4) as l, " +
                           "IntPrimitive <= some (1, 3, 4) as le " +
-                          " from SupportBean(theString like 'E%')";
+                          " from SupportBean(TheString like 'E%')";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 object[][] result = {
@@ -519,11 +519,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 fields = "eall,eany,neall,neany,isin".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "intBoxed = all ({doubleBoxed, longBoxed}) as eall, " +
-                      "intBoxed = any ({doubleBoxed, longBoxed}) as eany, " +
-                      "intBoxed != all ({doubleBoxed, longBoxed}) as neall, " +
-                      "intBoxed != any ({doubleBoxed, longBoxed}) as neany, " +
-                      "intBoxed in ({doubleBoxed, longBoxed}) as isin " +
+                      "intBoxed = all ({DoubleBoxed, LongBoxed}) as eall, " +
+                      "intBoxed = any ({DoubleBoxed, LongBoxed}) as eany, " +
+                      "intBoxed != all ({DoubleBoxed, LongBoxed}) as neall, " +
+                      "intBoxed != any ({DoubleBoxed, LongBoxed}) as neany, " +
+                      "intBoxed in ({DoubleBoxed, LongBoxed}) as isin " +
                       " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -559,11 +559,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // test non-array case
                 fields = "eall,eany,neall,neany,isin".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "intBoxed = all (doubleBoxed, longBoxed) as eall, " +
-                      "intBoxed = any (doubleBoxed, longBoxed) as eany, " +
-                      "intBoxed != all (doubleBoxed, longBoxed) as neall, " +
-                      "intBoxed != any (doubleBoxed, longBoxed) as neany, " +
-                      "intBoxed in (doubleBoxed, longBoxed) as isin " +
+                      "intBoxed = all (DoubleBoxed, LongBoxed) as eall, " +
+                      "intBoxed = any (DoubleBoxed, LongBoxed) as eany, " +
+                      "intBoxed != all (DoubleBoxed, LongBoxed) as neall, " +
+                      "intBoxed != any (DoubleBoxed, LongBoxed) as neany, " +
+                      "intBoxed in (DoubleBoxed, LongBoxed) as isin " +
                       " from SupportBean";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
@@ -605,11 +605,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select intArr = all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
-                    "Failed to validate select-clause expression 'intArr=all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to valIdate select-clause expression 'intArr=all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select intArr > all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
-                    "Failed to validate select-clause expression 'intArr>all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to valIdate select-clause expression 'intArr>all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }
     }

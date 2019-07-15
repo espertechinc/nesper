@@ -59,11 +59,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context MyCtx as " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0",
+                    "partition by TheString from SupportBean, p00 from SupportBean_S0",
                     path);
                 env.CompileDeploy("context MyCtx create variable int mycontextvar = 0", path);
                 env.CompileDeploy(
-                    "context MyCtx on SupportBean(intPrimitive > 0) set mycontextvar = IntPrimitive",
+                    "context MyCtx on SupportBean(IntPrimitive > 0) set mycontextvar = IntPrimitive",
                     path);
 
                 env.CompileDeploy("@Name('s0') context MyCtx select mycontextvar from SupportBean_S0", path)
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context MyCtx on SupportBean(TheString = context.s0.p00) set mycontextvar = IntPrimitive",
                     path);
                 env.CompileDeploy(
-                    "context MyCtx on SupportBean(intPrimitive < 0) set mycontextvar = IntPrimitive",
+                    "context MyCtx on SupportBean(IntPrimitive < 0) set mycontextvar = IntPrimitive",
                     path);
 
                 env.CompileDeploy(
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create context MyCtxOne as partition by theString from SupportBean", path);
+                env.CompileDeploy("create context MyCtxOne as partition by TheString from SupportBean", path);
                 env.CompileDeploy("create context MyCtxTwo as partition by p00 from SupportBean_S0", path);
                 env.CompileDeploy("context MyCtxOne create variable int myctxone_int = 0", path);
 
@@ -385,7 +385,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TryInvalidCompile(
                     env,
                     path,
-                    "context MyCtx create variable int mycontext_invalid1 = 0",
+                    "context MyCtx create variable int mycontext_invalId1 = 0",
                     "Context by name 'MyCtx' could not be found");
 
                 // wrong context uses variable
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TryInvalidCompile(
                     env,
                     path,
-                    "@Hint('reclaim_group_aged=myctxone_int') select longPrimitive, count(*) from SupportBean group by LongPrimitive",
+                    "@Hint('reclaim_group_aged=myctxone_int') select LongPrimitive, count(*) from SupportBean group by LongPrimitive",
                     "Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context");
 
                 env.UndeployAll();

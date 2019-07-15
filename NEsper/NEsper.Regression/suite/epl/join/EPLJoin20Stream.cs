@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             var delimiter = "";
             for (var i = 0; i < 20; i++) {
                 buf.Append(delimiter);
-                buf.Append("SupportBean_S0(id=" + i + ")#lastevent as s_" + i);
+                buf.Append("SupportBean_S0(Id=" + i + ")#lastevent as s_" + i);
                 delimiter = ", ";
             }
 

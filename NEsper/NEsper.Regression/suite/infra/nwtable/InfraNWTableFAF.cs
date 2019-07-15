@@ -104,8 +104,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             RegressionPath path)
         {
             TryAssertionIn(env, path, "theString in ('E2', 'E3') and IntPrimitive in (10, 20)", new[] {200L});
-            TryAssertionIn(env, path, "IntPrimitive in (30, 20) and theString in ('E4', 'E1')", new long[] { });
-            TryAssertionIn(env, path, "IntPrimitive in (30, 20) and theString in ('E2', 'E1')", new[] {200L});
+            TryAssertionIn(env, path, "IntPrimitive in (30, 20) and TheString in ('E4', 'E1')", new long[] { });
+            TryAssertionIn(env, path, "IntPrimitive in (30, 20) and TheString in ('E2', 'E1')", new[] {200L});
             TryAssertionIn(
                 env,
                 path,
@@ -166,12 +166,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var path = new RegressionPath();
             var eplCreate = namedWindow
                 ? "@Name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
-                : "@Name('TheInfra') create table MyInfra as (theString string primary key, IntPrimitive int primary key, longPrimitive long)";
+                : "@Name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
             env.CompileDeploy(eplCreate, path);
             var eplInsert = namedWindow
                 ? "@Name('Insert') insert into MyInfra select * from SupportBean"
                 : "@Name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
-                  " when not matched then insert select TheString, IntPrimitive, longPrimitive";
+                  " when not matched then insert select TheString, IntPrimitive, LongPrimitive";
             env.CompileDeploy(eplInsert, path);
             return path;
         }
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             RegressionPath path,
             string query)
         {
-            var fields = "theString,intPrimitive".SplitCsv();
+            var fields = "theString,IntPrimitive".SplitCsv();
             var result = env.CompileExecuteFAF(query, path);
             EPAssertionUtil.AssertPropsPerRow(
                 result.GetEnumerator(),
@@ -396,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(MakeBean("E2", 0, 10));
                 env.SendEventBean(MakeBean("E3", 0, 11));
 
-                query = "select distinct longPrimitive from MyInfra order by longPrimitive asc";
+                query = "select distinct LongPrimitive from MyInfra order by LongPrimitive asc";
                 fields = "LongPrimitive".SplitCsv();
                 result = env.CompileExecuteFAF(query, path);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -442,13 +442,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("E2", 11));
                 env.SendEventBean(new SupportBean("E3", 5));
 
-                var query = "select * from MyInfra(intPrimitive > 1, IntPrimitive < 10)";
+                var query = "select * from MyInfra(IntPrimitive > 1, IntPrimitive < 10)";
                 RunAssertionFilter(env, path, query);
 
-                query = "select * from MyInfra(intPrimitive > 1) where IntPrimitive < 10";
+                query = "select * from MyInfra(IntPrimitive > 1) where IntPrimitive < 10";
                 RunAssertionFilter(env, path, query);
 
-                query = "select * from MyInfra where intPrimitive < 10 and IntPrimitive > 1";
+                query = "select * from MyInfra where IntPrimitive < 10 and IntPrimitive > 1";
                 RunAssertionFilter(env, path, query);
 
                 env.UndeployAll();
@@ -493,12 +493,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     epl,
                     "Output rate limiting is not a supported feature of on-demand queries [select * from MyInfra output every 10 seconds]");
 
-                epl = "select prev(1, theString) from MyInfra";
+                epl = "select prev(1, TheString) from MyInfra";
                 TryInvalidFAFCompile(
                     env,
                     path,
                     epl,
-                    "Failed to validate select-clause expression 'prev(1,theString)': Previous function cannot be used in this context [select prev(1, theString) from MyInfra]");
+                    "Failed to valIdate select-clause expression 'prev(1,TheString)': Previous function cannot be used in this context [select prev(1, TheString) from MyInfra]");
 
                 epl = "insert into MyInfra(IntPrimitive) select 'a'";
                 if (namedWindow) {
@@ -506,22 +506,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env,
                         path,
                         epl,
-                        "Invalid assignment of column 'intPrimitive' of type 'System.String' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                        "InvalId assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
                 }
                 else {
                     TryInvalidFAFCompile(
                         env,
                         path,
                         epl,
-                        "Invalid assignment of column 'intPrimitive' of type 'System.String' to event property 'intPrimitive' typed as 'System.Integer', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                        "InvalId assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'System.Integer', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
                 }
 
-                epl = "insert into MyInfra(intPrimitive, theString) select 1";
+                epl = "insert into MyInfra(IntPrimitive, TheString) select 1";
                 TryInvalidFAFCompile(
                     env,
                     path,
                     epl,
-                    "Number of supplied values in the select or values clause does not match insert-into clause [insert into MyInfra(intPrimitive, theString) select 1]");
+                    "Number of supplied values in the select or values clause does not match insert-into clause [insert into MyInfra(IntPrimitive, TheString) select 1]");
 
                 epl = "insert into MyInfra select 1 as IntPrimitive from MyInfra";
                 TryInvalidFAFCompile(
@@ -530,12 +530,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     epl,
                     "Insert-into fire-and-forget query can only consist of an insert-into clause and a select-clause [insert into MyInfra select 1 as IntPrimitive from MyInfra]");
 
-                epl = "insert into MyInfra(intPrimitive, theString) values (1, 'a', 1)";
+                epl = "insert into MyInfra(IntPrimitive, TheString) values (1, 'a', 1)";
                 TryInvalidFAFCompile(
                     env,
                     path,
                     epl,
-                    "Number of supplied values in the select or values clause does not match insert-into clause [insert into MyInfra(intPrimitive, theString) values (1, 'a', 1)]");
+                    "Number of supplied values in the select or values clause does not match insert-into clause [insert into MyInfra(IntPrimitive, TheString) values (1, 'a', 1)]");
 
                 if (namedWindow) {
                     epl = "select * from pattern [every MyInfra]";
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "Provided EPL expression is a continuous query expression (not an on-demand query)");
+                    "ProvIded EPL expression is a continuous query expression (not an on-demand query)");
 
                 env.UndeployAll();
             }
@@ -853,11 +853,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var eplSecondCreate = isSecondNW
                     ? "create window MySecondInfra#keepall as select * from SupportBean_A"
-                    : "create table MySecondInfra as (id string primary key)";
+                    : "create table MySecondInfra as (Id string primary key)";
                 env.CompileDeploy(eplSecondCreate, path);
                 var eplSecondFill = isSecondNW
                     ? "insert into MySecondInfra select * from SupportBean_A "
-                    : "on SupportBean_A sba merge MySecondInfra msi where msi.id = sba.id when not matched then insert select id";
+                    : "on SupportBean_A sba merge MySecondInfra msi where msi.Id = sba.Id when not matched then insert select Id";
                 env.CompileDeploy(eplSecondFill, path);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -869,8 +869,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean_A("E2"));
                 string[] fields = {"TheString", "IntPrimitive", "id"};
 
-                var query = "select TheString, IntPrimitive, id from MyInfra nw1, " +
-                            "MySecondInfra nw2 where nw1.TheString = nw2.id";
+                var query = "select TheString, IntPrimitive, Id from MyInfra nw1, " +
+                            "MySecondInfra nw2 where nw1.TheString = nw2.Id";
                 var result = env.CompileExecuteFAF(query, path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.GetEnumerator(),
@@ -910,7 +910,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 string[] fields = {"TheString", "total"};
 
                 var query =
-                    "select TheString, sum(IntPrimitive) as total from MyInfra group by TheString order by theString asc";
+                    "select TheString, sum(IntPrimitive) as total from MyInfra group by TheString order by TheString asc";
                 var result = env.CompileExecuteFAF(query, path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.GetEnumerator(),
@@ -956,7 +956,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.UndeployModuleContaining("stmtIdx1");
 
                 // backwards index
-                env.CompileDeploy("@Name('stmtIdx2') create index Idx2 on MyInfra(intPrimitive, theString)", path);
+                env.CompileDeploy("@Name('stmtIdx2') create index Idx2 on MyInfra(IntPrimitive, TheString)", path);
                 RunAssertionIn(env, path);
                 env.UndeployModuleContaining("stmtIdx2");
 
@@ -1156,7 +1156,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 var stmtTextInsert =
-                    "insert into MyInfra(key, value) select irstream theString, intBoxed from SupportBean";
+                    "insert into MyInfra(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 env.Milestone(0);
@@ -1232,7 +1232,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var eplCreate = namedWindow
                     ? "context MyCtx create window CtxInfra#keepall as SupportBean"
-                    : "context MyCtx create table CtxInfra (theString string primary key, IntPrimitive int primary key)";
+                    : "context MyCtx create table CtxInfra (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
                 var eplPopulate = namedWindow
                     ? "context MyCtx insert into CtxInfra select * from SupportBean"
@@ -1257,14 +1257,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 CompileExecuteFAF(
                     env,
                     path,
-                    "delete from CtxInfra where theString = 'E0'",
+                    "delete from CtxInfra where TheString = 'E0'",
                     new ContextPartitionSelector[] {new SupportSelectorByHashCode(1)});
                 AssertCtxInfraCountPerCode(env, path, new long[] {0, 2, 1, 2});
 
                 var result = CompileExecuteFAF(
                     env,
                     path,
-                    "delete from CtxInfra where theString = 'E0'",
+                    "delete from CtxInfra where TheString = 'E0'",
                     new ContextPartitionSelector[] {new SupportSelectorByHashCode(3)});
                 AssertCtxInfraCountPerCode(env, path, new long[] {0, 2, 1, 1});
                 if (namedWindow) {
@@ -1278,14 +1278,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 CompileExecuteFAF(
                     env,
                     path,
-                    "delete from CtxInfra where theString = 'E1'",
+                    "delete from CtxInfra where TheString = 'E1'",
                     new ContextPartitionSelector[] {new SupportSelectorByHashCode(0)});
                 AssertCtxInfraCountPerCode(env, path, new long[] {0, 2, 1, 1});
 
                 CompileExecuteFAF(
                     env,
                     path,
-                    "delete from CtxInfra where theString = 'E1'",
+                    "delete from CtxInfra where TheString = 'E1'",
                     new ContextPartitionSelector[] {new SupportSelectorByHashCode(1)});
                 AssertCtxInfraCountPerCode(env, path, new long[] {0, 1, 1, 1});
                 env.UndeployAll();
@@ -1364,7 +1364,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 Assert.AreEqual(10L, GetMyInfraCount(env, path));
-                var eplWithWhere = "delete from MyInfra where theString=\"E1\"";
+                var eplWithWhere = "delete from MyInfra where TheString=\"E1\"";
                 var modelWithWhere = env.EplToModel(eplWithWhere);
                 Assert.AreEqual(eplWithWhere, modelWithWhere.ToEPL());
                 result = env.CompileExecuteFAF(modelWithWhere, path);
@@ -1396,21 +1396,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunQueryAssertCount(
                     env,
                     path,
-                    INDEX_CALLBACK_HOOK + "delete from MyInfra where theString = 'E1' and IntPrimitive = 0",
+                    INDEX_CALLBACK_HOOK + "delete from MyInfra where TheString = 'E1' and IntPrimitive = 0",
                     5,
                     namedWindow ? "Idx1" : "MyInfra",
                     namedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
                 RunQueryAssertCount(
                     env,
                     path,
-                    INDEX_CALLBACK_HOOK + "delete from MyInfra where theString = 'E1' and IntPrimitive = 1",
+                    INDEX_CALLBACK_HOOK + "delete from MyInfra where TheString = 'E1' and IntPrimitive = 1",
                     4,
                     namedWindow ? "Idx1" : "MyInfra",
                     namedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
                 RunQueryAssertCount(
                     env,
                     path,
-                    INDEX_CALLBACK_HOOK + "delete from MyInfra where theString = 'E2'",
+                    INDEX_CALLBACK_HOOK + "delete from MyInfra where TheString = 'E2'",
                     3,
                     namedWindow ? "Idx1" : null,
                     namedWindow ? BACKING_SINGLE_UNIQUE : null);
@@ -1468,7 +1468,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.SendEventBean(new SupportBean("E" + i, i));
                 }
 
-                var result = CompileExecute("update MyInfra set theString = 'ABC'", path, env);
+                var result = CompileExecute("update MyInfra set TheString = 'ABC'", path, env);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("TheInfra"),
                     fields,
@@ -1487,7 +1487,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 result = env.CompileExecuteFAF(
-                    "update MyInfra set theString = 'X', intPrimitive=-1 where theString = 'E1' and IntPrimitive = 1",
+                    "update MyInfra set TheString = 'X', IntPrimitive=-1 where TheString = 'E1' and IntPrimitive = 1",
                     path);
                 if (namedWindow) {
                     EPAssertionUtil.AssertPropsPerRow(
@@ -1502,7 +1502,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {new object[] {"E0", 0}, new object[] {"E2", 2}, new object[] {"X", -1}});
 
                 // test update with SODA
-                var epl = "update MyInfra set IntPrimitive=intPrimitive+10 where theString=\"E2\"";
+                var epl = "update MyInfra set IntPrimitive=IntPrimitive+10 where TheString=\"E2\"";
                 var model = env.EplToModel(epl);
                 Assert.AreEqual(epl, model.ToEPL());
                 result = env.CompileExecuteFAF(model, path);
@@ -1520,7 +1520,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // test update with initial value
                 result = env.CompileExecuteFAF(
-                    "update MyInfra set intPrimitive=5, theString='x', theString = initial.TheString || 'y', IntPrimitive=initial.IntPrimitive+100 where theString = 'E0'",
+                    "update MyInfra set IntPrimitive=5, TheString='x', TheString = initial.TheString || 'y', IntPrimitive=initial.IntPrimitive+100 where TheString = 'E0'",
                     path);
                 if (namedWindow) {
                     EPAssertionUtil.AssertPropsPerRow(
@@ -1548,7 +1548,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     INDEX_CALLBACK_HOOK +
-                    "update MyInfra set intPrimitive=-1 where theString = 'E1' and IntPrimitive = 0",
+                    "update MyInfra set IntPrimitive=-1 where TheString = 'E1' and IntPrimitive = 0",
                     5,
                     namedWindow ? "Idx1" : "MyInfra",
                     namedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
@@ -1556,21 +1556,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     INDEX_CALLBACK_HOOK +
-                    "update MyInfra set intPrimitive=-1 where theString = 'E1' and IntPrimitive = 1",
+                    "update MyInfra set IntPrimitive=-1 where TheString = 'E1' and IntPrimitive = 1",
                     4,
                     namedWindow ? "Idx1" : "MyInfra",
                     namedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
                 RunQueryAssertCountNonNegative(
                     env,
                     path,
-                    INDEX_CALLBACK_HOOK + "update MyInfra set IntPrimitive=-1 where theString = 'E2'",
+                    INDEX_CALLBACK_HOOK + "update MyInfra set IntPrimitive=-1 where TheString = 'E2'",
                     3,
                     namedWindow ? "Idx1" : null,
                     namedWindow ? BACKING_SINGLE_UNIQUE : null);
                 RunQueryAssertCountNonNegative(
                     env,
                     path,
-                    INDEX_CALLBACK_HOOK + "update MyInfra set intPrimitive=-1 where IntPrimitive = 4",
+                    INDEX_CALLBACK_HOOK + "update MyInfra set IntPrimitive=-1 where IntPrimitive = 4",
                     2,
                     null,
                     null);
@@ -1586,7 +1586,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // test consumption
                 env.CompileDeploy("@Name('s0') select irstream * from MyInfra", path).AddListener("s0");
-                env.CompileExecuteFAF("update MyInfra set IntPrimitive=1000 where theString = 'E0'", path);
+                env.CompileExecuteFAF("update MyInfra set IntPrimitive=1000 where TheString = 'E0'", path);
                 if (namedWindow) {
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertPairGetIRAndReset(),
@@ -1602,7 +1602,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.CompileExecuteFAF("update MyInfra mw set mw.setTheString('XYZ'), doubleInt(mw)", path);
                     EPAssertionUtil.AssertPropsPerRow(
                         env.GetEnumerator("TheInfra"),
-                        "theString,intPrimitive".SplitCsv(),
+                        "theString,IntPrimitive".SplitCsv(),
                         new[] {new object[] {"XYZ", 20}});
                 }
 
@@ -1624,7 +1624,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = SetupInfra(env, namedWindow);
 
                 Supplier<EPStatement> stmt = () => env.Statement("TheInfra");
-                var propertyNames = "theString,intPrimitive".SplitCsv();
+                var propertyNames = "theString,IntPrimitive".SplitCsv();
 
                 // try column name provided with insert-into
                 var eplSelect = "insert into MyInfra (TheString, IntPrimitive) select 'a', 1";
@@ -1641,7 +1641,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {new object[] {"a", 1}});
 
                 // try SODA and column name not provided with insert-into
-                var eplTwo = "insert into MyInfra select \"b\" as theString, 2 as IntPrimitive";
+                var eplTwo = "insert into MyInfra select \"b\" as TheString, 2 as IntPrimitive";
                 var modelWSelect = env.EplToModel(eplTwo);
                 Assert.AreEqual(eplTwo, modelWSelect.ToEPL());
                 var resultTwo = env.CompileExecuteFAF(modelWSelect, path);
@@ -1659,7 +1659,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create unique index, insert duplicate row
                 env.CompileDeploy("create unique index I1 on MyInfra (TheString)", path);
                 try {
-                    var eplThree = "insert into MyInfra (TheString) select 'a' as theString";
+                    var eplThree = "insert into MyInfra (TheString) select 'a' as TheString";
                     env.CompileExecuteFAF(eplThree, path);
                 }
                 catch (EPException ex) {

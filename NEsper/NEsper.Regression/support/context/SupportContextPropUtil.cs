@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.support.context
                     actual = ((EventBean) actual).Underlying;
                 }
 
-                Assert.AreEqual(expected, actual, "Mismatch id " + id + " field " + field);
+                Assert.AreEqual(expected, actual, "Mismatch Id " + id + " field " + field);
             }
         }
     }

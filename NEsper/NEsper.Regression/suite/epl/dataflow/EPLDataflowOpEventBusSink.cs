@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryInvalidCompile(
                     env,
                     "create dataflow DF1 EventBusSink => s1 {}",
-                    "Failed to obtain operator 'EventBusSink': EventBusSink operator does not provide an output stream");
+                    "Failed to obtain operator 'EventBusSink': EventBusSink operator does not provIde an output stream");
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create schema SampleSchema(tagId string, locX double, locY double)", path);

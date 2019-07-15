@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string a,
             string b)
         {
-            var fields = "aid,bid".SplitCsv();
+            var fields = "aId,bId".SplitCsv();
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string b,
             string c)
         {
-            var fields = "a.id,b.id,c.id".SplitCsv();
+            var fields = "a.Id,b.Id,c.Id".SplitCsv();
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string c,
             string d)
         {
-            var fields = "aid,bid,cid,did".SplitCsv();
+            var fields = "aId,bId,cId,dId".SplitCsv();
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -90,20 +90,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // no-view-declared
                 TryInvalidCompile(
                     env,
-                    "select * from SupportBean_A unidirectional full outer join SupportBean_B#keepall unidirectional",
-                    "The unidirectional keyword requires that no views are declared onto the stream (applies to stream 1)");
+                    "select * from SupportBean_A unIdirectional full outer join SupportBean_B#keepall unIdirectional",
+                    "The unIdirectional keyword requires that no views are declared onto the stream (applies to stream 1)");
 
                 // not-all-unidirectional
                 TryInvalidCompile(
                     env,
-                    "select * from SupportBean_A unidirectional full outer join SupportBean_B unidirectional full outer join SupportBean_C#keepall",
-                    "The unidirectional keyword must either apply to a single stream or all streams in a full outer join");
+                    "select * from SupportBean_A unIdirectional full outer join SupportBean_B unIdirectional full outer join SupportBean_C#keepall",
+                    "The unIdirectional keyword must either apply to a single stream or all streams in a full outer join");
 
                 // no iterate
                 TryInvalidIterate(
                     env,
-                    "@Name('s0') select * from SupportBean_A unidirectional full outer join SupportBean_B unidirectional",
-                    "Iteration over a unidirectional join is not supported");
+                    "@Name('s0') select * from SupportBean_A unIdirectional full outer join SupportBean_B unIdirectional",
+                    "Iteration over a unIdirectional join is not supported");
             }
         }
 
@@ -111,8 +111,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select a.id as aid, b.id as bid from SupportBean_A as a unidirectional " +
-                          "full outer join SupportBean_B as b unidirectional";
+                var epl = "@Name('s0') select a.Id as aId, b.Id as bId from SupportBean_A as a unIdirectional " +
+                          "full outer join SupportBean_B as b unIdirectional";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -142,9 +142,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean_A as a unidirectional " +
-                          "full outer join SupportBean_B as b unidirectional " +
-                          "full outer join SupportBean_C as c unidirectional";
+                var epl = "@Name('s0') select * from SupportBean_A as a unIdirectional " +
+                          "full outer join SupportBean_B as b unIdirectional " +
+                          "full outer join SupportBean_C as c unIdirectional";
 
                 env.CompileDeploy(soda, epl).AddListener("s0").Milestone(0);
 
@@ -176,12 +176,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var epl = "create window MyCWindow#keepall as SupportBean_C;\n" +
                           "insert into MyCWindow select * from SupportBean_C;\n" +
-                          "@Name('s0') select a.id as aid, b.id as bid, MyCWindow.id as cid, SupportBean_D.id as did " +
-                          "from pattern[every a=SupportBean_A => b=SupportBean_B] t1 unidirectional " +
+                          "@Name('s0') select a.Id as aId, b.Id as bId, MyCWindow.Id as cId, SupportBean_D.Id as dId " +
+                          "from pattern[every a=SupportBean_A => b=SupportBean_B] t1 unIdirectional " +
                           "full outer join " +
-                          "MyCWindow unidirectional " +
+                          "MyCWindow unIdirectional " +
                           "full outer join " +
-                          "SupportBean_D unidirectional;\n";
+                          "SupportBean_D unIdirectional;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean_C("c1"));
@@ -206,11 +206,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean_A as a unidirectional " +
-                          "full outer join SupportBean_B as b unidirectional " +
-                          "full outer join SupportBean_C as c unidirectional " +
-                          "full outer join SupportBean_D as d unidirectional " +
-                          "where coalesce(a.id,b.id,c.id,d.id) in ('YES')";
+                var epl = "@Name('s0') select * from SupportBean_A as a unIdirectional " +
+                          "full outer join SupportBean_B as b unIdirectional " +
+                          "full outer join SupportBean_C as c unIdirectional " +
+                          "full outer join SupportBean_D as d unIdirectional " +
+                          "where coalesce(a.Id,b.Id,c.Id,d.Id) in ('YES')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendAssert(env, new SupportBean_A("A1"), false);

@@ -339,7 +339,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 // test optional event not defined
                 var epl = "@Name('s0') select * from SupportBean_A match_recognize (" +
-                          "measures A.id as id, B.id as b_id " +
+                          "measures A.Id as Id, B.Id as b_Id " +
                           "pattern (A B?) " +
                           "define " +
                           " A as typeof(A) = 'SupportBean_A'" +
@@ -360,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,a_value,b_value".SplitCsv();
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by theString" +
+                           "  partition by TheString" +
                            "  measures A.TheString as a_string, A.value as a_value, B.value as b_value " +
                            "  all matches pattern (A B) " +
                            "  define B as (B.value > A.value)" +
@@ -685,11 +685,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                Assert.IsTrue("aq".Matches("^aq|^id"));
-                Assert.IsTrue("id".Matches("^aq|^id"));
+                Assert.IsTrue("aq".Matches("^aq|^Id"));
+                Assert.IsTrue("id".Matches("^aq|^Id"));
                 Assert.IsTrue("ad".Matches("a(q|i)?d"));
                 Assert.IsTrue("aqd".Matches("a(q|i)?d"));
-                Assert.IsTrue("aid".Matches("a(q|i)?d"));
+                Assert.IsTrue("aId".Matches("a(q|i)?d"));
                 Assert.IsFalse("aed".Matches("a(q|i)?d"));
                 Assert.IsFalse("a".Matches("(a(b?)c)?"));
             }

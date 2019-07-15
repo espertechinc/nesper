@@ -65,9 +65,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var eplMerge = "on SupportBean merge varaggIUD" +
                            " when not matched then" +
                            " insert select TheString as p0" +
-                           " when matched and theString like \"U%\" then" +
+                           " when matched and TheString like \"U%\" then" +
                            " update set p0=\"updated\"" +
-                           " when matched and theString like \"D%\" then" +
+                           " when matched and TheString like \"D%\" then" +
                            " delete";
             env.CompileDeploy(soda, eplMerge, path);
 
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = "c0,c1,c2,c3".SplitCsv();
             var eplRead =
-                "@Name('s0') select varaggMIU[id].p0 as c0, varaggMIU[id].p1 as c1, varaggMIU[id].p2 as c2, varaggMIU[id].sumint as c3 from SupportBean_S0";
+                "@Name('s0') select varaggMIU[Id].p0 as c0, varaggMIU[Id].p1 as c1, varaggMIU[Id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -162,9 +162,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                            " where IntPrimitive=key" +
                            " when not matched then" +
                            " insert select IntPrimitive as key, \"v1\" as p0, 1000 as p1, {1,2} as p2" +
-                           " when matched and theString like \"U%\" then" +
+                           " when matched and TheString like \"U%\" then" +
                            " update set p0=\"v2\", p1=2000, p2={3,4}" +
-                           " when matched and theString like \"D%\" then" +
+                           " when matched and TheString like \"D%\" then" +
                            " delete";
             env.CompileDeploy(soda, eplMerge, path).AddListener("merge");
 
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             // also aggregate-into the same key
             env.CompileDeploy(
                 soda,
-                "into table varaggMIU select sum(50) as sumint from SupportBean_S1 group by id",
+                "into table varaggMIU select sum(50) as sumint from SupportBean_S1 group by Id",
                 path);
             env.SendEventBean(new SupportBean_S1(10));
 
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = "c0,c1,c2".SplitCsv();
             var eplRead =
-                "@Name('s0') select varaggMIUD[id,p00].keyOne as c0, varaggMIUD[id,p00].keyTwo as c1, varaggMIUD[id,p00].prop as c2 from SupportBean_S0";
+                "@Name('s0') select varaggMIUD[Id,p00].keyOne as c0, varaggMIUD[Id,p00].keyTwo as c1, varaggMIUD[Id,p00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -267,12 +267,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // create merge
             var eplMerge = "@Name('merge') on SupportBean merge varaggMIUD" +
-                           " where IntPrimitive=keyOne and theString=keyTwo" +
+                           " where IntPrimitive=keyOne and TheString=keyTwo" +
                            " when not matched then" +
                            " insert select IntPrimitive as keyOne, TheString as keyTwo, \"inserted\" as prop" +
-                           " when matched and longPrimitive>0 then" +
+                           " when matched and LongPrimitive>0 then" +
                            " update set prop=\"updated\"" +
-                           " when matched and longPrimitive<0 then" +
+                           " when matched and LongPrimitive<0 then" +
                            " delete";
             env.CompileDeploy(soda, eplMerge, path);
             object[][] expectedType = {

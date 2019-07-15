@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
 
                 var expression =
-                    "@Name('s0') select symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
                 env.CompileDeploy(expression).AddListener("s0");
                 TryAssertion(env, 1);
                 env.UndeployAll();
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
 
                 var expression =
-                    "@Name('s0') select symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create("Symbol");
                 model.FromClause = FromClause.Create(
@@ -394,10 +394,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 SendTimeEvent(env, 1, 8, 0, 0, 0);
-                env.CompileDeploy("on SupportBean set myint = IntPrimitive, mystring = theString");
+                env.CompileDeploy("on SupportBean set myint = IntPrimitive, mystring = TheString");
 
                 var expression =
-                    "@Name('s0') select symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
+                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
                 env.CompileDeploy(expression);
                 var stmt = env.Statement("s0");
                 var subscriber = new SupportSubscriber();
@@ -439,7 +439,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@Name('s0') select symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
+                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
                 var stmt = env.CompileDeploy(expression).Statement("s0");
                 var subscriber = new SupportSubscriber();
                 stmt.Subscriber = subscriber;
@@ -474,7 +474,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@Name('s0') select symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
+                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
                 var stmt = env.CompileDeploy(expression).Statement("s0");
                 var subscriber = new SupportSubscriber();
                 stmt.Subscriber = subscriber;
@@ -508,7 +508,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimeEvent(env, 1, 8, 0, 0, 0);
                 var expression =
-                    "@Name('s0') select symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
+                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
                 var stmt = env.CompileDeploy(expression).Statement("s0");
                 var subscriber = new SupportSubscriber();
                 stmt.Subscriber = subscriber;
@@ -570,7 +570,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when sum(price) > 0",
-                    "Failed to validate output limit expression '(sum(price))>0': Property named 'price' is not valid in any stream [select * from SupportMarketDataBean output when sum(price) > 0]");
+                    "Failed to valIdate output limit expression '(sum(price))>0': Property named 'price' is not valId in any stream [select * from SupportMarketDataBean output when sum(price) > 0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -580,12 +580,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when prev(1, count_insert) = 0",
-                    "Failed to validate output limit expression 'prev(1,count_insert)=0': Previous function cannot be used in this context [select * from SupportMarketDataBean output when prev(1, count_insert) = 0]");
+                    "Failed to valIdate output limit expression 'prev(1,count_insert)=0': Previous function cannot be used in this context [select * from SupportMarketDataBean output when prev(1, count_insert) = 0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds",
-                    "Invalid time period expression returns a zero or negative time interval [select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds]");
+                    "InvalId time period expression returns a zero or negative time interval [select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds]");
             }
         }
     }

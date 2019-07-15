@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var fields = "a.TheString,b.TheString".SplitCsv();
                 var epl =
-                    "@Name('s0') select * from SupportBean(theString like 'A%')#length(3) as a inner join SupportBean(theString like 'B%')#length(3) as b " +
+                    "@Name('s0') select * from SupportBean(TheString like 'A%')#length(3) as a inner join SupportBean(TheString like 'B%')#length(3) as b " +
                     "where a.IntPrimitive = b.IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"stream_0.volume", "stream_1.longBoxed"};
+                string[] fields = {"stream_0.Volume", "stream_1.LongBoxed"};
                 var joinStatement = "@Name('s0') select * from " +
                                     "SupportMarketDataBean#length(3)," +
                                     "SupportBean#length(3)";

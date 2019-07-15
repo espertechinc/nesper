@@ -58,8 +58,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test property hosts a method
                 env.CompileDeploy(
-                        "@Name('s0') select inside.getMyString() as val," +
-                        "inside.insideTwo.getMyOtherString() as val2 " +
+                        "@Name('s0') select insIde.getMyString() as val," +
+                        "insIde.insIdeTwo.getMyOtherString() as val2 " +
                         "from SupportBeanStaticOuter")
                     .AddListener("s0");
 
@@ -95,10 +95,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var prefix = "@Name('s0') select * from SupportMarketDataBean as s0 where " +
                              typeof(SupportStaticMethodLib).Name;
-                TryAssertionStreamFunction(env, prefix + ".volumeGreaterZero(s0)");
-                TryAssertionStreamFunction(env, prefix + ".volumeGreaterZero(*)");
-                TryAssertionStreamFunction(env, prefix + ".volumeGreaterZeroEventBean(s0)");
-                TryAssertionStreamFunction(env, prefix + ".volumeGreaterZeroEventBean(*)");
+                TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(s0)");
+                TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(*)");
+                TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZeroEventBean(s0)");
+                TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZeroEventBean(*)");
             }
 
             private static void TryAssertionStreamFunction(
@@ -120,10 +120,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var textOne = "@Name('s0') select symbol, s1.getTheString() as theString from " +
+                var textOne = "@Name('s0') select Symbol, s1.getTheString() as TheString from " +
                               "SupportMarketDataBean#keepall as s0 " +
                               "left outer join " +
-                              "SupportBean#keepall as s1 on s0.symbol=s1.TheString";
+                              "SupportBean#keepall as s1 on s0.Symbol=s1.TheString";
                 env.CompileDeploy(textOne).AddListener("s0");
 
                 var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
@@ -142,10 +142,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var textOne =
-                    "@Name('s0') select symbol, s1.getSimpleProperty() as simpleprop, s1.makeDefaultBean() as def from " +
+                    "@Name('s0') select Symbol, s1.getSimpleProperty() as simpleprop, s1.makeDefaultBean() as def from " +
                     "SupportMarketDataBean#keepall as s0 " +
                     "left outer join " +
-                    "SupportBeanComplexProps#keepall as s1 on s0.symbol=s1.simpleProperty";
+                    "SupportBeanComplexProps#keepall as s1 on s0.Symbol=s1.simpleProperty";
                 env.CompileDeploy(textOne).AddListener("s0");
 
                 var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var textOne =
-                    "@Name('s0') select s0.getVolume() as volume, s0.getSymbol() as symbol, s0.getPriceTimesVolume(2) as pvf from " +
+                    "@Name('s0') select s0.getVolume() as Volume, s0.getSymbol() as Symbol, s0.getPriceTimesVolume(2) as pvf from " +
                     "SupportMarketDataBean as s0 ";
                 env.CompileDeploy(textOne).AddListener("s0");
 
@@ -223,8 +223,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           typeof(MyTestEvent).Name +
                           ";\n" +
                           "@Name('s0') select " +
-                          "s0.getValueAsInt(s0, 'id') as c0," +
-                          "s0.getValueAsInt(*, 'id') as c1" +
+                          "s0.getValueAsInt(s0, 'Id') as c0," +
+                          "s0.getValueAsInt(*, 'Id') as c1" +
                           " from MyTestEvent as s0";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
@@ -328,14 +328,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     "select s0.abc() from SupportBean as s0",
-                    "Failed to validate select-clause expression 's0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method or instance method named 'abc' in class '" +
+                    "Failed to valIdate select-clause expression 's0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method or instance method named 'abc' in class '" +
                     typeof(SupportBean).Name +
                     "' taking no parameters [");
 
                 TryInvalidCompile(
                     env,
                     "select s.TheString from pattern [every [2] s=SupportBean] ee",
-                    "Failed to validate select-clause expression 's.TheString': Failed to resolve property 's.TheString' (property 's' is an indexed property and requires an index or enumeration method to access values)");
+                    "Failed to valIdate select-clause expression 's.TheString': Failed to resolve property 's.TheString' (property 's' is an indexed property and requires an index or enumeration method to access values)");
             }
         }
 

@@ -255,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 var theEvent = env.GetEnumerator("s0").Advance();
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    "rootId,p0.p0id,p0.p1.p1id".SplitCsv(),
+                    "rootId,p0.p0Id,p0.p1.p1Id".SplitCsv(),
                     new object[] {10, 100, 1000});
 
                 env.UndeployAll();

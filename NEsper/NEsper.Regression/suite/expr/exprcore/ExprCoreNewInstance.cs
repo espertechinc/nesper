@@ -41,12 +41,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select new Dummy() from SupportBean",
-                    "Failed to validate select-clause expression 'new Dummy()': Failed to resolve new-operator class name 'Dummy'");
+                    "Failed to valIdate select-clause expression 'new Dummy()': Failed to resolve new-operator class name 'Dummy'");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select new SupportPrivateCtor() from SupportBean",
-                    "Failed to validate select-clause expression 'new SupportPrivateCtor()': Failed to find a suitable constructor for class ");
+                    "Failed to valIdate select-clause expression 'new SupportPrivateCtor()': Failed to find a suitable constructor for class ");
 
                 env.UndeployAll();
             }
@@ -80,15 +80,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "new SupportBean(\"A\",intPrimitive) as c0, " +
-                          "new SupportBean(\"B\",intPrimitive+10), " +
+                          "new SupportBean(\"A\",IntPrimitive) as c0, " +
+                          "new SupportBean(\"B\",IntPrimitive+10), " +
                           "new SupportBean() as c2, " +
                           "new SupportBean(\"ABC\",0).getTheString() as c3 " +
                           "from SupportBean";
                 env.CompileDeploy(soda, epl).AddListener("s0");
                 object[][] expectedAggType = {
                     new object[] {"c0", typeof(SupportBean)},
-                    new object[] {"new SupportBean(\"B\",intPrimitive+10)", typeof(SupportBean)}
+                    new object[] {"new SupportBean(\"B\",IntPrimitive+10)", typeof(SupportBean)}
                 };
                 SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                     expectedAggType,
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     @event.Get("c0"),
                     new object[] {"A", 10});
                 AssertSupportBean(
-                    ((IDictionary<string, object>) @event.Underlying).Get("new SupportBean(\"B\",intPrimitive+10)"),
+                    ((IDictionary<string, object>) @event.Underlying).Get("new SupportBean(\"B\",IntPrimitive+10)"),
                     new object[] {"B", 20});
                 AssertSupportBean(
                     @event.Get("c2"),

@@ -47,12 +47,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var path = new RegressionPath();
             var eplCreate = namedWindow
                 ? "@Name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
-                : "@Name('TheInfra') create table MyInfra as (theString string primary key, IntPrimitive int primary key, longPrimitive long)";
+                : "@Name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
             env.CompileDeploy(eplCreate, path);
             var eplInsert = namedWindow
                 ? "@Name('Insert') insert into MyInfra select * from SupportBean"
                 : "@Name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
-                  " when not matched then insert select TheString, IntPrimitive, longPrimitive";
+                  " when not matched then insert select TheString, IntPrimitive, LongPrimitive";
             env.CompileDeploy(eplInsert, path);
 
             for (var i = 0; i < 10; i++) {
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     Collections.SingletonDataMap("p0", 5),
                     new[] {"E5"});
 
-                var eplTwiceUsed = "select * from MyInfra where IntPrimitive = ?:p0:int or intBoxed = ?:p0:int";
+                var eplTwiceUsed = "select * from MyInfra where IntPrimitive = ?:p0:int or IntBoxed = ?:p0:int";
                 RunParameterizedQueryWCompile(
                     env,
                     path,
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     Collections.SingletonDataMap("p0", 12),
                     new[] {"E2"});
 
-                var eplTwoParam = "select * from MyInfra where IntPrimitive = ?:p1:int and intBoxed = ?:p0:int";
+                var eplTwoParam = "select * from MyInfra where IntPrimitive = ?:p1:int and IntBoxed = ?:p0:int";
                 query = CompilePrepare(eplTwoParam, path, env);
                 RunParameterizedQuery(env, query, CollectionUtil.PopulateNameValueMap("p0", 13, "p1", 3), new[] {"E3"});
                 RunParameterizedQuery(env, query, CollectionUtil.PopulateNameValueMap("p0", 3, "p1", 3), new string[0]);
@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     "select ? as c0,?:a as c1 from MyWindow",
-                    "Inconsistent use of substitution parameters, expecting all substitutions to either all provide a name or provide no name");
+                    "Inconsistent use of substitution parameters, expecting all substitutions to either all provIde a name or provIde no name");
 
                 // keyword used for name
                 TryInvalidCompileFAF(
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("create window MyWindow#keepall as SupportBean", path);
 
                 // invalid execute without prepare-params
-                var compiled = env.CompileFAF("select * from MyWindow where theString=?::string", path);
+                var compiled = env.CompileFAF("select * from MyWindow where TheString=?::string", path);
                 try {
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
                     Assert.Fail();
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 TryInvalidlyParameterized(env, compiled, query => { }, "Missing value for substitution parameter 1");
 
                 compiled = env.CompileFAF(
-                    "select * from MyWindow where theString=?::string and IntPrimitive=?::int",
+                    "select * from MyWindow where TheString=?::string and IntPrimitive=?::int",
                     path);
                 TryInvalidlyParameterized(env, compiled, query => { }, "Missing value for substitution parameter 1");
                 TryInvalidlyParameterized(
@@ -302,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "Missing value for substitution parameter 2");
 
                 compiled = env.CompileFAF(
-                    "select * from MyWindow where theString=?:p0:string and IntPrimitive=?:p1:int",
+                    "select * from MyWindow where TheString=?:p0:string and IntPrimitive=?:p1:int",
                     path);
                 TryInvalidlyParameterized(env, compiled, query => { }, "Missing value for substitution parameter 'p0'");
                 TryInvalidlyParameterized(
@@ -322,7 +322,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 env.CompileDeploy("create window MyWindow#keepall as SupportBean", path);
 
-                var compiled = env.CompileFAF("select * from MyWindow where theString='ABC'", path);
+                var compiled = env.CompileFAF("select * from MyWindow where TheString='ABC'", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -335,25 +335,25 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "The query has no substitution parameters");
 
                 // numbered, untyped, casted at eventService
-                compiled = env.CompileFAF("select * from MyWindow where theString=cast(?, String)", path);
+                compiled = env.CompileFAF("select * from MyWindow where TheString=cast(?, String)", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
                     query => query.SetObject("x", 10),
-                    "Substitution parameter names have not been provided for this query");
+                    "Substitution parameter names have not been provIded for this query");
                 TryInvalidSetObject(
                     env,
                     compiled,
                     query => query.SetObject(0, "a"),
-                    "Invalid substitution parameter index, expected an index between 1 and 1");
+                    "InvalId substitution parameter index, expected an index between 1 and 1");
                 TryInvalidSetObject(
                     env,
                     compiled,
                     query => query.SetObject(2, "a"),
-                    "Invalid substitution parameter index, expected an index between 1 and 1");
+                    "InvalId substitution parameter index, expected an index between 1 and 1");
 
                 // named, untyped, casted at eventService
-                compiled = env.CompileFAF("select * from MyWindow where theString=cast(?:p0, String)", path);
+                compiled = env.CompileFAF("select * from MyWindow where TheString=cast(?:p0, String)", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     compiled,
                     query => query.SetObject(0, "a"),
-                    "Substitution parameter names have been provided for this query, please set the value by name");
+                    "Substitution parameter names have been provIded for this query, please set the value by name");
 
                 env.UndeployAll();
             }
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 EPCompiled compiled;
 
                 // numbered, typed
-                compiled = env.CompileFAF("select * from MyWindow where theString=?::string", path);
+                compiled = env.CompileFAF("select * from MyWindow where TheString=?::string", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -387,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     typeof(string));
 
                 // name, typed
-                compiled = env.CompileFAF("select * from MyWindow where theString=?:p0:string", path);
+                compiled = env.CompileFAF("select * from MyWindow where TheString=?:p0:string", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     null); // not found
 
                 // test two parameter
-                var eplTwoParam = "select * from MyInfra where IntPrimitive = ?::int and longPrimitive = ?::long";
+                var eplTwoParam = "select * from MyInfra where IntPrimitive = ?::int and LongPrimitive = ?::long";
                 var pqTwoParam = CompilePrepare(eplTwoParam, path, env);
                 for (var i = 0; i < 10; i++) {
                     RunParameterizedQuery(
@@ -449,7 +449,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     null); // not found
 
                 // test in-clause with string objects
-                var eplInSimple = "select * from MyInfra where theString in (?::string, ?::string, ?::string)";
+                var eplInSimple = "select * from MyInfra where TheString in (?::string, ?::string, ?::string)";
                 var pqInSimple = CompilePrepare(eplInSimple, path, env);
                 RunParameterizedQuery(
                     env,
@@ -463,7 +463,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {"E3"});
 
                 // test in-clause with string array
-                var eplInArray = "select * from MyInfra where theString in (?::string[])";
+                var eplInArray = "select * from MyInfra where TheString in (?::string[])";
                 var pqInArray = CompilePrepare(eplInArray, path, env);
                 RunParameterizedQuery(
                     env,
@@ -475,24 +475,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunParameterizedQuery(
                     env,
                     CompilePrepare(
-                        "select * from MyInfra where theString in (?::string[]) and longPrimitive = 4000",
+                        "select * from MyInfra where TheString in (?::string[]) and LongPrimitive = 4000",
                         path,
                         env),
                     new object[] {new[] {"E3", "E4", "E8"}},
                     new[] {"E4"});
                 RunParameterizedQuery(
                     env,
-                    CompilePrepare("select * from MyInfra where longPrimitive > 8000", path, env),
+                    CompilePrepare("select * from MyInfra where LongPrimitive > 8000", path, env),
                     new object[] { },
                     new[] {"E9"});
                 RunParameterizedQuery(
                     env,
-                    CompilePrepare("select * from MyInfra where longPrimitive < ?::long", path, env),
+                    CompilePrepare("select * from MyInfra where LongPrimitive < ?::long", path, env),
                     new object[] {2000L},
                     new[] {"E0", "E1"});
                 RunParameterizedQuery(
                     env,
-                    CompilePrepare("select * from MyInfra where longPrimitive between ?::int and ?::int", path, env),
+                    CompilePrepare("select * from MyInfra where LongPrimitive between ?::int and ?::int", path, env),
                     new object[] {2000, 4000},
                     new[] {"E2", "E3", "E4"});
 

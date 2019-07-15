@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "create table MyStatsMore (\n" +
                     "  myKey string primary key,\n" +
                     "  myAvgFiltered avg(double, boolean), // column holds a average of double-typed values\n" +
-                    "                      // and filtered by a boolean expression to be provided\n" +
+                    "                      // and filtered by a boolean expression to be provIded\n" +
                     "  myAvgDistinct avg(distinct double) // column holds a average of distinct double-typed values\n" +
                     ")",
                     path);
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "  myWindow window(*) @type(SupportMySortValueEvent), // column holds a window of SupportMySortValueEvent events\n" +
                     "  mySorted sorted(mySortValue) @type(SupportMySortValueEvent), // column holds SupportMySortValueEvent events sorted by mySortValue\n" +
                     "  myMaxByEver maxbyever(mySortValue) @type(SupportMySortValueEvent) // column holds the single SupportMySortValueEvent event that \n" +
-                    "        // provided the highest value of mySortValue ever\n" +
+                    "        // provIded the highest value of mySortValue ever\n" +
                     ")",
                     path);
 

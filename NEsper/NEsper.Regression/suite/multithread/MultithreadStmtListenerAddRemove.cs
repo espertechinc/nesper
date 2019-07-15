@@ -36,11 +36,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var numThreads = 2;
 
-            env.CompileDeploy("@Name('s0') select * from pattern[every a=SupportMarketDataBean(symbol='IBM')]");
+            env.CompileDeploy("@Name('s0') select * from pattern[every a=SupportMarketDataBean(Symbol='IBM')]");
             TryStatementListenerAddRemove(env, numThreads, env.Statement("s0"), false, 10000);
             env.UndeployModuleContaining("s0");
 
-            env.CompileDeploy("@Name('s0') select * from SupportMarketDataBean(symbol='IBM', feed='RT')");
+            env.CompileDeploy("@Name('s0') select * from SupportMarketDataBean(Symbol='IBM', Feed='RT')");
             TryStatementListenerAddRemove(env, numThreads, env.Statement("s0"), true, 10000);
             env.UndeployModuleContaining("s0");
         }

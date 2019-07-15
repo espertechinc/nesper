@@ -151,12 +151,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
                 var eplCurrentTS = "@Name('s0') select " +
-                                   "longdate.between(longPrimitive, longBoxed) as c0, " +
-                                   "utildate.between(longPrimitive, longBoxed) as c1, " +
-                                   "exdate.between(longPrimitive, longBoxed) as c2," +
-                                   "localdate.between(longPrimitive, longBoxed) as c3," +
-                                   "zoneddate.between(longPrimitive, longBoxed) as c4 " +
-                                   " from SupportDateTime unidirectional, SupportBean#lastevent";
+                                   "longdate.between(LongPrimitive, LongBoxed) as c0, " +
+                                   "utildate.between(LongPrimitive, LongBoxed) as c1, " +
+                                   "exdate.between(LongPrimitive, LongBoxed) as c2," +
+                                   "localdate.between(LongPrimitive, LongBoxed) as c3," +
+                                   "zoneddate.between(LongPrimitive, LongBoxed) as c4 " +
+                                   " from SupportDateTime unIdirectional, SupportBean#lastevent";
                 env.CompileDeploy(eplCurrentTS).AddListener("s0");
 
                 var bean = new SupportBean();

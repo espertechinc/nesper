@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(id='B3') or timer:interval(8.500)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') or timer:interval(8.500)");
                 testCase.Add("D2");
                 testCaseList.AddTest(testCase);
 
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase = new EventExpressionCase("timer:interval(9999999 msec) and b=SupportBean_B");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("timer:interval(1 msec) and b=SupportBean_B(id='B2')");
+                testCase = new EventExpressionCase("timer:interval(1 msec) and b=SupportBean_B(Id='B2')");
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@Name('s0') select a.TheString as id from pattern [every a=SupportBean => timer:interval(intPrimitive seconds)]");
+                    "@Name('s0') select a.TheString as Id from pattern [every a=SupportBean => timer:interval(IntPrimitive seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(10000, env);
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@Name('s0') select a[0].TheString as a0id, a[1].TheString as a1id from pattern [ [2] a=SupportBean => timer:interval(a[0].IntPrimitive+a[1].IntPrimitive seconds)]");
+                    "@Name('s0') select a[0].TheString as a0Id, a[1].TheString as a1Id from pattern [ [2] a=SupportBean => timer:interval(a[0].IntPrimitive+a[1].IntPrimitive seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(10000, env);
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(15000, env);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a0id,a1id".SplitCsv(),
+                    "a0Id,a1Id".SplitCsv(),
                     "E1,E2".SplitCsv());
 
                 env.UndeployAll();

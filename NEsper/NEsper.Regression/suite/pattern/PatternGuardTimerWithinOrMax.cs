@@ -22,17 +22,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var testCaseList = new CaseList();
             EventExpressionCase testCase;
 
-            testCase = new EventExpressionCase("b=SupportBean_B(id='B1') where timer:withinmax(2 sec,100)");
+            testCase = new EventExpressionCase("b=SupportBean_B(Id='B1') where timer:withinmax(2 sec,100)");
             testCaseList.AddTest(testCase);
 
-            testCase = new EventExpressionCase("b=SupportBean_B(id='B1') where timer:withinmax(2001 msec,1)");
+            testCase = new EventExpressionCase("b=SupportBean_B(Id='B1') where timer:withinmax(2001 msec,1)");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCaseList.AddTest(testCase);
 
-            testCase = new EventExpressionCase("b=SupportBean_B(id='B1') where timer:withinmax(1999 msec,10)");
+            testCase = new EventExpressionCase("b=SupportBean_B(Id='B1') where timer:withinmax(1999 msec,10)");
             testCaseList.AddTest(testCase);
 
-            var text = "select * from pattern [b=SupportBean_B(id='B3') where timer:withinmax(10.001d,1)]";
+            var text = "select * from pattern [b=SupportBean_B(Id='B3') where timer:withinmax(10.001d,1)]";
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
             model = env.CopyMayFail(model);

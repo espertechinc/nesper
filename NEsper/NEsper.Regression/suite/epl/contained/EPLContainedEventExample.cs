@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // unidirectional count
                 env.UndeployAll();
                 stmtText =
-                    "@Name('s0') select count(*) from MediaOrder[books.book] as book unidirectional, MediaOrder[items.item] as item where productId = bookId order by bookId asc";
+                    "@Name('s0') select count(*) from MediaOrder[books.book] as book unIdirectional, MediaOrder[items.item] as item where productId = bookId order by bookId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventXMLDOM(eventDocTwo, "MediaOrder");
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // unidirectional count
                 env.UndeployAll();
                 stmtText =
-                    "@Name('s0') select count(*) from MediaOrder[books.book] as book unidirectional left outer join MediaOrder[items.item] as item on productId = bookId";
+                    "@Name('s0') select count(*) from MediaOrder[books.book] as book unIdirectional left outer join MediaOrder[items.item] as item on productId = bookId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventXMLDOM(eventDocTwo, "MediaOrder");
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // unidirectional count
                 env.UndeployAll();
                 stmtText =
-                    "@Name('s0') select count(*) from MediaOrder[books.book] as book unidirectional full outer join MediaOrder[items.item] as item on productId = bookId";
+                    "@Name('s0') select count(*) from MediaOrder[books.book] as book unIdirectional full outer join MediaOrder[items.item] as item on productId = bookId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventXMLDOM(eventDocTwo, "MediaOrder");

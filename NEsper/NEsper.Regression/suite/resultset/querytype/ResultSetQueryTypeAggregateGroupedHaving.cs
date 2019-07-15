@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("Volume"));
             Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("mySum"));
 
-            var fields = "symbol,volume,mySum".SplitCsv();
+            var fields = "symbol,Volume,mySum".SplitCsv();
             SendEvent(env, SYMBOL_DELL, 10000, 49);
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var received = env.Listener("s0").NewDataListFlattened;
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E2", 20}, new object[] {"E2", 21}});
 
                 env.UndeployAll();
@@ -112,9 +112,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, Volume, sum(price) as mySum " +
                           "from SupportMarketDataBean#length(3) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol " +
                           "having sum(price) >= 50";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -130,11 +130,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, Volume, sum(price) as mySum " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                          "  and one.TheString = two.symbol " +
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
+                          "  and one.TheString = two.Symbol " +
                           "group by Symbol " +
                           "having sum(price) >= 50";
                 env.CompileDeploy(epl).AddListener("s0");

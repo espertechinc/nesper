@@ -284,8 +284,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test for ESPER-185
-                var fields = "volume,symbol,price,mycount".SplitCsv();
-                var epl = "@Name('s0') select irstream volume,symbol,price,count(price) as mycount " +
+                var fields = "volume,Symbol,price,mycount".SplitCsv();
+                var epl = "@Name('s0') select irstream Volume,Symbol,price,count(price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Symbol, price";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -409,9 +409,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, Volume, sum(price) as mySum " +
                           "from SupportMarketDataBean#length(3) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -426,11 +426,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, Volume, sum(price) as mySum " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                          "  and one.TheString = two.symbol " +
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
+                          "  and one.TheString = two.Symbol " +
                           "group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -448,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    "@Name('s0') select symbol as symbol, avg(price) as average, sum(volume) as sumation from SupportMarketDataBean#length(3000)";
+                    "@Name('s0') select Symbol as Symbol, avg(price) as average, sum(Volume) as sumation from SupportMarketDataBean#length(3000)";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportMarketDataBean("IBM", 10D, 20000L, null));
@@ -459,7 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // create insert into statements
                 stmt =
-                    "@Name('s1') insert into StockAverages select symbol as symbol, avg(price) as average, sum(volume) as sumation " +
+                    "@Name('s1') insert into StockAverages select Symbol as Symbol, avg(price) as average, sum(Volume) as sumation " +
                     "from SupportMarketDataBean#length(3000);\n" +
                     "@Name('s2') select * from StockAverages";
                 env.CompileDeploy(stmt).AddListener("s1").AddListener("s2");

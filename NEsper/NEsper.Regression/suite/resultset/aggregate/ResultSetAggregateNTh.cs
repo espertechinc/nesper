@@ -25,9 +25,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             var epl = "@Name('s0') select " +
                       "theString, " +
-                      "nth(intPrimitive,0) as int1, " + // current
-                      "nth(intPrimitive,1) as int2 " + // one before
-                      "from SupportBean#keepall group by TheString output last every 3 events order by theString";
+                      "nth(IntPrimitive,0) as int1, " + // current
+                      "nth(IntPrimitive,1) as int2 " + // one before
+                      "from SupportBean#keepall group by TheString output last every 3 events order by TheString";
             env.CompileDeploy(epl).AddListener("s0");
 
             RunAssertion(env, milestone);
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             TryInvalidCompile(
                 env,
                 "select nth() from SupportBean",
-                "Failed to validate select-clause expression 'nth(*)': The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant [select nth() from SupportBean]");
+                "Failed to valIdate select-clause expression 'nth(*)': The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant [select nth() from SupportBean]");
         }
 
         private static void RunAssertion(

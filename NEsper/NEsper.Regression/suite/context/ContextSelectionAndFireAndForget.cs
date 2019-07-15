@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create context SegmentedSB as partition by theString from SupportBean", path);
+                env.CompileDeploy("create context SegmentedSB as partition by TheString from SupportBean", path);
                 env.CompileDeploy("create context SegmentedS0 as partition by p00 from SupportBean_S0", path);
                 env.CompileDeploy("context SegmentedSB create window WinSB#keepall as SupportBean", path);
                 env.CompileDeploy("context SegmentedS0 create window WinS0#keepall as SupportBean_S0", path);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "Joins in runtime queries for context partitions are not supported [context SegmentedSB select * from WinSB, WinS0]");
 
                 // test join
-                env.CompileDeploy("create context PartitionedByString partition by theString from SupportBean", path);
+                env.CompileDeploy("create context PartitionedByString partition by TheString from SupportBean", path);
                 env.CompileDeploy("context PartitionedByString create window MyWindowOne#keepall as SupportBean", path);
 
                 env.CompileDeploy("create context PartitionedByP00 partition by p00 from SupportBean_S0", path);
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TryInvalidCompileQuery(
                     env,
                     path,
-                    "select mw1.IntPrimitive as c1, mw2.id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.TheString = mw2.p00",
+                    "select mw1.IntPrimitive as c1, mw2.Id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.TheString = mw2.p00",
                     "Joins against named windows that are under context are not supported");
 
                 env.UndeployAll();
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create context PartitionedByString partition by theString from SupportBean", path);
+                env.CompileDeploy("create context PartitionedByString partition by TheString from SupportBean", path);
                 env.CompileDeploy("context PartitionedByString create window MyWindow#keepall as SupportBean", path);
                 env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
 
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorSegmented] interfaces but received com"),
+                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorSegmented] interfaces but received com"),
                         "message: " + ex.Message);
                 }
 
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context NestedContext " +
-                    "context ACtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id=s0.id), " +
+                    "context ACtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id=s0.Id), " +
                     "context BCtx group by IntPrimitive < 0 as grp1, group by IntPrimitive = 0 as grp2, group by IntPrimitive > 0 as grp3 from SupportBean",
                     path);
                 env.CompileDeploy("context NestedContext create window MyWindow#keepall as SupportBean", path);
@@ -307,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1".SplitCsv();
-                var epl = "create context PartitionedByString partition by theString from SupportBean;\n" +
+                var epl = "create context PartitionedByString partition by TheString from SupportBean;\n" +
                           "@Name('s0') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     Assert.Fail();
                 }
                 catch (ArgumentException ex) {
-                    Assert.AreEqual(ex.Message, "No selector provided");
+                    Assert.AreEqual(ex.Message, "No selector provIded");
                 }
 
                 try {
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     Assert.Fail();
                 }
                 catch (ArgumentException ex) {
-                    Assert.AreEqual(ex.Message, "No selector provided");
+                    Assert.AreEqual(ex.Message, "No selector provIded");
                 }
 
                 env.CompileDeploy("@Name('s2') select * from SupportBean");

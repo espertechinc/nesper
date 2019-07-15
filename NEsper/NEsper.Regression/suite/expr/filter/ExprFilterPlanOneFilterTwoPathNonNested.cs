@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "IntPrimitive = 0 or longPrimitive = 0",
+                "IntPrimitive = 0 or LongPrimitive = 0",
                 MakeItem(MakeBean("E1", 0, 1), true),
                 MakeItem(MakeBean("E2", 1, 0), true),
                 MakeItem(MakeBean("E3", 1, 1), false));

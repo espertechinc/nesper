@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             env.SendEventBean(new SupportTradeEvent(2, "1234", 1001));
-            Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("event1.id"));
+            Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("event1.Id"));
 
             env.UndeployAll();
         }

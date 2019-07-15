@@ -99,11 +99,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // test back-tick with spaces etc
                 env.CompileDeploy(
-                        "@Name('s0') select `candidate book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
+                        "@Name('s0') select `candIdate book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
                     .AddListener("s0");
 
                 IDictionary<string, object> defValues = new Dictionary<string, object>();
-                defValues.Put("candidate book", "Enders Game");
+                defValues.Put("candIdate book", "Enders Game");
                 defValues.Put("XML Message Type", "book");
                 defValues.Put("select", 100);
                 defValues.Put("children's books", new[] {50, 51});
@@ -118,11 +118,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 TryInvalidCompile(
                     env,
                     "select `select` from SupportBean",
-                    "Failed to validate select-clause expression 'select': Property named 'select' is not valid in any stream [");
+                    "Failed to valIdate select-clause expression 'select': Property named 'select' is not valId in any stream [");
                 TryInvalidCompile(
                     env,
                     "select `ab cd` from SupportBean",
-                    "Failed to validate select-clause expression 'ab cd': Property named 'ab cd' is not valid in any stream [");
+                    "Failed to valIdate select-clause expression 'ab cd': Property named 'ab cd' is not valId in any stream [");
 
                 // test resolution as nested property
                 var path = new RegressionPath();
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 TryInvalidCompile(
                     env,
                     "select MyProperty from SupportBeanDupProperty",
-                    "Failed to validate select-clause expression 'MyProperty': Property named 'MyProperty' is not valid in any stream (did you mean 'MYPROPERTY'?)");
+                    "Failed to valIdate select-clause expression 'MyProperty': Property named 'MyProperty' is not valId in any stream (dId you mean 'MYPROPERTY'?)");
             }
         }
 

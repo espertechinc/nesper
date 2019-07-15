@@ -84,12 +84,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                     var s0Type = "S0_" + rep.GetUndName();
                     var s1Type = "S1_" + rep.GetUndName();
-                    var eplOne = "select S0.id as S0_id, S1.id as S1_id, S0.p00 as S0_p00, S1.p00 as S1_p00 from " +
+                    var eplOne = "select S0.Id as S0_Id, S1.Id as S1_Id, S0.p00 as S0_p00, S1.p00 as S1_p00 from " +
                                  s0Type +
                                  "#keepall as S0, " +
                                  s1Type +
-                                 "#keepall as S1 where S0.id = S1.id";
-                    TryJoinAssertion(env, eplOne, rep, "S0_id,S1_id,S0_p00,S1_p00", milestone);
+                                 "#keepall as S1 where S0.Id = S1.Id";
+                    TryJoinAssertion(env, eplOne, rep, "S0_Id,S1_Id,S0_p00,S1_p00", milestone);
                 }
 
                 foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
@@ -99,8 +99,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                                  s0Type +
                                  "#keepall as S0, " +
                                  s1Type +
-                                 "#keepall as S1 where S0.id = S1.id";
-                    TryJoinAssertion(env, eplTwo, rep, "S0.id,S1.id,S0.p00,S1.p00", milestone);
+                                 "#keepall as S1 where S0.Id = S1.Id";
+                    TryJoinAssertion(env, eplTwo, rep, "S0.Id,S1.Id,S0.p00,S1.p00", milestone);
                 }
             }
 
@@ -144,8 +144,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 // Test for Esper-122
                 var joinStatement =
-                    "@Name('s0') select S0.id, S1.id, S0.p00, S1.p00 from MapS0#keepall as S0, MapS1#keepall as S1" +
-                    " where S0.id = S1.id";
+                    "@Name('s0') select S0.Id, S1.Id, S0.p00, S1.p00 from MapS0#keepall as S0, MapS1#keepall as S1" +
+                    " where S0.Id = S1.Id";
                 env.CompileDeployAddListenerMileZero(joinStatement, "s0");
 
                 for (var i = 0; i < 100; i++) {
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test for Esper-122
                 var epl = "insert into S0Stream select 's0' as streamone, * from SupportBean;\n" +
                           "insert into S1Stream select 's1' as streamtwo, * from SupportBean;\n" +
-                          "@Name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.intBoxed = b.intBoxed";
+                          "@Name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.IntBoxed = b.IntBoxed";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 for (var i = 0; i < 100; i++) {

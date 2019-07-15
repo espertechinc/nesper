@@ -93,37 +93,37 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[every timer:schedule(iso: 'x')]",
-                "Invalid parameter for pattern observer 'timer:schedule(iso:\"x\")': Failed to parse 'x': Exception parsing date 'x', the date is not a supported ISO 8601 date");
+                "InvalId parameter for pattern observer 'timer:schedule(iso:\"x\")': Failed to parse 'x': Exception parsing date 'x', the date is not a supported ISO 8601 date");
 
             // named parameter tests: absence, typing, etc.
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule()]",
-                "Invalid parameter for pattern observer 'timer:schedule()': No parameters provided");
+                "InvalId parameter for pattern observer 'timer:schedule()': No parameters provIded");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule(x:1)]",
-                "Invalid parameter for pattern observer 'timer:schedule(x:1)': Unexpected named parameter 'x', expecting any of the following: [iso, repetitions, date, period]");
+                "InvalId parameter for pattern observer 'timer:schedule(x:1)': Unexpected named parameter 'x', expecting any of the following: [iso, repetitions, date, period]");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule(period:1)]",
-                "Invalid parameter for pattern observer 'timer:schedule(period:1)': Failed to validate named parameter 'period', expected a single expression returning a TimePeriod-typed value");
+                "InvalId parameter for pattern observer 'timer:schedule(period:1)': Failed to valIdate named parameter 'period', expected a single expression returning a TimePeriod-typed value");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule(repetitions:'a', period:1 seconds)]",
-                "Invalid parameter for pattern observer 'timer:schedule(repetitions:\"a\",period:1 seconds)': Failed to validate named parameter 'repetitions', expected a single expression returning any of the following types: int,long");
+                "InvalId parameter for pattern observer 'timer:schedule(repetitions:\"a\",period:1 seconds)': Failed to valIdate named parameter 'repetitions', expected a single expression returning any of the following types: int,long");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule(date:1 seconds)]",
-                "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,Calendar,Date,long");
+                "InvalId parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to valIdate named parameter 'date', expected a single expression returning any of the following types: string,Calendar,Date,long");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule(repetitions:1)]",
-                "Invalid parameter for pattern observer 'timer:schedule(repetitions:1)': Either the date or period parameter is required");
+                "InvalId parameter for pattern observer 'timer:schedule(repetitions:1)': Either the date or period parameter is required");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S', repetitions:1)]",
-                "Invalid parameter for pattern observer 'timer:schedule(iso:\"R/1980-01-01T00:00:00Z/PT15S\",repetitions:1)': The 'iso' parameter is exclusive of other parameters");
+                "InvalId parameter for pattern observer 'timer:schedule(iso:\"R/1980-01-01T00:00:00Z/PT15S\",repetitions:1)': The 'iso' parameter is exclusive of other parameters");
         }
 
         private static void RunAssertionEquivalent(RegressionEnvironment env)
@@ -625,7 +625,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 /*
                 env.advanceTime(DateTime.parseDefaultMSecWZone("2001-10-01T05:51:00.000GMT-0:00")));
                 runtime.getDeploymentService().createEPL("select * from pattern[timer:schedule('2008-03-01T13:00:00Z/P1Y2M10DT2H30M')]").addListener(listener);
-    
+
                 long next = runtime.getRuntime().getNextScheduledTime();
                 System.out.println(DateTime.print(next));
                 */

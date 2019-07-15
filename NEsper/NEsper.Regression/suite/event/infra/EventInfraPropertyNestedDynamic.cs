@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(
                 env,
                 EventRepresentationChoice.AVRO,
-                "@AvroSchemaField(name='myid',schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"String\"},\"null\"]')");
+                "@AvroSchemaField(name='myId',schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"String\"},\"null\"]')");
             RunAssertion(env, EventRepresentationChoice.DEFAULT, "");
         }
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // XML
             Pair<object, object>[] xmlTests = {
-                new Pair<object, object>("<item id=\"101\"/>", Exists("101")),
+                new Pair<object, object>("<item Id=\"101\"/>", Exists("101")),
                 new Pair<object, object>("<item/>", NotExists())
             };
             if (!outputEventRep.IsAvroEvent()) {
@@ -163,21 +163,21 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                            eventRepresentationEnum.GetAnnotationText() +
                            additionalAnnotations +
                            " select " +
-                           "item.id? as myid, " +
-                           "exists(item.id?) as exists_myid " +
+                           "item.Id? as myId, " +
+                           "exists(item.Id?) as exists_myId " +
                            "from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");
 
             var eventType = env.Statement("s0").EventType;
-            Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType("myid"));
-            Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myid").GetBoxedType());
+            Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType("myId"));
+            Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myId").GetBoxedType());
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(eventType.UnderlyingType));
 
             foreach (var pair in tests) {
                 send.Invoke(env, pair.First, typename);
                 var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                AssertValueMayConvert(@event, "myid", (ValueWithExistsFlag) pair.Second, optionalValueConversion);
+                AssertValueMayConvert(@event, "myId", (ValueWithExistsFlag) pair.Second, optionalValueConversion);
             }
 
             env.UndeployAll();

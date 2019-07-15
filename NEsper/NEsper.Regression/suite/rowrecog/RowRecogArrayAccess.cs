@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             var text = "@Name('s0') select * from SupportBean " +
                        "match_recognize (" +
-                       " partition by theString " +
+                       " partition by TheString " +
                        " measures " +
                        measures +
                        " pattern (A+ B)" +
@@ -83,9 +83,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                        pattern +
                        ")" +
                        " define" +
-                       " A as theString like 'A%', " +
-                       " B as theString like 'B%'," +
-                       " C as theString like 'C%' and " +
+                       " A as TheString like 'A%', " +
+                       " B as TheString like 'B%'," +
+                       " C as TheString like 'C%' and " +
                        "   C.IntPrimitive = A[0].IntPrimitive and " +
                        "   C.IntPrimitive = B[0].IntPrimitive and " +
                        "   C.IntPrimitive = A[1].IntPrimitive and " +
@@ -284,8 +284,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                              " measures A as a, B as b " +
                              " pattern (A+ B)" +
                              " define" +
-                             " A as theString like 'A%', " +
-                             " B as theString like 'B%' and B.IntPrimitive > A.sumOf(v => v.IntPrimitive)" +
+                             " A as TheString like 'A%', " +
+                             " B as TheString like 'B%' and B.IntPrimitive > A.sumOf(v => v.IntPrimitive)" +
                              ")";
 
                 env.CompileDeploy(eplTwo).AddListener("s0");

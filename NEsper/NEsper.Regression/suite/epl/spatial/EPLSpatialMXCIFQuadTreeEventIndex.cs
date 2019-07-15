@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         {
             var result = env.CompileExecuteFAF(
                 IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                "select id as c0 from MyTable where rectangle(tx, ty, tw, th).intersects(rectangle(" +
+                "select Id as c0 from MyTable where rectangle(tx, ty, tw, th).intersects(rectangle(" +
                 x +
                 ", " +
                 y +
@@ -157,10 +157,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create window RectangleWindow#keepall as (id string, rx double, ry double, rw double, rh double);\n" +
+                    "create window RectangleWindow#keepall as (Id string, rx double, ry double, rw double, rh double);\n" +
                     "create index MyIndex on RectangleWindow((rx,ry,rw,rh) mxcifquadtree(0,0,100,100));\n" +
-                    "insert into RectangleWindow select id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
-                    "@Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from RectangleWindow as pt where rectangle(rx,ry,rw,rh).intersects(rectangle(x,y,width,height));\n";
+                    "insert into RectangleWindow select Id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
+                    "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from RectangleWindow as pt where rectangle(rx,ry,rw,rh).intersects(rectangle(x,y,width,height));\n";
                 env.CompileDeploy(epl).AddListener("out");
 
                 SendEventRectangle(env, "R0", 73.32704983331149, 23.46990952575032, 1, 1);
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create table MyTable(id string primary key, tx double, ty double, tw double, th double)",
+                    "create table MyTable(Id string primary key, tx double, ty double, tw double, th double)",
                     path);
                 env.CompileExecuteFAF("insert into MyTable values ('R1', 10, 20, 5, 6)", path);
                 env.CompileDeploy(
@@ -250,10 +250,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create window MyRectangleWindow#keepall as (id string, rx double, ry double, rw double, rh double);\n" +
-                    "insert into MyRectangleWindow select id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
+                    "create window MyRectangleWindow#keepall as (Id string, rx double, ry double, rw double, rh double);\n" +
+                    "insert into MyRectangleWindow select Id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
                     "create index Idx on MyRectangleWindow( (rx, ry, rw, rh) mxcifquadtree(0, 0, 100, 100));\n" +
-                    "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyRectangleWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(x, y, width, height));\n";
+                    "@Name('out') on SupportSpatialAABB select mpw.Id as c0 from MyRectangleWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(x, y, width, height));\n";
                 env.CompileDeploy(epl).AddListener("out");
 
                 SendSpatialEventRectanges(env, 100, 50);
@@ -281,11 +281,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('win') create window MyRectWindow#keepall as (id string, rx double, ry double, rw double, rh double);\n" +
-                    "@Name('insert') insert into MyRectWindow select id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
-                    "@Name('idx') create unique index Idx on MyRectWindow( (rx, ry, rw, rh) mxcifquadtree(0, 0, 100, 100));\n" +
+                    "@Name('win') create window MyRectWindow#keepall as (Id string, rx double, ry double, rw double, rh double);\n" +
+                    "@Name('insert') insert into MyRectWindow select Id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
+                    "@Name('Idx') create unique index Idx on MyRectWindow( (rx, ry, rw, rh) mxcifquadtree(0, 0, 100, 100));\n" +
                     IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                    "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyRectWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(x, y, width, height));\n";
+                    "@Name('out') on SupportSpatialAABB select mpw.Id as c0 from MyRectWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(x, y, width, height));\n";
                 env.CompileDeploy(epl).AddListener("out");
 
                 SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "@Name('s0') " +
                           IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                           " on SupportSpatialAABB as aabb " +
-                          "select rects.id as c0 from MyWindow as rects where rectangle(rects.x,rects.y,rects.width,rects.height).intersects(rectangle(aabb.x,aabb.y,aabb.width,aabb.height))";
+                          "select rects.Id as c0 from MyWindow as rects where rectangle(rects.x,rects.y,rects.width,rects.height).intersects(rectangle(aabb.x,aabb.y,aabb.width,aabb.height))";
                 env.CompileDeploy(soda, epl, path).AddListener("s0");
 
                 SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
@@ -429,10 +429,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create table RectangleTable(id string primary key, rx double, ry double, rw double, rh double);\n" +
+                    "create table RectangleTable(Id string primary key, rx double, ry double, rw double, rh double);\n" +
                     "create index MyIndex on RectangleTable((rx,ry,rw,rh) mxcifquadtree(0,0,100,100,4,20));\n" +
-                    "insert into RectangleTable select id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
-                    "@Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from RectangleTable as pt where rectangle(rx,ry,rw,rh).intersects(rectangle(x,y,width,height));\n";
+                    "insert into RectangleTable select Id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
+                    "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from RectangleTable as pt where rectangle(rx,ry,rw,rh).intersects(rectangle(x,y,width,height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 SendEventRectangle(env, "P1", 80, 80, 1, 1);
@@ -445,7 +445,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 env.Milestone(0);
 
                 AssertRectanglesManyRow(env, env.Listener("out"), BOXES, null, null, "P5", "P1,P2,P3,P4", "P5");
-                env.CompileExecuteFAF("delete from RectangleTable where id = 'P4'", path);
+                env.CompileExecuteFAF("delete from RectangleTable where Id = 'P4'", path);
                 AssertRectanglesManyRow(env, env.Listener("out"), BOXES, null, null, "P5", "P1,P2,P3", "P5");
 
                 env.Milestone(1);
@@ -461,10 +461,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create table RectangleTable(id string primary key, x double, y double, width double, height double);\n" +
+                    "create table RectangleTable(Id string primary key, x double, y double, width double, height double);\n" +
                     "create index MyIndex on RectangleTable((x,y,width,height) mxcifquadtree(0,0,100,100,2,12));\n" +
-                    "insert into RectangleTable select id, x, y, width, height from SupportSpatialEventRectangle;\n" +
-                    "@Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from RectangleTable as pt where rectangle(pt.x,pt.y,pt.width,pt.height).intersects(rectangle(aabb.x,aabb.y,aabb.width,aabb.height));\n";
+                    "insert into RectangleTable select Id, x, y, width, height from SupportSpatialEventRectangle;\n" +
+                    "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from RectangleTable as pt where rectangle(pt.x,pt.y,pt.width,pt.height).intersects(rectangle(aabb.x,aabb.y,aabb.width,aabb.height));\n";
                 env.CompileDeploy(epl).AddListener("out");
 
                 IList<SupportSpatialEventRectangle> rectangles = new List<SupportSpatialEventRectangle>();
@@ -490,10 +490,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create table RectangleTable(id string primary key, x double, y double, width double, height double);\n" +
+                    "create table RectangleTable(Id string primary key, x double, y double, width double, height double);\n" +
                     "create index MyIndex on RectangleTable((x,y,width,height) mxcifquadtree(0,0,100,100,4,40));\n" +
-                    "insert into RectangleTable select id, x, y, width, height from SupportSpatialEventRectangle;\n" +
-                    "@Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from RectangleTable as pt where rectangle(pt.x,pt.y,pt.width,pt.height).intersects(rectangle(aabb.x,aabb.y,aabb.width,aabb.height));\n";
+                    "insert into RectangleTable select Id, x, y, width, height from SupportSpatialEventRectangle;\n" +
+                    "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from RectangleTable as pt where rectangle(pt.x,pt.y,pt.width,pt.height).intersects(rectangle(aabb.x,aabb.y,aabb.width,aabb.height));\n";
                 env.CompileDeploy(epl).AddListener("out");
 
                 SendEventRectangle(env, "P1", 80, 40, 1, 1);
@@ -527,10 +527,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create window RectangleWindow#keepall as (id string, x double, y double, width double, height double);\n" +
+                    "create window RectangleWindow#keepall as (Id string, x double, y double, width double, height double);\n" +
                     "create index MyIndex on RectangleWindow((x,y,width,height) mxcifquadtree(0,0,100,100,2,5));\n" +
-                    "insert into RectangleWindow select id, x, y, width, height from SupportSpatialEventRectangle;\n" +
-                    "@Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from RectangleWindow as pt where rectangle(pt.x,pt.y,pt.width,pt.height).intersects(rectangle(aabb.x,aabb.y,aabb.width,aabb.height));\n";
+                    "insert into RectangleWindow select Id, x, y, width, height from SupportSpatialEventRectangle;\n" +
+                    "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from RectangleWindow as pt where rectangle(pt.x,pt.y,pt.width,pt.height).intersects(rectangle(aabb.x,aabb.y,aabb.width,aabb.height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 var boxesLevel4 = GetLevel5Boxes();
@@ -675,10 +675,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create window RectangleWindow#keepall as (id string, px double, py double, pw double, ph double);\n" +
+                    "create window RectangleWindow#keepall as (Id string, px double, py double, pw double, ph double);\n" +
                     "create index MyIndex on RectangleWindow((px,py,pw,ph) mxcifquadtree(0,0,100,100));\n" +
-                    "insert into RectangleWindow select id, x as px, y as py, width as pw, height as ph from SupportSpatialEventRectangle;\n" +
-                    "@Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from RectangleWindow as pt where rectangle(px,py,pw,ph).intersects(rectangle(x,y,width,height));\n";
+                    "insert into RectangleWindow select Id, x as px, y as py, width as pw, height as ph from SupportSpatialEventRectangle;\n" +
+                    "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from RectangleWindow as pt where rectangle(px,py,pw,ph).intersects(rectangle(x,y,width,height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 var random = new Random();
@@ -701,7 +701,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 }
 
                 var milestone = new AtomicLong();
-                var deleteQuery = env.CompileFAF("delete from RectangleWindow where id=?::string", path);
+                var deleteQuery = env.CompileFAF("delete from RectangleWindow where Id=?::string", path);
                 var preparedDelete = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(deleteQuery);
 
                 while (!rectangles.IsEmpty()) {
@@ -762,10 +762,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create table RectangleTable as (id string primary key, px double, py double, pw double, ph double);\n" +
+                    "create table RectangleTable as (Id string primary key, px double, py double, pw double, ph double);\n" +
                     "create index MyIndex on RectangleTable((px,py,pw,ph) mxcifquadtree(0,0,100,100));\n" +
-                    "insert into RectangleTable select id, x as px, y as py, width as pw, height as ph from SupportSpatialEventRectangle;\n" +
-                    "@Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from RectangleTable as pt where rectangle(px,py,pw,ph).intersects(rectangle(x,y,width,height));\n";
+                    "insert into RectangleTable select Id, x as px, y as py, width as pw, height as ph from SupportSpatialEventRectangle;\n" +
+                    "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from RectangleTable as pt where rectangle(px,py,pw,ph).intersects(rectangle(x,y,width,height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 var random = new Random();
@@ -783,7 +783,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 env.Milestone(0);
 
                 var milestone = new AtomicLong();
-                var deleteQuery = env.CompileFAF("delete from RectangleTable where id=?:id:string", path);
+                var deleteQuery = env.CompileFAF("delete from RectangleTable where Id=?:Id:string", path);
                 var preparedDelete = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(deleteQuery);
 
                 for (var i = 0; i < NUM_MOVES; i++) {
@@ -894,10 +894,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create window RectangleWindow#keepall as (id string, px double, py double, pw double, ph double);\n" +
+                    "create window RectangleWindow#keepall as (Id string, px double, py double, pw double, ph double);\n" +
                     "create unique index MyIndex on RectangleWindow((px,py,pw,ph) mxcifquadtree(0,0,1000,1000));\n" +
-                    "insert into RectangleWindow select id, x as px, y as py, width as pw, height as ph from SupportSpatialEventRectangle;\n" +
-                    "@Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from RectangleWindow as pt where rectangle(px,py,pw,ph).intersects(rectangle(x,y,width,height));\n";
+                    "insert into RectangleWindow select Id, x as px, y as py, width as pw, height as ph from SupportSpatialEventRectangle;\n" +
+                    "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from RectangleWindow as pt where rectangle(px,py,pw,ph).intersects(rectangle(x,y,width,height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 var random = new Random();

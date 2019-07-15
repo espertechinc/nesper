@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                "  <FloatPrimitive>0.0</FloatPrimitive>\n" +
                                "  <IntBoxed>992</IntBoxed>\n" +
                                "  <IntPrimitive>1</IntPrimitive>\n" +
-                               "  <longPrimitive>0</LongPrimitive>\n" +
+                               "  <LongPrimitive>0</LongPrimitive>\n" +
                                "  <ShortPrimitive>0</ShortPrimitive>\n" +
                                "  <TheString>a\\u000ac</TheString>\n" +
                                "  <this>\n" +
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                "  <innerarray>\n" +
                                "  </innerarray>\n" +
                                "  <prop0>\n" +
-                               "    <id>A1</id>\n" +
+                               "    <Id>A1</Id>\n" +
                                "  </prop0>\n" +
                                "</outerMap>";
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                            "    <stringarr>a&gt;b</stringarr>\n" +
                            "  </innerarray>\n" +
                            "  <innerarray/>\n" +
-                           "  <prop0 id=\"A1\"/>\n" +
+                           "  <prop0 Id=\"A1\"/>\n" +
                            "</outerMap>";
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 

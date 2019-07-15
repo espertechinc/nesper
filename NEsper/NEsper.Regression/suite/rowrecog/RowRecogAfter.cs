@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,a_value,b_value".SplitCsv();
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by theString" +
+                           "  partition by TheString" +
                            "  measures A.TheString as a_string, A.value as a_value, B.value as b_value " +
                            "  all matches " +
                            "  after match skip to next row " +

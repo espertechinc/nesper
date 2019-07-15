@@ -892,7 +892,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, startTime);
 
                 var epl =
-                    "@Name('s0') select symbol, sum(price) as s from SupportMarketDataBean#time_length_batch(5, 10, \"START_EAGER\") group by Symbol order by symbol asc";
+                    "@Name('s0') select Symbol, sum(price) as s from SupportMarketDataBean#time_length_batch(5, 10, \"START_EAGER\") group by Symbol order by Symbol asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendTimer(env, startTime + 4000);

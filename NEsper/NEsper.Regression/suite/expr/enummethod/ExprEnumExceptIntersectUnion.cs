@@ -267,14 +267,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'contained.union(true)': Enumeration method 'union' requires an expression yielding a collection of events of type");
+                    "Failed to valIdate select-clause expression 'contained.union(true)': Enumeration method 'union' requires an expression yielding a collection of events of type");
 
                 epl =
                     "select contained.union(prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'contained.union(prevwindow(s1))': Enumeration method 'union' expects event type '" +
+                    "Failed to valIdate select-clause expression 'contained.union(prevwindow(s1))': Enumeration method 'union' expects event type '" +
                     typeof(SupportBean_ST0).Name +
                     "' but receives event type 'SupportBean'");
 
@@ -282,13 +282,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'subselect_1.union(strvals)': Enumeration method 'union' requires an expression yielding a collection of events of type 'SupportBean' as input parameter");
+                    "Failed to valIdate select-clause expression 'subselect_1.union(strvals)': Enumeration method 'union' requires an expression yielding a collection of events of type 'SupportBean' as input parameter");
 
                 epl = "select strvals.union((select * from SupportBean#keepall)) from SupportCollection";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'strvals.union(subselect_1)': Enumeration method 'union' requires an expression yielding a collection of values of type 'String' as input parameter");
+                    "Failed to valIdate select-clause expression 'strvals.union(subselect_1)': Enumeration method 'union' requires an expression yielding a collection of values of type 'String' as input parameter");
             }
         }
 

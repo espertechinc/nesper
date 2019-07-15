@@ -18,14 +18,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select s0.doubleBoxed, s1.IntPrimitive*s1.intBoxed/2.0 as div from " +
-                      "SupportBean(theString='s0')#length(3) as s0," +
-                      "SupportBean(theString='s1')#length(3) as s1" +
-                      " where s0.doubleBoxed = s1.doubleBoxed";
+            var epl = "@Name('s0') select s0.DoubleBoxed, s1.IntPrimitive*s1.IntBoxed/2.0 as div from " +
+                      "SupportBean(TheString='s0')#length(3) as s0," +
+                      "SupportBean(TheString='s1')#length(3) as s1" +
+                      " where s0.DoubleBoxed = s1.DoubleBoxed";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             var result = env.Statement("s0").EventType;
-            Assert.AreEqual(typeof(double?), result.GetPropertyType("s0.doubleBoxed"));
+            Assert.AreEqual(typeof(double?), result.GetPropertyType("s0.DoubleBoxed"));
             Assert.AreEqual(typeof(double?), result.GetPropertyType("div"));
             Assert.AreEqual(2, env.Statement("s0").EventType.PropertyNames.Length);
 
@@ -37,14 +37,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             SendEvent(env, "s1", 1, 3, 2);
             var newEvents = env.Listener("s0").LastNewData;
-            Assert.AreEqual(1d, newEvents[0].Get("s0.doubleBoxed"));
+            Assert.AreEqual(1d, newEvents[0].Get("s0.DoubleBoxed"));
             Assert.AreEqual(3d, newEvents[0].Get("div"));
 
             env.Milestone(2);
 
             var iterator = env.Statement("s0").GetEnumerator();
             var theEvent = iterator.Advance();
-            Assert.AreEqual(1d, theEvent.Get("s0.doubleBoxed"));
+            Assert.AreEqual(1d, theEvent.Get("s0.DoubleBoxed"));
             Assert.AreEqual(3d, theEvent.Get("div"));
 
             env.UndeployAll();

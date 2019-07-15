@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                        "nested1.nested2.prop3[2] as indexedProp," +
                        "customProp," +
                        "prop4.attr2 as attrOneProp," +
-                       "nested3.nested4[2].id as attrTwoProp" +
+                       "nested3.nested4[2].Id as attrTwoProp" +
                        " from " +
                        typeName +
                        "#length(100)";

@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 log.Info("Done preloading");
 
-                var eplQuery = "@Name('s0') select * from SupportBean_ST0 st0 unidirectional, SBR a, ST1 st1 " +
+                var eplQuery = "@Name('s0') select * from SupportBean_ST0 st0 unIdirectional, SBR a, ST1 st1 " +
                                "where st0.key0 = a.key and st1.key1 = a.key and " +
                                "st1.p10 between rangeStart and rangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);

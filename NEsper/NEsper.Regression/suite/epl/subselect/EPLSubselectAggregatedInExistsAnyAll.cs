@@ -551,7 +551,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var path = new RegressionPath();
                 var epl = "create window MyWindow#keepall as (key string, anint int);\n" +
-                          "insert into MyWindow(key, anint) select id, value from SupportIdAndValueEvent;\n" +
+                          "insert into MyWindow(key, anint) select Id, value from SupportIdAndValueEvent;\n" +
                           "@Name('s0') select exists (select sum(anint) from MyWindow group by key) as c0," +
                           "not exists (select sum(anint) from MyWindow group by key) as c1 from SupportValueEvent;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
@@ -585,7 +585,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var path = new RegressionPath();
                 var epl = "create window MyWindow#keepall as (key string, anint int);\n" +
-                          "insert into MyWindow(key, anint) select id, value from SupportIdAndValueEvent;\n" +
+                          "insert into MyWindow(key, anint) select Id, value from SupportIdAndValueEvent;\n" +
                           "@Name('s0') select exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c0," +
                           "not exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c1 from SupportValueEvent";
                 var fields = "c0,c1".SplitCsv();
@@ -710,7 +710,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select id from SupportBean_S0 where exists (select max(id) from SupportBean_S1#length(3))";
+                    "@Name('s0') select Id from SupportBean_S0 where exists (select max(Id) from SupportBean_S1#length(3))";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventS0(env, 1);
@@ -729,7 +729,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select id from SupportBean_S0 where id in (select max(id) from SupportBean_S1#length(2))";
+                    "@Name('s0') select Id from SupportBean_S0 where Id in (select max(Id) from SupportBean_S1#length(2))";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventS0(env, 1);

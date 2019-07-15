@@ -62,9 +62,9 @@ namespace com.espertech.esper.regressionlib.support.bean
                    Symbol +
                    " price=" +
                    Price +
-                   " volume=" +
+                   " Volume=" +
                    Volume +
-                   " feed=" +
+                   " Feed=" +
                    Feed;
         }
     }

@@ -100,8 +100,8 @@ namespace com.espertech.esper.regressionlib.framework
             }
             else {
                 // Comment-in for logging: log.error("Exception: " + ex.getMessage(), ex);
-                log.Error("No assertion provided, received: " + ex.Message, ex);
-                Assert.Fail("No assertion provided, received: " + ex.Message);
+                log.Error("No assertion provIded, received: " + ex.Message, ex);
+                Assert.Fail("No assertion provIded, received: " + ex.Message);
             }
         }
 
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.framework
             else {
                 // Comment-in for logging: log.error("Exception: " + ex.getMessage(), ex);
                 Console.Out.WriteLine(exceptionMessage);
-                Assert.Fail("No assertion provided, received: " + exceptionMessage);
+                Assert.Fail("No assertion provIded, received: " + exceptionMessage);
             }
         }
 
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.framework
             }
             catch (PropertyAccessException ex) {
                 // expected
-                AssertMessage(ex, "Property named '" + propertyName + "' is not a valid property name for this type");
+                AssertMessage(ex, "Property named '" + propertyName + "' is not a valId property name for this type");
             }
         }
 
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.framework
             }
             catch (PropertyAccessException ex) {
                 // expected
-                AssertMessage(ex, "Property named '" + propertyName + "' is not a valid property name for this type");
+                AssertMessage(ex, "Property named '" + propertyName + "' is not a valId property name for this type");
             }
         }
 

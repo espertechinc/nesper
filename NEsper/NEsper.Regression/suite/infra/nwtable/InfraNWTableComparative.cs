@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var execs = new List<RegressionExecution>();
             var eplNamedWindow =
-                "create window TotalsWindow#unique(TheString) as (theString string, total int);" +
+                "create window TotalsWindow#unique(TheString) as (TheString string, total int);" +
                 "insert into TotalsWindow select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;" +
                 "@Name('s0') select p00 as c0, " +
                 "    (select total from TotalsWindow tw where tw.TheString = s0.p00) as c1 from SupportBean_S0 as s0;";

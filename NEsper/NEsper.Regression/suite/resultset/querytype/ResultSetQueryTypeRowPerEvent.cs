@@ -224,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream longPrimitive, sum(longBoxed) as mySum " +
+                var epl = "@Name('s0') select irstream LongPrimitive, sum(LongBoxed) as mySum " +
                           "from SupportBean#length(3)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream longPrimitive, sum(longBoxed) as mySum " +
+                var epl = "@Name('s0') select irstream LongPrimitive, sum(LongBoxed) as mySum " +
                           "from SupportBeanString#length(3) as one, SupportBean#length(3) as two " +
                           "where one.TheString = two.TheString";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // ESPER-571
                 var epl =
-                    "@Name('s0') select max(IntPrimitive) as val from SupportBean#time(1) having max(IntPrimitive) > intBoxed";
+                    "@Name('s0') select max(IntPrimitive) as val from SupportBean#time(1) having max(IntPrimitive) > IntBoxed";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E1", 10, 1);
@@ -322,9 +322,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select 'IBM stats' as title, volume, avg(volume) as myAvg, sum(volume) as mySum " +
+                    "@Name('s0') select 'IBM stats' as title, Volume, avg(Volume) as myAvg, sum(Volume) as mySum " +
                     "from SupportMarketDataBean#length(3)" +
-                    "where symbol='IBM'";
+                    "where Symbol='IBM'";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendMarketDataEvent(env, "GE", 10L);
@@ -353,7 +353,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select irstream symbol, sum(distinct volume) as volSum " +
+                var epl = "@Name('s0') select irstream Symbol, sum(distinct Volume) as volSum " +
                           "from SupportMarketDataBean#length(3) ";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -390,7 +390,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select irstream " +
-                          "avg(distinct volume) as avgVolume, count(distinct symbol) as countDistinctSymbol " +
+                          "avg(distinct Volume) as avgVolume, count(distinct Symbol) as countDistinctSymbol " +
                           "from SupportMarketDataBean";
                 env.CompileDeploy(epl).AddListener("s0");
 

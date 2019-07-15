@@ -32,8 +32,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "IntPrimitive = 0 and longPrimitive = 0",
-                "IntPrimitive = 0 and longPrimitive = 0",
+                "IntPrimitive = 0 and LongPrimitive = 0",
+                "IntPrimitive = 0 and LongPrimitive = 0",
                 MakeItem(MakeBean("E1", 0, 0), true, true),
                 MakeItem(MakeBean("E2", 1, 0), false, false),
                 MakeItem(MakeBean("E3", 0, 1), false, false));
@@ -42,8 +42,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "IntPrimitive != 1 and longPrimitive != 2",
-                "IntPrimitive != 1 and longPrimitive != 2",
+                "IntPrimitive != 1 and LongPrimitive != 2",
+                "IntPrimitive != 1 and LongPrimitive != 2",
                 MakeItem(MakeBean("E1", 1, 2), false, false),
                 MakeItem(MakeBean("E2", 2, 3), true, true),
                 MakeItem(MakeBean("E3", 1, -1), false, false),
@@ -53,8 +53,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "IntPrimitive > 0 and longPrimitive > 0",
-                "IntPrimitive > 0 and longPrimitive > 0",
+                "IntPrimitive > 0 and LongPrimitive > 0",
+                "IntPrimitive > 0 and LongPrimitive > 0",
                 MakeItem(MakeBean("E1", 1, 1), true, true),
                 MakeItem(MakeBean("E2", 1, 0), false, false),
                 MakeItem(MakeBean("E3", 0, 1), false, false));
@@ -63,8 +63,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "IntPrimitive between 0 and 10 and longPrimitive between 0 and 10",
-                "IntPrimitive between 0 and 10 and longPrimitive between 0 and 10",
+                "IntPrimitive between 0 and 10 and LongPrimitive between 0 and 10",
+                "IntPrimitive between 0 and 10 and LongPrimitive between 0 and 10",
                 MakeItem(MakeBean("E1", 1, 1), true, true),
                 MakeItem(MakeBean("E2", 1, -1), false, false),
                 MakeItem(MakeBean("E3", -1, 1), false, false));
@@ -73,8 +73,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "IntPrimitive in (1, 2) and longPrimitive in (2, 3)",
-                "IntPrimitive in (1, 2) and longPrimitive in (2, 3)",
+                "IntPrimitive in (1, 2) and LongPrimitive in (2, 3)",
+                "IntPrimitive in (1, 2) and LongPrimitive in (2, 3)",
                 MakeItem(MakeBean("E1", 1, 2), true, true),
                 MakeItem(MakeBean("E2", 2, 3), true, true),
                 MakeItem(MakeBean("E3", 1, -1), false, false),
@@ -84,8 +84,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "IntPrimitive not in (1, 2) and longPrimitive not in (2, 3)",
-                "IntPrimitive not in (1, 2) and longPrimitive not in (2, 3)",
+                "IntPrimitive not in (1, 2) and LongPrimitive not in (2, 3)",
+                "IntPrimitive not in (1, 2) and LongPrimitive not in (2, 3)",
                 MakeItem(MakeBean("E1", 1, 2), false, false),
                 MakeItem(MakeBean("E2", 2, 3), false, false),
                 MakeItem(MakeBean("E3", -1, -1), true, true),

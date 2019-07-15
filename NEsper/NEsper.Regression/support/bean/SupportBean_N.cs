@@ -53,15 +53,15 @@ namespace com.espertech.esper.regressionlib.support.bean
         {
             return "intPrim=" +
                    IntPrimitive +
-                   " intBoxed=" +
+                   " IntBoxed=" +
                    IntBoxed +
                    " doublePrim=" +
                    DoublePrimitive +
-                   " doubleBoxed=" +
+                   " DoubleBoxed=" +
                    DoubleBoxed +
                    " boolPrim=" +
                    IsBoolPrimitive +
-                   " boolBoxed=" +
+                   " BoolBoxed=" +
                    BoolBoxed;
         }
 

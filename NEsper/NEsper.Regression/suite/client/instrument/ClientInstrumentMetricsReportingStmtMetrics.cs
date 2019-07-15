@@ -34,19 +34,19 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             statements[0].AddListener(env.ListenerNew());
 
             statements[1] = env.CompileDeploy(
-                    "@Name('cpuStmtOne') select * from SupportBean(intPrimitive=1)#keepall where MyMetricFunctions.takeCPUTime(longPrimitive)")
+                    "@Name('cpuStmtOne') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.takeCPUTime(LongPrimitive)")
                 .Statement("cpuStmtOne");
             statements[1].AddListener(env.ListenerNew());
             statements[2] = env.CompileDeploy(
-                    "@Name('cpuStmtTwo') select * from SupportBean(intPrimitive=2)#keepall where MyMetricFunctions.takeCPUTime(longPrimitive)")
+                    "@Name('cpuStmtTwo') select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.takeCPUTime(LongPrimitive)")
                 .Statement("cpuStmtTwo");
             statements[2].AddListener(env.ListenerNew());
             statements[3] = env.CompileDeploy(
-                    "@Name('wallStmtThree') select * from SupportBean(intPrimitive=3)#keepall where MyMetricFunctions.takeWallTime(longPrimitive)")
+                    "@Name('wallStmtThree') select * from SupportBean(IntPrimitive=3)#keepall where MyMetricFunctions.takeWallTime(LongPrimitive)")
                 .Statement("wallStmtThree");
             statements[3].AddListener(env.ListenerNew());
             statements[4] = env.CompileDeploy(
-                    "@Name('wallStmtFour') select * from SupportBean(intPrimitive=4)#keepall where MyMetricFunctions.takeWallTime(longPrimitive)")
+                    "@Name('wallStmtFour') select * from SupportBean(IntPrimitive=4)#keepall where MyMetricFunctions.takeWallTime(LongPrimitive)")
                 .Statement("wallStmtFour");
             statements[4].AddListener(env.ListenerNew());
 

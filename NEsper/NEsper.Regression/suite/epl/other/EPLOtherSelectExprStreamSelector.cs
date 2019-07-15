@@ -294,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select TheString.* as s0, IntPrimitive as a, theString.* as s1, IntPrimitive as b from SupportBean#length(3) as theString";
+                    "@Name('s0') select TheString.* as s0, IntPrimitive as a, TheString.* as s1, IntPrimitive as b from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select IntPrimitive, s1.* as s1stream, theString, symbol as sym, s0.* as s0stream from SupportBean#length(3) as s0, " +
+                    "@Name('s0') select IntPrimitive, s1.* as s1stream, TheString, Symbol as sym, s0.* as s0stream from SupportBean#length(3) as s0, " +
                     "SupportMarketDataBean#keepall as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -381,7 +381,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select IntPrimitive, s1.*, symbol as sym from SupportBean#length(3) as s0, " +
+                var epl = "@Name('s0') select IntPrimitive, s1.*, Symbol as sym from SupportBean#length(3) as s0, " +
                           "SupportMarketDataBean#keepall as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -410,7 +410,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select TheString.* from SupportBean#length(3) as theString";
+                var epl = "@Name('s0') select TheString.* from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -428,7 +428,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select TheString.* as s0 from SupportBean#length(3) as theString";
+                var epl = "@Name('s0') select TheString.* as s0 from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -529,8 +529,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 TryInvalidCompile(
                     env,
-                    "select TheString.* as theString, theString from SupportBean#length(3) as theString",
-                    "Column name 'theString' appears more then once in select clause");
+                    "select TheString.* as TheString, TheString from SupportBean#length(3) as TheString",
+                    "Column name 'TheString' appears more then once in select clause");
 
                 TryInvalidCompile(
                     env,

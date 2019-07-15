@@ -37,10 +37,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "create window MyWindow#groupwin(TheString)#keepall as select TheString, longPrimitive from SupportBean",
+                "create window MyWindow#groupwin(TheString)#keepall as select TheString, LongPrimitive from SupportBean",
                 path);
             env.CompileDeploy(
-                "insert into MyWindow(theString, longPrimitive) select symbol, volume from SupportMarketDataBean",
+                "insert into MyWindow(TheString, LongPrimitive) select Symbol, Volume from SupportMarketDataBean",
                 path);
             return path;
         }

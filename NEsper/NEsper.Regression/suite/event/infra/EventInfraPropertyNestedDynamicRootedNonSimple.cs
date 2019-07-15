@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>("", notExists),
                 new Pair<object, object>(
                     "<item>" +
-                    "<indexed>1</indexed><indexed>2</indexed><mapped id=\"keyOne\">3</mapped><mapped id=\"keyTwo\">4</mapped>" +
+                    "<indexed>1</indexed><indexed>2</indexed><mapped Id=\"keyOne\">3</mapped><mapped Id=\"keyTwo\">4</mapped>" +
                     "</item>",
                     new[] {Exists("1"), Exists("2"), NotExists(), Exists("3"), Exists("4"), NotExists()})
             };

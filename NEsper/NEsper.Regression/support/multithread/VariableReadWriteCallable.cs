@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
             selectListener = new SupportUpdateListener();
             var stmtText = "@Name('t" +
                            threadNum +
-                           "') select var1, var2, var3 from SupportBean_A(id='" +
+                           "') select var1, var2, var3 from SupportBean_A(Id='" +
                            threadNum +
                            "')";
             env.CompileDeploy(stmtText).Statement("t" + threadNum).AddListener(selectListener);

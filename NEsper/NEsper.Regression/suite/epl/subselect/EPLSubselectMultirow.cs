@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select p00, " +
-                               "(select window(sb.*) from SupportBean#keepall sb where theString = s0.p00) as val " +
+                               "(select window(sb.*) from SupportBean#keepall sb where TheString = s0.p00) as val " +
                                "from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 

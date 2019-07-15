@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             }
 
             var consumeEpl =
-                "@Name('s0') select e0, (select TheString from MyWindow where IntPrimitive = es.e1 and theString = es.e2) as val from EventSchema as es";
+                "@Name('s0') select e0, (select TheString from MyWindow where IntPrimitive = es.e1 and TheString = es.e2) as val from EventSchema as es";
             if (disableIndexShareConsumer) {
                 consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
             }
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.CompileDeploy(createEpl, path);
 
                 if (buildIndex) {
-                    env.CompileDeploy("create index idx1 on MyWindow(theString hash)", path);
+                    env.CompileDeploy("create index Idx1 on MyWindow(TheString hash)", path);
                 }
 
                 env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // single-field compare
                 var fields = "val".SplitCsv();
                 var eplSingle =
-                    "@Name('s0') select (select IntPrimitive from MyWindow where theString = 'E9734') as val from SupportBeanRange sbr";
+                    "@Name('s0') select (select IntPrimitive from MyWindow where TheString = 'E9734') as val from SupportBeanRange sbr";
                 env.CompileDeploy(eplSingle, path).AddListener("s0");
 
                 var startTime = PerformanceObserver.MilliTime;
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // two-field compare
                 var eplTwoHash =
-                    "@Name('s1') select (select IntPrimitive from MyWindow where theString = 'E9736' and IntPrimitive = 9736) as val from SupportBeanRange sbr";
+                    "@Name('s1') select (select IntPrimitive from MyWindow where TheString = 'E9736' and IntPrimitive = 9736) as val from SupportBeanRange sbr";
                 env.CompileDeploy(eplTwoHash, path).AddListener("s1");
 
                 startTime = PerformanceObserver.MilliTime;
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // range compare single
                 if (buildIndex) {
-                    env.CompileDeploy("create index idx2 on MyWindow(intPrimitive btree)", path);
+                    env.CompileDeploy("create index Idx2 on MyWindow(IntPrimitive btree)", path);
                 }
 
                 var eplSingleBTree =
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // range compare composite
                 var eplComposite =
-                    "@Name('s3') select (select IntPrimitive from MyWindow where theString = 'E9738' and IntPrimitive between 9738 and 9738) as val from SupportBeanRange sbr";
+                    "@Name('s3') select (select IntPrimitive from MyWindow where TheString = 'E9738' and IntPrimitive between 9738 and 9738) as val from SupportBeanRange sbr";
                 env.CompileDeploy(eplComposite, path).AddListener("s3");
 
                 startTime = PerformanceObserver.MilliTime;
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.CompileDeploy(createEpl, path);
 
                 if (buildIndex) {
-                    env.CompileDeploy("create index idx1 on MyWindow(theString hash, IntPrimitive btree)", path);
+                    env.CompileDeploy("create index Idx1 on MyWindow(TheString hash, IntPrimitive btree)", path);
                 }
 
                 env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 var fields = "cols.mini,cols.maxi".SplitCsv();
                 var queryEpl =
-                    "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where theString = sbr.key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
+                    "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where TheString = sbr.key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
                 env.CompileDeploy(queryEpl, path).AddListener("s0");
 
                 var startTime = PerformanceObserver.MilliTime;
@@ -324,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.CompileDeploy(createEpl, path);
 
                 if (buildIndex) {
-                    env.CompileDeploy("create index idx1 on MyWindow(intPrimitive btree)", path);
+                    env.CompileDeploy("create index Idx1 on MyWindow(IntPrimitive btree)", path);
                 }
 
                 env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
@@ -373,7 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 var fields = "cols.mini,cols.maxi".SplitCsv();
                 var queryEpl =
                     "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow " +
-                    "where theString = sbr.key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
+                    "where TheString = sbr.key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
                 env.CompileDeploy(queryEpl, path).AddListener("s0").Milestone(0);
 
                 var startTime = PerformanceObserver.MilliTime;

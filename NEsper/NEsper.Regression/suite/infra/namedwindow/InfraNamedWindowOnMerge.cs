@@ -59,11 +59,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             epl += "on SupportBean_A delete from MyWindowSS;\n";
             epl += "on MyEvent me " +
                    "merge MyWindowSS mw " +
-                   "when not matched and (select IntPrimitive>0 from SupportBean(theString like 'A%')#lastevent) then " +
-                   "insert(col1, col2) select (select TheString from SupportBean(theString like 'A%')#lastevent), (select IntPrimitive from SupportBean(theString like 'A%')#lastevent) " +
-                   "when matched and (select IntPrimitive>0 from SupportBean(theString like 'B%')#lastevent) then " +
-                   "update set col1=(select TheString from SupportBean(theString like 'B%')#lastevent), col2=(select IntPrimitive from SupportBean(theString like 'B%')#lastevent) " +
-                   "when matched and (select IntPrimitive>0 from SupportBean(theString like 'C%')#lastevent) then " +
+                   "when not matched and (select IntPrimitive>0 from SupportBean(TheString like 'A%')#lastevent) then " +
+                   "insert(col1, col2) select (select TheString from SupportBean(TheString like 'A%')#lastevent), (select IntPrimitive from SupportBean(TheString like 'A%')#lastevent) " +
+                   "when matched and (select IntPrimitive>0 from SupportBean(TheString like 'B%')#lastevent) then " +
+                   "update set col1=(select TheString from SupportBean(TheString like 'B%')#lastevent), col2=(select IntPrimitive from SupportBean(TheString like 'B%')#lastevent) " +
+                   "when matched and (select IntPrimitive>0 from SupportBean(TheString like 'C%')#lastevent) then " +
                    "delete;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath());
 
@@ -216,11 +216,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 "orderId,quantity".SplitCsv(),
                 new[] {new object[] {"O1", 200}, new object[] {"O2", 300}});
 
-            var module = "create schema StreetCarCountSchema (streetid string, carcount int);" +
-                         "    create schema StreetChangeEvent (streetid string, action string);" +
-                         "    create window StreetCarCountWindow#unique(streetid) as StreetCarCountSchema;" +
-                         "    on StreetChangeEvent ce merge StreetCarCountWindow w where ce.streetid = w.streetid\n" +
-                         "    when not matched and ce.action = 'ENTER' then insert select streetid, 1 as carcount\n" +
+            var module = "create schema StreetCarCountSchema (streetId string, carcount int);" +
+                         "    create schema StreetChangeEvent (streetId string, action string);" +
+                         "    create window StreetCarCountWindow#unique(streetId) as StreetCarCountSchema;" +
+                         "    on StreetChangeEvent ce merge StreetCarCountWindow w where ce.streetId = w.streetId\n" +
+                         "    when not matched and ce.action = 'ENTER' then insert select streetId, 1 as carcount\n" +
                          "    when matched and ce.action = 'ENTER' then update set StreetCarCountWindow.carcount = carcount + 1\n" +
                          "    when matched and ce.action = 'LEAVE' then update set StreetCarCountWindow.carcount = carcount - 1;" +
                          "    select * from StreetCarCountWindow;";
@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             EPAssertionUtil.AssertPropsPerRow(
                 env.GetEnumerator("window"),
-                "theString,intPrimitive".SplitCsv(),
+                "theString,IntPrimitive".SplitCsv(),
                 new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
 
             env.UndeployAll();
@@ -330,10 +330,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(
                     "@Name('merge') on SupportBean_S0 as sb " +
                     "merge MyWindowUNP as mywin when matched then " +
-                    "update set mywin.setDoublePrimitive(id), increaseIntCopyDouble(initial, mywin)",
+                    "update set mywin.setDoublePrimitive(Id), increaseIntCopyDouble(initial, mywin)",
                     path);
                 env.AddListener("merge");
-                var fields = "IntPrimitive,doublePrimitive,doubleBoxed".SplitCsv();
+                var fields = "IntPrimitive,DoublePrimitive,DoubleBoxed".SplitCsv();
 
                 env.SendEventBean(MakeSupportBean("E1", 10, 2));
                 env.SendEventBean(new SupportBean_S0(5, "E1"));
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // try a case-statement
                 var eplCase = "on SupportBean_S0 merge MyWindowUNP " +
-                              "when matched then update set theString = " +
+                              "when matched then update set TheString = " +
                               "case IntPrimitive when 1 then 'a' else 'b' end";
                 env.CompileDeploy(eplCase, path);
 
@@ -359,14 +359,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
 
                 // test dispatch between named windows
-                env.CompileDeploy("@Name('A') create window A#unique(id) as (id int)", path);
-                env.CompileDeploy("@Name('B') create window B#unique(id) as (id int)", path);
+                env.CompileDeploy("@Name('A') create window A#unique(Id) as (Id int)", path);
+                env.CompileDeploy("@Name('B') create window B#unique(Id) as (Id int)", path);
                 env.CompileDeploy(
-                    "@Name('C') on A merge B when not matched then insert select 1 as id when matched then insert select 1 as id",
+                    "@Name('C') on A merge B when not matched then insert select 1 as Id when matched then insert select 1 as Id",
                     path);
 
                 env.CompileDeploy("@Name('D') select * from B", path).AddListener("D");
-                env.CompileDeploy("@Name('E') insert into A select IntPrimitive as id from SupportBean", path);
+                env.CompileDeploy("@Name('E') insert into A select IntPrimitive as Id from SupportBean", path);
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.IsTrue(env.Listener("D").IsInvoked);
@@ -422,7 +422,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var theEvent = env.GetEnumerator("window").Advance();
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new object[] {null, 10});
                 env.UndeployModuleContaining("merge");
 
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("window"),
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {null, 10}, new object[] {"E2", 20}});
 
                 env.UndeployAll();

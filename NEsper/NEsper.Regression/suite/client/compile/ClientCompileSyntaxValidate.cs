@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 TryInvalidCompile(
                     env,
                     "on SupportBean select 1",
-                    "Required insert-into clause is not provided, the clause is required for split-stream syntax");
+                    "Required insert-into clause is not provIded, the clause is required for split-stream syntax");
             }
         }
 

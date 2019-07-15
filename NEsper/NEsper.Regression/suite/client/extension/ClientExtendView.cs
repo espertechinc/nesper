@@ -84,13 +84,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             TryInvalidCompile(
                 env,
                 "select * from SupportMarketDataBean.mynamespace:xxx()",
-                "Failed to validate data window declaration: View name 'mynamespace:xxx' is not a known view name");
+                "Failed to valIdate data window declaration: View name 'mynamespace:xxx' is not a known view name");
             TryInvalidCompile(
                 env,
-                "select * from SupportMarketDataBean.mynamespace:invalid()",
-                "Failed to validate data window declaration: Error casting view factory instance to " +
+                "select * from SupportMarketDataBean.mynamespace:invalId()",
+                "Failed to valIdate data window declaration: Error casting view factory instance to " +
                 typeof(ViewFactoryForge).Name +
-                " interface for view 'invalid'");
+                " interface for view 'invalId'");
         }
 
         private void SendEvent(

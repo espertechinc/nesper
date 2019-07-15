@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = "theString,LongPrimitive".SplitCsv();
 
                 env.AdvanceTime(0);
-                var epl = "@Name('s0') select irstream * from SupportBean.ext:time_order(longPrimitive, 10 sec)";
+                var epl = "@Name('s0') select irstream * from SupportBean.ext:time_order(LongPrimitive, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
                 var epl =
-                    "insert rstream into OrderedStream select rstream id from SupportBeanTimestamp#time_order(timestamp, 10 sec);\n" +
+                    "insert rstream into OrderedStream select rstream Id from SupportBeanTimestamp#time_order(timestamp, 10 sec);\n" +
                     "@Name('s0') select * from OrderedStream";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -993,17 +993,17 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBeanTimestamp#time_order(bump, 10 sec)",
-                    "Failed to validate data window declaration: Invalid parameter expression 0 for Time-Order view: Failed to validate view parameter expression 'bump': Property named 'bump' is not valid in any stream [");
+                    "Failed to valIdate data window declaration: InvalId parameter expression 0 for Time-Order view: Failed to valIdate view parameter expression 'bump': Property named 'bump' is not valId in any stream [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBeanTimestamp#time_order(10 sec)",
-                    "Failed to validate data window declaration: Time-Order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [");
+                    "Failed to valIdate data window declaration: Time-Order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBeanTimestamp#time_order(timestamp, abc)",
-                    "Failed to validate data window declaration: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'id'?) [");
+                    "Failed to valIdate data window declaration: InvalId parameter expression 1 for Time-Order view: Failed to valIdate view parameter expression 'abc': Property named 'abc' is not valId in any stream (dId you mean 'Id'?) [");
             }
         }
 
@@ -1013,14 +1013,14 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var epl = "@Name('s0') select irstream id, " +
-                          " prev(0, id) as prevIdZero, " +
-                          " prev(1, id) as prevIdOne, " +
-                          " prior(1, id) as priorIdOne," +
-                          " prevtail(0, id) as prevTailIdZero, " +
-                          " prevtail(1, id) as prevTailIdOne, " +
-                          " prevcount(id) as prevCountId, " +
-                          " prevwindow(id) as prevWindowId " +
+                var epl = "@Name('s0') select irstream Id, " +
+                          " prev(0, Id) as prevIdZero, " +
+                          " prev(1, Id) as prevIdOne, " +
+                          " prior(1, Id) as priorIdOne," +
+                          " prevtail(0, Id) as prevTailIdZero, " +
+                          " prevtail(1, Id) as prevTailIdOne, " +
+                          " prevcount(Id) as prevCountId, " +
+                          " prevwindow(Id) as prevWindowId " +
                           " from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
                 string[] fields =
@@ -1109,12 +1109,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(1000);
 
-                var text = "@Name('s0') select irstream id, " +
-                           "prev(1, id) as prevId, " +
-                           "prior(1, id) as priorId, " +
-                           "prevtail(0, id) as prevtail, " +
-                           "prevcount(id) as prevCountId, " +
-                           "prevwindow(id) as prevWindowId " +
+                var text = "@Name('s0') select irstream Id, " +
+                           "prev(1, Id) as prevId, " +
+                           "prior(1, Id) as priorId, " +
+                           "prevtail(0, Id) as prevtail, " +
+                           "prevcount(Id) as prevCountId, " +
+                           "prevwindow(Id) as prevWindowId " +
                            "from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 

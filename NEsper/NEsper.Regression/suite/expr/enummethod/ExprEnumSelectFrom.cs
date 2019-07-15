@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.selectFrom(x => new {c0 = id||'x', c1 = key0||'y'}) as val0 " +
+                                  "contained.selectFrom(x => new {c0 = Id||'x', c1 = key0||'y'}) as val0 " +
                                   "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.selectFrom(x => id) as val0 " +
+                                  "contained.selectFrom(x => Id) as val0 " +
                                   "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

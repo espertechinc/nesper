@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('s0') insert into NextStream " +
-                    "select rstream s0.TheString as theString from SupportBean#length(3) as s0",
+                    "select rstream s0.TheString as TheString from SupportBean#length(3) as s0",
                     path);
                 env.AddListener("s0");
                 env.CompileDeploy("@Name('ii') select * from NextStream", path).AddListener("ii");
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('s0') insert rstream into NextStream " +
-                    "select rstream s0.TheString as theString from SupportBean#length(3) as s0",
+                    "select rstream s0.TheString as TheString from SupportBean#length(3) as s0",
                     path);
                 env.AddListener("s0");
 
@@ -201,8 +201,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 env.CompileDeploy(
                         "@Name('s0') select rstream s1.IntPrimitive as aID, s2.IntPrimitive as bID " +
-                        "from SupportBean(theString='a')#length(2) as s1, " +
-                        "SupportBean(theString='b')#keepall as s2" +
+                        "from SupportBean(TheString='a')#length(2) as s1, " +
+                        "SupportBean(TheString='b')#keepall as s2" +
                         " where s1.IntPrimitive = s2.IntPrimitive")
                     .AddListener("s0");
 
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('s0') insert rstream into NextStream " +
-                    "select istream a.TheString as theString from SupportBean#length(1) as a",
+                    "select istream a.TheString as TheString from SupportBean#length(1) as a",
                     path);
                 env.AddListener("s0");
 
@@ -274,8 +274,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(
                         "@Name('s0') " +
                         "select istream s1.IntPrimitive as aID, s2.IntPrimitive as bID " +
-                        "from SupportBean(theString='a')#length(2) as s1, " +
-                        "SupportBean(theString='b')#keepall as s2" +
+                        "from SupportBean(TheString='a')#length(2) as s1, " +
+                        "SupportBean(TheString='b')#keepall as s2" +
                         " where s1.IntPrimitive = s2.IntPrimitive")
                     .AddListener("s0");
 

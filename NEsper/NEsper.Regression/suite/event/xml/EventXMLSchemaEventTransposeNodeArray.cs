@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             SupportXML.SendDefaultEvent(env.EventService, "test", "SimpleEventWSchema");
 
             var resultItem = env.GetEnumerator("ii").Advance();
-            Assert.AreEqual("b", resultItem.Get("narr.id"));
+            Assert.AreEqual("b", resultItem.Get("narr.Id"));
             SupportEventTypeAssertionUtil.AssertConsistency(resultItem);
             var fragmentsInsertItem = (EventBean) resultItem.GetFragment("narr");
             SupportEventTypeAssertionUtil.AssertConsistency(fragmentsInsertItem);

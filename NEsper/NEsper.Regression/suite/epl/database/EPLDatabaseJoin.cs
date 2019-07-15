@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable \n\r where ${intPrimitive} = mytesttable.mybigint'] as s0," +
+                               " from mytesttable \n\r where ${IntPrimitive} = mytesttable.mybigint'] as s0," +
                                "SupportBean#time_batch(10 sec) as s1";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 RuntestTimeBatch(env);
@@ -230,8 +230,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var fields = "IntPrimitive,myint,myvarchar".SplitCsv();
                 var stmtText = "@Name('s0') select IntPrimitive, myint, myvarchar from " +
                                "SupportBean#keepall as s0, " +
-                               " sql:MyDBWithRetain ['select myint from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s1," +
-                               " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s2 ";
+                               " sql:MyDBWithRetain ['select myint from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as s1," +
+                               " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as s2 ";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -278,10 +278,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     "@Name('s0') select TheString as a, IntPrimitive as b, s1.myvarchar as c, s2.myvarchar as d from " +
                     "SupportBean#keepall as s0 " +
                     " inner join " +
-                    " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${intPrimitive} <> mytesttable.mybigint'] as s1 " +
+                    " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${IntPrimitive} <> mytesttable.mybigint'] as s1 " +
                     " on s1.myvarchar=s0.TheString " +
                     " inner join " +
-                    " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${intPrimitive} <> mytesttable.myint'] as s2 " +
+                    " sql:MyDBWithRetain ['select myvarchar from mytesttable where ${IntPrimitive} <> mytesttable.myint'] as s2 " +
                     " on s2.myvarchar=s0.TheString ";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create variable int queryvar", path);
-                env.CompileDeploy("on SupportBean set queryvar=intPrimitive", path);
+                env.CompileDeploy("on SupportBean set queryvar=IntPrimitive", path);
                 var stmtText = "@Name('s0') select myint from " +
                                " sql:MyDBWithRetain ['select myint from mytesttable where ${queryvar} = mytesttable.mybigint'] as s0, " +
                                "SupportBean_A#keepall as s1";
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var fields = ALL_FIELDS.SplitCsv();
-                var sql = "select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint";
+                var sql = "select " + ALL_FIELDS + " from mytesttable where ${IntPrimitive} = mytesttable.mybigint";
 
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create(fields);
@@ -357,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 model.FromClause = fromClause;
                 env.CopyMayFail(model);
                 Assert.AreEqual(
-                    "select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDBWithRetain[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${intPrimitive} = mytesttable.mybigint\"] as s0, " +
+                    "select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDBWithRetain[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${IntPrimitive} = mytesttable.mybigint\"] as s0, " +
                     "SupportBean#time_batch(10) as s1",
                     model.ToEPL());
 
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0," +
+                               " from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as s0," +
                                "SupportBean#time_batch(10 sec) as s1";
 
                 var model = env.EplToModel(stmtText);
@@ -396,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ' from mytesttable where' at line 1");
+                    "Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consIder turning off metadata interrogation via configuration, please check the statement, reason: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ' from mytesttable where' at line 1");
             }
         }
 
@@ -428,7 +428,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "Failed to validate from-clause database-access parameter expression 's1.xxx[0]': Failed to resolve property 's1.xxx[0]' to a stream or nested property in a stream");
+                    "Failed to valIdate from-clause database-access parameter expression 's1.xxx[0]': Failed to resolve property 's1.xxx[0]' to a stream or nested property in a stream");
 
                 stmtText = "@Name('s0') select myvarchar from " +
                            " sql:MyDBWithRetain ['select mychar from mytesttable where ${} = mytesttable.mybigint'] as s0," +
@@ -450,7 +450,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "Invalid expression 'myvarchar' resolves to the historical data itself");
+                    "InvalId expression 'myvarchar' resolves to the historical data itself");
             }
         }
 
@@ -464,7 +464,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "Invalid expression 'mybigint' resolves to the historical data itself");
+                    "InvalId expression 'mybigint' resolves to the historical data itself");
             }
         }
 
@@ -473,7 +473,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var sql =
-                    "sql:MyDBWithRetain ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.myint']#time(30 sec)";
+                    "sql:MyDBWithRetain ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.myint']#time(30 sec)";
                 var stmtText = "@Name('s0') select myvarchar as s0Name from " +
                                sql +
                                " as s0, " +
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "Historical data joins do not allow views onto the data, view 'time' is not valid in this context");
+                    "Historical data joins do not allow views onto the data, view 'time' is not valId in this context");
             }
         }
 
@@ -508,7 +508,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " mydecimal as g," +
                                " mydouble as h," +
                                " myreal as i " +
-                               "from mytesttable where ${id} = mytesttable.mybigint'] as s1";
+                               "from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS0(env, 1);
@@ -581,7 +581,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBean_S0 as s0," +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${id} = mytesttable.mybigint'] as s1";
+                               " from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS0(env, 1);
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             {
                 var stmtText = "@Name('s0') select mychar from " +
                                "SupportBean_S0 as s0," +
-                               " sql:MyDBWithRetain ['select mychar from mytesttable where ${id} = mytesttable.mybigint'] as s1";
+                               " sql:MyDBWithRetain ['select mychar from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
                 var compiled = env.Compile(stmtText);
                 env.Deploy(compiled);
 
@@ -625,7 +625,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${id} = mytesttable.mybigint'] as s0," +
+                               " from mytesttable where ${Id} = mytesttable.mybigint'] as s0," +
                                "SupportBean_S0 as s1";
                 env.CompileDeploy(stmtText).AddListener("s0");
 

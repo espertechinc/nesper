@@ -405,7 +405,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 0);
 
                 var text =
-                    "@Name('s0') select irstream symbol from SupportMarketDataBean#time_batch(1 sec, \"START_EAGER, FORCE_UPDATE\")";
+                    "@Name('s0') select irstream Symbol from SupportMarketDataBean#time_batch(1 sec, \"START_EAGER, FORCE_UPDATE\")";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendTimer(env, 1000);

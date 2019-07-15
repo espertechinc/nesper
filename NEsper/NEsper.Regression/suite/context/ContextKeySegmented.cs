@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             int id)
         {
             env.SendEventBean(new SupportWebEvent("Start", Convert.ToString(id)));
-            env.SendEventBean(new SupportWebEvent("Middle", Convert.ToString(id)));
+            env.SendEventBean(new SupportWebEvent("MIddle", Convert.ToString(id)));
             env.SendEventBean(new SupportWebEvent("End", Convert.ToString(id)));
         }
 
@@ -150,10 +150,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplContext = "create context IndividualBean partition by theString from SupportBean";
+                var eplContext = "create context IndivIdualBean partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
 
-                var eplAnalysis = "@Name('s0') context IndividualBean " +
+                var eplAnalysis = "@Name('s0') context IndivIdualBean " +
                                   "select * from pattern [every (event1=SupportBean(stringContainsX(TheString) = false) => event2=SupportBean(stringContainsX(TheString) = true))]";
                 env.CompileDeploy(eplAnalysis, path).AddListener("s0");
 
@@ -179,13 +179,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplContextOne = "create context SegmentedByString partition by theString from SupportBean";
+                var eplContextOne = "create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContextOne, path);
 
                 var eplMatchRecog = "@Name('s0') context SegmentedByString " +
                                     "select * from SupportBean\n" +
                                     "match_recognize ( \n" +
-                                    "  measures A.longPrimitive as a, B.longPrimitive as b\n" +
+                                    "  measures A.LongPrimitive as a, B.LongPrimitive as b\n" +
                                     "  pattern (A B) \n" +
                                     "  define " +
                                     "    A as A.IntPrimitive = 1," +
@@ -219,12 +219,12 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // try with "prev"
                 path.Clear();
-                var eplContextTwo = "create context SegmentedByString partition by theString from SupportBean";
+                var eplContextTwo = "create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContextTwo, path);
 
                 var eplMatchRecogWithPrev = "@Name('s0') context SegmentedByString select * from SupportBean " +
                                             "match_recognize ( " +
-                                            "  measures A.longPrimitive as e1, B.longPrimitive as e2" +
+                                            "  measures A.LongPrimitive as e1, B.LongPrimitive as e2" +
                                             "  pattern (A B) " +
                                             "  define A as A.IntPrimitive >= prev(A.IntPrimitive),B as B.IntPrimitive >= prev(B.IntPrimitive) " +
                                             ")";
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           " select rstream A.pageName as pageNameA , A.sessionId as sessionIdA, B.pageName as pageNameB, C.pageName as pageNameC from " +
                           "SupportWebEvent(pageName='Start')#time(30) A " +
                           "full outer join " +
-                          "SupportWebEvent(pageName='Middle')#time(30) B on A.sessionId = B.sessionId " +
+                          "SupportWebEvent(pageName='MIddle')#time(30) B on A.sessionId = B.sessionId " +
                           "full outer join " +
                           "SupportWebEvent(pageName='End')#time(30) C on A.sessionId  = C.sessionId " +
                           "where A.pageName is not null and (B.pageName is null or C.pageName is null) ";
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create context PartitionedByString partition by theString from SupportBean", path);
+                env.CompileDeploy("create context PartitionedByString partition by TheString from SupportBean", path);
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5)",
@@ -385,7 +385,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorSegmented] interfaces but received com."),
+                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorSegmented] interfaces but received com."),
                         "message: " + ex.Message);
                 }
 
@@ -404,7 +404,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate filter expression 'dummy=1': Property named 'dummy' is not valid in any stream [");
+                    "Failed to valIdate filter expression 'dummy=1': Property named 'dummy' is not valId in any stream [");
 
                 // property not found
                 epl = "create context SegmentedByAString partition by dummy from SupportBean";
@@ -415,23 +415,23 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // mismatch number pf properties
                 epl =
-                    "create context SegmentedByAString partition by theString from SupportBean, id, p00 from SupportBean_S0";
+                    "create context SegmentedByAString partition by TheString from SupportBean, Id, p00 from SupportBean_S0";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "For context 'SegmentedByAString' expected the same number of property names for each event type, found 1 properties for event type 'SupportBean' and 2 properties for event type 'SupportBean_S0' [create context SegmentedByAString partition by theString from SupportBean, id, p00 from SupportBean_S0]");
+                    "For context 'SegmentedByAString' expected the same number of property names for each event type, found 1 properties for event type 'SupportBean' and 2 properties for event type 'SupportBean_S0' [create context SegmentedByAString partition by TheString from SupportBean, Id, p00 from SupportBean_S0]");
 
                 // incompatible property types
                 epl =
-                    "create context SegmentedByAString partition by theString from SupportBean, id from SupportBean_S0";
+                    "create context SegmentedByAString partition by TheString from SupportBean, Id from SupportBean_S0";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'theString' of type 'System.String' compared to property 'id' of type 'System.Integer' [");
+                    "For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'System.String' compared to property 'Id' of type 'System.Integer' [");
 
                 // duplicate type specification
                 epl =
-                    "create context SegmentedByAString partition by theString from SupportBean, theString from SupportBean";
+                    "create context SegmentedByAString partition by TheString from SupportBean, TheString from SupportBean";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
@@ -446,7 +446,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // validate statement not applicable filters
                 var path = new RegressionPath();
-                env.CompileDeploy("create context SegmentedByAString partition by theString from SupportBean", path);
+                env.CompileDeploy("create context SegmentedByAString partition by TheString from SupportBean", path);
                 epl = "context SegmentedByAString select * from SupportBean_S0";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -456,12 +456,12 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // invalid attempt to partition a named window's streams
                 env.CompileDeploy("create window MyWindow#keepall as SupportBean", path);
-                epl = "create context SegmentedByWhat partition by theString from MyWindow";
+                epl = "create context SegmentedByWhat partition by TheString from MyWindow";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     epl,
-                    "Partition criteria may not include named windows [create context SegmentedByWhat partition by theString from MyWindow]");
+                    "Partition criteria may not include named windows [create context SegmentedByWhat partition by TheString from MyWindow]");
 
                 // partitioned with named window
                 env.CompileDeploy("create schema SomeSchema(ipAddress string)", path);
@@ -483,7 +483,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('context') create context SegmentedByAString  partition by theString from SupportBean",
+                    "@Name('context') create context SegmentedByAString  partition by TheString from SupportBean",
                     path);
 
                 var fields = "col1".SplitCsv();
@@ -492,7 +492,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "select sum(IntPrimitive) as col1," +
                     "prev(1, IntPrimitive)," +
                     "prior(1, IntPrimitive)," +
-                    "(select id from SupportBean_S0#lastevent)" +
+                    "(select Id from SupportBean_S0#lastevent)" +
                     "  from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
@@ -516,7 +516,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('context') create context SegmentedByAString " +
-                    "partition by theString from SupportBean(intPrimitive>0), p00 from SupportBean_S0(id > 0)",
+                    "partition by TheString from SupportBean(IntPrimitive>0), p00 from SupportBean_S0(Id > 0)",
                     path);
 
                 // first send a view events
@@ -527,7 +527,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "col1,col2".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByAString " +
-                    "select sum(sb.IntPrimitive) as col1, sum(s0.id) as col2 " +
+                    "select sum(sb.IntPrimitive) as col1, sum(s0.Id) as col2 " +
                     "from pattern [every (s0=SupportBean_S0 or sb=SupportBean)]",
                     path);
                 env.AddListener("s0");
@@ -588,7 +588,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.Milestone(7);
 
                 // Test unnecessary filter
-                var epl = "create context CtxSegmented partition by theString from SupportBean;" +
+                var epl = "create context CtxSegmented partition by TheString from SupportBean;" +
                           "context CtxSegmented select * from pattern [every a=SupportBean => c=SupportBean(c.TheString=a.TheString)];";
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -605,7 +605,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('context') create context SegmentedByAString " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0",
+                    "partition by TheString from SupportBean, p00 from SupportBean_S0",
                     path);
                 Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
 
@@ -615,7 +615,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 string[] fields = {"col1"};
                 env.CompileDeploy(
-                    "@Name('s0') context SegmentedByAString select sum(id) as col1 from SupportBean_S0",
+                    "@Name('s0') context SegmentedByAString select sum(Id) as col1 from SupportBean_S0",
                     path);
                 env.AddListener("s0");
 
@@ -743,13 +743,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('context') create context SegmentedBy2Fields " +
-                    "partition by theString and IntPrimitive from SupportBean, p00 and id from SupportBean_S0",
+                    "partition by TheString and IntPrimitive from SupportBean, p00 and Id from SupportBean_S0",
                     path);
 
                 var fields = "c1,c2,c3,c4,c5,c6".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedBy2Fields " +
-                    "select TheString as c1, IntPrimitive as c2, id as c3, p00 as c4, context.key1 as c5, context.key2 as c6 " +
+                    "select TheString as c1, IntPrimitive as c2, Id as c3, p00 as c4, context.key1 as c5, context.key2 as c6 " +
                     "from SupportBean#lastevent, SupportBean_S0#lastevent",
                     path);
                 env.AddListener("s0");
@@ -807,13 +807,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('context') create context SegmentedByString partition by theString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
                 string[] fieldsPrev = {"TheString", "col1"};
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select TheString, (select prev(0, id) from SupportBean_S0#keepall) as col1 from SupportBean",
+                    "select TheString, (select prev(0, Id) from SupportBean_S0#keepall) as col1 from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -854,7 +854,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string[] fieldsPrior = {"TheString", "col1"};
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select TheString, (select prior(0, id) from SupportBean_S0#keepall) as col1 from SupportBean",
+                    "select TheString, (select prior(0, Id) from SupportBean_S0#keepall) as col1 from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -900,7 +900,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('context') create context SegmentedByString partition by theString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
                 string[] fields = {"val0", "val1"};
@@ -943,13 +943,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('context') create context SegmentedByString partition by theString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
                 string[] fields = {"TheString", "IntPrimitive", "val0"};
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select TheString, IntPrimitive, (select p00 from SupportBean_S0#lastevent as s0 where sb.IntPrimitive = s0.id) as val0 " +
+                    "select TheString, IntPrimitive, (select p00 from SupportBean_S0#lastevent as s0 where sb.IntPrimitive = s0.Id) as val0 " +
                     "from SupportBean as sb",
                     path);
                 env.AddListener("s0");
@@ -1009,14 +1009,14 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('context') create context SegmentedByString partition by theString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                string[] fields = {"sb.TheString", "sb.IntPrimitive", "s0.id"};
+                string[] fields = {"sb.TheString", "sb.IntPrimitive", "s0.Id"};
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
                     "select * from SupportBean#keepall as sb, SupportBean_S0#keepall as s0 " +
-                    "where IntPrimitive = id",
+                    "where IntPrimitive = Id",
                     path);
                 env.AddListener("s0");
 
@@ -1056,13 +1056,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('context') create context SegmentedByString partition by theString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
                 string[] fields = {"a.TheString", "a.IntPrimitive", "b.TheString", "b.IntPrimitive"};
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select * from pattern [every a=SupportBean => b=SupportBean(intPrimitive=a.IntPrimitive+1)]",
+                    "select * from pattern [every a=SupportBean => b=SupportBean(IntPrimitive=a.IntPrimitive+1)]",
                     path);
                 env.AddListener("s0");
 
@@ -1099,7 +1099,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // add another statement: contexts already exist, this one uses @Consume
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select * from pattern [every a=SupportBean => b=SupportBean(intPrimitive=a.IntPrimitive+1)@Consume]",
+                    "select * from pattern [every a=SupportBean => b=SupportBean(IntPrimitive=a.IntPrimitive+1)@Consume]",
                     path);
                 env.AddListener("s0");
 
@@ -1132,10 +1132,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.UndeployModuleContaining("s0");
 
                 // test truly segmented consume
-                string[] fieldsThree = {"a.TheString", "a.IntPrimitive", "b.id", "b.p00"};
+                string[] fieldsThree = {"a.TheString", "a.IntPrimitive", "b.Id", "b.p00"};
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select * from pattern [every a=SupportBean => b=SupportBean_S0(id=a.IntPrimitive)@Consume]",
+                    "select * from pattern [every a=SupportBean => b=SupportBean_S0(Id=a.IntPrimitive)@Consume]",
                     path);
                 env.AddListener("s0");
 
@@ -1160,10 +1160,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('CTX') create context SegmentedByString partition by theString from SupportBean, p00 from SupportBean_S0;\n" +
+                    "@Name('CTX') create context SegmentedByString partition by TheString from SupportBean, p00 from SupportBean_S0;\n" +
                     "@Name('S1') context SegmentedByString " +
-                    "select a.TheString as c0, a.IntPrimitive as c1, b.id as c2, b.p00 as c3 from pattern [" +
-                    "every a=SupportBean => b=SupportBean_S0(id=a.IntPrimitive)];\n";
+                    "select a.TheString as c0, a.IntPrimitive as c1, b.Id as c2, b.p00 as c3 from pattern [" +
+                    "every a=SupportBean => b=SupportBean_S0(Id=a.IntPrimitive)];\n";
                 env.CompileDeploy(epl).AddListener("S1");
                 var fields = "c0,c1,c2,c3".SplitCsv();
 
@@ -1205,7 +1205,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var contextEPL =
-                    "@Name('context') create context SegmentedByString as partition by theString from SupportBean";
+                    "@Name('context') create context SegmentedByString as partition by TheString from SupportBean";
                 env.CompileDeploy(contextEPL, path);
 
                 var fieldsIterate = "IntPrimitive".SplitCsv();
@@ -1280,7 +1280,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var ctx = "SegmentedByString";
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select context.name as c1, context.id as c2, context.key1 as c3, TheString as c4 " +
+                    "select context.name as c1, context.Id as c2, context.key1 as c3, TheString as c4 " +
                     "from SupportBean#length(2) as items",
                     path);
                 env.AddListener("s0");
@@ -1303,7 +1303,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // test grouped delivery
                 path.Clear();
                 env.CompileDeploy("@Name('var') create variable boolean trigger = false", path);
-                env.CompileDeploy("create context MyCtx partition by theString from SupportBean", path);
+                env.CompileDeploy("create context MyCtx partition by TheString from SupportBean", path);
                 env.CompileDeploy(
                     "@Name('s0') context MyCtx select * from SupportBean#expr(not trigger) for grouped_delivery(TheString)",
                     path);
@@ -1326,10 +1326,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var eplContext =
-                    "@Name('CTX') create context SegmentedByString partition by theString from SupportBean";
+                    "@Name('CTX') create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = "theString,intPrimitive".SplitCsv();
+                var fields = "theString,IntPrimitive".SplitCsv();
                 var eplSelect = "@Name('S1') context SegmentedByString select irstream * from SupportBean#lastevent()";
                 env.CompileDeploy(eplSelect, path).AddListener("S1");
 
@@ -1375,9 +1375,9 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create context MyCtx partition by theString from SupportBean;\n" +
+                var epl = "create context MyCtx partition by TheString from SupportBean;\n" +
                           "@Name('select') context MyCtx select * from SupportBean#lastevent as sb, SupportBean_S0#lastevent as s0 " +
-                          "where theString is 'Test'";
+                          "where TheString is 'Test'";
                 env.CompileDeploy(epl).AddListener("select");
 
                 env.SendEventBean(new SupportBean("Test", 10));
@@ -1394,7 +1394,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create context MyContext partition by theString from SupportBean", path);
+                env.CompileDeploy("create context MyContext partition by TheString from SupportBean", path);
                 env.CompileDeploy("@Name('s0') context MyContext select count(*) as cnt from SupportBean", path);
                 env.AddListener("s0");
 
@@ -1417,7 +1417,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create context MyContext partition by theString, intBoxed, IntPrimitive from SupportBean",
+                    "create context MyContext partition by TheString, IntBoxed, IntPrimitive from SupportBean",
                     path);
                 env.CompileDeploy("@Name('s0') context MyContext select count(*) as cnt from SupportBean", path);
                 env.AddListener("s0");
@@ -1441,10 +1441,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create context ByP0 as partition by theString from SupportBean terminated by SupportBean(intPrimitive<0)",
+                    "create context ByP0 as partition by TheString from SupportBean terminated by SupportBean(IntPrimitive<0)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context ByP0 select TheString, count(*) as cnt from SupportBean(intPrimitive>= 0)",
+                    "@Name('s0') context ByP0 select TheString, count(*) as cnt from SupportBean(IntPrimitive>= 0)",
                     path);
 
                 env.AddListener("s0");
@@ -1485,7 +1485,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var id = (ContextPartitionIdentifierPartitioned) contextPartitionIdentifier;
                 if (match == null && cpids.Contains(id.ContextPartitionId)) {
-                    throw new EPException("Already exists context id: " + id.ContextPartitionId);
+                    throw new EPException("Already exists context Id: " + id.ContextPartitionId);
                 }
 
                 cpids.Add(id.ContextPartitionId);

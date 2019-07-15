@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.AdvanceTime(0);
             var path = new RegressionPath();
             env.CompileDeploy(
-                "create context MyCtx partition by theString from SupportBean terminated after 1 second",
+                "create context MyCtx partition by TheString from SupportBean terminated after 1 second",
                 path);
             env.CompileDeploy(
                 "@Name('s0') context MyCtx select count(*) as cnt from SupportBean output last when terminated",

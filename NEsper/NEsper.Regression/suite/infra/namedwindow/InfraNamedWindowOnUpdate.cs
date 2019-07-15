@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "@Name('window') create window MyWindow#keepall as select *, 1 as p0 from SupportBean;\n" +
                           "insert into MyWindow select *, 2 as p0 from SupportBean;\n" +
-                          "on SupportBean_S0 update MyWindow set theString = 'x', p0 = 2;\n";
+                          "on SupportBean_S0 update MyWindow set TheString = 'x', p0 = 2;\n";
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportBean("E1", 100));
                 env.SendEventBean(new SupportBean_S0(-1));
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl =
                     "@Name('create') create window MyWindowMDW#unique(TheString)#length(2) as select * from SupportBean;\n" +
                     "insert into MyWindowMDW select * from SupportBean;\n" +
-                    "on SupportBean_A update MyWindowMDW set IntPrimitive=intPrimitive*100 where theString=id;\n";
+                    "on SupportBean_A update MyWindowMDW set IntPrimitive=IntPrimitive*100 where TheString=Id;\n";
                 env.CompileDeploy(epl).AddListener("create");
 
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -128,12 +128,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 oldevents = EPAssertionUtil.Sort(oldevents, "TheString");
                 EPAssertionUtil.AssertPropsPerRow(
                     oldevents,
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E2", 3}});
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E1", 2}, new object[] {"E2", 300}});
 
                 env.UndeployAll();
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl =
                     "@Name('create') create window MyWindowMU#unique(TheString)#length(2) retain-union as select * from SupportBean;\n" +
                     "insert into MyWindowMU select * from SupportBean;\n" +
-                    "on SupportBean_A update MyWindowMU mw set mw.IntPrimitive=intPrimitive*100 where theString=id;\n";
+                    "on SupportBean_A update MyWindowMU mw set mw.IntPrimitive=IntPrimitive*100 where TheString=Id;\n";
                 env.CompileDeploy(epl).AddListener("create");
 
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -164,13 +164,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(1, oldevents.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     oldevents,
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E2", 3}});
 
                 var events = EPAssertionUtil.Sort(env.GetEnumerator("create"), "TheString");
                 EPAssertionUtil.AssertPropsPerRow(
                     events,
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E1", 2}, new object[] {"E2", 300}});
 
                 env.UndeployAll();
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl =
                     "@Name('create') create window MyWindowSC#keepall as select * from SupportBeanAbstractSub;\n" +
                     "insert into MyWindowSC select * from SupportBeanAbstractSub;\n" +
-                    "on SupportBean update MyWindowSC set v1=theString, v2=theString;\n";
+                    "on SupportBean update MyWindowSC set v1=TheString, v2=TheString;\n";
                 env.CompileDeploy(epl).AddListener("create");
 
                 env.SendEventBean(new SupportBeanAbstractSub("value2"));

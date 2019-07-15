@@ -40,8 +40,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                          "  measures P2.IntPrimitive as c0" +
                          "  pattern (P1 P2) " +
                          "  define " +
-                         "    P1 as P1.longPrimitive = 1," +
-                         "    P2 as P2.longPrimitive = 2" +
+                         "    P1 as P1.LongPrimitive = 1," +
+                         "    P2 as P2.LongPrimitive = 2" +
                          ")";
             env.CompileDeploy(eplOne).AddListener("S1");
 
@@ -51,8 +51,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                          "  measures P2.IntPrimitive as c0" +
                          "  pattern (P1 P2) " +
                          "  define " +
-                         "    P1 as P1.longPrimitive = 1," +
-                         "    P2 as P2.longPrimitive = 2" +
+                         "    P1 as P1.LongPrimitive = 1," +
+                         "    P2 as P2.LongPrimitive = 2" +
                          ")";
             env.CompileDeploy(eplTwo).AddListener("S2");
 

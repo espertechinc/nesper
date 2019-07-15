@@ -411,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fieldList = "bigint,bigdec".SplitCsv();
                 var epl = "@Name('s0') select bigint,bigdec from SupportBeanNumeric#keepall(), SupportBean#keepall " +
-                          "where IntPrimitive = bigint and doublePrimitive = bigdec";
+                          "where IntPrimitive = bigint and DoublePrimitive = bigdec";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSupportBean(env, 2, 3);

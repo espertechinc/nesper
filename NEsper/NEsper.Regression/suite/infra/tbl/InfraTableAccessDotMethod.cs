@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy(soda, eplDeclare, path);
 
             var eplInto = "@Name('into') into table varaggWDE " +
-                          "select lastever(longPrimitive) as a1, window(*) as a2 from SupportBean#time(10 seconds)" +
+                          "select lastever(LongPrimitive) as a1, window(*) as a2 from SupportBean#time(10 seconds)" +
                           (grouped ? " group by TheString" : "");
             env.CompileDeploy(soda, eplInto, path);
             object[][] expectedAggType = {

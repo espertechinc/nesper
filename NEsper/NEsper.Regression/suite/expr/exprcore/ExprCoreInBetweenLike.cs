@@ -473,7 +473,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select 1 in (longBoxed, intArr, longMap, intCol) as resOne, 1 not in (longBoxed, intArr, longMap, intCol) as resTwo from SupportBeanArrayCollMap";
+                    "@Name('s0') select 1 in (LongBoxed, intArr, longMap, intCol) as resOne, 1 not in (LongBoxed, intArr, longMap, intCol) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "resOne, resTwo".SplitCsv();
@@ -798,7 +798,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select IntPrimitive in (shortBoxed, intBoxed, longBoxed) as result from " +
+                var epl = "@Name('s0') select IntPrimitive in (ShortBoxed, IntBoxed, LongBoxed) as result from " +
                           typeof(SupportBean).Name;
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -820,7 +820,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select intBoxed in (floatBoxed, doublePrimitive, longBoxed) as result from " +
+                var epl = "@Name('s0') select IntBoxed in (FloatBoxed, DoublePrimitive, LongBoxed) as result from " +
                           typeof(SupportBean).Name;
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -842,7 +842,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select IntPrimitive between shortBoxed and longBoxed as result from " +
+                var epl = "@Name('s0') select IntPrimitive between ShortBoxed and LongBoxed as result from " +
                           typeof(SupportBean).Name;
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -867,8 +867,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "ro,rc,rho,rhc,nro,nrc,nrho,nrhc".SplitCsv();
                 var eplOne =
-                    "@Name('s0') select IntPrimitive in (2:4) as ro, intPrimitive in [2:4] as rc, intPrimitive in [2:4) as rho, IntPrimitive in (2:4] as rhc, " +
-                    "IntPrimitive not in (2:4) as nro, intPrimitive not in [2:4] as nrc, intPrimitive not in [2:4) as nrho, IntPrimitive not in (2:4] as nrhc " +
+                    "@Name('s0') select IntPrimitive in (2:4) as ro, IntPrimitive in [2:4] as rc, IntPrimitive in [2:4) as rho, IntPrimitive in (2:4] as rhc, " +
+                    "IntPrimitive not in (2:4) as nro, IntPrimitive not in [2:4] as nrc, IntPrimitive not in [2:4) as nrho, IntPrimitive not in (2:4] as nrhc " +
                     "from SupportBean";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
@@ -955,7 +955,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select intBoxed between floatBoxed and doublePrimitive as result from " +
+                var epl = "@Name('s0') select IntBoxed between FloatBoxed and DoublePrimitive as result from " +
                           typeof(SupportBean).Name;
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -986,7 +986,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'intArr in (1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to valIdate select-clause expression 'intArr in (1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }
     }

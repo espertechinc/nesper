@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow2\n" +
-                    "create schema MyEvent as (id string, price double),\n" +
+                    "create schema MyEvent as (Id string, price double),\n" +
                     "MyOperator => myOutStream<MyEvent> {\n" +
                     "myParameter : 10\n" +
                     "}");
@@ -87,12 +87,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     "create dataflow MyDataFlow8\n" +
                     "create objectarray schema RFIDSchema (tagId string, locX double, locy double),\n" +
-                    "MyOperator => rfid.stream<RFIDSchema> {}");
+                    "MyOperator => rfId.stream<RFIDSchema> {}");
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow9\n" +
                     "create objectarray schema RFIDSchema (tagId string, locX double, locy double),\n" +
-                    "MyOperator => rfid.stream<eventbean<RFIDSchema>> {}");
+                    "MyOperator => rfId.stream<eventbean<RFIDSchema>> {}");
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow10\n" +

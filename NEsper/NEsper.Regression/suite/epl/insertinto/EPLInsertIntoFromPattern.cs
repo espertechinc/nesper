@@ -31,15 +31,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             SendEventS1(env, 10, "");
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.IsNull(theEvent.Get("es0id"));
-            Assert.AreEqual(10, theEvent.Get("es1id"));
+            Assert.IsNull(theEvent.Get("es0Id"));
+            Assert.AreEqual(10, theEvent.Get("es1Id"));
 
             env.Milestone(0);
 
             SendEventS0(env, 20, "");
             theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(20, theEvent.Get("es0id"));
-            Assert.IsNull(theEvent.Get("es1id"));
+            Assert.AreEqual(20, theEvent.Get("es0Id"));
+            Assert.IsNull(theEvent.Get("es1Id"));
         }
 
         private static void SendEventS0(
@@ -65,8 +65,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtText = "insert into MyThirdStream(es0id, es1id) " +
-                               "select es0.id, es1.id " +
+                var stmtText = "insert into MyThirdStream(es0Id, es1Id) " +
+                               "select es0.Id, es1.Id " +
                                "from " +
                                "pattern [every (es0=SupportBean_S0" +
                                " or es1=SupportBean_S1)]";
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                " or es1=SupportBean_S1)]";
                 env.CompileDeploy(stmtText, path);
 
-                var stmtTwoText = "@Name('s0') select s0.id as es0id, s1.id as es1id from MySecondStream";
+                var stmtTwoText = "@Name('s0') select s0.Id as es0Id, s1.Id as es1Id from MySecondStream";
                 env.CompileDeploy(stmtTwoText, path).AddListener("s0");
 
                 SendEventsAndAssert(env);
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                " or es1=SupportBean_S1)]";
                 env.CompileDeploy(stmtText, path);
 
-                var stmtTwoText = "@Name('s0') select es0.id as es0id, es1.id as es1id from MyStream#length(10)";
+                var stmtTwoText = "@Name('s0') select es0.Id as es0Id, es1.Id as es1Id from MyStream#length(10)";
                 env.CompileDeploy(stmtTwoText, path).AddListener("s0");
 
                 SendEventsAndAssert(env);

@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "IntPrimitive=1, longPrimitive=10, doublePrimitive=100, boolPrimitive=true",
+                "IntPrimitive=1, LongPrimitive=10, DoublePrimitive=100, BoolPrimitive=true",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1, 10, 100, true), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1, 10, 100, false), false),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 0, 10, 100, true), false));
@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "IntPrimitive=1, longPrimitive=10, doublePrimitive=100, theString like 'A%'",
+                "IntPrimitive=1, LongPrimitive=10, DoublePrimitive=100, TheString like 'A%'",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1, 10, 100), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("B", 1, 10, 100), false),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1, 10, 0), false));

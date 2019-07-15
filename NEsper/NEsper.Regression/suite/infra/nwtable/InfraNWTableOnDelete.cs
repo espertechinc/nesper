@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextCreate, path).AddListener("CreateInfra");
 
                 // create delete stmt
-                var stmtTextDelete = "on SupportBean_A delete from MyInfra where 'X' || a || 'X' = id";
+                var stmtTextDelete = "on SupportBean_A delete from MyInfra where 'X' || a || 'X' = Id";
                 env.CompileDeploy(stmtTextDelete, path);
 
                 // create delete stmt

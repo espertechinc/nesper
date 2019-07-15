@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
             for (var i = 0; i < 100; i++) {
                 var epl = string.Format(
-                    "@Name('s{0}') select * from SupportBean where theString = '{1}';\n",
+                    "@Name('s{0}') select * from SupportBean where TheString = '{1}';\n",
                     i,
                     Convert.ToString(i));
                 module.Write(epl);

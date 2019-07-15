@@ -21,12 +21,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             var fields = "c0,c1".SplitCsv();
             var epl = "@Name('s0') select * from SupportBean match_recognize (" +
-                      "partition by theString " +
+                      "partition by TheString " +
                       "measures A.TheString as c0, C.IntPrimitive as c1 " +
                       "pattern (A B+ C) " +
                       "define " +
                       "B as B.IntPrimitive > A.IntPrimitive, " +
-                      "C as C.doublePrimitive > B.firstOf().IntPrimitive)";
+                      "C as C.DoublePrimitive > B.firstOf().IntPrimitive)";
             // can also be expressed as: B[0].IntPrimitive
             env.CompileDeploy(epl).AddListener("s0");
 

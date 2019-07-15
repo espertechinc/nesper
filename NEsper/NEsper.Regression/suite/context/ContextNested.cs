@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AdvanceTime(0);
                 env.CompileDeploy(
                     "create context Ctx " +
-                    "context C0 initiated by SupportBean as criteria terminated by SupportBean(theString='x'), " +
+                    "context C0 initiated by SupportBean as criteria terminated by SupportBean(TheString='x'), " +
                     "context C1 start @now end (*,*,*,*,*,*/5)",
                     path);
                 env.CompileDeploy(
@@ -330,7 +330,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy(
                     "@Name('ctx') create context MyContext \n" +
-                    "context C0 initiated by SupportBean(intPrimitive=0) AS criteria terminated by SupportBean(intPrimitive=1), \n" +
+                    "context C0 initiated by SupportBean(IntPrimitive=0) AS criteria terminated by SupportBean(IntPrimitive=1), \n" +
                     "context C1 start @now end (*,*,*,*,*,*/5)",
                     path);
                 env.CompileDeploy(
@@ -382,8 +382,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context TheContext " +
-                    "context C0 partition by theString from SupportBean," +
-                    "context C1 initiated by SupportBean(intPrimitive=1) terminated by SupportBean(intPrimitive=2)",
+                    "context C0 partition by TheString from SupportBean," +
+                    "context C1 initiated by SupportBean(IntPrimitive=1) terminated by SupportBean(IntPrimitive=2)",
                     path);
                 env.CompileDeploy(
                     "@Name('s0') context TheContext select TheString, sum(LongPrimitive) as theSum from SupportBean output last when terminated",
@@ -435,9 +435,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select * " +
                     "from SupportBean(" +
-                    "customEnabled(theString, context.ACtx.s0.p00, IntPrimitive, context.BCtx.s1.id)" +
+                    "customEnabled(TheString, context.ACtx.s0.p00, IntPrimitive, context.BCtx.s1.Id)" +
                     " and " +
-                    "customDisabled(theString, context.ACtx.s0.p00, IntPrimitive, context.BCtx.s1.id))",
+                    "customDisabled(TheString, context.ACtx.s0.p00, IntPrimitive, context.BCtx.s1.Id))",
                     path);
                 env.AddListener("s0");
 
@@ -466,7 +466,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context NestedContext " +
-                    "context ACtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id=s0.id), " +
+                    "context ACtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id=s0.Id), " +
                     "context BCtx group by IntPrimitive < 0 as grp1, group by IntPrimitive = 0 as grp2, group by IntPrimitive > 0 as grp3 from SupportBean",
                     path);
 
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorById, ContextPartitionSelectorNested] interfaces but received com."),
+                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorById, ContextPartitionSelectorNested] interfaces but received com."),
                         "message: " + ex.Message);
                 }
 
@@ -555,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create context NestedContext " +
                     "context ACtx group by IntPrimitive < 0 as i1, group by IntPrimitive = 0 as i2, group by IntPrimitive > 0 as i3 from SupportBean," +
                     "context BCtx group by LongPrimitive < 0 as l1, group by LongPrimitive = 0 as l2, group by LongPrimitive > 0 as l3 from SupportBean," +
-                    "context CCtx group by boolPrimitive = true as b1, group by boolPrimitive = false as b2 from SupportBean",
+                    "context CCtx group by BoolPrimitive = true as b1, group by BoolPrimitive = false as b2 from SupportBean",
                     path);
 
                 var fieldsSelect = "c0,c1,c2,c3".SplitCsv();
@@ -631,7 +631,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // validate statement added to nested context
                 var path = new RegressionPath();
                 epl =
-                    "create context ABC context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), context PartCtx as partition by theString from SupportBean";
+                    "create context ABC context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), context PartCtx as partition by TheString from SupportBean";
                 env.CompileDeploy(epl, path);
                 epl = "context ABC select * from SupportBean_S0";
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -654,7 +654,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context NestedContext " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context SegByString partition by theString from SupportBean",
+                    "context SegByString partition by TheString from SupportBean",
                     path);
 
                 var fields = "c0,c1,c2".SplitCsv();
@@ -698,30 +698,30 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // category over partition
                 eplContext = "@Name('ctx') create context TheContext " +
-                             "context CtxCategory as group intPrimitive < 0 as negative, group IntPrimitive > 0 as positive from SupportBean, " +
-                             "context CtxPartition as partition by theString from SupportBean";
+                             "context CtxCategory as group IntPrimitive < 0 as negative, group IntPrimitive > 0 as positive from SupportBean, " +
+                             "context CtxPartition as partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
 
-                AssertFilters(env, "[SupportBean(intPrimitive<0), SupportBean(intPrimitive>0)]", "ctx");
+                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
                 env.SendEventBean(new SupportBean("E1", -1));
 
                 env.MilestoneInc(milestone);
 
-                AssertFilters(env, "[SupportBean(intPrimitive<0,theStringisE1)]", "s0");
+                AssertFilters(env, "[SupportBean(IntPrimitive<0,TheStringisE1)]", "s0");
                 env.UndeployAll();
                 path.Clear();
                 Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
 
                 // category over partition over category
                 eplContext = "@Name('ctx') create context TheContext " +
-                             "context CtxCategoryOne as group intPrimitive < 0 as negative, group IntPrimitive > 0 as positive from SupportBean, " +
-                             "context CtxPartition as partition by theString from SupportBean," +
-                             "context CtxCategoryTwo as group longPrimitive < 0 as negative, group longPrimitive > 0 as positive from SupportBean";
+                             "context CtxCategoryOne as group IntPrimitive < 0 as negative, group IntPrimitive > 0 as positive from SupportBean, " +
+                             "context CtxPartition as partition by TheString from SupportBean," +
+                             "context CtxCategoryTwo as group LongPrimitive < 0 as negative, group LongPrimitive > 0 as positive from SupportBean";
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
 
-                AssertFilters(env, "[SupportBean(intPrimitive<0), SupportBean(intPrimitive>0)]", "ctx");
+                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
                 bean = new SupportBean("E1", -1);
                 bean.LongPrimitive = 1;
                 env.SendEventBean(bean);
@@ -730,18 +730,18 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 AssertFilters(
                     env,
-                    "[SupportBean(intPrimitive<0,theStringisE1,longPrimitive<0), SupportBean(intPrimitive<0,theStringisE1,LongPrimitive>0)]",
+                    "[SupportBean(IntPrimitive<0,TheStringisE1,LongPrimitive<0), SupportBean(IntPrimitive<0,TheStringisE1,LongPrimitive>0)]",
                     "s0");
-                AssertFilters(env, "[SupportBean(intPrimitive<0), SupportBean(intPrimitive>0)]", "ctx");
+                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
                 env.UndeployAll();
                 path.Clear();
                 Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
 
                 // partition over partition over partition
                 eplContext = "@Name('ctx') create context TheContext " +
-                             "context CtxOne as partition by theString from SupportBean, " +
+                             "context CtxOne as partition by TheString from SupportBean, " +
                              "context CtxTwo as partition by IntPrimitive from SupportBean," +
-                             "context CtxThree as partition by longPrimitive from SupportBean";
+                             "context CtxThree as partition by LongPrimitive from SupportBean";
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
 
@@ -751,10 +751,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(bean);
                 env.MilestoneInc(milestone);
 
-                AssertFilters(env, "[SupportBean(theStringisE1,intPrimitiveis2,LongPrimitiveis3)]", "s0");
+                AssertFilters(env, "[SupportBean(TheStringisE1,IntPrimitiveis2,LongPrimitiveis3)]", "s0");
                 AssertFilters(
                     env,
-                    "[SupportBean(), SupportBean(theStringisE1), SupportBean(theStringisE1,intPrimitiveis2)]",
+                    "[SupportBean(), SupportBean(TheStringisE1), SupportBean(TheStringisE1,IntPrimitiveis2)]",
                     "ctx");
 
                 env.UndeployAll();
@@ -763,26 +763,26 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // category over hash
                 eplContext = "@Name('ctx') create context TheContext " +
-                             "context CtxCategoryOne as group intPrimitive < 0 as negative, group IntPrimitive > 0 as positive from SupportBean, " +
+                             "context CtxCategoryOne as group IntPrimitive < 0 as negative, group IntPrimitive > 0 as positive from SupportBean, " +
                              "context CtxTwo as coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 100";
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
 
-                AssertFilters(env, "[SupportBean(intPrimitive<0), SupportBean(intPrimitive>0)]", "ctx");
+                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
                 bean = new SupportBean("E1", 2);
                 bean.LongPrimitive = 3;
                 env.SendEventBean(bean);
 
                 env.MilestoneInc(milestone);
 
-                AssertFilters(env, "[SupportBean(intPrimitive>0,consistent_hash_crc32(TheString)=33)]", "s0");
-                AssertFilters(env, "[SupportBean(intPrimitive<0), SupportBean(intPrimitive>0)]", "ctx");
+                AssertFilters(env, "[SupportBean(IntPrimitive>0,consistent_hash_crc32(TheString)=33)]", "s0");
+                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
                 env.UndeployAll();
                 path.Clear();
                 Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
 
                 eplContext = "@Name('ctx') create context TheContext " +
-                             "context CtxOne as partition by theString from SupportBean, " +
+                             "context CtxOne as partition by TheString from SupportBean, " +
                              "context CtxTwo as start pattern [SupportBean_S0] end pattern[SupportBean_S1]";
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
@@ -814,8 +814,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Audit('pattern-instances') create context TheContext" +
-                    " context CtxSession partition by id from SupportBean_S0, " +
-                    " context CtxStartEnd start SupportBean_S0 as te end SupportBean_S1(id=te.id)",
+                    " context CtxSession partition by Id from SupportBean_S0, " +
+                    " context CtxStartEnd start SupportBean_S0 as te end SupportBean_S1(Id=te.Id)",
                     path);
                 env.CompileDeploy(
                     "@Name('s0') context TheContext select firstEvent from SupportBean_S0#firstevent() as firstEvent" +
@@ -861,8 +861,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
 
                 var eplCtx = "@Name('ctx') create context NestedContext as " +
-                             "context ByCat as group intPrimitive < 0 as g1, group intPrimitive > 0 as g2, group IntPrimitive = 0 as g3 from SupportBean, " +
-                             "context InitCtx as initiated by pattern [every a=SupportBean_S0 => b=SupportBean_S1(id = a.id)] terminated after 10 sec";
+                             "context ByCat as group IntPrimitive < 0 as g1, group IntPrimitive > 0 as g2, group IntPrimitive = 0 as g3 from SupportBean, " +
+                             "context InitCtx as initiated by pattern [every a=SupportBean_S0 => b=SupportBean_S1(Id = a.Id)] terminated after 10 sec";
                 env.CompileDeploy(eplCtx, path);
 
                 var fields = "c0,c1,c2,c3".SplitCsv();
@@ -970,7 +970,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
 
                 var eplCtx = "@Name('ctx') create context NestedContext as " +
-                             "context SegByString as partition by theString from SupportBean(intPrimitive > 0), " +
+                             "context SegByString as partition by TheString from SupportBean(IntPrimitive > 0), " +
                              "context InitCtx initiated by SupportBean_S0 as s0 terminated after 60 seconds";
                 env.CompileDeploy(eplCtx, path);
 
@@ -1076,9 +1076,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var milestone = new AtomicLong();
 
                 var eplCtxOne = "create context NestedContext as " +
-                                "context SegByString as partition by theString from SupportBean, " +
+                                "context SegByString as partition by TheString from SupportBean, " +
                                 "context SegByInt as partition by IntPrimitive from SupportBean, " +
-                                "context SegByLong as partition by longPrimitive from SupportBean ";
+                                "context SegByLong as partition by LongPrimitive from SupportBean ";
                 env.CompileDeploy(eplCtxOne, path);
 
                 var fieldsOne = "c0,c1,c2,c3".SplitCsv();
@@ -1170,8 +1170,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // Test partitioned context
                 //
                 var eplCtxThree = "create context NestedContext as " +
-                                  "context InitOne initiated by SupportBean(theString like 'I%') as sb0 terminated after 10 sec, " +
-                                  "context InitTwo initiated by SupportBean(intPrimitive > 0) as sb1 terminated after 10 sec";
+                                  "context InitOne initiated by SupportBean(TheString like 'I%') as sb0 terminated after 10 sec, " +
+                                  "context InitTwo initiated by SupportBean(IntPrimitive > 0) as sb1 terminated after 10 sec";
                 env.CompileDeploy(eplCtxThree, path);
 
                 var fieldsThree = "c1,c2".SplitCsv();
@@ -1387,8 +1387,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c1,c2,c3".SplitCsv();
 
                 var epl = "@Name('ctx') create context NestedContext as " +
-                          "context InitCtx initiated by SupportBean_S0(id > 0) as s0 terminated after 10 seconds, " +
-                          "context SegmCtx as partition by theString from SupportBean(intPrimitive > 0);\n" +
+                          "context InitCtx initiated by SupportBean_S0(Id > 0) as s0 terminated after 10 seconds, " +
+                          "context SegmCtx as partition by TheString from SupportBean(IntPrimitive > 0);\n" +
                           "@Name('s0') context NestedContext select " +
                           "context.InitCtx.s0.p00 as c1, context.SegmCtx.key1 as c2, sum(IntPrimitive) as c3 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1496,8 +1496,8 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var eplCtx = "@Name('ctx') create context NestedContext as " +
                              "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                             "context ByCat as group intPrimitive<0 as g1, group intPrimitive=0 as g2, group IntPrimitive>0 as g3 from SupportBean, " +
-                             "context SegmentedByString as partition by theString from SupportBean";
+                             "context ByCat as group IntPrimitive<0 as g1, group IntPrimitive=0 as g2, group IntPrimitive>0 as g3 from SupportBean, " +
+                             "context SegmentedByString as partition by TheString from SupportBean";
                 env.CompileDeploy(eplCtx, path);
 
                 var fields = "c1,c2,c3".SplitCsv();
@@ -1620,10 +1620,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context NestedContext " +
                     "context ByCat " +
-                    "  group intPrimitive < 0 and IntPrimitive != -9999 as g1, " +
+                    "  group IntPrimitive < 0 and IntPrimitive != -9999 as g1, " +
                     "  group IntPrimitive = 0 as g2, " +
                     "  group IntPrimitive > 0 as g3 from SupportBean, " +
-                    "context InitGrd initiated by SupportBean(theString like 'init%') as sb terminated after 10 seconds",
+                    "context InitGrd initiated by SupportBean(TheString like 'init%') as sb terminated after 10 seconds",
                     path);
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
 
@@ -1717,7 +1717,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context NestedContext " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context SegmentedByAString partition by theString from SupportBean",
+                    "context SegmentedByAString partition by TheString from SupportBean",
                     path);
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
 
@@ -1832,7 +1832,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy(
                     "create context NestedContext " +
-                    "context SegmentedByAString partition by theString from SupportBean, " +
+                    "context SegmentedByAString partition by TheString from SupportBean, " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *)",
                     path);
                 Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
@@ -1947,7 +1947,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "@Name('ctx') create context NestedContext " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context SegmentedByAString partition by theString from SupportBean",
+                    "context SegmentedByAString partition by TheString from SupportBean",
                     path);
 
                 var fields = "c0,c1,c2,c3,c4,c5,c6".SplitCsv();
@@ -2047,7 +2047,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context NestedContext " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context SegmentedByAString partition by theString from SupportBean",
+                    "context SegmentedByAString partition by TheString from SupportBean",
                     path);
 
                 var fields = "c0,c1".SplitCsv();
@@ -2154,15 +2154,15 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context NestedContext " +
-                    "context PartitionedByKeys partition by theString, IntPrimitive from SupportBean, " +
+                    "context PartitionedByKeys partition by TheString, IntPrimitive from SupportBean, " +
                     "context InitiateAndTerm start SupportBean as e1 " +
-                    "end SupportBean_S0(id=e1.IntPrimitive and p00=e1.TheString)",
+                    "end SupportBean_S0(Id=e1.IntPrimitive and p00=e1.TheString)",
                     path);
 
                 var fields = "c0,c1,c2".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext " +
-                    "select TheString as c0, IntPrimitive as c1, count(longPrimitive) as c2 from SupportBean \n" +
+                    "select TheString as c0, IntPrimitive as c1, count(LongPrimitive) as c2 from SupportBean \n" +
                     "output last when terminated",
                     path);
                 env.AddListener("s0");
@@ -2194,7 +2194,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context NestedContext " +
-                    "context PartitionedByKeys partition by theString from SupportBean, " +
+                    "context PartitionedByKeys partition by TheString from SupportBean, " +
                     "context TimedImmediate initiated @now and pattern[every timer:interval(10)] terminated after 10 seconds",
                     path);
                 TryAssertion(env, path);
@@ -2208,7 +2208,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context NestedContext " +
-                    "context PartitionedByKeys partition by theString from SupportBean, " +
+                    "context PartitionedByKeys partition by TheString from SupportBean, " +
                     "context TimedImmediate start @now end after 10 seconds",
                     path);
                 TryAssertion(env, path);
@@ -2224,7 +2224,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "@Name('ctx') create context NestedCtxWTime " +
                     "context OuterCtx initiated @now and pattern[timer:interval(10000000)] terminated after 1 second, " +
-                    "context InnerCtx partition by theString from SupportBean(intPrimitive=0) terminated by SupportBean(intPrimitive=1)",
+                    "context InnerCtx partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean(IntPrimitive=1)",
                     path);
                 env.CompileDeploy("context NestedCtxWTime select TheString, count(*) as cnt from SupportBean", path);
 
@@ -2247,14 +2247,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('ctx') create context NestedCtxWPartition " +
-                    "context ByString partition by theString from SupportBean, " +
-                    "context ByInt partition by IntPrimitive from SupportBean terminated by SupportBean(boolPrimitive=false)",
+                    "context ByString partition by TheString from SupportBean, " +
+                    "context ByInt partition by IntPrimitive from SupportBean terminated by SupportBean(BoolPrimitive=false)",
                     path);
                 env.CompileDeploy(
                     "@Name('s0') context NestedCtxWPartition select TheString, IntPrimitive, sum(LongPrimitive) as thesum from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
-                var fields = "theString,intPrimitive,thesum".SplitCsv();
+                var fields = "theString,IntPrimitive,thesum".SplitCsv();
 
                 SendBean(env, "A", 1, 10, true);
                 SendBean(env, "B", 1, 11, true);
@@ -2364,8 +2364,8 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var eplCtx = "@Name('ctx') create context NestedContext as " +
                              "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                             "context ByCat as group intPrimitive < 0 as g1, group intPrimitive = 0 as g2, group IntPrimitive > 0 as g3 from SupportBean, " +
-                             "context SegmentedByString as partition by theString from SupportBean";
+                             "context ByCat as group IntPrimitive < 0 as g1, group IntPrimitive = 0 as g2, group IntPrimitive > 0 as g3 from SupportBean, " +
+                             "context SegmentedByString as partition by TheString from SupportBean";
                 env.CompileDeploy(eplCtx, path);
 
                 var fields = "c1,c2,c3".SplitCsv();
@@ -2503,7 +2503,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('ctx') create context NestedContext " +
-                    "context FirstCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id = s0.id), " +
+                    "context FirstCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id = s0.Id), " +
                     "context SecondCtx coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 4 " +
                     (preallocate ? "preallocate" : ""),
                     path);
@@ -2511,7 +2511,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.id as c0, TheString as c1 from SupportBean#keepall",
+                    "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2599,14 +2599,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('ctx') create context NestedContext " +
-                    "context FirstCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id = s0.id), " +
-                    "context SecondCtx partition by theString from SupportBean",
+                    "context FirstCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id = s0.Id), " +
+                    "context SecondCtx partition by TheString from SupportBean",
                     path);
 
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.id as c0, TheString as c1 from SupportBean#keepall",
+                    "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2689,14 +2689,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('ctx') create context NestedContext " +
-                    "context FirstCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id = s0.id), " +
+                    "context FirstCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id = s0.Id), " +
                     "context SecondCtx group by TheString = 'E1' as cat1, group by TheString = 'E2' as cat2 from SupportBean",
                     path);
 
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.id as c0, TheString as c1 from SupportBean#keepall",
+                    "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2777,14 +2777,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('ctx') create context NestedContext " +
-                    "context FirstCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id = s0.id), " +
+                    "context FirstCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id = s0.Id), " +
                     "context SecondCtx initiated by SupportBean_S2 as s2 terminated after 24 hours",
                     path);
 
                 var fields = "c0,c1,c2".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.id as c0, context.SecondCtx.s2.id as c1, TheString as c2 from SupportBean#keepall",
+                    "context.FirstCtx.s0.Id as c0, context.SecondCtx.s2.Id as c1, TheString as c2 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2858,10 +2858,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context NestedContext " +
                     "context ACtx group by IntPrimitive < 0 as grp1, group by IntPrimitive = 0 as grp2, group by IntPrimitive > 0 as grp3 from SupportBean, " +
-                    "context BCtx initiated by distinct(a.IntPrimitive) SupportBean(theString='A') as a terminated by SupportBean(theString='B') ",
+                    "context BCtx initiated by distinct(a.IntPrimitive) SupportBean(TheString='A') as a terminated by SupportBean(TheString='B') ",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') context NestedContext select count(*) as cnt from SupportBean(IntPrimitive = context.BCtx.a.IntPrimitive and theString != 'B')",
+                        "@Name('s0') context NestedContext select count(*) as cnt from SupportBean(IntPrimitive = context.BCtx.a.IntPrimitive and TheString != 'B')",
                         path)
                     .AddListener("s0");
 
@@ -2914,7 +2914,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var nested = (ContextPartitionIdentifierNested) contextPartitionIdentifier;
                 if (pathMatch == null && cpids.Contains(nested.ContextPartitionId)) {
-                    throw new EPException("Already exists context id: " + nested.ContextPartitionId);
+                    throw new EPException("Already exists context Id: " + nested.ContextPartitionId);
                 }
 
                 cpids.Add(nested.ContextPartitionId);

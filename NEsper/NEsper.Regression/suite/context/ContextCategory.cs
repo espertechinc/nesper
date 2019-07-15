@@ -91,8 +91,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('context') create context CategoryContext\n" +
-                          "group theString = 'A' as cat1,\n" +
-                          "group theString = 'B' as cat2 \n" +
+                          "group TheString = 'A' as cat1,\n" +
+                          "group TheString = 'B' as cat2 \n" +
                           "from SupportBean;\n" +
                           "@Name('s0') context CategoryContext select count(*) as c0, context.label as c1 from SupportBean;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var epl = "@Name('CTX') create context CtxCategory " +
                           "group by IntPrimitive > 0 as cat1," +
                           "group by IntPrimitive < 0 as cat2 from SupportBean;\n" +
-                          "@Name('s0') context CtxCategory select TheString as c1, sum(IntPrimitive) as c2, context.label as c3, context.name as c4, context.id as c5 from SupportBean;\n";
+                          "@Name('s0') context CtxCategory select TheString as c1, sum(IntPrimitive) as c2, context.label as c3, context.name as c4, context.Id as c5 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 AssertPartitionInfo(env);
 
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('ctx') create context MyCtx as group by IntPrimitive < -5 as grp1, group by IntPrimitive between -5 and +5 as grp2, group by IntPrimitive > 5 as grp3 from SupportBean",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select context.id as c0, context.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.Id as c0, context.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorCategory] interfaces but received com."),
+                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorCategory] interfaces but received com."),
                         "message: " + ex.Message);
                 }
 
@@ -393,18 +393,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string epl;
 
                 // invalid filter spec
-                epl = "create context ACtx group theString is not null as cat1 from SupportBean(dummy = 1)";
+                epl = "create context ACtx group TheString is not null as cat1 from SupportBean(dummy = 1)";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate filter expression 'dummy=1': Property named 'dummy' is not valid in any stream [");
+                    "Failed to valIdate filter expression 'dummy=1': Property named 'dummy' is not valId in any stream [");
 
                 // not a boolean expression
                 epl = "create context ACtx group IntPrimitive as grp1 from SupportBean";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Filter expression not returning a boolean value: 'intPrimitive' [");
+                    "Filter expression not returning a boolean value: 'IntPrimitive' [");
 
                 // validate statement not applicable filters
                 var path = new RegressionPath();
@@ -530,7 +530,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplCtx, path);
 
                 var eplStmt =
-                    "@Name('s0') context CategorizedContext select context.name as c0, context.label as c1, prior(1,intPrimitive) as c2 from SupportBean";
+                    "@Name('s0') context CategorizedContext select context.name as c0, context.label as c1, prior(1,IntPrimitive) as c2 from SupportBean";
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
 
                 RunAssertion(env, ctx, milestone);
@@ -623,7 +623,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var id = (ContextPartitionIdentifierCategory) contextPartitionIdentifier;
                 if (matchCategory == null && cpids.Contains(id.ContextPartitionId)) {
-                    throw new EPException("Already exists context id: " + id.ContextPartitionId);
+                    throw new EPException("Already exists context Id: " + id.ContextPartitionId);
                 }
 
                 cpids.Add(id.ContextPartitionId);

@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             var joinStatement = "@Name('s0') select * from " +
                                 "SupportMarketDataBean#length(3)," +
                                 "SupportBean#length(3)" +
-                                " where symbol=theString and volume=longBoxed";
+                                " where Symbol=TheString and Volume=LongBoxed";
             env.CompileDeploy(joinStatement).AddListener("s0");
 
             var setOne = new object[5];

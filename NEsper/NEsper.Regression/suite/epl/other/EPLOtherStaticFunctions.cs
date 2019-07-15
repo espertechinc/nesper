@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // test passing null
-                env.CompileDeploy("@Name('s0') select NullPrimitive.getValue(intBoxed) from SupportBean")
+                env.CompileDeploy("@Name('s0') select NullPrimitive.getValue(IntBoxed) from SupportBean")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
@@ -327,8 +327,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 TryInvalidCompile(
                     env,
-                    "select UnknownClass.invalidMethod() " + STREAM_MDB_LEN5,
-                    "Failed to validate select-clause expression 'UnknownClass.invalidMethod()': Failed to resolve 'UnknownClass.invalidMethod' to a property, single-row function, aggregation function, script, stream or class name ");
+                    "select UnknownClass.invalIdMethod() " + STREAM_MDB_LEN5,
+                    "Failed to valIdate select-clause expression 'UnknownClass.invalIdMethod()': Failed to resolve 'UnknownClass.invalIdMethod' to a property, single-row function, aggregation function, script, stream or class name ");
             }
         }
 
@@ -467,10 +467,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(Convert.ToString(17), result[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select Convert.ToString(price*volume +volume) " + STREAM_MDB_LEN5;
+                statementText = "@Name('s0') select Convert.ToString(price*Volume +Volume) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
-                result = AssertStatementAndGetProperty(env, true, "Convert.ToString(price*volume+volume)");
+                result = AssertStatementAndGetProperty(env, true, "Convert.ToString(price*Volume+Volume)");
                 Assert.AreEqual(Convert.ToString(44d), result[0]);
                 env.UndeployAll();
 
@@ -492,10 +492,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Math.max(2d,price), Math.max(volume,4d)" + STREAM_MDB_LEN5;
+                var statementText = "@Name('s0') select Math.max(2d,price), Math.max(Volume,4d)" + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
-                var props = AssertStatementAndGetProperty(env, true, "Math.max(2.0,price)", "Math.max(volume,4.0)");
+                var props = AssertStatementAndGetProperty(env, true, "Math.max(2.0,price)", "Math.max(Volume,4.0)");
                 Assert.AreEqual(10d, props[0]);
                 Assert.AreEqual(4d, props[1]);
                 env.UndeployAll();
@@ -515,9 +515,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // group-by
-                statementText = "@Name('s0') select symbol, sum(price)" +
+                statementText = "@Name('s0') select Symbol, sum(price)" +
                                 STREAM_MDB_LEN5 +
-                                "group by Convert.ToString(symbol)";
+                                "group by Convert.ToString(Symbol)";
                 env.CompileDeploy(statementText).AddListener("s0");
                 Assert.AreEqual(10d, AssertStatementAndGetProperty(env, true, "sum(price)")[0]);
                 SendEvent(env, "IBM", 4d, 100);
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // having
-                statementText = "@Name('s0') select symbol, sum(price)" +
+                statementText = "@Name('s0') select Symbol, sum(price)" +
                                 STREAM_MDB_LEN5 +
                                 "having Math.pow(sum(price), .5) > 3";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -535,7 +535,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // order-by
-                statementText = "@Name('s0') select symbol, price" +
+                statementText = "@Name('s0') select Symbol, price" +
                                 STREAM_MDB_LEN5 +
                                 "output every 3 events order by Math.pow(price, 2)";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text = "@Name('s0') select " +
-                           "SupportStaticMethodLib.passthru(id) as val from SupportBean_S0";
+                           "SupportStaticMethodLib.passthru(Id) as val from SupportBean_S0";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));

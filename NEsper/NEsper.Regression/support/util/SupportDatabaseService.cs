@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.support.util
             get {
                 var properties = new Properties();
                 properties["Server"] = DBHOST;
-                properties["Uid"] = DBUSER;
+                properties["UId"] = DBUSER;
                 properties["Pwd"] = DBPWD;
                 properties["Database"] = DBNAME;
 
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.support.util
 
             public Builder WithUser(string value)
             {
-                properties["Uid"] = value;
+                properties["UId"] = value;
                 return this;
             }
 

@@ -81,8 +81,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             TryInvalidCompile(
                 env,
                 path,
-                "context Ctx create window MyInvalidWindow#unique(p00) as SupportBean_S0",
-                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalidWindow#unique(p00) as SupportBean_S0]");
+                "context Ctx create window MyInvalIdWindow#unique(p00) as SupportBean_S0",
+                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalIdWindow#unique(p00) as SupportBean_S0]");
         }
 
         internal class ContextKeyedNamedWindowFAF : RegressionExecution
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create context SegmentedByString partition by theString from SupportBean", path);
+                env.CompileDeploy("create context SegmentedByString partition by TheString from SupportBean", path);
                 env.CompileDeploy("context SegmentedByString create window MyWindow#keepall as SupportBean", path);
                 env.CompileDeploy("context SegmentedByString insert into MyWindow select * from SupportBean", path);
                 var compiled = env.CompileFAF("select * from MyWindow", path);
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // Esper-695
                 var path = new RegressionPath();
                 var eplTwo =
-                    "create context Ctx partition by theString from SupportBean;\n" +
+                    "create context Ctx partition by TheString from SupportBean;\n" +
                     "context Ctx create window MyWindow#unique(IntPrimitive) as SupportBean;" +
                     "context Ctx select irstream * from pattern [MyWindow];";
                 env.CompileDeploy(eplTwo, path);
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('context') create context SegmentedByString partition by theString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
                 env.CompileDeploy(
                     "@Hint('enable_window_subquery_indexshare') create window MyWindowTwo#keepall as SupportBean_S0",
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select TheString, IntPrimitive, (select p00 from MyWindowTwo as s0 where sb.IntPrimitive = s0.id) as val0 " +
+                    "select TheString, IntPrimitive, (select p00 from MyWindowTwo as s0 where sb.IntPrimitive = s0.Id) as val0 " +
                     "from SupportBean as sb",
                     path);
                 env.AddListener("s0");
@@ -184,11 +184,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('context') create context SegmentedByString partition by theString from SupportBean;\n" +
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean;\n" +
                     "create window MyWindowThree#keepall as SupportBean_S0;\n" +
                     "insert into MyWindowThree select * from SupportBean_S0;\n" +
                     "@Name('s0') context SegmentedByString " +
-                    "select TheString, IntPrimitive, (select p00 from MyWindowThree as s0 where sb.IntPrimitive = s0.id) as val0 " +
+                    "select TheString, IntPrimitive, (select p00 from MyWindowThree as s0 where sb.IntPrimitive = s0.Id) as val0 " +
                     "from SupportBean as sb;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 

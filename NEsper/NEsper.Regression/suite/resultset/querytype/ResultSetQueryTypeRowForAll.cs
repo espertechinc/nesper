@@ -471,7 +471,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream sum(longBoxed) as mySum " +
+                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
                           "from SupportBean#time(10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -487,7 +487,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream sum(longBoxed) as mySum " +
+                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
                           "from SupportBeanString#keepall as one, " +
                           "SupportBean#time(10 sec) as two " +
                           "where one.TheString = two.TheString";
@@ -549,7 +549,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select istream * from SupportMarketDataBean#groupwin(symbol)#length(2)";
+                var stmtText = "@Name('s0') select istream * from SupportMarketDataBean#groupwin(Symbol)#length(2)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);
@@ -565,7 +565,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select istream price from SupportMarketDataBean#groupwin(symbol)#length(2)";
+                var stmtText = "@Name('s0') select istream price from SupportMarketDataBean#groupwin(Symbol)#length(2)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);
@@ -581,7 +581,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select istream avg(price) as aprice from SupportMarketDataBean" +
-                               "#groupwin(symbol)#length(2)";
+                               "#groupwin(Symbol)#length(2)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);
@@ -603,7 +603,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select istream average as aprice from SupportMarketDataBean" +
-                               "#groupwin(symbol)#length(2)#uni(price)";
+                               "#groupwin(Symbol)#length(2)#uni(price)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);
@@ -641,7 +641,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var fields = "c0,c1".SplitCsv();
                 var epl = "create window ABCWin.win:keepall() as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
-                          "on SupportBean_A delete from ABCWin where theString = id;\n" +
+                          "on SupportBean_A delete from ABCWin where TheString = Id;\n" +
                           "@Name('s0') select irstream TheString as c0, window(IntPrimitive) as c1 from ABCWin;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 

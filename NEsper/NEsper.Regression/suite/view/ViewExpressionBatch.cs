@@ -388,7 +388,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from SupportBean#expr_batch(udf(theString, view_reference, expired_count))";
+                    "@Name('s0') select * from SupportBean#expr_batch(udf(TheString, view_reference, expired_count))";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 ViewExpressionWindow.LocalUDF.Result = true;
@@ -416,17 +416,17 @@ namespace com.espertech.esper.regressionlib.suite.view
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean#expr_batch(1)",
-                    "Failed to validate data window declaration: Invalid return value for expiry expression, expected a boolean return value but received int [select * from SupportBean#expr_batch(1)]");
+                    "Failed to valIdate data window declaration: InvalId return value for expiry expression, expected a boolean return value but received int [select * from SupportBean#expr_batch(1)]");
 
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean#expr_batch((select * from SupportBean#lastevent))",
-                    "Failed to validate data window declaration: Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#expr_batch((select * from SupportBean#lastevent))]");
+                    "Failed to valIdate data window declaration: InvalId expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#expr_batch((select * from SupportBean#lastevent))]");
 
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean#expr_batch(null < 0)",
-                    "Failed to validate data window declaration: Invalid parameter expression 0 for Expression-batch view: Failed to validate view parameter expression 'null<0': Implicit conversion from datatype 'null' to numeric is not allowed");
+                    "Failed to valIdate data window declaration: InvalId parameter expression 0 for Expression-batch view: Failed to valIdate view parameter expression 'null<0': Implicit conversion from datatype 'null' to numeric is not allowed");
             }
         }
 
@@ -437,7 +437,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
                 var epl = "@Name('s0') create window NW#expr_batch(current_count > 3) as SupportBean;\n" +
                           "insert into NW select * from SupportBean;\n" +
-                          "on SupportBean_A delete from NW where theString = id;\n";
+                          "on SupportBean_A delete from NW where TheString = Id;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -474,7 +474,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 string[] fields = {"val0"};
                 var epl =
-                    "@Name('s0') select prev(1, theString) as val0 from SupportBean#expr_batch(current_count > 2)";
+                    "@Name('s0') select prev(1, TheString) as val0 from SupportBean#expr_batch(current_count > 2)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -497,7 +497,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"val0"};
-                var epl = "@Name('s0') select irstream TheString as val0 from SupportBean#expr_batch(intPrimitive > 0)";
+                var epl = "@Name('s0') select irstream TheString as val0 from SupportBean#expr_batch(IntPrimitive > 0)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -534,7 +534,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 string[] fields = {"TheString"};
 
-                var epl = "@Name('s0') select irstream theString from SupportBean#expr_batch(sum(IntPrimitive) > 100)";
+                var epl = "@Name('s0') select irstream TheString from SupportBean#expr_batch(sum(IntPrimitive) > 100)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -585,7 +585,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl =
-                    "@Name('s0') select irstream theString from SupportBean#groupwin(IntPrimitive)#expr_batch(sum(LongPrimitive) > 100)";
+                    "@Name('s0') select irstream TheString from SupportBean#groupwin(IntPrimitive)#expr_batch(sum(LongPrimitive) > 100)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -646,7 +646,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 var epl = "@Name('s0') create window NW#expr_batch(sum(IntPrimitive) >= 10) as SupportBean;\n" +
                           "insert into NW select * from SupportBean;\n" +
-                          "on SupportBean_A delete from NW where theString = id;\n";
+                          "on SupportBean_A delete from NW where TheString = Id;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));

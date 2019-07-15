@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var fields = "Symbol".SplitCsv();
-                var text = "@Name('s0') select irstream * from  SupportMarketDataBean#ext_timed(volume, 1 sec)";
+                var text = "@Name('s0') select irstream * from  SupportMarketDataBean#ext_timed(Volume, 1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent("E1", 500));
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = "c0".SplitCsv();
                 var epl =
-                    "@Name('s0') select irstream TheString as c0 from SupportBean#ext_timed(longPrimitive, 10 sec)";
+                    "@Name('s0') select irstream TheString as c0 from SupportBean#ext_timed(LongPrimitive, 10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, new object[0][]);
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream * from SupportBean#ext_timed(longPrimitive, 10 minutes)";
+                var epl = "@Name('s0') select irstream * from SupportBean#ext_timed(LongPrimitive, 10 minutes)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendExtTimeEvent(env, 0);
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select rstream * from SupportBean#ext_timed(longPrimitive, 1 month)";
+                var epl = "@Name('s0') select rstream * from SupportBean#ext_timed(LongPrimitive, 1 month)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");
@@ -283,13 +283,13 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream symbol," +
-                           "prev(1, symbol) as prev1, " +
-                           "prevtail(0, symbol) as prevTail0, " +
-                           "prevtail(1, symbol) as prevTail1, " +
-                           "prevcount(symbol) as prevCountSym, " +
-                           "prevwindow(symbol) as prevWindowSym " +
-                           "from SupportMarketDataBean#ext_timed(volume, 1 sec)";
+                var text = "@Name('s0') select irstream Symbol," +
+                           "prev(1, Symbol) as prev1, " +
+                           "prevtail(0, Symbol) as prevTail0, " +
+                           "prevtail(1, Symbol) as prevTail1, " +
+                           "prevcount(Symbol) as prevCountSym, " +
+                           "prevwindow(Symbol) as prevWindowSym " +
+                           "from SupportMarketDataBean#ext_timed(Volume, 1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 string[] fields = {"Symbol", "prev1", "prevTail0", "prevTail1", "prevCountSym", "prevWindowSym"};
 

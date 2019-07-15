@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             RegressionPath path,
             string methodName)
         {
-            env.CompileDeploy("@Name('s0') select id from SupportBean, method:" + methodName, path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select Id from SupportBean, method:" + methodName, path).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertPropsPerRow(
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             var events = new EventBean[2];
             var count = 0;
-            foreach (var id in "id1,id3".SplitCsv()) {
+            foreach (var id in "id1,Id3".SplitCsv()) {
                 events[count++] = context.EventBeanService.AdapterForMap(
                     Collections.SingletonDataMap("id", id),
                     "ItemEvent");
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                       typeof(SupportStaticMethodLib).Name +
                       "." +
                       method;
-            var fields = "theString,intPrimitive,mapstring,mapint".SplitCsv();
+            var fields = "theString,IntPrimitive,mapstring,mapint".SplitCsv();
             env.CompileDeploy(epl).AddListener("s0");
 
             EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -394,7 +394,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeployWBusPublicType("create schema ItemEvent(id string)", path);
+                env.CompileDeployWBusPublicType("create schema ItemEvent(Id string)", path);
 
                 var script =
                     "@Name('script') create expression EventBean[] @type(ItemEvent) js:myItemProducerScript() [\n" +
@@ -517,7 +517,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                            "method:" +
                            className +
                            ".fetchResult100() " +
-                           "on IntPrimitive = col1 and intBoxed = col2";
+                           "on IntPrimitive = col1 and IntBoxed = col2";
 
                 var fields = "IntPrimitive,IntBoxed,col1,col2".SplitCsv();
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -663,7 +663,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var path = new RegressionPath();
                 env.CompileDeploy("create variable int lower", path);
                 env.CompileDeploy("create variable int upper", path);
-                env.CompileDeploy("on SupportBean set lower=intPrimitive,upper=intBoxed", path);
+                env.CompileDeploy("on SupportBean set lower=IntPrimitive,upper=IntBoxed", path);
 
                 var className = typeof(SupportStaticMethodLib).Name;
                 string stmtText;
@@ -697,7 +697,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var path = new RegressionPath();
                 env.CompileDeploy("create variable int lower", path);
                 env.CompileDeploy("create variable int upper", path);
-                env.CompileDeploy("on SupportBean set lower=intPrimitive,upper=intBoxed", path);
+                env.CompileDeploy("on SupportBean set lower=IntPrimitive,upper=IntBoxed", path);
 
                 var className = typeof(SupportStaticMethodLib).Name;
                 string stmtText;
@@ -731,7 +731,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var path = new RegressionPath();
                 env.CompileDeploy("create variable int lower", path);
                 env.CompileDeploy("create variable int upper", path);
-                env.CompileDeploy("on SupportBean set lower=intPrimitive,upper=intBoxed", path);
+                env.CompileDeploy("on SupportBean set lower=IntPrimitive,upper=IntBoxed", path);
 
                 // Test int and singlerow
                 var className = typeof(SupportStaticMethodLib).Name;
@@ -770,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 TryAssertionSingleRowFetch(env, "fetchMap(TheString, IntPrimitive)");
-                TryAssertionSingleRowFetch(env, "fetchMapEventBean(s1, 'theString', 'intPrimitive')");
+                TryAssertionSingleRowFetch(env, "fetchMapEventBean(s1, 'TheString', 'IntPrimitive')");
                 TryAssertionSingleRowFetch(env, "fetchObjectArrayEventBean(TheString, IntPrimitive)");
                 TryAssertionSingleRowFetch(env, "fetchPOJOArray(TheString, IntPrimitive)");
                 TryAssertionSingleRowFetch(env, "fetchPOJOCollection(TheString, IntPrimitive)");
@@ -792,7 +792,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select id, theString from " +
+                var joinStatement = "@Name('s0') select Id, TheString from " +
                                     "SupportBean#length(3) as s1, " +
                                     "method:" +
                                     typeof(SupportStaticMethodLib).Name +
@@ -800,7 +800,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.CompileDeploy(joinStatement).AddListener("s0");
                 TryArrayNoArg(env);
 
-                joinStatement = "@Name('s0') select id, theString from " +
+                joinStatement = "@Name('s0') select Id, TheString from " +
                                 "SupportBean#length(3) as s1, " +
                                 "method:" +
                                 typeof(SupportStaticMethodLib).Name +
@@ -847,7 +847,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select irstream id, theString from " +
+                var joinStatement = "@Name('s0') select irstream Id, TheString from " +
                                     "SupportBean()#length(3) as s1, " +
                                     " method:" +
                                     typeof(SupportStaticMethodLib).Name +
@@ -855,7 +855,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.CompileDeploy(joinStatement).AddListener("s0");
                 TryArrayWithArg(env);
 
-                joinStatement = "@Name('s0') select irstream id, theString from " +
+                joinStatement = "@Name('s0') select irstream Id, TheString from " +
                                 "method:" +
                                 typeof(SupportStaticMethodLib).Name +
                                 ".fetchArrayGen(IntPrimitive) as s0, " +
@@ -948,7 +948,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select id, theString from " +
+                var joinStatement = "@Name('s0') select Id, TheString from " +
                                     "SupportBean()#length(3) as s1, " +
                                     " method:" +
                                     typeof(SupportStaticMethodLib).Name +
@@ -978,7 +978,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select id, theString from " +
+                var joinStatement = "@Name('s0') select Id, TheString from " +
                                     "SupportBean()#length(3) as s1, " +
                                     " method:" +
                                     typeof(SupportStaticMethodLib).Name +
@@ -1060,7 +1060,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     "select * from SupportBean, method:" +
                     typeof(SupportStaticMethodLib).Name +
                     ".sleep(100) where 1=2",
-                    "Invalid return type for static method 'sleep' of class '" +
+                    "InvalId return type for static method 'sleep' of class '" +
                     typeof(SupportStaticMethodLib).Name +
                     "', expecting a Java class [select * from SupportBean, method:" +
                     typeof(SupportStaticMethodLib).Name +
@@ -1069,7 +1069,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean, method:AClass. where 1=2",
-                    "Incorrect syntax near 'where' (a reserved keyword) expecting an identifier but found 'where' at line 1 column 42, please check the view specifications within the from clause [select * from SupportBean, method:AClass. where 1=2]");
+                    "Incorrect syntax near 'where' (a reserved keyword) expecting an Identifier but found 'where' at line 1 column 42, please check the view specifications within the from clause [select * from SupportBean, method:AClass. where 1=2]");
 
                 TryInvalidCompile(
                     env,
@@ -1084,7 +1084,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean, method:Dummy.dummy()#length(100) where 1=2",
-                    "Method data joins do not allow views onto the data, view 'length' is not valid in this context [select * from SupportBean, method:Dummy.dummy()#length(100) where 1=2]");
+                    "Method data joins do not allow views onto the data, view 'length' is not valId in this context [select * from SupportBean, method:Dummy.dummy()#length(100) where 1=2]");
 
                 TryInvalidCompile(
                     env,
@@ -1098,7 +1098,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     "select * from SupportBean, method:" +
                     typeof(SupportStaticMethodLib).Name +
                     ".minusOne(10) where 1=2",
-                    "Invalid return type for static method 'minusOne' of class '" +
+                    "InvalId return type for static method 'minusOne' of class '" +
                     typeof(SupportStaticMethodLib).Name +
                     "', expecting a Java class [");
 
@@ -1138,20 +1138,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
                 TryInvalidCompile(
                     env,
-                    "select * from method:SupportMethodInvocationJoinInvalid.readRowNoMetadata()",
-                    "Could not find getter method for method invocation, expected a method by name 'readRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.readRowNoMetadata()]");
+                    "select * from method:SupportMethodInvocationJoinInvalId.readRowNoMetadata()",
+                    "Could not find getter method for method invocation, expected a method by name 'readRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalId.readRowNoMetadata()]");
 
                 TryInvalidCompile(
                     env,
-                    "select * from method:SupportMethodInvocationJoinInvalid.readRowWrongMetadata()",
-                    "Getter method 'readRowWrongMetadataMetadata' does not return java.util.Map [select * from method:SupportMethodInvocationJoinInvalid.readRowWrongMetadata()]");
+                    "select * from method:SupportMethodInvocationJoinInvalId.readRowWrongMetadata()",
+                    "Getter method 'readRowWrongMetadataMetadata' does not return java.util.Map [select * from method:SupportMethodInvocationJoinInvalId.readRowWrongMetadata()]");
 
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean, method:" +
                     typeof(SupportStaticMethodLib).Name +
-                    ".invalidOverloadForJoin(null)",
-                    "Method by name 'invalidOverloadForJoin' is overloaded in class '" +
+                    ".invalIdOverloadForJoin(null)",
+                    "Method by name 'invalIdOverloadForJoin' is overloaded in class '" +
                     typeof(SupportStaticMethodLib).Name +
                     "' and overloaded methods do not return the same type");
             }

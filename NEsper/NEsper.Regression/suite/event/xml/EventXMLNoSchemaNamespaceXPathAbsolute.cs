@@ -19,11 +19,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public void Run(RegressionEnvironment env)
         {
             var epl =
-                "@Name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from StockQuote";
+                "@Name('s0') select Symbol_a, Symbol_b, Symbol_c, request.Symbol as Symbol_d, Symbol as Symbol_e from StockQuote";
             env.CompileDeploy(epl).AddListener("s0");
 
             var xml =
-                "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";
+                "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:Symbol>IBM</m0:Symbol></m0:request></m0:getQuote>";
             SendXMLEvent(env, xml, "StockQuote");
 
             // For XPath resolution testing and namespaces...

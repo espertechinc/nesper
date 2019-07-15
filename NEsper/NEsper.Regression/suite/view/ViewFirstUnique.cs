@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream symbol, price from SupportMarketDataBean#firstunique(symbol) order by symbol";
+                    "@Name('s0') select irstream Symbol, price from SupportMarketDataBean#firstunique(Symbol) order by Symbol";
                 if (optionalAnnotation != null) {
                     text = optionalAnnotation + text;
                 }

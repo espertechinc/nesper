@@ -519,7 +519,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean#expr(udf(theString, view_reference, expired_count))";
+                var epl = "@Name('s0') select * from SupportBean#expr(udf(TheString, view_reference, expired_count))";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 LocalUDF.Result = true;
@@ -547,12 +547,12 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#expr(1)",
-                    "Failed to validate data window declaration: Invalid return value for expiry expression, expected a boolean return value but received int [select * from SupportBean#expr(1)]");
+                    "Failed to valIdate data window declaration: InvalId return value for expiry expression, expected a boolean return value but received int [select * from SupportBean#expr(1)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#expr((select * from SupportBean#lastevent))",
-                    "Failed to validate data window declaration: Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#expr((select * from SupportBean#lastevent))]");
+                    "Failed to valIdate data window declaration: InvalId expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#expr((select * from SupportBean#lastevent))]");
             }
         }
 
@@ -563,7 +563,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
                 var epl = "@Name('s0') create window NW#expr(true) as SupportBean;\n" +
                           "insert into NW select * from SupportBean;\n" +
-                          "on SupportBean_A delete from NW where theString = id;\n";
+                          "on SupportBean_A delete from NW where TheString = Id;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -596,7 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"val0"};
-                var epl = "@Name('s0') select prev(1, theString) as val0 from SupportBean#expr(true)";
+                var epl = "@Name('s0') select prev(1, TheString) as val0 from SupportBean#expr(true)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -622,7 +622,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"TheString"};
-                var epl = "@Name('s0') select irstream theString from SupportBean#expr(sum(IntPrimitive) < 10)";
+                var epl = "@Name('s0') select irstream TheString from SupportBean#expr(sum(IntPrimitive) < 10)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -735,7 +735,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 string[] fields = {"TheString"};
                 var epl =
-                    "@Name('s0') select irstream theString from SupportBean#groupwin(IntPrimitive)#expr(sum(LongPrimitive) < 10)";
+                    "@Name('s0') select irstream TheString from SupportBean#groupwin(IntPrimitive)#expr(sum(LongPrimitive) < 10)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E1", 1, 5);
@@ -793,7 +793,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
                 var epl = "@Name('s0') create window NW#expr(sum(IntPrimitive) < 10) as SupportBean;\n" +
                           "insert into NW select * from SupportBean;\n" +
-                          "on SupportBean_A delete from NW where theString = id;\n";
+                          "on SupportBean_A delete from NW where TheString = Id;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));

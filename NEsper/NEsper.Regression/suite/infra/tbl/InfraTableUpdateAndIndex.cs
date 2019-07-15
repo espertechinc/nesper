@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 catch (EPCompileException ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex.InnerException,
-                        "Validation failed in when-matched (clause 1): On-merge statements may not update unique keys of tables");
+                        "ValIdation failed in when-matched (clause 1): On-merge statements may not update unique keys of tables");
                 }
 
                 env.UndeployAll();
@@ -253,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@Name('s1') create table MyTableMultiKey(pkey0 string primary key, pkey1 int primary key, c0 long)",
                     path);
                 env.CompileDeploy(
-                    "insert into MyTableMultiKey select TheString as pkey0, IntPrimitive as pkey1, longPrimitive as c0 from SupportBean",
+                    "insert into MyTableMultiKey select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
                     path);
                 env.CompileDeploy("on SupportBean_S0 update MyTableMultiKey set pkey0 = p01 where pkey0 = p00", path);
 

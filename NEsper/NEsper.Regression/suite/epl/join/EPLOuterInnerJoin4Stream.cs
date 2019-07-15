@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     public class EPLOuterInnerJoin4Stream
     {
         private static readonly string[] FIELDS =
-            "s0.id, s0.p00, s1.id, s1.p10, s2.id, s2.p20, s3.id, s3.p30".SplitCsv();
+            "s0.Id, s0.p00, s1.Id, s1.p10, s2.Id, s2.p20, s3.Id, s3.p30".SplitCsv();
 
         public static IList<RegressionExecution> Executions()
         {
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             RegressionEnvironment env,
             string expression)
         {
-            var fields = "s0.id, s0.p00, s1.id, s1.p10, s2.id, s2.p20, s3.id, s3.p30".SplitCsv();
+            var fields = "s0.Id, s0.p00, s1.Id, s1.p10, s2.Id, s2.p20, s3.Id, s3.p30".SplitCsv();
 
             env.CompileDeployAddListenerMileZero(expression, "s0");
 

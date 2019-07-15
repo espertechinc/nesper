@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean for ",
-                    "Incorrect syntax near end-of-input ('for' is a reserved keyword) expecting an identifier but found end-of-input at line 1 column 29");
+                    "Incorrect syntax near end-of-input ('for' is a reserved keyword) expecting an Identifier but found end-of-input at line 1 column 29");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean for grouped_delivery(dummy)",
-                    "Failed to validate for-clause expression 'dummy': Property named 'dummy' is not valid in any stream");
+                    "Failed to valIdate for-clause expression 'dummy': Property named 'dummy' is not valId in any stream");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var subscriber = new SupportSubscriberMRD();
                 SendTimer(env, 0);
                 env.CompileDeploy(
-                    "@Name('s0') select irstream theString,intPrimitive from SupportBean#time_batch(1) for discrete_delivery");
+                    "@Name('s0') select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for discrete_delivery");
                 env.Statement("s0").Subscriber = subscriber;
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
                 subscriber.Reset();
                 env.CompileDeploy(
-                    "@Name('s0') select irstream theString,intPrimitive from SupportBean#time_batch(1) for grouped_delivery(IntPrimitive)");
+                    "@Name('s0') select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for grouped_delivery(IntPrimitive)");
                 env.Statement("s0").Subscriber = subscriber;
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -148,15 +148,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(3, env.Listener("s0").NewDataList.Count);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E1", 1}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E2", 2}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[2],
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E3", 1}});
                 env.UndeployAll();
 
@@ -193,12 +193,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(2, env.Listener("s0").NewDataList[0].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E1", 1}, new object[] {"E3", 1}});
                 Assert.AreEqual(1, env.Listener("s0").NewDataList[1].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E2", 2}});
 
                 // test sorted
@@ -215,18 +215,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(1, env.Listener("s0").NewDataList[0].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E2", 2}});
                 Assert.AreEqual(2, env.Listener("s0").NewDataList[1].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E1", 1}, new object[] {"E3", 1}});
 
                 // test multiple criteria
                 env.UndeployAll();
                 var stmtText =
-                    "@Name('s0') select TheString, doubleBoxed, enumValue from SupportBean#time_batch(1) order by theString, doubleBoxed, enumValue for grouped_delivery(doubleBoxed, enumValue)";
+                    "@Name('s0') select TheString, DoubleBoxed, enumValue from SupportBean#time_batch(1) order by TheString, DoubleBoxed, enumValue for grouped_delivery(DoubleBoxed, enumValue)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "E1", 10d, SupportEnum.ENUM_VALUE_2); // A (1)
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendEvent(env, "E8", 10d, SupportEnum.ENUM_VALUE_1); // D
                 SendTimer(env, 3000);
                 Assert.AreEqual(4, env.Listener("s0").NewDataList.Count);
-                var fields = "theString,doubleBoxed,enumValue".SplitCsv();
+                var fields = "theString,DoubleBoxed,enumValue".SplitCsv();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
                     fields,

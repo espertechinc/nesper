@@ -103,9 +103,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                           "SupportBean_A#length(3) as streamA," +
                           "SupportBean_B#length(3) as streamB," +
                           "SupportBean_C#length(3) as streamC" +
-                          " where (streamA.id = streamB.id) " +
-                          "   and (streamB.id = streamC.id)" +
-                          "   and (streamA.id = streamC.id)";
+                          " where (streamA.Id = streamB.Id) " +
+                          "   and (streamB.Id = streamC.Id)" +
+                          "   and (streamA.Id = streamC.Id)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 RunJoinUniquePerId(env);
@@ -129,18 +129,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                         .AddView(View.Create("length", Expressions.Constant(3))));
                 model.FromClause = fromClause;
                 model.WhereClause = Expressions.And(
-                    Expressions.EqProperty("streamA.id", "streamB.id"),
-                    Expressions.EqProperty("streamB.id", "streamC.id"),
-                    Expressions.EqProperty("streamA.id", "streamC.id"));
+                    Expressions.EqProperty("streamA.Id", "streamB.Id"),
+                    Expressions.EqProperty("streamB.Id", "streamC.Id"),
+                    Expressions.EqProperty("streamA.Id", "streamC.Id"));
                 model = env.CopyMayFail(model);
 
                 var epl = "select * from " +
                           "SupportBean_A#length(3) as streamA, " +
                           "SupportBean_B#length(3) as streamB, " +
                           "SupportBean_C#length(3) as streamC " +
-                          "where streamA.id=streamB.id " +
-                          "and streamB.id=streamC.id " +
-                          "and streamA.id=streamC.id";
+                          "where streamA.Id=streamB.Id " +
+                          "and streamB.Id=streamC.Id " +
+                          "and streamA.Id=streamC.Id";
                 Assert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -160,9 +160,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                           "SupportBean_A#length(3) as streamA, " +
                           "SupportBean_B#length(3) as streamB, " +
                           "SupportBean_C#length(3) as streamC " +
-                          "where streamA.id=streamB.id " +
-                          "and streamB.id=streamC.id " +
-                          "and streamA.id=streamC.id";
+                          "where streamA.Id=streamB.Id " +
+                          "and streamB.Id=streamC.Id " +
+                          "and streamA.Id=streamC.Id";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
                 RunJoinUniquePerId(env);

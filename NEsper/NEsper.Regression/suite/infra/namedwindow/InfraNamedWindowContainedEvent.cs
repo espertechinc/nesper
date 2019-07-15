@@ -23,12 +23,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var path = new RegressionPath();
             env.CompileDeploy("create window BookWindow#time(30) as BookDesc", path);
 
-            epl = "select * from SupportBean unidirectional, BookWindow[reviews]";
+            epl = "select * from SupportBean unIdirectional, BookWindow[reviews]";
             TryInvalidCompile(
                 env,
                 path,
                 epl,
-                "Failed to validate named window use in join, contained-event is only allowed for named windows when marked as unidirectional");
+                "Failed to valIdate named window use in join, contained-event is only allowed for named windows when marked as unIdirectional");
 
             epl = "select *, (select * from BookWindow[reviews] where sb.TheString = comment) " +
                   "from SupportBean sb";
@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env,
                 path,
                 epl,
-                "Failed to plan subquery number 1 querying BookWindow: Failed to validate named window use in subquery, contained-event is only allowed for named windows when not correlated ");
+                "Failed to plan subquery number 1 querying BookWindow: Failed to valIdate named window use in subquery, contained-event is only allowed for named windows when not correlated ");
 
             env.UndeployAll();
         }

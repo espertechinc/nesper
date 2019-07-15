@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var sql = "select mydouble from mytesttable where ${intPrimitive} = myint";
+                var sql = "select mydouble from mytesttable where ${IntPrimitive} = myint";
                 RunAssertion(env, sql);
             }
         }
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var sql =
-                    "select mydouble, sum(myint) from mytesttable where ${intPrimitive} = myint group by mydouble";
+                    "select mydouble, sum(myint) from mytesttable where ${IntPrimitive} = myint group by mydouble";
                 RunAssertion(env, sql);
             }
         }
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var sql = "select mydouble from mytesttable ${$ESPER-SAMPLE-WHERE} where ${intPrimitive} = myint";
+                var sql = "select mydouble from mytesttable ${$ESPER-SAMPLE-WHERE} where ${IntPrimitive} = myint";
                 RunAssertion(env, sql);
             }
         }

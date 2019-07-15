@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             var epl = "@Name('window') create window MyWindowOne#unique(TheString) as SupportBean;\n" +
                       "insert into MyWindowOne select * from SupportBean;\n" +
-                      "@Name('idx') create unique index I1 on MyWindowOne(TheString);\n";
+                      "@Name('Idx') create unique index I1 on MyWindowOne(TheString);\n";
             env.CompileDeploy(epl);
             Assert.AreEqual(
                 StatementType.CREATE_INDEX,
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.GetEnumerator("window"),
-                "theString,intPrimitive".SplitCsv(),
+                "theString,IntPrimitive".SplitCsv(),
                 new[] {new object[] {"E0", 5}, new object[] {"E1", 4}, new object[] {"E2", 3}});
 
             env.UndeployAll();

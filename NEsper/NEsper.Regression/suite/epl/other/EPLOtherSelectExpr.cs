@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var fields =
-                    "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,first,last,unidirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window,left,right,full,outer,join";
+                    "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,first,last,unIdirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window,left,right,full,outer,join";
                 env.CompileDeploy("@Name('s0') select " + fields + " from SupportBeanKeywords").AddListener("s0");
 
                 env.SendEventBean(new SupportBeanKeywords());
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@Name('s0') select 'volume' as field1, \"sleep\" as field2, \"\\u0041\" as unicodeA from SupportBean");
+                    "@Name('s0') select 'Volume' as field1, \"sleep\" as field2, \"\\u0041\" as unicodeA from SupportBean");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
@@ -168,16 +168,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new object[] {"Volume", "sleep", "A"});
                 env.UndeployAll();
 
-                TryStatementMatch(env, "John's", "select * from SupportBean(theString='John\\'s')");
-                TryStatementMatch(env, "John's", "select * from SupportBean(theString='John\\u0027s')");
+                TryStatementMatch(env, "John's", "select * from SupportBean(TheString='John\\'s')");
+                TryStatementMatch(env, "John's", "select * from SupportBean(TheString='John\\u0027s')");
                 TryStatementMatch(
                     env,
                     "Quote \"Hello\"",
-                    "select * from SupportBean(theString like \"Quote \\\"Hello\\\"\")");
+                    "select * from SupportBean(TheString like \"Quote \\\"Hello\\\"\")");
                 TryStatementMatch(
                     env,
                     "Quote \"Hello\"",
-                    "select * from SupportBean(theString like \"Quote \\u0022Hello\\u0022\")");
+                    "select * from SupportBean(TheString like \"Quote \\u0022Hello\\u0022\")");
 
                 env.UndeployAll();
             }
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 string property,
                 string escaped)
             {
-                var epl = "@Name('s0') select * from SupportBean(theString=" + escaped + ")";
+                var epl = "@Name('s0') select * from SupportBean(TheString=" + escaped + ")";
                 var text = "trying >" + escaped + "< (" + escaped.Length + " chars) EPL " + epl;
                 log.Info("tryEscapeMatch for " + text);
                 env.CompileDeploy(epl).AddListener("s0");
@@ -215,20 +215,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select TheString, boolBoxed aBool, 3*intPrimitive, floatBoxed+floatPrimitive result" +
+                    "@Name('s0') select TheString, BoolBoxed aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive result" +
                     " from SupportBean#length(3) " +
-                    " where boolBoxed = true";
+                    " where BoolBoxed = true";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
                 log.Debug(".testGetEventType properties=" + type.PropertyNames.RenderAny());
                 EPAssertionUtil.AssertEqualsAnyOrder(
                     type.PropertyNames,
-                    new[] {"3*intPrimitive", "TheString", "result", "aBool"});
+                    new[] {"3*IntPrimitive", "TheString", "result", "aBool"});
                 Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
                 Assert.AreEqual(typeof(bool?), type.GetPropertyType("aBool"));
                 Assert.AreEqual(typeof(float?), type.GetPropertyType("result"));
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("3*intPrimitive"));
+                Assert.AreEqual(typeof(int?), type.GetPropertyType("3*IntPrimitive"));
 
                 env.UndeployAll();
             }
@@ -239,9 +239,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select TheString, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" +
+                    "@Name('s0') select TheString, BoolBoxed as aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive as result" +
                     " from SupportBean#length(3) " +
-                    " where boolBoxed = true";
+                    " where BoolBoxed = true";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "a", false, 0, 0, 0);

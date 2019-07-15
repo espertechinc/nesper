@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             bool soda)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@Name('type') create schema ItemEvent(id string)", path);
+            env.CompileDeploy("@Name('type') create schema ItemEvent(Id string)", path);
 
             var script =
                 "@Name('script') create expression EventBean[] @type(ItemEvent) js:myScriptReturnsEvents() [\n" +
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 env.Statement("script").GetProperty(StatementProperty.STATEMENTTYPE));
 
             env.CompileDeploy(
-                "@Name('s0') select myScriptReturnsEvents().where(v => v.id in ('id1', 'id3')) as c0 from SupportBean",
+                "@Name('s0') select myScriptReturnsEvents().where(v => v.Id in ('Id1', 'Id3')) as c0 from SupportBean",
                 path);
             env.AddListener("s0");
 
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             string expression;
             var path = new RegressionPath();
 
-            expression = "expression void " + dialect + ":mysetter() [ epl.setScriptAttribute('a', 1); ]";
+            expression = "expression voId " + dialect + ":mysetter() [ epl.setScriptAttribute('a', 1); ]";
             testData = new[] {
                 new object[] {new SupportBean("E1", 20), null},
                 new object[] {new SupportBean("E1", 10), null}
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 "  epl.setScriptAttribute('flag', flagValue);" +
                 "  flagValue;" +
                 "]" +
-                "select getFlag() as val from SupportBean(TheString = 'E1' or setFlag(intPrimitive > 0))");
+                "select getFlag() as val from SupportBean(TheString = 'E1' or setFlag(IntPrimitive > 0))");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBean("E2", 10));
@@ -146,14 +146,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 new object[] {new SupportBean("E1", 20), 120L},
                 new object[] {new SupportBean("E1", 10), 110L}
             };
-            TrySelect(env, path, expression, "thresholdAdder(intPrimitive, THRESHOLD)", typeof(long?), testData);
+            TrySelect(env, path, expression, "thresholdAdder(IntPrimitive, THRESHOLD)", typeof(long?), testData);
 
             env.Runtime.VariableService.SetVariableValue(env.DeploymentId("var"), "THRESHOLD", 1);
             testData = new[] {
                 new object[] {new SupportBean("E1", 20), 21L},
                 new object[] {new SupportBean("E1", 10), 11L}
             };
-            TrySelect(env, path, expression, "thresholdAdder(intPrimitive, THRESHOLD)", typeof(long?), testData);
+            TrySelect(env, path, expression, "thresholdAdder(IntPrimitive, THRESHOLD)", typeof(long?), testData);
 
             env.UndeployAll();
         }
@@ -607,12 +607,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 RunAssertionScriptReturningEvents(env, true);
 
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema ItemEvent(id string)", path);
+                env.CompileDeploy("create schema ItemEvent(Id string)", path);
                 TryInvalidCompile(
                     env,
                     path,
                     "expression double @type(ItemEvent) fib(num) [] select fib(1) from SupportBean",
-                    "Failed to validate select-clause expression 'fib(1)': The @type annotation is only allowed when the invocation target returns EventBean instances");
+                    "Failed to valIdate select-clause expression 'fib(1)': The @type annotation is only allowed when the invocation target returns EventBean instances");
                 env.UndeployAll();
             }
         }
@@ -667,7 +667,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidCompile(
                     env,
                     "expression js:abc(p1, p1) [/* text */] select * from SupportBean",
-                    "Invalid script parameters for script 'abc', parameter 'p1' is defined more then once [expression js:abc(p1, p1) [/* text */] select * from SupportBean]");
+                    "InvalId script parameters for script 'abc', parameter 'p1' is defined more then once [expression js:abc(p1, p1) [/* text */] select * from SupportBean]");
 
                 // invalid dialect
                 TryInvalidCompile(
@@ -679,13 +679,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidCompile(
                     env,
                     "select abc() from SupportBean",
-                    "Failed to validate select-clause expression 'abc': Unknown single-row function, expression declaration, script or aggregation function named 'abc' could not be resolved [select abc() from SupportBean]");
+                    "Failed to valIdate select-clause expression 'abc': Unknown single-row function, expression declaration, script or aggregation function named 'abc' could not be resolved [select abc() from SupportBean]");
 
                 // test incorrect number of parameters
                 TryInvalidCompile(
                     env,
                     "expression js:abc() [10] select abc(1) from SupportBean",
-                    "Failed to validate select-clause expression 'abc(1)': Invalid number of parameters for script 'abc', expected 0 parameters but received 1 parameters [expression js:abc() [10] select abc(1) from SupportBean]");
+                    "Failed to valIdate select-clause expression 'abc(1)': InvalId number of parameters for script 'abc', expected 0 parameters but received 1 parameters [expression js:abc() [10] select abc(1) from SupportBean]");
 
                 // test expression name overlap
                 TryInvalidCompile(
@@ -709,7 +709,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidCompile(
                     env,
                     "expression dummy js:abc() [10] select abc() from SupportBean",
-                    "Failed to validate select-clause expression 'abc()': Failed to resolve return type 'dummy' specified for script 'abc' [expression dummy js:abc() [10] select abc() from SupportBean]");
+                    "Failed to valIdate select-clause expression 'abc()': Failed to resolve return type 'dummy' specified for script 'abc' [expression dummy js:abc() [10] select abc() from SupportBean]");
             }
         }
 
@@ -725,7 +725,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidContains(
                     env,
                     "expression js:abc(aa) [return aa..bb(1);] select abc(1) from SupportBean",
-                    "Invalid return statement");
+                    "InvalId return statement");
 
                 TryInvalidCompile(
                     env,

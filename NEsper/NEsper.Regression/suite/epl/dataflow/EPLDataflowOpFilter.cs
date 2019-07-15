@@ -64,11 +64,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var capture = new DefaultSupportCaptureOp(2, env.Container.LockManager());
             var options = new EPDataFlowInstantiationOptions();
             options.DataFlowInstanceUserObject = "myuserobject";
-            options.DataFlowInstanceId = "myinstanceid";
+            options.DataFlowInstanceId = "myinstanceId";
             options.WithOperatorProvider(new DefaultSupportGraphOpProvider(source, capture));
             var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MySelect", options);
             Assert.AreEqual("myuserobject", instance.UserObject);
-            Assert.AreEqual("myinstanceid", instance.InstanceId);
+            Assert.AreEqual("myinstanceId", instance.InstanceId);
 
             instance.Run();
 
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryInvalidCompile(
                     env,
                     "create dataflow DF1 BeaconSource => instream<SupportBean> {} Filter(instream) => abc {}",
-                    "Failed to obtain operator 'Filter': Required parameter 'filter' providing the filter expression is not provided");
+                    "Failed to obtain operator 'Filter': Required parameter 'filter' provIding the filter expression is not provIded");
 
                 // invalid: too many output streams
                 TryInvalidCompile(
@@ -107,12 +107,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryInvalidFilter(
                     env,
                     "theString = 1",
-                    "Failed to obtain operator 'Filter': Failed to validate filter dataflow operator expression 'theString=1': Implicit conversion from datatype 'Integer' to 'String' is not allowed");
+                    "Failed to obtain operator 'Filter': Failed to valIdate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype 'Integer' to 'String' is not allowed");
 
                 TryInvalidFilter(
                     env,
-                    "prev(theString, 1) = 'abc'",
-                    "Failed to obtain operator 'Filter': Invalid filter dataflow operator expression 'prev(theString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
+                    "prev(TheString, 1) = 'abc'",
+                    "Failed to obtain operator 'Filter': InvalId filter dataflow operator expression 'prev(TheString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
             }
         }
 
@@ -133,12 +133,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\n" +
                           "  BeaconSource => samplestream<SampleSchema> {}\n" +
                           "  \n" +
-                          "  // Filter all events that have a tag id of '001'\n" +
+                          "  // Filter all events that have a tag Id of '001'\n" +
                           "  Filter(samplestream) => tags_001 {\n" +
                           "    filter : tagId = '001' \n" +
                           "  }\n" +
                           "  \n" +
-                          "  // Filter all events that have a tag id of '001', putting all other tags into the second stream\n" +
+                          "  // Filter all events that have a tag Id of '001', putting all other tags into the second stream\n" +
                           "  Filter(samplestream) => tags_001, tags_other {\n" +
                           "    filter : tagId = '001' \n" +
                           "  }";
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 DefaultSupportCaptureOpStatic<SupportBean>.GetInstances().Clear();
                 var graph = "@Name('flow') create dataflow MyFilter\n" +
                             "Emitter => sb<SupportBean> {name : 'e1'}\n" +
-                            "Filter(sb) => out.ok, out.fail {filter: theString = 'x'}\n" +
+                            "Filter(sb) => out.ok, out.fail {filter: TheString = 'x'}\n" +
                             "DefaultSupportCaptureOpStatic(out.ok) {}" +
                             "DefaultSupportCaptureOpStatic(out.fail) {}";
                 env.CompileDeploy(graph);

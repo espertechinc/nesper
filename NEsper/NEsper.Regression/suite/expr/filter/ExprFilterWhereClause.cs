@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportMarketDataBean#length(3) where symbol='CSCO'";
+                var epl = "@Name('s0') select * from SupportMarketDataBean#length(3) where Symbol='CSCO'";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendMarketDataEvent(env, "IBM");
@@ -73,8 +73,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // invalid return type for filter during compilation time
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "Select theString From SupportBean#time(30 seconds) where IntPrimitive group by TheString",
-                    "Error validating expression: The where-clause filter expression must return a boolean value");
+                    "Select TheString From SupportBean#time(30 seconds) where IntPrimitive group by TheString",
+                    "Error valIdating expression: The where-clause filter expression must return a boolean value");
 
                 // invalid return type for filter at eventService
                 epl = "select * From MapEventWithCriteriaBool#time(30 seconds) where criteria";
@@ -97,11 +97,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          " IntPrimitive + longPrimitive as p1," +
-                          " IntPrimitive * doublePrimitive as p2," +
-                          " floatPrimitive / doublePrimitive as p3" +
+                          " IntPrimitive + LongPrimitive as p1," +
+                          " IntPrimitive * DoublePrimitive as p2," +
+                          " FloatPrimitive / DoublePrimitive as p3" +
                           " from SupportBean#length(3) where " +
-                          "IntPrimitive=longPrimitive and IntPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
+                          "IntPrimitive=LongPrimitive and IntPrimitive=DoublePrimitive and FloatPrimitive=DoublePrimitive";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendSupportBeanEvent(env, 1, 2, 3, 4);

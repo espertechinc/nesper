@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             var eplFragment = "@Name('s0') select " +
                               "contained.minBy(x => p00) as val0," +
                               "contained.maxBy(x => p00) as val1," +
-                              "contained.minBy(x => p00).id as val2," +
+                              "contained.minBy(x => p00).Id as val2," +
                               "contained.maxBy(x => p00).p00 as val3 " +
                               "from SupportBean_ST0_Container";
             env.CompileDeploy(eplFragment).AddListener("s0");

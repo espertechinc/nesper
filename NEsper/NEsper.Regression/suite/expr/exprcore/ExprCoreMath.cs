@@ -338,16 +338,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "shortPrimitive + shortBoxed as c0," +
-                          "bytePrimitive + byteBoxed as c1, " +
-                          "shortPrimitive - shortBoxed as c2," +
-                          "bytePrimitive - byteBoxed as c3, " +
-                          "shortPrimitive * shortBoxed as c4," +
-                          "bytePrimitive * byteBoxed as c5, " +
-                          "shortPrimitive / shortBoxed as c6," +
-                          "bytePrimitive / byteBoxed as c7," +
-                          "shortPrimitive + longPrimitive as c8," +
-                          "bytePrimitive + longPrimitive as c9 " +
+                          "shortPrimitive + ShortBoxed as c0," +
+                          "bytePrimitive + ByteBoxed as c1, " +
+                          "shortPrimitive - ShortBoxed as c2," +
+                          "bytePrimitive - ByteBoxed as c3, " +
+                          "shortPrimitive * ShortBoxed as c4," +
+                          "bytePrimitive * ByteBoxed as c5, " +
+                          "shortPrimitive / ShortBoxed as c6," +
+                          "bytePrimitive / ByteBoxed as c7," +
+                          "shortPrimitive + LongPrimitive as c8," +
+                          "bytePrimitive + LongPrimitive as c9 " +
                           "from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9".SplitCsv();
@@ -389,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select longBoxed % IntBoxed as myMod from SupportBean#length(3) where not(longBoxed > intBoxed)";
+                    "@Name('s0') select LongBoxed % IntBoxed as myMod from SupportBean#length(3) where not(LongBoxed > IntBoxed)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, 1, 1, 0);

@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     Assert.Fail();
                 }
                 catch (EPUndeployNotFoundException ex) {
-                    SupportMessageAssertUtil.AssertMessage(ex.Message, "Deployment id 'nofound' cannot be found");
+                    SupportMessageAssertUtil.AssertMessage(ex.Message, "Deployment Id 'nofound' cannot be found");
                 }
                 catch (EPUndeployException t) {
                     Assert.Fail();
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context MyContext partition by theString from SupportBean",
+                    "@Name('ctx') create context MyContext partition by TheString from SupportBean",
                     path);
 
                 var text = "Context 'MyContext'";
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     env,
                     path,
                     "index",
-                    "@Name('A') on SupportBean_S0 as s0 delete from MyWindow as mw where mw.IntPrimitive = s0.id",
+                    "@Name('A') on SupportBean_S0 as s0 delete from MyWindow as mw where mw.IntPrimitive = s0.Id",
                     "A",
                     text);
 

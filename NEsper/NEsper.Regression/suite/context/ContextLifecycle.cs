@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplOne = "create context CtxSegmentedByTarget partition by theString from SupportBean;" +
+                var eplOne = "create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
                              "@Name('out') context CtxSegmentedByTarget on SupportBean insert into NewSupportBean select * where IntPrimitive = 100;";
                 env.CompileDeploy(eplOne, path);
                 env.CompileDeploy("@Name('s0') select * from NewSupportBean", path).AddListener("s0");
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test with subquery
                 var fields = "mymax".SplitCsv();
-                var eplTwo = "create context CtxSegmentedByTarget partition by theString from SupportBean;" +
+                var eplTwo = "create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
                              "context CtxSegmentedByTarget create window NewEvent#unique(TheString) as SupportBean;" +
                              "@Name('out') context CtxSegmentedByTarget on SupportBean " +
                              "insert into NewEvent select * where IntPrimitive = 100 " +
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportVirtualDWFactory.IsDestroyed = false;
 
                 var path = new RegressionPath();
-                env.CompileDeploy("create context CtxSegmented as partition by theString from SupportBean", path);
+                env.CompileDeploy("create context CtxSegmented as partition by TheString from SupportBean", path);
                 env.CompileDeploy("context CtxSegmented create window TestVDWWindow.test:vdw() as SupportBean", path);
                 env.CompileDeploy("select * from TestVDWWindow", path);
 
@@ -231,12 +231,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // test update: update is not allowed as it is processed out-of-context by eventService
                 env.CompileDeploy("insert into ABCStream select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@Name('context') create context SegmentedByAString partition by theString from ABCStream",
+                    "@Name('context') create context SegmentedByAString partition by TheString from ABCStream",
                     path);
                 TryInvalidCompile(
                     env,
                     path,
-                    "context SegmentedByAString update istream ABCStream set intPrimitive = (select id from SupportBean_S0#lastevent) where IntPrimitive < 0",
+                    "context SegmentedByAString update istream ABCStream set IntPrimitive = (select Id from SupportBean_S0#lastevent) where IntPrimitive < 0",
                     "Update IStream is not supported in conjunction with a context");
 
                 // context declaration for create-context
@@ -251,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TryInvalidCompile(
                     env,
                     "select context.sb.TheString from SupportBean as sb",
-                    "Failed to validate select-clause expression 'context.sb.TheString': Failed to resolve property 'context.sb.TheString' to a stream or nested property in a stream");
+                    "Failed to valIdate select-clause expression 'context.sb.TheString': Failed to resolve property 'context.sb.TheString' to a stream or nested property in a stream");
 
                 env.UndeployAll();
             }

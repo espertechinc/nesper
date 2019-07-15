@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create context CtxEachString partition by theString from SupportBean", path);
+            env.CompileDeploy("create context CtxEachString partition by TheString from SupportBean", path);
             env.CompileDeploy("@Name('select') context CtxEachString select * from SupportBean", path);
 
             TryPerformanceDispatch(env, 8, 100);

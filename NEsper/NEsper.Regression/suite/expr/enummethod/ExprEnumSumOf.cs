@@ -77,9 +77,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3,val4".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "beans.sumOf(x => intBoxed) as val0," +
-                                  "beans.sumOf(x => doubleBoxed) as val1," +
-                                  "beans.sumOf(x => longBoxed) as val2," +
+                                  "beans.sumOf(x => IntBoxed) as val0," +
+                                  "beans.sumOf(x => DoubleBoxed) as val1," +
+                                  "beans.sumOf(x => LongBoxed) as val2," +
                                   "beans.sumOf(x => bigDecimal) as val3, " +
                                   "beans.sumOf(x => bigInteger) as val4 " +
                                   "from SupportBean_Container";
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
+                    "Failed to valIdate select-clause expression 'beans.sumof()': InvalId input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
             }
         }
     }

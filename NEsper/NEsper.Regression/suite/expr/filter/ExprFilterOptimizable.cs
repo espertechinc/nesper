@@ -498,7 +498,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString='a' and (intPrimitive=1 or longPrimitive=10)"
+                "theString='a' and (IntPrimitive=1 or LongPrimitive=10)"
             };
             foreach (var filter in filtersAB) {
                 var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
@@ -578,10 +578,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString = 'a' or IntPrimitive=1 or longPrimitive=10 or doublePrimitive=100 or boolPrimitive=true or " +
-                "intBoxed=2 or longBoxed=20 or doubleBoxed=200",
-                "longBoxed=20 or theString = 'a' or boolPrimitive=true or intBoxed=2 or longPrimitive=10 or doublePrimitive=100 or " +
-                "IntPrimitive=1 or doubleBoxed=200"
+                "theString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100 or BoolPrimitive=true or " +
+                "intBoxed=2 or LongBoxed=20 or DoubleBoxed=200",
+                "longBoxed=20 or TheString = 'a' or BoolPrimitive=true or IntBoxed=2 or LongPrimitive=10 or DoublePrimitive=100 or " +
+                "IntPrimitive=1 or DoubleBoxed=200"
             };
             foreach (var filter in filtersAB) {
                 var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
@@ -618,7 +618,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString = 'a' or IntPrimitive=1 or longPrimitive=10 or doublePrimitive=100"
+                "theString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100"
             };
             foreach (var filter in filtersAB) {
                 var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
@@ -662,7 +662,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             var epl =
-                "@Name('ctx') create context MyContext initiated by SupportBean(theString='A' or IntPrimitive=1) terminated after 24 hours;\n" +
+                "@Name('ctx') create context MyContext initiated by SupportBean(TheString='A' or IntPrimitive=1) terminated after 24 hours;\n" +
                 "@Name('s0') context MyContext select * from SupportBean;\n";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -677,7 +677,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             var epl = "create context MyContext initiated by SupportBean terminated after 24 hours;" +
-                      "@Name('s0') context MyContext select * from SupportBean(theString='A' or IntPrimitive=1)";
+                      "@Name('s0') context MyContext select * from SupportBean(TheString='A' or IntPrimitive=1)";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
             env.SendEventBean(new SupportBean("A", 1));
@@ -701,8 +701,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString = 'a' or IntPrimitive = 1 or longPrimitive = 2",
-                "2 = longPrimitive or 1 = IntPrimitive or theString = 'a'"
+                "theString = 'a' or IntPrimitive = 1 or LongPrimitive = 2",
+                "2 = LongPrimitive or 1 = IntPrimitive or TheString = 'a'"
             };
             foreach (var filter in filtersAB) {
                 var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
@@ -751,7 +751,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             var epl =
-                "@Name('s0') select * from pattern[every a=SupportInKeywordBean => SupportBean(intPrimitive in (a." +
+                "@Name('s0') select * from pattern[every a=SupportInKeywordBean => SupportBean(IntPrimitive in (a." +
                 field +
                 "))]";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
@@ -817,7 +817,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             var epl =
-                "@Name('s0') select * from pattern[every a=SupportInKeywordBean => SupportBean(intPrimitive not in (a." +
+                "@Name('s0') select * from pattern[every a=SupportInKeywordBean => SupportBean(IntPrimitive not in (a." +
                 field +
                 "))]";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
@@ -841,8 +841,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString = 'a' or theString = 'b' or IntPrimitive=1",
-                "IntPrimitive = 1 or theString = 'b' or theString = 'a'"
+                "theString = 'a' or TheString = 'b' or IntPrimitive=1",
+                "IntPrimitive = 1 or TheString = 'b' or TheString = 'a'"
             };
             foreach (var filter in filtersAB) {
                 var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
@@ -871,7 +871,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             var epl = "create context MyContext initiated by SupportInKeywordBean as mie terminated after 24 hours;\n" +
                       "@Name('s1') context MyContext select * from SupportBean#keepall where IntPrimitive in (context.mie.ints);\n" +
-                      "@Name('s2') context MyContext select * from SupportBean(intPrimitive in (context.mie.ints));\n";
+                      "@Name('s2') context MyContext select * from SupportBean(IntPrimitive in (context.mie.ints));\n";
             env.CompileDeploy(epl).AddListener("s1").AddListener("s2");
 
             env.SendEventBean(new SupportInKeywordBean(new[] {1, 2}));
@@ -997,9 +997,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            env.Runtime.VariableService.SetVariableValue(null, "myCheckServiceProvider", new MyCheckServiceProvider());
+            env.Runtime.VariableService.SetVariableValue(null, "myCheckServiceProvIder", new MyCheckServiceProvider());
 
-            env.CompileDeploy("@Name('s0') select * from SupportBean(myCheckServiceProvider.check())")
+            env.CompileDeploy("@Name('s0') select * from SupportBean(myCheckServiceProvIder.check())")
                 .AddListener("s0");
             var latch = new CountDownLatch(1);
 
@@ -1029,8 +1029,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             string[] filtersAB = {
                 "select * from SupportBean(TheString = 'a' or IntPrimitive = 1)",
                 "select * from SupportBean(TheString = 'a' or 1 = IntPrimitive)",
-                "select * from SupportBean('a' = theString or 1 = IntPrimitive)",
-                "select * from SupportBean('a' = theString or IntPrimitive = 1)"
+                "select * from SupportBean('a' = TheString or 1 = IntPrimitive)",
+                "select * from SupportBean('a' = TheString or IntPrimitive = 1)"
             };
 
             foreach (var filter in filtersAB) {
@@ -1060,9 +1060,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "(TheString = 'a' and intPrimitive = 1) or (TheString = 'b' and IntPrimitive = 2)",
-                "(IntPrimitive = 1 and theString = 'a') or (IntPrimitive = 2 and theString = 'b')",
-                "(TheString = 'b' and intPrimitive = 2) or (TheString = 'a' and IntPrimitive = 1)"
+                "(TheString = 'a' and IntPrimitive = 1) or (TheString = 'b' and IntPrimitive = 2)",
+                "(IntPrimitive = 1 and TheString = 'a') or (IntPrimitive = 2 and TheString = 'b')",
+                "(TheString = 'b' and IntPrimitive = 2) or (TheString = 'a' and IntPrimitive = 1)"
             };
             foreach (var filter in filtersAB) {
                 var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
@@ -1273,7 +1273,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var epl =
                     "@Name('ctx') create context MyContext initiated by SupportBean terminated after 24 hours;\n" +
-                    "@Name('select') context MyContext select * from SupportBean(theString='A' or IntPrimitive=1)";
+                    "@Name('select') context MyContext select * from SupportBean(TheString='A' or IntPrimitive=1)";
                 env.CompileDeployAddListenerMileZero(epl, "select");
 
                 env.SendEventBean(new SupportBean("A", 1), typeof(SupportBean).Name);
@@ -1309,8 +1309,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 TryInvalidCompile(
                     env,
-                    "select * from pattern[every a=SupportInKeywordBean => SupportBean(intPrimitive in (a.longs))]",
-                    "Implicit conversion from datatype 'long' to 'Integer' for property 'intPrimitive' is not allowed (strict filter type coercion)");
+                    "select * from pattern[every a=SupportInKeywordBean => SupportBean(IntPrimitive in (a.longs))]",
+                    "Implicit conversion from datatype 'long' to 'Integer' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
             }
         }
 
@@ -1340,14 +1340,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 // declared expression (...) = value
                 env.CompileDeploy(
-                        "@Name('create-expr') create expression thesplit {theString => libSplit(TheString)}",
+                        "@Name('create-expr') create expression thesplit {TheString => libSplit(TheString)}",
                         path)
                     .AddListener("create-expr");
                 TryOptimizableEquals(env, path, "select * from SupportBean(thesplit(*) = !NUM!)", 10, milestone);
 
                 // declared expression (...) implied true
                 env.CompileDeploy(
-                        "@Name('create-expr') create expression theE1Test {theString => libE1True(TheString)}",
+                        "@Name('create-expr') create expression theE1Test {TheString => libE1True(TheString)}",
                         path)
                     .AddListener("create-expr");
                 TryOptimizableBoolean(env, path, "select * from SupportBean(theE1Test(*))", milestone);
@@ -1383,7 +1383,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 epl = "select * from SupportBean(libE1True(TheString))";
                 AssertFilterSingle(env, path, epl, "libE1True(TheString)", FilterOperator.EQUAL, milestone);
 
-                epl = "select * from SupportBean(funcTwo( theString ) > 10)";
+                epl = "select * from SupportBean(funcTwo( TheString ) > 10)";
                 AssertFilterSingle(env, path, epl, "funcTwo(TheString)", FilterOperator.GREATER, milestone);
 
                 epl = "select * from SupportBean(libE1True(TheString))";
@@ -1393,7 +1393,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 AssertFilterSingle(env, path, epl, "typeof(e)", FilterOperator.EQUAL, milestone);
 
                 env.CompileDeploy(
-                        "@Name('create-expr') create expression thesplit {theString => funcOne(TheString)}",
+                        "@Name('create-expr') create expression thesplit {TheString => funcOne(TheString)}",
                         path)
                     .AddListener("create-expr");
                 epl = "select * from SupportBean(thesplit(*) = 0)";
@@ -1406,7 +1406,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 AssertFilterSingle(env, path, epl, "IntPrimitive", FilterOperator.EQUAL, milestone);
 
                 epl =
-                    "expression housenumber alias for {intPrimitive*10} select * from SupportBean(IntPrimitive = housenumber)";
+                    "expression housenumber alias for {IntPrimitive*10} select * from SupportBean(IntPrimitive = housenumber)";
                 AssertFilterSingle(env, path, epl, ".boolean_expression", FilterOperator.BOOLEAN_EXPRESSION, milestone);
 
                 env.UndeployAll();
@@ -1486,10 +1486,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var milestone = new AtomicLong();
                 // test 'or' rewrite
                 string[] filtersAB = {
-                    "theString = 'a' or theString = 'b'",
-                    "theString = 'a' or 'b' = theString",
-                    "'a' = theString or 'b' = theString",
-                    "'a' = theString or theString = 'b'"
+                    "theString = 'a' or TheString = 'b'",
+                    "theString = 'a' or 'b' = TheString",
+                    "'a' = TheString or 'b' = TheString",
+                    "'a' = TheString or TheString = 'b'"
                 };
 
                 string epl;
@@ -1509,7 +1509,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env.UndeployAll();
                 }
 
-                epl = "@Name('s0') select * from SupportBean(IntPrimitive = 1 and (theString='a' or theString='b'))";
+                epl = "@Name('s0') select * from SupportBean(IntPrimitive = 1 and (TheString='a' or TheString='b'))";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 SupportFilterHelper.AssertFilterTwo(
                     env.Statement("s0"),
@@ -1560,46 +1560,46 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                RunAssertionEqualsWSubs(env, "select * from SupportBean(theString=?:p0:string)");
-                RunAssertionEqualsWSubs(env, "select * from SupportBean(?:p0:string=theString)");
-                RunAssertionEqualsWVariable(env, "select * from SupportBean(theString=var_optimizable_equals)");
-                RunAssertionEqualsWVariable(env, "select * from SupportBean(var_optimizable_equals=theString)");
-                RunAssertionEqualsWSubsWCoercion(env, "select * from SupportBean(longPrimitive=?:p0:int)");
-                RunAssertionEqualsWSubsWCoercion(env, "select * from SupportBean(?:p0:int=longPrimitive)");
+                RunAssertionEqualsWSubs(env, "select * from SupportBean(TheString=?:p0:string)");
+                RunAssertionEqualsWSubs(env, "select * from SupportBean(?:p0:string=TheString)");
+                RunAssertionEqualsWVariable(env, "select * from SupportBean(TheString=var_optimizable_equals)");
+                RunAssertionEqualsWVariable(env, "select * from SupportBean(var_optimizable_equals=TheString)");
+                RunAssertionEqualsWSubsWCoercion(env, "select * from SupportBean(LongPrimitive=?:p0:int)");
+                RunAssertionEqualsWSubsWCoercion(env, "select * from SupportBean(?:p0:int=LongPrimitive)");
 
                 TryInvalidCompile(
                     env,
-                    "select * from SupportBean(intPrimitive=?:p0:long)",
-                    "Implicit conversion from datatype 'Long' to 'Integer' for property 'intPrimitive' is not allowed");
+                    "select * from SupportBean(IntPrimitive=?:p0:long)",
+                    "Implicit conversion from datatype 'Long' to 'Integer' for property 'IntPrimitive' is not allowed");
 
-                RunAssertionRelOpWSubs(env, "select * from SupportBean(intPrimitive>?:p0:int)");
-                RunAssertionRelOpWSubs(env, "select * from SupportBean(?:p0:int<intPrimitive)");
-                RunAssertionRelOpWVariable(env, "select * from SupportBean(intPrimitive>var_optimizable_relop)");
-                RunAssertionRelOpWVariable(env, "select * from SupportBean(var_optimizable_relop<intPrimitive)");
+                RunAssertionRelOpWSubs(env, "select * from SupportBean(IntPrimitive>?:p0:int)");
+                RunAssertionRelOpWSubs(env, "select * from SupportBean(?:p0:int<IntPrimitive)");
+                RunAssertionRelOpWVariable(env, "select * from SupportBean(IntPrimitive>var_optimizable_relop)");
+                RunAssertionRelOpWVariable(env, "select * from SupportBean(var_optimizable_relop<IntPrimitive)");
 
-                RunAssertionInWSubs(env, "select * from SupportBean(intPrimitive in (?:p0:int, ?:p1:int))");
+                RunAssertionInWSubs(env, "select * from SupportBean(IntPrimitive in (?:p0:int, ?:p1:int))");
                 RunAssertionInWVariable(
                     env,
-                    "select * from SupportBean(intPrimitive in (var_optimizable_start, var_optimizable_end))");
+                    "select * from SupportBean(IntPrimitive in (var_optimizable_start, var_optimizable_end))");
 
-                RunAssertionInWSubsWArray(env, "select * from SupportBean(intPrimitive in (?:p0:int[primitive]))");
+                RunAssertionInWSubsWArray(env, "select * from SupportBean(IntPrimitive in (?:p0:int[primitive]))");
                 RunAssertionInWVariableWArray(
                     env,
-                    "select * from SupportBean(intPrimitive in (var_optimizable_array))");
+                    "select * from SupportBean(IntPrimitive in (var_optimizable_array))");
 
                 RunAssertionBetweenWSubsWNumeric(
                     env,
-                    "select * from SupportBean(intPrimitive between ?:p0:int and ?:p1:int)");
+                    "select * from SupportBean(IntPrimitive between ?:p0:int and ?:p1:int)");
                 RunAssertionBetweenWVariableWNumeric(
                     env,
-                    "select * from SupportBean(intPrimitive between var_optimizable_start and var_optimizable_end)");
+                    "select * from SupportBean(IntPrimitive between var_optimizable_start and var_optimizable_end)");
 
                 RunAssertionBetweenWSubsWString(
                     env,
-                    "select * from SupportBean(theString between ?:p0:string and ?:p1:string)");
+                    "select * from SupportBean(TheString between ?:p0:string and ?:p1:string)");
                 RunAssertionBetweenWVariableWString(
                     env,
-                    "select * from SupportBean(theString between var_optimizable_start_string and var_optimizable_end_string)");
+                    "select * from SupportBean(TheString between var_optimizable_start_string and var_optimizable_end_string)");
             }
         }
 

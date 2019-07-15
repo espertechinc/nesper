@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var eplMerge = "on SupportBean_S0 merge varagg " +
                            "when not matched then insert select -1 as c0, -1 as c1, -1 as c2, -1 as c3, -1 as c4, -1 as c5 " +
-                           "when matched then update set c0=id, c1=id, c2=id, c3=id, c4=id, c5=id";
+                           "when matched then update set c0=Id, c1=Id, c2=Id, c3=Id, c4=Id, c5=Id";
             env.CompileDeploy(eplMerge, path);
 
             var eplQuery = "@Name('s0') select varagg.c0 as c0, varagg.c1 as c1, varagg.c2 as c2," +

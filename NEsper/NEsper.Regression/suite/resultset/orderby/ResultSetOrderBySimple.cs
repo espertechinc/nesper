@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 // try pattern
                 var epl =
-                    "@Name('s0') select a.TheString from pattern [every a=SupportBean(theString like 'A%') => b=SupportBean(theString like 'B%')] order by a.TheString desc";
+                    "@Name('s0') select a.TheString from pattern [every a=SupportBean(TheString like 'A%') => b=SupportBean(TheString like 'B%')] order by a.TheString desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 1));
@@ -342,7 +342,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 // try pattern with output limit
                 epl =
-                    "@Name('s0') select a.TheString from pattern [every a=SupportBean(theString like 'A%') => b=SupportBean(theString like 'B%')] " +
+                    "@Name('s0') select a.TheString from pattern [every a=SupportBean(TheString like 'A%') => b=SupportBean(TheString like 'B%')] " +
                     "output every 3 events order by a.TheString desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 // try grouped time window
                 epl =
-                    "@Name('s0') select rstream theString from SupportBean#groupwin(TheString)#time(10) order by theString desc";
+                    "@Name('s0') select rstream TheString from SupportBean#groupwin(TheString)#time(10) order by TheString desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AdvanceTime(1000);
@@ -391,10 +391,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol, theString, price from " +
+                var epl = "@Name('s0') select Symbol, TheString, price from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "order by price";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -439,10 +439,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol, theString from " +
+                var epl = "@Name('s0') select Symbol, TheString from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "output every 6 events " +
                           "order by price";
                 var spv = new SymbolPricesVolumes();
@@ -457,12 +457,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "TheString"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
-                      "order by theString, price";
+                      "order by TheString, price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbolPrice(spv);
@@ -478,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "select symbol from " +
+                var stmtText = "select Symbol from " +
                                "SupportMarketDataBean#length(5) " +
                                "output every 6 events " +
                                "order by price desc";
@@ -521,7 +521,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
                           "order by price desc";
@@ -531,17 +531,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertValues(env, spv.Symbols, "Symbol");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by price desc, symbol asc";
+                      "order by price desc, Symbol asc";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
                 spv.Symbols.Reverse();
                 AssertValues(env, spv.Symbols, "Symbol");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
                       "order by price asc";
@@ -550,10 +550,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertValues(env, spv.Symbols, "Symbol");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, volume from " +
+                epl = "@Name('s0') select Symbol, Volume from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol desc";
+                      "order by Symbol desc";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
                 spv.Symbols.Reverse();
@@ -561,10 +561,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertValues(env, spv.Volumes, "Volume");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, price from " +
+                epl = "@Name('s0') select Symbol, price from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol desc, price desc";
+                      "order by Symbol desc, price desc";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbolPrice(spv);
                 spv.Symbols.Reverse();
@@ -573,10 +573,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertValues(env, spv.Prices, "Price");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, price from " +
+                epl = "@Name('s0') select Symbol, price from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol, price";
+                      "order by Symbol, price";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbolPrice(spv);
                 AssertValues(env, spv.Symbols, "Symbol");
@@ -590,7 +590,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
                           "order by (price * 6) + 5";
@@ -601,7 +601,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, price from " +
+                epl = "@Name('s0') select Symbol, price from " +
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
                       "order by (price * 6) + 5, price";
@@ -611,20 +611,20 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "Price"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, 1+volume*23 from " +
+                epl = "@Name('s0') select Symbol, 1+Volume*23 from " +
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by (price * 6) + 5, price, volume";
+                      "order by (price * 6) + 5, price, Volume";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
                 AssertValues(env, spv.Symbols, "Symbol");
-                AssertOnlyProperties(env, Arrays.AsList("Symbol", "1+volume*23"));
+                AssertOnlyProperties(env, Arrays.AsList("Symbol", "1+Volume*23"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by volume*price, symbol";
+                      "order by Volume*price, Symbol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
                 AssertValues(env, spv.Symbols, "Symbol");
@@ -638,7 +638,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol as mySymbol from " +
+                var epl = "@Name('s0') select Symbol as mySymbol from " +
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
                           "order by mySymbol";
@@ -650,7 +650,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("mySymbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol as mySymbol, price as myPrice from " +
+                epl = "@Name('s0') select Symbol as mySymbol, price as myPrice from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
                       "order by myPrice";
@@ -661,7 +661,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("mySymbol", "myPrice"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, price as myPrice from " +
+                epl = "@Name('s0') select Symbol, price as myPrice from " +
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
                       "order by (myPrice * 6) + 5, price";
@@ -671,7 +671,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "myPrice"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, 1+volume*23 as myVol from " +
+                epl = "@Name('s0') select Symbol, 1+Volume*23 as myVol from " +
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
                       "order by (price * 6) + 5, price, myVol";
@@ -688,10 +688,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "output every 6 events " +
                           "order by (price * 6) + 5";
                 CreateAndSend(env, epl, milestone);
@@ -702,10 +702,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, price from " +
+                epl = "@Name('s0') select Symbol, price from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
                       "order by (price * 6) + 5, price";
                 CreateAndSend(env, epl, milestone);
@@ -715,25 +715,25 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "Price"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, 1+volume*23 from " +
+                epl = "@Name('s0') select Symbol, 1+Volume*23 from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
-                      "order by (price * 6) + 5, price, volume";
+                      "order by (price * 6) + 5, price, Volume";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
                 AssertValues(env, spv.Symbols, "Symbol");
-                AssertOnlyProperties(env, Arrays.AsList("Symbol", "1+volume*23"));
+                AssertOnlyProperties(env, Arrays.AsList("Symbol", "1+Volume*23"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
-                      "order by volume*price, symbol";
+                      "order by Volume*price, Symbol";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbol(spv);
@@ -748,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var message = "Aggregate functions in the order-by clause must also occur in the select expression";
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
                           "order by sum(price)";
@@ -766,10 +766,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                       "order by sum(price)";
                 TryInvalidCompile(env, epl, message);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
                       "order by sum(price)";
                 TryInvalidCompile(env, epl, message);
@@ -777,7 +777,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 epl = "@Name('s0') select sum(price) from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
                       "order by sum(price + 6)";
                 TryInvalidCompile(env, epl, message);
@@ -785,7 +785,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 epl = "@Name('s0') select sum(price + 6) from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
                       "order by sum(price)";
                 TryInvalidCompile(env, epl, message);
@@ -797,10 +797,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
-                          "order by symbol, price";
+                          "order by Symbol, price";
                 CreateAndSend(env, epl, milestone);
                 var spv = new SymbolPricesVolumes();
                 OrderValuesBySymbolPrice(spv);
@@ -808,20 +808,20 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by price, symbol, volume";
+                      "order by price, Symbol, Volume";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPriceSymbol(spv);
                 AssertValues(env, spv.Symbols, "Symbol");
                 AssertOnlyProperties(env, Arrays.AsList("Symbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, volume*2 from " +
+                epl = "@Name('s0') select Symbol, Volume*2 from " +
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by price, volume";
+                      "order by price, Volume";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
                 AssertValues(env, spv.Symbols, "Symbol");
@@ -835,7 +835,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol as mySymbol from " +
+                var epl = "@Name('s0') select Symbol as mySymbol from " +
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
                           "order by mySymbol";
@@ -846,7 +846,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("mySymbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol as mySymbol, price as myPrice from " +
+                epl = "@Name('s0') select Symbol as mySymbol, price as myPrice from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
                       "order by myPrice";
@@ -857,7 +857,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("mySymbol", "myPrice"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, price as myPrice from " +
+                epl = "@Name('s0') select Symbol, price as myPrice from " +
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
                       "order by (myPrice * 6) + 5, price";
@@ -867,7 +867,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "myPrice"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, 1+volume*23 as myVol from " +
+                epl = "@Name('s0') select Symbol, 1+Volume*23 as myVol from " +
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
                       "order by (price * 6) + 5, price, myVol";
@@ -877,7 +877,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "myVol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol as mySymbol from " +
+                epl = "@Name('s0') select Symbol as mySymbol from " +
                       "SupportMarketDataBean#length(5) " +
                       "order by price, mySymbol";
                 CreateAndSend(env, epl, milestone);
@@ -896,12 +896,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "output every 6 events " +
-                          "order by symbol, price";
+                          "order by Symbol, price";
                 var spv = new SymbolPricesVolumes();
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
@@ -910,12 +910,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
-                      "order by price, symbol, volume";
+                      "order by price, Symbol, Volume";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceSymbol(spv);
@@ -923,12 +923,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, volume*2 from " +
+                epl = "@Name('s0') select Symbol, Volume*2 from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
-                      "order by price, volume";
+                      "order by price, Volume";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
@@ -943,7 +943,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
                           "order by price";
@@ -954,7 +954,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, price from " +
+                epl = "@Name('s0') select Symbol, price from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
                       "order by price";
@@ -965,7 +965,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "Price"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, volume from " +
+                epl = "@Name('s0') select Symbol, Volume from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
                       "order by price";
@@ -976,7 +976,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "Volume"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, volume*2 from " +
+                epl = "@Name('s0') select Symbol, Volume*2 from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
                       "order by price";
@@ -987,10 +987,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "volume*2"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, volume from " +
+                epl = "@Name('s0') select Symbol, Volume from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol";
+                      "order by Symbol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
                 AssertValues(env, spv.Symbols, "Symbol");
@@ -1001,7 +1001,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 epl = "@Name('s0') select price from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol";
+                      "order by Symbol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
                 AssertValues(env, spv.Prices, "Price");
@@ -1015,10 +1015,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "output every 6 events " +
                           "order by price";
                 var spv = new SymbolPricesVolumes();
@@ -1029,10 +1029,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, price from " +
+                epl = "@Name('s0') select Symbol, price from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
                       "order by price";
                 CreateAndSend(env, epl, milestone);
@@ -1043,10 +1043,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "Price"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, volume from " +
+                epl = "@Name('s0') select Symbol, Volume from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
                       "order by price";
                 CreateAndSend(env, epl, milestone);
@@ -1057,10 +1057,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "Volume"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, volume*2 from " +
+                epl = "@Name('s0') select Symbol, Volume*2 from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
                       "order by price";
                 CreateAndSend(env, epl, milestone);
@@ -1071,12 +1071,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList("Symbol", "volume*2"));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@Name('s0') select symbol, volume from " +
+                epl = "@Name('s0') select Symbol, Volume from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
-                      "order by symbol";
+                      "order by Symbol";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbol(spv);
@@ -1088,9 +1088,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 epl = "@Name('s0') select price from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
-                      "order by symbol, price";
+                      "order by Symbol, price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbolJoin(spv);
@@ -1121,7 +1121,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 epl = "@Name('s0') select * from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol";
+                      "order by Symbol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
                 AssertValues(env, spv.Symbols, "Symbol");
@@ -1140,7 +1140,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 var epl = "@Name('s0') select * from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "output every 6 events " +
                           "order by price";
                 var spv = new SymbolPricesVolumes();
@@ -1153,9 +1153,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 epl = "@Name('s0') select * from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
+                      "where one.Symbol = two.TheString " +
                       "output every 6 events " +
-                      "order by symbol, price";
+                      "order by Symbol, price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbolJoin(spv);
@@ -1170,7 +1170,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             {
                 var milestone = new AtomicLong();
                 var spv = new SymbolPricesVolumes();
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(5) " +
                           "order by price";
                 var listener = new SupportUpdateListener();
@@ -1186,7 +1186,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 // Set start time
                 SendTimeEvent(env, 0);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#time_batch(1 sec) " +
                       "order by price";
                 CreateAndSend(env, epl, milestone);
@@ -1203,10 +1203,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select symbol from " +
+                var epl = "@Name('s0') select Symbol from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "order by price";
                 var spv = new SymbolPricesVolumes();
                 var listener = new SupportUpdateListener();
@@ -1223,11 +1223,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 // Set start time
                 SendTimeEvent(env, 0);
 
-                epl = "@Name('s0') select symbol from " +
+                epl = "@Name('s0') select Symbol from " +
                       "SupportMarketDataBean#time_batch(1) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.TheString " +
-                      "order by price, symbol";
+                      "where one.Symbol = two.TheString " +
+                      "order by price, Symbol";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);

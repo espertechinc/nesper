@@ -20,9 +20,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public void Run(RegressionEnvironment env)
         {
             var epl = "@Name('s0') select " +
-                      "(intPrimitive=1) or (intPrimitive=2) as c0, " +
-                      "(intPrimitive>0) and (intPrimitive<3) as c1," +
-                      "not(intPrimitive=2) as c2" +
+                      "(IntPrimitive=1) or (IntPrimitive=2) as c0, " +
+                      "(IntPrimitive>0) and (IntPrimitive<3) as c1," +
+                      "not(IntPrimitive=2) as c2" +
                       " from SupportBean";
             env.CompileDeploy(epl).AddListener("s0");
 

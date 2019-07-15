@@ -41,11 +41,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6751);
 
             epl =
-                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = (id || '6752')";
+                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = (Id || '6752')";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6752);
 
             epl =
-                "@Name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_ST0#lastevent s0 where sb.TheString = (id || '6753')";
+                "@Name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_ST0#lastevent s0 where sb.TheString = (Id || '6753')";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6753);
 
             epl =
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6754);
 
             epl =
-                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = (id || '6755') and sb.IntPrimitive=6755";
+                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = (Id || '6755') and sb.IntPrimitive=6755";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6755);
 
             epl =

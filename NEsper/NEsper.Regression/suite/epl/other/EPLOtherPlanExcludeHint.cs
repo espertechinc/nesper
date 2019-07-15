@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "select * from SupportBean_S0 unidirectional, SupportBean_S1#keepall";
+                var epl = "select * from SupportBean_S0 unIdirectional, SupportBean_S1#keepall";
                 // no params
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -284,13 +284,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "@hint('exclude_plan(1)') " + epl,
-                    "Expression provided for hint EXCLUDE_PLAN must return a boolean value");
+                    "Expression provIded for hint EXCLUDE_PLAN must return a boolean value");
 
                 // invalid expression
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "@hint('exclude_plan(dummy = 1)') " + epl,
-                    "Failed to validate hint expression 'dummy=1': Property named 'dummy' is not valid in any stream");
+                    "Failed to valIdate hint expression 'dummy=1': Property named 'dummy' is not valId in any stream");
 
                 env.UndeployAll();
             }

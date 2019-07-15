@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         private const string CREATE_EPL =
             "${PREFIX} create schema MySchema();" +
             "${PREFIX} create variable int abc;\n" +
-            "${PREFIX} create context MyContext partition by theString from SupportBean;\n" +
+            "${PREFIX} create context MyContext partition by TheString from SupportBean;\n" +
             "${PREFIX} create window MyWindow#keepall as SupportBean;\n" +
             "${PREFIX} create table MyTable as (c count(*));\n" +
             "${PREFIX} create expression MyExpr { 1 };\n" +
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             "select 1 from MySchema;\n" +
             "select abc from SupportBean;\n" +
             "context MyContext select * from SupportBean;\n" +
-            "on SupportBean update MyWindow set theString = 'a';\n" +
+            "on SupportBean update MyWindow set TheString = 'a';\n" +
             "into table MyTable select count(*) as c from SupportBean;\n" +
             "select MyExpr() from SupportBean;\n" +
             "select myscript(1) from SupportBean;\n";
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env,
                 path,
                 "select abc from SupportBean",
-                "Failed to validate select-clause expression 'abc': Property named 'abc' is not valid in any stream");
+                "Failed to valIdate select-clause expression 'abc': Property named 'abc' is not valId in any stream");
             TryInvalidCompile(
                 env,
                 path,
@@ -88,23 +88,23 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             TryInvalidCompile(
                 env,
                 path,
-                "on SupportBean update MyWindow set theString = 'a'",
+                "on SupportBean update MyWindow set TheString = 'a'",
                 "A named window or table 'MyWindow' has not been declared");
             TryInvalidCompile(
                 env,
                 path,
                 "into table MyTable select count(*) as c from SupportBean",
-                "Invalid into-table clause: Failed to find table by name 'MyTable'");
+                "InvalId into-table clause: Failed to find table by name 'MyTable'");
             TryInvalidCompile(
                 env,
                 path,
                 "select MyExpr() from SupportBean",
-                "Failed to validate select-clause expression 'MyExpr': Unknown single-row function, expression declaration, script or aggregation function named 'MyExpr' could not be resolved");
+                "Failed to valIdate select-clause expression 'MyExpr': Unknown single-row function, expression declaration, script or aggregation function named 'MyExpr' could not be resolved");
             TryInvalidCompile(
                 env,
                 path,
                 "select myscript(1) from SupportBean",
-                "Failed to validate select-clause expression 'myscript(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'myscript' could not be resolved");
+                "Failed to valIdate select-clause expression 'myscript(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'myscript' could not be resolved");
         }
 
         private static void RunAssertionDisambiguate(
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
 
             var deployed = SupportCompileDeployUtil.Deploy(compiledBoth, env.Runtime);
-            Assert.AreEqual("abc", deployed.ModuleName); // Option-provided module-name wins
+            Assert.AreEqual("abc", deployed.ModuleName); // Option-provIded module-name wins
 
             env.UndeployAll();
         }
@@ -165,8 +165,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 RunAssertionDisambiguate(
                     env,
-                    "create context MyContext partition by theString from SupportBean;",
-                    "create context MyContext partition by id from SupportBean_S0;",
+                    "create context MyContext partition by TheString from SupportBean;",
+                    "create context MyContext partition by Id from SupportBean_S0;",
                     "context MyContext select p00 from SupportBean_S0",
                     () => { });
 
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var commonEPL = "create variable int abc;\n" +
                                 "create schema MySchema();" +
-                                "create context MyContext partition by theString from SupportBean;\n" +
+                                "create context MyContext partition by TheString from SupportBean;\n" +
                                 "create window MyWindow#keepall as SupportBean;\n" +
                                 "create table MyTable as (c count(*));\n" +
                                 "create expression MyExpr { 1 };\n" +

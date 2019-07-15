@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context CtxPerString " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0",
+                    "partition by TheString from SupportBean, p00 from SupportBean_S0",
                     path);
                 env.CompileDeploy("context CtxPerString create table MyTable(thesum sum(int))", path);
                 env.CompileDeploy(

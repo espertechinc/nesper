@@ -33,8 +33,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 string[] fields = {"val0", "val1", "val2"};
                 var eplFragment = "@Name('s0') select " +
                                   "contained.aggregate(0, (result, item) => result + item.p00) as val0, " +
-                                  "contained.aggregate('', (result, item) => result || ', ' || item.id) as val1, " +
-                                  "contained.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.id) as val2 " +
+                                  "contained.aggregate('', (result, item) => result || ', ' || item.Id) as val1, " +
+                                  "contained.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.Id) as val2 " +
                                   " from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

@@ -209,9 +209,9 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.UndeployAll();
 
-                epl = "@Name('s0') select size, symbol, feed from SupportMarketDataBean#size(symbol, feed)";
+                epl = "@Name('s0') select size, Symbol, Feed from SupportMarketDataBean#size(Symbol, Feed)";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
-                var fields = "size,symbol,feed".SplitCsv();
+                var fields = "size,Symbol,Feed".SplitCsv();
 
                 SendEvent(env, "DELL", 1L);
                 EPAssertionUtil.AssertProps(
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from  SupportMarketDataBean#size(symbol)";
+                var text = "@Name('s0') select irstream * from  SupportMarketDataBean#size(Symbol)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeMarketDataEvent("E1"));
@@ -359,9 +359,9 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream * from SupportMarketDataBean(symbol='" +
+                var epl = "@Name('s0') select irstream * from SupportMarketDataBean(Symbol='" +
                           SYMBOL +
-                          "')#length(3)#uni(price, symbol, feed)";
+                          "')#length(3)#uni(price, Symbol, Feed)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("average"));
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.UndeployAll();
 
                 // test select-star
-                var eplWildcard = "@Name('s0') select * from SupportBean#length(3)#uni(intPrimitive, *)";
+                var eplWildcard = "@Name('s0') select * from SupportBean#length(3)#uni(IntPrimitive, *)";
                 env.CompileDeployAddListenerMile(eplWildcard, "s0", 1);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -414,7 +414,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#uni(price, feed)";
+                var text = "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#uni(price, Feed)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeBean(50, "f1"));
@@ -448,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(price, volume)";
+                    "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(price, Volume)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeBean(10, 1000));
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(price, volume, feed)";
+                    "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(price, Volume, Feed)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeBean(10, 1000, "f1"));
@@ -532,7 +532,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(price, volume)";
+                var text = "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(price, Volume)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeBean(70, 1000));
@@ -585,7 +585,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(price, volume, feed)";
+                    "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(price, Volume, Feed)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeBean(70, 1000, "f1"));
@@ -641,7 +641,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#correl(price, volume)";
+                var text = "@Name('s0') select irstream * from SupportMarketDataBean#length(3)#correl(price, Volume)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeBean(70, 1000));
@@ -695,7 +695,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 // correlation
                 var f1 = "correlation".SplitCsv();
-                epl = "@Name('S1') select irstream * from SupportMarketDataBean#correl(price, volume)";
+                epl = "@Name('S1') select irstream * from SupportMarketDataBean#correl(price, Volume)";
                 env.CompileDeploy(epl).AddListener("S1");
 
                 // size
@@ -705,17 +705,17 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 // regression
                 var f3 = "slope,YIntercept".SplitCsv();
-                epl = "@Name('S3') select irstream * from SupportMarketDataBean#linest(price, volume)";
+                epl = "@Name('S3') select irstream * from SupportMarketDataBean#linest(price, Volume)";
                 env.CompileDeploy(epl).AddListener("S3");
 
                 // stat:uni
                 var f4 = "total,datapoints".SplitCsv();
-                epl = "@Name('S4') select irstream * from SupportMarketDataBean#uni(volume)";
+                epl = "@Name('S4') select irstream * from SupportMarketDataBean#uni(Volume)";
                 env.CompileDeploy(epl).AddListener("S4");
 
                 // stat:weighted_avg
                 var f5 = "average".SplitCsv();
-                epl = "@Name('S5') select irstream * from SupportMarketDataBean#weighted_avg(price, volume)";
+                epl = "@Name('S5') select irstream * from SupportMarketDataBean#weighted_avg(price, Volume)";
                 env.CompileDeploy(epl).AddListener("S5");
 
                 env.Milestone(0);

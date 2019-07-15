@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             TryInvalidCompile(
                 env,
                 text,
-                "Failed to validate condition expression for variable 'A': Failed to validate match-recognize define expression 'A.TheString=B.TheString': Failed to find a stream named 'B' (did you mean 'A'?) ");
+                "Failed to valIdate condition expression for variable 'A': Failed to valIdate match-recognize define expression 'A.TheString=B.TheString': Failed to find a stream named 'B' (dId you mean 'A'?) ");
 
             // invalid after syntax
             text = "select * from SupportRecogBean#keepall " +
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             TryInvalidCompile(
                 env,
                 text,
-                "Failed to validate match-recognize measure expression 'D.TheString': Failed to resolve property 'D.TheString' to a stream or nested property in a stream");
+                "Failed to valIdate match-recognize measure expression 'D.TheString': Failed to resolve property 'D.TheString' to a stream or nested property in a stream");
 
             // property not named
             text = "select * from SupportRecogBean#keepall " +
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             TryInvalidCompile(
                 env,
                 text,
-                "Failed to validate match-recognize measure expression 'B.TheString': Failed to resolve property 'B.TheString' (property 'B' is an indexed property and requires an index or enumeration method to access values)");
+                "Failed to valIdate match-recognize measure expression 'B.TheString': Failed to resolve property 'B.TheString' (property 'B' is an indexed property and requires an index or enumeration method to access values)");
 
             // define twice
             text = "select * from SupportRecogBean#keepall " +
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             TryInvalidCompile(
                 env,
                 text,
-                "Failed to validate condition expression for variable 'A': Failed to validate match-recognize define expression 'B.TheString like \"A%\"': Failed to find a stream named 'B' (did you mean 'A'?)");
+                "Failed to valIdate condition expression for variable 'A': Failed to valIdate match-recognize define expression 'B.TheString like \"A%\"': Failed to find a stream named 'B' (dId you mean 'A'?)");
 
             // aggregation over multiple groups
             text = "select * from SupportRecogBean#keepall " +
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             TryInvalidCompile(
                 env,
                 text,
-                "Failed to validate condition expression for variable 'A': An aggregate function may not appear in a DEFINE clause");
+                "Failed to valIdate condition expression for variable 'A': An aggregate function may not appear in a DEFINE clause");
 
             // join disallowed
             text = "select * from SupportRecogBean#keepall, SupportRecogBean#keepall " +

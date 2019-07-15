@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,intPrimitive".SplitCsv();
+                var fields = "theString,IntPrimitive".SplitCsv();
                 var path = new RegressionPath();
 
                 env.CompileDeploy("create window SupportBeanWindow#lastevent as SupportBean", path);
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy("insert into OrderWindowNWOT select * from OrderBean", path);
 
                 var stmtText =
-                    "@Name('s0') on OrderWindowNWOT[books] owb select sbw.* from SupportBeanWindow sbw where theString = title";
+                    "@Name('s0') on OrderWindowNWOT[books] owb select sbw.* from SupportBeanWindow sbw where TheString = title";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 TryInvalidCompile(
                     env,
                     "select bookId from OrderBean[select prev(1, bookId) from books]",
-                    "Failed to validate contained-event expression 'prev(1,bookId)': Previous function cannot be used in this context [select bookId from OrderBean[select prev(1, bookId) from books]]");
+                    "Failed to valIdate contained-event expression 'prev(1,bookId)': Previous function cannot be used in this context [select bookId from OrderBean[select prev(1, bookId) from books]]");
 
                 TryInvalidCompile(
                     env,
@@ -401,27 +401,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 TryInvalidCompile(
                     env,
                     "select bookId from OrderBean[select abc from books][reviews]",
-                    "Failed to validate contained-event expression 'abc': Property named 'abc' is not valid in any stream [select bookId from OrderBean[select abc from books][reviews]]");
+                    "Failed to valIdate contained-event expression 'abc': Property named 'abc' is not valId in any stream [select bookId from OrderBean[select abc from books][reviews]]");
 
                 TryInvalidCompile(
                     env,
                     "select bookId from OrderBean[books][reviews]",
-                    "Failed to validate select-clause expression 'bookId': Property named 'bookId' is not valid in any stream [select bookId from OrderBean[books][reviews]]");
+                    "Failed to valIdate select-clause expression 'bookId': Property named 'bookId' is not valId in any stream [select bookId from OrderBean[books][reviews]]");
 
                 TryInvalidCompile(
                     env,
                     "select orderId from OrderBean[books]",
-                    "Failed to validate select-clause expression 'orderId': Property named 'orderId' is not valid in any stream [select orderId from OrderBean[books]]");
+                    "Failed to valIdate select-clause expression 'orderId': Property named 'orderId' is not valId in any stream [select orderId from OrderBean[books]]");
 
                 TryInvalidCompile(
                     env,
                     "select * from OrderBean[books where abc=1]",
-                    "Failed to validate contained-event expression 'abc=1': Property named 'abc' is not valid in any stream [select * from OrderBean[books where abc=1]]");
+                    "Failed to valIdate contained-event expression 'abc=1': Property named 'abc' is not valId in any stream [select * from OrderBean[books where abc=1]]");
 
                 TryInvalidCompile(
                     env,
                     "select * from OrderBean[abc]",
-                    "Failed to validate contained-event expression 'abc': Property named 'abc' is not valid in any stream [select * from OrderBean[abc]]");
+                    "Failed to valIdate contained-event expression 'abc': Property named 'abc' is not valId in any stream [select * from OrderBean[abc]]");
             }
         }
     }

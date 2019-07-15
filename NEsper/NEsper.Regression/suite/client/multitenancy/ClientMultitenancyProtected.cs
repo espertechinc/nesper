@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
         {
             EPAssertionUtil.AssertPropsPerRow(
                 env.Runtime.DeploymentService.GetStatement(deploymentId, "create").GetEnumerator(),
-                "col1,myident".SplitCsv(),
+                "col1,myIdent".SplitCsv(),
                 new[] {new object[] {"E1", ident}, new object[] {"E2", ident}});
         }
 
@@ -90,10 +90,10 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             public void Run(RegressionEnvironment env)
             {
                 var eplInfra = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall as (col1 string, myident string);\n"
-                    : "@Name('create') create table MyInfra(col1 string primary key, myident string);\n";
+                    ? "@Name('create') create window MyInfra#keepall as (col1 string, myIdent string);\n"
+                    : "@Name('create') create table MyInfra(col1 string primary key, myIdent string);\n";
                 var epl = eplInfra +
-                          "insert into MyInfra select TheString as col1, $X as myident from SupportBean;\n";
+                          "insert into MyInfra select TheString as col1, $X as myIdent from SupportBean;\n";
                 var idOne = env.DeployGetId(env.Compile(epl.Replace("$X", "'A'")));
                 var idTwo = env.DeployGetId(env.Compile(epl.Replace("$X", "'B'")));
 
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('create') create context MyContext start SupportBean(theString=$X) as sb end after 1 year;\n" +
+                    "@Name('create') create context MyContext start SupportBean(TheString=$X) as sb end after 1 year;\n" +
                     "@Name('s0') context MyContext select count(*) as cnt from SupportBean;\n";
                 var idOne = env.DeployGetId(env.Compile(epl.Replace("$X", "'A'")));
                 var idTwo = env.DeployGetId(env.Compile(epl.Replace("$X", "'B'")));

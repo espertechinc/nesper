@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select * from " +
-                               "OrderBean as orderEvent unidirectional, " +
+                               "OrderBean as orderEvent unIdirectional, " +
                                "OrderBean[select * from books] as book, " +
                                "OrderBean[select * from orderdetail.items] as item " +
                                "where book.bookId=item.productId " +
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                                         NEWLINE +
                                         "select *" +
                                         NEWLINE +
-                                        "from OrderBean as orderEvent unidirectional," +
+                                        "from OrderBean as orderEvent unIdirectional," +
                                         NEWLINE +
                                         "OrderBean[select * from books] as book," +
                                         NEWLINE +
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select count(*) from " +
-                               "OrderBean OrderBean unidirectional, " +
+                               "OrderBean OrderBean unIdirectional, " +
                                "OrderBean[books] as book, " +
                                "OrderBean[orderdetail.items] item " +
                                "where book.bookId = item.productId order by book.bookId asc, item.amount asc";
@@ -452,7 +452,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create objectarray schema ContainedId(id string)", path);
+                env.CompileDeploy("create objectarray schema ContainedId(Id string)", path);
                 env.CompileDeploy(
                         "@Name('s0') select * from SupportStringBeanWithArray[select topId, * from containedIds @type(ContainedId)]",
                         path)
@@ -460,7 +460,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.SendEventBean(new SupportStringBeanWithArray("A", "one,two,three".SplitCsv()));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "topId,id".SplitCsv(),
+                    "topId,Id".SplitCsv(),
                     new[] {new object[] {"A", "one"}, new object[] {"A", "two"}, new object[] {"A", "three"}});
                 env.UndeployAll();
             }

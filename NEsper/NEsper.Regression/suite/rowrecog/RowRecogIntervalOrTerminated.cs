@@ -147,11 +147,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             SendTimer(env, 0);
 
-            var fields = "a_id,count_b,first_b,last_b".SplitCsv();
+            var fields = "a_Id,count_b,first_b,last_b".SplitCsv();
             var text = "@Name('s0') select * from TemperatureSensorEvent\n" +
                        "match_recognize (\n" +
                        "  partition by device\n" +
-                       "  measures A.id as a_id, count(B.id) as count_b, first(B.id) as first_b, last(B.id) as last_b\n" +
+                       "  measures A.Id as a_Id, count(B.Id) as count_b, first(B.Id) as first_b, last(B.Id) as last_b\n" +
                        "  pattern (A B*)\n" +
                        "  interval 5 seconds or terminated\n" +
                        "  define\n" +
@@ -372,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                        " pattern (A*)" +
                        " interval 10 seconds or terminated" +
                        " define" +
-                       " A as theString like 'A%'" +
+                       " A as TheString like 'A%'" +
                        ")";
 
             env.CompileDeploy(text).AddListener("s0");

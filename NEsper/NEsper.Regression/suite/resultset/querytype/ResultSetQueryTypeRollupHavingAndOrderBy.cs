@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 var epl = "@Name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
-                          "from SupportBean_S0 unidirectional, SupportBean#keepall " +
+                          "from SupportBean_S0 unIdirectional, SupportBean#keepall " +
                           "group by cube(TheString, IntPrimitive)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -204,9 +204,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                       (join ? ", SupportBean_S0#lastevent " : "") +
                       "group by rollup(TheString) " +
                       "having " +
-                      "(theString is null and sum(IntPrimitive) > 100) " +
+                      "(TheString is null and sum(IntPrimitive) > 100) " +
                       "or " +
-                      "(theString is not null and sum(IntPrimitive) > 200)";
+                      "(TheString is not null and sum(IntPrimitive) > 200)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "from SupportBean#time_batch(1 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
                           "group by rollup(TheString, IntPrimitive) " +
-                          "order by theString, IntPrimitive";
+                          "order by TheString, IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -340,7 +340,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var epl = "@Name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#time_batch(1 sec) " +
                           "group by rollup(TheString, IntPrimitive) " +
-                          "order by theString desc;";
+                          "order by TheString desc;";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(MakeEvent("E2", 10, 100));

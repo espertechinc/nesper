@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             {
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "create map schema SingleProp (id string), " +
+                    "create map schema SingleProp (Id string), " +
                     "EPStatementSource => thedata<SingleProp> {" +
                     "  statementDeploymentId : 'MyDeploymentId'," +
                     "  statementName : 'MyStatement'," +
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                var epl = "@Name('MyStatement') select TheString as id from SupportBean";
+                var epl = "@Name('MyStatement') select TheString as Id from SupportBean";
                 var compiled = env.Compile(epl);
                 try {
                     env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E5", 5));
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                compiled = env.Compile("@Name('MyStatement') select 'X'||theString||'X' as id from SupportBean");
+                compiled = env.Compile("@Name('MyStatement') select 'X'||TheString||'X' as Id from SupportBean");
                 try {
                     env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
                 }
@@ -187,13 +187,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var epl = "@Name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\t\t\t\n" +
                           "\t\t\t\n" +
-                          "  // Consider only the statement named MySelectStatement when it exists.\n" +
+                          "  // ConsIder only the statement named MySelectStatement when it exists.\n" +
                           "  EPStatementSource => stream.one<eventbean<?>> {\n" +
                           "    statementDeploymentId : 'MyDeploymentABC',\n" +
                           "    statementName : 'MySelectStatement'\n" +
                           "  }\n" +
                           "  \n" +
-                          "  // Consider all statements that match the filter object provided.\n" +
+                          "  // ConsIder all statements that match the filter object provIded.\n" +
                           "  EPStatementSource => stream.two<eventbean<?>> {\n" +
                           "    statementFilter : {\n" +
                           "      class : '" +
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "    }\n" +
                           "  }\n" +
                           "  \n" +
-                          "  // Consider all statements that match the filter object provided.\n" +
+                          "  // ConsIder all statements that match the filter object provIded.\n" +
                           "  // With collector that performs transformation.\n" +
                           "  EPStatementSource => stream.two<SampleSchema> {\n" +
                           "    collector : {\n" +
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             public void Run(RegressionEnvironment env)
             {
                 // one statement exists before the data flow
-                env.CompileDeploy("select id from SupportBean_B");
+                env.CompileDeploy("select Id from SupportBean_B");
 
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
@@ -287,10 +287,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new object[] {"E1", 1});
 
-                env.CompileDeploy("@Name('s2') select id from SupportBean_A");
+                env.CompileDeploy("@Name('s2') select Id from SupportBean_A");
                 env.SendEventBean(new SupportBean_A("A1"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Sleep(50);
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                env.CompileDeploy("@Name('s2') select id from SupportBean_A");
+                env.CompileDeploy("@Name('s2') select Id from SupportBean_A");
 
                 env.SendEventBean(new SupportBean_A("A3"));
                 captureOp.WaitForInvocation(200, 1);

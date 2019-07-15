@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         private static void TryAssertionFragmentSingeColNamedWindow(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeployWBusPublicType("create schema AEvent (symbol string)", path);
+            env.CompileDeployWBusPublicType("create schema AEvent (Symbol string)", path);
 
             env.CompileDeploy("create window MyEventWindow#lastevent (e AEvent)", path);
             env.CompileDeploy(
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select p00 as e0_0, p01 as e0_1 from SupportBean_S0#lastevent" +
-                    (filter ? " where id >= 100" : "") +
+                    (filter ? " where Id >= 100" : "") +
                     ") as ez " +
                     "from SupportBean",
                     path)
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var fields = "e0_0".SplitCsv();
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
-                    "(select p00 as e0_0, p01 as e0_1 from SupportBean_S0#keepall where id between 10 and 20) as ez " +
+                    "(select p00 as e0_0, p01 as e0_1 from SupportBean_S0#keepall where Id between 10 and 20) as ez " +
                     "from SupportBean",
                     path)
                 .AddListener("s0");
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select * from SupportBean_S0#length(2) " +
-                    (filter ? "where id >= 100" : "") +
+                    (filter ? "where Id >= 100" : "") +
                     ") as sb " +
                     "from SupportBean",
                     path)
@@ -405,7 +405,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     path,
                     "insert into N1_2 select new {p0='a'} as p1 from SupportBean",
-                    "Invalid assignment of column 'p0' of type 'System.String' to event property 'p0' typed as 'System.Integer', column and parameter types mismatch");
+                    "InvalId assignment of column 'p0' of type 'System.String' to event property 'p0' typed as 'System.Integer', column and parameter types mismatch");
 
                 // typable - selected column type is not matching anything
                 TryInvalidCompile(

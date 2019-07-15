@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             env.Listener("s0").Reset();
 
             // set output limit to 5
-            var stmtTextSet = "on SupportMarketDataBean set var_output_limit = volume";
+            var stmtTextSet = "on SupportMarketDataBean set var_output_limit = Volume";
             env.CompileDeploy(stmtTextSet);
             SendSetterBean(env, 5L);
 
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.Listener("s0").Reset();
 
                 // set output limit to 5
-                var stmtTextSet = "on SupportMarketDataBean set var_output_limit = volume";
+                var stmtTextSet = "on SupportMarketDataBean set var_output_limit = Volume";
                 env.CompileDeploy(stmtTextSet);
                 SendSetterBean(env, 5L);
 

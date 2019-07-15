@@ -46,11 +46,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create context CtxEachString partition by theString from SupportBean", path);
+            env.CompileDeploy("create context CtxEachString partition by TheString from SupportBean", path);
             env.CompileDeploy(
                 "@Name('select') context CtxEachString " +
                 "select * from SupportBean, " +
-                "  sql:MyDB ['select mycol3 from mytesttable_large where ${theString} = mycol1']",
+                "  sql:MyDB ['select mycol3 from mytesttable_large where ${TheString} = mycol1']",
                 path);
 
             // up to 10 threads, up to 1000 combinations (1 to 1000)

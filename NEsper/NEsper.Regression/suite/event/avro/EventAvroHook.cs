@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "insert into MyEvent(isodate) select dto from SupportEventWithDateTime",
-                    "Invalid assignment of column 'isodate' of type '" +
+                    "InvalId assignment of column 'isodate' of type '" +
                     TypeHelper.GetCleanName<DateTimeOffset>() +
                     "' to event property 'isodate' typed as '" +
                     TypeHelper.GetCleanName<char[]>() +
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return StaticMethod(typeof(MySupportBeanWidener), "widenInput", expression);
+                return StaticMethod(typeof(MySupportBeanWidener), "wIdenInput", expression);
             }
 
             public static object WidenInput(object input)

@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select p00 like p01 as c0, id like p02 as c1 from SupportBean_S0";
+                var epl = "@Name('s0') select p00 like p01 as c0, Id like p02 as c1 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendS0Event(env, 413, "%XXaXX", "%a%", "%1%", null);
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select p00 regexp p01 as c0, id regexp p02 as c1 from SupportBean_S0";
+                var epl = "@Name('s0') select p00 regexp p01 as c0, Id regexp p02 as c1 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendS0Event(env, 413, "XXAXX", ".*A.*", ".*1.*", null);
@@ -252,19 +252,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 TryInvalidExpr(env, "IntPrimitive like 'a' escape null");
-                TryInvalidExpr(env, "IntPrimitive like boolPrimitive");
+                TryInvalidExpr(env, "IntPrimitive like BoolPrimitive");
                 TryInvalidExpr(env, "boolPrimitive like string");
                 TryInvalidExpr(env, "string like string escape IntPrimitive");
 
                 TryInvalidExpr(env, "IntPrimitive regexp doublePrimitve");
-                TryInvalidExpr(env, "IntPrimitive regexp boolPrimitive");
+                TryInvalidExpr(env, "IntPrimitive regexp BoolPrimitive");
                 TryInvalidExpr(env, "boolPrimitive regexp string");
                 TryInvalidExpr(env, "string regexp IntPrimitive");
 
                 TryInvalidCompile(
                     env,
                     "select TheString regexp \"*any*\" from SupportBean",
-                    "Failed to validate select-clause expression 'theString regexp \"*any*\"': Error compiling regex pattern '*any*': Dangling meta character '*' near index 0");
+                    "Failed to valIdate select-clause expression 'TheString regexp \"*any*\"': Error compiling regex pattern '*any*': Dangling meta character '*' near index 0");
             }
         }
 
@@ -345,8 +345,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select intBoxed like '%01%' as r1, " +
-                          " doubleBoxed regexp '[0-9][0-9].[0-9]' as r2 " +
+                var epl = "@Name('s0') select IntBoxed like '%01%' as r1, " +
+                          " DoubleBoxed regexp '[0-9][0-9].[0-9]' as r2 " +
                           " from " +
                           typeof(SupportBean).Name;
 

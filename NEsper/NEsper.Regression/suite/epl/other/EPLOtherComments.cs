@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             "IntPrimitive as /* rename */ myPrimitive\n" +
                             "from SupportBean" +
                             lineSeparator +
-                            " where /* inside a where */ IntPrimitive /* */ = /* */ 100";
+                            " where /* insIde a where */ IntPrimitive /* */ = /* */ 100";
             env.CompileDeploy(statement).AddListener("s0");
 
             env.SendEventBean(new SupportBean("e1", 100));

@@ -565,8 +565,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var createEpl = namedWindow
-                    ? "create window MyInfraNWT#unique(TheString) as (theString string, IntPrimitive int)"
-                    : "create table MyInfraNWT(theString string primary key, IntPrimitive int)";
+                    ? "create window MyInfraNWT#unique(TheString) as (TheString string, IntPrimitive int)"
+                    : "create table MyInfraNWT(TheString string primary key, IntPrimitive int)";
                 if (enableIndexShareCreate) {
                     createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
                 }
@@ -579,7 +579,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 var consumeEpl =
-                    "@Name('s0') select status.*, (select * from MyInfraNWT where theString = SupportBean_S0.p00) @eventbean as details from SupportBean_S0 as status";
+                    "@Name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.p00) @eventbean as details from SupportBean_S0 as status";
                 if (disableIndexShareConsumer) {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }

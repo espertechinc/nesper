@@ -98,8 +98,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "IntPrimitive = SupportEnumTwo.ENUM_VALUE_1.getAssociatedValue() as c0," +
                           "SupportEnumTwo.ENUM_VALUE_2.checkAssociatedValue(IntPrimitive) as c1," +
                           "SupportEnumTwo.ENUM_VALUE_3.getNested().getValue() as c2," +
-                          "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(sb, 'intPrimitive') as c3," +
-                          "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(*, 'intPrimitive') as c4 " +
+                          "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(sb, 'IntPrimitive') as c3," +
+                          "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(*, 'IntPrimitive') as c4 " +
                           "from SupportBean as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -131,9 +131,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl = "@Name('s0') select " +
                           "innerTypes('key1') as c0,\n" +
                           "innerTypes(key) as c1,\n" +
-                          "innerTypes('key1').ids[1] as c2,\n" +
+                          "innerTypes('key1').Ids[1] as c2,\n" +
                           "innerTypes(key).getIds(subkey) as c3,\n" +
-                          "innerTypesArray[1].ids[1] as c4,\n" +
+                          "innerTypesArray[1].Ids[1] as c4,\n" +
                           "innerTypesArray(subkey).getIds(subkey) as c5,\n" +
                           "innerTypesArray(subkey).getIds(s0, 'xyz') as c6,\n" +
                           "innerTypesArray(subkey).getIds(*, 'xyz') as c7\n" +
@@ -178,13 +178,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select abc.noSuchMethod() from SupportBean abc",
-                    "Failed to validate select-clause expression 'abc.noSuchMethod()': Failed to solve 'noSuchMethod' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                    "Failed to valIdate select-clause expression 'abc.noSuchMethod()': Failed to solve 'noSuchMethod' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
                     typeof(SupportBean).Name +
                     "' taking no parameters [select abc.noSuchMethod() from SupportBean abc]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select abc.getChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc",
-                    "Failed to validate select-clause expression 'abc.getChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'getChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                    "Failed to valIdate select-clause expression 'abc.getChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'getChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
                     typeof(SupportChainChildOne).Name +
                     "' taking no parameters [select abc.getChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc]");
             }
@@ -216,16 +216,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create window NodeWindow#unique(id) as SupportEventNode;\n";
+                var epl = "create window NodeWindow#unique(Id) as SupportEventNode;\n";
                 epl += "insert into NodeWindow select * from SupportEventNode;\n";
                 epl += "create window NodeDataWindow#unique(nodeId) as SupportEventNodeData;\n";
                 epl += "insert into NodeDataWindow select * from SupportEventNodeData;\n";
                 epl += "create schema NodeWithData(node SupportEventNode, data SupportEventNodeData);\n";
-                epl += "create window NodeWithDataWindow#unique(node.id) as NodeWithData;\n";
+                epl += "create window NodeWithDataWindow#unique(node.Id) as NodeWithData;\n";
                 epl += "insert into NodeWithDataWindow " +
-                       "select node, data from NodeWindow node join NodeDataWindow as data on node.id = data.nodeId;\n";
+                       "select node, data from NodeWindow node join NodeDataWindow as data on node.Id = data.nodeId;\n";
                 epl +=
-                    "@Name('s0') select node.id, data.nodeId, data.value, node.compute(data) from NodeWithDataWindow;\n";
+                    "@Name('s0') select node.Id, data.nodeId, data.value, node.compute(data) from NodeWithDataWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventNode("1"));

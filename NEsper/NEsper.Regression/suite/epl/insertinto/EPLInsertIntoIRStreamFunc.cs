@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             // test join
             env.UndeployAll();
             fields = "c0,c1,c2".SplitCsv();
-            var stmtTextJoin = "@Name('s0') select irstream TheString as c0, id as c1, istream() as c2 " +
+            var stmtTextJoin = "@Name('s0') select irstream TheString as c0, Id as c1, istream() as c2 " +
                                "from SupportBean#lastevent, SupportBean_S0#lastevent";
             env.CompileDeploy(stmtTextJoin).AddListener("s0");
             env.SendEventBean(new SupportBean("E1", 0));

@@ -48,11 +48,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"Symbol", "sumPrice"};
-                var epl = "@Name('s0') select symbol, sum(price) as sumPrice from " +
+                var epl = "@Name('s0') select Symbol, sum(price) as sumPrice from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
-                          "order by symbol";
+                          "where one.Symbol = two.TheString " +
+                          "order by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString("CAT"));
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol as mySymbol, sum(price) as mySum from " +
+                var epl = "@Name('s0') select Symbol as mySymbol, sum(price) as mySum from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
                           "order by mySymbol";
@@ -129,12 +129,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, sum(price) from " +
+                var epl = "@Name('s0') select Symbol, sum(price) from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "output every 6 events " +
-                          "order by volume*sum(price), symbol";
+                          "order by Volume*sum(price), Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "IBM", 2);
@@ -176,10 +176,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, sum(price) from " +
+                var epl = "@Name('s0') select Symbol, sum(price) from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
-                          "order by volume*sum(price), symbol";
+                          "order by Volume*sum(price), Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "IBM", 2);
@@ -209,10 +209,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, sum(price) from " +
+                var epl = "@Name('s0') select Symbol, sum(price) from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
-                          "order by symbol";
+                          "order by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "IBM", 3);
@@ -242,10 +242,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, max(sum(price)) from " +
+                var epl = "@Name('s0') select Symbol, max(sum(price)) from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
-                          "order by symbol";
+                          "order by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "IBM", 3);
@@ -278,11 +278,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, sum(price) from " +
+                var epl = "@Name('s0') select Symbol, sum(price) from " +
                           "SupportMarketDataBean#length(10) " +
                           "having sum(price) > 0 " +
                           "output every 6 events " +
-                          "order by symbol";
+                          "order by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "IBM", 3);
@@ -312,10 +312,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, sum(price) from " +
+                var epl = "@Name('s0') select Symbol, sum(price) from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
-                          "order by symbol, sum(price)";
+                          "order by Symbol, sum(price)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "IBM", 3);
@@ -345,12 +345,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, sum(price) from " +
+                var epl = "@Name('s0') select Symbol, sum(price) from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "output every 6 events " +
-                          "order by symbol, sum(price)";
+                          "order by Symbol, sum(price)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "IBM", 3);
@@ -384,12 +384,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, max(sum(price)) from " +
+                var epl = "@Name('s0') select Symbol, max(sum(price)) from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "output every 6 events " +
-                          "order by symbol";
+                          "order by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "IBM", 3);
@@ -426,13 +426,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, sum(price) from " +
+                var epl = "@Name('s0') select Symbol, sum(price) from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "having sum(price) > 0 " +
                           "output every 6 events " +
-                          "order by symbol";
+                          "order by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);

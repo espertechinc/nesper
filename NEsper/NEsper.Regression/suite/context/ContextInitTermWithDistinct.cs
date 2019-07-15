@@ -74,13 +74,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds",
-                    "Invalid context distinct-clause expression 'subselect_0': Aggregation, sub-select, previous or prior functions are not supported in this context [create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds]");
+                    "InvalId context distinct-clause expression 'subselect_0': Aggregation, sub-select, previous or prior functions are not supported in this context [create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds]");
 
                 // empty list of expressions
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create context MyContext initiated by distinct() SupportBean terminated after 15 seconds",
-                    "Distinct-expressions have not been provided [create context MyContext initiated by distinct() SupportBean terminated after 15 seconds]");
+                    "Distinct-expressions have not been provIded [create context MyContext initiated by distinct() SupportBean terminated after 15 seconds]");
 
                 // non-overlapping context not allowed with distinct
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "theString,LongPrimitive,cnt".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context MyContext " +
-                    "select TheString, longPrimitive, count(*) as cnt from SupportBean(TheString = context.s0.TheString)",
+                    "select TheString, LongPrimitive, count(*) as cnt from SupportBean(TheString = context.s0.TheString)",
                     path);
                 env.AddListener("s0");
 
@@ -216,8 +216,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "id,p00,p01,cnt".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context MyContext " +
-                    "select id, p00, p01, count(*) as cnt " +
-                    "from SupportBean_S0(id = context.sb.IntPrimitive and p00 = context.sb.TheString)",
+                    "select Id, p00, p01, count(*) as cnt " +
+                    "from SupportBean_S0(Id = context.sb.IntPrimitive and p00 = context.sb.TheString)",
                     path);
                 env.AddListener("s0");
 
@@ -342,7 +342,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create context MyContext initiated by distinct(theString, intBoxed, IntPrimitive) SupportBean as sb terminated after 100 hours",
+                    "create context MyContext initiated by distinct(TheString, IntBoxed, IntPrimitive) SupportBean as sb terminated after 100 hours",
                     path);
                 env.CompileDeploy("@Name('s0') context MyContext select count(*) as cnt from SupportBean", path);
                 env.AddListener("s0");

@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(eplMinimal);
 
                 var options = new EPDataFlowInstantiationOptions();
-                options.AddParameterURI("BeaconSource/theString", "E1");
+                options.AddParameterURI("BeaconSource/TheString", "E1");
                 var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyGraph", options);
 
                 env.CompileDeploy("@Name('s0') select * from SupportBean").AddListener("s0");

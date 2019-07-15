@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             // - null key & value allowed
 
             var eplFragment =
-                "@Name('s0') select contained.toMap(c => id, c=> p00) as val from SupportBean_ST0_Container";
+                "@Name('s0') select contained.toMap(c => Id, c=> p00) as val from SupportBean_ST0_Container";
             env.CompileDeploy(eplFragment).AddListener("s0");
 
             LambdaAssertionUtil.AssertTypes(

@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
                                " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 " +
-                               "on theString = myvarchar";
+                               "on TheString = myvarchar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
                                " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
-                               "SupportBean as s0 on theString = myvarchar";
+                               "SupportBean as s0 on TheString = myvarchar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBean#keepall as s0 " +
                                " right outer join " +
                                " sql:MyDBWithRetain ['select myvarchar MyVarChar from mytesttable'] as s1 " +
-                               "on theString = MyVarChar";
+                               "on TheString = MyVarChar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);

@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 TryInvalidCompileGraph(
                     env,
-                    "select irstream theString from ME",
+                    "select irstream TheString from ME",
                     false,
                     "Failed to obtain operator 'Select': Selecting remove-stream is not supported");
 
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var graph = "@Name('flow') create dataflow MySelect\n" +
                             "Emitter => instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                             "@Audit Select(instream_s0 as ALIAS) => outstream {\n" +
-                            "  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString order by theString asc),\n" +
+                            "  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString order by TheString asc),\n" +
                             "  iterate: true" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                             "Emitter => instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
                             "Emitter => instream_s2<SupportBean_S2>{name: 'emitterS2'}\n" +
                             "Select(instream_s0 as S0, instream_s1 as S1, instream_s2 as S2) => outstream {\n" +
-                            "  select: (select s0.id as s0id, s1.id as s1id, s2.id as s2id " +
+                            "  select: (select s0.Id as s0Id, s1.Id as s1Id, s2.Id as s2Id " +
                             fromClause +
                             ")\n" +
                             "}\n" +
@@ -430,7 +430,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Assert.AreEqual(1, capture.Current.Length);
                 EPAssertionUtil.AssertProps(
                     (EventBean) capture.GetCurrentAndReset()[0],
-                    "s0id,s1id,s2id".SplitCsv(),
+                    "s0Id,s1Id,s2Id".SplitCsv(),
                     new object[] {1, 10, 100});
 
                 instance.Cancel();

@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(eplCreate, path);
 
                 env.CompileDeploy(
-                    "context ContextOne insert into MyInfra select TheString as pkey0, IntPrimitive as pkey1, longPrimitive as c0 from SupportBean",
+                    "context ContextOne insert into MyInfra select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
                     path);
 
                 env.SendEventBean(new SupportBean_S0(0)); // start

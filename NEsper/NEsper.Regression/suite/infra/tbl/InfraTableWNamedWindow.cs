@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "@Name('populate') into table varagg select sum(IntPrimitive) as total from MyWindow group by TheString",
                 path);
             env.CompileDeploy(
-                    "@Name('s0') on SupportBean_S0 select TheString, varagg[p00].total as c0 from MyWindow where theString = p00",
+                    "@Name('s0') on SupportBean_S0 select TheString, varagg[p00].total as c0 from MyWindow where TheString = p00",
                     path)
                 .AddListener("s0");
             var fields = "theString,c0".SplitCsv();

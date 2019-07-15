@@ -129,12 +129,12 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream symbol, " +
-                           "prev(1, symbol) as prev1, " +
-                           "prior(1, symbol) as prio1, " +
-                           "prevtail(symbol) as prevtail0, " +
-                           "prevcount(symbol) as prevCountSym, " +
-                           "prevwindow(symbol) as prevWindowSym " +
+                var text = "@Name('s0') select irstream Symbol, " +
+                           "prev(1, Symbol) as prev1, " +
+                           "prior(1, Symbol) as prio1, " +
+                           "prevtail(Symbol) as prevtail0, " +
+                           "prevcount(Symbol) as prevCountSym, " +
+                           "prevwindow(Symbol) as prevWindowSym " +
                            "from SupportMarketDataBean.win:length(2)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 string[] fields = {"Symbol", "prev1", "prio1", "prevtail0", "prevCountSym", "prevWindowSym"};
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select symbol, price from SupportMarketDataBean#length(2)";
+                var epl = "@Name('s0') select Symbol, price from SupportMarketDataBean#length(2)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "ABC", 20);

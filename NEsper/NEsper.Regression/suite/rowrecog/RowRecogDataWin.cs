@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as string, A.value as value" +
                            "  all matches pattern (A) " +
                            "  define " +
-                           "    A as PREV(A.TheString, 1) = theString" +
+                           "    A as PREV(A.TheString, 1) = TheString" +
                            ")";
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 var text = "@Name('S1') select * from MyWindow " +
                            "match_recognize (" +
-                           "  partition by theString " +
+                           "  partition by TheString " +
                            "  measures A.TheString as ast, A.IntPrimitive as ai, B.IntPrimitive as bi" +
                            "  all matches pattern ( A B ) " +
                            "  define " +

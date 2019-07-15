@@ -24,11 +24,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         private const long FOURTH_EVENT = 4;
         private const bool FITH_EVENT = false;
 
-        private const string EPL = "select bytePrimitive&byteBoxed as myFirstProperty, " +
-                                   "shortPrimitive|shortBoxed as mySecondProperty, " +
+        private const string EPL = "select BytePrimitive&ByteBoxed as myFirstProperty, " +
+                                   "shortPrimitive|ShortBoxed as mySecondProperty, " +
                                    "IntPrimitive|IntBoxed as myThirdProperty, " +
-                                   "LongPrimitive^longBoxed as myFourthProperty, " +
-                                   "boolPrimitive&boolBoxed as myFifthProperty " +
+                                   "LongPrimitive^LongBoxed as myFourthProperty, " +
+                                   "boolPrimitive&BoolBoxed as myFifthProperty " +
                                    "from SupportBean";
 
         public static IList<RegressionExecution> Executions()

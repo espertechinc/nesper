@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 path);
             env.CompileDeploy(
                 "insert into XStream " +
-                " select symbol as key, count(*) as mycount\n" +
+                " select Symbol as key, count(*) as mycount\n" +
                 " from SupportMarketDataBean#time(5 min)" +
                 " group by Symbol",
                 path);

@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate filter expression 'rectangle(10,20,5,6,filterindex:myi...(82 chars)': Invalid index type 'pointregionquadtree', expected 'mxcifquadtree'");
+                    "Failed to valIdate filter expression 'rectangle(10,20,5,6,filterindex:myi...(82 chars)': InvalId index type 'pointregionquadtree', expected 'mxcifquadtree'");
             }
         }
 
@@ -48,12 +48,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportSpatialEventRectangle(rectangle('a', 0).inside(rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'rectangle(\"a\",0).inside(rectangle(0...(43 chars)': Failed to validate method-chain parameter expression 'rectangle(0,0,0,0)': Unknown single-row function, expression declaration, script or aggregation function named 'rectangle' could not be resolved (did you mean 'rectangle.intersects')");
+                    "select * from SupportSpatialEventRectangle(rectangle('a', 0).insIde(rectangle(0, 0, 0, 0)))",
+                    "Failed to valIdate filter expression 'rectangle(\"a\",0).insIde(rectangle(0...(43 chars)': Failed to valIdate method-chain parameter expression 'rectangle(0,0,0,0)': Unknown single-row function, expression declaration, script or aggregation function named 'rectangle' could not be resolved (dId you mean 'rectangle.intersects')");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportSpatialEventRectangle(rectangle(0).intersects(rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'rectangle(0).intersects(rectangle(0...(43 chars)': Error validating left-hand-side method 'rectangle', expected 4 parameters but received 1 parameters");
+                    "Failed to valIdate filter expression 'rectangle(0).intersects(rectangle(0...(43 chars)': Error valIdating left-hand-sIde method 'rectangle', expected 4 parameters but received 1 parameters");
             }
         }
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 catch (Exception ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column 'x' received null and expected non-null");
+                        "Unexpected exception in statement 'mywindow': InvalId value for index 'MyIndex' column 'x' received null and expected non-null");
                 }
 
                 try {
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 catch (Exception ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column '(x,y,width,height)' received (200.0,200.0,1.0,1.0) and expected a value intersecting index bounding box (range-end-inclusive) {minX=0.0, minY=0.0, maxX=100.0, maxY=100.0}");
+                        "Unexpected exception in statement 'mywindow': InvalId value for index 'MyIndex' column '(x,y,width,height)' received (200.0,200.0,1.0,1.0) and expected a value intersecting index bounding box (range-end-inclusive) {minX=0.0, minY=0.0, maxX=100.0, maxY=100.0}");
                 }
 
                 env.UndeployAll();
@@ -125,10 +125,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl =
                     "create table RectangleTable(rectangleId string primary key, rx double, ry double, rwidth double, rheight double);\n" +
                     "create index RectangleIndex on RectangleTable((rx, ry, rwidth, rheight) mxcifquadtree(0, 0, 100, 100));\n" +
-                    "create schema OtherRectangleEvent(otherX double, otherY double, otherWidth double, otherHeight double);\n" +
+                    "create schema OtherRectangleEvent(otherX double, otherY double, otherWIdth double, otherHeight double);\n" +
                     "on OtherRectangleEvent\n" +
                     "select rectangleId from RectangleTable\n" +
-                    "where rectangle(rx, ry, rwidth, rheight).intersects(rectangle(otherX, otherY, otherWidth, otherHeight));" +
+                    "where rectangle(rx, ry, rwidth, rheight).intersects(rectangle(otherX, otherY, otherWIdth, otherHeight));" +
                     "expression myMXCIFQuadtreeSettings { mxcifquadtree(0, 0, 100, 100) } \n" +
                     "select * from SupportSpatialAABB(rectangle(10, 20, 5, 5, filterindex:myMXCIFQuadtreeSettings).intersects(rectangle(x, y, width, height)));\n";
                 env.CompileDeploy(epl).UndeployAll();

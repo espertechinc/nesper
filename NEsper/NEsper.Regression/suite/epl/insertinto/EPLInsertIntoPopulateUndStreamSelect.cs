@@ -262,15 +262,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create objectarray schema Event();\n" +
-                          "create objectarray schema ChildEvent(id string, action string) inherits Event;\n" +
-                          "create objectarray schema Incident(name string, event Event);\n" +
-                          "@Name('window') create window IncidentWindow#keepall as Incident;\n" +
+                          "create objectarray schema ChildEvent(Id string, action string) inherits Event;\n" +
+                          "create objectarray schema IncIdent(name string, event Event);\n" +
+                          "@Name('window') create window IncIdentWindow#keepall as IncIdent;\n" +
                           "\n" +
                           "on ChildEvent e\n" +
-                          "    merge IncidentWindow w\n" +
-                          "    where e.id = cast(w.event.id? as string)\n" +
+                          "    merge IncIdentWindow w\n" +
+                          "    where e.Id = cast(w.event.Id? as string)\n" +
                           "    when not matched\n" +
-                          "        then insert (name, event) select 'ChildIncident', e \n" +
+                          "        then insert (name, event) select 'ChildIncIdent', e \n" +
                           "            where e.action = 'INSERT'\n" +
                           "    when matched\n" +
                           "        then update set w.event = e \n" +
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventObjectArray(new object[] {"ID1", "INSERT"}, "ChildEvent");
                 var @event = env.Statement("window").First();
                 var underlying = (object[]) @event.Underlying;
-                Assert.AreEqual("ChildIncident", underlying[0]);
+                Assert.AreEqual("ChildIncIdent", underlying[0]);
                 var underlyingInner = (object[]) ((EventBean) underlying[1]).Underlying;
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] {"ID1", "INSERT"}, underlyingInner);
 

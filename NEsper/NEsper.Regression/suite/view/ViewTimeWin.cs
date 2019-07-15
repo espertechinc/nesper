@@ -494,7 +494,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(0);
 
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select symbol, volume, sum(price) as mySum from SupportMarketDataBean#time(30)";
+                var epl = "@Name('s0') select Symbol, Volume, sum(price) as mySum from SupportMarketDataBean#time(30)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 AssertSelectResultType(env.Statement("s0"));
@@ -527,7 +527,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select symbol, volume, sum(price) as mySum " +
+                var epl = "@Name('s0') select Symbol, Volume, sum(price) as mySum " +
                           "from SupportMarketDataBean#time(30) group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
                 var epl =
-                    "@Name('s0') select symbol, volume, sum(price) as mySum from SupportMarketDataBean(symbol = 'IBM')#time(30)";
+                    "@Name('s0') select Symbol, Volume, sum(price) as mySum from SupportMarketDataBean(Symbol = 'IBM')#time(30)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TrySingleAssertion(env);
@@ -616,11 +616,11 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var text = "@Name('s0') select irstream symbol, " +
-                           "prev(1, symbol) as prev1, " +
-                           "prevtail(symbol) as prevtail, " +
-                           "prevcount(symbol) as prevCountSym, " +
-                           "prevwindow(symbol) as prevWindowSym " +
+                var text = "@Name('s0') select irstream Symbol, " +
+                           "prev(1, Symbol) as prev1, " +
+                           "prevtail(Symbol) as prevtail, " +
+                           "prevcount(Symbol) as prevCountSym, " +
+                           "prevwindow(Symbol) as prevWindowSym " +
                            "from  SupportMarketDataBean#time(1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 string[] fields = {"Symbol", "prev1", "prevtail", "prevCountSym", "prevWindowSym"};
@@ -693,7 +693,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var text = "select rstream theString from SupportBean#time(?::int)";
+                var text = "select rstream TheString from SupportBean#time(?::int)";
                 var compiled = env.Compile(text);
 
                 env.Deploy(
@@ -719,7 +719,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var text = "select rstream theString from SupportBean#time(TIME_WIN_ONE)";
+                var text = "select rstream TheString from SupportBean#time(TIME_WIN_ONE)";
                 env.CompileDeploy("@Name('s0') " + text).AddListener("s0");
 
                 env.Runtime.VariableService.SetVariableValue(null, "TIME_WIN_ONE", 3);
@@ -738,10 +738,10 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var text = "@Name('s0') select rstream theString from SupportBean#time(4 sec)";
+                var text = "@Name('s0') select rstream TheString from SupportBean#time(4 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
-                text = "@Name('s1') select rstream theString from SupportBean#time(3000 milliseconds)";
+                text = "@Name('s1') select rstream TheString from SupportBean#time(3000 milliseconds)";
                 env.CompileDeploy(text).AddListener("s1").Milestone(0);
 
                 RunAssertion(env);
@@ -756,10 +756,10 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var text = "select rstream theString from SupportBean#time(TIME_WIN_TWO milliseconds)";
+                var text = "select rstream TheString from SupportBean#time(TIME_WIN_TWO milliseconds)";
                 env.CompileDeploy("@Name('s0')" + text).AddListener("s0");
 
-                text = "select rstream theString from SupportBean#time(TIME_WIN_TWO minutes)";
+                text = "select rstream TheString from SupportBean#time(TIME_WIN_TWO minutes)";
                 env.Runtime.VariableService.SetVariableValue(null, "TIME_WIN_TWO", 0.05);
                 env.CompileDeploy("@Name('s1')" + text).AddListener("s1");
 

@@ -69,14 +69,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 SupportBean.Compare(
                     outputOne.GetAndReset().ToArray(),
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {
                         new object[] {"E1", 1}
                     });
                 var received = outputTwo.GetAndReset();
                 SupportBean.Compare(
                     received.First.ToArray(),
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {
                         new object[] {"E1", 1}
                     });

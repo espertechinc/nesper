@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 var epl = "@Name('s0')select sum(price) as sumPrice from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.TheString " +
+                          "where one.Symbol = two.TheString " +
                           "order by price";
                 env.CompileDeploy(epl).AddListener("s0");
 

@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env,
                 SupportOutputLimitOpt.ENABLED.GetHint() +
                 " select sum(IntPrimitive) " +
-                "from SupportBean output last every 4 events order by theString",
+                "from SupportBean output last every 4 events order by TheString",
                 "The ENABLE_OUTPUTLIMIT_OPT hint is not supported with order-by");
         }
 

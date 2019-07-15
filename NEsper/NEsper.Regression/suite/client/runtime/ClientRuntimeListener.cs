@@ -102,10 +102,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public RoutedBeanEvent(string ident)
             {
-                Ident = ident;
+                ident = ident;
             }
 
-            public string Ident { get; }
+            public string ident { get; }
         }
     }
 } // end of namespace

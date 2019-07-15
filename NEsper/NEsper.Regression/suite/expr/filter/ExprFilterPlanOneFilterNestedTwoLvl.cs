@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "IntPrimitive=1, longPrimitive=10",
+                "IntPrimitive=1, LongPrimitive=10",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1, 10), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1, 0), false),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 0, 10), false));
@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "IntPrimitive != 0, longPrimitive != 1",
+                "IntPrimitive != 0, LongPrimitive != 1",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E1", 0, 1), false),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E2", -1, -1), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E3", 0, -1), false),
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "IntPrimitive>1, longPrimitive>10",
+                "IntPrimitive>1, LongPrimitive>10",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1, 10), false),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 2, 11), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 2, 10), false));
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "IntPrimitive between 0 and 2, longPrimitive between 0 and 2",
+                "IntPrimitive between 0 and 2, LongPrimitive between 0 and 2",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E1", 0, 1), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E2", 0, 2), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E3", 2, 0), true),
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "IntPrimitive in (0,1), longPrimitive in (2, 3)",
+                "IntPrimitive in (0,1), LongPrimitive in (2, 3)",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E1", 0, 2), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E2", 1, 3), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E3", 0, 3), true),
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "IntPrimitive not in (0,1), longPrimitive not in (2, 3)",
+                "IntPrimitive not in (0,1), LongPrimitive not in (2, 3)",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E1", 2, 0), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E2", -1, -1), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("E3", 3, 1), true),
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "IntPrimitive=1 and theString like 'A%B'",
+                "IntPrimitive=1 and TheString like 'A%B'",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A B", 1), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1), false),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A B", 0), false));

@@ -254,9 +254,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                       "cast('1997-07-16T19:20:30.45',dtx,dateformat:'iso') as c5," +
                       "cast('1997-07-16T19:20:30.45',long,dateformat:'iso') as c6," +
                       "cast('1997-07-16T19:20:30.45',date,dateformat:'iso') as c7," +
-                      "cast(theString,dtx,dateformat:'iso') as c8," +
-                      "cast(theString,long,dateformat:'iso') as c9," +
-                      "cast(theString,date,dateformat:'iso') as c10," +
+                      "cast(TheString,dtx,dateformat:'iso') as c8," +
+                      "cast(TheString,long,dateformat:'iso') as c9," +
+                      "cast(TheString,date,dateformat:'iso') as c10," +
                       "cast('1997-07-16T19:20:30.45',datetimeoffset,dateformat:'iso') as c11," +
                       "cast('1997-07-16T19:20:30+01:00',datetime,dateformat:'iso') as c12," +
                       "cast('1997-07-16',datetimeoffset,dateformat:'iso') as c13," +
@@ -352,40 +352,40 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             // not a valid named parameter
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "select cast(theString, date, x:1) from SupportBean",
-                "Failed to validate select-clause expression 'cast(theString,date,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
+                "select cast(TheString, date, x:1) from SupportBean",
+                "Failed to valIdate select-clause expression 'cast(TheString,date,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
 
             // invalid date format
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "select cast(theString, date, dateformat:'BBBBMMDD') from SupportBean",
-                "Failed to validate select-clause expression 'cast(theString,date,dateformat:\"BBB...(42 chars)': Invalid date format 'BBBBMMDD' (as obtained from new SimpleDateFormat): Illegal pattern character 'B'");
+                "select cast(TheString, date, dateformat:'BBBBMMDD') from SupportBean",
+                "Failed to valIdate select-clause expression 'cast(TheString,date,dateformat:\"BBB...(42 chars)': InvalId date format 'BBBBMMDD' (as obtained from new SimpleDateFormat): Illegal pattern character 'B'");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "select cast(theString, date, dateformat:1) from SupportBean",
-                "Failed to validate select-clause expression 'cast(theString,date,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormatter");
+                "select cast(TheString, date, dateformat:1) from SupportBean",
+                "Failed to valIdate select-clause expression 'cast(TheString,date,dateformat:1)': Failed to valIdate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormatter");
 
             // invalid input
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "select cast(intPrimitive, date, dateformat:'yyyyMMdd') from SupportBean",
-                "Failed to validate select-clause expression 'cast(intPrimitive,date,dateformat:\"...(45 chars)': Use of the 'dateformat' named parameter requires a string-type input");
+                "select cast(IntPrimitive, date, dateformat:'yyyyMMdd') from SupportBean",
+                "Failed to valIdate select-clause expression 'cast(IntPrimitive,date,dateformat:\"...(45 chars)': Use of the 'dateformat' named parameter requires a string-type input");
 
             // invalid target
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "select cast(theString, int, dateformat:'yyyyMMdd') from SupportBean",
-                "Failed to validate select-clause expression 'cast(theString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of calendar, date, long, localdatetime, localdate, localtime or zoneddatetime");
+                "select cast(TheString, int, dateformat:'yyyyMMdd') from SupportBean",
+                "Failed to valIdate select-clause expression 'cast(TheString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of calendar, date, long, localdatetime, localdate, localtime or zoneddatetime");
 
             // invalid parser
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select cast('xx', date, dateformat:java.time.format.DateTimeFormatter.ofPattern(\"yyyyMMddHHmmssVV\")) from SupportBean",
-                "Failed to validate select-clause expression 'cast(\"xx\",date,dateformat:java.time...(91 chars)': Invalid format, expected string-format or DateFormat but received java.time.format.DateTimeFormatter");
+                "Failed to valIdate select-clause expression 'cast(\"xx\",date,dateformat:java.time...(91 chars)': InvalId format, expected string-format or DateFormat but received java.time.format.DateTimeFormatter");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select cast('xx', localdatetime, dateformat:SimpleDateFormat.getInstance()) from SupportBean",
-                "Failed to validate select-clause expression 'cast(\"xx\",localdatetime,dateformat:...(66 chars)': Invalid format, expected string-format or DateTimeFormatter but received java.text.DateFormat");
+                "Failed to valIdate select-clause expression 'cast(\"xx\",localdatetime,dateformat:...(66 chars)': InvalId format, expected string-format or DateTimeFormatter but received java.text.DateFormat");
         }
 
         private static void AssertResults(
@@ -496,10 +496,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                            "cast(anFloat, float) as floatVal, " +
                            "cast(anByte, byte) as byteVal, " +
                            "cast(anShort, short) as shortVal, " +
-                           "cast(intPrimitive, int) as intOne, " +
-                           "cast(intBoxed, int) as intTwo, " +
-                           "cast(intPrimitive, System.Long) as longOne, " +
-                           "cast(intBoxed, long) as longTwo " +
+                           "cast(IntPrimitive, int) as intOne, " +
+                           "cast(IntBoxed, int) as intTwo, " +
+                           "cast(IntPrimitive, System.Long) as longOne, " +
+                           "cast(IntBoxed, long) as longTwo " +
                            "from StaticTypeMapEvent";
 
                 env.CompileDeploy(stmt).AddListener("s0");
@@ -537,15 +537,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "cast(intPrimitive, float) as c0," +
-                          "cast(intPrimitive, short) as c1," +
-                          "cast(intPrimitive, byte) as c2," +
-                          "cast(theString, char) as c3," +
-                          "cast(theString, boolean) as c4," +
-                          "cast(intPrimitive, BigInteger) as c5," +
-                          "cast(intPrimitive, BigDecimal) as c6," +
-                          "cast(doublePrimitive, BigDecimal) as c7," +
-                          "cast(theString, char) as c8" +
+                          "cast(IntPrimitive, float) as c0," +
+                          "cast(IntPrimitive, short) as c1," +
+                          "cast(IntPrimitive, byte) as c2," +
+                          "cast(TheString, char) as c3," +
+                          "cast(TheString, boolean) as c4," +
+                          "cast(IntPrimitive, BigInteger) as c5," +
+                          "cast(IntPrimitive, BigDecimal) as c6," +
+                          "cast(DoublePrimitive, BigDecimal) as c7," +
+                          "cast(TheString, char) as c8" +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -588,12 +588,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select cast(TheString as string) as t0, " +
-                          " cast(intBoxed, int) as t1, " +
-                          " cast(floatBoxed, System.Single) as t2, " +
-                          " cast(theString, System.String) as t3, " +
-                          " cast(intPrimitive, System.Integer) as t4, " +
-                          " cast(intPrimitive, long) as t5, " +
-                          " cast(floatBoxed, long) as t7 " +
+                          " cast(IntBoxed, int) as t1, " +
+                          " cast(FloatBoxed, System.Single) as t2, " +
+                          " cast(TheString, System.String) as t3, " +
+                          " cast(IntPrimitive, System.Integer) as t4, " +
+                          " cast(IntPrimitive, long) as t5, " +
+                          " cast(FloatBoxed, long) as t7 " +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -722,7 +722,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select cast(theString, int) as t0 from SupportBean";
+                var epl = "@Name('s0') select cast(TheString, int) as t0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("t0"));
@@ -854,9 +854,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select cast(boolPrimitive as System.Boolean) as t0, " +
-                          " cast(boolBoxed | boolPrimitive, boolean) as t1, " +
-                          " cast(boolBoxed, string) as t2 " +
+                var epl = "@Name('s0') select cast(BoolPrimitive as System.Boolean) as t0, " +
+                          " cast(BoolBoxed | BoolPrimitive, boolean) as t1, " +
+                          " cast(BoolBoxed, string) as t2 " +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 

@@ -102,8 +102,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "min(longPrimitive).before(max(longBoxed), 1 second) as c0," +
-                          "min(longPrimitive, longBoxed).before(20000L, 1 second) as c1" +
+                          "min(LongPrimitive).before(max(LongBoxed), 1 second) as c0," +
+                          "min(LongPrimitive, LongBoxed).before(20000L, 1 second) as c1" +
                           " from SupportBean#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = "c0,c1".SplitCsv();

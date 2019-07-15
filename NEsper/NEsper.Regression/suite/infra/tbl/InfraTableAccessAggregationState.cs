@@ -241,15 +241,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplDeclare, path);
 
                 var eplBind = "into table varTotal " +
-                              "select sum(doublePrimitive) as total, count(*) as cnt " +
-                              "from SupportBean group by TheString, IntPrimitive, longPrimitive";
+                              "select sum(DoublePrimitive) as total, count(*) as cnt " +
+                              "from SupportBean group by TheString, IntPrimitive, LongPrimitive";
                 env.CompileDeploy(eplBind, path);
 
                 env.Milestone(0);
 
                 var fields = "c0,c1".SplitCsv();
                 var eplUse =
-                    "@Name('s0') select varTotal[p00, id, 100L].total as c0, varTotal[p00, id, 100L].cnt as c1 from SupportBean_S0";
+                    "@Name('s0') select varTotal[p00, Id, 100L].total as c0, varTotal[p00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100, 1000);

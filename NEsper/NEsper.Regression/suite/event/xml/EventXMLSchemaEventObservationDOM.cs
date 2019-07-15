@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             TryInvalidCompile(
                 env,
                 "select Observation.Tag.ID from SensorEvent",
-                "Failed to validate select-clause expression 'Observation.Tag.ID': Failed to resolve property 'Observation.Tag.ID' to a stream or nested property in a stream [select Observation.Tag.ID from SensorEvent]");
+                "Failed to valIdate select-clause expression 'Observation.Tag.ID': Failed to resolve property 'Observation.Tag.ID' to a stream or nested property in a stream [select Observation.Tag.ID from SensorEvent]");
 
             env.UndeployAll();
         }

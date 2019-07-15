@@ -262,28 +262,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 "select * from MySentenceEvent[splitSentence_" +
                 eventRepresentationEnum.GetName() +
                 "(sentence)@dummy(WordEvent)]",
-                "Invalid annotation for property selection, expected 'type' but found 'dummy' in text '@dummy(WordEvent)'");
+                "InvalId annotation for property selection, expected 'type' but found 'dummy' in text '@dummy(WordEvent)'");
 
             // invalid type assignment to event type
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
                 TryInvalidCompile(
                     env,
                     path,
-                    "select * from MySentenceEvent[invalidSentence(sentence)@type(WordEvent)]",
+                    "select * from MySentenceEvent[invalIdSentence(sentence)@type(WordEvent)]",
                     "Event type 'WordEvent' underlying type [LSystem.Object; cannot be assigned a value of type");
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 TryInvalidCompile(
                     env,
                     path,
-                    "select * from MySentenceEvent[invalidSentence(sentence)@type(WordEvent)]",
+                    "select * from MySentenceEvent[invalIdSentence(sentence)@type(WordEvent)]",
                     "Event type 'WordEvent' underlying type java.util.Map cannot be assigned a value of type");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
                 TryInvalidCompile(
                     env,
                     path,
-                    "select * from MySentenceEvent[invalidSentence(sentence)@type(WordEvent)]",
+                    "select * from MySentenceEvent[invalIdSentence(sentence)@type(WordEvent)]",
                     "Event type 'WordEvent' underlying type " +
                     TypeHelper.AVRO_GENERIC_RECORD_CLASSNAME +
                     " cannot be assigned a value of type");
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env,
                 path,
                 "select * from MySentenceEvent[splitSentence((select * from SupportBean#keepall))@type(WordEvent)]",
-                "Invalid contained-event expression 'splitSentence(subselect_0)': Aggregation, sub-select, previous or prior functions are not supported in this context [select * from MySentenceEvent[splitSentence((select * from SupportBean#keepall))@type(WordEvent)]]");
+                "InvalId contained-event expression 'splitSentence(subselect_0)': Aggregation, sub-select, previous or prior functions are not supported in this context [select * from MySentenceEvent[splitSentence((select * from SupportBean#keepall))@type(WordEvent)]]");
 
             env.UndeployAll();
         }

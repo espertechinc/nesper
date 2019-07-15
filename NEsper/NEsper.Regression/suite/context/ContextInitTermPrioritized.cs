@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     "insert into EventsWindow select * from SupportProductIdEvent(not exists (select * from EventsWindow))",
-                    "Failed to validate subquery number 1 querying EventsWindow: Named window by name 'EventsWindow' has been declared for context 'RuleActivityTime' and can only be used within the same context");
+                    "Failed to valIdate subquery number 1 querying EventsWindow: Named window by name 'EventsWindow' has been declared for context 'RuleActivityTime' and can only be used within the same context");
 
                 env.UndeployAll();
             }

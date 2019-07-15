@@ -98,9 +98,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream sum(longBoxed) as mySum " +
+                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
                           "from SupportBean#time(10 seconds) " +
-                          "having sum(longBoxed) > 10";
+                          "having sum(LongBoxed) > 10";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssert(env);
@@ -113,11 +113,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream sum(longBoxed) as mySum " +
+                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
                           "from SupportBeanString#time(10 seconds) as one, " +
                           "SupportBean#time(10 seconds) as two " +
                           "where one.TheString = two.TheString " +
-                          "having sum(longBoxed) > 10";
+                          "having sum(LongBoxed) > 10";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBeanString(JOIN_KEY));
 
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select istream avg(price) as aprice from SupportMarketDataBean#unique(symbol) having avg(price) <= 0";
+                    "@Name('s0') select istream avg(price) as aprice from SupportMarketDataBean#unique(Symbol) having avg(price) <= 0";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", -1);

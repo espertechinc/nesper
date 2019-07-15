@@ -71,9 +71,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             {
                 // test select-clause
                 string[] fields = {"c0", "c1"};
-                var text = "@Name('s0') select isNullValue(*, 'theString') as c0," +
+                var text = "@Name('s0') select isNullValue(*, 'TheString') as c0," +
                            typeof(ClientExtendSingleRowFunction).Name +
-                           ".localIsNullValue(*, 'theString') as c1 from SupportBean";
+                           ".localIsNullValue(*, 'TheString') as c1 from SupportBean";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("a", 1));
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
                 // test pattern
                 var textPattern =
-                    "@Name('s0') select * from pattern [a=SupportBean => b=SupportBean(theString=getValueAsString(a, 'theString'))]";
+                    "@Name('s0') select * from pattern [a=SupportBean => b=SupportBean(TheString=getValueAsString(a, 'TheString'))]";
                 env.CompileDeploy(textPattern).AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.UndeployAll();
 
                 // test filter
-                var textFilter = "@Name('s0') select * from SupportBean('E1'=getValueAsString(*, 'theString'))";
+                var textFilter = "@Name('s0') select * from SupportBean('E1'=getValueAsString(*, 'TheString'))";
                 env.CompileDeploy(textFilter).AddListener("s0");
                 env.SendEventBean(new SupportBean("E2", 1));
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
                 // test "first"
                 var textAccessAgg =
-                    "@Name('s0') select * from SupportBean#keepall having 'E2' = getValueAsString(last(*), 'theString')";
+                    "@Name('s0') select * from SupportBean#keepall having 'E2' = getValueAsString(last(*), 'TheString')";
                 env.CompileDeploy(textAccessAgg).AddListener("s0");
                 env.SendEventBean(new SupportBean("E2", 1));
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
                 // test "window"
                 var textWindowAgg =
-                    "@Name('s0') select * from SupportBean#keepall having eventsCheckStrings(window(*), 'theString', 'E1')";
+                    "@Name('s0') select * from SupportBean#keepall having eventsCheckStrings(window(*), 'TheString', 'E1')";
                 env.CompileDeploy(textWindowAgg).AddListener("s0");
                 env.SendEventBean(new SupportBean("E2", 1));
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select chainTop().chainValue(12,intPrimitive) as val from SupportBean";
+                var text = "@Name('s0') select chainTop().chainValue(12,IntPrimitive) as val from SupportBean";
 
                 env.CompileDeploy(text).AddListener("s0");
                 TryAssertionChainMethod(env);
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 }
 
                 // NPE when boxed is null
-                env.CompileDeploy("@Name('s0') select power3Rethrow(intBoxed) from SupportBean").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select power3Rethrow(IntBoxed) from SupportBean").AddListener("s0");
                 try {
                     env.SendEventBean(new SupportBean("E1", 1));
                     Assert.Fail();
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 TryInvalidCompile(
                     env,
                     "select singlerow('a', 'b') from SupportBean",
-                    "Failed to validate select-clause expression 'singlerow(\"a\",\"b\")': Could not find static method named 'testSingleRow' in class '" +
+                    "Failed to valIdate select-clause expression 'singlerow(\"a\",\"b\")': Could not find static method named 'testSingleRow' in class '" +
                     typeof(SupportSingleRowFunctionTwo).Name +
                     "' with matching parameter number and expected parameter type(s) 'String, String' (nearest match found was 'testSingleRow' taking type(s) 'String, int')");
             }

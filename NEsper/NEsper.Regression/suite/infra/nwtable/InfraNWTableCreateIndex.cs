@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     "create gugu index IndexTwo on MyInfraOne(f2)",
-                    "Invalid keyword 'gugu' in create-index encountered, expected 'unique' [create gugu index IndexTwo on MyInfraOne(f2)]");
+                    "InvalId keyword 'gugu' in create-index encountered, expected 'unique' [create gugu index IndexTwo on MyInfraOne(f2)]");
 
                 TryInvalidCompile(
                     env,
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // invalid insert-into unique index
                 var eplCreateTwo = namedWindow
                     ? "@Name('create') create window MyInfraTwo#keepall as SupportBean"
-                    : "@Name('create') create table MyInfraTwo(theString string primary key, IntPrimitive int primary key)";
+                    : "@Name('create') create table MyInfraTwo(TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreateTwo, path);
                 env.CompileDeploy(
                     "@Name('insert') insert into MyInfraTwo select TheString, IntPrimitive from SupportBean",
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("E1", 1));
 
                 env.CompileDeploy(
-                        "@Name('s0') on SupportBean_S0 s0 select nw.f1 as f1, nw.f2 as f2 from MyInfraONR nw where nw.f2 = s0.id",
+                        "@Name('s0') on SupportBean_S0 s0 select nw.f1 as f1, nw.f2 as f2 from MyInfraONR nw where nw.f2 = s0.Id",
                         path)
                     .AddListener("s0");
                 Assert.AreEqual(namedWindow ? 1 : 2, GetIndexCount(env, namedWindow, "create", "MyInfraONR"));
@@ -350,7 +350,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create second identical statement
                 env.CompileDeploy(
-                    "@Name('stmtTwo') on SupportBean_S0 s0 select nw.f1 as f1, nw.f2 as f2 from MyInfraONR nw where nw.f2 = s0.id",
+                    "@Name('stmtTwo') on SupportBean_S0 s0 select nw.f1 as f1, nw.f2 as f2 from MyInfraONR nw where nw.f2 = s0.Id",
                     path);
                 Assert.AreEqual(namedWindow ? 1 : 2, GetIndexCount(env, namedWindow, "create", "MyInfraONR"));
 
@@ -364,7 +364,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // two-key index order test
                 env.CompileDeploy("@Name('cw') create window MyInfraFour#keepall as SupportBean", path);
-                env.CompileDeploy("create index idx1 on MyInfraFour (TheString, IntPrimitive)", path);
+                env.CompileDeploy("create index Idx1 on MyInfraFour (TheString, IntPrimitive)", path);
                 env.CompileDeploy(
                     "on SupportBean sb select * from MyInfraFour w where w.TheString = sb.TheString and w.IntPrimitive = sb.IntPrimitive",
                     path);
@@ -394,7 +394,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "@Name('create') create table MyInfraDC as (f1 string primary key, f2 int primary key, f3 string primary key, f4 string primary key)";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 env.CompileDeploy(
-                    "insert into MyInfraDC(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||theString||'<', '?'||theString||'?' from SupportBean",
+                    "insert into MyInfraDC(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean",
                     path);
                 env.CompileDeploy("@Name('indexOne') create index MyInfraDCIndex1 on MyInfraDC(f1)", path);
                 env.CompileDeploy("@Name('indexTwo') create index MyInfraDCIndex2 on MyInfraDC(f4)", path);
@@ -469,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfraMCMI as (f1 string primary key, f2 int, f3 string, f4 string)";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 env.CompileDeploy(
-                    "insert into MyInfraMCMI(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||theString||'<', '?'||theString||'?' from SupportBean",
+                    "insert into MyInfraMCMI(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean",
                     path);
                 env.CompileDeploy("create index MyInfraMCMIIndex1 on MyInfraMCMI(f2, f3, f1)", path);
                 env.CompileDeploy("create index MyInfraMCMIIndex2 on MyInfraMCMI(f2, f3)", path);
@@ -539,7 +539,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create infra
                 var stmtTextCreate = namedWindow
                     ? "@Name('Create') create window MyInfra.win:keepall() as SupportBean"
-                    : "@Name('Create') create table MyInfra(theString string primary key, IntPrimitive int primary key)";
+                    : "@Name('Create') create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("Create");
 
                 // create insert into
@@ -559,7 +559,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // perform on-demand query
                 var result = env.CompileExecuteFAF(
-                    "select * from MyInfra where theString = 'B2' order by IntPrimitive asc",
+                    "select * from MyInfra where TheString = 'B2' order by IntPrimitive asc",
                     path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
@@ -590,7 +590,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfraLC as (f1 string primary key, f2 int primary key, f3 string primary key, f4 string primary key)";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 env.CompileDeploy(
-                    "insert into MyInfraLC(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||theString||'<', '?'||theString||'?' from SupportBean",
+                    "insert into MyInfraLC(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", -4));
@@ -636,7 +636,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextCreate, path);
                 var compiledWindow = path.Compileds[0];
                 env.CompileDeploy(
-                    "insert into MyInfraCI(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||theString||'<', '?'||theString||'?' from SupportBean",
+                    "insert into MyInfraCI(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean",
                     path);
                 env.CompileDeploy("@Name('indexOne') create index MyInfraCIIndex on MyInfraCI(f2, f3, f1)", path);
                 var fields = "f1,f2,f3,f4".SplitCsv();
@@ -689,7 +689,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfraW as (f1 long primary key, f2 string primary key)";
                 env.CompileDeploy(stmtTextCreate, path);
                 env.CompileDeploy(
-                    "insert into MyInfraW(f1, f2) select longPrimitive, theString from SupportBean",
+                    "insert into MyInfraW(f1, f2) select LongPrimitive, TheString from SupportBean",
                     path);
                 env.CompileDeploy("create index MyInfraWIndex1 on MyInfraW(f1)", path);
                 var fields = "f1,f2".SplitCsv();
@@ -708,7 +708,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfraWTwo as (f1 short primary key, f2 string primary key)";
                 env.CompileDeploy(stmtTextCreate, path);
                 env.CompileDeploy(
-                    "insert into MyInfraWTwo(f1, f2) select shortPrimitive, theString from SupportBean",
+                    "insert into MyInfraWTwo(f1, f2) select ShortPrimitive, TheString from SupportBean",
                     path);
                 env.CompileDeploy("create index MyInfraWTwoIndex1 on MyInfraWTwo(f1)", path);
 
@@ -742,7 +742,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfraHBTW as (f1 long primary key, f2 string primary key)";
                 env.CompileDeploy(eplCreate, path);
 
-                var eplInsert = "insert into MyInfraHBTW(f1, f2) select longPrimitive, theString from SupportBean";
+                var eplInsert = "insert into MyInfraHBTW(f1, f2) select LongPrimitive, TheString from SupportBean";
                 env.CompileDeploy(eplInsert, path);
 
                 env.CompileDeploy("create index MyInfraHBTWIndex1 on MyInfraHBTW(f1 btree)", path);
@@ -770,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(eplCreateTwo, path);
 
                 var eplInsertTwo =
-                    "insert into MyInfraHBTWTwo(f1, f2) select shortPrimitive, theString from SupportBean";
+                    "insert into MyInfraHBTWTwo(f1, f2) select ShortPrimitive, TheString from SupportBean";
                 env.CompileDeploy(eplInsertTwo, path);
                 env.CompileDeploy("create index MyInfraHBTWTwoIndex1 on MyInfraHBTWTwo(f1 btree)", path);
 
@@ -800,21 +800,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? "@Name('create') create window MyInfraMRAK#keepall as SupportBeanRange"
-                    : "@Name('create') create table MyInfraMRAK(id string primary key, key string, keyLong long, rangeStartLong long primary key, rangeEndLong long primary key)";
+                    : "@Name('create') create table MyInfraMRAK(Id string primary key, key string, keyLong long, rangeStartLong long primary key, rangeEndLong long primary key)";
                 env.CompileDeploy(eplCreate, path);
 
                 var eplInsert = namedWindow
                     ? "insert into MyInfraMRAK select * from SupportBeanRange"
-                    : "on SupportBeanRange t0 merge MyInfraMRAK t1 where t0.id = t1.id when not matched then insert select id, key, keyLong, rangeStartLong, rangeEndLong";
+                    : "on SupportBeanRange t0 merge MyInfraMRAK t1 where t0.Id = t1.Id when not matched then insert select Id, key, keyLong, rangeStartLong, rangeEndLong";
                 env.CompileDeploy(eplInsert, path);
 
                 env.CompileDeploy(
-                    "create index idx1 on MyInfraMRAK(key hash, keyLong hash, rangeStartLong btree, rangeEndLong btree)",
+                    "create index Idx1 on MyInfraMRAK(key hash, keyLong hash, rangeStartLong btree, rangeEndLong btree)",
                     path);
                 var fields = "id".SplitCsv();
 
                 var query1 =
-                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 and key='K1' order by id asc";
+                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 and key='K1' order by Id asc";
                 RunQueryAssertion(env, path, query1, fields, null);
 
                 env.SendEventBean(SupportBeanRange.MakeLong("E1", "K1", 1L, 2L, 3L));
@@ -844,7 +844,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
 
                 var query2 =
-                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 order by id asc";
+                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 order by Id asc";
                 RunQueryAssertion(
                     env,
                     path,
@@ -875,7 +875,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfra as (f1 string primary key, f2 int, f3 string, f4 string)";
                 env.CompileDeploy(stmtTextCreate, path);
                 env.CompileDeploy(
-                    "insert into MyInfra(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||theString||'<', '?'||theString||'?' from SupportBean",
+                    "insert into MyInfra(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean",
                     path);
                 env.CompileDeploy("create index MyInfraIndex on MyInfra(f2, f3, f1)", path);
                 var fields = "f1,f2,f3,f4".SplitCsv();

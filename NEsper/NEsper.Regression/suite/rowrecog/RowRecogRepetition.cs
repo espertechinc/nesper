@@ -48,11 +48,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunDocSampleUpToN(RegressionEnvironment env)
         {
-            var fields = "a0_id,a1_id,b_id".SplitCsv();
+            var fields = "a0_Id,a1_Id,b_Id".SplitCsv();
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
-                      "  measures A[0].id as a0_id, A[1].id as a1_id, B.id as b_id\n" +
+                      "  measures A[0].Id as a0_Id, A[1].Id as a1_Id, B.Id as b_Id\n" +
                       "  pattern (A{,2} B)\n" +
                       "  define \n" +
                       "\tA as A.temp >= 100,\n" +
@@ -79,11 +79,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RegressionEnvironment env,
             string pattern)
         {
-            var fields = "a0_id,a1_id,a2_id,b_id".SplitCsv();
+            var fields = "a0_Id,a1_Id,a2_Id,b_Id".SplitCsv();
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
-                      "  measures A[0].id as a0_id, A[1].id as a1_id, A[2].id as a2_id, B.id as b_id\n" +
+                      "  measures A[0].Id as a0_Id, A[1].Id as a1_Id, A[2].Id as a2_Id, B.Id as b_Id\n" +
                       "  pattern (" +
                       pattern +
                       ")\n" +
@@ -110,11 +110,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunDocSampleExactlyN(RegressionEnvironment env)
         {
-            var fields = "a0_id,a1_id".SplitCsv();
+            var fields = "a0_Id,a1_Id".SplitCsv();
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
-                      "  measures A[0].id as a0_id, A[1].id as a1_id\n" +
+                      "  measures A[0].Id as a0_Id, A[1].Id as a1_Id\n" +
                       "  pattern (A{2})\n" +
                       "  define \n" +
                       "\tA as A.temp >= 100)";
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 template.Replace("REPLACE", "A{}"),
-                "Invalid match-recognize quantifier '{}', expecting an expression");
+                "InvalId match-recognize quantifier '{}', expecting an expression");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 template.Replace("REPLACE", "A{null}"),
@@ -165,9 +165,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 template.Replace("REPLACE", "A{prev(A)}"),
-                "Invalid match-recognize pattern expression 'prev(A)': Aggregation, sub-select, previous or prior functions are not supported in this context");
+                "InvalId match-recognize pattern expression 'prev(A)': Aggregation, sub-select, previous or prior functions are not supported in this context");
 
-            var expected = "Invalid pattern quantifier value -1, expecting a minimum of 1";
+            var expected = "InvalId pattern quantifier value -1, expecting a minimum of 1";
             SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{-1}"), expected);
             SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{,-1}"), expected);
             SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{-1,10}"), expected);
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 template.Replace("REPLACE", "A{5,3}"),
-                "Invalid pattern quantifier value 5, expecting a minimum of 1 and maximum of 3");
+                "InvalId pattern quantifier value 5, expecting a minimum of 1 and maximum of 3");
 
             env.UndeployAll();
         }

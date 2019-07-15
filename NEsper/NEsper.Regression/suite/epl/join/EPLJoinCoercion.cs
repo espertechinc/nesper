@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 var fields = "sbs,sbi,sbri".SplitCsv();
                 var epl =
-                    "@Name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
+                    "@Name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
                     "where IntPrimitive between rangeStartLong and rangeEndLong";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.UndeployAll();
 
                 epl =
-                    "@Name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
+                    "@Name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
                     "where sbr.key = sb.TheString and IntPrimitive between rangeStartLong and rangeEndLong";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -124,10 +124,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select volume from " +
+                var joinStatement = "@Name('s0') select Volume from " +
                                     "SupportMarketDataBean#length(3) as s0," +
                                     "SupportBean#length(3) as s1 " +
-                                    " where s0.volume = s1.IntPrimitive";
+                                    " where s0.Volume = s1.IntPrimitive";
                 env.CompileDeployAddListenerMileZero(joinStatement, "s0");
                 SendBeanEvent(env, 100);
                 SendMarketEvent(env, 100);

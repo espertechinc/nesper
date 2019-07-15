@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // - duplicate key allowed, creates a list of values
                 // - null key & value allowed
 
-                var eplFragment = "@Name('s0') select contained.groupBy(c => id) as val from SupportBean_ST0_Container";
+                var eplFragment = "@Name('s0') select contained.groupBy(c => Id) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@Name('s0') select contained.groupBy(k => id, v => p00) as val from SupportBean_ST0_Container";
+                    "@Name('s0') select contained.groupBy(k => Id, v => p00) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 EPAssertionUtil.AssertionCollectionValueString extractor = collectionItem => {

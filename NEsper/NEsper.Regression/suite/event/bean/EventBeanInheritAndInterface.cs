@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     for (var j = 0; j < expected[i].Length; j++) {
                         Assert.IsTrue(
                             theEvent.EventType.IsProperty(expected[i][j]),
-                            "failed property valid check for stmt=" + epls[i]);
+                            "failed property valId check for stmt=" + epls[i]);
                         Assert.AreEqual(
                             expected[i][j],
                             theEvent.Get(expected[i][j]),

@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 var fields = "c0,c1,c2,c3,c4,c5,c6".SplitCsv();
                 var stmtSelectText =
-                    "@Name('Select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.id as c2,vars0.p00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
+                    "@Name('Select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.p00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
                 env.CompileDeploy(stmtSelectText, path).AddListener("Select");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // test self evaluate
                 env.UndeployModuleContaining("set");
                 env.CompileDeploy(
-                    "@Name('set') on SupportBean_A set varbean.TheString = SupportBean_A.id, varbean.TheString = '>'||varbean.TheString||'<'",
+                    "@Name('set') on SupportBean_A set varbean.TheString = SupportBean_A.Id, varbean.TheString = '>'||varbean.TheString||'<'",
                     path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E3"));
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.UndeployModuleContaining("set");
 
                 // test widen
-                env.CompileDeploy("@Name('set') on SupportBean_A set varbean.longPrimitive = 1", path);
+                env.CompileDeploy("@Name('set') on SupportBean_A set varbean.LongPrimitive = 1", path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E4"));
                 Assert.AreEqual(
@@ -293,9 +293,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var depIdVarbean = env.DeploymentId("v1");
                 var depIdVartype = env.DeploymentId("v2");
 
-                var fields = "varobject,varbean,varbean.id,vartype,vartype.id".SplitCsv();
+                var fields = "varobject,varbean,varbean.Id,vartype,vartype.Id".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('s0') select varobject, varbean, varbean.id, vartype, vartype.id from SupportBean",
+                    "@Name('s0') select varobject, varbean, varbean.Id, vartype, vartype.Id from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -374,7 +374,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 // test on-set for Bean class
                 env.CompileDeploy(
-                    "@Name('set-two') on SupportBean_A(id='Y') arrival set varobject=null, vartype=null, varbean=arrival",
+                    "@Name('set-two') on SupportBean_A(Id='Y') arrival set varobject=null, vartype=null, varbean=arrival",
                     path);
                 env.AddListener("set-two");
                 var a1objectTwo = new SupportBean_A("Y");

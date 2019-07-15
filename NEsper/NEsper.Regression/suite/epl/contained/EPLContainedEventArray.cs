@@ -40,16 +40,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create schema IdContainer(id int);" +
-                    "create schema MyEvent(ids int[]);" +
-                    "select * from MyEvent[ids@type(IdContainer)];",
+                    "create schema IdContainer(Id int);" +
+                    "create schema MyEvent(Ids int[]);" +
+                    "select * from MyEvent[Ids@type(IdContainer)];",
                     path);
 
                 env.CompileDeploy(
-                    "create window MyWindow#keepall (id int);" +
-                    "on MyEvent[ids@type(IdContainer)] as my_ids \n" +
+                    "create window MyWindow#keepall (Id int);" +
+                    "on MyEvent[Ids@type(IdContainer)] as my_Ids \n" +
                     "delete from MyWindow my_window \n" +
-                    "where my_ids.id = my_window.id;",
+                    "where my_Ids.Id = my_window.Id;",
                     path);
 
                 env.UndeployAll();
@@ -61,10 +61,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "create objectarray schema DeleteId(id int);" +
+                var epl = "create objectarray schema DeleteId(Id int);" +
                           "create window MyWindow#keepall as SupportBean;" +
                           "insert into MyWindow select * from SupportBean;" +
-                          "on SupportBeanArrayCollMap[intArr@type(DeleteId)] delete from MyWindow where IntPrimitive = id";
+                          "on SupportBeanArrayCollMap[intArr@type(DeleteId)] delete from MyWindow where IntPrimitive = Id";
                 env.CompileDeploy(epl, path);
 
                 env.SendEventBean(new SupportBean("E1", 1));

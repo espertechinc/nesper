@@ -389,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "on SupportBean select * where IntPrimitive=1 insert into BStream select * where 1=2",
-                    "Required insert-into clause is not provided, the clause is required for split-stream syntax");
+                    "Required insert-into clause is not provIded, the clause is required for split-stream syntax");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -442,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.IsFalse(env.Listener("insert").IsInvoked);
 
                 // test select
-                stmtOrigText = "@Name('s1') on SupportBean insert into BStreamABC select 3*intPrimitive as value";
+                stmtOrigText = "@Name('s1') on SupportBean insert into BStreamABC select 3*IntPrimitive as value";
                 env.CompileDeploy(stmtOrigText, path);
 
                 env.CompileDeploy("@Name('s2') select value from BStreamABC", path);
@@ -466,7 +466,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 var stmtOrigText = "@Name('split') on SupportBean " +
                                    "insert into AStream2SP select * where IntPrimitive=1 " +
-                                   "insert into BStream2SP select * where intPrimitive=1 or IntPrimitive=2";
+                                   "insert into BStream2SP select * where IntPrimitive=1 or IntPrimitive=2";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
                 TryAssertion(env, path);
                 path.Clear();
@@ -502,8 +502,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@Name('split') on SupportBean " +
-                                   "insert into AStreamSub select (select p00 from SupportBean_S0#lastevent) as string where IntPrimitive=(select id from SupportBean_S0#lastevent) " +
-                                   "insert into BStreamSub select (select p01 from SupportBean_S0#lastevent) as string where IntPrimitive<>(select id from SupportBean_S0#lastevent) or (select id from SupportBean_S0#lastevent) is null";
+                                   "insert into AStreamSub select (select p00 from SupportBean_S0#lastevent) as string where IntPrimitive=(select Id from SupportBean_S0#lastevent) " +
+                                   "insert into BStreamSub select (select p01 from SupportBean_S0#lastevent) as string where IntPrimitive<>(select Id from SupportBean_S0#lastevent) or (select Id from SupportBean_S0#lastevent) is null";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 env.CompileDeploy("@Name('s0') select * from AStreamSub", path).AddListener("s0");
@@ -534,7 +534,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 var stmtOrigText = "@Name('split') on SupportBean " +
                                    "insert into AStream2S select TheString where IntPrimitive=1 " +
-                                   "insert into BStream2S select TheString where intPrimitive=1 or IntPrimitive=2 " +
+                                   "insert into BStream2S select TheString where IntPrimitive=1 or IntPrimitive=2 " +
                                    "output all";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
@@ -573,9 +573,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@Name('split') on SupportBean " +
-                                   "insert into AStream2S select TheString || '_1' as theString where IntPrimitive in (1, 2) " +
-                                   "insert into BStream2S select TheString || '_2' as theString where IntPrimitive in (2, 3) " +
-                                   "insert into CStream2S select TheString || '_3' as theString " +
+                                   "insert into AStream2S select TheString || '_1' as TheString where IntPrimitive in (1, 2) " +
+                                   "insert into BStream2S select TheString || '_2' as TheString where IntPrimitive in (2, 3) " +
+                                   "insert into CStream2S select TheString || '_3' as TheString " +
                                    "output all";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
@@ -610,9 +610,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@Name('split') on SupportBean as mystream " +
-                                   "insert into AStream34 select mystream.TheString||'_1' as theString where IntPrimitive=1 " +
-                                   "insert into BStream34 select mystream.TheString||'_2' as theString where IntPrimitive=2 " +
-                                   "insert into CStream34 select TheString||'_3' as theString";
+                                   "insert into AStream34 select mystream.TheString||'_1' as TheString where IntPrimitive=1 " +
+                                   "insert into BStream34 select mystream.TheString||'_2' as TheString where IntPrimitive=2 " +
+                                   "insert into CStream34 select TheString||'_3' as TheString";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 var listeners = GetListeners(env);
@@ -651,10 +651,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@Name('split') on SupportBean " +
-                                   "insert into AStream34 select TheString||'_1' as theString where IntPrimitive=10 " +
-                                   "insert into BStream34 select TheString||'_2' as theString where IntPrimitive=20 " +
-                                   "insert into CStream34 select TheString||'_3' as theString where IntPrimitive<0 " +
-                                   "insert into DStream34 select TheString||'_4' as theString";
+                                   "insert into AStream34 select TheString||'_1' as TheString where IntPrimitive=10 " +
+                                   "insert into BStream34 select TheString||'_2' as TheString where IntPrimitive=20 " +
+                                   "insert into CStream34 select TheString||'_3' as TheString where IntPrimitive<0 " +
+                                   "insert into DStream34 select TheString||'_4' as TheString";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 var listeners = GetListeners(env);

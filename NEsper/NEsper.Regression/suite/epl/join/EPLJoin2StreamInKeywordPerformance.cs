@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_S0 s0 unidirectional " +
+                    "@Name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_S0 s0 unIdirectional " +
                     "where sb.TheString in (s0.p00, s0.p01)";
                 var fields = "val".SplitCsv();
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select id as val from SupportBean_S0#keepall s0, SupportBean sb unidirectional " +
+                    "@Name('s0') select Id as val from SupportBean_S0#keepall s0, SupportBean sb unIdirectional " +
                     "where sb.TheString in (s0.p00, s0.p01)";
                 var fields = "val".SplitCsv();
                 env.CompileDeployAddListenerMileZero(epl, "s0");

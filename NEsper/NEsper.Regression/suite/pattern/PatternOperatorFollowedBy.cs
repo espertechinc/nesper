@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmt = "@Name('s0') select * from pattern [" +
-                           " every a=SupportBean_A -> (timer:interval(10 seconds) and not (SupportBean_B(id=a.id) or SupportBean_C(id=a.id)))" +
+                           " every a=SupportBean_A -> (timer:interval(10 seconds) and not (SupportBean_B(Id=a.Id) or SupportBean_C(Id=a.Id)))" +
                            "] ";
 
                 SendTimer(0, env);
@@ -542,10 +542,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 env.AdvanceTime(0);
 
-                var pattern = "@Name('s0') select * from pattern [every s=SupportBean(theString='E') -> " +
-                              "(timer:interval(10) and not SupportBean(theString='C1'))" +
+                var pattern = "@Name('s0') select * from pattern [every s=SupportBean(TheString='E') -> " +
+                              "(timer:interval(10) and not SupportBean(TheString='C1'))" +
                               "or" +
-                              "(SupportBean(theString='C2') and not timer:interval(10))]";
+                              "(SupportBean(TheString='C2') and not timer:interval(10))]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.AdvanceTime(1000);

@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var epl = "@Name('create') " +
                       createWindowStatement +
                       ";\n" +
-                      "@Name('insert') insert into MyWindow select TheString as key, longBoxed as value from SupportBean;\n" +
+                      "@Name('insert') insert into MyWindow select TheString as key, LongBoxed as value from SupportBean;\n" +
                       "@Name('s0') select irstream key, value*2 as value from MyWindow;\n" +
                       "@Name('s2') select irstream key, sum(value) as value from MyWindow group by key;\n" +
                       "@Name('s3') select irstream key, value from MyWindow where value >= 10;\n";
@@ -396,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             AssertEvent(env.Listener("create").AssertOneGetNewAndReset(), "MyWindowBB");
             AssertEvent(env.Listener("s0").AssertOneGetNewAndReset(), "MyWindowBB");
 
-            env.CompileDeploy("@Name('update') on SupportBean_A update MyWindowBB set theString='s'", path)
+            env.CompileDeploy("@Name('update') on SupportBean_A update MyWindowBB set TheString='s'", path)
                 .AddListener("update");
             env.SendEventBean(new SupportBean_A("A1"));
             AssertEvent(env.Listener("update").LastNewData[0], "MyWindowBB");
@@ -486,12 +486,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "@Name('insert') insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "@Name('insert') insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // send event G1
@@ -821,7 +821,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 TryCreateWindow(
                     env,
                     "create window MyWindow#keepall as MySimpleKeyValueMap",
-                    "on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key");
+                    "on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key");
             }
         }
 
@@ -832,7 +832,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 TryCreateWindow(
                     env,
                     "create window MyWindow#keepall as select key, value from MySimpleKeyValueMap",
-                    "on SupportMarketDataBean delete from MyWindow as s1 where symbol = s1.key");
+                    "on SupportMarketDataBean delete from MyWindow as s1 where Symbol = s1.key");
             }
         }
 
@@ -843,7 +843,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 TryCreateWindow(
                     env,
                     "create window MyWindow#keepall as MySimpleKeyValueMap",
-                    "on SupportMarketDataBean as s0 delete from MyWindow where s0.symbol = key");
+                    "on SupportMarketDataBean as s0 delete from MyWindow where s0.Symbol = key");
             }
         }
 
@@ -854,7 +854,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 TryCreateWindow(
                     env,
                     "create window MyWindow#keepall as select key as key, value as value from MySimpleKeyValueMap",
-                    "on SupportMarketDataBean delete from MyWindow where symbol = key");
+                    "on SupportMarketDataBean delete from MyWindow where Symbol = key");
             }
         }
 
@@ -872,7 +872,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindowTW select TheString as key, longBoxed as value from SupportBean";
+                    "insert into MyWindowTW select TheString as key, LongBoxed as value from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create consumer
@@ -882,7 +882,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTW as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTW as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 SendTimer(env, 1000);
@@ -1036,7 +1036,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "@Name('insert') insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "@Name('insert') insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 env.Milestone(1);
@@ -1049,7 +1049,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 env.Milestone(3);
@@ -1208,9 +1208,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 SendTimer(env, 1000);
 
                 var epl = "@Name('create') create window MyWindowTFW#firsttime(10 sec) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowTFW select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowTFW select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select irstream key, value as value from MyWindowTFW;\n" +
-                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTFW as s1 where s0.symbol = s1.key;\n";
+                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTFW as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("create").AddListener("s0").AddListener("delete");
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("create"), fields, null);
 
@@ -1307,9 +1307,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var epl =
                     "@Name('create') create window MyWindowETW#ext_timed(value, 10 sec) as MySimpleKeyValueMap;\n" +
-                    "insert into MyWindowETW select TheString as key, longBoxed as value from SupportBean;\n" +
+                    "insert into MyWindowETW select TheString as key, LongBoxed as value from SupportBean;\n" +
                     "@Name('s0') select irstream key, value as value from MyWindowETW;\n" +
-                    "@Name('delete') on SupportMarketDataBean delete from MyWindowETW where symbol = key";
+                    "@Name('delete') on SupportMarketDataBean delete from MyWindowETW where Symbol = key";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("create").AddListener("delete");
 
                 SendSupportBean(env, "E1", 1000L);
@@ -1416,14 +1416,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window
                 var stmtTextCreate =
-                    "@Name('create') create window MyWindow.win:ext_timed(value, 10 sec) as select TheString as key, longBoxed as value from SupportBean";
+                    "@Name('create') create window MyWindow.win:ext_timed(value, 10 sec) as select TheString as key, LongBoxed as value from SupportBean";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 env.Milestone(0);
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindow(key, value) select irstream theString, longBoxed from SupportBean";
+                    "insert into MyWindow(key, value) select irstream TheString, LongBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 env.Milestone(1);
@@ -1436,7 +1436,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 env.Milestone(3);
@@ -1592,7 +1592,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy("create window ABCWin.win:time(10 sec) as SupportBean", path);
                 env.CompileDeploy("insert into ABCWin select * from SupportBean", path);
                 env.CompileDeploy("@Name('s0') select irstream * from ABCWin", path);
-                env.CompileDeploy("on SupportBean_A delete from ABCWin where theString = id", path);
+                env.CompileDeploy("on SupportBean_A delete from ABCWin where TheString = Id", path);
                 env.AddListener("s0");
 
                 env.Milestone(0);
@@ -1678,9 +1678,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var epl =
                     "@Name('create') create window MyWindowTOW#time_order(value, 10 sec) as MySimpleKeyValueMap;\n" +
-                    "insert into MyWindowTOW select TheString as key, longBoxed as value from SupportBean;\n" +
+                    "insert into MyWindowTOW select TheString as key, LongBoxed as value from SupportBean;\n" +
                     "@Name('s0') select irstream key, value as value from MyWindowTOW;\n" +
-                    "@Name('delete') on SupportMarketDataBean delete from MyWindowTOW where symbol = key;\n";
+                    "@Name('delete') on SupportMarketDataBean delete from MyWindowTOW where Symbol = key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendTimer(env, 5000);
@@ -1782,17 +1782,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window
                 var stmtTextCreate =
-                    "@Name('create') create window MyWindow.ext:time_order(value, 10) as select TheString as key, longBoxed as value from SupportBean";
+                    "@Name('create') create window MyWindow.ext:time_order(value, 10) as select TheString as key, LongBoxed as value from SupportBean";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindow(key, value) select irstream theString, longBoxed from SupportBean";
+                    "insert into MyWindow(key, value) select irstream TheString, LongBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // send event G1
@@ -1977,9 +1977,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowLW#length(3) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowLW select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowLW select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select irstream key, value as value from MyWindowLW;\n" +
-                          "@Name('delete') on SupportMarketDataBean delete from MyWindowLW where symbol = key";
+                          "@Name('delete') on SupportMarketDataBean delete from MyWindowLW where Symbol = key";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L);
@@ -2110,12 +2110,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // send event G1
@@ -2311,9 +2311,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowLFW#firstlength(2) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowLFW select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowLFW select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select irstream key, value as value from MyWindowLFW;\n" +
-                          "@Name('delete') on SupportMarketDataBean delete from MyWindowLFW where symbol = key";
+                          "@Name('delete') on SupportMarketDataBean delete from MyWindowLFW where Symbol = key";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L);
@@ -2392,9 +2392,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window
                 var epl = "@Name('create') create window MyWindowTA#time_accum(10 sec) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowTA select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowTA select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select irstream key, value as value from MyWindowTA;\n" +
-                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTA as s1 where s0.symbol = s1.key;\n";
+                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTA as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendTimer(env, 1000);
@@ -2614,7 +2614,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "@Name('insert') insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "@Name('insert') insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create consumer
@@ -2623,7 +2623,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 env.Milestone(0);
@@ -2873,9 +2873,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowTB#time_batch(10 sec) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowTB select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowTB select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select key, value as value from MyWindowTB;\n" +
-                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTB as s1 where s0.symbol = s1.key;\n";
+                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTB as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendTimer(env, 1000);
@@ -2966,12 +2966,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // send event
@@ -3139,7 +3139,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 SendTimer(env, 0);
 
                 var epl = "@Name('create') create window MyWindowTBLC#time_batch(10 sec) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowTBLC select TheString as key, longBoxed as value from SupportBean;\n";
+                          "insert into MyWindowTBLC select TheString as key, LongBoxed as value from SupportBean;\n";
                 env.CompileDeploy(epl, path);
 
                 SendTimer(env, 0);
@@ -3176,9 +3176,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowLB#length_batch(3) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowLB select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowLB select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select key, value as value from MyWindowLB;\n" +
-                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowLB as s1 where s0.symbol = s1.key;\n";
+                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowLB as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L);
@@ -3301,14 +3301,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 env.Milestone(1);
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 env.Milestone(2);
@@ -3582,9 +3582,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowSW#sort(3, value asc) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowSW select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowSW select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select key, value as value from MyWindowSW;\n" +
-                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowSW as s1 where s0.symbol = s1.key;\n";
+                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowSW as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("create").AddListener("s0");
 
                 SendSupportBean(env, "E1", 10L);
@@ -3735,12 +3735,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // send event G1
@@ -3870,9 +3870,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var epl =
                     "@Name('create') create window MyWindowTLB#time_length_batch(10 sec, 3) as MySimpleKeyValueMap;\n" +
-                    "insert into MyWindowTLB select TheString as key, longBoxed as value from SupportBean;\n" +
+                    "insert into MyWindowTLB select TheString as key, LongBoxed as value from SupportBean;\n" +
                     "@Name('s0') select key, value as value from MyWindowTLB;\n" +
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTLB as s1 where s0.symbol = s1.key;\n";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowTLB as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("delete").AddListener("create");
 
                 SendTimer(env, 1000);
@@ -3984,12 +3984,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // send event
@@ -4177,7 +4177,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
                 env.CompileDeploy("create window ABCWin#length(2) as SupportBean", path);
                 env.CompileDeploy("insert into ABCWin select * from SupportBean", path);
-                env.CompileDeploy("on SupportBean_A delete from ABCWin where theString = id", path);
+                env.CompileDeploy("on SupportBean_A delete from ABCWin where TheString = Id", path);
                 env.CompileDeploy("@Name('s0') select irstream * from ABCWin", path).AddListener("s0");
 
                 env.Milestone(0);
@@ -4254,9 +4254,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var epl =
                     "@Name('create') create window MyWindowWPG#groupwin(value)#length(2) as MySimpleKeyValueMap;\n" +
-                    "insert into MyWindowWPG select TheString as key, longBoxed as value from SupportBean;\n" +
+                    "insert into MyWindowWPG select TheString as key, LongBoxed as value from SupportBean;\n" +
                     "@Name('s0') select irstream key, value as value from MyWindowWPG;\n" +
-                    "@Name('delete') on SupportMarketDataBean delete from MyWindowWPG where symbol = key;\n";
+                    "@Name('delete') on SupportMarketDataBean delete from MyWindowWPG where Symbol = key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L);
@@ -4402,7 +4402,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 SendTimer(env, 0);
                 var epl =
                     "@Name('create') create window MyWindowTBPG#groupwin(value)#time_batch(10 sec) as MySimpleKeyValueMap;\n" +
-                    "insert into MyWindowTBPG select TheString as key, longBoxed as value from SupportBean;\n" +
+                    "insert into MyWindowTBPG select TheString as key, LongBoxed as value from SupportBean;\n" +
                     "@Name('s0') select key, value as value from MyWindowTBPG;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("create");
 
@@ -4461,18 +4461,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowDISM#keepall as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowDISM select TheString as key, longBoxed+1 as value from SupportBean;\n" +
-                          "insert into MyWindowDISM select TheString as key, longBoxed+2 as value from SupportBean;\n" +
+                          "insert into MyWindowDISM select TheString as key, LongBoxed+1 as value from SupportBean;\n" +
+                          "insert into MyWindowDISM select TheString as key, LongBoxed+2 as value from SupportBean;\n" +
                           "@Name('s0') select key, value as value from MyWindowDISM";
                 env.CompileDeploy(epl).AddListener("create").AddListener("s0");
 
                 SendSupportBean(env, "E1", 10L);
                 Assert.AreEqual(
                     2,
-                    env.Listener("create").NewDataList.Count); // listener to window gets 2 individual events
+                    env.Listener("create").NewDataList.Count); // listener to window gets 2 indivIdual events
                 Assert.AreEqual(
                     2,
-                    env.Listener("s0").NewDataList.Count); // listener to statement gets 1 individual event
+                    env.Listener("s0").NewDataList.Count); // listener to statement gets 1 indivIdual event
                 Assert.AreEqual(2, env.Listener("create").NewDataListFlattened.Length);
                 Assert.AreEqual(2, env.Listener("s0").NewDataListFlattened.Length);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -4492,9 +4492,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowLE#lastevent as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowLE select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowLE select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select irstream key, value as value from MyWindowLE;\n" +
-                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowLE as s1 where s0.symbol = s1.key;\n";
+                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowLE as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L);
@@ -4589,12 +4589,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // send event
@@ -4676,9 +4676,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowFE#firstevent as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowFE select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowFE select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select irstream key, value as value from MyWindowFE;\n" +
-                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowFE as s1 where s0.symbol = s1.key;\n";
+                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowFE as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L);
@@ -4759,9 +4759,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowUN#unique(key) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowUN select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowUN select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select irstream key, value as value from MyWindowUN;\n" +
-                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowUN as s1 where s0.symbol = s1.key;\n";
+                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowUN as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("s0").AddListener("create");
 
                 SendSupportBean(env, "G1", 1L);
@@ -4873,7 +4873,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create insert into
                 var stmtTextInsert =
-                    "@Name('insert') insert into MyWindow(key, value) select irstream theString, intBoxed from SupportBean";
+                    "@Name('insert') insert into MyWindow(key, value) select irstream TheString, IntBoxed from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 env.Milestone(1);
@@ -4886,7 +4886,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path);
 
                 env.Milestone(3);
@@ -4984,9 +4984,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
 
                 var epl = "@Name('create') create window MyWindowFU#firstunique(key) as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowFU select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowFU select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select irstream key, value as value from MyWindowFU;\n" +
-                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowFU as s1 where s0.symbol = s1.key;\n";
+                          "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowFU as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("create").AddListener("s0").AddListener("delete");
 
                 SendSupportBean(env, "G1", 1L);
@@ -5068,7 +5068,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "@Name('create') create window MyWindowFC#unique(key) as select TheString as key, IntPrimitive as value from SupportBean;\n" +
                     "insert into MyWindowFC select TheString as key, IntPrimitive as value from SupportBean;\n" +
                     "@Name('s0') select irstream key, value as value from MyWindowFC(value > 0, value < 10);\n" +
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowFC as s1 where s0.symbol = s1.key;\n";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowFC as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("create").AddListener("s0").AddListener("delete");
 
                 SendSupportBeanInt(env, "G1", 5);
@@ -5187,14 +5187,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create select stmt
                 var stmtTextSelect =
-                    "@Name('s0') select TheString, intPrimitive, count(*) from MyWindowSGVS group by TheString, intPrimitive order by theString, IntPrimitive";
+                    "@Name('s0') select TheString, IntPrimitive, count(*) from MyWindowSGVS group by TheString, IntPrimitive order by TheString, IntPrimitive";
                 env.CompileDeploy(stmtTextSelect, path);
                 received = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("s0"));
                 Assert.AreEqual(10, received.Length);
 
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "theString,intPrimitive,count(*)".SplitCsv(),
+                    "theString,IntPrimitive,count(*)".SplitCsv(),
                     new[] {
                         new object[] {"c0", 0, 1L},
                         new object[] {"c0", 1, 2L},
@@ -5221,12 +5221,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window
                 var stmtTextCreate =
-                    "@Name('create') create window MyWindowSGVLS#groupwin(TheString, IntPrimitive)#length(9) as select TheString, IntPrimitive, longPrimitive, boolPrimitive from SupportBean";
+                    "@Name('create') create window MyWindowSGVLS#groupwin(TheString, IntPrimitive)#length(9) as select TheString, IntPrimitive, LongPrimitive, BoolPrimitive from SupportBean";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 // create insert into
                 var stmtTextInsert =
-                    "insert into MyWindowSGVLS select TheString, IntPrimitive, longPrimitive, boolPrimitive from SupportBean";
+                    "insert into MyWindowSGVLS select TheString, IntPrimitive, LongPrimitive, BoolPrimitive from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // create variable
@@ -5254,8 +5254,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create select stmt
                 var stmtTextSelect =
-                    "@Name('s0') select TheString, IntPrimitive, avg(longPrimitive) as avgLong, count(boolPrimitive) as cntBool" +
-                    " from MyWindowSGVLS group by TheString, intPrimitive having theString = var_1_1_1 order by theString, IntPrimitive";
+                    "@Name('s0') select TheString, IntPrimitive, avg(LongPrimitive) as avgLong, count(BoolPrimitive) as cntBool" +
+                    " from MyWindowSGVLS group by TheString, IntPrimitive having TheString = var_1_1_1 order by TheString, IntPrimitive";
                 env.CompileDeploy(stmtTextSelect, path);
 
                 // set variable to C0
@@ -5266,7 +5266,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(3, received.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "theString,intPrimitive,avgLong,cntBool".SplitCsv(),
+                    "theString,IntPrimitive,avgLong,cntBool".SplitCsv(),
                     new[] {
                         new object[] {"c0", 0, 0.0, 1L},
                         new object[] {"c0", 1, 1.0, 1L},
@@ -5280,7 +5280,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(3, received.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "theString,intPrimitive,avgLong,cntBool".SplitCsv(),
+                    "theString,IntPrimitive,avgLong,cntBool".SplitCsv(),
                     new[] {
                         new object[] {"c1", 0, 0.0, 1L},
                         new object[] {"c1", 1, 5.5, 2L},
@@ -5355,7 +5355,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowFCLS as s1 where s0.symbol = s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowFCLS as s1 where s0.Symbol = s1.key";
                 env.CompileDeploy(stmtTextDelete, path);
 
                 SendMarketBean(env, "G4");
@@ -5411,18 +5411,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     env,
                     path,
                     "update SomeWindow set a = 'a' where a = 'b'",
-                    "Provided EPL expression is an on-demand query expression (not a continuous query)");
+                    "ProvIded EPL expression is an on-demand query expression (not a continuous query)");
                 TryInvalidFAFCompile(
                     env,
                     path,
                     "update istream SomeWindow set a = 'a' where a = 'b'",
-                    "Provided EPL expression is a continuous query expression (not an on-demand query)");
+                    "ProvIded EPL expression is a continuous query expression (not an on-demand query)");
 
                 // test model-after with no field
                 TryInvalidCompile(
                     env,
                     "create window MyWindowI3#keepall as select innermap.abc from OuterMap",
-                    "Failed to validate select-clause expression 'innermap.abc': Failed to resolve property 'innermap.abc' to a stream or nested property in a stream");
+                    "Failed to valIdate select-clause expression 'innermap.abc': Failed to resolve property 'innermap.abc' to a stream or nested property in a stream");
 
                 env.UndeployAll();
             }
@@ -5469,7 +5469,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fieldsStat = new[] {"average"};
 
                 var epl = "@Name('create') create window MyWindowPS#keepall as MySimpleKeyValueMap;\n" +
-                          "insert into MyWindowPS select TheString as key, longBoxed as value from SupportBean;\n" +
+                          "insert into MyWindowPS select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@Name('s0') select prior(1, key) as priorKeyOne, prior(2, key) as priorKeyTwo from MyWindowPS;\n" +
                           "@Name('s3') select average from MyWindowPS#uni(value);\n";
                 env.CompileDeploy(epl).AddListener("create").AddListener("s0").AddListener("s3");
@@ -5554,7 +5554,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(typeof(long?), env.Statement("create").EventType.GetPropertyType("value"));
 
                 var stmtTextInsert =
-                    "insert into MyWindowLCL select TheString as key, longBoxed as value from SupportBean";
+                    "insert into MyWindowLCL select TheString as key, LongBoxed as value from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // send events
@@ -5651,7 +5651,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(typeof(long?), env.Statement("create").EventType.GetPropertyType("value"));
 
                 var stmtTextInsert =
-                    "insert into MyWindowLCJ select TheString as key, longBoxed as value from SupportBean";
+                    "insert into MyWindowLCJ select TheString as key, LongBoxed as value from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 // send events
@@ -5668,9 +5668,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     new object[] {"E2", 1L});
 
                 // This replays into MyWindow
-                var stmtTextSelectTwo = "@Name('s2') select key, value, symbol from MyWindowLCJ as s0" +
+                var stmtTextSelectTwo = "@Name('s2') select key, value, Symbol from MyWindowLCJ as s0" +
                                         " left outer join SupportMarketDataBean#keepall as s1" +
-                                        " on s0.value = s1.volume";
+                                        " on s0.value = s1.Volume";
                 env.CompileDeploy(stmtTextSelectTwo, path).AddListener("s2");
                 Assert.IsFalse(env.Listener("s2").IsInvoked);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -5741,7 +5741,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new[] {"key", "value"};
                 var epl = "@Name('create') create window MyWindowPAT#keepall as MySimpleKeyValueMap;\n" +
                           "@Name('s0') select a.key as key, a.value as value from pattern [every a=MyWindowPAT(key='S1') or a=MyWindowPAT(key='S2')];\n" +
-                          "insert into MyWindowPAT select TheString as key, longBoxed as value from SupportBean;\n";
+                          "insert into MyWindowPAT select TheString as key, LongBoxed as value from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSupportBean(env, "E1", 1L);
@@ -5780,9 +5780,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var epl =
                     "@Name('create') create window MyWindowETB#ext_timed_batch(value, 10 sec, 0L) as MySimpleKeyValueMap;\n" +
-                    "insert into MyWindowETB select TheString as key, longBoxed as value from SupportBean;\n" +
+                    "insert into MyWindowETB select TheString as key, LongBoxed as value from SupportBean;\n" +
                     "@Name('s0') select irstream key, value as value from MyWindowETB;\n" +
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowETB as s1 where s0.symbol = s1.key;\n";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowETB as s1 where s0.Symbol = s1.key;\n";
                 env.CompileDeploy(epl).AddListener("delete").AddListener("create").AddListener("s0");
 
                 env.Milestone(0);

@@ -503,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 TryInvalidCompile(
                     env,
                     "select SupportEnum.ENUM_VALUE_1 from SupportBean",
-                    "Failed to validate select-clause expression 'SupportEnum.ENUM_VALUE_1'");
+                    "Failed to valIdate select-clause expression 'SupportEnum.ENUM_VALUE_1'");
 
                 env.UndeployAll();
             }

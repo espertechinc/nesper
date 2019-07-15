@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select countever(distinct IntPrimitive) from SupportBean",
-                    "Failed to validate select-clause expression 'countever(distinct IntPrimitive)': Aggregation function 'countever' does now allow distinct [");
+                    "Failed to valIdate select-clause expression 'countever(distinct IntPrimitive)': Aggregation function 'countever' does now allow distinct [");
             }
         }
 
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var fields = "firsteverstring,lasteverstring,counteverall".SplitCsv();
                 var epl = "create window MyWindow#keepall as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "on SupportBean_A delete from MyWindow where theString = id;\n" +
+                          "on SupportBean_A delete from MyWindow where TheString = Id;\n" +
                           "@Name('s0') select firstever(TheString) as firsteverstring, " +
                           "lastever(TheString) as lasteverstring," +
                           "countever(*) as counteverall from MyWindow";
@@ -129,9 +129,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "first(TheString) as firststring, " +
                           "last(TheString) as laststring, " +
                           "countever(*) as cntstar, " +
-                          "countever(intBoxed) as cntexpr, " +
+                          "countever(IntBoxed) as cntexpr, " +
                           "countever(*,BoolPrimitive) as cntstarfiltered, " +
-                          "countever(intBoxed,BoolPrimitive) as cntexprfiltered " +
+                          "countever(IntBoxed,BoolPrimitive) as cntexprfiltered " +
                           "from SupportBean.win:length(2)";
                 env.CompileDeploy(soda, epl).AddListener("s0");
 

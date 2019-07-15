@@ -71,11 +71,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunDocSampleUpToN(RegressionEnvironment env)
         {
-            var fields = "a_id,b_id".SplitCsv();
+            var fields = "a_Id,b_Id".SplitCsv();
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
-                      "  measures A.id as a_id, B.id as b_id\n" +
+                      "  measures A.Id as a_Id, B.Id as b_Id\n" +
                       "  pattern (match_recognize_permute(A, B))\n" +
                       "  define \n" +
                       "\tA as A.temp < 100, \n" +

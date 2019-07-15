@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = "c0,c1,c2".SplitCsv();
 
                 var epl =
-                    "@Name('s0') select a[0].TheString as c0, a[1].TheString as c1, b.TheString as c2 from pattern [a=SupportBean(intPrimitive=0) until b=SupportBean(intPrimitive=1)]";
+                    "@Name('s0') select a[0].TheString as c0, a[1].TheString as c1, b.TheString as c2 from pattern [a=SupportBean(IntPrimitive=0) until b=SupportBean(IntPrimitive=1)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var testCaseList = new CaseList();
                 EventExpressionCase testCase;
 
-                testCase = new EventExpressionCase("a=SupportBean_A(id='A2') until SupportBean_D");
+                testCase = new EventExpressionCase("a=SupportBean_A(Id='A2') until SupportBean_D");
                 testCase.Add("D1", "a[0]", events.GetEvent("A2"));
                 testCaseList.AddTest(testCase);
 
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("A1", "b[0]", null, "a", events.GetEvent("A1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B until SupportBean_D(id='D3')");
+                testCase = new EventExpressionCase("b=SupportBean_B until SupportBean_D(Id='D3')");
                 testCase.Add(
                     "D3",
                     "b[0]",
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "(a=SupportBean_A or b=SupportBean_B) until d=SupportBean_D(id='D3')");
+                    "(a=SupportBean_A or b=SupportBean_B) until d=SupportBean_D(Id='D3')");
                 testCase.Add(
                     "D3",
                     new[] {
@@ -189,11 +189,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     });
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("(d=SupportBean_D) until a=SupportBean_A(id='A1')");
+                testCase = new EventExpressionCase("(d=SupportBean_D) until a=SupportBean_A(Id='A1')");
                 testCase.Add("A1");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("a=SupportBean_A until SupportBean_G(id='GX')");
+                testCase = new EventExpressionCase("a=SupportBean_A until SupportBean_G(Id='GX')");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("[2] a=SupportBean_A");
@@ -240,17 +240,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 // the until ends the matching returning permanently false
-                testCase = new EventExpressionCase("[2] b=SupportBean_B until a=SupportBean_A(id='A1')");
+                testCase = new EventExpressionCase("[2] b=SupportBean_B until a=SupportBean_A(Id='A1')");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("[2] b=SupportBean_B until c=SupportBean_C");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("[2:2] b=SupportBean_B until g=SupportBean_G(id='G1')");
+                testCase = new EventExpressionCase("[2:2] b=SupportBean_B until g=SupportBean_G(Id='G1')");
                 testCase.Add("B2", "b[0]", events.GetEvent("B1"), "b[1]", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("[:4] b=SupportBean_B until g=SupportBean_G(id='G1')");
+                testCase = new EventExpressionCase("[:4] b=SupportBean_B until g=SupportBean_G(Id='G1')");
                 testCase.Add(
                     "G1",
                     "b[0]",
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     events.GetEvent("G1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("[:3] b=SupportBean_B until g=SupportBean_G(id='G1')");
+                testCase = new EventExpressionCase("[:3] b=SupportBean_B until g=SupportBean_G(Id='G1')");
                 testCase.Add(
                     "G1",
                     "b[0]",
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     events.GetEvent("G1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("[:2] b=SupportBean_B until g=SupportBean_G(id='G1')");
+                testCase = new EventExpressionCase("[:2] b=SupportBean_B until g=SupportBean_G(Id='G1')");
                 testCase.Add(
                     "G1",
                     "b[0]",
@@ -287,15 +287,15 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     events.GetEvent("G1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("[:1] b=SupportBean_B until g=SupportBean_G(id='G1')");
+                testCase = new EventExpressionCase("[:1] b=SupportBean_B until g=SupportBean_G(Id='G1')");
                 testCase.Add("G1", "b[0]", events.GetEvent("B1"), "g", events.GetEvent("G1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("[:1] b=SupportBean_B until a=SupportBean_A(id='A1')");
+                testCase = new EventExpressionCase("[:1] b=SupportBean_B until a=SupportBean_A(Id='A1')");
                 testCase.Add("A1", "b[0]", null, "a", events.GetEvent("A1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("[1:] b=SupportBean_B until g=SupportBean_G(id='G1')");
+                testCase = new EventExpressionCase("[1:] b=SupportBean_B until g=SupportBean_G(Id='G1')");
                 testCase.Add(
                     "G1",
                     "b[0]",
@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase = new EventExpressionCase("[1:] b=SupportBean_B until a=SupportBean_A");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("[2:] b=SupportBean_B until a=SupportBean_A(id='A2')");
+                testCase = new EventExpressionCase("[2:] b=SupportBean_B until a=SupportBean_A(Id='A2')");
                 testCase.Add(
                     "A2",
                     "b[0]",
@@ -326,14 +326,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 // same event triggering both clauses, until always wins, match does not count
-                testCase = new EventExpressionCase("[2:] b=SupportBean_B until e=SupportBean_B(id='B2')");
+                testCase = new EventExpressionCase("[2:] b=SupportBean_B until e=SupportBean_B(Id='B2')");
                 testCaseList.AddTest(testCase);
 
                 // same event triggering both clauses, until always wins, match does not count
-                testCase = new EventExpressionCase("[1:] b=SupportBean_B until e=SupportBean_B(id='B1')");
+                testCase = new EventExpressionCase("[1:] b=SupportBean_B until e=SupportBean_B(Id='B1')");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("[1:2] b=SupportBean_B until a=SupportBean_A(id='A2')");
+                testCase = new EventExpressionCase("[1:2] b=SupportBean_B until a=SupportBean_A(Id='A2')");
                 testCase.Add(
                     "A2",
                     "b[0]",
@@ -531,7 +531,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    "@Name('s0') select a, b, a[0] as a0, a[0].id as a0Id, a[1] as a1, a[1].id as a1Id, a[2] as a2, a[2].id as a2Id from pattern [a=SupportBean_A until b=SupportBean_B]";
+                    "@Name('s0') select a, b, a[0] as a0, a[0].Id as a0Id, a[1] as a1, a[1].Id as a1Id, a[2] as a2, a[2].Id as a2Id from pattern [a=SupportBean_A until b=SupportBean_B]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.Milestone(0);
@@ -580,9 +580,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 Assert.AreSame(eventA1, theEvent.Get("a[0]"));
                 Assert.AreSame(eventA2, theEvent.Get("a[1]"));
                 Assert.IsNull(theEvent.Get("a[2]"));
-                Assert.AreEqual("A1", theEvent.Get("a[0].id"));
-                Assert.AreEqual("A2", theEvent.Get("a[1].id"));
-                Assert.IsNull(theEvent.Get("a[2].id"));
+                Assert.AreEqual("A1", theEvent.Get("a[0].Id"));
+                Assert.AreEqual("A2", theEvent.Get("a[1].Id"));
+                Assert.IsNull(theEvent.Get("a[2].Id"));
                 Assert.AreSame(eventB1, theEvent.Get("b"));
 
                 env.UndeployAll();
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 EventBean theEvent;
 
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean_C(id = ('C' || a[0].id || a[1].id || b.id))]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean_C(Id = ('C' || a[0].Id || a[1].Id || b.Id))]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 object eventA1 = new SupportBean_A("A1");
@@ -632,7 +632,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Test equals-optimization with array event
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean(TheString = a[1].id)]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean(TheString = a[1].Id)]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -649,7 +649,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Test in-optimization
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean(theString in(a[2].id))]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean(TheString in(a[2].Id))]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -667,7 +667,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Test not-in-optimization
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean(theString!=a[0].id and theString!=a[1].id and theString!=a[2].id)]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean(TheString!=a[0].Id and TheString!=a[1].Id and TheString!=a[2].Id)]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -687,7 +687,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Test range-optimization
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean(theString like 'A%') until b=SupportBean(theString like 'B%') => c=SupportBean(intPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)]";
+                    "@Name('s0') select * from pattern [a=SupportBean(TheString like 'A%') until b=SupportBean(TheString like 'B%') => c=SupportBean(IntPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 5));
@@ -712,7 +712,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    "@Name('s0') select * from pattern [every [2] (a=SupportBean_A() => b=SupportBean_B(id=a.id))]";
+                    "@Name('s0') select * from pattern [every [2] (a=SupportBean_A() => b=SupportBean_B(Id=a.Id))]";
 
                 env.CompileDeploy(stmt);
                 env.AddListener("s0");
@@ -728,7 +728,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // test with timer:interval
                 env.AdvanceTime(0);
                 var query =
-                    "@Name('s0') select * from pattern [every ([2:]e1=SupportBean(theString='2') until timer:interval(5))=>([2:]e2=SupportBean(theString='3') until timer:interval(2))]";
+                    "@Name('s0') select * from pattern [every ([2:]e1=SupportBean(TheString='2') until timer:interval(5))=>([2:]e2=SupportBean(TheString='3') until timer:interval(2))]";
                 env.CompileDeploy(query).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("2", 0));
@@ -748,9 +748,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // test followed by 3 streams
                 env.UndeployAll();
 
-                var epl = "@Name('s0') select * from pattern [ every [2] A=SupportBean(theString='1') " +
-                          "=> [2] B=SupportBean(theString='2' and IntPrimitive=A[0].IntPrimitive)" +
-                          "=> [2] C=SupportBean(theString='3' and IntPrimitive=A[0].IntPrimitive)]";
+                var epl = "@Name('s0') select * from pattern [ every [2] A=SupportBean(TheString='1') " +
+                          "=> [2] B=SupportBean(TheString='2' and IntPrimitive=A[0].IntPrimitive)" +
+                          "=> [2] C=SupportBean(TheString='3' and IntPrimitive=A[0].IntPrimitive)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("1", 10));
@@ -825,7 +825,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 ValidateStmt(env, stmtThree, 5, true, 2);
 
                 // test followed-by - bounded
-                env.CompileDeploy("@Name('s0') select * from pattern [s0=SupportBean_S0 => [s0.id] b=SupportBean]")
+                env.CompileDeploy("@Name('s0') select * from pattern [s0=SupportBean_S0 => [s0.Id] b=SupportBean]")
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(2));
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -865,7 +865,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AdvanceTime(16000);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.id".SplitCsv(),
+                    "a.Id".SplitCsv(),
                     new object[] {"A1"});
 
                 env.AdvanceTime(999999);
@@ -894,7 +894,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AdvanceTime(1024999);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.id,b[0].id,b[1].id".SplitCsv(),
+                    "a.Id,b[0].Id,b[1].Id".SplitCsv(),
                     new object[] {"A1", "B1", "B2"});
 
                 env.AdvanceTime(1999999);
@@ -910,7 +910,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var fields = "e[0].IntPrimitive,e[1].IntPrimitive".SplitCsv();
                 var epl =
-                    "@Name('s0') select * from pattern [every [2] (e = SupportBean(theString='A') and not SupportBean(theString='B'))]";
+                    "@Name('s0') select * from pattern [every [2] (e = SupportBean(TheString='A') and not SupportBean(TheString='B'))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A", 1));
@@ -976,12 +976,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "Incorrect range specification, a bounds value of zero or negative value is not allowed");
                 TryInvalidPattern(
                     env,
-                    "[1] a=SupportBean_A(a[0].id='a')",
-                    "Failed to validate filter expression 'a[0].id=\"a\"': Property named 'a[0].id' is not valid in any stream");
+                    "[1] a=SupportBean_A(a[0].Id='a')",
+                    "Failed to valIdate filter expression 'a[0].Id=\"a\"': Property named 'a[0].Id' is not valId in any stream");
                 TryInvalidPattern(
                     env,
-                    "a=SupportBean_A => SupportBean_B(a[0].id='a')",
-                    "Failed to validate filter expression 'a[0].id=\"a\"': Property named 'a[0].id' is not valid in any stream");
+                    "a=SupportBean_A => SupportBean_B(a[0].Id='a')",
+                    "Failed to valIdate filter expression 'a[0].Id=\"a\"': Property named 'a[0].Id' is not valId in any stream");
                 TryInvalidPattern(
                     env,
                     "(a=SupportBean_A until c=SupportBean_B) => c=SupportBean_C",

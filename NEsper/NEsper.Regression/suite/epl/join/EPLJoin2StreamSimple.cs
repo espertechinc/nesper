@@ -19,9 +19,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public void Run(RegressionEnvironment env)
         {
             var text =
-                "@Name('s0') select irstream s0.price, s1.price from SupportMarketDataBean(symbol='S0')#length(3) as s0," +
-                "SupportMarketDataBean(symbol='S1')#length(3) as s1 " +
-                " where s0.volume = s1.volume";
+                "@Name('s0') select irstream s0.price, s1.price from SupportMarketDataBean(Symbol='S0')#length(3) as s0," +
+                "SupportMarketDataBean(Symbol='S1')#length(3) as s1 " +
+                " where s0.Volume = s1.Volume";
             env.CompileDeployAddListenerMileZero(text, "s0");
 
             env.SendEventBean(MakeMarketDataEvent("S0", 100, 1));

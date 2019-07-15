@@ -372,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,a_cat,a_value,b_value".SplitCsv();
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by theString, cat" +
+                           "  partition by TheString, cat" +
                            "  measures A.TheString as a_string, A.cat as a_cat, A.value as a_value, B.value as b_value " +
                            "  all matches pattern (A B) " +
                            "  define " +

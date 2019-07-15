@@ -29,8 +29,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "theString != 'x' and theString != 'y' and doubleBoxed is not null",
-                "theString != 'x' and theString != 'y' and longBoxed is not null",
+                "theString != 'x' and TheString != 'y' and DoubleBoxed is not null",
+                "theString != 'x' and TheString != 'y' and LongBoxed is not null",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBeanWBoxed("E1", -1, null, null), false, false),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBeanWBoxed("x", -1, 1d, 1L), false, false),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBeanWBoxed("x", -1, 1d, null), false, false),

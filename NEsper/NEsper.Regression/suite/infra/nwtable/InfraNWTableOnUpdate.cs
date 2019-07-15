@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create window
                 var stmtTextCreate = namedWindow
                     ? "@Name('create') create window MyInfra.win:keepall() as SupportBean"
-                    : "@Name('create') create table MyInfra(theString string, IntPrimitive int primary key)";
+                    : "@Name('create') create table MyInfra(TheString string, IntPrimitive int primary key)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create onUpdate
                 var stmtTextOnUpdate =
-                    "@Name('update') on SupportBean_S0 update MyInfra set theString = p00 where IntPrimitive = id";
+                    "@Name('update') on SupportBean_S0 update MyInfra set TheString = p00 where IntPrimitive = Id";
                 env.CompileDeploy(stmtTextOnUpdate, path).AddListener("update");
                 Assert.AreEqual(
                     StatementType.ON_UPDATE,
@@ -159,15 +159,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var epl = namedWindow
                     ? "create window MyInfra#keepall as SupportBean;\n"
-                    : "create table MyInfra(theString string primary key, IntPrimitive int, intBoxed int, doublePrimitive double);\n";
+                    : "create table MyInfra(TheString string primary key, IntPrimitive int, IntBoxed int, DoublePrimitive double);\n";
                 epl +=
-                    "insert into MyInfra select TheString, IntPrimitive, intBoxed, doublePrimitive from SupportBean;\n";
+                    "insert into MyInfra select TheString, IntPrimitive, IntBoxed, DoublePrimitive from SupportBean;\n";
                 epl += "@Name('update') on SupportBean_S0 as sb " +
                        "update MyInfra as mywin" +
-                       " set IntPrimitive=id, intBoxed=mywin.IntPrimitive, doublePrimitive=initial.IntPrimitive" +
+                       " set IntPrimitive=Id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive" +
                        " where mywin.TheString = sb.p00;\n";
                 env.CompileDeploy(epl).AddListener("update");
-                var fields = "IntPrimitive,IntBoxed,doublePrimitive".SplitCsv();
+                var fields = "IntPrimitive,IntBoxed,DoublePrimitive".SplitCsv();
 
                 env.SendEventBean(MakeSupportBean("E1", 1, 2));
                 env.SendEventBean(new SupportBean_S0(5, "E1"));
@@ -212,16 +212,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? "@Name('create') create window MyInfraSS#keepall as SupportBean"
-                    : "@Name('create') create table MyInfraSS(theString string primary key, IntPrimitive int)";
+                    : "@Name('create') create table MyInfraSS(TheString string primary key, IntPrimitive int)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into MyInfraSS select TheString, IntPrimitive from SupportBean", path);
 
-                // This is better done with "set intPrimitive = IntPrimitive + 1"
+                // This is better done with "set IntPrimitive = IntPrimitive + 1"
                 var epl = "@Name(\"Self Update\")\n" +
                           "on SupportBean_A c\n" +
                           "update MyInfraSS s\n" +
-                          "set IntPrimitive = (select IntPrimitive from MyInfraSS t where t.TheString = c.id) + 1\n" +
-                          "where s.TheString = c.id";
+                          "set IntPrimitive = (select IntPrimitive from MyInfraSS t where t.TheString = c.Id) + 1\n" +
+                          "where s.TheString = c.Id";
                 env.CompileDeploy(epl, path);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "theString,intPrimitive".SplitCsv(),
+                    "theString,IntPrimitive".SplitCsv(),
                     new[] {new object[] {"E1", 3}, new object[] {"E2", 7}});
                 env.UndeployAll();
             }

@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = "c0,c1".SplitCsv();
 
                 var epl =
-                    "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(intPrimitive=0) or b=SupportBean(intPrimitive=1)]";
+                    "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(IntPrimitive=0) or b=SupportBean(IntPrimitive=1)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);

@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
         public object GetEvent(string eventId)
         {
             if (!testEvents.ContainsKey(eventId)) {
-                throw new ArgumentException("Event id " + eventId + " not found in data set");
+                throw new ArgumentException("Event Id " + eventId + " not found in data set");
             }
 
             return testEvents.Get(eventId);

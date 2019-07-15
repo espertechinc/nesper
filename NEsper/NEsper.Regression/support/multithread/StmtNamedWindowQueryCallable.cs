@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
         public object Call()
         {
-            var selectQuery = "select * from MyWindow where theString='" + threadKey + "' and longPrimitive=?::int";
+            var selectQuery = "select * from MyWindow where TheString='" + threadKey + "' and LongPrimitive=?::int";
             var compiled = env.CompileFAF(selectQuery, path);
             var prepared = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(compiled);
 

@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Map
             IDictionary<string, object> mapInner = new Dictionary<string, object>();
-            mapInner.Put("myInsideInt", 10);
+            mapInner.Put("myInsIdeInt", 10);
             IDictionary<string, object> topInner = new Dictionary<string, object>();
             topInner.Put("myInt", 1);
             topInner.Put("myString", "abc");
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, OA_TYPENAME, FOA, oaTop);
 
             // XML
-            var xml = "<myevent myInt=\"1\" myString=\"abc\"><nested myInsideInt=\"10\"/></myevent>";
+            var xml = "<myevent myInt=\"1\" myString=\"abc\"><nested myInsIdeInt=\"10\"/></myevent>";
             RunAssertion(env, XML_TYPENAME, FXML, xml);
 
             // Avro
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 .AsRecordSchema();
             var innerSchema = schema.GetField("nested").Schema.AsRecordSchema();
             var avroInner = new GenericRecord(innerSchema);
-            avroInner.Put("myInsideInt", 10);
+            avroInner.Put("myInsIdeInt", 10);
             var avro = new GenericRecord(schema);
             avro.Put("myInt", 1);
             avro.Put("myString", "abc");
@@ -83,12 +83,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             var jsonEventRenderer = env.Runtime.RenderEventService.GetJSONRenderer(env.Statement("s0").EventType);
             var json = jsonEventRenderer.Render(eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-            Assert.AreEqual("{\"myInt\":1,\"myString\":\"abc\",\"nested\":{\"myInsideInt\":10}}", json);
+            Assert.AreEqual("{\"myInt\":1,\"myString\":\"abc\",\"nested\":{\"myInsIdeInt\":10}}", json);
 
             var xmlEventRenderer = env.Runtime.RenderEventService.GetXMLRenderer(env.Statement("s0").EventType);
             var xml = xmlEventRenderer.Render("root", eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
             Assert.AreEqual(
-                "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><myInt>1</myInt><myString>abc</myString><nested><myInsideInt>10</myInsideInt></nested></root>",
+                "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><myInt>1</myInt><myString>abc</myString><nested><myInsIdeInt>10</myInsIdeInt></nested></root>",
                 xml);
 
             env.UndeployAll();

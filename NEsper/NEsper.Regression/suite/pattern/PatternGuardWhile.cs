@@ -85,25 +85,25 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var testCaseList = new CaseList();
                 EventExpressionCase testCase = null;
 
-                testCase = new EventExpressionCase("a=SupportBean_A => (every b=SupportBean_B) while(b.id != 'B2')");
+                testCase = new EventExpressionCase("a=SupportBean_A => (every b=SupportBean_B) while(b.Id != 'B2')");
                 testCase.Add("B1", "a", events.GetEvent("A1"), "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("a=SupportBean_A => (every b=SupportBean_B) while(b.id != 'B3')");
+                testCase = new EventExpressionCase("a=SupportBean_A => (every b=SupportBean_B) while(b.Id != 'B3')");
                 testCase.Add("B1", "a", events.GetEvent("A1"), "b", events.GetEvent("B1"));
                 testCase.Add("B2", "a", events.GetEvent("A1"), "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("(every b=SupportBean_B) while(b.id != 'B3')");
+                testCase = new EventExpressionCase("(every b=SupportBean_B) while(b.Id != 'B3')");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                var text = "select * from pattern [(every b=SupportBean_B) while (b.id!=\"B3\")]";
+                var text = "select * from pattern [(every b=SupportBean_B) while (b.Id!=\"B3\")]";
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard();
                 model = env.CopyMayFail(model);
-                Expression guardExpr = Expressions.Neq("b.id", "B3");
+                Expression guardExpr = Expressions.Neq("b.Id", "B3");
                 PatternExpr every = Patterns.Every(Patterns.Filter(Filter.Create("SupportBean_B"), "b"));
                 PatternExpr patternGuarded = Patterns.WhileGuard(every, guardExpr);
                 model.FromClause = FromClause.Create(PatternStream.Create(patternGuarded));
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("(every b=SupportBean_B) while(b.id != 'B1')");
+                testCase = new EventExpressionCase("(every b=SupportBean_B) while(b.Id != 'B1')");
                 testCaseList.AddTest(testCase);
 
                 var util = new PatternTestHarness(events, testCaseList, GetType());
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.CompileDeploy("@Name('var') create variable boolean myVariable = true", path);
 
                 var expression =
-                    "@Name('s0') select * from pattern [every a=SupportBean(theString like 'A%') => (every b=SupportBean(theString like 'B%')) while (myVariable)]";
+                    "@Name('s0') select * from pattern [every a=SupportBean(TheString like 'A%') => (every b=SupportBean(TheString like 'B%')) while (myVariable)]";
                 env.CompileDeploy(expression, path);
                 env.AddListener("s0");
 
@@ -156,11 +156,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern [every SupportBean while ('abc')]",
-                    "Invalid parameter for pattern guard 'SupportBean while (\"abc\")': Expression pattern guard requires a single expression as a parameter returning a true or false (boolean) value [select * from pattern [every SupportBean while ('abc')]]");
+                    "InvalId parameter for pattern guard 'SupportBean while (\"abc\")': Expression pattern guard requires a single expression as a parameter returning a true or false (boolean) value [select * from pattern [every SupportBean while ('abc')]]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern [every SupportBean while (abc)]",
-                    "Failed to validate pattern guard expression 'abc': Property named 'abc' is not valid in any stream [select * from pattern [every SupportBean while (abc)]]");
+                    "Failed to valIdate pattern guard expression 'abc': Property named 'abc' is not valId in any stream [select * from pattern [every SupportBean while (abc)]]");
             }
         }
     }

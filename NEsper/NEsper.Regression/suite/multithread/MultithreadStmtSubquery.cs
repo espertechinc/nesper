@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numRepeats)
         {
             env.CompileDeploy(
-                "@Name('s0') select (select id from SupportBean_S0#length(1000000) where id = s1.id) as value from SupportBean_S1 as s1");
+                "@Name('s0') select (select Id from SupportBean_S0#length(1000000) where Id = s1.Id) as value from SupportBean_S1 as s1");
             var listener = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listener);
 

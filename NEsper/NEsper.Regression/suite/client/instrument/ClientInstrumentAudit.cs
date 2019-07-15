@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(1, callback.Audits.Count);
                 var cb = callback.Audits[0];
-                Assert.AreEqual("SupportBean(theString=...) inserted SupportBean[SupportBean(E1, 1)]", cb.Message);
+                Assert.AreEqual("SupportBean(TheString=...) inserted SupportBean[SupportBean(E1, 1)]", cb.Message);
                 Assert.AreEqual(env.DeploymentId("ABC"), cb.DeploymentId);
                 Assert.AreEqual("ABC", cb.StatementName);
                 Assert.AreEqual(DEFAULT_RUNTIME_URI, cb.RuntimeURI);
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // expression-detail
                 AUDITLOG.Info("*** Expression-Nested: ");
                 env.CompileDeploy(
-                        "@Name('ABC') @Audit('expression-nested') select ('A'||theString)||'X' as val0 from SupportBean")
+                        "@Name('ABC') @Audit('expression-nested') select ('A'||TheString)||'X' as val0 from SupportBean")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 50));
                 Assert.AreEqual("AE1X", env.Listener("ABC").AssertOneGetNewAndReset().Get("val0"));
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // data flow
                 env.CompileDeploy(
                     "@Audit @Name('df') create dataflow MyFlow " +
-                    "EventBusSource => a<SupportBean> {filter:theString like 'I%'} " +
+                    "EventBusSource => a<SupportBean> {filter:TheString like 'I%'} " +
                     "Filter(a) => b {filter: true}" +
                     "LogSink(b) {log:false}");
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("df"), "MyFlow");
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.CompileDeploy(
                     "create context WhenEventArrives " +
                     "initiated by SupportBean_ST0 as st0 " +
-                    "terminated by SupportBean_ST1(id=st0.id);\n" +
+                    "terminated by SupportBean_ST1(Id=st0.Id);\n" +
                     "@Audit('ContextPartition') context WhenEventArrives select * from SupportBean;\n");
                 env.SendEventBean(new SupportBean_ST0("E1", 0));
                 env.SendEventBean(new SupportBean_ST1("E1", 0));
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.CompileDeploy(
                     "@Name('into-table') @Audit into table TableOne select count(*) as cnt from SupportBean group by TheString",
                     path);
-                env.CompileDeploy("@Name('access-table') @Audit select TableOne[id].cnt from SupportBean_ST0", path)
+                env.CompileDeploy("@Name('access-table') @Audit select TableOne[Id].cnt from SupportBean_ST0", path)
                     .AddListener("access-table");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean_ST0("E1", 0));

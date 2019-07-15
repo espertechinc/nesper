@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@Name('infra') create context MyContext partition by theString from SupportBean",
+                    "@Name('infra') create context MyContext partition by TheString from SupportBean",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency context 'MyContext'";
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 TryInvalidDeploy(
                     env,
                     path,
-                    "on SupportBean_S0 as sb update MyWindow as mw set theString='a' where sb.id = mw.IntPrimitive",
+                    "on SupportBean_S0 as sb update MyWindow as mw set TheString='a' where sb.Id = mw.IntPrimitive",
                     text);
 
                 env.UndeployAll();

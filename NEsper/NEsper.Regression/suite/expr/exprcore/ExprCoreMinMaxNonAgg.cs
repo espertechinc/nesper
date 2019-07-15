@@ -19,10 +19,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreMinMaxNonAgg
     {
-        private const string EPL = "select max(longBoxed,IntBoxed) as myMax, " +
-                                   "max(longBoxed,IntBoxed,shortBoxed) as myMaxEx, " +
-                                   "min(longBoxed,IntBoxed) as myMin, " +
-                                   "min(longBoxed,IntBoxed,shortBoxed) as myMinEx" +
+        private const string EPL = "select max(LongBoxed,IntBoxed) as myMax, " +
+                                   "max(LongBoxed,IntBoxed,ShortBoxed) as myMaxEx, " +
+                                   "min(LongBoxed,IntBoxed) as myMin, " +
+                                   "min(LongBoxed,IntBoxed,ShortBoxed) as myMinEx" +
                                    " from SupportBean#length(3)";
 
         public static IList<RegressionExecution> Executions()

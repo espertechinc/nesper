@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numThreads,
             int numRepeats)
         {
-            var compiled = env.Compile("@Name('upd') update istream SupportBean set theString='a'");
+            var compiled = env.Compile("@Name('upd') update istream SupportBean set TheString='a'");
 
             var threadPool = Executors.NewFixedThreadPool(
                 numThreads,

@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
     {
         public void Run(RegressionEnvironment env)
         {
-            var sql = "select myint from mytesttable where ${intPrimitive} = myint'" +
+            var sql = "select myint from mytesttable where ${IntPrimitive} = myint'" +
                       "metadatasql 'select myint from mytesttable'";
             var stmtText = "@Name('s0') select myint from " +
                            " sql:MyDBLowerCase ['" +

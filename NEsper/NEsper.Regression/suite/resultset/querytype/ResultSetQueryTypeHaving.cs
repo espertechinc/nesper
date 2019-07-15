@@ -123,8 +123,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             var epl =
                 "@Name('s0') select irstream a.price as aPrice, b.price as bPrice, Math.max(a.price, b.price) - Math.min(a.price, b.price) as spread " +
-                "from SupportMarketDataBean(symbol='SYM1')#length(1) as a, " +
-                "SupportMarketDataBean(symbol='SYM2')#length(1) as b " +
+                "from SupportMarketDataBean(Symbol='SYM1')#length(1) as a, " +
+                "SupportMarketDataBean(Symbol='SYM2')#length(1) as b " +
                 filterClause +
                 " Math.max(a.price, b.price) - Math.min(a.price, b.price) >= 1.4";
             env.CompileDeploy(epl).AddListener("s0");
@@ -307,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 model.HavingClause = Expressions.Lt(Expressions.Property("Price"), Expressions.Avg("Price"));
                 model = env.CopyMayFail(model);
 
-                var epl = "select irstream symbol, price, avg(price) as avgPrice " +
+                var epl = "select irstream Symbol, price, avg(price) as avgPrice " +
                           "from SupportMarketDataBean#length(5) " +
                           "having price<avg(price)";
                 Assert.AreEqual(epl, model.ToEPL());
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol, price, avg(price) as avgPrice " +
+                var epl = "@Name('s0') select irstream Symbol, price, avg(price) as avgPrice " +
                           "from SupportMarketDataBean#length(5) " +
                           "having price < avg(price)";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -340,10 +340,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol, price, avg(price) as avgPrice " +
+                var epl = "@Name('s0') select irstream Symbol, price, avg(price) as avgPrice " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(5) as two " +
-                          "where one.TheString = two.symbol " +
+                          "where one.TheString = two.Symbol " +
                           "having price < avg(price)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -359,9 +359,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol, price, avg(price) as avgPrice " +
+                var epl = "@Name('s0') select irstream Symbol, price, avg(price) as avgPrice " +
                           "from SupportMarketDataBean#length(5) as two " +
-                          "having volume < avg(price)";
+                          "having Volume < avg(price)";
                 env.CompileDeploy(epl).UndeployAll();
             }
         }

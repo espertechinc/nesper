@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 var statementName = "s" + i;
                 var stmtText =
                     $"@Name('s{i}')select * from pattern" +
-                    $" [ every e1=SupportByteArrEventLongId(id={i}) => timer:interval(1 seconds)]";
+                    $" [ every e1=SupportByteArrEventLongId(Id={i}) => timer:interval(1 seconds)]";
 
                 var supportCountListener = new SupportCountListener();
                 env.CompileDeploy(

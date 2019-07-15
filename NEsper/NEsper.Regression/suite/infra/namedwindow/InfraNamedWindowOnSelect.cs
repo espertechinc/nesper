@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var eplInsert = "@Name('insert') insert into MyWindow select * from SupportBean";
                 env.CompileDeploy(eplInsert, path);
 
-                var eplOnExpr = "@Name('delete') on SupportBean_S0 delete from MyWindow where IntPrimitive = id";
+                var eplOnExpr = "@Name('delete') on SupportBean_S0 delete from MyWindow where IntPrimitive = Id";
                 env.CompileDeploy(eplOnExpr, path);
 
                 env.Milestone(0);
@@ -110,10 +110,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
 
                 var epl = "@Name('create') create window MyWindow#keepall as select * from SupportBean;\n" +
-                          "insert into MyWindow select * from SupportBean(theString like 'E%');\n" +
-                          "@Name('select') on SupportBean_A insert into MyStream select mywin.* from MyWindow as mywin order by theString asc;\n" +
+                          "insert into MyWindow select * from SupportBean(TheString like 'E%');\n" +
+                          "@Name('select') on SupportBean_A insert into MyStream select mywin.* from MyWindow as mywin order by TheString asc;\n" +
                           "@Name('consumer') select * from MyStream;\n" +
-                          "insert into MyStream select * from SupportBean(theString like 'I%');\n";
+                          "insert into MyStream select * from SupportBean(TheString like 'I%');\n";
                 env.CompileDeploy(epl, path).AddListener("select").AddListener("consumer");
                 Assert.AreEqual(
                     StatementType.ON_INSERT,

@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("IntPrimitive"));
             Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col2"));
 
-            var fieldsInner = "theString,intPrimitive,col2".SplitCsv();
+            var fieldsInner = "theString,IntPrimitive,col2".SplitCsv();
             env.SendEventBean(new SupportBean("E1", 1));
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             AtomicLong milestone)
         {
             var epl = rep.GetAnnotationText() +
-                      "@Name('s0') select new { theString = 'x' || theString || 'x', intPrimitive = IntPrimitive + 2} as val0 from SupportBean as sb";
+                      "@Name('s0') select new { TheString = 'x' || TheString || 'x', IntPrimitive = IntPrimitive + 2} as val0 from SupportBean as sb";
             env.CompileDeploy(epl).AddListener("s0").Milestone(milestone.GetAndIncrement());
 
             Assert.AreEqual(
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
             Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("IntPrimitive").GetBoxedType());
 
-            var fieldsInner = "theString,intPrimitive".SplitCsv();
+            var fieldsInner = "theString,IntPrimitive".SplitCsv();
             env.SendEventBean(new SupportBean("E1", -5));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             if (rep.IsAvroEvent()) {
@@ -170,9 +170,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "case theString" +
-                          " when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\"}" +
-                          " when \"B\" then new{theString,intPrimitive=10,col2=theString||\"B\"} " +
+                          "case TheString" +
+                          " when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\"}" +
+                          " when \"B\" then new{TheString,IntPrimitive=10,col2=TheString||\"B\"} " +
                           "end as val0 from SupportBean as sb";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -185,13 +185,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 // test to-expression string
                 epl = "@Name('s0') select " +
-                      "case theString" +
-                      " when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\" }" +
-                      " when \"B\" then new{theString,intPrimitive = 10,col2=theString||\"B\" } " +
+                      "case TheString" +
+                      " when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\" }" +
+                      " when \"B\" then new{TheString,IntPrimitive = 10,col2=TheString||\"B\" } " +
                       "end from SupportBean as sb";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(
-                    "case theString when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\"} when \"B\" then new{theString,intPrimitive=10,col2=theString||\"B\"} end",
+                    "case TheString when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\"} when \"B\" then new{TheString,IntPrimitive=10,col2=TheString||\"B\"} end",
                     env.Statement("s0").EventType.PropertyNames[0]);
                 env.UndeployAll();
             }
@@ -204,15 +204,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var milestone = new AtomicLong();
                 var epl = "@Name('s0') select " +
                           "case " +
-                          "  when theString = 'A' then new { col1 = 'X', col2 = 10 } " +
-                          "  when theString = 'B' then new { col1 = 'Y', col2 = 20 } " +
-                          "  when theString = 'C' then new { col1 = null, col2 = null } " +
+                          "  when TheString = 'A' then new { col1 = 'X', col2 = 10 } " +
+                          "  when TheString = 'B' then new { col1 = 'Y', col2 = 20 } " +
+                          "  when TheString = 'C' then new { col1 = null, col2 = null } " +
                           "  else new { col1 = 'Z', col2 = 30 } " +
                           "end as val0 from SupportBean sb";
                 TryAssertion(env, epl, milestone);
 
                 epl = "@Name('s0') select " +
-                      "case theString " +
+                      "case TheString " +
                       "  when 'A' then new { col1 = 'X', col2 = 10 } " +
                       "  when 'B' then new { col1 = 'Y', col2 = 20 } " +
                       "  when 'C' then new { col1 = null, col2 = null } " +
@@ -232,31 +232,31 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(44 chars)': Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value, check the else-condition [select case when true then new { col1 = 'a' } else 1 end from SupportBean]");
+                    "Failed to valIdate select-clause expression 'case when true then new{col1=\"a\"} e...(44 chars)': Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value, check the else-condition [select case when true then new { col1 = 'a' } else 1 end from SupportBean]");
 
                 epl = "select case when true then new { col1 = 'a' } when false then 1 end from SupportBean";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} w...(55 chars)': Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value, check when-condition number 1 [select case when true then new { col1 = 'a' } when false then 1 end from SupportBean]");
+                    "Failed to valIdate select-clause expression 'case when true then new{col1=\"a\"} w...(55 chars)': Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value, check when-condition number 1 [select case when true then new { col1 = 'a' } when false then 1 end from SupportBean]");
 
                 epl = "select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(54 chars)': Incompatible case-when return types by new-operator in case-when number 1: Type by name 'Case-when number 1' in property 'col1' expected class System.String but receives class System.Integer [select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean]");
+                    "Failed to valIdate select-clause expression 'case when true then new{col1=\"a\"} e...(54 chars)': Incompatible case-when return types by new-operator in case-when number 1: Type by name 'Case-when number 1' in property 'col1' expected class System.String but receives class System.Integer [select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean]");
 
                 epl = "select case when true then new { col1 = 'a' } else new { col2 = 'a' } end from SupportBean";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(56 chars)': Incompatible case-when return types by new-operator in case-when number 1: The property 'col1' is not provided but required [select case when true then new { col1 = 'a' } else new { col2 = 'a' } end from SupportBean]");
+                    "Failed to valIdate select-clause expression 'case when true then new{col1=\"a\"} e...(56 chars)': Incompatible case-when return types by new-operator in case-when number 1: The property 'col1' is not provIded but required [select case when true then new { col1 = 'a' } else new { col2 = 'a' } end from SupportBean]");
 
                 epl = "select case when true then new { col1 = 'a', col1 = 'b' } end from SupportBean";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\",co...(46 chars)': Failed to validate new-keyword property names, property 'col1' has already been declared [select case when true then new { col1 = 'a', col1 = 'b' } end from SupportBean]");
+                    "Failed to valIdate select-clause expression 'case when true then new{col1=\"a\",co...(46 chars)': Failed to valIdate new-keyword property names, property 'col1' has already been declared [select case when true then new { col1 = 'a', col1 = 'b' } end from SupportBean]");
             }
         }
     }

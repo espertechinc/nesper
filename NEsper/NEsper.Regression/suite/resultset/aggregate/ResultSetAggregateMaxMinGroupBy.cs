@@ -244,13 +244,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream symbol, " +
-                          "min(all volume) as minVol," +
-                          "max(all volume) as maxVol," +
-                          "min(distinct volume) as minDistVol," +
-                          "max(distinct volume) as maxDistVol" +
+                var epl = "@Name('s0') select irstream Symbol, " +
+                          "min(all Volume) as minVol," +
+                          "max(all Volume) as maxVol," +
+                          "min(distinct Volume) as minDistVol," +
+                          "max(distinct Volume) as maxDistVol" +
                           " from SupportMarketDataBean#length(3) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -282,13 +282,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 model.GroupByClause = GroupByClause.Create("Symbol");
                 model = env.CopyMayFail(model);
 
-                var epl = "select irstream symbol, " +
-                          "min(volume) as minVol, " +
-                          "max(volume) as maxVol, " +
-                          "min(distinct volume) as minDistVol, " +
-                          "max(distinct volume) as maxDistVol " +
+                var epl = "select irstream Symbol, " +
+                          "min(Volume) as minVol, " +
+                          "max(Volume) as maxVol, " +
+                          "min(distinct Volume) as minDistVol, " +
+                          "max(distinct Volume) as maxDistVol " +
                           "from SupportMarketDataBean#length(3) " +
-                          "where symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\" " +
+                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
                 Assert.AreEqual(epl, model.ToEPL());
 
@@ -305,13 +305,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol, " +
-                          "min(volume) as minVol, " +
-                          "max(volume) as maxVol, " +
-                          "min(distinct volume) as minDistVol, " +
-                          "max(distinct volume) as maxDistVol " +
+                var epl = "@Name('s0') select irstream Symbol, " +
+                          "min(Volume) as minVol, " +
+                          "max(Volume) as maxVol, " +
+                          "min(distinct Volume) as minDistVol, " +
+                          "max(distinct Volume) as maxDistVol " +
                           "from SupportMarketDataBean#length(3) " +
-                          "where symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\" " +
+                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
@@ -325,15 +325,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol, " +
-                          "min(volume) as minVol," +
-                          "max(volume) as maxVol," +
-                          "min(distinct volume) as minDistVol," +
-                          "max(distinct volume) as maxDistVol" +
+                var epl = "@Name('s0') select irstream Symbol, " +
+                          "min(Volume) as minVol," +
+                          "max(Volume) as maxVol," +
+                          "min(distinct Volume) as minDistVol," +
+                          "max(distinct Volume) as maxDistVol" +
                           " from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                          "  and one.TheString = two.symbol " +
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
+                          "  and one.TheString = two.Symbol " +
                           "group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -350,8 +350,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select symbol from SupportMarketDataBean#time(5 sec) " +
-                               "having volume > min(volume) * 1.3";
+                var stmtText = "@Name('s0') select Symbol from SupportMarketDataBean#time(5 sec) " +
+                               "having Volume > min(Volume) * 1.3";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 SendEvent(env, "DELL", 100L);
@@ -378,8 +378,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select symbol, min(volume) as mymin from SupportMarketDataBean#length(5) " +
-                               "having volume > min(volume) * 1.3";
+                var stmtText = "@Name('s0') select Symbol, min(Volume) as mymin from SupportMarketDataBean#length(5) " +
+                               "having Volume > min(Volume) * 1.3";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 SendEvent(env, "DELL", 100L);

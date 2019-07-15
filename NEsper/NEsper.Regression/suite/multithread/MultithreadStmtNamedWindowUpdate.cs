@@ -47,10 +47,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.CompileDeploy(
                 "create window MyWindow#unique(TheString, IntPrimitive) as select * from SupportBean",
                 path);
-            env.CompileDeploy("insert into MyWindow select * from SupportBean(boolPrimitive = true)", path);
+            env.CompileDeploy("insert into MyWindow select * from SupportBean(BoolPrimitive = true)", path);
             env.CompileDeploy(
-                "on SupportBean(boolPrimitive = false) sb " +
-                "update MyWindow win set intBoxed = win.intBoxed + 1, doublePrimitive = win.doublePrimitive + sb.doublePrimitive" +
+                "on SupportBean(BoolPrimitive = false) sb " +
+                "update MyWindow win set IntBoxed = win.IntBoxed + 1, DoublePrimitive = win.DoublePrimitive + sb.DoublePrimitive" +
                 " where sb.TheString = win.TheString and sb.IntPrimitive = win.IntPrimitive",
                 path);
 

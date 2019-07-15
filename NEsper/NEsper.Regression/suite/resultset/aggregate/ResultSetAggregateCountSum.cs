@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select count(distinct *) from SupportMarketDataBean",
-                    "Failed to validate select-clause expression 'count(distinct *)': Invalid use of the 'distinct' keyword with count and wildcard");
+                    "Failed to valIdate select-clause expression 'count(distinct *)': InvalId use of the 'distinct' keyword with count and wildcard");
 
                 env.UndeployAll();
             }
@@ -309,12 +309,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 model.GroupByClause = GroupByClause.Create("Symbol");
                 model = env.CopyMayFail(model);
 
-                var epl = "select irstream symbol, " +
+                var epl = "select irstream Symbol, " +
                           "count(*) as countAll, " +
-                          "count(distinct volume) as countDistVol, " +
-                          "count(volume) as countVol" +
+                          "count(distinct Volume) as countDistVol, " +
+                          "count(Volume) as countVol" +
                           " from SupportMarketDataBean#length(3) " +
-                          "where symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\" " +
+                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
                 Assert.AreEqual(epl, model.ToEPL());
 
@@ -333,8 +333,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 // test for ESPER-328
                 var epl =
-                    "@Name('s0') select symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)" +
-                    "group by Symbol order by symbol asc";
+                    "@Name('s0') select Symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)" +
+                    "group by Symbol order by Symbol asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, SYMBOL_DELL, 50L);
@@ -381,12 +381,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol, " +
+                var epl = "@Name('s0') select irstream Symbol, " +
                           "count(*) as countAll, " +
-                          "count(distinct volume) as countDistVol, " +
-                          "count(volume) as countVol" +
+                          "count(distinct Volume) as countDistVol, " +
+                          "count(Volume) as countVol" +
                           " from SupportMarketDataBean#length(3) " +
-                          "where symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\" " +
+                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
@@ -400,12 +400,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol, " +
+                var epl = "@Name('s0') select irstream Symbol, " +
                           "count(*) as countAll," +
-                          "count(distinct volume) as countDistVol," +
-                          "count(all volume) as countVol" +
+                          "count(distinct Volume) as countDistVol," +
+                          "count(all Volume) as countVol" +
                           " from SupportMarketDataBean#length(3) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol";
 
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -420,14 +420,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol, " +
+                var epl = "@Name('s0') select irstream Symbol, " +
                           "count(*) as countAll," +
-                          "count(distinct volume) as countDistVol," +
-                          "count(volume) as countVol " +
+                          "count(distinct Volume) as countDistVol," +
+                          "count(Volume) as countVol " +
                           " from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                          "  and one.TheString = two.symbol " +
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
+                          "  and one.TheString = two.Symbol " +
                           "group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -446,7 +446,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol, count(distinct price) as countDistinctPrice " +
+                var epl = "@Name('s0') select irstream Symbol, count(distinct price) as countDistinctPrice " +
                           "from SupportMarketDataBean group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -465,9 +465,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var fields = "theString,mysum".SplitCsv();
                 var epl = "create window MyWindow.win:keepall() as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "on SupportBean_A a delete from MyWindow w where w.TheString = a.id;\n" +
+                          "on SupportBean_A a delete from MyWindow w where w.TheString = a.Id;\n" +
                           "on SupportBean_B delete from MyWindow;\n" +
-                          "@Name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by theString";
+                          "@Name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A", 100));

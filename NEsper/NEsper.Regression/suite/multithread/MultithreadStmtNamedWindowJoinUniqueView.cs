@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                       "insert into B select * from MyEventB;\n" +
                       "\n" +
                       "@Name('stmt') select sum(A.data) as aTotal,sum(B.data) as bTotal " +
-                      "from A unidirectional, B where A.key = B.key;\n";
+                      "from A unIdirectional, B where A.key = B.key;\n";
             env.CompileDeploy(epl);
 
             var es = Executors.NewFixedThreadPool(

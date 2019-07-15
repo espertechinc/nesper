@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                                            "<nested>\n" +
                                            "<nes2>3</nes2>\n" +
                                            "</nested>\n" +
-                                           "<map id='a'>4</map>\n" +
+                                           "<map Id='a'>4</map>\n" +
                                            "</simpleEvent>";
 
         public void Run(RegressionEnvironment env)

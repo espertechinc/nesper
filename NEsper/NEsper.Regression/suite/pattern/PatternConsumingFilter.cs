@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.UndeployAll();
 
                 pattern =
-                    "@Name('s0') select a.TheString as a, b.TheString as b from pattern [every (a=SupportBean and b=SupportBean(intPrimitive=10)@consume(2))]";
+                    "@Name('s0') select a.TheString as a, b.TheString as b from pattern [every (a=SupportBean and b=SupportBean(IntPrimitive=10)@consume(2))]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('A') select a.TheString as a, b.TheString as b from pattern[a=SupportBean and b=SupportBean(theString='A')@consume]";
+                    "@Name('A') select a.TheString as a, b.TheString as b from pattern[a=SupportBean and b=SupportBean(TheString='A')@consume]";
                 env.CompileDeploy(epl).AddListener("A");
 
                 string[] fields = {"a", "b"};
@@ -202,13 +202,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 TryAssertion(
                     env,
                     fields,
-                    "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(intPrimitive=11)@consume(1) or b=SupportBean] order by a asc",
+                    "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(IntPrimitive=11)@consume(1) or b=SupportBean] order by a asc",
                     new object[] {null, "E1"});
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(intPrimitive=10)@consume(1) or b=SupportBean] order by a asc",
+                    "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(IntPrimitive=10)@consume(1) or b=SupportBean] order by a asc",
                     new object[] {"E1", null});
 
                 fields = "a,b,c".SplitCsv();

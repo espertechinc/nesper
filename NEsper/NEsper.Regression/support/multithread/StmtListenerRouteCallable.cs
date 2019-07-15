@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 this.env = env;
                 this.numThread = numThread;
                 compiled = env.Compile(
-                    "@Name('t" + numThread + "') select * from SupportMarketDataBean where volume=" + numThread);
+                    "@Name('t" + numThread + "') select * from SupportMarketDataBean where Volume=" + numThread);
             }
 
             public void Update(

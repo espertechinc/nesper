@@ -149,9 +149,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             var epl = eventRepresentationEnum.GetAnnotationText() +
                       " create schema InnerSchema as (key string);\n" +
                       eventRepresentationEnum.GetAnnotationText() +
-                      " create schema MySchema as (inside InnerSchema, insidearr InnerSchema[]);\n" +
+                      " create schema MySchema as (insIde InnerSchema, insIdearr InnerSchema[]);\n" +
                       eventRepresentationEnum.GetAnnotationText() +
-                      " @name('s0') select typeof(s0.inside) as t0, typeof(s0.insidearr) as t1 from MySchema as s0;\n";
+                      " @name('s0') select typeof(s0.insIde) as t0, typeof(s0.insIdearr) as t1 from MySchema as s0;\n";
             string[] fields = {"t0", "t1"};
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
             var deploymentId = env.DeploymentId("s0");
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new Dictionary<string, object>();
-                theEvent.Put("inside", new Dictionary<string, object>());
+                theEvent.Put("insIde", new Dictionary<string, object>());
                 env.SendEventMap(theEvent, "MySchema");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .GetAvroSchema(env.Runtime.EventTypeService.GetEventType(deploymentId, "InnerSchema"))
                     .AsRecordSchema();
                 var @event = new GenericRecord(mySchema);
-                @event.Put("inside", new GenericRecord(innerSchema));
+                @event.Put("insIde", new GenericRecord(innerSchema));
                 env.SendEventAvro(@event, "MySchema");
             }
             else {
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new Dictionary<string, object>();
-                theEvent.Put("insidearr", new IDictionary<string, object>[0]);
+                theEvent.Put("insIdearr", new IDictionary<string, object>[0]);
                 env.SendEventMap(theEvent, "MySchema");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .GetAvroSchema(env.Runtime.EventTypeService.GetEventType(deploymentId, "MySchema"))
                     .AsRecordSchema();
                 var @event = new GenericRecord(mySchema);
-                @event.Put("insidearr", new EmptyList<object>());
+                @event.Put("insIdearr", new EmptyList<object>());
                 env.SendEventAvro(@event, "MySchema");
             }
             else {
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select typeof(xx) from SupportBean",
-                    "Failed to validate select-clause expression 'typeof(xx)': Property named 'xx' is not valid in any stream [select typeof(xx) from SupportBean]");
+                    "Failed to valIdate select-clause expression 'typeof(xx)': Property named 'xx' is not valId in any stream [select typeof(xx) from SupportBean]");
             }
         }
 

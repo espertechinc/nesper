@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             RunAssertionMeasurePresence(env, 0, "B.size()", 1);
             RunAssertionMeasurePresence(env, 0, "100+B.size()", 101);
-            RunAssertionMeasurePresence(env, 1000000, "B.anyOf(v=>theString='E2')", true);
+            RunAssertionMeasurePresence(env, 1000000, "B.anyOf(v=>TheString='E2')", true);
 
             RunAssertionDefineNotPresent(env, true);
             RunAssertionDefineNotPresent(env, false);
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.AdvanceTime(baseTime);
             var epl = "@Name('s0') select * from SupportBean  " +
                       "match_recognize (" +
-                      "    measures A as a, A.TheString as id, " +
+                      "    measures A as a, A.TheString as Id, " +
                       select +
                       " as val " +
                       "    pattern (A B*) " +

@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
                 catch (Exception t) {
                     Assert.AreEqual(
-                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
+                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 Id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consIder renaming either of these types",
                         t.Message);
                 }
             }
@@ -367,12 +367,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 TryInvalidCompile(
                     env,
-                    "create schema Invalid (x dummy[primitive])",
-                    "Type 'dummy' is not a primitive type [create schema Invalid (x dummy[primitive])]");
+                    "create schema InvalId (x dummy[primitive])",
+                    "Type 'dummy' is not a primitive type [create schema InvalId (x dummy[primitive])]");
                 TryInvalidCompile(
                     env,
-                    "create schema Invalid (x int[dummy])",
-                    "Invalid array keyword 'dummy', expected 'primitive'");
+                    "create schema InvalId (x int[dummy])",
+                    "InvalId array keyword 'dummy', expected 'primitive'");
             }
 
             private static void TryAssertionSchemaArrayPrimitiveType(
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(theEvent);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].id".SplitCsv(),
+                    "bean.TheString,beanarray[0].Id".SplitCsv(),
                     new object[] {"E1", 2});
                 env.UndeployModuleContaining("s0");
 
@@ -456,13 +456,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(theEvent);
                 EPAssertionUtil.AssertProps(
                     env.Listener("window").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].id".SplitCsv(),
+                    "bean.TheString,beanarray[0].Id".SplitCsv(),
                     new object[] {"E1", 2});
                 env.UndeployModuleContaining("windowInsertOne");
 
                 // insert pattern to named window
                 env.CompileDeploy(
-                    "@Name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean => s0Arr=SupportBean_S0 until SupportBean_S0(id=0)]",
+                    "@Name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean => s0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
                     path);
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.SendEventBean(new SupportBean_S0(10, "S0_1"));
@@ -470,7 +470,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S0(0, "S0_3"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("window").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].id,beanarray[1].id".SplitCsv(),
+                    "bean.TheString,beanarray[0].Id,beanarray[1].Id".SplitCsv(),
                     new object[] {"E2", 10, 20});
                 env.UndeployModuleContaining("windowInsertOne");
 
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(theEvent);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].id".SplitCsv(),
+                    "bean.TheString,beanarray[0].Id".SplitCsv(),
                     new object[] {"E1", 2});
 
                 env.UndeployAll();
@@ -620,7 +620,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     " create schema E4 as " +
                     typeof(SupportBean).Name +
                     " copyFrom XYZ",
-                    "Copy-from types are not allowed with class-provided types [");
+                    "Copy-from types are not allowed with class-provIded types [");
                 TryInvalidCompile(
                     env,
                     path,
@@ -663,7 +663,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     "create objectarray schema A();\n" +
                     "create objectarray schema B();\n" +
-                    "create objectarray schema InvalidOA () inherits A, B;\n",
+                    "create objectarray schema InvalIdOA () inherits A, B;\n",
                     "Object-array event types only allow a single supertype");
             }
 
@@ -705,7 +705,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     eventRepresentationEnum.GetAnnotationText() + " create schema MyEventTypeT3 as () inherits",
-                    "Incorrect syntax near end-of-input expecting an identifier but found end-of-input at line 1 column ");
+                    "Incorrect syntax near end-of-input expecting an Identifier but found end-of-input at line 1 column ");
 
                 env.UndeployAll();
             }
@@ -791,11 +791,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test keyword
                 TryInvalidCompile(
                     env,
-                    "create schema MySchemaInvalid as com.mycompany.event.ABC",
+                    "create schema MySchemaInvalId as com.mycompany.event.ABC",
                     "Could not load class by name 'com.mycompany.event.ABC', please check imports");
                 TryInvalidCompile(
                     env,
-                    "create schema MySchemaInvalid as com.mycompany.events.ABC",
+                    "create schema MySchemaInvalId as com.mycompany.events.ABC",
                     "Could not load class by name 'com.mycompany.events.ABC', please check imports");
 
                 env.UndeployAll();
@@ -871,7 +871,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "insert into MyVariantPredef select * from MyTypeTwo",
-                    "Selected event type is not a valid event type of the variant stream 'MyVariantPredef' [insert into MyVariantPredef select * from MyTypeTwo]");
+                    "Selected event type is not a valId event type of the variant stream 'MyVariantPredef' [insert into MyVariantPredef select * from MyTypeTwo]");
 
                 // try predefined with any
                 var createText =

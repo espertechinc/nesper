@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionMultiParamSingleArray(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select irstream countback({1,2,intPrimitive}) as val from SupportBean";
+            var text = "@Name('s0') select irstream countback({1,2,IntPrimitive}) as val from SupportBean";
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
@@ -234,12 +234,12 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             TryInvalidCompile(
                 env,
-                "select concatstring(*) as val from SupportBean#lastevent, SupportBean unidirectional",
-                "Failed to validate select-clause expression 'concatstring(*)': The 'concatstring' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead");
+                "select concatstring(*) as val from SupportBean#lastevent, SupportBean unIdirectional",
+                "Failed to valIdate select-clause expression 'concatstring(*)': The 'concatstring' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead");
             env.UndeployAll();
 
             // test distinct
-            var text = "@Name('s0') select irstream concatstring(distinct theString) as val from SupportBean";
+            var text = "@Name('s0') select irstream concatstring(distinct TheString) as val from SupportBean";
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean("a", -1));
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             SupportSupportBeanAggregationFunctionFactory.InstanceCount = 0;
             var fields = "val0,val1".SplitCsv();
             env.CompileDeploy(
-                    "@Name('s0') select (myagg(id)).getTheString() as val0, (myagg(id)).getIntPrimitive() as val1 from SupportBean_A")
+                    "@Name('s0') select (myagg(Id)).getTheString() as val0, (myagg(Id)).getIntPrimitive() as val1 from SupportBean_A")
                 .AddListener("s0");
 
             env.SendEventBean(new SupportBean_A("A1"));
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             RegressionEnvironment env,
             bool soda)
         {
-            var text = "@Name('s0') select irstream countboundary(1,10,intPrimitive,*) as val from SupportBean";
+            var text = "@Name('s0') select irstream countboundary(1,10,IntPrimitive,*) as val from SupportBean";
             env.CompileDeploy(soda, text).AddListener("s0");
 
             var validContext = SupportLowerUpperCompareAggregationFunctionForge.Contexts[0];
@@ -418,14 +418,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             TryInvalidCompile(
                 env,
                 "select concatstring(1) from SupportBean",
-                "Failed to validate select-clause expression 'concatstring(1)': Plug-in aggregation function 'concatstring' failed validation: Invalid parameter type '");
+                "Failed to valIdate select-clause expression 'concatstring(1)': Plug-in aggregation function 'concatstring' failed valIdation: InvalId parameter type '");
         }
 
         private void RunAssertionInvalidUse(RegressionEnvironment env)
         {
             TryInvalidCompile(
                 env,
-                "select * from SupportBean group by invalidAggFuncForge(1)",
+                "select * from SupportBean group by invalIdAggFuncForge(1)",
                 "Error resolving aggregation: Class by name 'System.String' does not implement the AggregationFunctionForge interface");
 
             TryInvalidCompile(
@@ -439,7 +439,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             TryInvalidCompile(
                 env,
                 "select zzz(TheString) from SupportBean",
-                "Failed to validate select-clause expression 'zzz(TheString)': Unknown single-row function, aggregation function or mapped or indexed property named 'zzz' could not be resolved");
+                "Failed to valIdate select-clause expression 'zzz(TheString)': Unknown single-row function, aggregation function or mapped or indexed property named 'zzz' could not be resolved");
         }
     }
 } // end of namespace

@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(new SupportBean_S1(0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "theString,intPrimitive".SplitCsv(),
+                "theString,IntPrimitive".SplitCsv(),
                 new object[] {expectedString, expectedInt});
         }
 
@@ -297,11 +297,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 // batch-window assertions
                 var path = new RegressionPath();
                 var eplWithBatchSingleKey =
-                    "@Name('s0') select TheString from SupportBean#length_batch(10) order by theString limit 1";
+                    "@Name('s0') select TheString from SupportBean#length_batch(10) order by TheString limit 1";
                 TryAssertionLimitOneSingleKeySortBatch(env, path, eplWithBatchSingleKey);
 
                 var eplWithBatchMultiKey =
-                    "@Name('s0') select TheString, intPrimitive from SupportBean#length_batch(5) order by theString asc, IntPrimitive desc limit 1";
+                    "@Name('s0') select TheString, IntPrimitive from SupportBean#length_batch(5) order by TheString asc, IntPrimitive desc limit 1";
                 TryAssertionLimitOneMultiKeySortBatch(env, path, eplWithBatchMultiKey);
 
                 // context output-when-terminated assertions
@@ -310,13 +310,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var eplContextSingleKey = "@Name('s0') context StartS0EndS1 " +
                                           "select TheString from SupportBean#keepall " +
                                           "output snapshot when terminated " +
-                                          "order by theString limit 1";
+                                          "order by TheString limit 1";
                 TryAssertionLimitOneSingleKeySortBatch(env, path, eplContextSingleKey);
 
                 var eplContextMultiKey = "@Name('s0') context StartS0EndS1 " +
                                          "select TheString, IntPrimitive from SupportBean#keepall " +
                                          "output snapshot when terminated " +
-                                         "order by theString asc, IntPrimitive desc limit 1";
+                                         "order by TheString asc, IntPrimitive desc limit 1";
                 TryAssertionLimitOneMultiKeySortBatch(env, path, eplContextMultiKey);
 
                 env.UndeployAll();
@@ -540,7 +540,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 1000);
                 var epl =
-                    "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) output every 10 seconds order by theString desc limit 2";
+                    "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) output every 10 seconds order by TheString desc limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "theString,mysum".SplitCsv();

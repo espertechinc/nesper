@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "create context MyContext as partition by theString from SupportBean";
+                var epl = "create context MyContext as partition by TheString from SupportBean";
                 env.CompileDeploy(epl, path);
                 TryInvalidDeploy(env, epl, "A context by name 'MyContext'", MODULE_NAME_UNNAMED);
                 env.UndeployAll();

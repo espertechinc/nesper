@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select IntPrimitive=longPrimitive as c0, IntPrimitive is longPrimitive as c1 from SupportBean";
+                    "@Name('s0') select IntPrimitive=LongPrimitive as c0, IntPrimitive is LongPrimitive as c1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = "c0,c1".SplitCsv();
 
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select p00 = p01 as c0, id = id as c1, p02 is not null as c2 from SupportBean_S0";
+                    "@Name('s0') select p00 = p01 as c0, Id = Id as c1, p02 is not null as c2 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = "c0,c1,c2".SplitCsv();
 

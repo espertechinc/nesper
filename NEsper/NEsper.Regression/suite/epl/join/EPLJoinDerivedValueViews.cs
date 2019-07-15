@@ -21,8 +21,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                       "Math.signum(stream1.slope) as s1,\n" +
                       "Math.signum(stream2.slope) as s2\n" +
                       "from\n" +
-                      "SupportBean#length_batch(3)#linest(intPrimitive, longPrimitive) as stream1,\n" +
-                      "SupportBean#length_batch(2)#linest(intPrimitive, longPrimitive) as stream2";
+                      "SupportBean#length_batch(3)#linest(IntPrimitive, LongPrimitive) as stream1,\n" +
+                      "SupportBean#length_batch(2)#linest(IntPrimitive, LongPrimitive) as stream2";
             env.CompileDeployAddListenerMileZero(epl, "s0");
             env.SendEventBean(MakeEvent("E3", 1, 100));
             env.SendEventBean(MakeEvent("E4", 1, 100));

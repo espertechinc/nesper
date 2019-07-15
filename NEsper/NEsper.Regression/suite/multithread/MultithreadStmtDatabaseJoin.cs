@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.CompileDeploy(
                 "@Name('s0') select * \n" +
                 "  from SupportBean#length(1000) as s0,\n" +
-                "      sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s1"
+                "      sql:MyDB ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as s1"
             );
             TrySendAndReceive(env, 4, env.Statement("s0"), 1000);
             TrySendAndReceive(env, 2, env.Statement("s0"), 2000);

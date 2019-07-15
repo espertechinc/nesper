@@ -213,13 +213,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var milestone = new AtomicLong();
 
-                var epl = "@Name('s0') select irstream symbol," +
+                var epl = "@Name('s0') select irstream Symbol," +
                           "median(all price) as myMedian," +
                           "median(distinct price) as myDistMedian," +
                           "stddev(all price) as myStdev," +
                           "avedev(all price) as myAvedev " +
                           "from SupportMarketDataBean#length(5) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -278,19 +278,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                             .Add(Expressions.Eq("Symbol", "IBM"))
                             .Add(Expressions.Eq("Symbol", "GE"))
                     )
-                    .Add(Expressions.EqProperty("one.TheString", "two.symbol"));
+                    .Add(Expressions.EqProperty("one.TheString", "two.Symbol"));
                 model.GroupByClause = GroupByClause.Create("Symbol");
                 model = env.CopyMayFail(model);
 
-                var epl = "select irstream symbol, " +
+                var epl = "select irstream Symbol, " +
                           "median(price) as myMedian, " +
                           "median(distinct price) as myDistMedian, " +
                           "stddev(price) as myStdev, " +
                           "avedev(price) as myAvedev " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(5) as two " +
-                          "where (symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\") " +
-                          "and one.TheString=two.symbol " +
+                          "where (Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\") " +
+                          "and one.TheString=two.Symbol " +
                           "group by Symbol";
                 Assert.AreEqual(epl, model.ToEPL());
 
@@ -311,15 +311,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream symbol," +
+                var epl = "@Name('s0') select irstream Symbol," +
                           "median(price) as myMedian," +
                           "median(distinct price) as myDistMedian," +
                           "stddev(price) as myStdev," +
                           "avedev(price) as myAvedev " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(5) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                          "       and one.TheString = two.symbol " +
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
+                          "       and one.TheString = two.Symbol " +
                           "group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 

@@ -51,11 +51,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var eplOne =
-                    "@Name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where intBoxed between rangeStart and rangeEnd";
+                    "@Name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where IntBoxed between rangeStart and rangeEnd";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 var eplTwo =
-                    "@Name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where theString = key and intBoxed in [rangeStart: rangeEnd]";
+                    "@Name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = key and IntBoxed in [rangeStart: rangeEnd]";
                 env.CompileDeploy(eplTwo).AddListener("s1");
 
                 // null join lookups
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test string compare
                 var eplThree =
-                    "@Name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where theString in [rangeStartStr:rangeEndStr]";
+                    "@Name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where TheString in [rangeStartStr:rangeEndStr]";
                 env.CompileDeploy(eplThree).AddListener("s2");
 
                 SendSupportBean(env, "P", 1, 1);
@@ -96,10 +96,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var joinStatement = "@Name('s0') select * from " +
-                                    "SupportBean(theString='A')#length(3) as streamA," +
-                                    "SupportBean(theString='B')#length(3) as streamB" +
+                                    "SupportBean(TheString='A')#length(3) as streamA," +
+                                    "SupportBean(TheString='B')#length(3) as streamB" +
                                     " where streamA.IntPrimitive = streamB.IntPrimitive " +
-                                    "and streamA.intBoxed = streamB.intBoxed";
+                                    "and streamA.IntBoxed = streamB.IntBoxed";
                 env.CompileDeploy(joinStatement).AddListener("s0");
 
                 Assert.AreEqual(typeof(SupportBean), env.Statement("s0").EventType.GetPropertyType("streamA"));

@@ -42,10 +42,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "@Name('s0') select A.longBoxed as value from " +
-                           "SupportBean(theString='A')#length(1000000) as A," +
-                           "SupportBean(theString='B')#length(1000000) as B" +
-                           " where A.longBoxed=B.IntPrimitive";
+                var stmt = "@Name('s0') select A.LongBoxed as value from " +
+                           "SupportBean(TheString='A')#length(1000000) as A," +
+                           "SupportBean(TheString='B')#length(1000000) as B" +
+                           " where A.LongBoxed=B.IntPrimitive";
                 env.CompileDeployAddListenerMileZero(stmt, "s0");
 
                 // preload
@@ -73,9 +73,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var stmt = "@Name('s0') select A.IntPrimitive as value from " +
-                           "SupportBean(theString='A')#length(1000000) as A," +
-                           "SupportBean(theString='B')#length(1000000) as B" +
-                           " where A.IntPrimitive=B.longBoxed";
+                           "SupportBean(TheString='A')#length(1000000) as A," +
+                           "SupportBean(TheString='B')#length(1000000) as B" +
+                           " where A.IntPrimitive=B.LongBoxed";
                 env.CompileDeployAddListenerMileZero(stmt, "s0");
 
                 // preload

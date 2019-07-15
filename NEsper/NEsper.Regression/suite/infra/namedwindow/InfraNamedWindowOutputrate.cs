@@ -20,14 +20,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create window MyWindowOne#keepall as (theString string, intv int)", path);
+            env.CompileDeploy("create window MyWindowOne#keepall as (TheString string, intv int)", path);
             env.CompileDeploy("insert into MyWindowOne select TheString, IntPrimitive as intv from SupportBean", path);
 
             env.AdvanceTime(0);
 
             string[] fields = {"TheString", "c"};
             env.CompileDeploy(
-                    "@Name('s0') select irstream theString, count(*) as c from MyWindowOne group by TheString output snapshot every 1 second",
+                    "@Name('s0') select irstream TheString, count(*) as c from MyWindowOne group by TheString output snapshot every 1 second",
                     path)
                 .AddListener("s0");
 

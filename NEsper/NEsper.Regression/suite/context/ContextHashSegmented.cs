@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('ctx') create context MyCtx as coalesce consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select context.id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.Id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString",
                     path);
                 env.Milestone(0);
 
@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorHash] interfaces but received com."),
+                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorHash] interfaces but received com."),
                         "message: " + ex.Message);
                 }
 
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate filter expression 'dummy=1': Property named 'dummy' is not valid in any stream [");
+                    "Failed to valIdate filter expression 'dummy=1': Property named 'dummy' is not valId in any stream [");
 
                 // invalid hash code function
                 epl = "create context ACtx coalesce hash_code_xyz(IntPrimitive) from SupportBean granularity 10";
@@ -362,12 +362,12 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // invalid attempt to partition a named window's streams
                 env.CompileDeploy("create window MyWindow#keepall as SupportBean", path);
-                epl = "create context SegmentedByWhat partition by theString from MyWindow";
+                epl = "create context SegmentedByWhat partition by TheString from MyWindow";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     epl,
-                    "Partition criteria may not include named windows [create context SegmentedByWhat partition by theString from MyWindow]");
+                    "Partition criteria may not include named windows [create context SegmentedByWhat partition by TheString from MyWindow]");
 
                 env.UndeployAll();
             }
@@ -385,7 +385,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              ctx +
                              " as " +
                              "coalesce " +
-                             " consistent_hash_crc32(TheString) from SupportBean(intPrimitive > 10) " +
+                             " consistent_hash_crc32(TheString) from SupportBean(IntPrimitive > 10) " +
                              "granularity 4 " +
                              "preallocate";
                 env.CompileDeploy(eplCtx, path);
@@ -455,7 +455,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = "c0,c1,c2".SplitCsv();
                 var eplGrouped = "@Name('s0') context CtxHash " +
-                                 "select context.id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString";
+                                 "select context.Id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString";
                 env.CompileDeploy(eplGrouped, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -517,7 +517,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = "c1,c2,c3,c4,c5".SplitCsv();
                 var eplStmt = "@Name('s0') context Ctx1 select IntPrimitive as c1, " +
-                              "sum(LongPrimitive) as c2, prev(1, longPrimitive) as c3, prior(1, longPrimitive) as c4," +
+                              "sum(LongPrimitive) as c2, prev(1, LongPrimitive) as c3, prior(1, LongPrimitive) as c4," +
                               "(select p00 from SupportBean_S0#length(2)) as c5 " +
                               "from SupportBean#length(3)";
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
@@ -570,7 +570,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var eplStmt = "@Name('s0') context " +
                               ctx +
                               " " +
-                              "select context.name as c0, IntPrimitive as c1, id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.TheString = t2.p00";
+                              "select context.name as c0, IntPrimitive as c1, Id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.TheString = t2.p00";
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
 
                 var fields = "c0,c1,c2".SplitCsv();
@@ -863,9 +863,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplCtx, path);
 
                 var eplStmt =
-                    "@Name('s0') context HashSegmentedContext select context.id as c1, myHash(*) as c2, mySecond(*, theString) as c3, " +
+                    "@Name('s0') context HashSegmentedContext select context.Id as c1, myHash(*) as c2, mySecond(*, TheString) as c3, " +
                     typeof(ContextHashSegmented).Name +
-                    ".mySecondFunc(*, theString) as c4 from SupportBean";
+                    ".mySecondFunc(*, TheString) as c4 from SupportBean";
                 env.CompileDeploy(eplStmt, path);
                 env.AddListener("s0");
 
@@ -877,7 +877,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {3, 3, "E1", "E1"}); // context id matches the number returned by myHashFunc
+                    new object[] {3, 3, "E1", "E1"}); // context Id matches the number returned by myHashFunc
 
                 env.SendEventBean(new SupportBean("E2", 0));
                 EPAssertionUtil.AssertProps(
@@ -914,7 +914,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var id = (ContextPartitionIdentifierHash) contextPartitionIdentifier;
                 if (match == null && cpids.Contains(id.ContextPartitionId)) {
-                    throw new EPException("Already exists context id: " + id.ContextPartitionId);
+                    throw new EPException("Already exists context Id: " + id.ContextPartitionId);
                 }
 
                 cpids.Add(id.ContextPartitionId);
